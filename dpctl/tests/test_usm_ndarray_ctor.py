@@ -59,13 +59,13 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 
 def test_usm_ndarray_flags():
-    assert dpt.usm_ndarray((5,)).flags.fnc
+    assert dpt.usm_ndarray((5,)).flags.fc
     assert dpt.usm_ndarray((5, 2)).flags.c_contiguous
     assert dpt.usm_ndarray((5, 2), order="F").flags.f_contiguous
     assert dpt.usm_ndarray((5, 1, 2), order="F").flags.f_contiguous
     assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags.c_contiguous
     assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.fnc
+    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.fc
 
 
 @pytest.mark.parametrize(
@@ -1525,6 +1525,7 @@ def test_flags():
     f.c_contiguous
     f.f_contiguous
     f.contiguous
+    f.fc
     f.fnc
     f.forc
     f.writable

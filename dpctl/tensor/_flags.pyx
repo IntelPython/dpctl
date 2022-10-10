@@ -58,6 +58,13 @@ cdef class Flags:
         return _check_bit(self.flags_, USM_ARRAY_WRITEABLE)
 
     @property
+    def fc(self):
+        return (
+           _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
+           and _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
+        )
+
+    @property
     def forc(self):
         return (
            _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
@@ -68,7 +75,7 @@ cdef class Flags:
     def fnc(self):
         return (
            _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
-           and _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
+           and not _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
         )
 
     @property
@@ -82,6 +89,8 @@ cdef class Flags:
             return self.f_contiguous
         elif name == "WRITABLE":
             return self.writable
+        elif name == "FC":
+            return self.fc
         elif name == "CONTIGUOUS":
             return self.forc
 
