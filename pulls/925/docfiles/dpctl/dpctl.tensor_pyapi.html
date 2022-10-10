@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.0dev0+148.gc6ae7f0d7 documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.0dev0+167.g35cf5c82a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+148.gc6ae7f0d7
+                0.14.0dev0+167.g35cf5c82a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -118,7 +118,10 @@ implementations that implement Python data API
 <tr class="row-odd"><td><p><a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a></p></td>
 <td><p>Class representing Data-API concept of device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
+<td><p>Create a data type object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a></p></td>
 <td><p>See <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for allowed keyword arguments.</p></td>
 </tr>
 </tbody>
@@ -171,25 +174,28 @@ implementations that implement Python data API
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.linspace" title="dpctl.tensor.linspace"><code class="xref py py-func docutils literal notranslate"><span class="pre">linspace()</span></code></a></p></td>
 <td><p>: usm_ndarray Returns evenly spaced numbers of specified interval.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones" title="dpctl.tensor.ones"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.meshgrid" title="dpctl.tensor.meshgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshgrid()</span></code></a></p></td>
+<td><p>-&gt; list[usm_ndarray] Creates list of <cite>usm_ndarray</cite> coordinate matrices from vectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones" title="dpctl.tensor.ones"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones()</span></code></a></p></td>
 <td><p>Creates <cite>usm_ndarray</cite> with elements of one.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones_like" title="dpctl.tensor.ones_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones_like()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones_like" title="dpctl.tensor.ones_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones_like()</span></code></a></p></td>
 <td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
 <td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tril" title="dpctl.tensor.tril"><code class="xref py py-func docutils literal notranslate"><span class="pre">tril()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tril" title="dpctl.tensor.tril"><code class="xref py py-func docutils literal notranslate"><span class="pre">tril()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Returns the lower triangular part of a matrix (or a stack of matrices) X.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.triu" title="dpctl.tensor.triu"><code class="xref py py-func docutils literal notranslate"><span class="pre">triu()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.triu" title="dpctl.tensor.triu"><code class="xref py py-func docutils literal notranslate"><span class="pre">triu()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Returns the upper triangular part of a matrix (or a stack of matrices) X.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
 <td><p>Creates <cite>usm_ndarray</cite> with zero elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like" title="dpctl.tensor.zeros_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros_like()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like" title="dpctl.tensor.zeros_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros_like()</span></code></a></p></td>
 <td><p>Creates <cite>usm_ndarray</cite> from USM allocation initialized with zeros.</p></td>
 </tr>
 </tbody>
@@ -209,20 +215,32 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_to" title="dpctl.tensor.broadcast_to"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast_to()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.can_cast" title="dpctl.tensor.can_cast"><code class="xref py py-func docutils literal notranslate"><span class="pre">can_cast()</span></code></a></p></td>
+<td><p>-&gt; bool Determines if one data type can be cast to another data type according to Type Promotion Rules rules.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Joins a sequence of arrays along an existing axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.finfo" title="dpctl.tensor.finfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">finfo()</span></code></a></p></td>
+<td><p>-&gt; finfo_object Returns machine limits for float data types.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.flip" title="dpctl.tensor.flip"><code class="xref py py-func docutils literal notranslate"><span class="pre">flip()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Reverses the order of elements in an array along the given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.iinfo" title="dpctl.tensor.iinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">iinfo()</span></code></a></p></td>
+<td><p>-&gt; iinfo_object Returns machine limits for integer data types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
+<td><p>-&gt; dtype Returns the dtype that results from applying the Type Promotion Rules to the arguments.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Rolls array elements along a specified axis.</p></td>

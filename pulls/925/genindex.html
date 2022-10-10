@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data-parallel Control (dpctl) 0.14.0dev0+148.gc6ae7f0d7 documentation</title>
+  <title>Index &mdash; Data-parallel Control (dpctl) 0.14.0dev0+167.g35cf5c82a documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+148.gc6ae7f0d7
+                0.14.0dev0+167.g35cf5c82a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -198,6 +198,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/dpctl_enum_api.html#dpctl.backend_type">backend_type (class in dpctl)</a>
 </li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.base">base (numpy.dtype attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_arrays">broadcast_arrays() (in module dpctl.tensor)</a>
 </li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_to">broadcast_to() (in module dpctl.tensor)</a>
@@ -208,6 +210,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.can_cast">can_cast() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.compile_num_sub_groups">compile_num_sub_groups (dpctl.program.SyclKernel attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.compile_sub_group_size">compile_sub_group_size (dpctl.program.SyclKernel attribute)</a>
@@ -266,6 +270,8 @@
       <li><a href="docfiles/dpctl/SyclPlatform.html#dpctl.SyclPlatform.default_context">default_context (dpctl.SyclPlatform attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.default_selector_score">default_selector_score (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.descr">descr (numpy.dtype attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/Device.html#dpctl.tensor.Device">Device (class in dpctl.tensor)</a>
 </li>
@@ -1684,8 +1690,12 @@
       </ul></li>
       <li><a href="docfiles/dpctl/SyclTimer.html#dpctl.SyclTimer.dt">dt (dpctl.SyclTimer attribute)</a>
 </li>
-      <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.dtype">dtype (dpctl.tensor.usm_ndarray attribute)</a>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype">dtype (class in numpy)</a>
+
+      <ul>
+        <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.dtype">(dpctl.tensor.usm_ndarray attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1747,7 +1757,11 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.fields">fields (numpy.dtype attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.filter_string">filter_string (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.finfo">finfo() (in module dpctl.tensor)</a>
 </li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.flags">flags (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
@@ -2278,12 +2292,16 @@
 </li>
       <li><a href="docfiles/dpctl/SyclProgram.html#dpctl.program.SyclProgram.has_sycl_kernel">has_sycl_kernel() (in module dpctl.program.SyclProgram)</a>
 </li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.hasobject">hasobject (numpy.dtype attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.iinfo">iinfo() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.imag">imag (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.image_2d_max_height">image_2d_max_height (dpctl.SyclDevice attribute)</a>
@@ -2296,10 +2314,10 @@
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.image_3d_max_width">image_3d_max_width (dpctl.SyclDevice attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.is_accelerator">is_accelerator (dpctl.SyclDevice attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.is_cpu">is_cpu (dpctl.SyclDevice attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.is_gpu">is_gpu (dpctl.SyclDevice attribute)</a>
@@ -2309,6 +2327,12 @@
       <li><a href="docfiles/dpctl/dpctl_functions_api.html#dpctl.is_in_device_context">is_in_device_context() (in module dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.is_in_order">is_in_order (dpctl.SyclQueue attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.isalignedstruct">isalignedstruct (numpy.dtype attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.isbuiltin">isbuiltin (numpy.dtype attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.isnative">isnative (numpy.dtype attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.itemsize">itemsize (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
@@ -2382,10 +2406,10 @@
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.mem_advise">mem_advise() (in module dpctl.SyclQueue)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.memcpy">memcpy() (in module dpctl.SyclQueue)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice">MemoryUSMDevice (class in dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl/MemoryUSMHost.html#dpctl.memory.MemoryUSMHost">MemoryUSMHost (class in dpctl.memory)</a>
@@ -2400,6 +2424,10 @@
         <li><a href="docfiles/dpctl/MemoryUSMShared.html#dpctl.memory.MemoryUSMShared.memset">(in module dpctl.memory.MemoryUSMShared)</a>
 </li>
       </ul></li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.meshgrid">meshgrid() (in module dpctl.tensor)</a>
+</li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.metadata">metadata (numpy.dtype attribute)</a>
+</li>
       <li>
     module
 
@@ -2430,7 +2458,11 @@
 </li>
         <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.name">(dpctl.SyclQueue attribute)</a>
 </li>
+        <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.name">(numpy.dtype attribute)</a>
+</li>
       </ul></li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.names">names (numpy.dtype attribute)</a>
+</li>
       <li>
     namespace
 
@@ -2451,6 +2483,12 @@
 </li>
       </ul></li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.ndim">ndim (dpctl.tensor.usm_ndarray attribute)</a>
+
+      <ul>
+        <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.ndim">(numpy.dtype attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.newbyteorder">newbyteorder() (in module numpy.dtype)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.num_args">num_args (dpctl.program.SyclKernel attribute)</a>
 </li>
@@ -2579,6 +2617,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.reshape">reshape() (in module dpctl.tensor)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.result_type">result_type() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.roll">roll() (in module dpctl.tensor)</a>
 </li>
   </ul></td>
@@ -2609,7 +2649,11 @@
       <li><a href="docfiles/dpctl/dpctl_functions_api.html#dpctl.set_global_queue">set_global_queue() (in module dpctl)</a>
 </li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.shape">shape (dpctl.tensor.usm_ndarray attribute)</a>
+
+      <ul>
+        <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.shape">(numpy.dtype attribute)</a>
 </li>
+      </ul></li>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.size">size (dpctl.memory.MemoryUSMDevice attribute)</a>
 
       <ul>
@@ -2624,9 +2668,13 @@
 </li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.stack">stack() (in module dpctl.tensor)</a>
 </li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.str">str (numpy.dtype attribute)</a>
+</li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.strides">strides (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.sub_group_independent_forward_progress">sub_group_independent_forward_progress (dpctl.SyclDevice attribute)</a>
+</li>
+      <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.subdtype">subdtype (numpy.dtype attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.submit">submit() (in module dpctl.SyclQueue)</a>
 </li>
