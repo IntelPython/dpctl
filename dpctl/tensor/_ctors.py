@@ -133,9 +133,9 @@ def _asarray_from_usm_ndarray(
     #    sycl_queue is unchanged
     can_zero_copy = can_zero_copy and copy_q is usm_ndary.sycl_queue
     #    order is unchanged
-    c_contig = usm_ndary.flags & 1
-    f_contig = usm_ndary.flags & 2
-    fc_contig = usm_ndary.flags & 3
+    c_contig = usm_ndary.flags.c_contiguous
+    f_contig = usm_ndary.flags.f_contiguous
+    fc_contig = usm_ndary.flags.forc
     if can_zero_copy:
         if order == "C" and c_contig:
             pass
@@ -1130,7 +1130,7 @@ def tril(X, k=0):
     k = operator.index(k)
 
     # F_CONTIGUOUS = 2
-    order = "F" if (X.flags & 2) else "C"
+    order = "F" if (X.flags.f_contiguous) else "C"
 
     shape = X.shape
     nd = X.ndim
@@ -1171,7 +1171,7 @@ def triu(X, k=0):
     k = operator.index(k)
 
     # F_CONTIGUOUS = 2
-    order = "F" if (X.flags & 2) else "C"
+    order = "F" if (X.flags.f_contiguous) else "C"
 
     shape = X.shape
     nd = X.ndim

@@ -59,13 +59,13 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 
 def test_usm_ndarray_flags():
-    assert dpt.usm_ndarray((5,)).flags == 3
-    assert dpt.usm_ndarray((5, 2)).flags == 1
-    assert dpt.usm_ndarray((5, 2), order="F").flags == 2
-    assert dpt.usm_ndarray((5, 1, 2), order="F").flags == 2
-    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags == 1
-    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags == 2
-    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags == 3
+    assert dpt.usm_ndarray((5,)).flags.fc
+    assert dpt.usm_ndarray((5, 2)).flags.c_contiguous
+    assert dpt.usm_ndarray((5, 2), order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags.c_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.fc
 
 
 @pytest.mark.parametrize(
@@ -465,7 +465,7 @@ def test_pyx_capi_get_flags():
         fn_restype=ctypes.c_int,
     )
     flags = get_flags_fn(X)
-    assert type(flags) is int and flags == X.flags
+    assert type(flags) is int and X.flags == flags
 
 
 def test_pyx_capi_get_offset():
@@ -753,7 +753,7 @@ def test_shape_setter():
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
-    assert X.flags & 1, "reshaped array expected to be C-contiguous"
+    assert X.flags.c_contiguous, "reshaped array expected to be C-contiguous"
 
     sh_s = (
         2,
@@ -1516,3 +1516,18 @@ def test_common_arg_validation():
         dpt.triu(X)
     with pytest.raises(TypeError):
         dpt.meshgrid(X)
+
+
+def test_flags():
+    x = dpt.empty(tuple(), "i4")
+    f = x.flags
+    f.__repr__()
+    f.c_contiguous
+    f.f_contiguous
+    f.contiguous
+    f.fc
+    f.fnc
+    f.forc
+    f.writable
+    # check comparison with generic types
+    f == Ellipsis
