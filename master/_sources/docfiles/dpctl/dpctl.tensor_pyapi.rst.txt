@@ -18,6 +18,7 @@ Classes
    :hidden:
 
    Device
+   dtype
    usm_ndarray
 
 .. list-table::
@@ -25,6 +26,8 @@ Classes
 
     * - :class:`Device`
       - Class representing Data-API concept of device.
+    * - :class:`dtype`
+      - Create a data type object.
     * - :class:`usm_ndarray`
       - See :class:`dpctl.memory.MemoryUSMShared` for allowed keyword arguments.
 
@@ -92,16 +95,24 @@ Array Manipulation
       - -> list of usm_ndarrays Broadcasts one or more usm_ndarrays against one another.
     * - :func:`broadcast_to()`
       - -> usm_ndarray Broadcast an array to a new shape; returns the broadcasted array as a view.
+    * - :func:`can_cast()`
+      - -> bool Determines if one data type can be cast to another data type according to Type Promotion Rules rules.
     * - :func:`concat()`
       - -> usm_ndarray Joins a sequence of arrays along an existing axis.
     * - :func:`expand_dims()`
       - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.
+    * - :func:`finfo()`
+      - -> finfo_object Returns machine limits for float data types.
     * - :func:`flip()`
       - -> usm_ndarray Reverses the order of elements in an array along the given axis.
+    * - :func:`iinfo()`
+      - -> iinfo_object Returns machine limits for integer data types.
     * - :func:`permute_dims()`
       - -> usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
       - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
+    * - :func:`result_type()`
+      - -> dtype Returns the dtype that results from applying the Type Promotion Rules to the arguments.
     * - :func:`roll()`
       - -> usm_ndarray Rolls array elements along a specified axis.
     * - :func:`squeeze()`

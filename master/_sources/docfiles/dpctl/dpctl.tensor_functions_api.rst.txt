@@ -38,11 +38,15 @@ Array Manipulation
 
 .. autofunction:: broadcast_arrays
 .. autofunction:: broadcast_to
+.. autofunction:: can_cast
 .. autofunction:: concat
 .. autofunction:: expand_dims
+.. autofunction:: finfo
 .. autofunction:: flip
+.. autofunction:: iinfo
 .. autofunction:: permute_dims
 .. autofunction:: reshape
+.. autofunction:: result_type
 .. autofunction:: roll
 .. autofunction:: squeeze
 .. autofunction:: stack
