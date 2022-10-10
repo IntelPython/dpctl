@@ -517,7 +517,7 @@ def test_pyx_capi_check_constants():
     assert cc_flag > 0 and 0 == (cc_flag & (cc_flag - 1))
     fc_flag = _pyx_capi_int(X, "USM_ARRAY_F_CONTIGUOUS")
     assert fc_flag > 0 and 0 == (fc_flag & (fc_flag - 1))
-    w_flag = _pyx_capi_int(X, "USM_ARRAY_WRITEABLE")
+    w_flag = _pyx_capi_int(X, "USM_ARRAY_WRITABLE")
     assert w_flag > 0 and 0 == (w_flag & (w_flag - 1))
 
     bool_typenum = _pyx_capi_int(X, "UAR_BOOL")
