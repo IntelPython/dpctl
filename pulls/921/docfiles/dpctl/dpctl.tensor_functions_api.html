@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+152.g6e88e3eb7 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.0dev0+156.ga38199234 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+152.g6e88e3eb7
+                0.14.0dev0+156.ga38199234
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -446,6 +446,28 @@ underlying SYCL queue to be used. If both are <cite>None</cite>, the
 Default: <cite>None</cite>.</p></li>
 <li><p><strong>endpoint</strong> – boolean indicating whether to include <cite>stop</cite> in the
 interval. Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.meshgrid">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">meshgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><span class="pre">usm_ndarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#meshgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.meshgrid" title="Permalink to this definition"></a></dt>
+<dd><p>Creates list of <cite>usm_ndarray</cite> coordinate matrices from vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arrays</strong> – arbitrary number of one-dimensional <cite>USM_ndarray</cite> objects.
+If vectors are not of the same data type,
+or are not one-dimensional, raises <cite>ValueError.</cite></p></li>
+<li><p><strong>indexing</strong> – Cartesian (<cite>xy</cite>) or matrix (<cite>ij</cite>) indexing of output.
+For a set of <cite>n</cite> vectors with lengths N0, N1, N2, …
+Cartesian indexing results in arrays of shape
+(N1, N0, N2, …)
+matrix indexing results in arrays of shape
+(n0, N1, N2, …)
+Default: <cite>xy</cite>.</p></li>
 </ul>
 </dd>
 </dl>

@@ -24,6 +24,7 @@ Array Construction
 .. autofunction:: full
 .. autofunction:: full_like
 .. autofunction:: linspace
+.. autofunction:: meshgrid
 .. autofunction:: ones
 .. autofunction:: ones_like
 .. autofunction:: to_numpy
