@@ -999,3 +999,32 @@ def test_stack_3arrays(data):
     R = dpt.stack([X, Y, Z], axis=axis)
 
     assert_array_equal(Rnp, dpt.asnumpy(R))
+
+
+def test_can_cast():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    # incorrect input
+    X = dpt.ones((2, 2), dtype=dpt.int64, sycl_queue=q)
+    pytest.raises(TypeError, dpt.can_cast, X, 1)
+    pytest.raises(TypeError, dpt.can_cast, X, X)
+    X_np = np.ones((2, 2), dtype=np.int64)
+
+    assert dpt.can_cast(X, "float32") == np.can_cast(X_np, "float32")
+    assert dpt.can_cast(X, dpt.int32) == np.can_cast(X_np, np.int32)
+    assert dpt.can_cast(X, dpt.int64) == np.can_cast(X_np, np.int64)
+
+
+def test_result_type():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    X = [dpt.ones((2), dtype=dpt.int64, sycl_queue=q), dpt.int32, "float16"]
+    X_np = [np.ones((2), dtype=np.int64), np.int32, "float16"]
+
+    assert dpt.result_type(*X) == np.result_type(*X_np)

@@ -85,14 +85,14 @@ def test_usm_ndarray_flags():
         "c8",
         "c16",
         b"float32",
-        np.dtype("d"),
+        dpt.dtype("d"),
         np.half,
     ],
 )
 def test_dtypes(dtype):
     Xusm = dpt.usm_ndarray((1,), dtype=dtype)
-    assert Xusm.itemsize == np.dtype(dtype).itemsize
-    expected_fmt = (np.dtype(dtype).str)[1:]
+    assert Xusm.itemsize == dpt.dtype(dtype).itemsize
+    expected_fmt = (dpt.dtype(dtype).str)[1:]
     actual_fmt = Xusm.__sycl_usm_array_interface__["typestr"][1:]
     assert expected_fmt == actual_fmt
 
@@ -112,7 +112,7 @@ def test_properties(dt):
     assert isinstance(X.sycl_queue, dpctl.SyclQueue)
     assert isinstance(X.sycl_device, dpctl.SyclDevice)
     assert isinstance(X.sycl_context, dpctl.SyclContext)
-    assert isinstance(X.dtype, np.dtype)
+    assert isinstance(X.dtype, dpt.dtype)
     assert isinstance(X.__sycl_usm_array_interface__, dict)
     assert isinstance(X.mT, dpt.usm_ndarray)
     assert isinstance(X.imag, dpt.usm_ndarray)
@@ -521,44 +521,44 @@ def test_pyx_capi_check_constants():
     assert w_flag > 0 and 0 == (w_flag & (w_flag - 1))
 
     bool_typenum = _pyx_capi_int(X, "UAR_BOOL")
-    assert bool_typenum == np.dtype("bool_").num
+    assert bool_typenum == dpt.dtype("bool_").num
 
     byte_typenum = _pyx_capi_int(X, "UAR_BYTE")
-    assert byte_typenum == np.dtype(np.byte).num
+    assert byte_typenum == dpt.dtype(np.byte).num
     ubyte_typenum = _pyx_capi_int(X, "UAR_UBYTE")
-    assert ubyte_typenum == np.dtype(np.ubyte).num
+    assert ubyte_typenum == dpt.dtype(np.ubyte).num
 
     short_typenum = _pyx_capi_int(X, "UAR_SHORT")
-    assert short_typenum == np.dtype(np.short).num
+    assert short_typenum == dpt.dtype(np.short).num
     ushort_typenum = _pyx_capi_int(X, "UAR_USHORT")
-    assert ushort_typenum == np.dtype(np.ushort).num
+    assert ushort_typenum == dpt.dtype(np.ushort).num
 
     int_typenum = _pyx_capi_int(X, "UAR_INT")
-    assert int_typenum == np.dtype(np.intc).num
+    assert int_typenum == dpt.dtype(np.intc).num
     uint_typenum = _pyx_capi_int(X, "UAR_UINT")
-    assert uint_typenum == np.dtype(np.uintc).num
+    assert uint_typenum == dpt.dtype(np.uintc).num
 
     long_typenum = _pyx_capi_int(X, "UAR_LONG")
-    assert long_typenum == np.dtype(np.int_).num
+    assert long_typenum == dpt.dtype(np.int_).num
     ulong_typenum = _pyx_capi_int(X, "UAR_ULONG")
-    assert ulong_typenum == np.dtype(np.uint).num
+    assert ulong_typenum == dpt.dtype(np.uint).num
 
     longlong_typenum = _pyx_capi_int(X, "UAR_LONGLONG")
-    assert longlong_typenum == np.dtype(np.longlong).num
+    assert longlong_typenum == dpt.dtype(np.longlong).num
     ulonglong_typenum = _pyx_capi_int(X, "UAR_ULONGLONG")
-    assert ulonglong_typenum == np.dtype(np.ulonglong).num
+    assert ulonglong_typenum == dpt.dtype(np.ulonglong).num
 
     half_typenum = _pyx_capi_int(X, "UAR_HALF")
-    assert half_typenum == np.dtype(np.half).num
+    assert half_typenum == dpt.dtype(np.half).num
     float_typenum = _pyx_capi_int(X, "UAR_FLOAT")
-    assert float_typenum == np.dtype(np.single).num
+    assert float_typenum == dpt.dtype(np.single).num
     double_typenum = _pyx_capi_int(X, "UAR_DOUBLE")
-    assert double_typenum == np.dtype(np.double).num
+    assert double_typenum == dpt.dtype(np.double).num
 
     cfloat_typenum = _pyx_capi_int(X, "UAR_CFLOAT")
-    assert cfloat_typenum == np.dtype(np.csingle).num
+    assert cfloat_typenum == dpt.dtype(np.csingle).num
     cdouble_typenum = _pyx_capi_int(X, "UAR_CDOUBLE")
-    assert cdouble_typenum == np.dtype(np.cdouble).num
+    assert cdouble_typenum == dpt.dtype(np.cdouble).num
 
 
 _all_dtypes = [
@@ -720,12 +720,12 @@ def test_setitem_wingaps():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default queue could not be created")
-    if np.dtype("intc").itemsize == np.dtype("int32").itemsize:
+    if dpt.dtype("intc").itemsize == dpt.dtype("int32").itemsize:
         dpt_dst = dpt.empty(4, dtype="int32", sycl_queue=q)
         np_src = np.arange(4, dtype="intc")
         dpt_dst[:] = np_src  # should not raise exceptions
         assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
-    if np.dtype("long").itemsize == np.dtype("longlong").itemsize:
+    if dpt.dtype("long").itemsize == dpt.dtype("longlong").itemsize:
         dpt_dst = dpt.empty(4, dtype="longlong", sycl_queue=q)
         np_src = np.arange(4, dtype="long")
         dpt_dst[:] = np_src  # should not raise exceptions
@@ -1027,7 +1027,7 @@ def test_full(dtype):
 
 def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 4).dtype, np.integer)
-    assert dpt.full(10, True).dtype is np.dtype(np.bool_)
+    assert dpt.full(10, True).dtype is dpt.dtype(np.bool_)
     assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
     assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
 
@@ -1047,7 +1047,7 @@ def test_arange(dt):
             "Device does not support double precision floating point type"
         )
     X = dpt.arange(0, 123, dtype=dt, sycl_queue=q)
-    dt = np.dtype(dt)
+    dt = dpt.dtype(dt)
     if np.issubdtype(dt, np.integer):
         assert int(X[47]) == 47
     elif np.issubdtype(dt, np.floating):
@@ -1056,7 +1056,7 @@ def test_arange(dt):
         assert complex(X[47]) == 47.0 + 0.0j
 
     # choose size larger than maximal value that u1/u2 can accomodate
-    sz = int(np.iinfo(np.int16).max) + 1
+    sz = int(dpt.iinfo(dpt.int16).max) + 1
     X1 = dpt.arange(sz, dtype=dt, sycl_queue=q)
     assert X1.shape == (sz,)
 
@@ -1101,9 +1101,9 @@ def test_linspace_fp():
     n = 16
     X = dpt.linspace(0, n - 1, num=n, sycl_queue=q)
     if q.sycl_device.has_aspect_fp64:
-        assert X.dtype == np.dtype("float64")
+        assert X.dtype == dpt.dtype("float64")
     else:
-        assert X.dtype == np.dtype("float32")
+        assert X.dtype == dpt.dtype("float32")
     assert X.shape == (n,)
     assert X.strides == (1,)
 
@@ -1238,7 +1238,7 @@ def test_full_like(dt, usm_kind):
             "Device does not support double precision floating point type"
         )
 
-    fill_v = np.dtype(dt).type(1)
+    fill_v = dpt.dtype(dt).type(1)
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.full_like(X, fill_v)
     assert X.shape == Y.shape

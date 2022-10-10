@@ -33,20 +33,20 @@ def _get_dtype(dtype, sycl_obj, ref_type=None):
     if dtype is None:
         if ref_type in [None, float] or np.issubdtype(ref_type, np.floating):
             dtype = ti.default_device_fp_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         elif ref_type in [bool, np.bool_]:
             dtype = ti.default_device_bool_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         elif ref_type is int or np.issubdtype(ref_type, np.integer):
             dtype = ti.default_device_int_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         elif ref_type is complex or np.issubdtype(ref_type, np.complexfloating):
             dtype = ti.default_device_complex_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         else:
             raise TypeError(f"Reference type {ref_type} not recognized.")
     else:
-        return np.dtype(dtype)
+        return dpt.dtype(dtype)
 
 
 def _array_info_dispatch(obj):
@@ -313,7 +313,7 @@ def asarray(
         )
     # 2. Check that dtype is None, or a valid dtype
     if dtype is not None:
-        dtype = np.dtype(dtype)
+        dtype = dpt.dtype(dtype)
     # 3. Validate order
     if not isinstance(order, str):
         raise TypeError(
@@ -768,7 +768,7 @@ def empty_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -825,7 +825,7 @@ def zeros_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     return zeros(
         sh,
         dtype=dtype,
@@ -882,7 +882,7 @@ def ones_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     return ones(
         sh,
         dtype=dtype,
@@ -946,7 +946,7 @@ def full_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     return full(
         sh,
         fill_value,
@@ -1026,7 +1026,7 @@ def linspace(
     )
     if dtype is None and np.issubdtype(dt, np.integer):
         dt = ti.default_device_fp_type(sycl_queue)
-        dt = np.dtype(dt)
+        dt = dpt.dtype(dt)
         start = float(start)
         stop = float(stop)
     res = dpt.empty(num, dtype=dt, sycl_queue=sycl_queue)

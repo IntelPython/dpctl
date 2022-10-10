@@ -309,8 +309,7 @@ def _arrays_validation(arrays):
         raise ValueError("All the input arrays must have usm_type")
 
     X0 = arrays[0]
-    if not all(Xi.dtype.char in "?bBhHiIlLqQefdFD" for Xi in arrays):
-        raise ValueError("Unsupported dtype encountered.")
+    _supported_dtype(Xi.dtype for Xi in arrays)
 
     res_dtype = X0.dtype
     for i in range(1, n):
@@ -421,3 +420,73 @@ def stack(arrays, axis=0):
     dpctl.SyclEvent.wait_for(hev_list)
 
     return res
+
+
+def can_cast(from_, to, casting="safe"):
+    """
+    can_cast(from: usm_ndarray or dtype, to: dtype) -> bool
+
+    Determines if one data type can be cast to another data type according \
+        to Type Promotion Rules rules.
+    """
+    if isinstance(to, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type.")
+
+    dtype_to = dpt.dtype(to)
+
+    dtype_from = (
+        from_.dtype if isinstance(from_, dpt.usm_ndarray) else dpt.dtype(from_)
+    )
+
+    _supported_dtype([dtype_from, dtype_to])
+
+    return np.can_cast(dtype_from, dtype_to, casting)
+
+
+def result_type(*arrays_and_dtypes):
+    """
+    result_type(arrays_and_dtypes: an arbitrary number usm_ndarrays or dtypes)\
+         -> dtype
+
+    Returns the dtype that results from applying the Type Promotion Rules to \
+        the arguments.
+    """
+    dtypes = [
+        X.dtype if isinstance(X, dpt.usm_ndarray) else dpt.dtype(X)
+        for X in arrays_and_dtypes
+    ]
+
+    _supported_dtype(dtypes)
+
+    return np.result_type(*dtypes)
+
+
+def iinfo(type):
+    """
+    iinfo(type: integer data-type) -> iinfo_object
+
+    Returns machine limits for integer data types.
+    """
+    if isinstance(type, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type, get {to}.")
+    _supported_dtype([dpt.dtype(type)])
+    return np.iinfo(type)
+
+
+def finfo(type):
+    """
+    finfo(type: float data-type) -> finfo_object
+
+    Returns machine limits for float data types.
+    """
+    if isinstance(type, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type, get {to}.")
+    _supported_dtype([dpt.dtype(type)])
+    return np.finfo(type)
+
+
+def _supported_dtype(dtypes):
+    for dtype in dtypes:
+        if dtype.char not in "?bBhHiIlLqQefdFD":
+            raise ValueError(f"Dpctl doesn't support dtype {dtype}.")
+    return True
