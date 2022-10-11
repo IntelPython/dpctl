@@ -207,7 +207,7 @@ cdef class _Memory:
                 self.memory_ptr = other_buf.p
                 self.nbytes = other_buf.nbytes
                 self.queue = other_buf.queue
-                # self.writeable = other_buf.writeable
+                # self.writable = other_buf.writable
                 self.refobj = other
             else:
                 raise ValueError(
@@ -333,7 +333,7 @@ cdef class _Memory:
         def __get__(self):
             cdef dict iface = {
                 "data": (<size_t>(<void *>self.memory_ptr),
-                         True),  # bool(self.writeable)),
+                         True),  # bool(self.writable)),
                 "shape": (self.nbytes,),
                 "strides": None,
                 "typestr": "|u1",

@@ -23,7 +23,7 @@ from libcpp cimport bool as cpp_bool
 from dpctl.tensor._usmarray cimport (
     USM_ARRAY_C_CONTIGUOUS,
     USM_ARRAY_F_CONTIGUOUS,
-    USM_ARRAY_WRITEABLE,
+    USM_ARRAY_WRITABLE,
     usm_ndarray,
 )
 
@@ -33,7 +33,10 @@ cdef cpp_bool _check_bit(int flag, int mask):
 
 
 cdef class Flags:
-    """Helper class to represent flags of :class:`dpctl.tensor.usm_ndarray`."""
+    """
+    Helper class to represent memory layout flags of
+    :class:`dpctl.tensor.usm_ndarray`.
+    """
     cdef int flags_
     cdef usm_ndarray arr_
 
@@ -43,22 +46,41 @@ cdef class Flags:
 
     @property
     def flags(self):
+        """
+        Integer representation of the memory layout flags of
+        :class:`dpctl.tensor.usm_ndarray` instance.
+        """
         return self.flags_
 
     @property
     def c_contiguous(self):
+        """
+        True if the memory layout of the
+        :class:`dpctl.tensor.usm_ndarray` instance is C-contiguous.
+        """
         return _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
 
     @property
     def f_contiguous(self):
+        """
+        True if the memory layout of the
+        :class:`dpctl.tensor.usm_ndarray` instance is F-contiguous.
+        """
         return _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
 
     @property
     def writable(self):
-        return _check_bit(self.flags_, USM_ARRAY_WRITEABLE)
+        """
+        True if :class:`dpctl.tensor.usm_ndarray` instance is writable.
+        """
+        return _check_bit(self.flags_, USM_ARRAY_WRITABLE)
 
     @property
     def fc(self):
+        """
+        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        instance is C-contiguous and F-contiguous.
+        """
         return (
            _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
            and _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
@@ -66,6 +88,10 @@ cdef class Flags:
 
     @property
     def forc(self):
+        """
+        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        instance is C-contiguous or F-contiguous.
+        """
         return (
            _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
            or _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
@@ -73,6 +99,10 @@ cdef class Flags:
 
     @property
     def fnc(self):
+        """
+        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        instance is F-contiguous and not C-contiguous.
+        """
         return (
            _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
            and not _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
@@ -80,6 +110,11 @@ cdef class Flags:
 
     @property
     def contiguous(self):
+        """
+        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        instance is C-contiguous and F-contiguous.
+        Equivalent to `forc.`
+        """
         return self.forc
 
     def __getitem__(self, name):
@@ -87,7 +122,7 @@ cdef class Flags:
             return self.c_contiguous
         elif name in ["F_CONTIGUOUS", "F"]:
             return self.f_contiguous
-        elif name == "WRITABLE":
+        elif name in ["WRITABLE", "W"]:
             return self.writable
         elif name == "FC":
             return self.fc

@@ -366,7 +366,7 @@ cdef class usm_ndarray:
         ary_iface = self.base_.__sycl_usm_array_interface__
         mem_ptr = <char *>(<size_t> ary_iface['data'][0])
         ary_ptr = <char *>(<size_t> self.data_)
-        ro_flag = False if (self.flags_ & USM_ARRAY_WRITEABLE) else True
+        ro_flag = False if (self.flags_ & USM_ARRAY_WRITABLE) else True
         ary_iface['data'] = (<size_t> mem_ptr, ro_flag)
         ary_iface['shape'] = self.shape
         if (self.strides_):
@@ -637,7 +637,7 @@ cdef class usm_ndarray:
             buffer=self.base_,
             offset=_meta[2]
         )
-        res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
+        res.flags_ |= (self.flags_ & USM_ARRAY_WRITABLE)
         res.array_namespace_ = self.array_namespace_
         return res
 
@@ -1175,7 +1175,7 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
     return r
 
 
@@ -1192,7 +1192,7 @@ cdef usm_ndarray _m_transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
     return r
 
 

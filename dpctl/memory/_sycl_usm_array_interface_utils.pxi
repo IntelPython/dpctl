@@ -122,7 +122,7 @@ cdef class _USMBufferData:
     `__sycl_usm_array_interface__` dictionary
     """
     cdef DPCTLSyclUSMRef p
-    cdef int writeable
+    cdef int writable
     cdef object dt
     cdef Py_ssize_t itemsize
     cdef Py_ssize_t nbytes
@@ -140,7 +140,7 @@ cdef class _USMBufferData:
         cdef size_t arr_data_ptr = 0
         cdef DPCTLSyclUSMRef memRef = NULL
         cdef Py_ssize_t itemsize = -1
-        cdef int writeable = -1
+        cdef int writable = -1
         cdef int nd = -1
         cdef DPCTLSyclQueueRef QRef = NULL
         cdef object dt
@@ -156,9 +156,9 @@ cdef class _USMBufferData:
         if not ary_data_tuple or len(ary_data_tuple) != 2:
             raise ValueError("__sycl_usm_array_interface__ is malformed:"
                              " 'data' field is required, and must be a tuple"
-                             " (usm_pointer, is_writeable_boolean).")
+                             " (usm_pointer, is_writable_boolean).")
         arr_data_ptr = <size_t>ary_data_tuple[0]
-        writeable = 1 if ary_data_tuple[1] else 0
+        writable = 1 if ary_data_tuple[1] else 0
         # Check that memory and syclobj are consistent:
         # (USM pointer is bound to this sycl context)
         memRef = <DPCTLSyclUSMRef>arr_data_ptr
@@ -207,7 +207,7 @@ cdef class _USMBufferData:
         buf = _USMBufferData.__new__(_USMBufferData)
         buf.p = <DPCTLSyclUSMRef>(
             arr_data_ptr + (<Py_ssize_t>min_disp) * itemsize)
-        buf.writeable = writeable
+        buf.writable = writable
         buf.itemsize = itemsize
         buf.nbytes = <Py_ssize_t> nbytes
 
