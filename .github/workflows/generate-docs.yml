@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
       - name: Add Intel repository
@@ -41,7 +41,7 @@ jobs:
           sudo apt-get install cmake ninja-build
       - name: Setup Python
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           architecture: x64
@@ -51,7 +51,7 @@ jobs:
         run: |
           pip install numpy cython setuptools scikit-build sphinx sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           persist-credentials: false
