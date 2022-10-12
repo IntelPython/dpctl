@@ -39,6 +39,10 @@ namespace kernels
 namespace constructors
 {
 
+/*!
+  @defgroup CtorKernels
+ */
+
 template <typename Ty> class linear_sequence_step_kernel;
 template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
 template <typename Ty> class eye_kernel;
@@ -47,6 +51,10 @@ namespace py = pybind11;
 
 /* =========== Unboxing Python scalar =============== */
 
+/*!
+ * @brief Cast pybind11 class managing Python object to specified type `T`.
+ * @defgroup CtorKernels
+ */
 template <typename T> T unbox_py_scalar(py::object o)
 {
     return py::cast<T>(o);
@@ -96,6 +104,23 @@ public:
     }
 };
 
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified by typed starting value and
+ * increment.
+ *
+ * @param q  Sycl queue to which the kernel is submitted
+ * @param nelems Length of the sequence
+ * @param start_v Typed starting value of the sequence
+ * @param step_v  Typed increment of the sequence
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename Ty>
 sycl::event lin_space_step_impl(sycl::queue exec_q,
                                 size_t nelems,
@@ -114,6 +139,25 @@ sycl::event lin_space_step_impl(sycl::queue exec_q,
     return lin_space_step_event;
 }
 
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified by starting value and increment
+ * given as Python objects.
+ *
+ * @param q  Sycl queue to which the kernel is submitted
+ * @param nelems Length of the sequence
+ * @param start Starting value of the sequence as Python object. Must be
+ * convertible to array element data type `Ty`.
+ * @param step  Increment of the sequence as Python object. Must be convertible
+ * to array element data type `Ty`.
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename Ty>
 sycl::event lin_space_step_impl(sycl::queue exec_q,
                                 size_t nelems,
@@ -137,6 +181,11 @@ sycl::event lin_space_step_impl(sycl::queue exec_q,
     return lin_space_step_event;
 }
 
+/*!
+ * @brief  Factor to get function pointer of type `fnT` for array with elements
+ * of type `Ty`.
+ * @defgroup CtorKernels
+ */
 template <typename fnT, typename Ty> struct LinSpaceStepFactory
 {
     fnT get()
@@ -195,6 +244,23 @@ public:
     }
 };
 
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified by typed starting and end values.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence.
+ * @param start_v Stating value of the sequence.
+ * @param end_v   End-value of the sequence.
+ * @param include_endpoint  Whether the end-value is included in the sequence.
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename Ty>
 sycl::event lin_space_affine_impl(sycl::queue exec_q,
                                   size_t nelems,
@@ -226,6 +292,26 @@ sycl::event lin_space_affine_impl(sycl::queue exec_q,
     return lin_space_affine_event;
 }
 
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified  by starting and end values given
+ * as Python objects.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param start Stating value of the sequence as Python object. Must be
+ * convertible to array data element type `Ty`.
+ * @param end   End-value of the sequence as Python object. Must be convertible
+ * to array data element type `Ty`.
+ * @param include_endpoint  Whether the end-value is included in the sequence
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename Ty>
 sycl::event lin_space_affine_impl(sycl::queue exec_q,
                                   size_t nelems,
@@ -249,6 +335,10 @@ sycl::event lin_space_affine_impl(sycl::queue exec_q,
     return lin_space_affine_event;
 }
 
+/*!
+ * @brief Factory to get function pointer of type `fnT` for array data type
+ * `Ty`.
+ */
 template <typename fnT, typename Ty> struct LinSpaceAffineFactory
 {
     fnT get()
@@ -266,6 +356,21 @@ typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue,
                                             char *,
                                             const std::vector<sycl::event> &);
 
+/*!
+ * @brief Function to submit kernel to fill given contiguous memory allocation
+ * with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param fill_v  Value to fill the array with
+ * @param dst_p Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename dstTy>
 sycl::event full_contig_impl(sycl::queue q,
                              size_t nelems,
@@ -282,6 +387,22 @@ sycl::event full_contig_impl(sycl::queue q,
     return fill_ev;
 }
 
+/*!
+ * @brief Function to submit kernel to fill given contiguous memory allocation
+ * with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param py_value Python object representing the value to fill the array with.
+ * Must be convertible to `dstTy`.
+ * @param dst_p Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename dstTy>
 sycl::event full_contig_impl(sycl::queue exec_q,
                              size_t nelems,
@@ -351,6 +472,21 @@ public:
     }
 };
 
+/*!
+ * @brief Function to populate 2D array with eye matrix.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Number of elements to assign.
+ * @param start   Position of the first non-zero value.
+ * @param end     Position of the last non-zero value.
+ * @param step    Number of array elements between non-zeros.
+ * @param array_data Kernel accessible USM pointer for the destination array.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return  Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename Ty>
 sycl::event eye_impl(sycl::queue exec_q,
                      size_t nelems,
@@ -370,6 +506,10 @@ sycl::event eye_impl(sycl::queue exec_q,
     return eye_event;
 }
 
+/*!
+ * @brief  Factory to get function pointer of type `fnT` for data type `Ty`.
+ * @ingroup CtorKernels
+ */
 template <typename fnT, typename Ty> struct EyeFactory
 {
     fnT get()
@@ -393,8 +533,30 @@ typedef sycl::event (*tri_fn_ptr_t)(sycl::queue,
                                     const std::vector<sycl::event> &,
                                     const std::vector<sycl::event> &);
 
+/*!
+ * @brief Function to copy triangular matrices from source stack to destination
+ * stack.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param inner_range  Number of elements in each matrix.
+ * @param outer_range  Number of matrices to copy.
+ * @param src_p  Kernel accessible USM pointer for the source array.
+ * @param dst_p  Kernel accessible USM pointer for the destination array.
+ * @param nd  The array dimensionality of source and destination arrays.
+ * @param shape_and_strides  Kernel accessible USM pointer to packed shape and
+ * strides of arrays.
+ * @param k Position of the diagonal above/below which to copy filling the rest
+ * with zero elements.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ * @param additional_depends  List of additional events to wait for before
+ * starting computations, if any.
+ *
+ * @return  Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
 template <typename Ty, bool> class tri_kernel;
-template <typename Ty, bool l>
+template <typename Ty, bool upper>
 sycl::event tri_impl(sycl::queue exec_q,
                      py::ssize_t inner_range,
                      py::ssize_t outer_range,
@@ -417,7 +579,7 @@ sycl::event tri_impl(sycl::queue exec_q,
     sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
-        cgh.parallel_for<tri_kernel<Ty, l>>(
+        cgh.parallel_for<tri_kernel<Ty, upper>>(
             sycl::range<1>(inner_range * outer_range), [=](sycl::id<1> idx) {
                 py::ssize_t outer_gid = idx[0] / inner_range;
                 py::ssize_t inner_gid = idx[0] - inner_range * outer_gid;
@@ -438,7 +600,7 @@ sycl::event tri_impl(sycl::queue exec_q,
                         inner[0] * shape_and_strides[dst_s + nd_2] +
                         inner[1] * shape_and_strides[dst_s + nd_1];
 
-                    if (l)
+                    if constexpr (upper)
                         to_copy = (inner[0] + k >= inner[1]);
                     else
                         to_copy = (inner[0] + k <= inner[1]);
@@ -463,6 +625,10 @@ sycl::event tri_impl(sycl::queue exec_q,
     return tri_ev;
 }
 
+/*!
+ * @brief  Factory to get function pointer of type `fnT` for data type `Ty`.
+ * @ingroup CtorKernels
+ */
 template <typename fnT, typename Ty> struct TrilGenericFactory
 {
     fnT get()
@@ -472,6 +638,10 @@ template <typename fnT, typename Ty> struct TrilGenericFactory
     }
 };
 
+/*!
+ * @brief  Factory to get function pointer of type `fnT` for data type `Ty`.
+ * @ingroup CtorKernels
+ */
 template <typename fnT, typename Ty> struct TriuGenericFactory
 {
     fnT get()

@@ -150,6 +150,13 @@ public:
     }
 };
 
+/*!
+  @defgroup CopyAndCastKernels
+ */
+
+/*!
+ * @brief Function pointer type for generic array cast and copying function.
+ */
 typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     sycl::queue,
     size_t,
@@ -162,6 +169,39 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
+/*!
+ * @brief Generic function to copy `nelems` elements from `src` usm_ndarray to
+ `dst` usm_ndarray while casting from `srcTy` to `dstTy`.
+
+   Both arrays have array dimensionality specied via argument `nd`. The
+ `shape_and_strides` is kernel accessible USM array of length `3*nd`, where the
+ first `nd` elements encode common shape, second `nd` elements contain strides
+ of `src` array, and the trailing `nd` elements contain strides of `dst` array.
+ `src_p` and `dst_p` represent pointers into respective arrays, but the start of
+ iteration begins at offset of `src_offset` elements for `src` array and at
+ offset `dst_offset` elements for `dst` array. Kernel is submitted to sycl queue
+ `q` with events `depends` and `additional_depends` as dependencies.
+
+   @param  q       Sycl queue to which the kernel is submitted.
+   @param  nelems  Number of elements to cast and copy.
+   @param  nd      Array dimensionality, i.e. number of indices needed to
+ identify an element of each array.
+   @param  shape_and_strides  Kernel accessible USM pointer to packed shape and
+ strides.
+   @param  src_p   Kernel accessible USM pointer for the source array
+   @param  src_offset  Offset to the beginning of iteration in number of
+ elements of source array from `src_p`.
+   @param  dst_p   Kernel accessible USM pointer for the destination array
+   @param  dst_offset  Offset to the beginning of iteration in number of
+ elements of destination array from `dst_p`.
+   @param  depends  List of events to wait for before starting computations, if
+ any.
+   @param  additional_depends Additional list of events to wait for before
+ starting computations, if any.
+
+   @return  Event to wait on to ensure that computation completes.
+   @ingroup CopyAndCastKernels
+ */
 template <typename dstTy, typename srcTy>
 sycl::event
 copy_and_cast_generic_impl(sycl::queue q,
@@ -187,6 +227,11 @@ copy_and_cast_generic_impl(sycl::queue q,
     return copy_and_cast_ev;
 }
 
+/*!
+ * @brief Factory to get generic function pointer of type `fnT` for given source
+ * data type `S` and destination data type `D`.
+ * @ingroup CopyAndCastKernels
+ */
 template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
 {
     fnT get()
@@ -198,6 +243,10 @@ template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
 
 // Specialization of copy_and_cast for 1D arrays
 
+/*!
+ * @brief Factory to get function pointer for casting and copying 1D arrays.
+ * @ingroup CopyAndCastKernels
+ */
 typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     sycl::queue,
     size_t,
@@ -210,6 +259,10 @@ typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     py::ssize_t,
     const std::vector<sycl::event> &);
 
+/*!
+ * @brief Factory to get function pointer for casting and copying 2D arrays.
+ * @ingroup CopyAndCastKernels
+ */
 typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     sycl::queue,
     size_t,
@@ -222,6 +275,35 @@ typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     py::ssize_t,
     const std::vector<sycl::event> &);
 
+/*!
+ * @brief Specialized for given array dimension function to copy `nelems`
+ elements from `src` usm_ndarray to `dst` usm_ndarray while casting from `srcTy`
+ to `dstTy`.
+
+   Both arrays have array dimensionality known at compile time and specified in
+ template parameters `nd`. Arrays' shape and strides are provided as
+ `std::array`. `src_p` and `dst_p` represent pointers into respective arrays,
+ but the start of iteration begins at offset of `src_offset` elements for `src`
+ array and at offset `dst_offset` elements for `dst` array. Kernel is submitted
+ to sycl queue `q` with events `depends` as dependencies.
+
+   @param q  The queue where the routine should be executed.
+   @param nelems  Number of elements to cast and copy.
+   @param shape   Common shape of the arrays.
+   @param src_strides Strides of the source array.
+   @param dst_strides Strides of the destination array.
+   @param src_p  Kernel accessible USM pointer for the source array
+   @param src_offset  Offset to the beginning of iteration in number of elements
+ of the source array from `src_p`.
+   @param dst_p  Kernel accessible USM pointer for the destination array
+   @param dst_offset  Offset to the beginning of iteration in number of elements
+ of the destination array from `src_p`.
+   @param depends  List of events to wait for before starting computations, if
+ any.
+
+   @return  Event to wait on to ensure that computation completes.
+ * @ingroup CopyAndCastKernels
+ */
 template <typename dstTy, typename srcTy, int nd>
 sycl::event
 copy_and_cast_nd_specialized_impl(sycl::queue q,
@@ -247,6 +329,11 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
     return copy_and_cast_ev;
 }
 
+/*!
+ * @brief Factory to get 1D-specialized function pointer of type `fnT` for given
+ * source data type `S` and destination data type `D`.
+ * @ingroup CopyAndCastKernels
+ */
 template <typename fnT, typename D, typename S> struct CopyAndCast1DFactory
 {
     fnT get()
@@ -256,6 +343,11 @@ template <typename fnT, typename D, typename S> struct CopyAndCast1DFactory
     }
 };
 
+/*!
+ * @brief Factory to get 2D-specialized function pointer of type `fnT` for given
+ * source data type `S` and destination data type `D`.
+ * @ingroup CopyAndCastKernels
+ */
 template <typename fnT, typename D, typename S> struct CopyAndCast2DFactory
 {
     fnT get()
@@ -340,6 +432,44 @@ typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
+/*!
+ * @brief Function to copy from NumPy's ndarray with elements of type `srcTy`
+ * into usm_ndarray with elements of type `srcTy`.
+ *
+ * Function to cast and copy elements from numpy.ndarray specified by typeless
+ * `host_src_p` and the `src_offset` given in the number of array elements.
+ * Arrays' metadata are given in packed USM vector of length `3*nd` whose first
+ * `nd` elements contain arrays' shape, next `nd` elements specify source
+ * strides in elements (not bytes), and trailing `nd` elements specify
+ * destination array strides. Kernel dependencies are given by two vectors of
+ * events: `depends` and `additional_depends`. The function execution is
+ * complete at the return.
+ *
+ * @param q  The queue where the routine should be executed.
+ * @param nelems Number of elements to cast and copy.
+ * @param nd The dimensionality of arrays
+ * @param shape_and_strides  Kernel accessible USM pointer to packed shape and
+ * strides.
+ * @param host_src_p  Host (not USM allocated) pointer associated with the
+ * source array.
+ * @param src_offset  Offset to the beginning of iteration in number of elements
+ * of the source array from `host_src_p`.
+ * @param src_min_nelem_offset  Smallest value of offset relative to
+ * `host_src_p` in number of elements attained while iterating over elements of
+ * the source array.
+ * @param src_max_nelem_offset  Largest value of offset relative to `host_src_p`
+ * in number of elements attained while iterating over elements of the source
+ * array.
+ * @param dst_p  USM pointer associated with the destination array.
+ * @param dst_offset  Offset to the beginning of iteration in number of elements
+ * of the destination array from `dst_p`.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ * @param additional_depends List of additional events to wait for before
+ * starting computations, if any.
+ *
+ * @ingroup CopyAndCastKernels
+ */
 template <typename dstTy, typename srcTy>
 void copy_and_cast_from_host_impl(
     sycl::queue q,
@@ -375,11 +505,18 @@ void copy_and_cast_from_host_impl(
                                    dst_offset));
     });
 
+    // perform explicit synchronization. Implicit synchronization would be
+    // performed by sycl::buffer destructor.
     copy_and_cast_from_host_ev.wait_and_throw();
 
     return;
 }
 
+/*!
+ * @brief Factory to get function pointer of type `fnT` for given NumPy array
+ * source data type `S` and destination data type `D`.
+ * @defgroup CopyAndCastKernels
+ */
 template <typename fnT, typename D, typename S>
 struct CopyAndCastFromHostFactory
 {
@@ -466,6 +603,28 @@ typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
     char *,        // dst_data_ptr
     const std::vector<sycl::event> &);
 
+/*!
+ * @brief Function to copy content of array while reshaping.
+ *
+ * Submits a kernel to perform a copy `dst[unravel_index((i + shift) % nelems ,
+ * dst.shape)] = src[unravel_undex(i, src.shape)]`.
+ *
+ * @param  q      The execution queue where kernel is submitted.
+ * @param  shift  The shift in flat indexing.
+ * @param  nelems The number of elements to copy
+ * @param  src_nd Array dimension of the source array
+ * @param  dst_nd Array dimension of the destination array
+ * @param  packed_shapes_and_strides Kernel accessible USM array of size
+ * `2*src_nd + 2*dst_nd` with contant `[src_shape, src_strides, dst_shape,
+ * dst_strides]`.
+ * @param  src_p  Typeless USM pointer to the buffer of the source array
+ * @param  dst_p  Typeless USM pointer to the buffer of the destination array
+ * @param  depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @ingroup CopyAndCastKernels
+ */
 template <typename Ty>
 sycl::event
 copy_for_reshape_generic_impl(sycl::queue q,
@@ -490,6 +649,11 @@ copy_for_reshape_generic_impl(sycl::queue q,
     return copy_for_reshape_ev;
 }
 
+/*!
+ * @brief Factory to get function pointer of type `fnT` for given array data
+ * type `Ty`.
+ * @ingroup CopyAndCastKernels
+ */
 template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
 {
     fnT get()
