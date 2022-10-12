@@ -1,0 +1,44 @@
+.. _MemoryUSMShared_api:
+
+############################
+dpctl.memory.MemoryUSMShared
+############################
+
+.. currentmodule:: dpctl.memory
+
+.. autoclass:: dpctl.memory.MemoryUSMShared
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: dpctl.memory.MemoryUSMShared
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: dpctl.memory.MemoryUSMShared
+        :methods:
+
+
+Attributes
+----------
+
+.. autoattribute:: dpctl.memory.MemoryUSMShared._context
+.. autoattribute:: dpctl.memory.MemoryUSMShared._pointer
+.. autoattribute:: dpctl.memory.MemoryUSMShared._queue
+.. autoattribute:: dpctl.memory.MemoryUSMShared.nbytes
+.. autoattribute:: dpctl.memory.MemoryUSMShared.reference_obj
+.. autoattribute:: dpctl.memory.MemoryUSMShared.size
+.. autoattribute:: dpctl.memory.MemoryUSMShared.sycl_context
+.. autoattribute:: dpctl.memory.MemoryUSMShared.sycl_device
+.. autoattribute:: dpctl.memory.MemoryUSMShared.sycl_queue
+
+Public methods
+--------------
+
+.. autofunction:: dpctl.memory.MemoryUSMShared.copy_from_device
+.. autofunction:: dpctl.memory.MemoryUSMShared.copy_from_host
+.. autofunction:: dpctl.memory.MemoryUSMShared.copy_to_host
+.. autofunction:: dpctl.memory.MemoryUSMShared.get_usm_type
+.. autofunction:: dpctl.memory.MemoryUSMShared.memset
+.. autofunction:: dpctl.memory.MemoryUSMShared.tobytes
+
