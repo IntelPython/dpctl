@@ -42,8 +42,6 @@
 
 namespace py = pybind11;
 
-static dpctl::tensor::detail::usm_ndarray_types array_types;
-
 namespace
 {
 
@@ -301,6 +299,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -322,15 +321,16 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    int src_flags = src.get_flags();
-    int dst_flags = dst.get_flags();
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_src_f_contig = src.is_f_contiguous();
+
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_dst_f_contig = dst.is_f_contiguous();
 
     // check for applicability of special cases:
     //      (same type && (both C-contiguous || both F-contiguous)
-    bool both_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) &&
-                          (dst_flags & USM_ARRAY_C_CONTIGUOUS));
-    bool both_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) &&
-                          (dst_flags & USM_ARRAY_F_CONTIGUOUS));
+    bool both_c_contig = (is_src_c_contig && is_dst_c_contig);
+    bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
     if (both_c_contig || both_f_contig) {
         if (src_type_id == dst_type_id) {
 
@@ -359,12 +359,6 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
 
     int nd = src_nd;
     const py::ssize_t *shape = src_shape;
-
-    bool is_src_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
-    bool is_src_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
-
-    bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
-    bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
 
     constexpr py::ssize_t src_itemsize = 1; // in elements
     constexpr py::ssize_t dst_itemsize = 1; // in elements
@@ -550,6 +544,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int type_id = array_types.typenum_to_lookup_id(src_typenum);
 
     auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
@@ -576,14 +571,13 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
     const py::ssize_t *src_strides = src.get_strides_raw();
     if (src_strides == nullptr) {
-        int src_flags = src.get_flags();
-        if (src_flags & USM_ARRAY_C_CONTIGUOUS) {
+        if (src.is_c_contiguous()) {
             const auto &src_contig_strides =
                 c_contiguous_strides(src_nd, src_shape);
             std::copy(src_contig_strides.begin(), src_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + src_nd);
         }
-        else if (src_flags & USM_ARRAY_F_CONTIGUOUS) {
+        else if (src.is_f_contiguous()) {
             const auto &src_contig_strides =
                 f_contiguous_strides(src_nd, src_shape);
             std::copy(src_contig_strides.begin(), src_contig_strides.end(),
@@ -602,15 +596,14 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
     const py::ssize_t *dst_strides = dst.get_strides_raw();
     if (dst_strides == nullptr) {
-        int dst_flags = dst.get_flags();
-        if (dst_flags & USM_ARRAY_C_CONTIGUOUS) {
+        if (dst.is_c_contiguous()) {
             const auto &dst_contig_strides =
                 c_contiguous_strides(dst_nd, dst_shape);
             std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
                       packed_host_shapes_strides_shp->begin() + 2 * src_nd +
                           dst_nd);
         }
-        else if (dst_flags & USM_ARRAY_F_CONTIGUOUS) {
+        else if (dst.is_f_contiguous()) {
             const auto &dst_contig_strides =
                 f_contiguous_strides(dst_nd, dst_shape);
             std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
@@ -736,6 +729,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         py::detail::array_descriptor_proxy(npy_src.dtype().ptr())->type_num;
     int dst_typenum = dst.get_typenum();
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -744,14 +738,13 @@ void copy_numpy_ndarray_into_usm_ndarray(
     char *dst_data = dst.get_data();
 
     int src_flags = npy_src.flags();
-    int dst_flags = dst.get_flags();
 
     // check for applicability of special cases:
     //      (same type && (both C-contiguous || both F-contiguous)
-    bool both_c_contig = ((src_flags & py::array::c_style) &&
-                          (dst_flags & USM_ARRAY_C_CONTIGUOUS));
-    bool both_f_contig = ((src_flags & py::array::f_style) &&
-                          (dst_flags & USM_ARRAY_F_CONTIGUOUS));
+    bool both_c_contig =
+        ((src_flags & py::array::c_style) && dst.is_c_contiguous());
+    bool both_f_contig =
+        ((src_flags & py::array::f_style) && dst.is_f_contiguous());
     if (both_c_contig || both_f_contig) {
         if (src_type_id == dst_type_id) {
             int src_elem_size = npy_src.itemsize();
@@ -791,8 +784,8 @@ void copy_numpy_ndarray_into_usm_ndarray(
     bool is_src_c_contig = ((src_flags & py::array::c_style) != 0);
     bool is_src_f_contig = ((src_flags & py::array::f_style) != 0);
 
-    bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
-    bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_dst_f_contig = dst.is_f_contiguous();
 
     // all args except itemsizes and is_?_contig bools can be modified by
     // reference
@@ -906,18 +899,18 @@ usm_ndarray_linear_sequence_step(py::object start,
             "usm_ndarray_linspace: Expecting 1D array to populate");
     }
 
-    int flags = dst.get_flags();
-    if (!(flags & USM_ARRAY_C_CONTIGUOUS)) {
+    if (!dst.is_c_contiguous()) {
         throw py::value_error(
             "usm_ndarray_linspace: Non-contiguous arrays are not supported");
     }
 
     sycl::queue dst_q = dst.get_queue();
-    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
         throw py::value_error(
-            "Execution queue context is not the same as allocation context");
+            "Execution queue is not compatible with the allocation queue");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -955,18 +948,18 @@ usm_ndarray_linear_sequence_affine(py::object start,
             "usm_ndarray_linspace: Expecting 1D array to populate");
     }
 
-    int flags = dst.get_flags();
-    if (!(flags & USM_ARRAY_C_CONTIGUOUS)) {
+    if (!dst.is_c_contiguous()) {
         throw py::value_error(
             "usm_ndarray_linspace: Non-contiguous arrays are not supported");
     }
 
     sycl::queue dst_q = dst.get_queue();
-    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
         throw py::value_error(
             "Execution queue context is not the same as allocation context");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -1010,23 +1003,20 @@ usm_ndarray_full(py::object py_value,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    int dst_flags = dst.get_flags();
-
     sycl::queue dst_q = dst.get_queue();
-    if (dst_q != exec_q && dst_q.get_context() != exec_q.get_context()) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
         throw py::value_error(
-            "Execution queue context is not the same as allocation context");
+            "Execution queue is not compatible with the allocation queue");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     char *dst_data = dst.get_data();
     sycl::event full_event;
 
-    if (dst_nelems == 1 || (dst_flags & USM_ARRAY_C_CONTIGUOUS) ||
-        (dst_flags & USM_ARRAY_F_CONTIGUOUS))
-    {
+    if (dst_nelems == 1 || dst.is_c_contiguous() || dst.is_f_contiguous()) {
         auto fn = full_contig_dispatch_vector[dst_typeid];
 
         sycl::event full_contig_event =
@@ -1068,6 +1058,7 @@ eye(py::ssize_t k,
                               "allocation queue");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -1079,8 +1070,8 @@ eye(py::ssize_t k,
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    bool is_dst_c_contig = ((dst.get_flags() & USM_ARRAY_C_CONTIGUOUS) != 0);
-    bool is_dst_f_contig = ((dst.get_flags() & USM_ARRAY_F_CONTIGUOUS) != 0);
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_dst_f_contig = dst.is_f_contiguous();
     if (!is_dst_c_contig && !is_dst_f_contig) {
         throw py::value_error("USM array is not contiguous");
     }
@@ -1182,6 +1173,8 @@ tri(sycl::queue &exec_q,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
+    auto array_types = dpctl::tensor::detail::usm_ndarray_types::get();
+
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
@@ -1203,9 +1196,8 @@ tri(sycl::queue &exec_q,
     using shT = std::vector<py::ssize_t>;
     shT src_strides(src_nd);
 
-    int src_flags = src.get_flags();
-    bool is_src_c_contig = ((src_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
-    bool is_src_f_contig = ((src_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_src_f_contig = src.is_f_contiguous();
 
     const py::ssize_t *src_strides_raw = src.get_strides_raw();
     if (src_strides_raw == nullptr) {
@@ -1227,9 +1219,8 @@ tri(sycl::queue &exec_q,
 
     shT dst_strides(src_nd);
 
-    int dst_flags = dst.get_flags();
-    bool is_dst_c_contig = ((dst_flags & USM_ARRAY_C_CONTIGUOUS) != 0);
-    bool is_dst_f_contig = ((dst_flags & USM_ARRAY_F_CONTIGUOUS) != 0);
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_dst_f_contig = dst.is_f_contiguous();
 
     const py::ssize_t *dst_strides_raw = dst.get_strides_raw();
     if (dst_strides_raw == nullptr) {
@@ -1456,9 +1447,6 @@ PYBIND11_MODULE(_tensor_impl, m)
     init_copy_and_cast_dispatch_tables();
     init_copy_for_reshape_dispatch_vector();
     import_dpctl();
-
-    // populate types constants for type dispatching functions
-    array_types = dpctl::tensor::detail::usm_ndarray_types::get();
 
     m.def(
         "_contract_iter", &contract_iter,
