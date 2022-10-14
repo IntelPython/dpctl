@@ -30,6 +30,7 @@ find_library(mkl_sycl NAMES mkl_sycl PATHS ${MKL_LIBRARY_DIR} REQUIRED)
 find_library(mkl_intel_ilp64 NAMES mkl_intel_ilp64 PATHS ${MKL_LIBRARY_DIR} REQUIRED)
 find_library(mkl_tbb_thread NAMES mkl_tbb_thread PATHS ${MKL_LIBRARY_DIR} REQUIRED)
 find_library(tbb NAMES tbb PATHS ${TBB_LIBRARY_DIR} REQUIRED)
+find_library(OpenCL NAMES OpenCL REQUIRED)
 
 set(py_module_name _onemkl)
 
@@ -64,7 +65,7 @@ target_include_directories(standalone_cpp
   PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR} sycl_gemm
   )
 target_link_libraries(standalone_cpp
-    PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb}
+    PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb} ${OpenCL}
 )
 
 set(ignoreMe "${SKBUILD}")

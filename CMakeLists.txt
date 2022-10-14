@@ -7,6 +7,8 @@ project(dpctl
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 
 # Option to generate code coverage report using llvm-cov and lcov.
 option(DPCTL_GENERATE_COVERAGE
