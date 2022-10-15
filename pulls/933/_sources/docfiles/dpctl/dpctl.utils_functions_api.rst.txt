@@ -1,0 +1,21 @@
+.. _dpctl.utils_functions_api:
+
+#####################
+dpctl.utils Functions
+#####################
+
+
+.. currentmodule:: dpctl.utils
+
+
+Functions
+---------
+
+.. autofunction:: get_coerced_usm_type
+.. autofunction:: get_execution_queue
+.. autofunction:: validate_usm_type
+
+Other Functions
+---------------
+
+.. autofunction:: onetrace_enabled
