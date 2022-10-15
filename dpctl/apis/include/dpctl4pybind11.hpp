@@ -179,9 +179,15 @@ private:
         : default_sycl_queue{}, default_usm_memory{}, default_usm_ndarray{},
           as_usm_memory{}
     {
-        // Import Cython CAPI for dpctl
+        // Import Cython-generated C-API for dpctl
+        // This imports python modules and initializes
+        // static variables such as function pointers for C-API,
+        // e.g. SyclDevice_GetDeviceRef, etc.
+        // pointers to Python types, i.e. PySyclDeviceType, etc.
+        // and exported constants, i.e. USM_ARRAY_C_CONTIGUOUS, etc.
         import_dpctl();
 
+        // Python type objects for classes implemented by dpctl
         this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
         this->PySyclDeviceType_ = &PySyclDeviceType;
         this->Py_SyclContextType_ = &Py_SyclContextType;
@@ -212,12 +218,14 @@ private:
         this->SyclQueue_GetQueueRef_ = SyclQueue_GetQueueRef;
         this->SyclQueue_Make_ = SyclQueue_Make;
 
+        // dpctl.memory API
         this->Memory_GetUsmPointer_ = Memory_GetUsmPointer;
         this->Memory_GetContextRef_ = Memory_GetContextRef;
         this->Memory_GetQueueRef_ = Memory_GetQueueRef;
         this->Memory_GetNumBytes_ = Memory_GetNumBytes;
         this->Memory_Make_ = Memory_Make;
 
+        // dpctl.tensor.usm_ndarray API
         this->UsmNDArray_GetData_ = UsmNDArray_GetData;
         this->UsmNDArray_GetNDim_ = UsmNDArray_GetNDim;
         this->UsmNDArray_GetShape_ = UsmNDArray_GetShape;
@@ -228,6 +236,7 @@ private:
         this->UsmNDArray_GetQueueRef_ = UsmNDArray_GetQueueRef;
         this->UsmNDArray_GetOffset_ = UsmNDArray_GetOffset;
 
+        // constants
         this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS;
         this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS;
         this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE;
@@ -247,6 +256,7 @@ private:
         this->UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL;
         this->UAR_HALF_ = UAR_HALF;
 
+        // deduced disjoint types
         this->UAR_INT8_ = UAR_BYTE;
         this->UAR_UINT8_ = UAR_UBYTE;
         this->UAR_INT16_ = UAR_SHORT;
@@ -266,6 +276,8 @@ private:
                                    unsigned long long, unsigned int>(
                 UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
 
+        // create shared pointers to python objects used in type-casters
+        // for dpctl::memory::usm_memory and dpctl::tensor::usm_ndarray
         sycl::queue q_{};
         PySyclQueueObject *py_q_tmp =
             SyclQueue_Make(reinterpret_cast<DPCTLSyclQueueRef>(&q_));
