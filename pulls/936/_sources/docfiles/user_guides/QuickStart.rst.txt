@@ -37,7 +37,7 @@ On Windows
 .. note::
 
     If no GPU platforms are shown, make sure your system has a supported
-    GPU and has the necessary GPU drivers installed. You can install GPU
+    GPU and the necessary GPU drivers installed. See `GPU driver installation guide`_ to install GPU drivers.
     drivers by following the `GPU driver installation guide`_.
 
 Install Wheel package from Pypi
