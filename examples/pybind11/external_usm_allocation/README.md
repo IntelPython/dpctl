@@ -1,11 +1,13 @@
-# Exposing USM allocations made by native code to dpctl
+# Exposing USM Allocations Made by the Native Code to dpctl
 
-This extension demonstrates how a Python object backed by
+This extension demonstrates how a Python* object backed by
 a native class, which allocates USM memory, can expose it
-to dpctl.memory entities using `__sycl_usm_array_interface__`.
+to the `dpctl.memory` entities using `__sycl_usm_array_interface__`.
 
 
-# Building extension
+## Building
+
+To build the example, run:
 
 ```
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
@@ -14,7 +16,7 @@ python -m pytest tests
 python example.py
 ```
 
-# Sample output
+## Example output
 
 ```
 (idp) [12:43:20 ansatnuc04 external_usm_allocation]$ python example.py

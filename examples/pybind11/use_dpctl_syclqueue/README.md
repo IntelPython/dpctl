@@ -1,12 +1,15 @@
-# Usage of dpctl entities in Pybind11
+# Usage of dpctl Entities in Pybind11
 
-This extension demonstrates how dpctl Python types,
-such as dpctl.SyclQueue could be used in Pybind11
+## Description
+
+This extension demonstrates how you can use dpctl Python types,
+such as ``dpctl.SyclQueue``, in Pybind11
 extensions.
 
 
-# Building extension
+## Building 
 
+To build the extension, run:
 ```
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
 CXX=icpx python setup.py build_ext --inplace

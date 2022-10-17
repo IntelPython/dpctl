@@ -4,41 +4,50 @@
 Queue
 #####
 
-A queue is needed to schedule execution of any computation or data copying on a
-device. Queue construction requires specifying a device and a context targeting
-that device as well as additional properties, such as whether profiling
-information should be collected or whether submitted tasks are executed in the
-order in which they were submitted.
+You need a queue to schedule the execution of any computation or data copying on a
+device. 
+
+The queue construction requires specifying:
+
+* Device
+* Context targeting the device
+* Additional properties, such as:
+  * If profiling information should be collected
+  * If submitted tasks are executed in the order, in which they are submitted
 
 The :class:`dpctl.SyclQueue` class represents a queue and abstracts the
-:sycl_queue:`sycl::queue <>` SYCL runtime class.
+:sycl_queue:`sycl::queue <>` SYCL* runtime class.
 
 Types of Queues
 ---------------
 
-SYCL has a task-based execution model. The order in which a SYCL runtime
-executes a task on a target device is specified by a sequence of events which
-must be complete before execution of the task is allowed. Submission of a task
-returns an event which can be used to further grow the graph of computational
-tasks. A SYCL queue stores the needed data to manage the scheduling operations.
+SYCL* has a task-based execution model. The order, in which a SYCL* runtime
+executes a task on a target device, is specified by a sequence of events that
+must be completed before the execution of the task is allowed. 
 
-Unless specified otherwise during constriction of a queue, a SYCL runtime
-executes tasks whose dependencies were met in an unspecified order, with
-possibility for some of the tasks to be execute concurrently. Such queues are
-said to be 'out-of-order'.
+Submission of a task returns an event that you can use to further grow the graph of computational
+tasks. A SYCL* queue stores the needed data to manage the scheduling operations.
 
-SYCL queues can be specified to indicate that runtime must execute tasks in the
-order in which they were submitted. In this case, tasks submitted to such a
-queue, called 'in-order' queues, are never executed concurrently.
+There are two types of queues: 
+
+* **Out-of-order.** Unless specified otherwise during the constriction of a queue, a SYCL* runtime
+executes tasks, which dependencies are met in an unspecified order, with the
+possibility for some of the tasks to be executed concurrently.
+* **In-order.** You can specify SYCL* queues to indicate that runtime must execute tasks in the
+order, in which they are submitted. In this case, tasks submitted to such a
+queue are never executed concurrently.
+
 
 Creating a New Queue
 --------------------
 
 :class:`dpctl.SyclQueue(ctx, dev, property=None)` creates a new queue instance
-for the given compatible context and device. Keyword parameter `property` can be
-set to `"in_order"` to create an 'in-order' queue and to `"enable_profiling"` to
-dynamically collect task execution statistics in the returned event once the
-associated task completes.
+for the given compatible context and device. 
+
+To create the **in-order** queue, set a keyword ``parametr`` to ``in_order``
+
+To dynamically collect task execution statistics in the returned event once the
+associated task completes, set a keyword ``parametr`` to ``enable_profiling``.
 
 .. _fig-constructing-queue-context-device-property:
 
@@ -48,12 +57,12 @@ associated task completes.
     :caption: Constructing SyclQueue from context and device
     :linenos:
 
-A possible output for the example
-:ref:`fig-constructing-queue-context-device-property` may be:
+A possible output for the :ref:`fig-constructing-queue-context-device-property` example:
+
 
 .. program-output:: python ../examples/python/sycl_queue.py -r create_queue_from_subdevice_multidevice_context
 
-When a context is not specified the :sycl_queue:`sycl::queue <>` constructor
+When a context is not specified, the :sycl_queue:`sycl::queue <>` constructor
 from a device instance is called. Instead of an instance of
 :class:`dpctl.SyclDevice` the argument `dev` can be a valid filter selector
 string. In this case, the :sycl_queue:`sycl::queue <>` constructor with the
@@ -68,8 +77,7 @@ is called.
     :caption: Constructing SyclQueue from filter selector
     :linenos:
 
-A possible output for the example :ref:`fig-constructing-queue-filter-selector`
-may be:
+A possible output for the :ref:`fig-constructing-queue-filter-selector` example:
 
 .. program-output:: python ../examples/python/sycl_queue.py -r create_queue_from_filter_selector
 
@@ -77,16 +85,20 @@ may be:
 Profiling a Task Submitted to a Queue
 -------------------------------------
 
-The result of scheduling execution of a task on a queue is an event. An event
-has several uses: it can be queried for the status of the task execution, it can
-be used to order execution of the future tasks after it is complete, it can be
-used to wait for execution to complete, and it can carry information to profile
-of the task execution. The profiling information is only populated if the queue
-used was created with the "enable_profiling" property and only becomes available
+The result of scheduling the execution of a task on a queue is an event. You can use
+an event for several purposes: 
+
+* Query for the status of the task execution
+* Order execution of future tasks after it is completed
+* Wait for execution to complete
+* Сarry information to profile the task execution
+
+The profiling information is only populated if the queue
+used is created with the ``enable_profiling`` property and only becomes available
 after the task execution is complete.
 
-The class :class:`dpctl.SyclTimer` implements a Python context manager that can
-be used to collect cumulative profiling information for all the tasks submitted
+The :class:`dpctl.SyclTimer` class implements a Python context manager. 
+You can use this manager to collect cumulative profiling information for all the tasks submitted
 to the queue of interest by functions executed within the context:
 
 .. code-block:: python
