@@ -15,8 +15,10 @@ jobs:
   isort:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - uses: jamescurtin/isort-action@master
         with:
           configuration: "--check-only"
@@ -27,14 +29,16 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: ['3.10']
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # Set up a Python environment for use in actions
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       # Run black code formatter
       - uses: psf/black@stable
@@ -47,12 +51,12 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: ['3.10']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -60,4 +64,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8
     - name: Lint with flake8
-      uses: py-actions/flake8@v1
+      uses: py-actions/flake8@v2

@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
@@ -41,15 +41,35 @@ jobs:
           cd /home/runner/work
           mkdir -p sycl_bundle
           cd sycl_bundle
-          export LATEST_LLVM_TAG=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | grep sycl-nightly | tail --lines=1)
-          export LATEST_LLVM_TAG_SHA=$(echo ${LATEST_LLVM_TAG} | awk '{print $1}')
-          export NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
-             $(echo ${LATEST_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
-          if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${LATEST_LLVM_TAG_SHA}" ) ]]; then
-              echo "Using cached download of ${LATEST_LLVM_TAG}"
+          # get list of shas and tags from remote, filter sycl-nightly tags and reverse order
+          export LLVM_TAGS=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | \
+                       grep sycl-nightly | awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }')
+          # initialize
+          unset DEPLOY_NIGHTLY_TAG
+          unset DEPLOY_NIGHTLY_TAG_SHA
+
+          # go through tags and find the most recent one where nighly build binary is available
+          while IFS= read -r NEXT_LLVM_TAG; do
+              export NEXT_LLVM_TAG_SHA=$(echo ${NEXT_LLVM_TAG} | awk '{print $1}')
+              export NEXT_NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
+                                          $(echo ${NEXT_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
+              if [[ `wget -S --spider ${DOWNLOAD_URL_PREFIX}/${NEXT_NIGHTLY_TAG}/dpcpp-compiler.tar.gz  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
+              then
+                  export DEPLOY_NIGHTLY_TAG=${NEXT_NIGHTLY_TAG}
+                  export DEPLOY_LLVM_TAG_SHA=${NEXT_LLVM_TAG_SHA}
+                  break
+              fi
+          done <<< "${LLVM_TAGS}"
+
+          [[ -n "${DEPLOY_NIGHTLY_TAG}" ]] || exit 1
+          [[ -n "${DEPLOY_LLVM_TAG_SHA}" ]] || exit 1
+          echo "Using ${m} corresponding to intel/llvm at ${DEPLOY_LLVM_TAG_SHA}"
+
+          if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${DEPLOY_LLVM_TAG_SHA}" ) ]]; then
+              echo "Using cached download of ${DEPLOY_LLVM_TAG_SHA}"
           else
               rm -rf dpcpp-compiler.tar.gz
-              wget ${DOWNLOAD_URL_PREFIX}/${NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${LATEST_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
+              wget ${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${DEPLOY_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
               [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
               [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${FPGAEMU_FN} || rm -rf bundle_id.txt
               [ -f ${TBB_FN} ] || wget ${TBB_URL}/${TBB_FN} || rm -rf bundle_id.txt
@@ -71,7 +91,7 @@ jobs:
           sudo apt-get install cmake ninja-build libtinfo5
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           architecture: x64
@@ -82,7 +102,7 @@ jobs:
           pip install numpy cython setuptools pytest scikit-build
 
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
