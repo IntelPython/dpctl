@@ -95,25 +95,14 @@ A possible output for the :ref:`fig-adv-device-selection` example:
 A **filter string** is a three-tuple that may specify the *backend*,
 *device type*, and *device number* as a colon (:) separated string. 
 
+.. csv-table::
+   :header: "String", "Usage", "Values"
+   :widths: 25, 25, 50
 
-.. list-table:: Title
-   :widths: 50 50
-   :header-rows: 1
+   "*backend*", "Specifies the type of device driver.", "``host``, ``opencl``, ``level-zero``, ``cuda``"
+   "*device type*", "Specifies the type of device.", "``host``, ``gpu``, ``cpu``, ``accelerator``"
+   "*device number*", "Specifies the ordinality of the device in the listing of devices as determined by the SYCL* runtime.", "Numeric value"
 
-   * - String
-     - Usage
-     - Value
-   * - *backend*
-     - *device type*
-     - *device number*
-   * - Specifies the type of device driver.
-     - Specifies the type of device.
-     - Specifies the ordinality of the device in the listing of devices as
-       determined by the SYCL* runtime.
-   * - ``host``, ``opencl``, ``level-zero``, ``cuda``
-     - ``host``, ``gpu``, ``cpu``, ``accelerator``
-     - Numeric value
-   
 The backend, device type, and device number value are optional but provide at least one of them. 
 That is, ``opencl:gpu:0``, ``gpu:0``, ``gpu``, ``0``, and ``opencl:0`` are all valid filter strings.
 

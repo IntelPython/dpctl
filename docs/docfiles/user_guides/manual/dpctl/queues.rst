@@ -31,11 +31,11 @@ tasks. A SYCL* queue stores the needed data to manage the scheduling operations.
 There are two types of queues: 
 
 * **Out-of-order.** Unless specified otherwise during the constriction of a queue, a SYCL* runtime
-executes tasks, which dependencies are met in an unspecified order, with the
-possibility for some of the tasks to be executed concurrently.
+  executes tasks, which dependencies are met in an unspecified order, with the
+  possibility for some of the tasks to be executed concurrently.
 * **In-order.** You can specify SYCL* queues to indicate that runtime must execute tasks in the
-order, in which they are submitted. In this case, tasks submitted to such a
-queue are never executed concurrently.
+  order, in which they are submitted. In this case, tasks submitted to such a
+  queue are never executed concurrently.
 
 
 Creating a New Queue

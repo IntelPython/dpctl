@@ -65,12 +65,11 @@ Device Aspects and Information Descriptors
 A device can have various *aspects* and *information descriptors* that describe
 its hardware characteristics:
 
-* :sycl_aspects:`Aspects <>` are boolean
-characteristics of the device
+* :sycl_aspects:`Aspects <>` are boolean characteristics of the device
 * :sycl_device_info:`information descriptors <>` are non-boolean characteristics
-that provide more verbose information about the device
+  that provide more verbose information about the device
 * :class:`dpctl.SyclDevice` exposes various Python* properties that describe a
-device's aspects and information descriptors. 
+  device's aspects and information descriptors. 
 
 For example, the property ``has_aspect_fp16`` returns a boolean expression indicating if:
 

@@ -59,22 +59,13 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
 
    Depending on the capability of the device, USM allocations can be:
 
-   .. list-table:: 
-   :widths: 25 25 50 
-   :header-rows: 1
+.. csv-table::
+   :header: "Name", "Allocation accessible", "Access"
+   :widths: 25, 25, 50
 
-   * - Name
-     - Allocation accessible
-     - Access 
-   * - Device allocation
-     - Shared allocation 
-     - Host allocation
-   * - No
-     - Yes
-     - Yes 
-   * - Refers to an allocation in host memory that is
-       accessible from a device.
-     - Accessible by both the host and device.
+   "Device allocation", "No","Refers to an allocation in host memory that is accessible from a device."
+   "Shared allocation", "Yes", "Accessible by both the host and device."
+   "Host allocation", "Yes", "Accessible by both the host and device."
 
 
 Runtime manages synchronization of the host's and device's view into shared allocations. 
