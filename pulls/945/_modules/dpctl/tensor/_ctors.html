@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+195.g7afefa6a6 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+197.g3bf26b3ef documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+195.g7afefa6a6
+                0.14.0dev0+197.g3bf26b3ef
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -623,7 +623,7 @@
     <span class="n">is_bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">dtype</span><span class="p">:</span>
         <span class="n">is_bool</span> <span class="o">=</span> <span class="p">(</span><span class="n">dtype</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
-    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,),</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">_coerce_and_infer_dt</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">stop_</span><span class="p">,</span> <span class="n">step_</span><span class="p">),</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">_coerce_and_infer_dt</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span>
         <span class="n">stop</span><span class="p">,</span>
         <span class="n">step</span><span class="p">,</span>
@@ -648,9 +648,10 @@
         <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
-    <span class="n">_step</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">_step</span><span class="p">)</span>
-    <span class="n">_start</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">sc_ty</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span>
+    <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">_step</span><span class="p">)</span>
+    <span class="n">_start</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">_start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">is_bool</span><span class="p">:</span>
