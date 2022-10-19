@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+197.g3bf26b3ef documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.0dev0+198.gc4d3af973 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+197.g3bf26b3ef
+                0.14.0dev0+198.gc4d3af973
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -649,9 +649,18 @@
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="n">sc_ty</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span>
-    <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
-    <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">_step</span><span class="p">)</span>
-    <span class="n">_start</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">_first</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sh</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_second</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
+            <span class="n">int64_ty</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="o">.</span><span class="n">type</span>
+            <span class="n">_step</span> <span class="o">=</span> <span class="n">int64_ty</span><span class="p">(</span><span class="n">_second</span><span class="p">)</span> <span class="o">-</span> <span class="n">int64_ty</span><span class="p">(</span><span class="n">_first</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_step</span> <span class="o">=</span> <span class="n">_second</span> <span class="o">-</span> <span class="n">_first</span>
+        <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">_step</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_start</span> <span class="o">=</span> <span class="n">_first</span>
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">_start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">is_bool</span><span class="p">:</span>
