@@ -144,7 +144,7 @@ of hardware properties that may be used for device selection.
 .. Note::
     A **root** device implies an unpartitioned device. A root device can be
     partitioned into two or more :ref:`sub-devices <sec-devices-sub-devices>`
-    based on various criteria. For example, a CPU device with multiple NUMA*
+    based on various criteria. For example, a CPU device with multiple NUMA
     domains may be partitioned into multiple sub-devices, each representing a
     sub-device.
 

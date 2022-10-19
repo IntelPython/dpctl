@@ -98,7 +98,7 @@ used is created with the ``enable_profiling`` property and only becomes availabl
 after the task execution is complete.
 
 The :class:`dpctl.SyclTimer` class implements a Python context manager. 
-You can use this manager to collect cumulative profiling information for all the tasks submitted
+You can use this context manager to collect cumulative profiling information for all the tasks submitted
 to the queue of interest by functions executed within the context:
 
 .. code-block:: python

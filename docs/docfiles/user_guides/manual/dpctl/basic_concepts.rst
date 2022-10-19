@@ -37,13 +37,13 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
 * **Queue**
    A queue is needed to schedule the execution of any computation or data
    copying on the device. Queue construction requires specifying a device
-   and contextual targeting that device as well as additional properties,
+   and a context targeting that device as well as additional properties,
    such as whether profiling information should be collected or submitted
    tasks are executed in the order in which they were submitted.
 
 * **Event**
    Holds information related to computation or data movement operation
-   scheduled for the execution on a queue. That can be its execution status or
+   scheduled for the execution on a queue. An event can store the execution status or
    profiling information if the queue, to which the task is submitted, is allowed
    for the collection of such information. Events can be used to specify task
    dependencies or to synchronize host and devices.

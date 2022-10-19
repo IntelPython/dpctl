@@ -48,7 +48,7 @@ On Windows* OS
 Install the Wheel Package from PyPi*
 ====================================
 
-To install Dpctl from PyPi*, run:
+To install dpctl from PyPi*, run:
 
 .. code-block:: bash
 
@@ -77,7 +77,7 @@ On Windows* OS
 Building from the Source
 ========================
 
-To build dpctl from the source, you need dpcpp and GPU drivers, optionally CPU
+To build dpctl from the source, you need dpcpp and GPU drivers, and optionally CPU
 OpenCL drivers. It is preferable to use the dpcpp compiler packaged as part of
 oneAPI. However, it is possible to use a custom build of dpcpp to build dpctl,
 especially if you want to enable CUDA* support.
@@ -86,7 +86,7 @@ Building using oneAPI dpcpp
 ---------------------------
 
 Install oneAPI and graphics drivers to the system prior
-to proceed further.
+to proceeding further.
 
 Activate oneAPI 
 ~~~~~~~~~~~~~~~
@@ -242,10 +242,10 @@ You can execute the dpctl Python* test suite as follow:
     pytest --pyargs dpctl
 
 
-Building the DPCTLSyclInterface Library
+Building the libsyclinterface Library
 =======================================
 
-The libDPCTLSyclInterface is a shared library used by the Python* package.
+The libsyclinterface is a shared library used by the Python* package.
 To build the library, you need: 
 
 *  ``DPC++`` toolchain

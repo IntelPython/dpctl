@@ -137,7 +137,7 @@ Several types of partitioning schemes are available:
     architectural hierarchy.
 
 The following example shows an affinity-based partitioning of a CPU device
-into sub-devices based on the available NUMA* domains:
+into sub-devices based on the available NUMA domains:
 
 .. _fig-partition-cpu:
 

@@ -21,8 +21,7 @@ The compute kernel can be a code:
 The `dpctl` library is built upon the [SYCL*
 standard](https://www.khronos.org/sycl/). It also implements Python
 bindings for a subset of the standard [runtime
-classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes).
-Such classes allow users to:
+classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes) that allow users to:
 * query platforms
 * discover and represent devices and sub-devices
 * construct contexts and queues 
@@ -98,7 +97,7 @@ setting up a development environment and building `dpctl` from the source.
 
 Find our examples [here](examples). 
 
-To build these examples, run:
+To run these examples, use:
 
 ```bash
 for script in `ls examples/python/`; 

@@ -32,13 +32,12 @@ of `dpctl`
 
 ### C/C++ Code Style
 
-We use a [clang-format](https://clang.llvm.org/docs/ClangFormat.html) code formatter.
+We use [clang-format](https://clang.llvm.org/docs/ClangFormat.html) for C++ code formatting.
 
 To install, run:
 ```bash
 conda install clang-tools
 ```
-Revision: `10.0.1`
 
 See the default configuration used by dpctl in `.clang-format`.
 
@@ -54,19 +53,18 @@ clang-format -style=file -i         \
      libsyclinterface/helper/source/*.cpp
 ```
 
-> **NOTE:** It is easier to use `pre-commit` and the `clang-format` hook.
+> **:** It is easier to use `pre-commit` and the `clang-format` hook.
 
 ### Python Code Style
 
 We use the following Python code style tools:
 - [black](https://black.readthedocs.io/en/stable/) code formatter.
-    - Revision: `22.3.0`.
 - [flake8](https://flake8.pycqa.org/en/latest/) linter.
-    - Revision `4.0.1`.
 - [isort](https://pycqa.github.io/isort/) import sorter.
-    - Revision `5.10.1`.
 
-> **NOTE:** Refer `pyproject.toml` and `.flake8` config files for current configurations.
+> **NOTE:** Refer:
+>  * `pyproject.toml` and `.flake8` config files for current configurations
+> * `.pre-commit-config.yaml` file for the versions of the tools
 
 Run these three tools before each commit. 
 
@@ -116,13 +114,13 @@ The standard header looks like this:
 ```
 ---
 > **NOTE:**
-- The `-*- C++ -*-` string on the first line tells Emacs* that
+>- The `-*- C++ -*-` string on the first line tells Emacs* that
   it is a C++ file. The string is only needed for `*.h` headers and
   should be omitted for `*.cpp` files. Without the string, Emacs* assumes the
   file is a C header.
-- The copyright year must be updated every calendar year.
-- Each comment line should be a max of 80 chars.
-- A Doxygen `\file` tag describing the contents of the file must be provided.
+>- The copyright year must be updated every calendar year.
+>- Each comment line should be a max of 80 chars.
+>- A Doxygen `\file` tag describing the contents of the file must be provided.
   Note that the `\file` tag is inside a Doxygen comment block. It is
   defined by the `///` comment marker instead of the `//` comment marker used in the
   rest of the header.
@@ -166,7 +164,7 @@ To install, run:
 pip install bandit
 ```
 
-Revision: `1.7.0`
+Bandit revision used: `1.7.0`
 
 Before each commit, run:
 ```bash
@@ -211,8 +209,8 @@ To check the code coverage for your code, follow these steps:
     `setup.py`.
 
     The coverage results for the C and Python* sources are printed to the
-    terminal during the build (C API) and pytest execution (Python*).
-    The detailed coverage reports for the C API are saved to the
+    terminal during the build (`libsyclinterface`) and pytest execution (Python*).
+    The detailed coverage reports for the `libsyclinterface` library are saved to the
     `dpctl-c-api-coverage` directory. The Python* coverage reports are saved to
     the `htmlcov` directory.
 
@@ -234,7 +232,7 @@ To check the code coverage for your code, follow these steps:
 
 ## Error Reporting and Logging
 
-The SyclInterface library responds to the `DPCTL_VERBOSITY` environment variable that controls the severity level of errors printed to the console.
+The `libsyclinterface` library responds to the `DPCTL_VERBOSITY` environment variable that controls the severity level of errors printed to the console.
 Specify one of the following severity levels (in increasing order of severity): `warning` and `error` by running:
 
 ```bash
@@ -260,7 +258,7 @@ conda install glog
 python scripts/build_locally.py --oneapi --glog
 ```
 
-3. Use `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of a Python* code.
+3. Use the `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of a Python* code.
 Use `DPCTLService_InitLogger` and `DPCTLService_ShutdownLogger` library C functions during library development to initialize Google's logging library and de-initialize accordingly:
 
 ```python
