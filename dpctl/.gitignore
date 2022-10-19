@@ -1,5 +1,5 @@
 *.so
-*.cpp
+_*.cpp
 *.cxx
 *.c
 *.h

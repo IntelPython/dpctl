@@ -1,7 +1,6 @@
 # SYCL Extension Working NumPy Array Input via SYCL Buffers
 
-
-## Description
+## Decription
 
 Cython function expecting a 2D array in a C-contiguous layout that
 computes column-wise total by using SYCL* oneMKL (as GEMV call with

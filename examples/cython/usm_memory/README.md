@@ -1,6 +1,5 @@
 # Working with USM Memory
 
-
 ## Building
 
 > **NOTE:** Make sure oneAPI is activated, $ONEAPI_ROOT must be set.

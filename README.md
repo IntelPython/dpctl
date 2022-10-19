@@ -32,7 +32,7 @@ management and implements a tensor [array
 API](https://data-apis.org/array-api/latest/).
 
 The library helps authors of Python native extensions written
-in C*, Cython*, or pybind11* to access `dpctl` objects representing SYCL*
+in C, Cython*, or pybind11* to access `dpctl` objects representing SYCL*
 devices, queues, memory, and tensors.
 
 `Dpctl` is the core part of a larger family of [data-parallel Python*

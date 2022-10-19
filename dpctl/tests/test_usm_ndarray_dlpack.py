@@ -79,6 +79,18 @@ def test_dlpack_exporter(typestr, usm_type):
         assert caps_fn(caps2, b"dltensor")
 
 
+def test_dlpack_exporter_stream():
+    try:
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queues")
+    X = dpt.empty((64,), dtype="u1", sycl_queue=q1)
+    cap1 = X.__dlpack__(stream=q1)
+    cap2 = X.__dlpack__(stream=q2)
+    assert type(cap1) is type(cap2)
+
+
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(shape, typestr, usm_type):
     all_root_devices = dpctl.get_devices()

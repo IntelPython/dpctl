@@ -181,7 +181,7 @@ instead of the DPC++ compiler that comes with oneAPI.
 
 Do this, to enable support for CUDA* devices.
 
-Following steps in the *Build and Install with scikit-build* use a command-line option to set
+Following steps in the `Build and install with scikit-build`_ use a command-line option to set
 the relevant CMake variables, for example:
 
 .. code-block:: bash

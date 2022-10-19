@@ -22,7 +22,7 @@ cimport dpctl
 
 cdef public api int USM_ARRAY_C_CONTIGUOUS
 cdef public api int USM_ARRAY_F_CONTIGUOUS
-cdef public api int USM_ARRAY_WRITEABLE
+cdef public api int USM_ARRAY_WRITABLE
 
 cdef public api int UAR_BOOL
 cdef public api int UAR_BYTE
