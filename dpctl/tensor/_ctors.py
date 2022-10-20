@@ -483,7 +483,7 @@ def _coerce_and_infer_dt(*args, dt, sycl_queue, err_msg, allow_bool=False):
 
 def _round_for_arange(tmp):
     k = int(tmp)
-    if k > 0 and float(k) < tmp:
+    if k >= 0 and float(k) < tmp:
         tmp = tmp + 1
     return tmp
 
@@ -491,13 +491,14 @@ def _round_for_arange(tmp):
 def _get_arange_length(start, stop, step):
     "Compute length of arange sequence"
     span = stop - start
-    if type(step) in [int, float] and type(span) in [int, float]:
+    if hasattr(step, "__float__") and hasattr(span, "__float__"):
         return _round_for_arange(span / step)
     tmp = span / step
-    if type(tmp) is complex and tmp.imag == 0:
+    if hasattr(tmp, "__complex__"):
+        tmp = complex(tmp)
         tmp = tmp.real
     else:
-        return tmp
+        tmp = float(tmp)
     return _round_for_arange(tmp)
 
 
@@ -536,13 +537,18 @@ def arange(
     if stop is None:
         stop = start
         start = 0
+    if step is None:
+        step = 1
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    (start, stop, step,), dt = _coerce_and_infer_dt(
+    is_bool = False
+    if dtype:
+        is_bool = (dtype is bool) or (dpt.dtype(dtype) == dpt.bool)
+    (start_, stop_, step_), dt = _coerce_and_infer_dt(
         start,
         stop,
         step,
-        dt=dtype,
+        dt=dpt.int8 if is_bool else dtype,
         sycl_queue=sycl_queue,
         err_msg="start, stop, and step must be Python scalars",
         allow_bool=False,
@@ -554,6 +560,8 @@ def arange(
             sh = 0
     except TypeError:
         sh = 0
+    if is_bool and sh > 2:
+        raise ValueError("no fill-function for boolean data type")
     res = dpt.usm_ndarray(
         (sh,),
         dtype=dt,
@@ -561,11 +569,31 @@ def arange(
         order="C",
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    _step = (start + step) - start
-    _step = dt.type(_step)
-    _start = dt.type(start)
+    sc_ty = dt.type
+    _first = sc_ty(start)
+    if sh > 1:
+        _second = sc_ty(start + step)
+        if dt in [dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64]:
+            int64_ty = dpt.int64.type
+            _step = int64_ty(_second) - int64_ty(_first)
+        else:
+            _step = _second - _first
+        _step = sc_ty(_step)
+    else:
+        _step = sc_ty(1)
+    _start = _first
     hev, _ = ti._linspace_step(_start, _step, res, sycl_queue)
     hev.wait()
+    if is_bool:
+        res_out = dpt.usm_ndarray(
+            (sh,),
+            dtype=dpt.bool,
+            buffer=usm_type,
+            order="C",
+            buffer_ctor_kwargs={"queue": sycl_queue},
+        )
+        res_out[:] = res
+        res = res_out
     return res
 
 
