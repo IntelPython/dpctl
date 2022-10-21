@@ -1,6 +1,6 @@
 # Exposing USM Allocations Made by the Native Code to dpctl
 
-This extension demonstrates how a Python* object backed by
+This extension demonstrates how a Python object backed by
 a native class, which allocates USM memory, can expose it
 to the `dpctl.memory` entities using `__sycl_usm_array_interface__`.
 

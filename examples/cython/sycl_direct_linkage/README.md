@@ -1,9 +1,9 @@
 # Example of sycl_direct_linkage Usage
 
-This Cython* extension does not directly use dpctl and links to SYCL*. 
+This Cython extension does not directly use dpctl and links to SYCL. 
 It exposes the `columnwise_total` function that uses oneMKL to compute
 totals for each column of its argument matrix in double precision 
-expected as an ordinary NumPy* array in a C-contiguous layout.
+expected as an ordinary NumPy array in a C-contiguous layout.
 
 This function performs the following steps:
 
@@ -12,7 +12,7 @@ This function performs the following steps:
   3. Creates a vector `v_ones` with all elements being ones
      and allocates memory for the result.
   4. Calls oneMKL to compute xGEMV as dot(v_ones, M)
-  5. Returns the result as NumPy* array
+  5. Returns the result as NumPy array
 
 This extension does not allow to control the device or queue, to
 which execution of kernel is being scheduled.
@@ -22,7 +22,7 @@ A related example "sycl_buffer" modifies this example in that it uses
 and avoid the overhead of queue creation.
 
 To illustrate the queue creation overhead in each call, compare the execution of the default queue,
-which is Intel(R) Gen9* GPU on an OpenCL* backend:
+which is Intel(R) Gen9 GPU on an OpenCL backend:
 
 ```
 (idp) [11:24:38 ansatnuc04 sycl_direct_linkage]$ SYCL_DEVICE_FILTER=opencl:gpu python bench.py

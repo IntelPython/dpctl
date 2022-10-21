@@ -18,12 +18,12 @@ of `dpctl`
     - [Python Code Style](#python-code-style)
     - [Setting Up a Pre-commit](#setting-up-a-pre-commit)
     - [C/C++ File Headers](#cc-file-headers)
-    - [Python* File Headers](#python-file-headers)
+    - [Python File Headers](#python-file-headers)
   - [Security](#security)
     - [Bandit](#bandit)
   - [Code Coverage](#code-coverage)
   - [Error Reporting and Logging](#error-reporting-and-logging)
-    - [Optional use of the Google* logging library (glog*)](#optional-use-of-the-google-logging-library-glog)
+    - [Optional use of the Google logging library (glog)](#optional-use-of-the-google-logging-library-glog)
 
 
 # Mechanical Source Issues
@@ -53,7 +53,7 @@ clang-format -style=file -i         \
      libsyclinterface/helper/source/*.cpp
 ```
 
-> **:** It is easier to use `pre-commit` and the `clang-format` hook.
+> **NOTE:** It is recommended to use `pre-commit` that invokes `clang-format` among other linters as configured.
 
 ### Python Code Style
 
@@ -116,7 +116,7 @@ The standard header looks like this:
 > **NOTE:**
 >- The `-*- C++ -*-` string on the first line tells Emacs* that
   it is a C++ file. The string is only needed for `*.h` headers and
-  should be omitted for `*.cpp` files. Without the string, Emacs* assumes the
+  should be omitted for `*.cpp` files. Without the string, Emacs assumes the
   file is a C header.
 >- The copyright year must be updated every calendar year.
 >- Each comment line should be a max of 80 chars.
@@ -128,9 +128,9 @@ The standard header looks like this:
 ---
 
 
-### Python* File Headers
+### Python File Headers
 
-Every Python* and Cython* file should only include the following license header:
+Every Python and Cython file should only include the following license header:
 
 ```
 #                      Data Parallel Control (dpctl)
@@ -156,8 +156,8 @@ The copyright year should be updated every calendar year.
 
 ### Bandit
 
-We use [Bandit*](https://github.com/PyCQA/bandit) to find common security issues
-in the Python* code.
+We use [Bandit](https://github.com/PyCQA/bandit) to find common security issues
+in the Python code.
 
 To install, run:
 ```bash
@@ -182,15 +182,14 @@ To check the code coverage for your code, follow these steps:
 
 1. Install dependencies for C/C++ source.
 
-    For C/C++ source, we require `lcov`, `llvm-cov`, and `llvm-profdata`. `llvm-cov` and `llvm-profdata` 
-    should be version 11.0 or higher. If you
+    For C/C++ source,  `lcov`, `llvm-cov` (>=11.0), and `llvm-profdata` (>=11.0) are required. If you
     have multiple `llvm-cov` tools installed, set the `LLVM_TOOLS_HOME`
     environment variable to make sure the correct one is used to generate
     coverage.
 
-2. Install dependencies for Python* sources.
+2. Install dependencies for Python sources.
 
-    To generate the coverage data for dpctl Python* sources,
+    To generate the coverage data for dpctl Python sources,
     install `coverage`:
 
     ```bash
@@ -208,10 +207,10 @@ To check the code coverage for your code, follow these steps:
     reason, the coverage script builds the package in `develop` mode of
     `setup.py`.
 
-    The coverage results for the C and Python* sources are printed to the
-    terminal during the build (`libsyclinterface`) and pytest execution (Python*).
+    The coverage results for the C and Python sources are printed to the
+    terminal during the build (`libsyclinterface`) and pytest execution (Python).
     The detailed coverage reports for the `libsyclinterface` library are saved to the
-    `dpctl-c-api-coverage` directory. The Python* coverage reports are saved to
+    `dpctl-c-api-coverage` directory. The Python coverage reports are saved to
     the `htmlcov` directory.
 
     The coverage data for every PR is also available online at
@@ -241,24 +240,24 @@ export DPCTL_VERBOSITY=warning
 
 Messages of a given severity are shown not only in the console for that severity but also for the higher severity. For example, the severity level `warning` outputs severity errors for `error` and `warning` to the console.
 
-### Optional use of the Google* logging library (glog*)
+### Optional use of the Google logging library (glog)
 
-The dpctl error handler for libsyclinterface can be optionally configured to use [glog*](https://github.com/google/glog). 
+The dpctl error handler for libsyclinterface can be optionally configured to use [glog](https://github.com/google/glog). 
 
-To use glog*, complete the following steps:
+To use glog, complete the following steps:
 
-1. Install glog* package of the latest version
+1. Install glog package of the latest version
 
 ```bash
 conda install glog
 ```
-2. Build dpctl with the glog* support
+2. Build dpctl with the glog support
 
 ```bash
 python scripts/build_locally.py --oneapi --glog
 ```
 
-3. Use the `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of a Python* code.
+1. Use the `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of a Python code.
 Use `DPCTLService_InitLogger` and `DPCTLService_ShutdownLogger` library C functions during library development to initialize Google's logging library and de-initialize accordingly:
 
 ```python
@@ -278,4 +277,4 @@ Where:
  - `*log_dir` - a directory path for writing log files. Specifying `NULL` results in logging to ``std::cerr``.
 
 > **_NOTE:_**
-> If `InitGoogleLogging` is not called before the first use of the glog*, the library self-initializes to the `logtostderr` mode, and log files are not generated.
+> If `InitGoogleLogging` is not called before the first use of the glog, the library self-initializes to the `logtostderr` mode, and log files are not generated.

@@ -6,13 +6,13 @@ Device
 
 A device is an abstract representation of an XPU. The :class:`dpctl.SyclDevice`
 class represents a device and is a wrapper over the
-:sycl_device:`sycl::device <>` SYCL* runtime class.
+:sycl_device:`sycl::device <>` SYCL runtime class.
 
 Creating Devices
 ----------------
 
 The :class:`dpctl.SyclDevice` class includes the default constructor to create a
-``default`` device. This device is selected by the SYCL* runtime. You can also use
+``default`` device. This device is selected by the SYCL runtime. You can also use
 explicit :ref:`filter selector strings <sec-filter-selection>` to create a
 device.
 
@@ -24,7 +24,7 @@ Listing Devices
 :py:mod:`dpctl` provides the :func:`dpctl.get_devices` utility function to list
 the available devices on a user's system. The list of devices returned depends
 on the available hardware, installed drivers,
-:dpcpp_envar:`environment variables <>` influencing SYCL* runtime,
+:dpcpp_envar:`environment variables <>` influencing SYCL runtime,
 such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``.
 
 .. _fig-listing-devices:
@@ -68,7 +68,7 @@ its hardware characteristics:
 * :sycl_aspects:`Aspects <>` are boolean characteristics of the device
 * :sycl_device_info:`information descriptors <>` are non-boolean characteristics
   that provide more verbose information about the device
-* :class:`dpctl.SyclDevice` exposes various Python* properties that describe a
+* :class:`dpctl.SyclDevice` exposes various Python properties that describe a
   device's aspects and information descriptors. 
 
 For example, the property ``has_aspect_fp16`` returns a boolean expression indicating if:
@@ -111,7 +111,7 @@ A sub-device represents a subset of the computational units within a device
 that are grouped based on some hardware criteria. For example, you can partition a two-socket 
 CPU into two sub-devices, where each sub-device represents a separate
 :numa_domain:`NUMA domain <>`. Depending on the hardware characteristics and
-the capabilities of the SYCL* runtime, a sub-device may be partitioned further.
+the capabilities of the SYCL runtime, a sub-device may be partitioned further.
 
 For devices that support partitioning, you can use
 :func:`dpctl.SyclDevice.create_sub_devices` to create a list of

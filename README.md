@@ -9,16 +9,16 @@
 
 # Data Parallel Control
 
-Data Parallel Control or `dpctl` is a Python* library that allows users
+Data Parallel Control or `dpctl` is a Python library that allows users
 to *control* the execution placement of a [compute
 kernel](https://en.wikipedia.org/wiki/Compute_kernel) on an
-[XPU*](https://www.intel.com/content/www/us/en/newsroom/news/xpu-vision-oneapi-server-gpu.html).
+[XPU](https://www.intel.com/content/www/us/en/newsroom/news/xpu-vision-oneapi-server-gpu.html).
 
 The compute kernel can be a code:
-* written by the user, e.g., using `numba-dppy`
+* written by the user, e.g., using [`numba-dpex`](https://github.com/IntelPython/numba-dpex)
 * that is part of a library, such as oneMKL  
 
-The `dpctl` library is built upon the [SYCL*
+The `dpctl` library is built upon the [SYCL
 standard](https://www.khronos.org/sycl/). It also implements Python
 bindings for a subset of the standard [runtime
 classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes) that allow users to:
@@ -26,16 +26,16 @@ classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.ht
 * discover and represent devices and sub-devices
 * construct contexts and queues 
 
-`dpctl` features classes for [SYCL* Unified Shared Memory
+`dpctl` features classes for [SYCL Unified Shared Memory
 (USM)](https://link.springer.com/chapter/10.1007/978-1-4842-5574-2_6)
 management and implements a tensor [array
 API](https://data-apis.org/array-api/latest/).
 
 The library helps authors of Python native extensions written
-in C, Cython*, or pybind11* to access `dpctl` objects representing SYCL*
+in C, Cython, or pybind11 to access `dpctl` objects representing SYCL
 devices, queues, memory, and tensors.
 
-`Dpctl` is the core part of a larger family of [data-parallel Python*
+`Dpctl` is the core part of a larger family of [data-parallel Python
 libraries and tools](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
 to program on XPUs. 
 
@@ -43,10 +43,10 @@ to program on XPUs.
 
 # Installing
 
-You can install the library with [conda*](https://anaconda.org/intel/dpctl) and
-[pip*](https://pypi.org/project/dpctl/). It is also available in the [Intel(R)
+You can install the library with [conda](https://anaconda.org/intel/dpctl) and
+[pip](https://pypi.org/project/dpctl/). It is also available in the [Intel(R)
 Distribution for
-Python*](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html)
+Python](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html)
 (IDP).
 
 ## Inte(R) oneAPI
@@ -57,13 +57,13 @@ To get the library from the latest oneAPI release, follow the
 instructions from Intel(R) [oneAPI installation
 guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html).
 
-> **NOTE:** You need to install the Intel(R) oneAPI Base Toolkit to get
+> **NOTE:** You need to install the Intel(R) oneAPI Basekit to get
 >IDP and `dpctl`.
 
 
 ## Conda
 
-To install `dpctl` from the Intel(R) channel on Annaconda*
+To install `dpctl` from the Intel(R) channel on Annaconda
 cloud, use the following command:
 
 ```bash
@@ -72,7 +72,7 @@ conda install dpctl -c intel
 
 ## PyPi
 
-To install `dpctl` from PyPi*, run the following command:
+To install `dpctl` from PyPi, run the following command:
 
 ```bash
 pip3 install dpctl
@@ -82,7 +82,7 @@ Installing the bleeding edge
 ------------------------
 
 To try out the current master, install it from our
-development channel on Anaconda* cloud:
+development channel on Anaconda cloud:
 
 ```bash
 conda install dpctl -c dppy\label\dev
@@ -106,8 +106,8 @@ for script in `ls examples/python/`;
 done
 ```
 
-##  Cython* extensions
-See examples of building Cython* extensions with DPC++ compiler that interoperates
+##  Cython extensions
+See examples of building Cython extensions with DPC++ compiler that interoperates
 with `dpctl` in the [cython folder](examples\cython).
 
 To build these examples, run:

@@ -16,24 +16,24 @@ The queue construction requires specifying:
   * If submitted tasks are executed in the order, in which they are submitted
 
 The :class:`dpctl.SyclQueue` class represents a queue and abstracts the
-:sycl_queue:`sycl::queue <>` SYCL* runtime class.
+:sycl_queue:`sycl::queue <>` SYCL runtime class.
 
 Types of Queues
 ---------------
 
-SYCL* has a task-based execution model. The order, in which a SYCL* runtime
+SYCL has a task-based execution model. The order, in which a SYCL runtime
 executes a task on a target device, is specified by a sequence of events that
 must be completed before the execution of the task is allowed. 
 
 Submission of a task returns an event that you can use to further grow the graph of computational
-tasks. A SYCL* queue stores the needed data to manage the scheduling operations.
+tasks. A SYCL queue stores the needed data to manage the scheduling operations.
 
 There are two types of queues: 
 
-* **Out-of-order.** Unless specified otherwise during the constriction of a queue, a SYCL* runtime
+* **Out-of-order.** Unless specified otherwise during the constriction of a queue, a SYCL runtime
   executes tasks, which dependencies are met in an unspecified order, with the
   possibility for some of the tasks to be executed concurrently.
-* **In-order.** You can specify SYCL* queues to indicate that runtime must execute tasks in the
+* **In-order.** You can specify SYCL queues to indicate that runtime must execute tasks in the
   order, in which they are submitted. In this case, tasks submitted to such a
   queue are never executed concurrently.
 

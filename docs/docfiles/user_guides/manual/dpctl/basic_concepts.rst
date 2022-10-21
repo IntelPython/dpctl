@@ -5,14 +5,14 @@ Basic Concepts
 
 This section introduces the basic concepts for XPU management used by `dpctl`.
 
-.. note:: For SYCL-level details, refer to a more topical SYCL* reference, such as the :sycl_spec_2020:`SYCL 2020 spec <>`.
+.. note:: For SYCL-level details, refer to a more topical SYCL reference, such as the :sycl_spec_2020:`SYCL 2020 spec <>`.
 
 * **Heterogeneous computing**
     Refers to using multiple devices in a program.
 
 * **Host**
     Every program starts by running on a host, and most of the lines of code in
-    a program, in particular lines of code implementing the Python* interpreter
+    a program, in particular lines of code implementing the Python interpreter
     itself, are usually for the host. Hosts are customarily CPUs.
 
 * **Device**
@@ -44,8 +44,8 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
 * **Event**
    Holds information related to computation or data movement operation
    scheduled for the execution on a queue. An event can store the execution status or
-   profiling information if the queue, to which the task is submitted, is allowed
-   for the collection of such information. Events can be used to specify task
+   profiling information of the queue, to which the task is submitted.
+   Events can be used to specify task
    dependencies or to synchronize host and devices.
 
 * **USM**

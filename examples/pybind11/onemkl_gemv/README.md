@@ -1,5 +1,5 @@
 
-# SYCL* Build Pybind11 Extension
+# SYCL Build Pybind11 Extension
 
 ## Building 
 

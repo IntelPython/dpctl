@@ -21,15 +21,15 @@ use one of the helper functions included inside `dpctl`` directly. Dpctl include
 *  ``default`` device
 
 
-These functions are analogous to SYCL* built-in
+These functions are analogous to SYCL built-in
 :sycl_device_selector:`sycl::device_selector <>` classes. The scoring and
 selection of a specific device when multiple devices of the same type are
-available on a system are deferred to the underlying SYCL* runtime.
+available on a system are deferred to the underlying SYCL runtime.
 
 The example :ref:`fig-gpu-device-selection` shows the usage of the
 :func:`dpctl.select_gpu_device()` device selection function. In case when multiple
 GPU devices are available, only one is returned based on the underlying scoring
-logic inside of the SYCL* runtime. If the selection function is unable to select a
+logic inside of the SYCL runtime. If the selection function is unable to select a
 device, a ``ValueError`` is raised.
 
 .. _fig-gpu-device-selection:
@@ -107,7 +107,7 @@ The backend, device type, and device number value are optional but provide at le
 That is, ``opencl:gpu:0``, ``gpu:0``, ``gpu``, ``0``, and ``opencl:0`` are all valid filter strings.
 
 The device listing including the ``device number value`` remains stable for
-a given system unless the driver configuration is changed or the SYCL*
+a given system unless the driver configuration is changed or the SYCL
 runtime setting is changed using the ``SYCL_DEVICE_FILTER`` environment variable. 
 Refer to :oneapi_filter_selection:`oneAPI filter selection extension <>` for more
 information.
@@ -151,7 +151,7 @@ of hardware properties that may be used for device selection.
 A convenience function :func:`dpctl.select_device_with_aspects()` is available,
 which makes it easy to select a device based on a set of specific aspects. The
 :ref:`fig-select-device-with-aspects` example selects a device that
-supports double precision arithmetic and SYCL* USM shared memory allocation.
+supports double precision arithmetic and SYCL USM shared memory allocation.
 
 .. _fig-select-device-with-aspects:
 
