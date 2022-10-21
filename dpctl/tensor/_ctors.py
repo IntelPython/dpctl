@@ -193,6 +193,28 @@ def _asarray_from_usm_ndarray(
     return res
 
 
+def _map_to_device_dtype(dt, q):
+    if dt.char == "?" or np.issubdtype(dt, np.integer):
+        return dt
+    d = q.sycl_device
+    dtc = dt.char
+    if np.issubdtype(dt, np.floating):
+        if dtc == "f":
+            return dt
+        else:
+            if dtc == "d" and d.has_aspect_fp64:
+                return dt
+            if dtc == "h" and d.has_aspect_fp16:
+                return dt
+            return dpt.dtype("f4")
+    elif np.issubdtype(dt, np.complexfloating):
+        if dtc == "F":
+            return dt
+        if dtc == "D" and d.has_aspect_fp64:
+            return dt
+        return dpt.dtype("c8")
+
+
 def _asarray_from_numpy_ndarray(
     ary, dtype=None, usm_type=None, sycl_queue=None, order="K"
 ):
@@ -207,10 +229,8 @@ def _asarray_from_numpy_ndarray(
             "Please convert the input to an array with numeric data type."
         )
     if dtype is None:
-        ary_dtype = ary.dtype
-        dtype = _get_dtype(dtype, copy_q, ref_type=ary_dtype)
-        if dtype.itemsize > ary_dtype.itemsize or ary_dtype == np.uint64:
-            dtype = ary_dtype
+        # deduce device-representable output data type
+        dtype = _map_to_device_dtype(ary.dtype, copy_q)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -246,7 +266,7 @@ def _asarray_from_numpy_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    ti._copy_numpy_ndarray_into_usm_ndarray(src=ary, dst=res, sycl_queue=copy_q)
+    res[...] = ary
     return res
 
 
