@@ -186,9 +186,33 @@ def _asarray_from_usm_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    # FIXME: call copy_to when implemented
-    res[(slice(None, None, None),) * res.ndim] = usm_ndary
+    hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=usm_ndary, dst=res, sycl_queue=copy_q
+    )
+    hev.wait()
     return res
+
+
+def _map_to_device_dtype(dt, q):
+    if dt.char == "?" or np.issubdtype(dt, np.integer):
+        return dt
+    d = q.sycl_device
+    dtc = dt.char
+    if np.issubdtype(dt, np.floating):
+        if dtc == "f":
+            return dt
+        else:
+            if dtc == "d" and d.has_aspect_fp64:
+                return dt
+            if dtc == "h" and d.has_aspect_fp16:
+                return dt
+            return dpt.dtype("f4")
+    elif np.issubdtype(dt, np.complexfloating):
+        if dtc == "F":
+            return dt
+        if dtc == "D" and d.has_aspect_fp64:
+            return dt
+        return dpt.dtype("c8")
 
 
 def _asarray_from_numpy_ndarray(
@@ -205,10 +229,8 @@ def _asarray_from_numpy_ndarray(
             "Please convert the input to an array with numeric data type."
         )
     if dtype is None:
-        ary_dtype = ary.dtype
-        dtype = _get_dtype(dtype, copy_q, ref_type=ary_dtype)
-        if dtype.itemsize > ary_dtype.itemsize:
-            dtype = ary_dtype
+        # deduce device-representable output data type
+        dtype = _map_to_device_dtype(ary.dtype, copy_q)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -244,8 +266,7 @@ def _asarray_from_numpy_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    # FIXME: call copy_to when implemented
-    res[(slice(None, None, None),) * res.ndim] = ary
+    res[...] = ary
     return res
 
 
