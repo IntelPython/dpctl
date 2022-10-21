@@ -1458,3 +1458,8 @@ def test_flags():
     f.writable
     # check comparison with generic types
     f == Ellipsis
+
+def test_asarray_uint64():
+    Xnp = np.ndarray(1, dtype=np.uint64)
+    X = dpt.asarray(Xnp)
+    assert X.dtype == Xnp.dtype
