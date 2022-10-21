@@ -186,8 +186,10 @@ def _asarray_from_usm_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    # FIXME: call copy_to when implemented
-    res[(slice(None, None, None),) * res.ndim] = usm_ndary
+    hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=usm_ndary, dst=res, sycl_queue=copy_q
+    )
+    hev.wait()
     return res
 
 
@@ -207,7 +209,7 @@ def _asarray_from_numpy_ndarray(
     if dtype is None:
         ary_dtype = ary.dtype
         dtype = _get_dtype(dtype, copy_q, ref_type=ary_dtype)
-        if dtype.itemsize > ary_dtype.itemsize:
+        if dtype.itemsize > ary_dtype.itemsize or ary_dtype == np.uint64:
             dtype = ary_dtype
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
@@ -244,8 +246,10 @@ def _asarray_from_numpy_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    # FIXME: call copy_to when implemented
-    res[(slice(None, None, None),) * res.ndim] = ary
+    hev, _ = ti._copy_numpy_ndarray_into_usm_ndarray(
+        src=ary, dst=res, sycl_queue=copy_q
+    )
+    hev.wait()
     return res
 
 
