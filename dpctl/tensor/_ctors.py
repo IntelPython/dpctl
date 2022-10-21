@@ -246,9 +246,7 @@ def _asarray_from_numpy_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    ti._copy_numpy_ndarray_into_usm_ndarray(
-        src=ary, dst=res, sycl_queue=copy_q
-    )
+    ti._copy_numpy_ndarray_into_usm_ndarray(src=ary, dst=res, sycl_queue=copy_q)
     return res
 
 
