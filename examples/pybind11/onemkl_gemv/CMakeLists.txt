@@ -53,6 +53,7 @@ set_source_files_properties(${_sycl_gemm_sources}
   PROPERTIES
   COMPILE_OPTIONS "-O3"
 )
+target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 
 add_executable(standalone_cpp
   EXCLUDE_FROM_ALL
