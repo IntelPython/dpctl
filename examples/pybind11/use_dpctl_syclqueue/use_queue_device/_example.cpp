@@ -45,7 +45,7 @@ uint64_t get_device_local_mem_size(sycl::device &d)
 }
 
 py::array_t<int64_t>
-offloaded_array_mod(sycl::queue &q,
+offloaded_array_mod(sycl::queue q,
                     py::array_t<int64_t, py::array::c_style> array,
                     int64_t mod)
 {
@@ -86,13 +86,11 @@ offloaded_array_mod(sycl::queue &q,
 
 PYBIND11_MODULE(_use_queue_device, m)
 {
-    // Import the dpctl extensions
-    import_dpctl();
     m.def(
         "get_max_compute_units",
-        [=](sycl::queue &q) -> size_t {
-            return q.get_device()
-                .get_info<sycl::info::device::max_compute_units>();
+        [=](sycl::queue q) -> size_t {
+            sycl::device d = q.get_device();
+            return d.get_info<sycl::info::device::max_compute_units>();
         },
         "Computes max_compute_units property of the device underlying given "
         "dpctl.SyclQueue");
