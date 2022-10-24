@@ -62,13 +62,11 @@ py_gemv(sycl::queue q,
         throw std::runtime_error("Inconsistent shapes.");
     }
 
-    auto q_ctx = q.get_context();
-    if (q_ctx != matrix.get_queue().get_context() ||
-        q_ctx != vector.get_queue().get_context() ||
-        q_ctx != result.get_queue().get_context())
+    if (!dpctl::utils::queues_are_compatible(
+            q, {matrix.get_queue(), vector.get_queue(), result.get_queue()}))
     {
         throw std::runtime_error(
-            "USM allocation is not bound to the context in execution queue.");
+            "USM allocations are not compatible with the execution queue.");
     }
 
     auto &api = dpctl::detail::dpctl_capi::get();
