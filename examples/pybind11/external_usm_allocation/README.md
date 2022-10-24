@@ -7,9 +7,9 @@ to dpctl.memory entities using `__sycl_usm_array_interface__`.
 
 # Building extension
 
-```
+```bash
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
-CXX=dpcpp CC=dpcpp python setup.py build_ext --inplace
+CXX=icpx CC=icx python setup.py build_ext --inplace
 python -m pytest tests
 python example.py
 ```
