@@ -134,9 +134,6 @@ py::list tolist(DMatrix &m)
 
 PYBIND11_MODULE(_external_usm_alloc, m)
 {
-    // Import the dpctl extensions
-    import_dpctl();
-
     py::class_<DMatrix> dm(m, "DMatrix");
     dm.def(py::init(&create_matrix),
            "DMatrix(dpctl.SyclQueue, n_rows, n_cols)");
