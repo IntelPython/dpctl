@@ -186,10 +186,15 @@ def _asarray_from_usm_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=usm_ndary, dst=res, sycl_queue=copy_q
-    )
-    hev.wait()
+    eq = dpctl.utils.get_execution_queue([usm_ndary.sycl_queue, copy_q])
+    if eq is not None:
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ndary, dst=res, sycl_queue=eq
+        )
+        hev.wait()
+    else:
+        tmp = dpt.asnumpy(usm_ndary)
+        res[...] = tmp
     return res
 
 

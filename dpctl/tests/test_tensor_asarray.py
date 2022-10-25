@@ -16,6 +16,7 @@
 
 import numpy as np
 import pytest
+from helper import get_queue_or_skip
 
 import dpctl
 import dpctl.tensor as dpt
@@ -193,10 +194,7 @@ def test_asarray_scalars():
 
 
 def test_asarray_copy_false():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not create a queue")
+    q = get_queue_or_skip()
     rng = np.random.default_rng()
     Xnp = rng.integers(low=-255, high=255, size=(10, 4), dtype=np.int64)
     X = dpt.from_numpy(Xnp, usm_type="device", sycl_queue=q)
@@ -229,10 +227,15 @@ def test_asarray_copy_false():
 
 
 def test_asarray_invalid_dtype():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not create a queue")
+    q = get_queue_or_skip()
     Xnp = np.array([1, 2, 3], dtype=object)
     with pytest.raises(TypeError):
         dpt.asarray(Xnp, sycl_queue=q)
+
+
+def test_asarray_cross_device():
+    q = get_queue_or_skip()
+    qprof = dpctl.SyclQueue(property="enable_profiling")
+    x = dpt.empty(10, dtype="i8", sycl_queue=q)
+    y = dpt.asarray(x, sycl_queue=qprof)
+    assert y.sycl_queue == qprof
