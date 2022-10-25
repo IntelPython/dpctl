@@ -63,7 +63,7 @@ guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installa
 
 ## Conda
 
-To install `dpctl` from the Intel(R) channel on Annaconda
+To install `dpctl` from the Intel(R) channel on Anaconda
 cloud, use the following command:
 
 ```bash

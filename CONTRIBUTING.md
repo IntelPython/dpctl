@@ -257,7 +257,7 @@ conda install glog
 python scripts/build_locally.py --oneapi --glog
 ```
 
-1. Use the `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of a Python code.
+3. Use the `dpctl._diagnostics.syclinterface_diagnostics(verbosity="warning", log_dir=None)` context manager to switch library diagnostics on for a block of a Python code.
 Use `DPCTLService_InitLogger` and `DPCTLService_ShutdownLogger` library C functions during library development to initialize Google's logging library and de-initialize accordingly:
 
 ```python
