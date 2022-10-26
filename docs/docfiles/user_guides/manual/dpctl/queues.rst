@@ -5,7 +5,7 @@ Queue
 #####
 
 You need a queue to schedule the execution of any computation or data copying on a
-device. 
+device.
 
 The queue construction requires specifying:
 
@@ -23,12 +23,12 @@ Types of Queues
 
 SYCL has a task-based execution model. The order, in which a SYCL runtime
 executes a task on a target device, is specified by a sequence of events that
-must be completed before the execution of the task is allowed. 
+must be completed before the execution of the task is allowed.
 
 Submission of a task returns an event that you can use to further grow the graph of computational
 tasks. A SYCL queue stores the needed data to manage the scheduling operations.
 
-There are two types of queues: 
+There are two types of queues:
 
 * **Out-of-order.** Unless specified otherwise during the constriction of a queue, a SYCL runtime
   executes tasks, which dependencies are met in an unspecified order, with the
@@ -42,7 +42,7 @@ Creating a New Queue
 --------------------
 
 :class:`dpctl.SyclQueue(ctx, dev, property=None)` creates a new queue instance
-for the given compatible context and device. 
+for the given compatible context and device.
 
 To create the **in-order** queue, set a keyword ``parametr`` to ``in_order``
 
@@ -86,7 +86,7 @@ Profiling a Task Submitted to a Queue
 -------------------------------------
 
 The result of scheduling the execution of a task on a queue is an event. You can use
-an event for several purposes: 
+an event for several purposes:
 
 * Query for the status of the task execution
 * Order execution of future tasks after it is completed
@@ -97,7 +97,7 @@ The profiling information is only populated if the queue
 used is created with the ``enable_profiling`` property and only becomes available
 after the task execution is complete.
 
-The :class:`dpctl.SyclTimer` class implements a Python context manager. 
+The :class:`dpctl.SyclTimer` class implements a Python context manager.
 You can use this context manager to collect cumulative profiling information for all the tasks submitted
 to the queue of interest by functions executed within the context:
 

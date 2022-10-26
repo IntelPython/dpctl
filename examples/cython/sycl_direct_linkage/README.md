@@ -1,8 +1,8 @@
 # Example of sycl_direct_linkage Usage
 
-This Cython extension does not directly use dpctl and links to SYCL. 
+This Cython extension does not directly use dpctl and links to SYCL.
 It exposes the `columnwise_total` function that uses oneMKL to compute
-totals for each column of its argument matrix in double precision 
+totals for each column of its argument matrix in double precision
 expected as an ordinary NumPy array in a C-contiguous layout.
 
 This function performs the following steps:

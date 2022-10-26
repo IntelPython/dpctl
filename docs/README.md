@@ -29,7 +29,7 @@ instructions to install `liblua`. For example, on Ubuntu 20.04:
 sudo apt-get install liblua5.2-dev
 ```
 
-Generating The Documentation 
+Generating The Documentation
 ============================
 
 The helper script ``scripts/gen_docs.py`` is the preferred way to generate the

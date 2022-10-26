@@ -66,14 +66,14 @@ We use the following Python code style tools:
 >  * `pyproject.toml` and `.flake8` config files for current configurations
 > * `.pre-commit-config.yaml` file for the versions of the tools
 
-Run these three tools before each commit. 
+Run these three tools before each commit.
 
 > **TIP:** Refer your IDE docs to automate these checks or set up `pre-commit` to add git hooks.
 
 ### Setting Up a Pre-commit
-                                     
+
 A `.pre-commit-config.yaml` is included to run various checks before you
-commit your code. 
+commit your code.
 
 To setup `pre-commit` in your workflow, install:
 
@@ -176,7 +176,7 @@ bandit -r dpctl -lll
 Code coverage, for both C and Python sources in dpctl, is generated for each
 pull request (PR). A PR cannot be merged if it leads to a drop in the code
 coverage by more than five percentage points. Therefore, write
-unit tests for your changes. 
+unit tests for your changes.
 
 To check the code coverage for your code, follow these steps:
 
@@ -242,7 +242,7 @@ Messages of a given severity are shown not only in the console for that severity
 
 ### Optional use of the Google logging library (glog)
 
-The dpctl error handler for libsyclinterface can be optionally configured to use [glog](https://github.com/google/glog). 
+The dpctl error handler for libsyclinterface can be optionally configured to use [glog](https://github.com/google/glog).
 
 To use glog, complete the following steps:
 

@@ -7,7 +7,7 @@ such as ``dpctl.SyclQueue``, in Pybind11
 extensions.
 
 
-## Building 
+## Building
 
 To build the extension, run:
 ```

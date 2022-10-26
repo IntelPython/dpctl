@@ -68,7 +68,7 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
    "Host allocation", "Yes", "Accessible by both the host and device."
 
 
-Runtime manages synchronization of the host's and device's view into shared allocations. 
+Runtime manages synchronization of the host's and device's view into shared allocations.
 The initial placement of the shared allocations is not defined.
 
 * **Backend**

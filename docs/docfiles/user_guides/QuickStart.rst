@@ -8,8 +8,8 @@ Installation from oneAPI
 ========================
 
 Dpctl is available as part of the oneAPI Intel(R) Distribution for Python (IDP).
-Refer to `Intel(R) oneAPI Toolkits Installation Guide <https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html>`_ 
-to install it. 
+Refer to `Intel(R) oneAPI Toolkits Installation Guide <https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html>`_
+to install it.
 
 In this topic, it is assumed that oneAPI is installed in the standard location and the
 environment variable ``ONEAPI_ROOT`` points to the following installation root
@@ -88,7 +88,7 @@ Building using oneAPI dpcpp
 Install oneAPI and graphics drivers to the system prior
 to proceeding further.
 
-Activate oneAPI 
+Activate oneAPI
 ~~~~~~~~~~~~~~~
 
 On Linux OS
@@ -177,7 +177,7 @@ Building Using Custom dpcpp
 ---------------------------
 
 You can build dpctl from the source using the `DPC++ toolchain <https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md>`_
-instead of the DPC++ compiler that comes with oneAPI. 
+instead of the DPC++ compiler that comes with oneAPI.
 
 Do this, to enable support for CUDA devices.
 
@@ -224,11 +224,11 @@ After setting up dpctl, you can test the Python examples as follows:
     python examples/python/${script}
     done
 
-The dpctl repository also provides a set of `examples <https://github.com/IntelPython/dpctl/tree/master/examples/cython>`_ 
+The dpctl repository also provides a set of `examples <https://github.com/IntelPython/dpctl/tree/master/examples/cython>`_
 of building the Cython extensions with the DPC++ compiler, that interoperates with dpctl.
 
 To build each example, use
-``CC=icx CXX=dpcpp python setup.py build_ext --inplace``. 
+``CC=icx CXX=dpcpp python setup.py build_ext --inplace``.
 Refer to the ``run.py`` script in respective folders to execute the Cython extension
 examples.
 
@@ -246,7 +246,7 @@ Building the libsyclinterface Library
 =======================================
 
 The libsyclinterface is a shared library used by the Python package.
-To build the library, you need: 
+To build the library, you need:
 
 *  ``DPC++`` toolchain
 * ``cmake``
@@ -280,4 +280,3 @@ library.
         ..
 
     make V=1 -n -j 4 && make check && make install
-

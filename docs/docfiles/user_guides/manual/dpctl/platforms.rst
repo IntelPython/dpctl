@@ -12,7 +12,7 @@ Listing Available Platforms
 ---------------------------
 
 To require the platforms available on a system, use
-:func:`dpctl.lsplatform` function. 
+:func:`dpctl.lsplatform` function.
 
 It is possible to print out metadata about a platform:
 

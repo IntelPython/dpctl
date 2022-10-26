@@ -16,7 +16,7 @@ kernel](https://en.wikipedia.org/wiki/Compute_kernel) on an
 
 The compute kernel can be a code:
 * written by the user, e.g., using [`numba-dpex`](https://github.com/IntelPython/numba-dpex)
-* that is part of a library, such as oneMKL  
+* that is part of a library, such as oneMKL
 
 The `dpctl` library is built upon the [SYCL
 standard](https://www.khronos.org/sycl/). It also implements Python
@@ -24,7 +24,7 @@ bindings for a subset of the standard [runtime
 classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes) that allow users to:
 * query platforms
 * discover and represent devices and sub-devices
-* construct contexts and queues 
+* construct contexts and queues
 
 `dpctl` features classes for [SYCL Unified Shared Memory
 (USM)](https://link.springer.com/chapter/10.1007/978-1-4842-5574-2_6)
@@ -37,7 +37,7 @@ devices, queues, memory, and tensors.
 
 `Dpctl` is the core part of a larger family of [data-parallel Python
 libraries and tools](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
-to program on XPUs. 
+to program on XPUs.
 
 
 
@@ -51,7 +51,7 @@ Python](https://software.intel.com/content/www/us/en/develop/tools/oneapi/compon
 
 ## Inte(R) oneAPI
 
-You can find the most recent release of `dpctl` every quarter as part of the Intel(R) oneAPI releases. 
+You can find the most recent release of `dpctl` every quarter as part of the Intel(R) oneAPI releases.
 
 To get the library from the latest oneAPI release, follow the
 instructions from Intel(R) [oneAPI installation
@@ -95,14 +95,14 @@ setting up a development environment and building `dpctl` from the source.
 
 # Running Examples
 
-Find our examples [here](examples). 
+Find our examples [here](examples).
 
 To run these examples, use:
 
 ```bash
-for script in `ls examples/python/`; 
-    do echo "executing ${script}"; 
-    python examples/python/${script}; 
+for script in `ls examples/python/`;
+    do echo "executing ${script}";
+    python examples/python/${script};
 done
 ```
 

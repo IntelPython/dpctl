@@ -1,11 +1,11 @@
 
 # SYCL Build Pybind11 Extension
 
-## Building 
+## Building
 
 > **NOTE:** Install scikit-build and dpcpp before next steps.
 
-To build, run: 
+To build, run:
 ```sh
 python setup.py develop -- -G "Ninja" \
      -DCMAKE_C_COMPILER:PATH=icx \

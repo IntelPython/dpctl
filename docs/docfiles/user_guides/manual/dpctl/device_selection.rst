@@ -55,7 +55,7 @@ device selection involves the usage of *filter strings*. Refer to
 
 The :ref:`fig-gpu-device-selection` example also demonstrates the usage of a filter string
 to create a GPU device directly. Using a filter string allows much more
-fine-grained control for selecting a device. 
+fine-grained control for selecting a device.
 
 The following :ref:`fig-filter-selection`
 example demonstrates the usage of the device selection using filter
@@ -93,7 +93,7 @@ A possible output for the :ref:`fig-adv-device-selection` example:
 
 
 A **filter string** is a three-tuple that may specify the *backend*,
-*device type*, and *device number* as a colon (:) separated string. 
+*device type*, and *device number* as a colon (:) separated string.
 
 .. csv-table::
    :header: "String", "Usage", "Values"
@@ -103,19 +103,19 @@ A **filter string** is a three-tuple that may specify the *backend*,
    "*device type*", "Specifies the type of device.", "``host``, ``gpu``, ``cpu``, ``accelerator``"
    "*device number*", "Specifies the ordinality of the device in the listing of devices as determined by the SYCL* runtime.", "Numeric value"
 
-The backend, device type, and device number value are optional but provide at least one of them. 
+The backend, device type, and device number value are optional but provide at least one of them.
 That is, ``opencl:gpu:0``, ``gpu:0``, ``gpu``, ``0``, and ``opencl:0`` are all valid filter strings.
 
 The device listing including the ``device number value`` remains stable for
 a given system unless the driver configuration is changed or the SYCL
-runtime setting is changed using the ``SYCL_DEVICE_FILTER`` environment variable. 
+runtime setting is changed using the ``SYCL_DEVICE_FILTER`` environment variable.
 Refer to :oneapi_filter_selection:`oneAPI filter selection extension <>` for more
 information.
 
 Advanced Device Selection
 -------------------------
 
-Real-world applications may require more precise control over device selection. 
+Real-world applications may require more precise control over device selection.
 Dpctl helps you to accomplish more advanced device selection.
 
 .. _fig-custom-device-selection:
@@ -129,12 +129,12 @@ Dpctl helps you to accomplish more advanced device selection.
 The :ref:`fig-custom-device-selection` example shows a way of selecting a device
 based on a specific hardware property. The process is the following:
 
-1. The :func:`dpctl.get_devices()` returns a list of all *root* devices on the system. 
+1. The :func:`dpctl.get_devices()` returns a list of all *root* devices on the system.
 2. Out of that list the devices that
-support half-precision floating-point arithmetic are selected. 
+support half-precision floating-point arithmetic are selected.
 3. A "score" computed using the SYCL8 runtime's default device scoring logic that is
 stored in :attr:`dpctl.SyclDevice.default_selector_score` is used to select a
-single device. 
+single device.
 
 Refer to the :class:`dpctl.SyclDevice` documentation for a list
 of hardware properties that may be used for device selection.
