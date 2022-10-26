@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+169.g88122f0c5 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.0dev0+224.ge674e4631 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+169.g88122f0c5
+                0.14.0dev0+224.ge674e4631
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -48,7 +48,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../UserManual.html">User Manual</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../UserManual.html#table-of-contents">Table of contents</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../UserManual.html#table-of-contents">Table of Contents</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="basic_concepts.html">Basic Concepts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="device_selection.html">Device Selection</a></li>
@@ -98,22 +98,22 @@
 <p>The Data Parallel Control (dpctl) package provides a Python runtime to access a
 data-parallel computing resource or <em>XPU</em> from another Python application or
 library, alleviating the need for the other Python packages to develop such a
-runtime themselves. The term XPU denotes a diverse range of compute
-architectures such as a CPU, GPU, FPGA, <em>etc.</em>, available to programmers on a
+runtime themselves. The term XPU denotes a diverse range of computing
+architectures such as a CPU, GPU, FPGA, and more. They are available to programmers on a
 modern heterogeneous system.</p>
 <p>The dpctl runtime is built on top of the C++ SYCL standard and is designed to be
 both vendor and architecture agnostic. If the underlying SYCL runtime supports
-a type of architecture, the dpctl runtime will allow accessing that architecture
+a type of architecture, the dpctl runtime allows accessing that architecture
 from Python.</p>
-<p>In its current form, dpctl relies on certain DPC++ extensions of SYCL standard.
+<p>In its current form, dpctl relies on certain DPC++ extensions of the SYCL standard.
 Moreover, the binary distribution of dpctl uses the proprietary Intel(R) oneAPI
-DPC++ runtime bundled as part of oneAPI and supports Intel XPU devices only.
-However, dpctl is compatible with the runtime of open-source DPC++ SYCL bundle
+DPC++ runtime bundled as part of oneAPI and supports Intel(R) XPU devices only.
+However, dpctl is compatible with the runtime of the open-source DPC++ SYCL bundle
 that can be compiled to support a wide range of architectures including CUDA,
-AMD ROC, and HIP.</p>
+AMD* ROC, and HIP*.</p>
 <p>The user guide introduces the core features of dpctl and the underlying
 concepts. The guide is meant primarily for users of the Python package. Library
-and native extension developers should refer to the programmer’s guide.</p>
+and native extension developers should refer to the programmer guide.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul>
