@@ -4,7 +4,7 @@
 User Manual
 ###########
 
-Table of contents
+Table of Contents
 +++++++++++++++++
 
 .. toctree::
