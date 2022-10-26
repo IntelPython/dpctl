@@ -42,12 +42,11 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
    tasks are executed in the order in which they were submitted.
 
 * **Event**
-   Holds information related to computation or data movement operation
-   scheduled for the execution on a queue. An event can store the execution status or
-   profiling information of the queue, to which the task is submitted.
-   Events can be used to specify task
-   dependencies as well as to ensure completion of the associated command from
-   the host.
+   An event holds information related to computation/data movement operation
+   scheduled for execution on a queue, such as its execution status as well
+   as profiling information if the queue the task was submitted to allowed
+   for collection of such information. Events can be used to specify task
+   dependencies as well as to synchronize host and devices.
 
 * **USM**
    Unified Shared Memory (USM) refers to pointer-based device memory management.
@@ -67,6 +66,12 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
    "Device allocation", "No","Refers to an allocation in host memory that is accessible from a device."
    "Shared allocation", "Yes", "Accessible by both the host and device."
    "Host allocation", "Yes", "Accessible by both the host and device."
+
+   Depending on the capability of the device, USM allocations can be a "device"
+   allocation, a "shared" allocation, or a "host" allocation. A "device"
+   allocation is not accessible from host, while "shared" or "host" allocations
+   are. "Host" allocation refers to an allocation in host memory that is
+   accessible from a device.
 
 Runtime manages synchronization of the host's and device's view into shared allocations.
 The initial placement of the shared allocations is not defined.
