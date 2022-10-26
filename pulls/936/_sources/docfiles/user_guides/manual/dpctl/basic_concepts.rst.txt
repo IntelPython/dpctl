@@ -67,12 +67,6 @@ This section introduces the basic concepts for XPU management used by `dpctl`.
    "Shared allocation", "Yes", "Accessible by both the host and device."
    "Host allocation", "Yes", "Accessible by both the host and device."
 
-   Depending on the capability of the device, USM allocations can be a "device"
-   allocation, a "shared" allocation, or a "host" allocation. A "device"
-   allocation is not accessible from host, while "shared" or "host" allocations
-   are. "Host" allocation refers to an allocation in host memory that is
-   accessible from a device.
-
 Runtime manages synchronization of the host's and device's view into shared allocations.
 The initial placement of the shared allocations is not defined.
 
