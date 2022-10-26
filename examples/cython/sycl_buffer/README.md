@@ -1,22 +1,22 @@
-# Example of SYCL extension working NumPy array input via SYCL buffers
-
+# SYCL Extension Working NumPy Array Input via SYCL Buffers
 
 ## Decription
 
-Cython function expecting a 2D array in C-contiguous layout that
+Cython function expecting a 2D array in a C-contiguous layout that
 computes column-wise total by using SYCL oneMKL (as GEMV call with
-an all units vector).
+an all-units vector).
 
-Example illustrates compiling SYCL extension, linking to oneMKL.
+The example illustrates compiling SYCL extension linking to oneMKL.
 
 
 ## Compiling
 
+> **NOTE:** Make sure oneAPI is activated, $ONEAPI_ROOT must be set.
+
+To compile the example, run:
 ```
-# make sure oneAPI is activated, $ONEAPI_ROOT must be set
 CC=icx CXX=dpcpp python setup.py build_ext --inplace
 ```
-
 
 ## Running
 
@@ -49,7 +49,7 @@ CPU times: user 4.82 ms, sys: 8.06 ms, total: 12.9 ms
 Wall time: 12.3 ms
 ```
 
-Running bench.py:
+### Running bench.py:
 
 ```
 ========== Executing warm-up ==========
@@ -64,7 +64,7 @@ Times for NumPy
 [3.4011058019823395, 3.07286038500024, 3.0390414349967614, 3.0305576199898496, 3.002687797998078]
 ```
 
-Running run.py:
+### Running run.py:
 
 ```
 (idp) [09:14:53 ansatnuc04 sycl_buffer]$ SYCL_DEVICE_FILTER=opencl python run.py

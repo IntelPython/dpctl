@@ -1,7 +1,11 @@
-# Example of SYCL built pybind11 extension
 
-## To build, use (assumes scikit-build and dpcpp is installed):
+# SYCL Build Pybind11 Extension
 
+## Building
+
+> **NOTE:** Install scikit-build and dpcpp before next steps.
+
+To build, run:
 ```sh
 python setup.py develop -- -G "Ninja" \
      -DCMAKE_C_COMPILER:PATH=icx \
@@ -12,13 +16,15 @@ python setup.py develop -- -G "Ninja" \
      -DTBB_INCLUDE_DIR=${CONDA_PREFIX}/include
 ```
 
-## To run test suite
+## Running
+
+To run the example, use:
 
 ```sh
 python -m pytest tests
 ```
 
-## To compare Python overhead,
+To compare Python overhead, use:
 
 ```
 # build standad-alone executable
@@ -29,4 +35,4 @@ $(find . -name cmake-build)/standalone_cpp 1000 11
 python sycl_timing_solver.py 1000 11
 ```
 
-Compare host times vs. C++ wall-clock times while making sure that the number of iterations is the same
+Compare host times vs. C++ wall-clock times while making sure that the number of iterations is the same.

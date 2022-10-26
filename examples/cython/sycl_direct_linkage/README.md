@@ -1,29 +1,28 @@
-# Example "sycl_direct_linkage"
+# Example of sycl_direct_linkage Usage
 
-This Cython extension does not use dpctl and links to SYCL directly.
+This Cython extension does not directly use dpctl and links to SYCL.
+It exposes the `columnwise_total` function that uses oneMKL to compute
+totals for each column of its argument matrix in double precision
+expected as an ordinary NumPy array in a C-contiguous layout.
 
-It exposes `columnwise_total` function that uses oneMKL to compute
-totals for each column of its argument matrix in double precision,
-expected as an ordinary NumPy array in C-contiguous layout.
+This function performs the following steps:
 
-This functions performs the following steps:
-
-  1. Create a SYCL queue using default device selector
+  1. Creates a SYCL queue using the default device selector
   2. Creates SYCL buffer around the matrix data
-  3. Creates a vector `v_ones` with all elements being ones,
+  3. Creates a vector `v_ones` with all elements being ones
      and allocates memory for the result.
-  4. Calls oneMKL to compute xGEMV, as dot(v_ones, M)
-  5. Returs the result as NumPy array
+  4. Calls oneMKL to compute xGEMV as dot(v_ones, M)
+  5. Returns the result as NumPy array
 
-This extension does not allow one to control the device/queue to
-which execution of kernel is being schedules.
+This extension does not allow to control the device or queue, to
+which execution of kernel is being scheduled.
 
 A related example "sycl_buffer" modifies this example in that it uses
-`dpctl` to retrieve the current queue, allowing a user control the queue,
-and the avoid the overhead of the queue creation.
+`dpctl` to retrieve the current queue allowing a user to control the queue
+and avoid the overhead of queue creation.
 
-To illustrate the queue creation overhead in each call, compare execution of default queue,
-which is Intel Gen9 GPU on OpenCL backend:
+To illustrate the queue creation overhead in each call, compare the execution of the default queue,
+which is Intel(R) Gen9 GPU on an OpenCL backend:
 
 ```
 (idp) [11:24:38 ansatnuc04 sycl_direct_linkage]$ SYCL_DEVICE_FILTER=opencl:gpu python bench.py
@@ -37,7 +36,7 @@ Times for NumPy
 [3.5394036192446947, 3.498957809060812, 3.4925728561356664, 3.5036555202677846, 3.493739523924887]
 ```
 
-vs. timing when `dpctl`'s queue is being reused:
+to the timing when the `dpctl` queue is being reused:
 
 ```
 (idp) [11:29:14 ansatnuc04 sycl_buffer]$ python bench.py
@@ -53,5 +52,5 @@ Times for NumPy
 [3.4809365631081164, 3.42917942116037, 3.42471009073779, 3.3689011191017926, 3.4336009239777923]
 ```
 
-So the overhead of ``sycl::queue`` creation per call is roughly comparable with the time to
-execute the actual computation.
+The overhead of the ``sycl::queue`` creation per call is approximately comparable with the time of
+the actual computation execution.
