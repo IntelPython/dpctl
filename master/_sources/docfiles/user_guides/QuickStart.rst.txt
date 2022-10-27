@@ -38,12 +38,9 @@ On Windows OS
 
 .. note::
 
-    The ``dpctl.lsplatform()`` function is new in dpctl 0.7 and will be
-    available in oneAPI 2021.3. If you are following the guide on an older
-    oneAPI installation, use ``dpctl.dump()``. If no GPU platforms are shown,
-    make sure your system has a supported GPU and the necessary GPU drivers
-    installed. You can install GPU drivers by following the
-    `GPU driver installation guide <https://dgpu-docs.intel.com/installation-guides/index.html>`_.
+    If no GPU platforms are shown, make sure your system has a supported
+    GPU and the necessary GPU drivers installed.
+    See `GPU driver installation guide <https://dgpu-docs.intel.com/installation-guides/index.html>`_ to install GPU drivers.
 
 Install the Wheel Package from PyPi
 ====================================
