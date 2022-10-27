@@ -10,7 +10,7 @@ runtime themselves. The term XPU denotes a diverse range of computing
 architectures such as a CPU, GPU, FPGA, and more. They are available to programmers on a
 modern heterogeneous system.
 
-The dpctl runtime is built on top of the C++ SYCL standard and is designed to be
+The dpctl runtime is built on top of the C++ SYCL* standard and is designed to be
 both vendor and architecture agnostic. If the underlying SYCL runtime supports
 a type of architecture, the dpctl runtime allows accessing that architecture
 from Python.

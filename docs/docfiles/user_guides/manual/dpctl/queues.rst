@@ -16,12 +16,12 @@ The queue construction requires specifying:
   * If submitted tasks are executed in the order, in which they are submitted
 
 The :class:`dpctl.SyclQueue` class represents a queue and abstracts the
-:sycl_queue:`sycl::queue <>` SYCL runtime class.
+:sycl_queue:`sycl::queue <>` SYCL* runtime class.
 
 Types of Queues
 ---------------
 
-SYCL has a task-based execution model. The order, in which a SYCL runtime
+SYCL* has a task-based execution model. The order, in which a SYCL runtime
 executes a task on a target device, is specified by a sequence of events that
 must be completed before the execution of the task is allowed.
 
@@ -112,7 +112,7 @@ to the queue of interest by functions executed within the context:
 
    host_dt, device_dt = timer_ctx.dt
 
-The timer leverages :oneapi_enqueue_barrier:`oneAPI enqueue_barrier SYCL
+The timer leverages :oneapi_enqueue_barrier:`oneAPI enqueue_barrier SYCL*
 extension <>` and submits a barrier at context entrance and a barrier at context
 exit and records associated events. The elapsed device time is computed as
 ``e_exit.profiling_info_start - e_enter.profiling_info_end``.

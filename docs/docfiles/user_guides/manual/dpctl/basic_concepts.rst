@@ -5,7 +5,7 @@ Basic Concepts
 
 This section introduces the basic concepts for XPU management used by `dpctl`.
 
-.. note:: For SYCL-level details, refer to a more topical SYCL reference, such as the :sycl_spec_2020:`SYCL 2020 spec <>`.
+.. note:: For SYCL-level details, refer to a more topical SYCL* reference, such as the :sycl_spec_2020:`SYCL 2020 spec <>`.
 
 * **Heterogeneous computing**
     Refers to using multiple devices in a program.

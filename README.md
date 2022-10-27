@@ -18,7 +18,7 @@ The compute kernel can be a code:
 * written by the user, e.g., using [`numba-dpex`](https://github.com/IntelPython/numba-dpex)
 * that is part of a library, such as oneMKL
 
-The `dpctl` library is built upon the [SYCL
+The `dpctl` library is built upon the [SYCL*
 standard](https://www.khronos.org/sycl/). It also implements Python
 bindings for a subset of the standard [runtime
 classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes) that allow users to:
@@ -63,7 +63,7 @@ guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installa
 
 ## Conda
 
-To install `dpctl` from the Intel(R) channel on Anaconda
+To install `dpctl` from the Intel(R) channel on Anaconda*
 cloud, use the following command:
 
 ```bash
@@ -72,7 +72,7 @@ conda install dpctl -c intel
 
 ## PyPi
 
-To install `dpctl` from PyPi, run the following command:
+To install `dpctl` from PyPi*, run the following command:
 
 ```bash
 pip3 install dpctl
@@ -82,7 +82,7 @@ Installing the bleeding edge
 ------------------------
 
 To try out the current master, install it from our
-development channel on Anaconda cloud:
+development channel on Anaconda* cloud:
 
 ```bash
 conda install dpctl -c dppy\label\dev
@@ -124,3 +124,6 @@ To run the tests, use:
 ```bash
 pytest --pyargs dpctl
 ```
+
+------------------------------------------------------------------------
+\* All names and brands may be claimed as the property of others.

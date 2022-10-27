@@ -6,7 +6,7 @@ Platform
 
 A platform abstracts a device driver for one or more XPUs that is connected to
 a host. The :class:`dpctl.SyclPlatform` class represents a platform and
-abstracts the :sycl_platform:`sycl::platform <>` SYCL runtime class.
+abstracts the :sycl_platform:`sycl::platform <>` SYCL* runtime class.
 
 Listing Available Platforms
 ---------------------------

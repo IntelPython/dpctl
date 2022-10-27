@@ -121,7 +121,7 @@ The standard header looks like this:
 >- The copyright year must be updated every calendar year.
 >- Each comment line should be a max of 80 chars.
 >- A Doxygen `\file` tag describing the contents of the file must be provided.
-  Note that the `\file` tag is inside a Doxygen comment block. It is
+  Note that the `\file` tag is inside a Doxygen* comment block. It is
   defined by the `///` comment marker instead of the `//` comment marker used in the
   rest of the header.
 
@@ -156,7 +156,7 @@ The copyright year should be updated every calendar year.
 
 ### Bandit
 
-We use [Bandit](https://github.com/PyCQA/bandit) to find common security issues
+We use [Bandit*](https://github.com/PyCQA/bandit) to find common security issues
 in the Python code.
 
 To install, run:
@@ -242,7 +242,7 @@ Messages of a given severity are shown not only in the console for that severity
 
 ### Optional use of the Google logging library (glog)
 
-The dpctl error handler for libsyclinterface can be optionally configured to use [glog](https://github.com/google/glog).
+The dpctl error handler for libsyclinterface can be optionally configured to use [glog*](https://github.com/google/glog).
 
 To use glog, complete the following steps:
 
