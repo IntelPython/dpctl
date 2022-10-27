@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to the Data-parallel Control (dpctl) Documentation! &mdash; Data-parallel Control (dpctl) 0.14.0dev0+223.gc905ec5cb documentation</title>
+  <title>Welcome to the Data-parallel Control (dpctl) Documentation! &mdash; Data-parallel Control (dpctl) 0.14.0dev0+226.gad4e37e51 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             <a href="#" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev0+223.gc905ec5cb
+                0.14.0dev0+226.gad4e37e51
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -89,13 +89,14 @@ of the SYCL 2020 specification.</p>
 classes, dpctl includes bindings for SYCL USM memory allocators and
 deallocators. Dpctl Python API provides classes that implement
 <a class="reference external" href="https://docs.python.org/3/c-api/buffer.html">Python buffer protocol</a></p>
-<p>Dpctl implements N-dimensional array Python object <a class="reference internal" href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> to
-logically address USM memory allocations, and contains growing implementation of
-operations on such objects confofrming <a class="reference external" href="https://data-apis.org/array-api/latest/">array API specification</a> in
-<a class="reference internal" href="docfiles/dpctl/dpctl.tensor_pyapi.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> namespace.</p>
-<p>Dpctl also supports the DPCPP <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">oneapi::filter_selector</a> extension and has
+<p>Dpctl also supports the DPC++ <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_filter_selector.asciidoc">ext::oneapi::filter_selector</a> extension and has
 experimental support for SYCL’s interoperability <code class="docutils literal notranslate"><span class="pre">kernel</span></code> and
 <code class="docutils literal notranslate"><span class="pre">kernel_bundle&lt;bundle_state::executable&gt;</span></code> classes.</p>
+<p>Dpctl includes a reference implementation for <a class="reference external" href="https://data-apis.org/array-api/latest/">array API specification</a> using
+DPC++ and USM memory allocation in the <a class="reference internal" href="docfiles/dpctl/dpctl.tensor_pyapi.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> sub-module.
+The <a class="reference internal" href="docfiles/dpctl/dpctl.tensor_pyapi.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> sub-module provides an N-dimensional array Python object
+<a class="reference internal" href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> and a growing implementation of <a class="reference external" href="https://data-apis.org/array-api/latest/">array API specification</a>
+compliant operations on instances of the array class.</p>
 </section>
 <section id="how-to-guides">
 <h1>How-to Guides<a class="headerlink" href="#how-to-guides" title="Permalink to this heading"></a></h1>

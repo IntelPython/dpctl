@@ -12,11 +12,12 @@ classes, dpctl includes bindings for SYCL USM memory allocators and
 deallocators. Dpctl Python API provides classes that implement
 `Python buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_
 
-Dpctl implements N-dimensional array Python object :class:`dpctl.tensor.usm_ndarray` to
-logically address USM memory allocations, and contains growing implementation of
-operations on such objects confofrming :array_api:`array API specification <>` in
-:class:`dpctl.tensor` namespace.
-
-Dpctl also supports the DPCPP :oneapi_filter_selection:`oneapi::filter_selector <>` extension and has
+Dpctl also supports the DPC++ :oneapi_filter_selection:`ext::oneapi::filter_selector <>` extension and has
 experimental support for SYCL's interoperability ``kernel`` and
 ``kernel_bundle<bundle_state::executable>`` classes.
+
+Dpctl includes a reference implementation for :array_api:`array API specification <>` using
+DPC++ and USM memory allocation in the :class:`dpctl.tensor` sub-module.
+The :class:`dpctl.tensor` sub-module provides an N-dimensional array Python object
+:class:`dpctl.tensor.usm_ndarray` and a growing implementation of :array_api:`array API specification <>`
+compliant operations on instances of the array class.
