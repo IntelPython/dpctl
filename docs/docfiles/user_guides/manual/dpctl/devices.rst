@@ -6,13 +6,13 @@ Device
 
 A device is an abstract representation of an XPU. The :class:`dpctl.SyclDevice`
 class represents a device and is a wrapper over the
-:sycl_device:`sycl::device <>` SYCL runtime class.
+:sycl_device:`sycl::device <>` SYCL* runtime class.
 
 Creating Devices
 ----------------
 
 The :class:`dpctl.SyclDevice` class includes the default constructor to create a
-``default`` device. This device is selected by the SYCL runtime. You can also use
+``default`` device. This device is selected by the SYCL* runtime. You can also use
 explicit :ref:`filter selector strings <sec-filter-selection>` to create a
 device.
 
@@ -24,7 +24,7 @@ Listing Devices
 :py:mod:`dpctl` provides the :func:`dpctl.get_devices` utility function to list
 the available devices on a user's system. The list of devices returned depends
 on the available hardware, installed drivers,
-:dpcpp_envar:`environment variables <>` influencing SYCL runtime,
+:dpcpp_envar:`environment variables <>` influencing SYCL* runtime,
 such as ``SYCL_DEVICE_FILTER`` or ``SYCL_DEVICE_ALLOWLIST``.
 
 .. _fig-listing-devices:

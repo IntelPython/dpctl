@@ -29,7 +29,7 @@ available on a system are deferred to the underlying SYCL runtime.
 The example :ref:`fig-gpu-device-selection` shows the usage of the
 :func:`dpctl.select_gpu_device()` device selection function. In case when multiple
 GPU devices are available, only one is returned based on the underlying scoring
-logic inside of the SYCL runtime. If the selection function is unable to select a
+logic inside of the SYCL* runtime. If the selection function is unable to select a
 device, a ``ValueError`` is raised.
 
 .. _fig-gpu-device-selection:
@@ -132,7 +132,7 @@ based on a specific hardware property. The process is the following:
 1. The :func:`dpctl.get_devices()` returns a list of all *root* devices on the system.
 2. Out of that list the devices that
 support half-precision floating-point arithmetic are selected.
-3. A "score" computed using the SYCL8 runtime's default device scoring logic that is
+3. A "score" computed using the SYCL* runtime's default device scoring logic that is
 stored in :attr:`dpctl.SyclDevice.default_selector_score` is used to select a
 single device.
 
@@ -144,14 +144,14 @@ of hardware properties that may be used for device selection.
 .. Note::
     A **root** device implies an unpartitioned device. A root device can be
     partitioned into two or more :ref:`sub-devices <sec-devices-sub-devices>`
-    based on various criteria. For example, a CPU device with multiple NUMA
+    based on various criteria. For example, a CPU device with multiple NUMA*
     domains may be partitioned into multiple sub-devices, each representing a
     sub-device.
 
 A convenience function :func:`dpctl.select_device_with_aspects()` is available,
 which makes it easy to select a device based on a set of specific aspects. The
 :ref:`fig-select-device-with-aspects` example selects a device that
-supports double precision arithmetic and SYCL USM shared memory allocation.
+supports double precision arithmetic and SYCL* USM shared memory allocation.
 
 .. _fig-select-device-with-aspects:
 

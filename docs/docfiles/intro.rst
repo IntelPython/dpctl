@@ -2,7 +2,7 @@ Welcome to the Data-parallel Control (dpctl) Documentation!
 ===========================================================
 
 The data-parallel control (dpctl) library provides C and Python bindings for
-:sycl_spec_2020:`SYCL 2020 <>`. The SYCL 2020 features supported by dpctl are
+:sycl_spec_2020:`SYCL 2020 <>`. The SYCL* 2020 features supported by dpctl are
 limited to those included by Intel(R) DPCPP compiler and specifically cover the
 SYCL runtime classes described in :sycl_runtime_classes:`Section 4.6 <>`
 of the SYCL 2020 specification.

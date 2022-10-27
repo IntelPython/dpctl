@@ -21,14 +21,14 @@ directory:
 Once oneAPI is installed, dpctl is ready to be used by setting up IDP from
 the oneAPI installation. IDP can be set up as follows:
 
-On Linux OS
+On Linux* OS
 
 .. code-block:: bash
 
   source ${ONEAPI_ROOT}/intelpython/latest/env/vars.sh
   python -c "import dpctl; dpctl.lsplatform()"
 
-On Windows OS
+On Windows* OS
 
 .. code-block:: bat
 
@@ -56,19 +56,19 @@ To install dpctl from PyPi, run:
 
 .. note::
 
-    The dpctl wheel package is available on PyPi, but some of the dependencies
-    (like Intel(R) numpy) are available only on Anaconda Cloud. For this reason,
+    The dpctl wheel package is available on PyPi*, but some of the dependencies
+    (like Intel(R) numpy) are available only on Anaconda* Cloud. For this reason,
     install the extra packages needed by dpctl from the Intel(R) channel on
     Anaconda cloud. You also need to set the ``LD_LIBRARY_PATH``
     or ``PATH`` correctly.
 
-On Linux OS
+On Linux* OS
 
 .. code-block:: bash
 
     export LD_LIBRARY_PATH=<path_to_your_env>/lib
 
-On Windows OS
+On Windows* OS
 
 .. code-block:: bat
 
@@ -78,7 +78,7 @@ Building from the Source
 ========================
 
 To build dpctl from the source, you need dpcpp and GPU drivers, and optionally CPU
-OpenCL drivers. It is preferable to use the dpcpp compiler packaged as part of
+OpenCL* drivers. It is preferable to use the dpcpp compiler packaged as part of
 oneAPI. However, it is possible to use a custom build of dpcpp to build dpctl,
 especially if you want to enable CUDA support.
 
@@ -91,13 +91,13 @@ to proceeding further.
 Activate oneAPI
 ~~~~~~~~~~~~~~~
 
-On Linux OS
+On Linux* OS
 
 .. code-block:: bash
 
   source ${ONEAPI_ROOT}/setvars.sh
 
-On Windows OS
+On Windows* OS
 
 .. code-block:: bat
 
@@ -108,14 +108,14 @@ Build and Install Using Conda-Build
 
 You can use the conda-recipe included with the sources to build the dpctl
 package. The advantage of this approach is that all dependencies are pulled in
-from oneAPI's intelpython conda channel that is installed as a part of oneAPI.
+from oneAPI's intelpython Conda* channel that is installed as a part of oneAPI.
 
 .. code-block:: bash
 
     export ONEAPI_ROOT=/opt/intel/oneapi
     conda build conda-recipe -c ${ONEAPI_ROOT}/conda_channel
 
-On Windows OS to cope with `long file names <https://github.com/IntelPython/dpctl/issues/15>`_,
+On Windows* OS to cope with `long file names <https://github.com/IntelPython/dpctl/issues/15>`_,
 use ``croot`` with a short folder path:
 
 .. code-block:: bat
@@ -123,7 +123,7 @@ use ``croot`` with a short folder path:
     set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
     conda build --croot=C:/tmp conda-recipe -c "%ONEAPI_ROOT%\conda_channel"
 
-After building the Conda package, install it by executing:
+After building the Conda* package, install it by executing:
 
 .. code-block:: bash
 
@@ -164,9 +164,9 @@ To develop, run:
 
     python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
 
-On Windows OS, use ``icx`` for both C and CXX compilers.
+On Windows* OS, use ``icx`` for both C and CXX compilers.
 
-To develop on Linux OS, use the driver script:
+To develop on Linux* OS, use the driver script:
 
 .. code-block:: bash
 
@@ -179,7 +179,7 @@ Building Using Custom dpcpp
 You can build dpctl from the source using the `DPC++ toolchain <https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md>`_
 instead of the DPC++ compiler that comes with oneAPI.
 
-Do this, to enable support for CUDA devices.
+Do this, to enable support for CUDA* devices.
 
 Following steps in the `Build and install with scikit-build`_ use a command-line option to set
 the relevant CMake variables, for example:
@@ -202,7 +202,7 @@ You can retrieve available options and their descriptions using the option
 Using dpctl
 ===========
 
-Dpctl requires a DPC++ runtime. When dpctl is installed via Conda it uses
+Dpctl requires a DPC++ runtime. When dpctl is installed via Conda* it uses
 the DPC++ runtime from the ``dpcpp_cpp_rt`` package that is a part of IDP. When using
 ``setuptools`` make sure a compatible version of DPC++ runtime is available on
 the system. The easiest way to set up a DPC++ runtime is by activating
@@ -225,7 +225,7 @@ After setting up dpctl, you can test the Python examples as follows:
     done
 
 The dpctl repository also provides a set of `examples <https://github.com/IntelPython/dpctl/tree/master/examples/cython>`_
-of building the Cython extensions with the DPC++ compiler, that interoperates with dpctl.
+of building the Cython* extensions with the DPC++ compiler, that interoperates with dpctl.
 
 To build each example, use
 ``CC=icx CXX=dpcpp python setup.py build_ext --inplace``.
@@ -253,7 +253,7 @@ To build the library, you need:
 * ``ninja`` or ``make``
 * Optionally ``gtest 1.10`` if you want to run the test suite
 
-For example, on Linux OS the following script can be used to build the C oneAPI
+For example, on Linux* OS the following script can be used to build the C oneAPI
 library.
 
 .. code-block:: bash

@@ -2,11 +2,11 @@
 
 ## Decription
 
-Cython function expecting a 2D array in a C-contiguous layout that
+Cython* function expecting a 2D array in a C-contiguous layout that
 computes column-wise total by using SYCL oneMKL (as GEMV call with
 an all-units vector).
 
-The example illustrates compiling SYCL extension linking to oneMKL.
+The example illustrates compiling SYCL* extension linking to oneMKL.
 
 
 ## Compiling
