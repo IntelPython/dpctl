@@ -38,6 +38,7 @@
 
 #endif // __linux__
 
+#include "dpctl_error_handlers.h"
 #include <cstdint>
 
 namespace dpctl
@@ -76,12 +77,18 @@ public:
         char *error = dlerror();
 
         if (nullptr != error) {
+            error_handler("Could not retrieve symbol " + std::string(symName) +
+                              ". Error encountered: " + std::string(error),
+                          __FILE__, __func__, __LINE__);
             return nullptr;
         }
 #elif defined(_WIN32) || defined(_WIN64)
         void *sym = (void *)GetProcAddress((HMODULE)_handle, symName);
 
         if (nullptr == sym) {
+            error_handler("Could not retrieve symbol " + std::string(symName) +
+                              ".",
+                          __FILE__, __func__, __LINE__);
             return nullptr;
         }
 #endif
