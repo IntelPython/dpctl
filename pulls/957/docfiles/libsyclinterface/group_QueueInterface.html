@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Queue class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev0+228.g6180b60a documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Queue class helper functions" href="group_QueueManager.html" />
+    <link rel="prev" title="Platform class helper functions" href="group_PlatformManager.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.14.0dev0+228.g6180b60a
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libsyclinterface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group_ContextInterface.html">Context class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceInterface.html">Device class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceManager.html">Device class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_DeviceSelectors.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_EventInterface.html">Event class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelInterface.html">Kernel class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_KernelBundleInterface.html">Kernel_bundle class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Queue class C wrapper</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#global-functions">Global Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_Service.html">Service functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="global.html">Global Namespace</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">libsyclinterface</a> &raquo;</li>
+      <li>Queue class C wrapper</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/libsyclinterface/group_QueueInterface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="queue-class-c-wrapper">
+<span id="doxid-d2-d22-group-queue-interface"></span><span id="index-0"></span><h1>Queue class C wrapper<a class="headerlink" href="#queue-class-c-wrapper" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga8a957bd257ec77b0f57bcb3c35e1e479"><span class="std std-ref">DPCTLQueue_AreEq</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef1</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef2</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gad8d2312b954460ad658b2f1080c0dee3"><span class="std std-ref">DPCTLQueue_Copy</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gaffc0932f21ca4be9ef6ffa6626d1ee0d"><span class="std std-ref">DPCTLQueue_Create</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
+    <a class="reference internal" href="global.html#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">properties</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga49d6da8648e54441a043ea7db496e810"><span class="std std-ref">DPCTLQueue_CreateForDevice</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">dRef</span><span class="p">,</span>
+    <a class="reference internal" href="global.html#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">properties</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga44557847663338a67f423a06ecf9192a"><span class="std std-ref">DPCTLQueue_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gaaa78d08b30ca33c9b76eaee19d591f11"><span class="std std-ref">DPCTLQueue_Fill128</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint64_t</span><span class="o">*</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga75e628ef0f3949fbc136ddd1d682455d"><span class="std std-ref">DPCTLQueue_Fill16</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint16_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gab94d7bf045ac1dd4e7b911e5cd83697c"><span class="std std-ref">DPCTLQueue_Fill32</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint32_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gadfd2d9643f185440a19a6607d2860e05"><span class="std std-ref">DPCTLQueue_Fill64</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint64_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga73815389ece90cbc68bc05245028f0f0"><span class="std std-ref">DPCTLQueue_Fill8</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint8_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga8c3629a8627e9748cdec34688f6ce908"><span class="std std-ref">DPCTLQueue_GetBackend</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gad11e27086f2cee7f3d22f33de1a24bc9"><span class="std std-ref">DPCTLQueue_GetContext</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga44095b28dfb5c357e6c065749e9aa8c0"><span class="std std-ref">DPCTLQueue_GetDevice</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga348ae09783aa4defd1eb864eb04418a2"><span class="std std-ref">DPCTLQueue_HasEnableProfiling</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga17f54699da3f3ab226cf8e3c9c57a7dc"><span class="std std-ref">DPCTLQueue_Hash</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga0738e262108a1ac8f43f227548724f07"><span class="std std-ref">DPCTLQueue_IsInOrder</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1gae1c5fe85612e619887c355107210dc93"><span class="std std-ref">DPCTLQueue_MemAdvise</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Ptr</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">Advice</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga74cd7ea8c9b3ef38c043ce1c09d1b458"><span class="std std-ref">DPCTLQueue_Memcpy</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">Dest</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Src</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga263f4a51235b115732a1f088433241e6"><span class="std std-ref">DPCTLQueue_Memset</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint8_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga0a473cde9cee125781af03e42e81a153"><span class="std std-ref">DPCTLQueue_Prefetch</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Ptr</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga94b6312555d533998e46c9ad312bda8e"><span class="std std-ref">DPCTLQueue_SubmitNDRange</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="kt">void</span><span class="o">**</span> <span class="n">Args</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span><span class="o">*</span> <span class="n">ArgTypes</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NArgs</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">gRange</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">lRange</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="kt">size_t</span> <span class="n">NDims</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NDepEvents</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga31ae37a405b585b26e10101d13283c62"><span class="std std-ref">DPCTLQueue_SubmitRange</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="kt">void</span><span class="o">**</span> <span class="n">Args</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span><span class="o">*</span> <span class="n">ArgTypes</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NArgs</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">Range</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="kt">size_t</span> <span class="n">NRange</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NDepEvents</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d2-d22-group-queue-interface-1ga3411357b2a09bad80be5b4fee8a8ed44"><span class="std std-ref">DPCTLQueue_Wait</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">);</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-d2-d22-group-queue-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
+<section id="global-functions">
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga8a957bd257ec77b0f57bcb3c35e1e479"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<span class="n">DPCTLQueue_AreEq</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef1</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef2</span>
+    <span class="p">)</span></pre>
+<p>Checks if two DPCTLSyclQueueRef objects point to the same <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef1</p></td>
+<td><p>First opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef2</p></td>
+<td><p>Second opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>True if the underlying sycl::queue are same, false otherwise.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gad8d2312b954460ad658b2f1080c0dee3"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<span class="n">DPCTLQueue_Copy</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Returns a copy of the DPCTLSyclQueueRef object.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>DPCTLSyclQueueRef object to be copied.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef object.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gaffc0932f21ca4be9ef6ffa6626d1ee0d"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<span class="n">DPCTLQueue_Create</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">CRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
+    <a class="reference internal" href="global.html#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">properties</span>
+    <span class="p">)</span></pre>
+<p>A wrapper for sycl::queue contructor to construct a new queue from the provided context, device, async handler and propertis bit flags.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>CRef</p></td>
+<td><p>An opaque pointer to a sycl::context.</p></td>
+</tr>
+<tr class="row-even"><td><p>DRef</p></td>
+<td><p>An opaque pointer to a sycl::device</p></td>
+</tr>
+<tr class="row-odd"><td><p>handler</p></td>
+<td><p>A callback function that will be invoked by the async_handler used during queue creation. Can be NULL if no async_handler is needed.</p></td>
+</tr>
+<tr class="row-even"><td><p>properties</p></td>
+<td><p>A combination of bit flags using the values defined in the DPCTLQueuePropertyType enum. The bit flags are used to create a sycl::property_list that is passed to the SYCL queue constructor.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque DPCTLSyclQueueRef pointer containing the new sycl::queue object. A nullptr is returned if the queue could not be created.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga49d6da8648e54441a043ea7db496e810"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span>
+<span class="n">DPCTLQueue_CreateForDevice</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">dRef</span><span class="p">,</span>
+    <a class="reference internal" href="global.html#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="o">*</span> <span class="n">handler</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">properties</span>
+    <span class="p">)</span></pre>
+<p>Constructs a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> object of the specified SYCL device.</p>
+<p>Constructs a new SYCL queue for the specified SYCL device. The behaviour of this function differs from the following queue constructor:</p>
+<pre class="highlight literal-block"><span></span><span class="n">queue</span><span class="p">(</span>
+    <span class="k">const</span> <span class="n">device</span> <span class="o">&amp;</span><span class="n">syclDevice</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">async_handler</span> <span class="o">&amp;</span><span class="n">asyncHandler</span><span class="p">,</span>
+    <span class="k">const</span> <span class="n">property_list</span> <span class="o">&amp;</span><span class="n">propList</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="p">)</span></pre>
+<p>Unlike the SYCL queue constructor, we try not to create a new SYCL context for the device and instead look to reuse a previously cached SYCL context for the device (refer dpctl_sycl_device_manager.cpp). DPCTL caches contexts only for root devices and for all custom devices the function begaves the same way as the SYCL constructor.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>dRef</p></td>
+<td><p>An opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>handler</p></td>
+<td><p>A callback function that will be invoked by the async_handler used during queue creation. Can be NULL if no async_handler is needed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>properties</p></td>
+<td><p>A combination of bit flags using the values defined in the DPCTLQueuePropertyType enum. The bit flags are used to create a <code class="docutils literal notranslate"><span class="pre">sycl::property_list</span></code> that is passed to the SYCL queue constructor.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque DPCTLSyclQueueRef pointer containing the new <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> object. A nullptr is returned if the queue could not be created.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga44557847663338a67f423a06ecf9192a"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLQueue_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Delete the pointer after casting it to sycl::queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>A DPCTLSyclQueueRef pointer that gets deleted.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gaaa78d08b30ca33c9b76eaee19d591f11"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Fill128</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint64_t</span><span class="o">*</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>USMRef</p></td>
+<td><p>An USM pointer to the memory to fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value</p></td>
+<td><p>A pointer to uint64_t array of 2 elements with value to fill.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of 128-bit elements to fill.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga75e628ef0f3949fbc136ddd1d682455d"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Fill16</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint16_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>USMRef</p></td>
+<td><p>An USM pointer to the memory to fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value</p></td>
+<td><p>A uint16_t value to fill.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of uint16_t elements to fill.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gab94d7bf045ac1dd4e7b911e5cd83697c"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Fill32</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint32_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>USMRef</p></td>
+<td><p>An USM pointer to the memory to fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value</p></td>
+<td><p>A uint32_t value to fill.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of uint32_t elements to fill.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gadfd2d9643f185440a19a6607d2860e05"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Fill64</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint64_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>USMRef</p></td>
+<td><p>An USM pointer to the memory to fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value</p></td>
+<td><p>A uint64_t value to fill.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of uint64_t elements to fill.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga73815389ece90cbc68bc05245028f0f0"><span id="index-10"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Fill8</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint8_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>USMRef</p></td>
+<td><p>An USM pointer to the memory to fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value</p></td>
+<td><p>A uint8_t value to fill.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of uint8_t elements to fill.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga8c3629a8627e9748cdec34688f6ce908"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span>
+<span class="n">DPCTLQueue_GetBackend</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Returns the Sycl backend for the provided sycl::queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the sycl queue.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A enum DPCTLSyclBackendType corresponding to the backed for the queue.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gad11e27086f2cee7f3d22f33de1a24bc9"><span id="index-12"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span>
+<span class="n">DPCTLQueue_GetContext</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Returns the Sycl context for the queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the sycl queue.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A DPCTLSyclContextRef pointer to the sycl context for the queue.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga44095b28dfb5c357e6c065749e9aa8c0"><span id="index-13"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<span class="n">DPCTLQueue_GetDevice</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>returns the Sycl device for the queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the sycl queue.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A DPCTLSyclDeviceRef pointer to the sycl device for the queue.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga348ae09783aa4defd1eb864eb04418a2"><span id="index-14"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<span class="n">DPCTLQueue_HasEnableProfiling</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>C-API wrapper for sycl::queue::has_property&lt;sycl::property::queue::enable_profiling&gt;() that indicates whether the referenced queue was constructed with this property.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga17f54699da3f3ab226cf8e3c9c57a7dc"><span id="index-15"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<span class="n">DPCTLQueue_Hash</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>C-API wrapper for std::hash&lt;sycl::queue&gt;’s operator().</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>Hash value of the underlying <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> instance.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga0738e262108a1ac8f43f227548724f07"><span id="index-16"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<span class="n">DPCTLQueue_IsInOrder</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>C-API wrapper for sycl::queue::is_in_order that indicates whether the referenced queue is in-order or out-of-order.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1gae1c5fe85612e619887c355107210dc93"><span id="index-17"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_MemAdvise</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Ptr</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">Advice</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::mem_advise</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ptr</p></td>
+<td><p>An USM pointer to memory.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Count</p></td>
+<td><p>A number of bytes to prefetch.</p></td>
+</tr>
+<tr class="row-even"><td><p>Advice</p></td>
+<td><p>Device-defined advice for the specified allocation. A value of 0 reverts the advice for Ptr to the default behavior.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::mem_advise</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga74cd7ea8c9b3ef38c043ce1c09d1b458"><span id="index-18"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Memcpy</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">Dest</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Src</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::memcpy</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Dest</p></td>
+<td><p>An USM pointer to the destination memory.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Src</p></td>
+<td><p>An USM pointer to the source memory.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of bytes to copy.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::memcpy</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga263f4a51235b115732a1f088433241e6"><span id="index-19"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Memset</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">USMRef</span><span class="p">,</span>
+    <span class="kt">uint8_t</span> <span class="n">Value</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>USMRef</p></td>
+<td><p>An USM pointer to the memory to fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value</p></td>
+<td><p>A value to fill.</p></td>
+</tr>
+<tr class="row-even"><td><p>Count</p></td>
+<td><p>A number of uint8_t elements to fill.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga0a473cde9cee125781af03e42e81a153"><span id="index-20"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_Prefetch</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Ptr</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">)</span></pre>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::prefetch</span></code>.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ptr</p></td>
+<td><p>An USM pointer to memory.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Count</p></td>
+<td><p>A number of bytes to prefetch.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::prefetch</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga94b6312555d533998e46c9ad312bda8e"><span id="index-21"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_SubmitNDRange</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="kt">void</span><span class="o">**</span> <span class="n">Args</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span><span class="o">*</span> <span class="n">ArgTypes</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NArgs</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">gRange</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">lRange</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="kt">size_t</span> <span class="n">NDims</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NDepEvents</span>
+    <span class="p">)</span></pre>
+<p>Submits the kernel to the specified queue with the provided nd_range argument.</p>
+<p>A wrapper over <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code>. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as <code class="docutils literal notranslate"><span class="pre">parallel_for(nd_range&lt;NRange&gt;,</span> <span class="pre">*unwrap(KRef))</span></code>.</p>
+<p>Todo sycl::buffer arguments are not supported yet.</p>
+<p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>KRef</p></td>
+<td><p>Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel.</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef</p></td>
+<td><p>Opaque pointer to the sycl::queue where the kernel will be enqueued.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Args</p></td>
+<td><p>An array of void* pointers that represent the kernel arguments for the kernel.</p></td>
+</tr>
+<tr class="row-even"><td><p>ArgTypes</p></td>
+<td><p>An array of DPCTLKernelArgType enum values that represent the type of each kernel argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NArgs</p></td>
+<td><p>Size of Args.</p></td>
+</tr>
+<tr class="row-even"><td><p>gRange</p></td>
+<td><p>Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>lRange</p></td>
+<td><p>Defines the iteration domain of a single work-group in a parallel dispatch. The array can have up to three dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p>NDims</p></td>
+<td><p>The number of dimensions for both local and global ranges.</p></td>
+</tr>
+<tr class="row-odd"><td><p>DepEvents</p></td>
+<td><p>List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call <code class="docutils literal notranslate"><span class="pre">sycl::handler.depends_on</span></code> for each of the provided events.</p></td>
+</tr>
+<tr class="row-even"><td><p>NDepEvents</p></td>
+<td><p>Size of the DepEvents list.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga31ae37a405b585b26e10101d13283c62"><span id="index-22"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<span class="n">DPCTLQueue_SubmitRange</span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="kt">void</span><span class="o">**</span> <span class="n">Args</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span><span class="o">*</span> <span class="n">ArgTypes</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NArgs</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">Range</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="kt">size_t</span> <span class="n">NRange</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">NDepEvents</span>
+    <span class="p">)</span></pre>
+<p>Submits the kernel to the specified queue with the provided range argument.</p>
+<p>A wrapper over <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code>. The function takes an interoperability kernel, the kernel arguments, and a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> as input. The kernel is submitted as <code class="docutils literal notranslate"><span class="pre">parallel_for(range&lt;NRange&gt;,</span> <span class="pre">*unwrap(KRef))</span></code>.</p>
+<p>Todo <code class="docutils literal notranslate"><span class="pre">sycl::buffer</span></code> arguments are not supported yet.</p>
+<p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>KRef</p></td>
+<td><p>Opaque pointer to an OpenCL interoperability kernel wrapped inside a sycl::kernel.</p></td>
+</tr>
+<tr class="row-even"><td><p>QRef</p></td>
+<td><p>Opaque pointer to the sycl::queue where the kernel will be enqueued.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Args</p></td>
+<td><p>An array of void* pointers that represent the kernel arguments for the kernel.</p></td>
+</tr>
+<tr class="row-even"><td><p>ArgTypes</p></td>
+<td><p>An array of DPCTLKernelArgType enum values that represent the type of each kernel argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NArgs</p></td>
+<td><p>Size of Args and ArgTypes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Range</p></td>
+<td><p>Defines the overall dimension of the dispatch for the kernel. The array can have up to three dimensions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NRange</p></td>
+<td><p>Size of the gRange array.</p></td>
+</tr>
+<tr class="row-even"><td><p>DepEvents</p></td>
+<td><p>List of dependent DPCTLSyclEventRef objects (events) for the kernel. We call <code class="docutils literal notranslate"><span class="pre">sycl::handler.depends_on</span></code> for each of the provided events.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NDepEvents</p></td>
+<td><p>Size of the DepEvents list.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code> function.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d22-group-queue-interface-1ga3411357b2a09bad80be5b4fee8a8ed44"><span id="index-23"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<span class="n">DPCTLQueue_Wait</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
+<p>Calls the <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit</span></code> function to do a blocking wait on all enqueued tasks in the queue.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>QRef</p></td>
+<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="group_PlatformManager.html" class="btn btn-neutral float-left" title="Platform class helper functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="group_QueueManager.html" class="btn btn-neutral float-right" title="Queue class helper functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
