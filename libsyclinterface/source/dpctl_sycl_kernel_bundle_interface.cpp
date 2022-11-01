@@ -44,8 +44,8 @@
 // not reorder the includes.
 // clang-format off
 #include "ze_api.h" /* Level Zero headers */
-#if __has_include(<sycl/backend/level_zero.hpp>)
-#include <sycl/backend/level_zero.hpp>
+#if __has_include(<sycl/ext/oneapi/backend/level_zero.hpp>)
+#include <sycl/ext/oneapi/backend/level_zero.hpp>
 #else
 #include <CL/sycl/backend/level_zero.hpp>
 #endif
