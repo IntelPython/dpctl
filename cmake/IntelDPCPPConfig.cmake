@@ -240,12 +240,6 @@ if( "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang" OR
   set(SYCL_LINK_FLAGS "-fsycl ")
 endif()
 
-# Based on Compiler ID, add support for DPCPP
-if( "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
-  set(SYCL_FLAGS "--dpcpp ${SYCL_FLAGS}")
-  set(SYCL_LINK_FLAGS "--dpcpp ${SYCL_LINK_FLAGS}")
-endif()
-
 # TODO verify if this is needed
 # Windows: Add Exception handling
 if(WIN32)
