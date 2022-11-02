@@ -24,24 +24,16 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_selector_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
 using namespace sycl;
 
-namespace
-{
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-
-} /* end of anonymous namespace */
-
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
 {
     try {
-        auto Selector = new accelerator_selector();
+        auto Selector = new dpctl_accelerator_selector();
         return wrap(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -52,7 +44,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
 {
     try {
-        auto Selector = new default_selector();
+        auto Selector = new dpctl_default_selector();
         return wrap(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -63,7 +55,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
 {
     try {
-        auto Selector = new cpu_selector();
+        auto Selector = new dpctl_cpu_selector();
         return wrap(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -74,11 +66,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
 __dpctl_give DPCTLSyclDeviceSelectorRef
 DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str)
 {
-#if __SYCL_COMPILER_VERSION < 20210925
-    using filter_selector_t = sycl::ONEAPI::filter_selector;
-#else
-    using filter_selector_t = sycl::ext::oneapi::filter_selector;
-#endif
+    using filter_selector_t = dpctl_filter_selector;
     try {
         auto Selector = new filter_selector_t(filter_str);
         return wrap(Selector);
@@ -91,7 +79,7 @@ DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str)
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
 {
     try {
-        auto Selector = new gpu_selector();
+        auto Selector = new dpctl_gpu_selector();
         return wrap(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -102,7 +90,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
 {
     try {
-        auto Selector = new host_selector();
+        auto Selector = new dpctl_host_selector();
         return wrap(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);

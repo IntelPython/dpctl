@@ -25,9 +25,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <iomanip>
@@ -37,15 +37,6 @@
 #include <vector>
 
 using namespace sycl;
-
-namespace
-{
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
-                                   DPCTLPlatformVectorRef);
-} // namespace
 
 __dpctl_give DPCTLSyclPlatformRef
 DPCTLPlatform_Copy(__dpctl_keep const DPCTLSyclPlatformRef PRef)

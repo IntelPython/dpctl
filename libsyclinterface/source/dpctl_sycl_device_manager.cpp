@@ -24,10 +24,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_manager.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <iomanip>
@@ -39,10 +39,6 @@ using namespace sycl;
 
 namespace
 {
-
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
 /*
  * Helper function to print the metadata for a sycl::device.

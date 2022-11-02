@@ -23,7 +23,6 @@
 /// inside dpctl_sycl_queue_interface.cpp.
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -31,6 +30,7 @@
 #include "dpctl_sycl_kernel_bundle_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
 #include "dpctl_sycl_queue_interface.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
 #include <filesystem>
@@ -41,7 +41,6 @@ namespace
 {
 constexpr size_t SIZE = 1024;
 static_assert(SIZE % 8 == 0);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 } /* end of anonymous namespace */
 
 struct TestQueueSubmit : public ::testing::Test

@@ -25,20 +25,13 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_kernel_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* Sycl headers */
 #include <cstdint>
 
 using namespace sycl;
-
-namespace
-{
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
-
-} /* end of anonymous namespace */
 
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef)
 {

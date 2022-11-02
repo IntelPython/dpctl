@@ -25,19 +25,17 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_platform_interface.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils.h"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
 using namespace sycl;
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef);
 
 const DPCTLPartitionAffinityDomainType a_dpctl_domain =
     DPCTLPartitionAffinityDomainType::not_applicable;

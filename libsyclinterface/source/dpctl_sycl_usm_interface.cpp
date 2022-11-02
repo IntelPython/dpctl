@@ -25,22 +25,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_usm_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_interface.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* SYCL headers   */
 
 using namespace sycl;
-
-namespace
-{
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef)
-
-} /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclUSMRef
 DPCTLmalloc_shared(size_t size, __dpctl_keep const DPCTLSyclQueueRef QRef)

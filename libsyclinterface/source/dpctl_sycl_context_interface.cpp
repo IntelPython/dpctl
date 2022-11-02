@@ -25,21 +25,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp>
 #include <vector>
 
 using namespace sycl;
-
-namespace
-{
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
-                                   DPCTLDeviceVectorRef)
-} /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,

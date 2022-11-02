@@ -24,7 +24,6 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
@@ -32,6 +31,7 @@
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
@@ -40,7 +40,6 @@ using namespace sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef);
 
 void error_handler_fn(int /*err*/)
 {

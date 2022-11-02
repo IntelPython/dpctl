@@ -24,7 +24,6 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>

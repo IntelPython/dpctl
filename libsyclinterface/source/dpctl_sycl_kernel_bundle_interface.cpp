@@ -27,9 +27,9 @@
 
 #include "dpctl_sycl_kernel_bundle_interface.h"
 #include "Config/dpctl_config.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_dynamic_lib_helper.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
 #if __has_include(<sycl/backend/opencl.hpp>)
@@ -56,11 +56,6 @@ using namespace sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel_bundle<bundle_state::executable>,
-                                   DPCTLSyclKernelBundleRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
 
 #ifdef __linux__
 static const char *clLoaderName = DPCTL_LIBCL_LOADER_FILENAME;

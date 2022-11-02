@@ -25,19 +25,13 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_event_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <vector>
 
 using namespace sycl;
-
-namespace
-{
-// Create wrappers for C Binding types (see CBindingWrapping.h)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(event, DPCTLSyclEventRef)
-} /* end of anonymous namespace */
 
 #undef EL
 #define EL Event

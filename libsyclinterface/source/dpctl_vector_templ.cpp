@@ -25,14 +25,10 @@
 //===----------------------------------------------------------------------===//
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_vector_macros.h"
 #include <type_traits>
 #include <vector>
-
-namespace
-{
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<SYCLREF(EL)>, VECTOR(EL))
-}
 
 /*!
  * @brief Creates a new std::vector of the opaque SYCL pointer types.
@@ -41,10 +37,11 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<SYCLREF(EL)>, VECTOR(EL))
  */
 __dpctl_give VECTOR(EL) FN(EL, Create)()
 {
-    std::vector<SYCLREF(EL)> *Vec = nullptr;
+    using vecTy = std::vector<SYCLREF(EL)>;
+    vecTy *Vec = nullptr;
     try {
         Vec = new std::vector<SYCLREF(EL)>();
-        return wrap(Vec);
+        return wrap<vecTy>(Vec);
     } catch (std::exception const &e) {
         delete Vec;
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -61,15 +58,16 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 __dpctl_give VECTOR(EL)
     FN(EL, CreateFromArray)(size_t n, __dpctl_keep SYCLREF(EL) * elems)
 {
-    std::vector<SYCLREF(EL)> *Vec = nullptr;
+    using vecTy = std::vector<SYCLREF(EL)>;
+    vecTy *Vec = nullptr;
     try {
-        Vec = new std::vector<SYCLREF(EL)>();
+        Vec = new vecTy();
         for (size_t i = 0; i < n; ++i) {
             auto Ref = unwrap(elems[i]);
             Vec->emplace_back(
                 wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref)));
         }
-        return wrap(Vec);
+        return wrap<vecTy>(Vec);
     } catch (std::exception const &e) {
         delete Vec;
         error_handler(e, __FILE__, __func__, __LINE__);

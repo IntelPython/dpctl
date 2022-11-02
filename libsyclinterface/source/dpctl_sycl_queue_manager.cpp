@@ -24,9 +24,9 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_manager.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <vector>
 
@@ -37,10 +37,6 @@ using namespace sycl;
 // Anonymous namespace for private helpers
 namespace
 {
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
 
 struct QueueManager
 {

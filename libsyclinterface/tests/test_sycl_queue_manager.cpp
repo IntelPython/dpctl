@@ -23,13 +23,13 @@
 /// dpctl_sycl_queue_interface.h and dpctl_sycl_queue_manager.h.
 ///
 //===----------------------------------------------------------------------===//
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 #include <thread>
@@ -39,8 +39,6 @@ using namespace sycl;
 
 namespace
 {
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef);
 
 void foo(size_t &num)
 {
