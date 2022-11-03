@@ -9,9 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Implemented `dpctl.tensor.linspace` function from array-API [#875](https://github.com/IntelPython/dpctl/pull/875).
+* Implemented `dpctl.tensor.eye` function from array-API [#896](https://github.com/IntelPython/dpctl/pull/896).
+* Implemented `dpctl.tensor.tril` and `dpctl.tensor.triu` functions from array-API [#910](https://github.com/IntelPython/dpctl/pull/910).
+* Added data type objects to `dpctl.tensor` namespace, and `finfo` and `iinfo` functions [#913](https://github.com/IntelPython/dpctl/pull/913).
+* Implemented `dpctl.tensor.meshgrid` creation function from array-API [#920](https://github.com/IntelPython/dpctl/pull/920).
+* Implemented convenience class to represent output of `dpctl.tensor.usm_ndarray.flags` property [#921](https://github.com/IntelPython/dpctl/pull/921).
+* Added new device attributes and kernel's device-specific attributes [#894](https://github.com/IntelPython/dpctl/pull/894).
+* Added `dpctl.utils.onetrace_enabled` context manager for targeted trace collection [#903](https://github.com/IntelPython/dpctl/pull/903).
+* Added support for `stream` keyword in `__dlpack__` method, enabling support for sending `usm_ndarray` using mpi4py [#906](https://github.com/IntelPython/dpctl/pull/906).
+* `dpctl.tensor.asarray` can now transition data between incompatible devices, [#951](https://github.com/IntelPython/dpctl/pull/951).
 
 ### Changed
+* Improved queue compatibility testing in `dpctl.tensor`'s implementation module [#900](https://github.com/IntelPython/dpctl/pull/900).
+* Added automatic measurement of array-API conformance test suite in CI [#901](https://github.com/IntelPython/dpctl/pull/901).
+* Improved performance of array metadata transfer from host to device [#912](https://github.com/IntelPython/dpctl/pull/912).
+* Used `os.add_dll_directory` on Windows to ensure that `DPCTLSyclInterface` library can be found [#918](https://github.com/IntelPython/dpctl/pull/918).
+* Refactored `dpctl.tensor`'s implementation module [#941](https://github.com/IntelPython/dpctl/pull/941) to streamline adding new functionality. Streamlined `dpctl::tensor::usm_ndarray` class implementation.
+* Added debugging messaging in case when `DPCTLDynamicLib::getSymbol` encounters errors [#956](https://github.com/IntelPython/dpctl/pull/956).
+* Updated code base according to changes in DPC++ compiler [#952](https://github.com/IntelPython/dpctl/pull/952), [#957](https://github.com/IntelPython/dpctl/pull/957), [#958](https://github.com/IntelPython/dpctl/pull/958).
+
 ### Fixed
+* Improved SyclDevice constructor error message [#893](https://github.com/IntelPython/dpctl/pull/893).
+* Fixed issue gh-890 about `dpctl.tensor.reshape` function [#915](https://github.com/IntelPython/dpctl/pull/915).
+* Fixed unexpected `UnboundLocalError` exception in [#922](https://github.com/IntelPython/dpctl/pull/922).
+* Fixed bugs in `dpctl.tensor.arange` in [#945](https://github.com/IntelPython/dpctl/pull/945).
+* Fixed issue with type inferencing in `dpctl.tensor.asarray` in [#949](https://github.com/IntelPython/dpctl/pull/949).
 
 ## [0.13.0] - 07/28/2022
 
