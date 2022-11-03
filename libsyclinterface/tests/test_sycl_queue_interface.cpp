@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "Config/dpctl_config.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
@@ -355,9 +356,11 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
     case DPCTL_CUDA:
         EXPECT_TRUE(Backend == backend::ext_oneapi_cuda);
         break;
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case DPCTL_HOST:
         EXPECT_TRUE(Backend == backend::host);
         break;
+#endif
     case DPCTL_LEVEL_ZERO:
         EXPECT_TRUE(Backend == backend::ext_oneapi_level_zero);
         break;
