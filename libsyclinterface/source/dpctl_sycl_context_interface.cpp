@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp>
@@ -169,7 +170,7 @@ bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
     auto Ctx = unwrap<context>(CtxRef);
     if (Ctx) {
-#if __SYCL_COMPILER_VERSION >= 20221020L
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
         return false;
 #else
         return Ctx->is_host();
@@ -193,7 +194,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
     auto BE = unwrap<context>(CtxRef)->get_platform().get_backend();
 
     switch (BE) {
-#if __SYCL_COMPILER_VERSION < 20221020L
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case backend::host:
         return DPCTL_HOST;
 #endif

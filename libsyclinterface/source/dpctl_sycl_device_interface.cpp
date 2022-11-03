@@ -25,6 +25,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_interface.h"
+#include "Config/dpctl_config.h"
+#include "dpctl_device_selection.hpp"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_device_manager.h"
@@ -44,7 +46,7 @@ using namespace dpctl::syclinterface;
 
 device *new_device_from_selector(const dpctl_device_selector *sel)
 {
-#if __SYCL_COMPILER_VERSION >= 20221020L
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
     return new device(
         [=](const device &d) -> int { return sel->operator()(d); });
 #else
@@ -60,7 +62,7 @@ DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
-#if __SYCL_COMPILER_VERSION >= 20220805
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD
             auto id_sizes =
                 D->get_info<info::device::max_work_item_sizes<dim>>();
 #else
@@ -179,7 +181,7 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap<device>(DRef);
     if (D) {
-#if __SYCL_COMPILER_VERSION >= 20221020L
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
         return false;
 #else
         return D->is_host();

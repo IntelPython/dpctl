@@ -21,20 +21,20 @@
 ///
 /// \file
 /// This file implements device-selection classes declared in
-/// dpctl_sycl_type_type_casters.hpp
+/// dpctl_device_selection.hpp
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_type_casters.hpp"
+#include "dpctl_device_selection.hpp"
+#include "Config/dpctl_config.h"
 #include <CL/sycl.hpp>
 
 namespace dpctl
 {
-
 namespace syclinterface
 {
 
-#if __SYCL_COMPILER_VERSION >= 20221020
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 
 int dpctl_device_selector::operator()(const sycl::device &) const
 {

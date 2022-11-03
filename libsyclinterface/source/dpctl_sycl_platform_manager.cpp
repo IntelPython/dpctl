@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_manager.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_platform_interface.h"
@@ -70,7 +71,7 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
            << p.get_info<info::platform::version>() << _endl << std::setw(4)
            << " " << std::left << std::setw(12) << "Vendor" << vendor << _endl
            << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
-#if __SYCL_COMPILER_VERSION >= 20221020L
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
         ss << p.get_backend();
 #else
         p.is_host() ? (ss << "unknown") : (ss << p.get_backend());

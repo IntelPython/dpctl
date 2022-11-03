@@ -25,6 +25,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
+#include "Config/dpctl_config.h"
+#include "dpctl_device_selection.hpp"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_type_casters.hpp"
@@ -45,7 +47,7 @@ using namespace dpctl::syclinterface;
 
 platform *new_platform_from_selector(const dpctl_device_selector *sel)
 {
-#if __SYCL_COMPILER_VERSION >= 20221020L
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
     return new platform(
         [=](const device &d) -> int { return sel->operator()(d); });
 #else
