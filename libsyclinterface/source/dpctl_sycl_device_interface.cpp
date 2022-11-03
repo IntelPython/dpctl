@@ -179,7 +179,11 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap<device>(DRef);
     if (D) {
+#if __SYCL_COMPILER_VERSION >= 20221020L
+        return false;
+#else
         return D->is_host();
+#endif
     }
     return false;
 }

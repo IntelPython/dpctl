@@ -169,7 +169,11 @@ bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
     auto Ctx = unwrap<context>(CtxRef);
     if (Ctx) {
+#if __SYCL_COMPILER_VERSION >= 20221020L
+        return false;
+#else
         return Ctx->is_host();
+#endif
     }
     return false;
 }
@@ -189,8 +193,10 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
     auto BE = unwrap<context>(CtxRef)->get_platform().get_backend();
 
     switch (BE) {
+#if __SYCL_COMPILER_VERSION < 20221020L
     case backend::host:
         return DPCTL_HOST;
+#endif
     case backend::opencl:
         return DPCTL_OPENCL;
     case backend::ext_oneapi_level_zero:
