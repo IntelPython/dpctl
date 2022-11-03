@@ -30,7 +30,11 @@
 
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
+#include <iostream>
 #include <vector>
+
+namespace dpctl::syclinterface
+{
 
 #if __SYCL_COMPILER_VERSION >= 20221020
 
@@ -38,15 +42,20 @@ class dpctl_device_selector
 {
 public:
     virtual ~dpctl_device_selector() = default;
-
-    virtual int operator()(const sycl::device &device) const = 0;
+    static constexpr int REJECT_DEVICE = -1;
+    virtual int operator()(const sycl::device &d) const
+    {
+        std::cout << "Outright rejecting "
+                  << d.get_info<sycl::info::device::name>() << std::endl;
+        return REJECT_DEVICE;
+    };
 };
 
 class dpctl_accelerator_selector : public dpctl_device_selector
 {
 public:
     dpctl_accelerator_selector() = default;
-    int operator()(const sycl::device &d) const
+    int operator()(const sycl::device &d) const override
     {
         return sycl::accelerator_selector_v(d);
     }
@@ -56,9 +65,11 @@ class dpctl_default_selector : public dpctl_device_selector
 {
 public:
     dpctl_default_selector() = default;
-    int operator()(const sycl::device &d) const
+    int operator()(const sycl::device &d) const override
     {
-        return sycl::default_selector_v(d);
+        auto score = sycl::default_selector_v(d);
+        std::cout << "Got score = " << score << std::endl;
+        return score;
     }
 };
 
@@ -66,7 +77,7 @@ class dpctl_gpu_selector : public dpctl_device_selector
 {
 public:
     dpctl_gpu_selector() = default;
-    int operator()(const sycl::device &d) const
+    int operator()(const sycl::device &d) const override
     {
         return sycl::gpu_selector_v(d);
     }
@@ -76,7 +87,7 @@ class dpctl_cpu_selector : public dpctl_device_selector
 {
 public:
     dpctl_cpu_selector() = default;
-    int operator()(const sycl::device &d) const
+    int operator()(const sycl::device &d) const override
     {
         return sycl::cpu_selector_v(d);
     }
@@ -87,7 +98,7 @@ class dpctl_filter_selector : public dpctl_device_selector
 public:
     dpctl_filter_selector(const std::string &fs) : _impl(fs) {}
 
-    int operator()(const sycl::device &d) const
+    int operator()(const sycl::device &d) const override
     {
         return _impl(d);
     }
@@ -100,13 +111,10 @@ class dpctl_host_selector : public dpctl_device_selector
 {
 public:
     dpctl_host_selector() = default;
-    int operator()(const sycl::device &) const
+    int operator()(const sycl::device &) const override
     {
-        return REJECTED_SCORE;
+        return REJECT_DEVICE;
     }
-
-private:
-    constexpr static int REJECTED_SCORE = -1;
 };
 
 #else
@@ -201,22 +209,20 @@ private:
 #endif
 
 /*!
-    @brief Creates two convenience functions to reinterpret_cast an opaque
-    pointer to a pointer to a Sycl type and vice-versa.
+    @brief Creates two convenience templated functions to
+    reinterpret_cast an opaque pointer to a pointer to a Sycl type
+    and vice-versa.
 */
 #define DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ty, ref)                            \
-    __attribute__((unused)) inline ty *unwrap(ref P)                           \
+    template <typename T,                                                      \
+              std::enable_if_t<std::is_same<T, ty>::value, bool> = true>       \
+    __attribute__((unused)) T *unwrap(ref P)                                   \
     {                                                                          \
         return reinterpret_cast<ty *>(P);                                      \
     }                                                                          \
-                                                                               \
-    __attribute__((unused)) inline ref wrap(const ty *P)                       \
-    {                                                                          \
-        return reinterpret_cast<ref>(const_cast<ty *>(P));                     \
-    }                                                                          \
     template <typename T,                                                      \
               std::enable_if_t<std::is_same<T, ty>::value, bool> = true>       \
-    ref wrap(const ty *P)                                                      \
+    __attribute__((unused)) ref wrap(const ty *P)                              \
     {                                                                          \
         return reinterpret_cast<ref>(const_cast<ty *>(P));                     \
     }
@@ -247,3 +253,5 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclEventRef>,
                                    DPCTLEventVectorRef)
 
 #endif
+
+} // namespace dpctl::syclinterface

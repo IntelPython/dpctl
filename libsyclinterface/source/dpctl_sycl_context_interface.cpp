@@ -32,13 +32,18 @@
 
 using namespace sycl;
 
+namespace
+{
+using namespace dpctl::syclinterface;
+} // end of anonymous namespace
+
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                     error_handler_callback *handler,
                     int /**/)
 {
     DPCTLSyclContextRef CRef = nullptr;
-    auto Device = unwrap(DRef);
+    auto Device = unwrap<device>(DRef);
     if (!Device) {
         error_handler("Cannot create device from DPCTLSyclDeviceRef"
                       "as input is a nullptr.",
@@ -46,7 +51,8 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         return nullptr;
     }
     try {
-        CRef = wrap(new context(*Device, DPCTL_AsyncErrorHandler(handler)));
+        CRef = wrap<context>(
+            new context(*Device, DPCTL_AsyncErrorHandler(handler)));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
@@ -61,7 +67,7 @@ DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
 {
     DPCTLSyclContextRef CRef = nullptr;
     std::vector<device> Devices;
-    auto DeviceRefs = unwrap(DVRef);
+    auto DeviceRefs = unwrap<std::vector<DPCTLSyclDeviceRef>>(DVRef);
     if (!DeviceRefs) {
         error_handler("Cannot create device reference from DPCTLDeviceVectorRef"
                       "as input is a nullptr.",
@@ -71,11 +77,12 @@ DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
     Devices.reserve(DeviceRefs->size());
 
     for (auto const &DRef : *DeviceRefs) {
-        Devices.emplace_back(*unwrap(DRef));
+        Devices.emplace_back(*unwrap<device>(DRef));
     }
 
     try {
-        CRef = wrap(new context(Devices, DPCTL_AsyncErrorHandler(handler)));
+        CRef = wrap<context>(
+            new context(Devices, DPCTL_AsyncErrorHandler(handler)));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
@@ -91,13 +98,13 @@ bool DPCTLContext_AreEq(__dpctl_keep const DPCTLSyclContextRef CtxRef1,
                       __LINE__);
         return false;
     }
-    return (*unwrap(CtxRef1) == *unwrap(CtxRef2));
+    return (*unwrap<context>(CtxRef1) == *unwrap<context>(CtxRef2));
 }
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef)
 {
-    auto Context = unwrap(CRef);
+    auto Context = unwrap<context>(CRef);
     if (!Context) {
         error_handler("Cannot copy DPCTLSyclContextRef as input is a nullptr.",
                       __FILE__, __func__, __LINE__);
@@ -105,7 +112,7 @@ DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef)
     }
     try {
         auto CopiedContext = new context(*Context);
-        return wrap(CopiedContext);
+        return wrap<context>(CopiedContext);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -115,16 +122,17 @@ DPCTLContext_Copy(__dpctl_keep const DPCTLSyclContextRef CRef)
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
 {
-    auto Context = unwrap(CRef);
+    auto Context = unwrap<context>(CRef);
     if (!Context) {
         error_handler("Cannot retrieve devices from DPCTLSyclContextRef as "
                       "input is a nullptr.",
                       __FILE__, __func__, __LINE__);
         return nullptr;
     }
-    std::vector<DPCTLSyclDeviceRef> *DevicesVectorPtr = nullptr;
+    using vecTy = std::vector<DPCTLSyclDeviceRef>;
+    vecTy *DevicesVectorPtr = nullptr;
     try {
-        DevicesVectorPtr = new std::vector<DPCTLSyclDeviceRef>();
+        DevicesVectorPtr = new vecTy();
     } catch (std::exception const &e) {
         delete DevicesVectorPtr;
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -134,9 +142,9 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
         auto Devices = Context->get_devices();
         DevicesVectorPtr->reserve(Devices.size());
         for (const auto &Dev : Devices) {
-            DevicesVectorPtr->emplace_back(wrap(new device(Dev)));
+            DevicesVectorPtr->emplace_back(wrap<device>(new device(Dev)));
         }
-        return wrap(DevicesVectorPtr);
+        return wrap<vecTy>(DevicesVectorPtr);
     } catch (std::exception const &e) {
         delete DevicesVectorPtr;
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -146,7 +154,7 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
 
 size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef)
 {
-    auto Context = unwrap(CRef);
+    auto Context = unwrap<context>(CRef);
     if (!Context) {
         error_handler("Cannot retrieve devices from DPCTLSyclContextRef as "
                       "input is a nullptr.",
@@ -159,7 +167,7 @@ size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef)
 
 bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
-    auto Ctx = unwrap(CtxRef);
+    auto Ctx = unwrap<context>(CtxRef);
     if (Ctx) {
         return Ctx->is_host();
     }
@@ -168,7 +176,7 @@ bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 
 void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef)
 {
-    delete unwrap(CtxRef);
+    delete unwrap<context>(CtxRef);
 }
 
 DPCTLSyclBackendType
@@ -178,7 +186,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
         return DPCTL_UNKNOWN_BACKEND;
     }
 
-    auto BE = unwrap(CtxRef)->get_platform().get_backend();
+    auto BE = unwrap<context>(CtxRef)->get_platform().get_backend();
 
     switch (BE) {
     case backend::host:
@@ -197,7 +205,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 size_t DPCTLContext_Hash(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 {
     if (CtxRef) {
-        auto C = unwrap(CtxRef);
+        auto C = unwrap<context>(CtxRef);
         std::hash<context> hash_fn;
         return hash_fn(*C);
     }

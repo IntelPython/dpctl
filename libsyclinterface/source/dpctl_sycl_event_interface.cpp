@@ -33,17 +33,25 @@
 
 using namespace sycl;
 
+namespace
+{
+using namespace dpctl::syclinterface;
+} // end of anonymous namespace
+
 #undef EL
+#undef EL_SYCL_TYPE
 #define EL Event
+#define EL_SYCL_TYPE sycl::event
 #include "dpctl_vector_templ.cpp"
 #undef EL
+#undef EL_SYCL_TYPE
 
 __dpctl_give DPCTLSyclEventRef DPCTLEvent_Create()
 {
     DPCTLSyclEventRef ERef = nullptr;
     try {
         auto E = new event();
-        ERef = wrap(E);
+        ERef = wrap<event>(E);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
@@ -53,7 +61,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLEvent_Create()
 void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     if (ERef) {
-        auto SyclEvent = unwrap(ERef);
+        auto SyclEvent = unwrap<event>(ERef);
         try {
             if (SyclEvent)
                 SyclEvent->wait();
@@ -71,7 +79,7 @@ void DPCTLEvent_Wait(__dpctl_keep DPCTLSyclEventRef ERef)
 void DPCTLEvent_WaitAndThrow(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     if (ERef) {
-        auto SyclEvent = unwrap(ERef);
+        auto SyclEvent = unwrap<event>(ERef);
         try {
             if (SyclEvent)
                 SyclEvent->wait_and_throw();
@@ -88,13 +96,13 @@ void DPCTLEvent_WaitAndThrow(__dpctl_keep DPCTLSyclEventRef ERef)
 
 void DPCTLEvent_Delete(__dpctl_take DPCTLSyclEventRef ERef)
 {
-    delete unwrap(ERef);
+    delete unwrap<event>(ERef);
 }
 
 __dpctl_give DPCTLSyclEventRef
 DPCTLEvent_Copy(__dpctl_keep DPCTLSyclEventRef ERef)
 {
-    auto SyclEvent = unwrap(ERef);
+    auto SyclEvent = unwrap<event>(ERef);
     if (!SyclEvent) {
         error_handler("Cannot copy DPCTLSyclEventRef as input is a nullptr.",
                       __FILE__, __func__, __LINE__);
@@ -102,7 +110,7 @@ DPCTLEvent_Copy(__dpctl_keep DPCTLSyclEventRef ERef)
     }
     try {
         auto CopiedSyclEvent = new event(*SyclEvent);
-        return wrap(CopiedSyclEvent);
+        return wrap<event>(CopiedSyclEvent);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -112,7 +120,7 @@ DPCTLEvent_Copy(__dpctl_keep DPCTLSyclEventRef ERef)
 DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
-    auto E = unwrap(ERef);
+    auto E = unwrap<event>(ERef);
     if (E) {
         BTy = DPCTL_SyclBackendToDPCTLBackendType(E->get_backend());
     }
@@ -128,7 +136,7 @@ DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     DPCTLSyclEventStatusType ESTy =
         DPCTLSyclEventStatusType::DPCTL_UNKNOWN_STATUS;
-    auto E = unwrap(ERef);
+    auto E = unwrap<event>(ERef);
     if (E) {
         try {
             auto SyclESTy =
@@ -144,7 +152,7 @@ DPCTLEvent_GetCommandExecutionStatus(__dpctl_keep DPCTLSyclEventRef ERef)
 uint64_t DPCTLEvent_GetProfilingInfoSubmit(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     uint64_t profilingInfoSubmit = 0;
-    auto E = unwrap(ERef);
+    auto E = unwrap<event>(ERef);
     if (E) {
         try {
             E->wait();
@@ -160,7 +168,7 @@ uint64_t DPCTLEvent_GetProfilingInfoSubmit(__dpctl_keep DPCTLSyclEventRef ERef)
 uint64_t DPCTLEvent_GetProfilingInfoStart(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     uint64_t profilingInfoStart = 0;
-    auto E = unwrap(ERef);
+    auto E = unwrap<event>(ERef);
     if (E) {
         try {
             E->wait();
@@ -176,7 +184,7 @@ uint64_t DPCTLEvent_GetProfilingInfoStart(__dpctl_keep DPCTLSyclEventRef ERef)
 uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef)
 {
     uint64_t profilingInfoEnd = 0;
-    auto E = unwrap(ERef);
+    auto E = unwrap<event>(ERef);
     if (E) {
         try {
             E->wait();
@@ -192,15 +200,16 @@ uint64_t DPCTLEvent_GetProfilingInfoEnd(__dpctl_keep DPCTLSyclEventRef ERef)
 __dpctl_give DPCTLEventVectorRef
 DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef)
 {
-    auto E = unwrap(ERef);
+    auto E = unwrap<event>(ERef);
     if (!E) {
         error_handler("Cannot get wait list as input is a nullptr.", __FILE__,
                       __func__, __LINE__);
         return nullptr;
     }
-    std::vector<DPCTLSyclEventRef> *EventsVectorPtr = nullptr;
+    using vecTy = std::vector<DPCTLSyclEventRef>;
+    vecTy *EventsVectorPtr = nullptr;
     try {
-        EventsVectorPtr = new std::vector<DPCTLSyclEventRef>();
+        EventsVectorPtr = new vecTy();
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -209,9 +218,9 @@ DPCTLEvent_GetWaitList(__dpctl_keep DPCTLSyclEventRef ERef)
         auto Events = E->get_wait_list();
         EventsVectorPtr->reserve(Events.size());
         for (const auto &Ev : Events) {
-            EventsVectorPtr->emplace_back(wrap(new event(Ev)));
+            EventsVectorPtr->emplace_back(wrap<event>(new event(Ev)));
         }
-        return wrap(EventsVectorPtr);
+        return wrap<vecTy>(EventsVectorPtr);
     } catch (std::exception const &e) {
         delete EventsVectorPtr;
         error_handler(e, __FILE__, __func__, __LINE__);

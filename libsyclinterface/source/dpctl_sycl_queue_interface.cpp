@@ -39,6 +39,8 @@ using namespace sycl;
 namespace
 {
 
+using namespace dpctl::syclinterface;
+
 /*!
  * @brief Set the kernel arg object
  *
@@ -163,8 +165,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
                   int properties)
 {
     DPCTLSyclQueueRef q = nullptr;
-    auto dev = unwrap(DRef);
-    auto ctx = unwrap(CRef);
+    auto dev = unwrap<device>(DRef);
+    auto ctx = unwrap<context>(CRef);
 
     if (!(dev && ctx)) {
         error_handler("Cannot create queue from DPCTLSyclContextRef and "
@@ -178,7 +180,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
         try {
             auto Queue = new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler),
                                    *propList);
-            q = wrap(Queue);
+            q = wrap<queue>(Queue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
@@ -186,7 +188,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     else if (properties) {
         try {
             auto Queue = new queue(*ctx, *dev, *propList);
-            q = wrap(Queue);
+            q = wrap<queue>(Queue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
@@ -195,7 +197,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
         try {
             auto Queue =
                 new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler));
-            q = wrap(Queue);
+            q = wrap<queue>(Queue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
@@ -203,7 +205,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     else {
         try {
             auto Queue = new queue(*ctx, *dev);
-            q = wrap(Queue);
+            q = wrap<queue>(Queue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
@@ -219,7 +221,7 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 {
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
-    auto Device = unwrap(DRef);
+    auto Device = unwrap<device>(DRef);
 
     if (!Device) {
         error_handler("Cannot create queue from NULL device reference.",
@@ -236,7 +238,7 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         context *ContextPtr = nullptr;
         try {
             ContextPtr = new context(*Device);
-            CRef = wrap(ContextPtr);
+            CRef = wrap<context>(ContextPtr);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             delete ContextPtr;
@@ -255,7 +257,7 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  */
 void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef)
 {
-    delete unwrap(QRef);
+    delete unwrap<queue>(QRef);
 }
 
 /*!
@@ -264,11 +266,11 @@ void DPCTLQueue_Delete(__dpctl_take DPCTLSyclQueueRef QRef)
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_Copy(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Queue = unwrap(QRef);
+    auto Queue = unwrap<queue>(QRef);
     if (Queue) {
         try {
             auto CopiedQueue = new queue(*Queue);
-            return wrap(CopiedQueue);
+            return wrap<queue>(CopiedQueue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
@@ -289,16 +291,16 @@ bool DPCTLQueue_AreEq(__dpctl_keep const DPCTLSyclQueueRef QRef1,
                       __LINE__);
         return false;
     }
-    return (*unwrap(QRef1) == *unwrap(QRef2));
+    return (*unwrap<queue>(QRef1) == *unwrap<queue>(QRef2));
 }
 
 DPCTLSyclBackendType DPCTLQueue_GetBackend(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         try {
             auto C = Q->get_context();
-            return DPCTLContext_GetBackend(wrap(&C));
+            return DPCTLContext_GetBackend(wrap<context>(&C));
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             return DPCTL_UNKNOWN_BACKEND;
@@ -312,11 +314,11 @@ __dpctl_give DPCTLSyclDeviceRef
 DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
     DPCTLSyclDeviceRef DRef = nullptr;
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         try {
             auto Device = new device(Q->get_device());
-            DRef = wrap(Device);
+            DRef = wrap<device>(Device);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
@@ -331,10 +333,10 @@ DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef)
 __dpctl_give DPCTLSyclContextRef
 DPCTLQueue_GetContext(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     DPCTLSyclContextRef CRef = nullptr;
     if (Q)
-        CRef = wrap(new context(Q->get_context()));
+        CRef = wrap<context>(new context(Q->get_context()));
     else {
         error_handler("Could not get the context for this queue.", __FILE__,
                       __func__, __LINE__);
@@ -353,8 +355,8 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                        size_t NDepEvents)
 {
-    auto Kernel = unwrap(KRef);
-    auto Queue = unwrap(QRef);
+    auto Kernel = unwrap<kernel>(KRef);
+    auto Queue = unwrap<queue>(QRef);
     event e;
 
     try {
@@ -362,7 +364,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
             // Depend on any event that was specified by the caller.
             if (NDepEvents)
                 for (auto i = 0ul; i < NDepEvents; ++i)
-                    cgh.depends_on(*unwrap(DepEvents[i]));
+                    cgh.depends_on(*unwrap<event>(DepEvents[i]));
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
@@ -390,7 +392,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         return nullptr;
     }
 
-    return wrap(new event(e));
+    return wrap<event>(new event(e));
 }
 
 __dpctl_give DPCTLSyclEventRef
@@ -405,8 +407,8 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                          size_t NDepEvents)
 {
-    auto Kernel = unwrap(KRef);
-    auto Queue = unwrap(QRef);
+    auto Kernel = unwrap<kernel>(KRef);
+    auto Queue = unwrap<queue>(QRef);
     event e;
 
     try {
@@ -414,7 +416,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
             // Depend on any event that was specified by the caller.
             if (NDepEvents)
                 for (auto i = 0ul; i < NDepEvents; ++i)
-                    cgh.depends_on(*unwrap(DepEvents[i]));
+                    cgh.depends_on(*unwrap<event>(DepEvents[i]));
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
@@ -446,7 +448,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         return nullptr;
     }
 
-    return wrap(new event(e));
+    return wrap<event>(new event(e));
 }
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
@@ -454,7 +456,7 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
     // \todo what happens if the QRef is null or a pointer to a valid sycl
     // queue
     if (QRef) {
-        auto SyclQueue = unwrap(QRef);
+        auto SyclQueue = unwrap<queue>(QRef);
         if (SyclQueue)
             SyclQueue->wait();
     }
@@ -469,7 +471,7 @@ DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   const void *Src,
                   size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         sycl::event ev;
         try {
@@ -478,7 +480,7 @@ DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef passed to memcpy was NULL.", __FILE__, __func__,
@@ -492,7 +494,7 @@ DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
                     const void *Ptr,
                     size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         if (Ptr) {
             sycl::event ev;
@@ -502,7 +504,7 @@ DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
                 error_handler(e, __FILE__, __func__, __LINE__);
                 return nullptr;
             }
-            return wrap(new event(ev));
+            return wrap<event>(new event(ev));
         }
         else {
             error_handler("Attempt to prefetch USM-allocation at nullptr.",
@@ -523,7 +525,7 @@ DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
                      size_t Count,
                      int Advice)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         sycl::event ev;
         try {
@@ -532,7 +534,7 @@ DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef passed to prefetch was NULL.", __FILE__, __func__,
@@ -543,7 +545,7 @@ DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
 
 bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         return Q->is_in_order();
     }
@@ -553,7 +555,7 @@ bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef)
 
 bool DPCTLQueue_HasEnableProfiling(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         return Q->has_property<sycl::property::queue::enable_profiling>();
     }
@@ -563,7 +565,7 @@ bool DPCTLQueue_HasEnableProfiling(__dpctl_keep const DPCTLSyclQueueRef QRef)
 
 size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q) {
         std::hash<queue> hash_fn;
         return hash_fn(*Q);
@@ -579,7 +581,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
     __dpctl_keep const DPCTLSyclEventRef *DepEvents,
     size_t NDepEvents)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     event e;
     if (Q) {
         try {
@@ -587,7 +589,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
                 // Depend on any event that was specified by the caller.
                 if (NDepEvents)
                     for (auto i = 0ul; i < NDepEvents; ++i)
-                        cgh.depends_on(*unwrap(DepEvents[i]));
+                        cgh.depends_on(*unwrap<event>(DepEvents[i]));
 
                 cgh.ext_oneapi_barrier();
             });
@@ -596,7 +598,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
             return nullptr;
         }
 
-        return wrap(new event(e));
+        return wrap<event>(new event(e));
     }
     else {
         error_handler("Argument QRef is NULL", __FILE__, __func__, __LINE__);
@@ -616,7 +618,7 @@ DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   uint8_t Value,
                   size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q && USMRef) {
         sycl::event ev;
         try {
@@ -625,7 +627,7 @@ DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
@@ -640,7 +642,7 @@ DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
                  uint8_t Value,
                  size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q && USMRef) {
         sycl::event ev;
         try {
@@ -649,7 +651,7 @@ DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
@@ -664,7 +666,7 @@ DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   uint16_t Value,
                   size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q && USMRef) {
         sycl::event ev;
         try {
@@ -673,7 +675,7 @@ DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef or USMRef passed to fill16 were NULL.", __FILE__,
@@ -688,7 +690,7 @@ DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   uint32_t Value,
                   size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q && USMRef) {
         sycl::event ev;
         try {
@@ -697,7 +699,7 @@ DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef or USMRef passed to fill32 were NULL.", __FILE__,
@@ -712,7 +714,7 @@ DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   uint64_t Value,
                   size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q && USMRef) {
         sycl::event ev;
         try {
@@ -721,7 +723,7 @@ DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef or USMRef passed to fill64 were NULL.", __FILE__,
@@ -745,7 +747,7 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
                    uint64_t *Value,
                    size_t Count)
 {
-    auto Q = unwrap(QRef);
+    auto Q = unwrap<queue>(QRef);
     if (Q && USMRef) {
         sycl::event ev;
         try {
@@ -757,7 +759,7 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap(new event(ev));
+        return wrap<event>(new event(ev));
     }
     else {
         error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,

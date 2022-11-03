@@ -65,12 +65,12 @@ DPCTL_API
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create(void);
 
 /*!
- * @brief Returns an opaque wrapper for sycl::ONEAPI::filter_selector object
- * based on the passed in filter string.
+ * @brief Returns an opaque wrapper for sycl::ext::oneapi::filter_selector
+ * object based on the passed in filter string.
  *
  * @param    filter_str     A C string providing a filter based on which to
- *                          create a device_selector.
- * @return   An opaque pointer to a sycl::ONEAPI::filter_selector object.
+ *                          create a device selector.
+ * @return   An opaque pointer to a sycl::ext::oneapi::filter_selector object.
  * @ingroup DeviceSelectors
  */
 DPCTL_API
@@ -78,18 +78,18 @@ __dpctl_give DPCTLSyclDeviceSelectorRef
 DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str);
 
 /*!
- * @brief Returns an opaque wrapper for sycl::gpu_selector object.
+ * @brief Returns an opaque wrapper for dpctl_gpu_selector object.
  *
- * @return An opaque pointer to a sycl::gpu_selector object.
+ * @return An opaque pointer to a dpctl_gpu_selector object.
  * @ingroup DeviceSelectors
  */
 DPCTL_API
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create(void);
 
 /*!
- * @brief Returns an opaque wrapper for sycl::host_selector object.
+ * @brief Returns an opaque wrapper for dpctl_host_selector object.
  *
- * @return An opaque pointer to a sycl::host_selector object.
+ * @return An opaque pointer to a dpctl_host_selector object.
  * @ingroup DeviceSelectors
  */
 DPCTL_API

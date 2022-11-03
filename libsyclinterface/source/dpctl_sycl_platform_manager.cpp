@@ -41,6 +41,8 @@ using namespace sycl;
 namespace
 {
 
+using namespace dpctl::syclinterface;
+
 std::string platform_print_info_impl(const platform &p, size_t verbosity)
 {
     std::stringstream ss;
@@ -97,14 +99,17 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
 } // namespace
 
 #undef EL
+#undef EL_SYCL_TYPE
 #define EL Platform
+#define EL_SYCL_TYPE sycl::platform
 #include "dpctl_vector_templ.cpp"
 #undef EL
+#undef EL_SYCL_TYPE
 
 void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                                 size_t verbosity)
 {
-    auto p = unwrap(PRef);
+    auto p = unwrap<platform>(PRef);
     if (p) {
         std::cout << platform_print_info_impl(*p, verbosity);
     }
@@ -119,7 +124,7 @@ DPCTLPlatformMgr_GetInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                          size_t verbosity)
 {
     const char *cstr_info = nullptr;
-    auto p = unwrap(PRef);
+    auto p = unwrap<platform>(PRef);
     if (p) {
         auto infostr = platform_print_info_impl(*p, verbosity);
         cstr_info = dpctl::helper::cstring_from_string(infostr);

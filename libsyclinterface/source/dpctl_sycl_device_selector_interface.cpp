@@ -30,11 +30,16 @@
 
 using namespace sycl;
 
+namespace
+{
+using namespace dpctl::syclinterface;
+} // end of anonymous namespace
+
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLAcceleratorSelector_Create()
 {
     try {
         auto Selector = new dpctl_accelerator_selector();
-        return wrap(Selector);
+        return wrap<dpctl_device_selector>(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -45,7 +50,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLDefaultSelector_Create()
 {
     try {
         auto Selector = new dpctl_default_selector();
-        return wrap(Selector);
+        return wrap<dpctl_device_selector>(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -56,7 +61,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
 {
     try {
         auto Selector = new dpctl_cpu_selector();
-        return wrap(Selector);
+        return wrap<dpctl_device_selector>(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -69,7 +74,7 @@ DPCTLFilterSelector_Create(__dpctl_keep const char *filter_str)
     using filter_selector_t = dpctl_filter_selector;
     try {
         auto Selector = new filter_selector_t(filter_str);
-        return wrap(Selector);
+        return wrap<dpctl_device_selector>(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -80,7 +85,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
 {
     try {
         auto Selector = new dpctl_gpu_selector();
-        return wrap(Selector);
+        return wrap<dpctl_device_selector>(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -91,7 +96,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
 {
     try {
         auto Selector = new dpctl_host_selector();
-        return wrap(Selector);
+        return wrap<dpctl_device_selector>(Selector);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -103,8 +108,8 @@ int DPCTLDeviceSelector_Score(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef,
 {
     constexpr int REJECT_DEVICE_SCORE = -1;
     if (DSRef && DRef) {
-        auto dev = *(unwrap(DRef));
-        return (*unwrap(DSRef))(dev);
+        auto dev = *(unwrap<device>(DRef));
+        return (*unwrap<dpctl_device_selector>(DSRef))(dev);
     }
     else
         return REJECT_DEVICE_SCORE;
@@ -112,6 +117,6 @@ int DPCTLDeviceSelector_Score(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef,
 
 void DPCTLDeviceSelector_Delete(__dpctl_take DPCTLSyclDeviceSelectorRef DSRef)
 {
-    auto Selector = unwrap(DSRef);
+    auto Selector = unwrap<dpctl_device_selector>(DSRef);
     delete Selector;
 }

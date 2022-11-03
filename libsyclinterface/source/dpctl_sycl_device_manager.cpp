@@ -40,6 +40,8 @@ using namespace sycl;
 namespace
 {
 
+using namespace dpctl::syclinterface;
+
 /*
  * Helper function to print the metadata for a sycl::device.
  */
@@ -111,7 +113,7 @@ struct DeviceCacheBuilder
     {
         static DeviceCache *cache = new DeviceCache([] {
             DeviceCache cache_l;
-            default_selector mRanker;
+            dpctl_default_selector mRanker;
             auto Platforms = platform::get_platforms();
             for (const auto &P : Platforms) {
                 auto Devices = P.get_devices();
@@ -144,16 +146,19 @@ struct DeviceCacheBuilder
 } // namespace
 
 #undef EL
+#undef EL_SYCL_TYPE
 #define EL Device
+#define EL_SYCL_TYPE sycl::device
 #include "dpctl_vector_templ.cpp"
 #undef EL
+#undef EL_SYCL_TYPE
 
 DPCTLSyclContextRef
 DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     DPCTLSyclContextRef CRef = nullptr;
 
-    auto Device = unwrap(DRef);
+    auto Device = unwrap<device>(DRef);
     if (!Device) {
         error_handler("Cannot create device from DPCTLSyclDeviceRef"
                       "as input is a nullptr.",
@@ -166,7 +171,7 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         context *ContextPtr = nullptr;
         try {
             ContextPtr = new context(entry->second);
-            CRef = wrap(ContextPtr);
+            CRef = wrap<context>(ContextPtr);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             delete ContextPtr;
@@ -183,7 +188,8 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDeviceMgr_GetDevices(int device_identifier)
 {
-    std::vector<DPCTLSyclDeviceRef> *Devices = nullptr;
+    using vecTy = std::vector<DPCTLSyclDeviceRef>;
+    vecTy *Devices = nullptr;
 
     device_identifier = to_canonical_device_id(device_identifier);
 
@@ -196,10 +202,10 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
     }
 
     if (!device_identifier)
-        return wrap(Devices);
+        return wrap<vecTy>(Devices);
 
     const auto &root_devices = device::get_devices();
-    default_selector mRanker;
+    dpctl_default_selector mRanker;
 
     for (const auto &root_device : root_devices) {
         if (mRanker(root_device) < 0)
@@ -209,18 +215,18 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
         auto Dty(DPCTL_SyclDeviceTypeToDPCTLDeviceType(
             root_device.get_info<info::device::device_type>()));
         if ((device_identifier & Bty) && (device_identifier & Dty)) {
-            Devices->emplace_back(wrap(new device(root_device)));
+            Devices->emplace_back(wrap<device>(new device(root_device)));
         }
     }
     // the wrap function is defined inside dpctl_vector_templ.cpp
-    return wrap(Devices);
+    return wrap<vecTy>(Devices);
 }
 
 __dpctl_give const char *
 DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     const char *cstr_info = nullptr;
-    auto D = unwrap(DRef);
+    auto D = unwrap<device>(DRef);
     if (D) {
         try {
             auto infostr = get_device_info_str(*D);
@@ -245,9 +251,9 @@ int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
         return not_found;
 
     const auto &root_devices = device::get_devices();
-    default_selector mRanker;
+    dpctl_default_selector mRanker;
     int index = not_found;
-    auto reference_device = *(unwrap(DRef));
+    const auto &reference_device = *(unwrap<device>(DRef));
 
     for (const auto &root_device : root_devices) {
         if (mRanker(root_device) < 0)
@@ -278,7 +284,7 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
     if (!device_identifier)
         return 0;
 
-    default_selector mRanker;
+    dpctl_default_selector mRanker;
     for (const auto &entry : cache) {
         if (mRanker(entry.first) < 0)
             continue;
@@ -300,7 +306,7 @@ size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
  */
 void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    auto Device = unwrap(DRef);
+    auto Device = unwrap<device>(DRef);
     if (Device)
         std::cout << get_device_info_str(*Device);
     else
@@ -310,7 +316,7 @@ void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 
 int64_t DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    auto Device = unwrap(DRef);
+    auto Device = unwrap<device>(DRef);
 
     if (Device)
         return DPCTL_GetRelativeDeviceId(*Device);
