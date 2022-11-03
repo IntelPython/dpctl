@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,6 +47,26 @@ def _check_multi_kernel_program(prog):
     assert 4 == axpyKernel.get_num_args()
     assert type(addKernel.addressof_ref()) is int
     assert type(axpyKernel.addressof_ref()) is int
+
+    for krn in [addKernel, axpyKernel]:
+        na = krn.num_args
+        assert na == krn.get_num_args()
+        wgsz = krn.work_group_size
+        assert type(wgsz) is int
+        pwgszm = krn.preferred_work_group_size_multiple
+        assert type(pwgszm) is int
+        pmsz = krn.private_mem_size
+        assert type(pmsz) is int
+        vmnsg = krn.max_num_sub_groups
+        assert type(vmnsg) is int
+        v = krn.max_sub_group_size
+        assert (
+            v == NotImplemented
+        ), "SyclKernel.max_sub_group_size acquired implementation, fix the test"
+        cmnsg = krn.compile_num_sub_groups
+        assert type(cmnsg) is int
+        cmsgsz = krn.compile_sub_group_size
+        assert type(cmsgsz) is int
 
 
 def test_create_program_from_source_ocl():

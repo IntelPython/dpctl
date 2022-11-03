@@ -18,9 +18,9 @@ def test_gemv():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
     Mnp, vnp = np.random.randn(5, 3), np.random.randn(3)
-    r = dpt.empty((5,), dtype="d", sycl_queue=q)
     M = dpt.asarray(Mnp, sycl_queue=q)
     v = dpt.asarray(vnp, sycl_queue=q)
+    r = dpt.empty((5,), dtype=v.dtype, sycl_queue=q)
     hev, ev = gemv(q, M, v, r, [])
     hev.wait()
     rnp = dpt.asnumpy(r)
@@ -33,9 +33,9 @@ def test_sub():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
     anp, bnp = np.random.randn(5), np.random.randn(5)
-    r = dpt.empty((5,), dtype="d", sycl_queue=q)
     a = dpt.asarray(anp, sycl_queue=q)
     b = dpt.asarray(bnp, sycl_queue=q)
+    r = dpt.empty((5,), dtype=b.dtype, sycl_queue=q)
     hev, ev = sub(q, a, b, r, [])
     hev.wait()
     rnp = dpt.asnumpy(r)

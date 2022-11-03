@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ from ._backend cimport DPCTLSyclDeviceSelectorRef, DPCTLSyclPlatformRef
 
 
 cdef class _SyclPlatform:
-    ''' A helper metaclass to abstract a cl::sycl::platform instance.
+    ''' A helper metaclass to abstract a ``sycl::platform`` instance.
     '''
     cdef DPCTLSyclPlatformRef _platform_ref
     cdef const char *_vendor

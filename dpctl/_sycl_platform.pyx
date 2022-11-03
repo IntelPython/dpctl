@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
 
 cdef class SyclPlatform(_SyclPlatform):
     """ SyclPlatform(self, arg=None)
-        Python class representing ``cl::sycl::platform`` class.
+        Python class representing ``sycl::platform`` class.
 
         SyclPlatform() - create platform selected by sycl::default_selector
         SyclPlatform(filter_selector) - create platform selected by filter
@@ -349,7 +349,7 @@ def lsplatform(verbosity=0):
     cdef DPCTLSyclPlatformRef PRef = NULL
 
     if not isinstance(verbosity, int):
-        print(
+        warnings.warn(
             "Illegal verbosity level. Accepted values are 0, 1, or 2. "
             "Using the default verbosity level of 0."
         )

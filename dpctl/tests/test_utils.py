@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -111,3 +111,14 @@ def validate_usm_type_arg():
         dpctl.utils.validate_usm_type("inv", allow_none=True)
     with pytest.raises(ValueError):
         dpctl.utils.validate_usm_type("inv", allow_none=False)
+
+
+@pytest.mark.filterwarnings("ignore:.*:RuntimeWarning")
+def test_onetrace_enabled():
+    import os
+
+    v_name = "PTI_ENABLE_COLLECTION"
+    v_v = os.getenv(v_name, None)
+    with dpctl.utils.onetrace_enabled():
+        assert os.getenv(v_name, None) == "1"
+    assert os.getenv(v_name, None) == v_v

@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -160,5 +160,13 @@ typedef enum
     DPCTL_RUNNING,
     DPCTL_COMPLETE
 } DPCTLSyclEventStatusType;
+
+typedef enum
+{
+    DPCTL_MEM_CACHE_TYPE_INDETERMINATE,
+    DPCTL_MEM_CACHE_TYPE_NONE,
+    DPCTL_MEM_CACHE_TYPE_READ_ONLY,
+    DPCTL_MEM_CACHE_TYPE_READ_WRITE
+} DPCTLGlobalMemCacheType;
 
 DPCTL_C_EXTERN_C_END

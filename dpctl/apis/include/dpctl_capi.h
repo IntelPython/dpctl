@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,8 +47,11 @@
  * C functions can use dpctl's C-API functions without linking to
  * shared objects defining this symbols, if they call `import_dpctl()`
  * prior to using those symbols.
+ *
+ * It is declared inline to allow multiple definitions in
+ * different translation units
  */
-void import_dpctl(void)
+static inline void import_dpctl(void)
 {
     import_dpctl___sycl_device();
     import_dpctl___sycl_context();

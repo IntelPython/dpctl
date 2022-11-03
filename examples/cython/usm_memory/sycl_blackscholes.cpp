@@ -89,32 +89,32 @@ cpp_blackscholes(DPCTLSyclQueueRef q_ptr, size_t n_opts, T *params, T *callput)
                 data_t mr = -opt_rate,
                        sig_sig_two = two * opt_volatility * opt_volatility;
 
-                a = cl::sycl::log(opt_price / opt_strike);
+                a = sycl::log(opt_price / opt_strike);
                 b = opt_maturity * mr;
                 z = opt_maturity * sig_sig_two;
 
                 c = quarter * z;
-                e = cl::sycl::exp(b);
-                y = cl::sycl::rsqrt(z);
+                e = sycl::exp(b);
+                y = sycl::rsqrt(z);
 
                 a = b - a;
                 w1 = (a - c) * y;
                 w2 = (a + c) * y;
 
                 if (w1 < zero) {
-                    d1 = cl::sycl::erfc(w1) * half;
+                    d1 = sycl::erfc(w1) * half;
                     d1c = one - d1;
                 }
                 else {
-                    d1c = cl::sycl::erfc(-w1) * half;
+                    d1c = sycl::erfc(-w1) * half;
                     d1 = one - d1c;
                 }
                 if (w2 < zero) {
-                    d2 = cl::sycl::erfc(w2) * half;
+                    d2 = sycl::erfc(w2) * half;
                     d2c = one - d2;
                 }
                 else {
-                    d2c = cl::sycl::erfc(-w2) * half;
+                    d2c = sycl::erfc(-w2) * half;
                     d2 = one - d2c;
                 }
 

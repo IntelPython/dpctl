@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -75,6 +75,6 @@ cdef public api class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject,
     pass
 
 
-cdef public class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject,
+cdef public api class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject,
                                             type PyMemoryUSMDeviceType]:
     pass

@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@
 #include <glog/logging.h>
 #endif
 
-void DPCTL_AsyncErrorHandler::operator()(
-    const cl::sycl::exception_list &exceptions)
+void DPCTL_AsyncErrorHandler::operator()(const sycl::exception_list &exceptions)
 {
     for (std::exception_ptr const &e : exceptions) {
         try {

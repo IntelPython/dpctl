@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import numpy as np
 import pytest
+from helper import get_queue_or_skip
 
 import dpctl
 import dpctl.tensor as dpt
@@ -175,22 +176,25 @@ def test_asarray_scalars():
     import ctypes
 
     Y = dpt.asarray(5)
-    assert Y.dtype == np.dtype(int)
+    assert Y.dtype == dpt.dtype(int)
     Y = dpt.asarray(5.2)
-    assert Y.dtype == np.dtype(float)
+    if Y.sycl_device.has_aspect_fp64:
+        assert Y.dtype == dpt.dtype(float)
+    else:
+        assert Y.dtype == dpt.dtype(dpt.float32)
     Y = dpt.asarray(np.float32(2.3))
-    assert Y.dtype == np.dtype(np.float32)
+    assert Y.dtype == dpt.dtype(dpt.float32)
     Y = dpt.asarray(1.0j)
-    assert Y.dtype == np.dtype(complex)
+    if Y.sycl_device.has_aspect_fp64:
+        assert Y.dtype == dpt.dtype(complex)
+    else:
+        assert Y.dtype == dpt.dtype(dpt.complex64)
     Y = dpt.asarray(ctypes.c_int(8))
-    assert Y.dtype == np.dtype(ctypes.c_int)
+    assert Y.dtype == dpt.dtype(ctypes.c_int)
 
 
 def test_asarray_copy_false():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not create a queue")
+    q = get_queue_or_skip()
     rng = np.random.default_rng()
     Xnp = rng.integers(low=-255, high=255, size=(10, 4), dtype=np.int64)
     X = dpt.from_numpy(Xnp, usm_type="device", sycl_queue=q)
@@ -220,3 +224,18 @@ def test_asarray_copy_false():
     assert Y6 is Xf
     with pytest.raises(ValueError):
         dpt.asarray(Xf, copy=False, order="C")
+
+
+def test_asarray_invalid_dtype():
+    q = get_queue_or_skip()
+    Xnp = np.array([1, 2, 3], dtype=object)
+    with pytest.raises(TypeError):
+        dpt.asarray(Xnp, sycl_queue=q)
+
+
+def test_asarray_cross_device():
+    q = get_queue_or_skip()
+    qprof = dpctl.SyclQueue(property="enable_profiling")
+    x = dpt.empty(10, dtype="i8", sycl_queue=q)
+    y = dpt.asarray(x, sycl_queue=qprof)
+    assert y.sycl_queue == qprof

@@ -1,4 +1,18 @@
-
+#                      Data Parallel Control (dpctl)
+#
+# Copyright 2020-2022 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 cdef bint _valid_usm_ptr_and_context(DPCTLSyclUSMRef ptr, SyclContext ctx):
     usm_type = _Memory.get_pointer_type(ptr, ctx)
@@ -108,7 +122,7 @@ cdef class _USMBufferData:
     `__sycl_usm_array_interface__` dictionary
     """
     cdef DPCTLSyclUSMRef p
-    cdef int writeable
+    cdef int writable
     cdef object dt
     cdef Py_ssize_t itemsize
     cdef Py_ssize_t nbytes
@@ -126,7 +140,7 @@ cdef class _USMBufferData:
         cdef size_t arr_data_ptr = 0
         cdef DPCTLSyclUSMRef memRef = NULL
         cdef Py_ssize_t itemsize = -1
-        cdef int writeable = -1
+        cdef int writable = -1
         cdef int nd = -1
         cdef DPCTLSyclQueueRef QRef = NULL
         cdef object dt
@@ -142,9 +156,9 @@ cdef class _USMBufferData:
         if not ary_data_tuple or len(ary_data_tuple) != 2:
             raise ValueError("__sycl_usm_array_interface__ is malformed:"
                              " 'data' field is required, and must be a tuple"
-                             " (usm_pointer, is_writeable_boolean).")
+                             " (usm_pointer, is_writable_boolean).")
         arr_data_ptr = <size_t>ary_data_tuple[0]
-        writeable = 1 if ary_data_tuple[1] else 0
+        writable = 1 if ary_data_tuple[1] else 0
         # Check that memory and syclobj are consistent:
         # (USM pointer is bound to this sycl context)
         memRef = <DPCTLSyclUSMRef>arr_data_ptr
@@ -193,7 +207,7 @@ cdef class _USMBufferData:
         buf = _USMBufferData.__new__(_USMBufferData)
         buf.p = <DPCTLSyclUSMRef>(
             arr_data_ptr + (<Py_ssize_t>min_disp) * itemsize)
-        buf.writeable = writeable
+        buf.writable = writable
         buf.itemsize = itemsize
         buf.nbytes = <Py_ssize_t> nbytes
 

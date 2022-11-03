@@ -31,7 +31,7 @@
 #include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
 
-int c_columnwise_total(cl::sycl::queue &q,
+int c_columnwise_total(sycl::queue q,
                        size_t n,
                        size_t m,
                        double *mat,
@@ -56,8 +56,7 @@ int c_columnwise_total(cl::sycl::queue &q,
             ev.wait_and_throw();
         } catch (sycl::exception const &e) {
             std::cout << "\t\tCaught synchronous SYCL exception during fill:\n"
-                      << e.what() << std::endl
-                      << "OpenCL status: " << e.get_cl_code() << std::endl;
+                      << e.what() << std::endl;
             goto cleanup;
         }
 
@@ -68,8 +67,7 @@ int c_columnwise_total(cl::sycl::queue &q,
             q.wait();
         } catch (sycl::exception const &e) {
             std::cout << "\t\tCaught synchronous SYCL exception during GEMV:\n"
-                      << e.what() << std::endl
-                      << "OpenCL status: " << e.get_cl_code() << std::endl;
+                      << e.what() << std::endl;
             goto cleanup;
         }
     }

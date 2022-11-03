@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ struct TestGetNumDevicesForBTy : public ::testing::TestWithParam<int>
 
 TEST_P(TestGetNumDevicesForBTy, ChkGetNumDevices)
 {
-    auto platforms = cl::sycl::platform::get_platforms();
+    auto platforms = sycl::platform::get_platforms();
     size_t nDevices = 0;
     sycl::default_selector mRanker;
     for (const auto &P : platforms) {

@@ -17,8 +17,8 @@ include(GNUInstallDirs)
 include(FetchContent)
 FetchContent_Declare(
   pybind11
-  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.9.2.tar.gz
-  URL_HASH SHA256=6bd528c4dbe2276635dc787b6b1f2e5316cf6b49ee3e150264e455a0d68d19c1
+  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.0.tar.gz
+  URL_HASH SHA256=eacf582fa8f696227988d08cfc46121770823839fe9e301a20fbce67e7cd70ec
 )
 FetchContent_MakeAvailable(pybind11)
 
@@ -53,6 +53,7 @@ set_source_files_properties(${_sycl_gemm_sources}
   PROPERTIES
   COMPILE_OPTIONS "-O3"
 )
+target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 
 add_executable(standalone_cpp
   EXCLUDE_FROM_ALL

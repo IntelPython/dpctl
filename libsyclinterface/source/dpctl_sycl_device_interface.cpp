@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@
 #include <cstring>
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {
@@ -45,6 +45,31 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
+
+template <int dim>
+__dpctl_keep size_t *
+DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t *sizes = nullptr;
+    auto D = unwrap(DRef);
+    if (D) {
+        try {
+#if __SYCL_COMPILER_VERSION >= 20220805
+            auto id_sizes =
+                D->get_info<info::device::max_work_item_sizes<dim>>();
+#else
+            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
+#endif
+            sizes = new size_t[dim];
+            for (auto i = 0ul; i < dim; ++i) {
+                sizes[i] = id_sizes[i];
+            }
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return sizes;
+}
 
 } /* end of anonymous namespace */
 
@@ -226,22 +251,27 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 }
 
 __dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return DPCTLDevice__GetMaxWorkItemSizes<1>(DRef);
+}
+
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return DPCTLDevice__GetMaxWorkItemSizes<2>(DRef);
+}
+
+__dpctl_keep size_t *
+DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
+}
+
+__dpctl_keep size_t *
 DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t *sizes = nullptr;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
-            sizes = new size_t[3];
-            for (auto i = 0ul; i < 3; ++i) {
-                sizes[i] = id_sizes[i];
-            }
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return sizes;
+    return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
 }
 
 size_t
@@ -335,20 +365,6 @@ DPCTLDevice_GetDriverVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         }
     }
     return cstr_driver;
-}
-
-bool DPCTLDevice_IsHostUnifiedMemory(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool ret = false;
-    auto D = unwrap(DRef);
-    if (D) {
-        try {
-            ret = D->get_info<info::device::host_unified_memory>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return ret;
 }
 
 bool DPCTLDevice_AreEq(__dpctl_keep const DPCTLSyclDeviceRef DRef1,
@@ -659,5 +675,56 @@ size_t DPCTLDevice_GetProfilingTimerResolution(
     else {
         error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
         return 0;
+    }
+}
+
+uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        return D->get_info<info::device::global_mem_cache_line_size>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
+
+uint64_t
+DPCTLDevice_GetGlobalMemCacheSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        return D->get_info<info::device::global_mem_cache_size>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
+
+DPCTLGlobalMemCacheType
+DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap(DRef);
+        auto mem_type = D->get_info<info::device::global_mem_cache_type>();
+        switch (mem_type) {
+        case info::global_mem_cache_type::none:
+            return DPCTL_MEM_CACHE_TYPE_NONE;
+        case info::global_mem_cache_type::read_only:
+            return DPCTL_MEM_CACHE_TYPE_READ_ONLY;
+        case info::global_mem_cache_type::read_write:
+            return DPCTL_MEM_CACHE_TYPE_READ_WRITE;
+        }
+        // If execution reaches here unrecognized mem_type was returned. Check
+        // values in the enumeration `info::global_mem_cache_type` in SYCL specs
+        assert(false);
+        return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
     }
 }

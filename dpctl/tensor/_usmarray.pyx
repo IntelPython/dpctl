@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2021 Intel Corporation
+#  Copyright 2020-2022 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 cimport dpctl.tensor._dlpack as c_dlpack
+import dpctl.tensor._flags as _flags
 
 include "_stride_utils.pxi"
 include "_types.pxi"
@@ -365,7 +366,7 @@ cdef class usm_ndarray:
         ary_iface = self.base_.__sycl_usm_array_interface__
         mem_ptr = <char *>(<size_t> ary_iface['data'][0])
         ary_ptr = <char *>(<size_t> self.data_)
-        ro_flag = False if (self.flags_ & USM_ARRAY_WRITEABLE) else True
+        ro_flag = False if (self.flags_ & USM_ARRAY_WRITABLE) else True
         ary_iface['data'] = (<size_t> mem_ptr, ro_flag)
         ary_iface['shape'] = self.shape
         if (self.strides_):
@@ -503,9 +504,9 @@ cdef class usm_ndarray:
     @property
     def flags(self):
         """
-        Currently returns integer whose bits correspond to the flags.
+        Returns dpctl.tensor._flags object.
         """
-        return self.flags_
+        return _flags.Flags(self, self.flags_)
 
     @property
     def usm_type(self):
@@ -636,7 +637,7 @@ cdef class usm_ndarray:
             buffer=self.base_,
             offset=_meta[2]
         )
-        res.flags_ |= (self.flags_ & USM_ARRAY_WRITEABLE)
+        res.flags_ |= (self.flags_ & USM_ARRAY_WRITABLE)
         res.array_namespace_ = self.array_namespace_
         return res
 
@@ -663,7 +664,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags
+            res.flags_ = self.flags.flags
             return res
         else:
             nbytes = self.usm_data.nbytes
@@ -678,7 +679,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags
+            res.flags_ = self.flags.flags
             return res
 
     def _set_namespace(self, mod):
@@ -779,13 +780,14 @@ cdef class usm_ndarray:
             NotImplementedError: when non-default value of `stream` keyword
                 is used.
         """
-        if stream is None:
-            return c_dlpack.to_dlpack_capsule(self)
+        _caps = c_dlpack.to_dlpack_capsule(self)
+        if (stream is None or type(stream) is not dpctl.SyclQueue or
+            stream == self.sycl_queue):
+            pass
         else:
-            raise NotImplementedError(
-                "Only stream=None is supported. "
-                "Use `dpctl.SyclQueue.submit_barrier` to synchronize queues."
-            )
+            ev = self.sycl_queue.submit_barrier()
+            stream.submit_barrier(dependent_events=[ev])
+        return _caps
 
     def __dlpack_device__(self):
         """
@@ -937,7 +939,7 @@ cdef class usm_ndarray:
                 except Exception:
                     raise ValueError(
                         f"Input of type {type(val)} could not be "
-                        "converted to numpy.ndarray"
+                        "converted to usm_ndarray"
                     )
 
     def __sub__(first, other):
@@ -1173,7 +1175,7 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
     return r
 
 
@@ -1190,7 +1192,7 @@ cdef usm_ndarray _m_transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITEABLE)
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
     return r
 
 

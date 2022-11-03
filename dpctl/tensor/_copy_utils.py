@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2021 Intel Corporation
+#  Copyright 2020-2022 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -59,18 +59,19 @@ def _copy_to_numpy(ary):
 def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     "Copies numpy array `np_ary` into a new usm_ndarray"
     # This may peform a copy to meet stated requirements
-    Xnp = np.require(np_ary, requirements=["A", "O", "C", "E"])
-    if sycl_queue:
-        ctor_kwargs = {"queue": sycl_queue}
+    Xnp = np.require(np_ary, requirements=["A", "E"])
+    alloc_q = normalize_queue_device(sycl_queue=sycl_queue, device=None)
+    dt = Xnp.dtype
+    if dt.char in "dD" and alloc_q.sycl_device.has_aspect_fp64 is False:
+        Xusm_dtype = (
+            dpt.dtype("float32") if dt.char == "d" else dpt.dtype("complex64")
+        )
     else:
-        ctor_kwargs = dict()
-    Xusm = dpt.usm_ndarray(
-        Xnp.shape,
-        dtype=Xnp.dtype,
-        buffer=usm_type,
-        buffer_ctor_kwargs=ctor_kwargs,
+        Xusm_dtype = dt
+    Xusm = dpt.empty(
+        Xnp.shape, dtype=Xusm_dtype, usm_type=usm_type, sycl_queue=sycl_queue
     )
-    Xusm.usm_data.copy_from_host(Xnp.reshape((-1)).view("u1"))
+    _copy_from_numpy_into(Xusm, Xnp)
     return Xusm
 
 
@@ -81,8 +82,15 @@ def _copy_from_numpy_into(dst, np_ary):
     if not isinstance(dst, dpt.usm_ndarray):
         raise TypeError("Expected usm_ndarray, got {}".format(type(dst)))
     src_ary = np.broadcast_to(np_ary, dst.shape)
+    copy_q = dst.sycl_queue
+    if copy_q.sycl_device.has_aspect_fp64 is False:
+        src_ary_dt_c = src_ary.dtype.char
+        if src_ary_dt_c == "d":
+            src_ary = src_ary.astype(np.float32)
+        elif src_ary_dt_c == "D":
+            src_ary = src_ary.astype(np.complex64)
     ti._copy_numpy_ndarray_into_usm_ndarray(
-        src=src_ary, dst=dst, sycl_queue=dst.sycl_queue
+        src=src_ary, dst=dst, sycl_queue=copy_q
     )
 
 
@@ -253,18 +261,18 @@ def copy(usm_ary, order="K"):
     elif order == "F":
         copy_order = order
     elif order == "A":
-        if usm_ary.flags & 2:
+        if usm_ary.flags.f_contiguous:
             copy_order = "F"
     elif order == "K":
-        if usm_ary.flags & 2:
+        if usm_ary.flags.f_contiguous:
             copy_order = "F"
     else:
         raise ValueError(
             "Unrecognized value of the order keyword. "
             "Recognized values are 'A', 'C', 'F', or 'K'"
         )
-    c_contig = usm_ary.flags & 1
-    f_contig = usm_ary.flags & 2
+    c_contig = usm_ary.flags.c_contiguous
+    f_contig = usm_ary.flags.f_contiguous
     R = dpt.usm_ndarray(
         usm_ary.shape,
         dtype=usm_ary.dtype,
@@ -310,15 +318,15 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
             "Recognized values are 'A', 'C', 'F', or 'K'"
         )
     ary_dtype = usm_ary.dtype
-    target_dtype = np.dtype(newdtype)
-    if not np.can_cast(ary_dtype, target_dtype, casting=casting):
+    target_dtype = dpt.dtype(newdtype)
+    if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
         raise TypeError(
             "Can not cast from {} to {} according to rule {}".format(
                 ary_dtype, newdtype, casting
             )
         )
-    c_contig = usm_ary.flags & 1
-    f_contig = usm_ary.flags & 2
+    c_contig = usm_ary.flags.c_contiguous
+    f_contig = usm_ary.flags.f_contiguous
     needs_copy = copy or not (ary_dtype == target_dtype)
     if not needs_copy and (order != "K"):
         needs_copy = (c_contig and order not in ["A", "C"]) or (
@@ -331,10 +339,10 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         elif order == "F":
             copy_order = order
         elif order == "A":
-            if usm_ary.flags & 2:
+            if usm_ary.flags.f_contiguous:
                 copy_order = "F"
         elif order == "K":
-            if usm_ary.flags & 2:
+            if usm_ary.flags.f_contiguous:
                 copy_order = "F"
         else:
             raise ValueError(

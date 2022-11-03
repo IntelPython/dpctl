@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,13 +31,13 @@ import dpctl.tensor as dpt
 @pytest.mark.parametrize(
     "ctype_str,dtype,ctypes_ctor",
     [
-        ("short", np.dtype("i2"), ctypes.c_short),
-        ("int", np.dtype("i4"), ctypes.c_int),
-        ("unsigned int", np.dtype("u4"), ctypes.c_uint),
-        ("long", np.dtype(np.longlong), ctypes.c_longlong),
-        ("unsigned long", np.dtype(np.ulonglong), ctypes.c_ulonglong),
-        ("float", np.dtype("f4"), ctypes.c_float),
-        ("double", np.dtype("f8"), ctypes.c_double),
+        ("short", dpt.dtype("i2"), ctypes.c_short),
+        ("int", dpt.dtype("i4"), ctypes.c_int),
+        ("unsigned int", dpt.dtype("u4"), ctypes.c_uint),
+        ("long", dpt.dtype(np.longlong), ctypes.c_longlong),
+        ("unsigned long", dpt.dtype(np.ulonglong), ctypes.c_ulonglong),
+        ("float", dpt.dtype("f4"), ctypes.c_float),
+        ("double", dpt.dtype("f8"), ctypes.c_double),
     ],
 )
 def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
@@ -45,7 +45,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         q = dpctl.SyclQueue("opencl", property="enable_profiling")
     except dpctl.SyclQueueCreationError:
         pytest.skip("OpenCL queue could not be created")
-    if dtype == np.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
+    if dtype == dpt.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
         pytest.skip(
             "Device does not support double precision floating point type"
         )

@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2021 Intel Corporation
+#  Copyright 2020-2022 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ cdef int ERROR_UNEXPECTED_STRIDES = 3
 
 cdef int USM_ARRAY_C_CONTIGUOUS = 1
 cdef int USM_ARRAY_F_CONTIGUOUS = 2
-cdef int USM_ARRAY_WRITEABLE = 4
+cdef int USM_ARRAY_WRITABLE = 4
 
 
 cdef Py_ssize_t shape_to_elem_count(int nd, Py_ssize_t *shape_arr):

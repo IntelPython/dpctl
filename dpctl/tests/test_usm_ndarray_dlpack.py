@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,6 +77,18 @@ def test_dlpack_exporter(typestr, usm_type):
         Y = X[::2]
         caps2 = Y.__dlpack__()
         assert caps_fn(caps2, b"dltensor")
+
+
+def test_dlpack_exporter_stream():
+    try:
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queues")
+    X = dpt.empty((64,), dtype="u1", sycl_queue=q1)
+    cap1 = X.__dlpack__(stream=q1)
+    cap2 = X.__dlpack__(stream=q2)
+    assert type(cap1) is type(cap2)
 
 
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])

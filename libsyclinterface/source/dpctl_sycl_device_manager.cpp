@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {
@@ -58,8 +58,6 @@ std::string get_device_info_str(const device &Device)
        << Device.get_info<info::device::driver_version>() << _endl
        << std::setw(4) << " " << std::left << std::setw(16) << "Vendor"
        << Device.get_info<info::device::vendor>() << _endl << std::setw(4)
-       << " " << std::left << std::setw(16) << "Profile"
-       << Device.get_info<info::device::profile>() << _endl << std::setw(4)
        << " " << std::left << std::setw(16) << "Filter string"
        << DPCTL_GetDeviceFilterString(Device) << _endl;
 

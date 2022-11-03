@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2021 Intel Corporation
+#  Copyright 2020-2022 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+
+import operator
 
 import numpy as np
 
@@ -31,20 +33,20 @@ def _get_dtype(dtype, sycl_obj, ref_type=None):
     if dtype is None:
         if ref_type in [None, float] or np.issubdtype(ref_type, np.floating):
             dtype = ti.default_device_fp_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         elif ref_type in [bool, np.bool_]:
             dtype = ti.default_device_bool_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         elif ref_type is int or np.issubdtype(ref_type, np.integer):
             dtype = ti.default_device_int_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         elif ref_type is complex or np.issubdtype(ref_type, np.complexfloating):
             dtype = ti.default_device_complex_type(sycl_obj)
-            return np.dtype(dtype)
+            return dpt.dtype(dtype)
         else:
-            raise ValueError(f"Reference type {ref_type} not recognized.")
+            raise TypeError(f"Reference type {ref_type} not recognized.")
     else:
-        return np.dtype(dtype)
+        return dpt.dtype(dtype)
 
 
 def _array_info_dispatch(obj):
@@ -131,9 +133,9 @@ def _asarray_from_usm_ndarray(
     #    sycl_queue is unchanged
     can_zero_copy = can_zero_copy and copy_q is usm_ndary.sycl_queue
     #    order is unchanged
-    c_contig = usm_ndary.flags & 1
-    f_contig = usm_ndary.flags & 2
-    fc_contig = usm_ndary.flags & 3
+    c_contig = usm_ndary.flags.c_contiguous
+    f_contig = usm_ndary.flags.f_contiguous
+    fc_contig = usm_ndary.flags.forc
     if can_zero_copy:
         if order == "C" and c_contig:
             pass
@@ -184,9 +186,38 @@ def _asarray_from_usm_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    # FIXME: call copy_to when implemented
-    res[(slice(None, None, None),) * res.ndim] = usm_ndary
+    eq = dpctl.utils.get_execution_queue([usm_ndary.sycl_queue, copy_q])
+    if eq is not None:
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ndary, dst=res, sycl_queue=eq
+        )
+        hev.wait()
+    else:
+        tmp = dpt.asnumpy(usm_ndary)
+        res[...] = tmp
     return res
+
+
+def _map_to_device_dtype(dt, q):
+    if dt.char == "?" or np.issubdtype(dt, np.integer):
+        return dt
+    d = q.sycl_device
+    dtc = dt.char
+    if np.issubdtype(dt, np.floating):
+        if dtc == "f":
+            return dt
+        else:
+            if dtc == "d" and d.has_aspect_fp64:
+                return dt
+            if dtc == "h" and d.has_aspect_fp16:
+                return dt
+            return dpt.dtype("f4")
+    elif np.issubdtype(dt, np.complexfloating):
+        if dtc == "F":
+            return dt
+        if dtc == "D" and d.has_aspect_fp64:
+            return dt
+        return dpt.dtype("c8")
 
 
 def _asarray_from_numpy_ndarray(
@@ -196,9 +227,15 @@ def _asarray_from_numpy_ndarray(
         raise TypeError(f"Expected numpy.ndarray, got {type(ary)}")
     if usm_type is None:
         usm_type = "device"
-    if dtype is None:
-        dtype = ary.dtype
     copy_q = normalize_queue_device(sycl_queue=None, device=sycl_queue)
+    if ary.dtype.char not in "?bBhHiIlLqQefdFD":
+        raise TypeError(
+            f"Numpy array of data type {ary.dtype} is not supported. "
+            "Please convert the input to an array with numeric data type."
+        )
+    if dtype is None:
+        # deduce device-representable output data type
+        dtype = _map_to_device_dtype(ary.dtype, copy_q)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -234,8 +271,7 @@ def _asarray_from_numpy_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    # FIXME: call copy_to when implemented
-    res[(slice(None, None, None),) * res.ndim] = ary
+    res[...] = ary
     return res
 
 
@@ -292,7 +328,7 @@ def asarray(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -303,7 +339,7 @@ def asarray(
         )
     # 2. Check that dtype is None, or a valid dtype
     if dtype is not None:
-        dtype = np.dtype(dtype)
+        dtype = dpt.dtype(dtype)
     # 3. Validate order
     if not isinstance(order, str):
         raise TypeError(
@@ -430,7 +466,7 @@ def empty(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -453,27 +489,27 @@ def empty(
     return res
 
 
-def _coerce_and_infer_dt(*args, dt):
+def _coerce_and_infer_dt(*args, dt, sycl_queue, err_msg, allow_bool=False):
     "Deduce arange type from sequence spec"
     nd, seq_dt, d = _array_info_sequence(args)
     if d != _host_set or nd != (len(args),):
-        raise ValueError("start, stop and step must be Python scalars")
-    if dt is None:
-        dt = seq_dt
-    dt = np.dtype(dt)
+        raise ValueError(err_msg)
+    dt = _get_dtype(dt, sycl_queue, ref_type=seq_dt)
     if np.issubdtype(dt, np.integer):
         return tuple(int(v) for v in args), dt
     elif np.issubdtype(dt, np.floating):
         return tuple(float(v) for v in args), dt
     elif np.issubdtype(dt, np.complexfloating):
         return tuple(complex(v) for v in args), dt
+    elif allow_bool and dt.char == "?":
+        return tuple(bool(v) for v in args), dt
     else:
         raise ValueError(f"Data type {dt} is not supported")
 
 
 def _round_for_arange(tmp):
     k = int(tmp)
-    if k > 0 and float(k) < tmp:
+    if k >= 0 and float(k) < tmp:
         tmp = tmp + 1
     return tmp
 
@@ -481,13 +517,14 @@ def _round_for_arange(tmp):
 def _get_arange_length(start, stop, step):
     "Compute length of arange sequence"
     span = stop - start
-    if type(step) in [int, float] and type(span) in [int, float]:
+    if hasattr(step, "__float__") and hasattr(span, "__float__"):
         return _round_for_arange(span / step)
     tmp = span / step
-    if type(tmp) is complex and tmp.imag == 0:
+    if hasattr(tmp, "__complex__"):
+        tmp = complex(tmp)
         tmp = tmp.real
     else:
-        return tmp
+        tmp = float(tmp)
     return _round_for_arange(tmp)
 
 
@@ -518,18 +555,29 @@ def arange(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
     if stop is None:
         stop = start
         start = 0
-    (
+    if step is None:
+        step = 1
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    is_bool = False
+    if dtype:
+        is_bool = (dtype is bool) or (dpt.dtype(dtype) == dpt.bool)
+    (start_, stop_, step_), dt = _coerce_and_infer_dt(
         start,
         stop,
         step,
-    ), dt = _coerce_and_infer_dt(start, stop, step, dt=dtype)
+        dt=dpt.int8 if is_bool else dtype,
+        sycl_queue=sycl_queue,
+        err_msg="start, stop, and step must be Python scalars",
+        allow_bool=False,
+    )
     try:
         tmp = _get_arange_length(start, stop, step)
         sh = int(tmp)
@@ -537,8 +585,8 @@ def arange(
             sh = 0
     except TypeError:
         sh = 0
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
-    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    if is_bool and sh > 2:
+        raise ValueError("no fill-function for boolean data type")
     res = dpt.usm_ndarray(
         (sh,),
         dtype=dt,
@@ -546,11 +594,31 @@ def arange(
         order="C",
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    _step = (start + step) - start
-    _step = dt.type(_step)
-    _start = dt.type(start)
+    sc_ty = dt.type
+    _first = sc_ty(start)
+    if sh > 1:
+        _second = sc_ty(start + step)
+        if dt in [dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64]:
+            int64_ty = dpt.int64.type
+            _step = int64_ty(_second) - int64_ty(_first)
+        else:
+            _step = _second - _first
+        _step = sc_ty(_step)
+    else:
+        _step = sc_ty(1)
+    _start = _first
     hev, _ = ti._linspace_step(_start, _step, res, sycl_queue)
     hev.wait()
+    if is_bool:
+        res_out = dpt.usm_ndarray(
+            (sh,),
+            dtype=dpt.bool,
+            buffer=usm_type,
+            order="C",
+            buffer_ctor_kwargs={"queue": sycl_queue},
+        )
+        res_out[:] = res
+        res = res_out
     return res
 
 
@@ -578,7 +646,7 @@ def zeros(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -626,7 +694,7 @@ def ones(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -682,7 +750,7 @@ def full(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -732,7 +800,7 @@ def empty_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -753,7 +821,7 @@ def empty_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -789,7 +857,7 @@ def zeros_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -810,7 +878,7 @@ def zeros_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     return zeros(
         sh,
         dtype=dtype,
@@ -846,7 +914,7 @@ def ones_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -867,7 +935,7 @@ def ones_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     return ones(
         sh,
         dtype=dtype,
@@ -910,7 +978,7 @@ def full_like(
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
             specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both a `None`, the
+            underlying SYCL queue to be used. If both are `None`, the
             `dpctl.SyclQueue()` is used for allocation and copying.
             Default: `None`.
     """
@@ -931,7 +999,7 @@ def full_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
-    dtype = np.dtype(dtype)
+    dtype = dpt.dtype(dtype)
     return full(
         sh,
         fill_value,
@@ -941,3 +1009,303 @@ def full_like(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
     )
+
+
+def linspace(
+    start,
+    stop,
+    /,
+    num,
+    *,
+    dtype=None,
+    device=None,
+    endpoint=True,
+    sycl_queue=None,
+    usm_type="device",
+):
+    """
+    linspace(start, stop, num, dtype=None, device=None, endpoint=True,
+        sycl_queue=None, usm_type=None): usm_ndarray
+
+    Returns evenly spaced numbers of specified interval.
+
+    Args:
+        start: the start of the interval.
+        stop: the end of the interval. If the `endpoint` is `False`, the
+            function must generate `num+1` evenly spaced points starting
+            with `start` and ending with `stop` and exclude the `stop`
+            from the returned array such that the returned array consists
+            of evenly spaced numbers over the half-open interval
+            `[start, stop)`. If `endpoint` is `True`, the output
+            array must consist of evenly spaced numbers over the closed
+            interval `[start, stop]`. Default: `True`.
+        num: number of samples. Must be a non-negative integer; otherwise,
+            the function must raise an exception.
+        dtype: output array data type. Should be a floating data type.
+            If `dtype` is `None`, the output array must be the default
+            floating point data type. Default: `None`.
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. Default: `"device"`.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both are `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+        endpoint: boolean indicating whether to include `stop` in the
+            interval. Default: `True`.
+    """
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    if endpoint not in [True, False]:
+        raise TypeError("endpoint keyword argument must be of boolean type")
+    num = operator.index(num)
+    if num < 0:
+        raise ValueError("Number of points must be non-negative")
+    ((start, stop,), dt) = _coerce_and_infer_dt(
+        start,
+        stop,
+        dt=dtype,
+        sycl_queue=sycl_queue,
+        err_msg="start and stop must be Python scalars.",
+        allow_bool=True,
+    )
+    if dtype is None and np.issubdtype(dt, np.integer):
+        dt = ti.default_device_fp_type(sycl_queue)
+        dt = dpt.dtype(dt)
+        start = float(start)
+        stop = float(stop)
+    res = dpt.empty(num, dtype=dt, sycl_queue=sycl_queue)
+    hev, _ = ti._linspace_affine(
+        start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
+    )
+    hev.wait()
+    return res
+
+
+def eye(
+    n_rows,
+    n_cols=None,
+    /,
+    *,
+    k=0,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    eye(n_rows, n_cols = None, /, *, k = 0, dtype = None, \
+    device = None, usm_type="device", sycl_queue=None) -> usm_ndarray
+
+    Creates `usm_ndarray` with ones on the `k`th diagonal.
+
+    Args:
+        n_rows: number of rows in the output array.
+        n_cols (optional): number of columns in the output array. If None,
+            n_cols = n_rows. Default: `None`.
+        k: index of the diagonal, with 0 as the main diagonal.
+            A positive value of k is a superdiagonal, a negative value
+            is a subdiagonal.
+            Raises `TypeError` if k is not an integer.
+            Default: `0`.
+        dtype (optional): data type of the array. Can be typestring,
+            a `numpy.dtype` object, `numpy` char string, or a numpy
+            scalar type. Default: None
+        order ("C" or F"): memory layout for the array. Default: "C"
+        device (optional): array API concept of device where the output array
+            is created. `device` can be `None`, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to a
+            non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
+            `dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+            allocation for the output array. Default: `"device"`.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
+            for output array allocation and copying. `sycl_queue` and `device`
+            are exclusive keywords, i.e. use one or another. If both are
+            specified, a `TypeError` is raised unless both imply the same
+            underlying SYCL queue to be used. If both are `None`, the
+            `dpctl.SyclQueue()` is used for allocation and copying.
+            Default: `None`.
+    """
+    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'F' or 'C'."
+        )
+    else:
+        order = order[0].upper()
+    n_rows = operator.index(n_rows)
+    n_cols = n_rows if n_cols is None else operator.index(n_cols)
+    k = operator.index(k)
+    if k >= n_cols or -k >= n_rows:
+        return dpt.zeros(
+            (n_rows, n_cols),
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dtype = _get_dtype(dtype, sycl_queue)
+    res = dpt.usm_ndarray(
+        (n_rows, n_cols),
+        dtype=dtype,
+        buffer=usm_type,
+        order=order,
+        buffer_ctor_kwargs={"queue": sycl_queue},
+    )
+    if n_rows != 0 and n_cols != 0:
+        hev, _ = ti._eye(k, dst=res, sycl_queue=sycl_queue)
+        hev.wait()
+    return res
+
+
+def tril(X, k=0):
+    """
+    tril(X: usm_ndarray, k: int) -> usm_ndarray
+
+    Returns the lower triangular part of a matrix (or a stack of matrices) X.
+    """
+    if type(X) is not dpt.usm_ndarray:
+        raise TypeError
+
+    k = operator.index(k)
+
+    # F_CONTIGUOUS = 2
+    order = "F" if (X.flags.f_contiguous) else "C"
+
+    shape = X.shape
+    nd = X.ndim
+    if nd < 2:
+        raise ValueError("Array dimensions less than 2.")
+
+    if k >= shape[nd - 1] - 1:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X, dst=res, sycl_queue=X.sycl_queue
+        )
+        hev.wait()
+    elif k < -shape[nd - 2]:
+        res = dpt.zeros(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+    else:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._tril(src=X, dst=res, k=k, sycl_queue=X.sycl_queue)
+        hev.wait()
+
+    return res
+
+
+def triu(X, k=0):
+    """
+    triu(X: usm_ndarray, k: int) -> usm_ndarray
+
+    Returns the upper triangular part of a matrix (or a stack of matrices) X.
+    """
+    if type(X) is not dpt.usm_ndarray:
+        raise TypeError
+
+    k = operator.index(k)
+
+    # F_CONTIGUOUS = 2
+    order = "F" if (X.flags.f_contiguous) else "C"
+
+    shape = X.shape
+    nd = X.ndim
+    if nd < 2:
+        raise ValueError("Array dimensions less than 2.")
+
+    if k > shape[nd - 1]:
+        res = dpt.zeros(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+    elif k <= -shape[nd - 2] + 1:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=X, dst=res, sycl_queue=X.sycl_queue
+        )
+        hev.wait()
+    else:
+        res = dpt.empty(
+            X.shape, dtype=X.dtype, order=order, sycl_queue=X.sycl_queue
+        )
+        hev, _ = ti._triu(src=X, dst=res, k=k, sycl_queue=X.sycl_queue)
+        hev.wait()
+
+    return res
+
+
+def meshgrid(*arrays, indexing="xy"):
+
+    """
+    meshgrid(*arrays, indexing="xy") -> list[usm_ndarray]
+
+    Creates list of `usm_ndarray` coordinate matrices from vectors.
+
+    Args:
+        arrays: arbitrary number of one-dimensional `USM_ndarray` objects.
+            If vectors are not of the same data type,
+            or are not one-dimensional, raises `ValueError.`
+        indexing: Cartesian (`xy`) or matrix (`ij`) indexing of output.
+            For a set of `n` vectors with lengths N0, N1, N2, ...
+            Cartesian indexing results in arrays of shape
+            (N1, N0, N2, ...)
+            matrix indexing results in arrays of shape
+            (n0, N1, N2, ...)
+            Default: `xy`.
+    """
+    ref_dt = None
+    ref_unset = True
+    for array in arrays:
+        if not isinstance(array, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected instance of dpt.usm_ndarray, got {type(array)}."
+            )
+        if array.ndim != 1:
+            raise ValueError("All arrays must be one-dimensional.")
+        if ref_unset:
+            ref_unset = False
+            ref_dt = array.dtype
+        else:
+            if not ref_dt == array.dtype:
+                raise ValueError(
+                    "All arrays must be of the same numeric data type."
+                )
+    if indexing not in ["xy", "ij"]:
+        raise ValueError(
+            "Unrecognized indexing keyword value, expecting 'xy' or 'ij.'"
+        )
+    n = len(arrays)
+    sh = (-1,) + (1,) * (n - 1)
+
+    res = []
+    if n > 1 and indexing == "xy":
+        res.append(dpt.reshape(arrays[0], (1, -1) + sh[2:], copy=True))
+        res.append(dpt.reshape(arrays[1], sh, copy=True))
+        arrays, sh = arrays[2:], sh[-2:] + sh[:-2]
+
+    for array in arrays:
+        res.append(dpt.reshape(array, sh, copy=True))
+        sh = sh[-1:] + sh[:-1]
+
+    output = dpt.broadcast_arrays(*res)
+
+    return output

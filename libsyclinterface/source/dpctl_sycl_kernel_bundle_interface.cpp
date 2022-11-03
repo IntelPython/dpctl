@@ -3,7 +3,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,15 +44,15 @@
 // not reorder the includes.
 // clang-format off
 #include "ze_api.h" /* Level Zero headers */
-#if __has_include(<sycl/backend/level_zero.hpp>)
-#include <sycl/backend/level_zero.hpp>
+#if __has_include(<sycl/ext/oneapi/backend/level_zero.hpp>)
+#include <sycl/ext/oneapi/backend/level_zero.hpp>
 #else
 #include <CL/sycl/backend/level_zero.hpp>
 #endif
 // clang-format on
 #endif
 
-using namespace cl::sycl;
+using namespace sycl;
 
 namespace
 {

@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,8 @@ typedef struct DPCTLOpaqueSyclEvent *DPCTLSyclEventRef;
 typedef struct DPCTLOpaqueSyclKernel *DPCTLSyclKernelRef;
 
 /*!
- * @brief Opaque pointer to a ``sycl::kernel_bundle``
+ * @brief Opaque pointer to a
+ * ``sycl::kernel_bundle<sycl::bundle_state::executable>``
  *
  */
 typedef struct DPCTLOpaqueSyclKernelBundle *DPCTLSyclKernelBundleRef;

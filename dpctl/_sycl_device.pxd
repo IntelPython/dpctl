@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ cdef public api class _SyclDevice [
     object Py_SyclDeviceObject,
     type Py_SyclDeviceType
 ]:
-    """ A helper data-owner class to abstract a `cl::sycl::device` instance.
+    """ A helper data-owner class to abstract a `sycl::device` instance.
     """
     cdef DPCTLSyclDeviceRef _device_ref
     cdef const char *_vendor

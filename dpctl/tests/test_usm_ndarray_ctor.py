@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import numbers
 
 import numpy as np
 import pytest
+from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.memory as dpm
@@ -42,10 +43,7 @@ from dpctl.tensor import Device
 )
 @pytest.mark.parametrize("usm_type", ["shared", "host", "device"])
 def test_allocate_usm_ndarray(shape, usm_type):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclCreationError:
-        pytest.skip("Default SYCL queue could not be created")
+    q = get_queue_or_skip()
     X = dpt.usm_ndarray(
         shape, dtype="d", buffer=usm_type, buffer_ctor_kwargs={"queue": q}
     )
@@ -59,13 +57,13 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 
 def test_usm_ndarray_flags():
-    assert dpt.usm_ndarray((5,)).flags == 3
-    assert dpt.usm_ndarray((5, 2)).flags == 1
-    assert dpt.usm_ndarray((5, 2), order="F").flags == 2
-    assert dpt.usm_ndarray((5, 1, 2), order="F").flags == 2
-    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags == 1
-    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags == 2
-    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags == 3
+    assert dpt.usm_ndarray((5,)).flags.fc
+    assert dpt.usm_ndarray((5, 2)).flags.c_contiguous
+    assert dpt.usm_ndarray((5, 2), order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags.c_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.fc
 
 
 @pytest.mark.parametrize(
@@ -85,14 +83,14 @@ def test_usm_ndarray_flags():
         "c8",
         "c16",
         b"float32",
-        np.dtype("d"),
+        dpt.dtype("d"),
         np.half,
     ],
 )
 def test_dtypes(dtype):
     Xusm = dpt.usm_ndarray((1,), dtype=dtype)
-    assert Xusm.itemsize == np.dtype(dtype).itemsize
-    expected_fmt = (np.dtype(dtype).str)[1:]
+    assert Xusm.itemsize == dpt.dtype(dtype).itemsize
+    expected_fmt = (dpt.dtype(dtype).str)[1:]
     actual_fmt = Xusm.__sycl_usm_array_interface__["typestr"][1:]
     assert expected_fmt == actual_fmt
 
@@ -112,7 +110,7 @@ def test_properties(dt):
     assert isinstance(X.sycl_queue, dpctl.SyclQueue)
     assert isinstance(X.sycl_device, dpctl.SyclDevice)
     assert isinstance(X.sycl_context, dpctl.SyclContext)
-    assert isinstance(X.dtype, np.dtype)
+    assert isinstance(X.dtype, dpt.dtype)
     assert isinstance(X.__sycl_usm_array_interface__, dict)
     assert isinstance(X.mT, dpt.usm_ndarray)
     assert isinstance(X.imag, dpt.usm_ndarray)
@@ -465,7 +463,7 @@ def test_pyx_capi_get_flags():
         fn_restype=ctypes.c_int,
     )
     flags = get_flags_fn(X)
-    assert type(flags) is int and flags == X.flags
+    assert type(flags) is int and X.flags == flags
 
 
 def test_pyx_capi_get_offset():
@@ -517,48 +515,48 @@ def test_pyx_capi_check_constants():
     assert cc_flag > 0 and 0 == (cc_flag & (cc_flag - 1))
     fc_flag = _pyx_capi_int(X, "USM_ARRAY_F_CONTIGUOUS")
     assert fc_flag > 0 and 0 == (fc_flag & (fc_flag - 1))
-    w_flag = _pyx_capi_int(X, "USM_ARRAY_WRITEABLE")
+    w_flag = _pyx_capi_int(X, "USM_ARRAY_WRITABLE")
     assert w_flag > 0 and 0 == (w_flag & (w_flag - 1))
 
     bool_typenum = _pyx_capi_int(X, "UAR_BOOL")
-    assert bool_typenum == np.dtype("bool_").num
+    assert bool_typenum == dpt.dtype("bool_").num
 
     byte_typenum = _pyx_capi_int(X, "UAR_BYTE")
-    assert byte_typenum == np.dtype(np.byte).num
+    assert byte_typenum == dpt.dtype(np.byte).num
     ubyte_typenum = _pyx_capi_int(X, "UAR_UBYTE")
-    assert ubyte_typenum == np.dtype(np.ubyte).num
+    assert ubyte_typenum == dpt.dtype(np.ubyte).num
 
     short_typenum = _pyx_capi_int(X, "UAR_SHORT")
-    assert short_typenum == np.dtype(np.short).num
+    assert short_typenum == dpt.dtype(np.short).num
     ushort_typenum = _pyx_capi_int(X, "UAR_USHORT")
-    assert ushort_typenum == np.dtype(np.ushort).num
+    assert ushort_typenum == dpt.dtype(np.ushort).num
 
     int_typenum = _pyx_capi_int(X, "UAR_INT")
-    assert int_typenum == np.dtype(np.intc).num
+    assert int_typenum == dpt.dtype(np.intc).num
     uint_typenum = _pyx_capi_int(X, "UAR_UINT")
-    assert uint_typenum == np.dtype(np.uintc).num
+    assert uint_typenum == dpt.dtype(np.uintc).num
 
     long_typenum = _pyx_capi_int(X, "UAR_LONG")
-    assert long_typenum == np.dtype(np.int_).num
+    assert long_typenum == dpt.dtype(np.int_).num
     ulong_typenum = _pyx_capi_int(X, "UAR_ULONG")
-    assert ulong_typenum == np.dtype(np.uint).num
+    assert ulong_typenum == dpt.dtype(np.uint).num
 
     longlong_typenum = _pyx_capi_int(X, "UAR_LONGLONG")
-    assert longlong_typenum == np.dtype(np.longlong).num
+    assert longlong_typenum == dpt.dtype(np.longlong).num
     ulonglong_typenum = _pyx_capi_int(X, "UAR_ULONGLONG")
-    assert ulonglong_typenum == np.dtype(np.ulonglong).num
+    assert ulonglong_typenum == dpt.dtype(np.ulonglong).num
 
     half_typenum = _pyx_capi_int(X, "UAR_HALF")
-    assert half_typenum == np.dtype(np.half).num
+    assert half_typenum == dpt.dtype(np.half).num
     float_typenum = _pyx_capi_int(X, "UAR_FLOAT")
-    assert float_typenum == np.dtype(np.single).num
+    assert float_typenum == dpt.dtype(np.single).num
     double_typenum = _pyx_capi_int(X, "UAR_DOUBLE")
-    assert double_typenum == np.dtype(np.double).num
+    assert double_typenum == dpt.dtype(np.double).num
 
     cfloat_typenum = _pyx_capi_int(X, "UAR_CFLOAT")
-    assert cfloat_typenum == np.dtype(np.csingle).num
+    assert cfloat_typenum == dpt.dtype(np.csingle).num
     cdouble_typenum = _pyx_capi_int(X, "UAR_CDOUBLE")
-    assert cdouble_typenum == np.dtype(np.cdouble).num
+    assert cdouble_typenum == dpt.dtype(np.cdouble).num
 
 
 _all_dtypes = [
@@ -588,7 +586,7 @@ _all_dtypes = [
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_tofrom_numpy(shape, dtype, usm_type):
-    q = dpctl.SyclQueue()
+    q = get_queue_or_skip()
     Xnp = np.zeros(shape, dtype=dtype)
     Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
@@ -604,14 +602,8 @@ def test_tofrom_numpy(shape, dtype, usm_type):
 @pytest.mark.parametrize("src_usm_type", ["device", "shared", "host"])
 @pytest.mark.parametrize("dst_usm_type", ["device", "shared", "host"])
 def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not create default SyclQueue.")
-    if q.sycl_device.has_aspect_fp64 is False and dtype in ["f8", "c16"]:
-        pytest.skip(
-            "Device does not support double precision floating point types."
-        )
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     Xnp = (
         np.random.randint(-10, 10, size=2 * 3 * 4)
         .astype(dtype)
@@ -660,12 +652,8 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
 )
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_setitem_scalar(dtype, usm_type):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not create default SyclQueue")
-    if q.sycl_device.has_aspect_fp64 is False and dtype in ["f8", "c16"]:
-        pytest.skip("Device does not support double precision floating type")
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     X = dpt.usm_ndarray((6, 6), dtype=dtype, buffer=usm_type)
     for i in range(X.size):
         X[np.unravel_index(i, X.shape)] = np.asarray(i, dtype=dtype)
@@ -681,8 +669,9 @@ def test_setitem_scalar(dtype, usm_type):
 
 
 def test_setitem_errors():
-    X = dpt.usm_ndarray((4,), dtype="u1")
-    Y = dpt.usm_ndarray((4, 2), dtype="u1")
+    q = get_queue_or_skip()
+    X = dpt.empty((4,), dtype="u1", sycl_queue=q)
+    Y = dpt.empty((4, 2), dtype="u1", sycl_queue=q)
     with pytest.raises(ValueError):
         X[:] = Y
     with pytest.raises(ValueError):
@@ -692,14 +681,8 @@ def test_setitem_errors():
 
 @pytest.mark.parametrize("src_dt,dst_dt", [("i4", "i8"), ("f4", "f8")])
 def test_setitem_different_dtypes(src_dt, dst_dt):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Default queue could not be created")
-    if dst_dt == "f8" and q.sycl_device.has_aspect_fp64 is False:
-        pytest.skip(
-            "Device does not support double precision floating point type"
-        )
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dst_dt, q)
     X = dpt.from_numpy(np.ones(10, src_dt), sycl_queue=q)
     Y = dpt.from_numpy(np.zeros(10, src_dt), sycl_queue=q)
     Z = dpt.empty((20,), dtype=dst_dt, sycl_queue=q)
@@ -709,16 +692,13 @@ def test_setitem_different_dtypes(src_dt, dst_dt):
 
 
 def test_setitem_wingaps():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Default queue could not be created")
-    if np.dtype("intc").itemsize == np.dtype("int32").itemsize:
+    q = get_queue_or_skip()
+    if dpt.dtype("intc").itemsize == dpt.dtype("int32").itemsize:
         dpt_dst = dpt.empty(4, dtype="int32", sycl_queue=q)
         np_src = np.arange(4, dtype="intc")
         dpt_dst[:] = np_src  # should not raise exceptions
         assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
-    if np.dtype("long").itemsize == np.dtype("longlong").itemsize:
+    if dpt.dtype("long").itemsize == dpt.dtype("longlong").itemsize:
         dpt_dst = dpt.empty(4, dtype="longlong", sycl_queue=q)
         np_src = np.arange(4, dtype="long")
         dpt_dst[:] = np_src  # should not raise exceptions
@@ -746,7 +726,7 @@ def test_shape_setter():
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
-    assert X.flags & 1, "reshaped array expected to be C-contiguous"
+    assert X.flags.c_contiguous, "reshaped array expected to be C-contiguous"
 
     sh_s = (
         2,
@@ -831,12 +811,8 @@ def test_to_device():
 
 
 def test_to_device_migration():
-    try:
-        dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Default queue could not be created")
-    q1 = dpctl.SyclQueue()  # two distinct copies of default-constructed queue
-    q2 = dpctl.SyclQueue()
+    q1 = get_queue_or_skip()  # two distinct copies of default-constructed queue
+    q2 = get_queue_or_skip()
     X1 = dpt.empty((5,), "i8", sycl_queue=q1)  # X1 is associated with q1
     X2 = X1.to_device(q2)  # X2 is reassociated with q2
     assert X1.sycl_queue == q1
@@ -989,14 +965,8 @@ def test_zeros(dtype):
     _all_dtypes,
 )
 def test_ones(dtype):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not created default queue")
-    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
-        pytest.skip(
-            "Device does not support double precision floating point type"
-        )
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     X = dpt.ones(10, dtype=dtype, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(X), np.ones(10, dtype=dtype))
 
@@ -1006,21 +976,15 @@ def test_ones(dtype):
     _all_dtypes,
 )
 def test_full(dtype):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Could not created default queue")
-    if dtype in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
-        pytest.skip(
-            "Device does not support double precision floating point type"
-        )
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     X = dpt.full(10, 4, dtype=dtype, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(X), np.full(10, 4, dtype=dtype))
 
 
 def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 4).dtype, np.integer)
-    assert dpt.full(10, True).dtype is np.dtype(np.bool_)
+    assert dpt.full(10, True).dtype is dpt.dtype(np.bool_)
     assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
     assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
 
@@ -1030,17 +994,10 @@ def test_full_dtype_inference():
     _all_dtypes[1:],
 )
 def test_arange(dt):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
-
-    if dt in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
-        pytest.skip(
-            "Device does not support double precision floating point type"
-        )
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
     X = dpt.arange(0, 123, dtype=dt, sycl_queue=q)
-    dt = np.dtype(dt)
+    dt = dpt.dtype(dt)
     if np.issubdtype(dt, np.integer):
         assert int(X[47]) == 47
     elif np.issubdtype(dt, np.floating):
@@ -1049,26 +1006,86 @@ def test_arange(dt):
         assert complex(X[47]) == 47.0 + 0.0j
 
     # choose size larger than maximal value that u1/u2 can accomodate
-    sz = int(np.iinfo(np.int16).max) + 1
-    X1 = dpt.arange(sz, dtype=dt, sycl_queue=q)
-    assert X1.shape == (sz,)
+    sz = int(dpt.iinfo(dpt.int8).max)
+    X1 = dpt.arange(sz + 1, dtype=dt, sycl_queue=q)
+    assert X1.shape == (sz + 1,)
 
     X2 = dpt.arange(sz, 0, -1, dtype=dt, sycl_queue=q)
     assert X2.shape == (sz,)
 
 
 def test_arange_fp():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     assert dpt.arange(7, 0, -2, dtype="f4", device=q).shape == (4,)
     assert dpt.arange(0, 1, 0.25, dtype="f4", device=q).shape == (4,)
 
-    if q.sycl_device.has_aspect_fp64:
+    has_fp64 = q.sycl_device.has_aspect_fp64
+    if has_fp64:
         assert dpt.arange(7, 0, -2, dtype="f8", device=q).shape == (4,)
     assert dpt.arange(0, 1, 0.25, dtype="f4", device=q).shape == (4,)
+
+    x = dpt.arange(9.7, stop=10, sycl_queue=q)
+    assert x.shape == (1,)
+    assert x.dtype == dpt.float64 if has_fp64 else dpt.float32
+
+
+def test_arange_step_None():
+    q = get_queue_or_skip()
+
+    x = dpt.arange(0, stop=10, step=None, dtype="int32", sycl_queue=q)
+    assert x.shape == (10,)
+
+
+def test_arange_bool():
+    q = get_queue_or_skip()
+
+    x = dpt.arange(0, stop=2, dtype="bool", sycl_queue=q)
+    assert x.shape == (2,)
+    assert x.dtype == dpt.bool
+
+
+def test_arange_mixed_types():
+    q = get_queue_or_skip()
+
+    x = dpt.arange(-2.5, stop=200, step=100, dtype="int32", sycl_queue=q)
+    assert x.shape[0] == 3
+    assert int(x[1]) == 99 + int(x[0])
+
+    x = dpt.arange(+2.5, stop=200, step=100, dtype="int32", device=x.device)
+    assert x.shape[0] == 2
+    assert int(x[1]) == 100 + int(x[0])
+
+    _stop = np.float32(504)
+    x = dpt.arange(0, stop=_stop, step=100, dtype="f4", device=x.device)
+    assert x.shape == (6,)
+
+    # ensure length is determined using uncast parameters
+    x = dpt.arange(-5, stop=10**2, step=2.7, dtype="int64", device=x.device)
+    assert x.shape == (39,)
+
+
+@pytest.mark.parametrize(
+    "dt",
+    _all_dtypes,
+)
+def test_linspace(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+    X = dpt.linspace(0, 1, num=2, dtype=dt, sycl_queue=q)
+    assert np.allclose(dpt.asnumpy(X), np.linspace(0, 1, num=2, dtype=dt))
+
+
+def test_linspace_fp():
+    q = get_queue_or_skip()
+    n = 16
+    X = dpt.linspace(0, n - 1, num=n, sycl_queue=q)
+    if q.sycl_device.has_aspect_fp64:
+        assert X.dtype == dpt.dtype("float64")
+    else:
+        assert X.dtype == dpt.dtype("float32")
+    assert X.shape == (n,)
+    assert X.strides == (1,)
 
 
 @pytest.mark.parametrize(
@@ -1084,10 +1101,7 @@ def test_arange_fp():
     ],
 )
 def test_empty_like(dt, usm_kind):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.empty_like(X)
@@ -1117,10 +1131,7 @@ def test_empty_like(dt, usm_kind):
     ],
 )
 def test_zeros_like(dt, usm_kind):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.zeros_like(X)
@@ -1152,14 +1163,8 @@ def test_zeros_like(dt, usm_kind):
     ],
 )
 def test_ones_like(dt, usm_kind):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
-    if dt in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
-        pytest.skip(
-            "Device does not support double precision floating point type"
-        )
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.ones_like(X)
@@ -1191,17 +1196,10 @@ def test_ones_like(dt, usm_kind):
     ],
 )
 def test_full_like(dt, usm_kind):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
 
-    if dt in ["f8", "c16"] and q.sycl_device.has_aspect_fp64 is False:
-        pytest.skip(
-            "Device does not support double precision floating point type"
-        )
-
-    fill_v = np.dtype(dt).type(1)
+    fill_v = dpt.dtype(dt).type(1)
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.full_like(X, fill_v)
     assert X.shape == Y.shape
@@ -1219,6 +1217,194 @@ def test_full_like(dt, usm_kind):
     assert np.array_equal(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
 
 
+@pytest.mark.parametrize("dtype", _all_dtypes)
+@pytest.mark.parametrize("usm_kind", ["shared", "device", "host"])
+def test_eye(dtype, usm_kind):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.eye(4, 5, k=1, dtype=dtype, usm_type=usm_kind, sycl_queue=q)
+    Xnp = np.eye(4, 5, k=1, dtype=dtype)
+    assert X.dtype == Xnp.dtype
+    assert np.array_equal(Xnp, dpt.asnumpy(X))
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes[1:])
+def test_tril(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    shape = (2, 3, 4, 5, 5)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype=dtype, sycl_queue=q), shape
+    )
+    Y = dpt.tril(X)
+    Xnp = np.arange(np.prod(shape), dtype=dtype).reshape(shape)
+    Ynp = np.tril(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes[1:])
+def test_triu(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    shape = (4, 5)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype=dtype, sycl_queue=q), shape
+    )
+    Y = dpt.triu(X, 1)
+    Xnp = np.arange(np.prod(shape), dtype=dtype).reshape(shape)
+    Ynp = np.triu(Xnp, 1)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_tril_slice():
+    q = get_queue_or_skip()
+
+    shape = (6, 10)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype="int", sycl_queue=q), shape
+    )[1:, ::-2]
+    Y = dpt.tril(X)
+    Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape)[1:, ::-2]
+    Ynp = np.tril(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_triu_permute_dims():
+    q = get_queue_or_skip()
+
+    shape = (2, 3, 4, 5)
+    X = dpt.permute_dims(
+        dpt.reshape(
+            dpt.arange(np.prod(shape), dtype="int", sycl_queue=q), shape
+        ),
+        (3, 2, 1, 0),
+    )
+    Y = dpt.triu(X)
+    Xnp = np.transpose(
+        np.arange(np.prod(shape), dtype="int").reshape(shape), (3, 2, 1, 0)
+    )
+    Ynp = np.triu(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_tril_broadcast_to():
+    q = get_queue_or_skip()
+
+    shape = (5, 5)
+    X = dpt.broadcast_to(dpt.ones((1), dtype="int", sycl_queue=q), shape)
+    Y = dpt.tril(X)
+    Xnp = np.broadcast_to(np.ones((1), dtype="int"), shape)
+    Ynp = np.tril(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_triu_bool():
+    q = get_queue_or_skip()
+
+    shape = (4, 5)
+    X = dpt.ones((shape), dtype="bool", sycl_queue=q)
+    Y = dpt.triu(X)
+    Xnp = np.ones((shape), dtype="bool")
+    Ynp = np.triu(Xnp)
+    assert Y.dtype == Ynp.dtype
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("order", ["F", "C"])
+@pytest.mark.parametrize("k", [-10, -2, -1, 3, 4, 10])
+def test_triu_order_k(order, k):
+    q = get_queue_or_skip()
+
+    shape = (3, 3)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype="int", sycl_queue=q),
+        shape,
+        order=order,
+    )
+    Y = dpt.triu(X, k)
+    Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
+    Ynp = np.triu(Xnp, k)
+    assert Y.dtype == Ynp.dtype
+    assert X.flags == Y.flags
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("order", ["F", "C"])
+@pytest.mark.parametrize("k", [-10, -4, -3, 1, 2, 10])
+def test_tril_order_k(order, k):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    shape = (3, 3)
+    X = dpt.reshape(
+        dpt.arange(np.prod(shape), dtype="int", sycl_queue=q),
+        shape,
+        order=order,
+    )
+    Y = dpt.tril(X, k)
+    Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
+    Ynp = np.tril(Xnp, k)
+    assert Y.dtype == Ynp.dtype
+    assert X.flags == Y.flags
+    assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_meshgrid():
+    q = get_queue_or_skip()
+
+    X = dpt.arange(5, sycl_queue=q)
+    Y = dpt.arange(3, sycl_queue=q)
+    Z = dpt.meshgrid(X, Y)
+    Znp = np.meshgrid(dpt.asnumpy(X), dpt.asnumpy(Y))
+    n = len(Z)
+    assert n == len(Znp)
+    for i in range(n):
+        assert np.array_equal(dpt.asnumpy(Z[i]), Znp[i])
+    # dimension > 1 must raise ValueError
+    with pytest.raises(ValueError):
+        dpt.meshgrid(dpt.usm_ndarray((4, 4)))
+    # unknown indexing kwarg must raise ValueError
+    with pytest.raises(ValueError):
+        dpt.meshgrid(X, indexing="ji")
+    # input arrays with different data types must raise ValueError
+    with pytest.raises(ValueError):
+        dpt.meshgrid(X, dpt.asarray(Y, dtype="b1"))
+
+
+def test_meshgrid2():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+    q3 = get_queue_or_skip()
+
+    x1 = dpt.arange(0, 2, dtype="int16", sycl_queue=q1)
+    x2 = dpt.arange(3, 6, dtype="int16", sycl_queue=q2)
+    x3 = dpt.arange(6, 10, dtype="int16", sycl_queue=q3)
+    y1, y2, y3 = dpt.meshgrid(x1, x2, x3, indexing="xy")
+    z1, z2, z3 = dpt.meshgrid(x1, x2, x3, indexing="ij")
+    assert all(
+        x.sycl_queue == y.sycl_queue for x, y in zip((x1, x2, x3), (y1, y2, y3))
+    )
+    assert all(
+        x.sycl_queue == z.sycl_queue for x, z in zip((x1, x2, x3), (z1, z2, z3))
+    )
+    assert y1.shape == y2.shape and y2.shape == y3.shape
+    assert z1.shape == z2.shape and z2.shape == z3.shape
+    assert y1.shape == (len(x2), len(x1), len(x3))
+    assert z1.shape == (len(x1), len(x2), len(x3))
+    # FIXME: uncomment out once gh-921 is merged
+    # assert all(z.flags["C"]  for z in (z1, z2, z3))
+    # assert all(y.flags["C"]  for y in (y1, y2, y3))
+
+
 def test_common_arg_validation():
     order = "I"
     # invalid order must raise ValueError
@@ -1230,6 +1416,8 @@ def test_common_arg_validation():
         dpt.ones(10, order=order)
     with pytest.raises(ValueError):
         dpt.full(10, 1, order=order)
+    with pytest.raises(ValueError):
+        dpt.eye(10, order=order)
     X = dpt.empty(10)
     with pytest.raises(ValueError):
         dpt.empty_like(X, order=order)
@@ -1249,3 +1437,30 @@ def test_common_arg_validation():
         dpt.ones_like(X)
     with pytest.raises(TypeError):
         dpt.full_like(X, 1)
+    with pytest.raises(TypeError):
+        dpt.tril(X)
+    with pytest.raises(TypeError):
+        dpt.triu(X)
+    with pytest.raises(TypeError):
+        dpt.meshgrid(X)
+
+
+def test_flags():
+    x = dpt.empty(tuple(), "i4")
+    f = x.flags
+    f.__repr__()
+    f.c_contiguous
+    f.f_contiguous
+    f.contiguous
+    f.fc
+    f.fnc
+    f.forc
+    f.writable
+    # check comparison with generic types
+    f == Ellipsis
+
+
+def test_asarray_uint64():
+    Xnp = np.ndarray(1, dtype=np.uint64)
+    X = dpt.asarray(Xnp)
+    assert X.dtype == Xnp.dtype

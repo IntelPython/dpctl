@@ -48,6 +48,9 @@ setup(
                 dpctl.get_include(),
                 os.path.join(sysconfig.get_paths()["include"], ".."),
             ],
+            library_dirs=[
+                os.path.join(sysconfig.get_paths()["stdlib"], ".."),
+            ],
             libraries=["sycl"]
             + [
                 "mkl_sycl",
@@ -55,7 +58,6 @@ setup(
                 "mkl_tbb_thread",
                 "mkl_core",
                 "tbb",
-                "iomp5",
             ],
             runtime_library_dirs=[],
             extra_compile_args=[

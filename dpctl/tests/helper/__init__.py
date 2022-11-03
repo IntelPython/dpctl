@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@
 
 from ._helper import (
     create_invalid_capsule,
+    get_queue_or_skip,
     has_cpu,
     has_gpu,
     has_sycl_platforms,
+    skip_if_dtype_not_supported,
 )
 
 __all__ = [
@@ -29,4 +31,6 @@ __all__ = [
     "has_cpu",
     "has_gpu",
     "has_sycl_platforms",
+    "get_queue_or_skip",
+    "skip_if_dtype_not_supported",
 ]

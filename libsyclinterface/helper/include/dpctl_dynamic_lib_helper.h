@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@
 
 #endif // __linux__
 
+#include "dpctl_error_handlers.h"
 #include <cstdint>
 
 namespace dpctl
@@ -76,12 +77,18 @@ public:
         char *error = dlerror();
 
         if (nullptr != error) {
+            error_handler("Could not retrieve symbol " + std::string(symName) +
+                              ". Error encountered: " + std::string(error),
+                          __FILE__, __func__, __LINE__);
             return nullptr;
         }
 #elif defined(_WIN32) || defined(_WIN64)
         void *sym = (void *)GetProcAddress((HMODULE)_handle, symName);
 
         if (nullptr == sym) {
+            error_handler("Could not retrieve symbol " + std::string(symName) +
+                              ".",
+                          __FILE__, __func__, __LINE__);
             return nullptr;
         }
 #endif

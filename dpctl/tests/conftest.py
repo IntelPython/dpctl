@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,4 +20,14 @@
 import os
 import sys
 
+from _device_attributes_checks import (
+    check,
+    device_selector,
+    invalid_filter,
+    valid_filter,
+)
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "helper"))
+
+# common fixtures
+__all__ = ["check", "device_selector", "invalid_filter", "valid_filter"]

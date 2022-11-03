@@ -3,7 +3,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -499,16 +499,16 @@ int simplify_iteration_two_strides(const int nd,
     return nd_;
 }
 
-using vecT = std::vector<py::ssize_t>;
-std::tuple<vecT, vecT, py::size_t> contract_iter(vecT shape, vecT strides)
+template <typename T, class Error, typename vecT = std::vector<T>>
+std::tuple<vecT, vecT, T> contract_iter(vecT shape, vecT strides)
 {
     const size_t dim = shape.size();
     if (dim != strides.size()) {
-        throw py::value_error("Shape and strides must be of equal size.");
+        throw Error("Shape and strides must be of equal size.");
     }
     vecT out_shape = shape;
     vecT out_strides = strides;
-    py::ssize_t disp(0);
+    T disp(0);
 
     int nd = simplify_iteration_stride(dim, out_shape.data(),
                                        out_strides.data(), disp);
@@ -517,18 +517,19 @@ std::tuple<vecT, vecT, py::size_t> contract_iter(vecT shape, vecT strides)
     return std::make_tuple(out_shape, out_strides, disp);
 }
 
-std::tuple<vecT, vecT, py::size_t, vecT, py::ssize_t>
+template <typename T, class Error, typename vecT = std::vector<T>>
+std::tuple<vecT, vecT, T, vecT, T>
 contract_iter2(vecT shape, vecT strides1, vecT strides2)
 {
     const size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size()) {
-        throw py::value_error("Shape and strides must be of equal size.");
+        throw Error("Shape and strides must be of equal size.");
     }
     vecT out_shape = shape;
     vecT out_strides1 = strides1;
     vecT out_strides2 = strides2;
-    py::ssize_t disp1(0);
-    py::ssize_t disp2(0);
+    T disp1(0);
+    T disp2(0);
 
     int nd = simplify_iteration_two_strides(dim, out_shape.data(),
                                             out_strides1.data(),

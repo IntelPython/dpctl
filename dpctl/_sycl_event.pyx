@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -105,11 +105,11 @@ cdef class _SyclEvent:
 cdef class SyclEvent(_SyclEvent):
     """
     SyclEvent(arg=None)
-    Python class representing ``cl::sycl::event``. There are multiple
+    Python class representing ``sycl::event``. There are multiple
     ways to create a :class:`dpctl.SyclEvent` object:
 
         - Invoking the constructor with no arguments creates a ready event
-          using the default constructor of the ``cl::sycl::event``.
+          using the default constructor of the ``sycl::event``.
 
         :Example:
             .. code-block:: python
@@ -248,7 +248,7 @@ cdef class SyclEvent(_SyclEvent):
 
     def _get_capsule(self):
         """
-        Returns a copy of the underlying ``cl::sycl::event`` pointer as a void
+        Returns a copy of the underlying ``sycl::event`` pointer as a void
         pointer inside a named ``PyCapsule`` that has the name
         **SyclEventRef**. The ownership of the pointer inside the capsule is
         passed to the caller, and pointer is deleted when the capsule goes out
@@ -256,11 +256,11 @@ cdef class SyclEvent(_SyclEvent):
 
         Returns:
             :class:`pycapsule`: A capsule object storing a copy of the
-            ``cl::sycl::event`` pointer belonging to a
+            ``sycl::event`` pointer belonging to a
             :class:`dpctl.SyclEvent` instance.
         Raises:
             ValueError: If the ``DPCTLEvent_Copy`` fails to copy the
-                        ``cl::sycl::event`` pointer.
+                        ``sycl::event`` pointer.
 
         """
         cdef DPCTLSyclEventRef ERef = NULL
@@ -334,7 +334,7 @@ cdef class SyclEvent(_SyclEvent):
     def profiling_info_submit(self):
         """
         Returns the 64-bit time value in nanoseconds
-        when ``cl::sycl::command_group`` was submitted to the queue.
+        when ``sycl::command_group`` was submitted to the queue.
         """
         cdef uint64_t profiling_info_submit = 0
         profiling_info_submit = DPCTLEvent_GetProfilingInfoSubmit(
@@ -346,7 +346,7 @@ cdef class SyclEvent(_SyclEvent):
     def profiling_info_start(self):
         """
         Returns the 64-bit time value in nanoseconds
-        when ``cl::sycl::command_group`` started execution on the device.
+        when ``sycl::command_group`` started execution on the device.
         """
         cdef uint64_t profiling_info_start = 0
         profiling_info_start = DPCTLEvent_GetProfilingInfoStart(self._event_ref)
@@ -356,7 +356,7 @@ cdef class SyclEvent(_SyclEvent):
     def profiling_info_end(self):
         """
         Returns the 64-bit time value in nanoseconds
-        when ``cl::sycl::command_group`` finished execution on the device.
+        when ``sycl::command_group`` finished execution on the device.
         """
         cdef uint64_t profiling_info_end = 0
         profiling_info_end = DPCTLEvent_GetProfilingInfoEnd(self._event_ref)

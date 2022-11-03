@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -96,3 +96,22 @@ class event_status_type(Enum):
     submitted = auto()
     running = auto()
     complete = auto()
+
+
+class global_mem_cache_type(Enum):
+    """
+    An enumeration of global memory cache types for a device.
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            print(dev.global_mem_cache_type)
+            # Possible output: <global_mem_cache_type.read_write: 4>
+    """
+
+    indeterminate = auto()
+    none = auto()
+    read_only = auto()
+    read_write = auto()

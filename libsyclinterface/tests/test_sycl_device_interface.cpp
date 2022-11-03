@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2021 Intel Corporation
+// Copyright 2020-2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 struct TestDPCTLSyclDeviceInterface
     : public ::testing::TestWithParam<const char *>
@@ -151,6 +151,30 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemDims)
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxWorkItemDims(DRef));
     EXPECT_TRUE(n > 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes1d)
+{
+    size_t *sizes = nullptr;
+    EXPECT_NO_FATAL_FAILURE(sizes = DPCTLDevice_GetMaxWorkItemSizes1d(DRef));
+    EXPECT_TRUE(sizes != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes2d)
+{
+    size_t *sizes = nullptr;
+    EXPECT_NO_FATAL_FAILURE(sizes = DPCTLDevice_GetMaxWorkItemSizes2d(DRef));
+    EXPECT_TRUE(sizes != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes3d)
+{
+    size_t *sizes = nullptr;
+    EXPECT_NO_FATAL_FAILURE(sizes = DPCTLDevice_GetMaxWorkItemSizes3d(DRef));
+    EXPECT_TRUE(sizes != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes)
@@ -383,6 +407,30 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetProfilingTimerResolution)
     EXPECT_TRUE(res != 0);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheSize)
+{
+    uint64_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheSize(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheLineSize)
+{
+    uint32_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheLineSize(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheType)
+{
+    DPCTLGlobalMemCacheType res = DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheType(DRef));
+    EXPECT_TRUE(res != DPCTL_MEM_CACHE_TYPE_INDETERMINATE);
+    EXPECT_TRUE((res == DPCTL_MEM_CACHE_TYPE_NONE ||
+                 res == DPCTL_MEM_CACHE_TYPE_READ_ONLY ||
+                 res == DPCTL_MEM_CACHE_TYPE_READ_WRITE));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
@@ -538,14 +586,6 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkDriverVersion)
     ASSERT_TRUE(driver_version == nullptr);
 }
 
-TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsHostUnifiedMemory)
-{
-    bool is_hum = true;
-    EXPECT_NO_FATAL_FAILURE(is_hum =
-                                DPCTLDevice_IsHostUnifiedMemory(Null_DRef));
-    ASSERT_FALSE(is_hum);
-}
-
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkAreEq)
 {
     bool are_eq = true;
@@ -688,4 +728,26 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetProfilingTimerResolution)
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTLDevice_GetProfilingTimerResolution(Null_DRef));
     ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheSize)
+{
+    uint64_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheLineSize)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        res = DPCTLDevice_GetGlobalMemCacheLineSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheType)
+{
+    DPCTLGlobalMemCacheType res = DPCTL_MEM_CACHE_TYPE_NONE;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheType(Null_DRef));
+    ASSERT_TRUE(res == DPCTL_MEM_CACHE_TYPE_INDETERMINATE);
 }

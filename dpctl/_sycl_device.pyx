@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2021 Intel Corporation
+# Copyright 2020-2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
+    DPCTLDevice_GetGlobalMemCacheLineSize,
+    DPCTLDevice_GetGlobalMemCacheSize,
+    DPCTLDevice_GetGlobalMemCacheType,
     DPCTLDevice_GetGlobalMemSize,
     DPCTLDevice_GetImage2dMaxHeight,
     DPCTLDevice_GetImage2dMaxWidth,
@@ -46,7 +49,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetMaxReadImageArgs,
     DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
-    DPCTLDevice_GetMaxWorkItemSizes,
+    DPCTLDevice_GetMaxWorkItemSizes1d,
+    DPCTLDevice_GetMaxWorkItemSizes2d,
+    DPCTLDevice_GetMaxWorkItemSizes3d,
     DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetName,
     DPCTLDevice_GetParentDevice,
@@ -85,12 +90,13 @@ from ._backend cimport (  # noqa: E211
     _aspect_type,
     _backend_type,
     _device_type,
+    _global_mem_cache_type,
     _partition_affinity_domain_type,
 )
 
-from .enum_types import backend_type, device_type
+from .enum_types import backend_type, device_type, global_mem_cache_type
 
-from libc.stdint cimport int64_t, uint32_t
+from libc.stdint cimport int64_t, uint32_t, uint64_t
 from libc.stdlib cimport free, malloc
 
 from ._sycl_platform cimport SyclPlatform
@@ -123,7 +129,7 @@ cdef class SyclSubDeviceCreationError(Exception):
 
 cdef class _SyclDevice:
     """
-    A helper data-owner class to abstract a cl::sycl::device instance.
+    A helper data-owner class to abstract a `sycl::device` instance.
     """
 
     def __dealloc__(self):
@@ -185,7 +191,7 @@ cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
     device._name = DPCTLDevice_GetName(DRef)
     device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
     device._vendor = DPCTLDevice_GetVendor(DRef)
-    device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef)
+    device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes3d(DRef)
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -263,7 +269,7 @@ cdef class SyclDevice(_SyclDevice):
         self._name = DPCTLDevice_GetName(self._device_ref)
         self._driver_version = DPCTLDevice_GetDriverVersion(self._device_ref)
         self._max_work_item_sizes = (
-            DPCTLDevice_GetMaxWorkItemSizes(self._device_ref)
+            DPCTLDevice_GetMaxWorkItemSizes3d(self._device_ref)
         )
         self._vendor = DPCTLDevice_GetVendor(self._device_ref)
         return 0
@@ -291,7 +297,8 @@ cdef class SyclDevice(_SyclDevice):
             ret = self._init_from_selector(DSRef)
             if ret == -1:
                 raise SyclDeviceCreationError(
-                    "Could not create a SyclDevice with the selector string"
+                    "Could not create a SyclDevice with the selector string "
+		    "'{selector_string}'".format(selector_string=arg)
                 )
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
@@ -649,12 +656,60 @@ cdef class SyclDevice(_SyclDevice):
         return max_work_item_dims
 
     @property
+    def max_work_item_sizes1d(self):
+        """ Returns the maximum number of work-items that are permitted in each
+        dimension of the work-group of the nd_range<1>. The minimum value is
+        `(1 )` for devices that are not of device type
+         ``info::device_type::custom``.
+        """
+        cdef size_t *max_work_item_sizes1d = NULL
+        max_work_item_sizes1d = DPCTLDevice_GetMaxWorkItemSizes1d(
+            self._device_ref
+        )
+        res = (max_work_item_sizes1d[0], )
+        DPCTLSize_t_Array_Delete(max_work_item_sizes1d)
+        return res
+
+    @property
+    def max_work_item_sizes2d(self):
+        """ Returns the maximum number of work-items that are permitted in each
+        dimension of the work-group of the nd_range<2>. The minimum value is
+        `(1; 1)` for devices that are not of device type
+         ``info::device_type::custom``.
+        """
+        cdef size_t *max_work_item_sizes2d = NULL
+        max_work_item_sizes2d = DPCTLDevice_GetMaxWorkItemSizes2d(
+            self._device_ref
+        )
+        res = (max_work_item_sizes2d[0], max_work_item_sizes2d[1],)
+        DPCTLSize_t_Array_Delete(max_work_item_sizes2d)
+        return res
+
+    @property
+    def max_work_item_sizes3d(self):
+        """ Returns the maximum number of work-items that are permitted in each
+        dimension of the work-group of the nd_range<3>. The minimum value is
+        `(1; 1; 1)` for devices that are not of device type
+         ``info::device_type::custom``.
+        """
+        return (
+            self._max_work_item_sizes[0],
+            self._max_work_item_sizes[1],
+            self._max_work_item_sizes[2],
+        )
+
+    @property
     def max_work_item_sizes(self):
         """ Returns the maximum number of work-items that are permitted in each
         dimension of the work-group of the nd_range. The minimum value is
         `(1; 1; 1)` for devices that are not of device type
         ``info::device_type::custom``.
         """
+        warnings.warn(
+            "dpctl.SyclDevice.max_work_item_sizes is deprecated, "
+            "use dpctl.SyclDevice.max_work_item_sizes3d instead",
+            DeprecationWarning,
+        )
         return (
             self._max_work_item_sizes[0],
             self._max_work_item_sizes[1],
@@ -1046,6 +1101,52 @@ cdef class SyclDevice(_SyclDevice):
         if (timer_res == 0):
             raise RuntimeError("Failed to get device timer resolution.")
         return timer_res
+
+    @property
+    def global_mem_cache_type(self):
+        """ Global device cache memory type.
+
+        Returns:
+            global_mem_cache_type: type of cache memory
+        Raises:
+            A RuntimeError is raised if an unrecognized memory type
+            is reported by runtime.
+        """
+        cdef _global_mem_cache_type gmcTy = (
+           DPCTLDevice_GetGlobalMemCacheType(self._device_ref)
+        )
+        if gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_READ_WRITE:
+            return global_mem_cache_type.read_write
+        elif gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_READ_ONLY:
+            return global_mem_cache_type.read_only
+        elif gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_NONE:
+            return global_mem_cache_type.none
+        elif gmcTy == _global_mem_cache_type._MEM_CACHE_TYPE_INDETERMINATE:
+            raise RuntimeError("Unrecognized global memory cache type reported")
+
+    @property
+    def global_mem_cache_size(self):
+        """ Global device memory cache size.
+
+        Returns:
+            int: Cache size in bytes
+        """
+        cdef uint64_t cache_sz = DPCTLDevice_GetGlobalMemCacheSize(
+            self._device_ref
+	)
+        return cache_sz
+
+    @property
+    def global_mem_cache_line_size(self):
+        """ Global device memory cache line size.
+
+        Returns:
+            int: Cache size in bytes
+        """
+        cdef uint64_t cache_line_sz = DPCTLDevice_GetGlobalMemCacheLineSize(
+            self._device_ref
+	)
+        return cache_line_sz
 
     cdef cpp_bool equals(self, SyclDevice other):
         """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the

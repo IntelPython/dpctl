@@ -28,6 +28,7 @@ def run(
     compiler_root=None,
     cmake_executable=None,
     use_glog=False,
+    cmake_opts="",
 ):
     build_system = None
 
@@ -57,6 +58,8 @@ def run(
         "-DDPCTL_ENABLE_L0_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
         "-DDPCTL_ENABLE_GLOG:BOOL=" + ("ON" if use_glog else "OFF"),
     ]
+    if cmake_opts:
+        cmake_args += cmake_opts.split()
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
     )
@@ -109,6 +112,13 @@ if __name__ == "__main__":
         help="DPCTLSyclInterface uses Google logger",
         dest="glog",
         action="store_true",
+    )
+    driver.add_argument(
+        "--cmake-opts",
+        help="DPCTLSyclInterface uses Google logger",
+        dest="cmake_opts",
+        default="",
+        type=str,
     )
     args = parser.parse_args()
 
@@ -163,4 +173,5 @@ if __name__ == "__main__":
         compiler_root=args.compiler_root,
         cmake_executable=args.cmake_executable,
         use_glog=args.glog,
+        cmake_opts=args.cmake_opts,
     )
