@@ -36,6 +36,7 @@
 #include <gtest/gtest.h>
 
 using namespace sycl;
+using namespace dpctl::syclinterface;
 
 const DPCTLPartitionAffinityDomainType a_dpctl_domain =
     DPCTLPartitionAffinityDomainType::not_applicable;
@@ -137,7 +138,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNotApplicable)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
@@ -166,7 +167,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNuma)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
@@ -197,7 +198,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL4Cache)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
@@ -228,7 +229,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL3Cache)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
@@ -259,7 +260,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL2Cache)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
@@ -290,7 +291,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL1Cache)
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<
@@ -322,7 +323,7 @@ TEST_P(TestDPCTLSyclDeviceInterface,
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         size_t expected_size = 0;
         try {
             auto subDevices = D->create_sub_devices<

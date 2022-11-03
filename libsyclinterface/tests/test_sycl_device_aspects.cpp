@@ -134,6 +134,8 @@ auto build_params()
     return build_gtest_values(pairs);
 }
 
+using namespace dpctl::syclinterface;
+
 } // namespace
 
 struct TestDPCTLSyclDeviceInterfaceAspects
@@ -161,7 +163,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         if (!DRef)
             GTEST_SKIP_("Device not found");
-        auto D = unwrap(DRef);
+        auto D = unwrap<device>(DRef);
         auto syclAspect = GetParam().second.second;
         try {
             hasAspect = D->has(syclAspect);

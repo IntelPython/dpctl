@@ -37,6 +37,7 @@
 #include <gtest/gtest.h>
 
 using namespace sycl;
+using namespace dpctl::syclinterface;
 
 namespace
 {
@@ -347,7 +348,7 @@ TEST(TestDPCTLSyclQueueInterface, CheckMemOpsZeroQRef)
 
 TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
 {
-    auto q = unwrap(QRef);
+    auto q = unwrap<queue>(QRef);
     auto Backend = q->get_device().get_platform().get_backend();
     auto Bty = DPCTLQueue_GetBackend(QRef);
     switch (Bty) {

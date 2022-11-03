@@ -41,6 +41,9 @@ namespace
 {
 constexpr size_t SIZE = 1024;
 static_assert(SIZE % 8 == 0);
+
+using namespace dpctl::syclinterface;
+
 } /* end of anonymous namespace */
 
 struct TestQueueSubmit : public ::testing::Test
@@ -92,8 +95,8 @@ TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
     auto c = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
     ASSERT_TRUE(c != nullptr);
 
-    auto a_ptr = reinterpret_cast<float *>(unwrap(a));
-    auto b_ptr = reinterpret_cast<float *>(unwrap(b));
+    auto a_ptr = reinterpret_cast<float *>(unwrap<void>(a));
+    auto b_ptr = reinterpret_cast<float *>(unwrap<void>(b));
     // Initialize a,b
     for (auto i = 0ul; i < SIZE; ++i) {
         a_ptr[i] = i + 1.0;
@@ -103,7 +106,8 @@ TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
     // Create kernel args for axpy
     float d = 10.0;
     size_t Range[] = {SIZE};
-    void *args2[4] = {unwrap(a), unwrap(b), unwrap(c), (void *)&d};
+    void *args2[4] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
+                      (void *)&d};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
                                               DPCTL_VOID_PTR, DPCTL_FLOAT};
     auto ERef = DPCTLQueue_SubmitRange(
@@ -152,8 +156,8 @@ TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
     auto c = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
     ASSERT_TRUE(c != nullptr);
 
-    auto a_ptr = reinterpret_cast<float *>(unwrap(a));
-    auto b_ptr = reinterpret_cast<float *>(unwrap(b));
+    auto a_ptr = reinterpret_cast<float *>(unwrap<void>(a));
+    auto b_ptr = reinterpret_cast<float *>(unwrap<void>(b));
     // Initialize a,b
     for (auto i = 0ul; i < SIZE; ++i) {
         a_ptr[i] = i + 1.0;
@@ -164,7 +168,8 @@ TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
     float d = 10.0;
     size_t gRange[] = {1, 1, SIZE};
     size_t lRange[] = {1, 1, 8};
-    void *args2[4] = {unwrap(a), unwrap(b), unwrap(c), (void *)&d};
+    void *args2[4] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
+                      (void *)&d};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
                                               DPCTL_VOID_PTR, DPCTL_FLOAT};
     DPCTLSyclEventRef events[1];
