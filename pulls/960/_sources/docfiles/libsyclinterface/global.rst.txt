@@ -7,6 +7,7 @@ Global Namespace
 .. toctree::
 	:hidden:
 
+	namespace_dpctl.rst
 	enum_DPCTLGlobalMemCacheType.rst
 	enum_DPCTLKernelArgType.rst
 	enum_DPCTLPartitionAffinityDomainType.rst
@@ -26,6 +27,11 @@ Overview
 	:class: doxyrest-overview-code-block
 
 	
+	// namespaces
+
+	namespace :ref:`dpctl<doxid-d2/df1/namespacedpctl>`;
+		namespace :ref:`dpctl::syclinterface<doxid-d1/d06/namespacedpctl_1_1syclinterface>`;
+
 	// typedefs
 
 	typedef void :ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`(int err_code);
