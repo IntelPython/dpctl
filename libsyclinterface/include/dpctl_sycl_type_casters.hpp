@@ -28,9 +28,9 @@
 
 #ifdef __cplusplus
 
+#include "Support/DllExport.h"
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
-#include <iostream>
 #include <vector>
 
 namespace dpctl::syclinterface
@@ -38,88 +38,62 @@ namespace dpctl::syclinterface
 
 #if __SYCL_COMPILER_VERSION >= 20221020
 
-class dpctl_device_selector
+class DPCTL_API dpctl_device_selector
 {
 public:
     virtual ~dpctl_device_selector() = default;
     static constexpr int REJECT_DEVICE = -1;
-    virtual int operator()(const sycl::device &d) const
-    {
-        std::cout << "Outright rejecting "
-                  << d.get_info<sycl::info::device::name>() << std::endl;
-        return REJECT_DEVICE;
-    };
+    virtual int operator()(const sycl::device &) const;
 };
 
-class dpctl_accelerator_selector : public dpctl_device_selector
+class DPCTL_API dpctl_accelerator_selector : public dpctl_device_selector
 {
 public:
     dpctl_accelerator_selector() = default;
-    int operator()(const sycl::device &d) const override
-    {
-        return sycl::accelerator_selector_v(d);
-    }
+    int operator()(const sycl::device &d) const override;
 };
 
-class dpctl_default_selector : public dpctl_device_selector
+class DPCTL_API dpctl_default_selector : public dpctl_device_selector
 {
 public:
     dpctl_default_selector() = default;
-    int operator()(const sycl::device &d) const override
-    {
-        auto score = sycl::default_selector_v(d);
-        std::cout << "Got score = " << score << std::endl;
-        return score;
-    }
+    int operator()(const sycl::device &d) const override;
 };
 
-class dpctl_gpu_selector : public dpctl_device_selector
+class DPCTL_API dpctl_gpu_selector : public dpctl_device_selector
 {
 public:
     dpctl_gpu_selector() = default;
-    int operator()(const sycl::device &d) const override
-    {
-        return sycl::gpu_selector_v(d);
-    }
+    int operator()(const sycl::device &d) const override;
 };
 
-class dpctl_cpu_selector : public dpctl_device_selector
+class DPCTL_API dpctl_cpu_selector : public dpctl_device_selector
 {
 public:
     dpctl_cpu_selector() = default;
-    int operator()(const sycl::device &d) const override
-    {
-        return sycl::cpu_selector_v(d);
-    }
+    int operator()(const sycl::device &d) const override;
 };
 
-class dpctl_filter_selector : public dpctl_device_selector
+class DPCTL_API dpctl_filter_selector : public dpctl_device_selector
 {
 public:
     dpctl_filter_selector(const std::string &fs) : _impl(fs) {}
-
-    int operator()(const sycl::device &d) const override
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::ext::oneapi::filter_selector _impl;
 };
 
-class dpctl_host_selector : public dpctl_device_selector
+class DPCTL_API dpctl_host_selector : public dpctl_device_selector
 {
 public:
     dpctl_host_selector() = default;
-    int operator()(const sycl::device &) const override
-    {
-        return REJECT_DEVICE;
-    }
+    int operator()(const sycl::device &) const override;
 };
 
 #else
 
-class dpctl_device_selector : public sycl::device_selector
+class DPCTL_API dpctl_device_selector : public sycl::device_selector
 {
 public:
     virtual ~dpctl_device_selector() = default;
@@ -127,80 +101,62 @@ public:
     virtual int operator()(const sycl::device &device) const = 0;
 };
 
-class dpctl_accelerator_selector : public dpctl_device_selector
+class DPCTL_API dpctl_accelerator_selector : public dpctl_device_selector
 {
 public:
     dpctl_accelerator_selector() : _impl(){};
-    int operator()(const sycl::device &d) const
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::accelerator_selector _impl;
 };
 
-class dpctl_default_selector : public dpctl_device_selector
+class DPCTL_API dpctl_default_selector : public dpctl_device_selector
 {
 public:
     dpctl_default_selector() : _impl(){};
-    int operator()(const sycl::device &d) const
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::default_selector _impl;
 };
 
-class dpctl_gpu_selector : public dpctl_device_selector
+class DPCTL_API dpctl_gpu_selector : public dpctl_device_selector
 {
 public:
     dpctl_gpu_selector() : _impl(){};
-    int operator()(const sycl::device &d) const
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::gpu_selector _impl;
 };
 
-class dpctl_cpu_selector : public dpctl_device_selector
+class DPCTL_API dpctl_cpu_selector : public dpctl_device_selector
 {
 public:
     dpctl_cpu_selector() : _impl(){};
-    int operator()(const sycl::device &d) const
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::cpu_selector _impl;
 };
 
-class dpctl_filter_selector : public dpctl_device_selector
+class DPCTL_API dpctl_filter_selector : public dpctl_device_selector
 {
 public:
     dpctl_filter_selector(const std::string &fs) : _impl(fs) {}
 
-    int operator()(const sycl::device &d) const
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::ext::oneapi::filter_selector _impl;
 };
 
-class dpctl_host_selector : public dpctl_device_selector
+class DPCTL_API dpctl_host_selector : public dpctl_device_selector
 {
 public:
     dpctl_host_selector() : _impl(){};
-    int operator()(const sycl::device &d) const
-    {
-        return _impl(d);
-    }
+    int operator()(const sycl::device &d) const override;
 
 private:
     sycl::host_selector _impl;
