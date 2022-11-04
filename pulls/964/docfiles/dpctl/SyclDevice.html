@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0dev1+3.g655794456 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0dev1+2.g75479ea36 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+3.g655794456
+                0.14.0dev1+2.g75479ea36
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -315,7 +315,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range&lt;2&gt;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="dpctl.SyclDevice.max_work_item_sizes3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes3d</span></code></a></p></td>
-<td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range&lt;3&gt;. The minimum value is <cite>(1; 1; 1)</cite> for devices that are not of device type  <code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p></td>
+<td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range&lt;3&gt;.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_write_image_args" title="dpctl.SyclDevice.max_write_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_write_image_args</span></code></a></p></td>
 <td><p>Returns the maximum number of simultaneous image objects that can be written to by a kernel.</p></td>
@@ -351,7 +351,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Profiling timer resolution.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
-<td><p>Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
+<td><p>Returns True if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
 <td><p>Returns the platform associated with this device.</p></td>
@@ -420,7 +420,7 @@ and may not be properly programmed by the DPC++ runtime.</p>
 <dd class="field-even"><p><a class="reference internal" href="dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type">device_type</a></p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>A ValueError is raised if the device type is not recognized.</strong> – </p>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the device type is not recognized.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -509,10 +509,7 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 <dd class="field-even"><p><a class="reference internal" href="dpctl_enum_api.html#dpctl.global_mem_cache_type" title="dpctl.global_mem_cache_type">global_mem_cache_type</a></p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A RuntimeError is raised if an unrecognized memory type</strong> – </p></li>
-<li><p><strong>is reported by runtime.</strong> – </p></li>
-</ul>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If an unrecognized memory type is reported by runtime.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -934,6 +931,14 @@ else False.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_compute_units</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_compute_units" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of parallel compute units available to the
 device. The minimum value is 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of compute units in the device.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -964,10 +969,17 @@ SYCL device has aspect::image.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_group_size">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_group_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_group_size" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the maximum number of work-items
-that are permitted in a work-group executing a
-kernel on a single compute unit. The minimum
+<dd><p>Returns the maximum number of work-items that are permitted in a
+work-group executing a kernel on a single compute unit. The minimum
 value is 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The maximum supported work group size.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -990,8 +1002,21 @@ work-item IDs used by the data parallel execution model.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
 dimension of the work-group of the nd_range. The minimum value is
-<cite>(1; 1; 1)</cite> for devices that are not of device type
-<code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
+<cite>(1; 1; 1)</cite> for devices that evaluate to False for
+<a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple whose length depends on the number of
+workgrpup dimensions supported by the device.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple[int, int, int]</p>
+</dd>
+</dl>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.14: </span>The property is deprecated use <a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="dpctl.SyclDevice.max_work_item_sizes3d"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_work_item_sizes3d</span></code></a>
+instead.</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1003,8 +1028,11 @@ dimension of the work-group of the nd_range&lt;1&gt;. The minimum value is
 <a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A tuple with the maximum allowed value for a 1D range used to
-enqueue a kernel on the device.</p>
+<dd class="field-odd"><p>A tuple with the maximum allowed value for a 1D range
+used to enqueue a kernel on the device.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple[int,]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1018,8 +1046,11 @@ dimension of the work-group of the nd_range&lt;2&gt;. The minimum value is
 <a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A tuple with the maximum allowed value for each dimension of a 2D
-range used to enqueue a kernel on the device.</p>
+<dd class="field-odd"><p>A tuple with the maximum allowed value for each
+dimension of a 2D range used to enqueue a kernel on the device.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple[int, int]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1029,10 +1060,17 @@ range used to enqueue a kernel on the device.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes3d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
 dimension of the work-group of the nd_range&lt;3&gt;. The minimum value is
-<cite>(1; 1; 1)</cite> for devices that are not of device type</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">info::device_type::custom</span></code>.</p>
-</div></blockquote>
+<cite>(1; 1; 1)</cite> for devices that evaluate to False for
+<a class="reference internal" href="#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple with the maximum allowed value for
+each dimension of a 3D range used to enqueue a kernel on the device.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple[int, int, int]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1138,8 +1176,17 @@ types that can be put into vectors.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_independent_forward_progress">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition"></a></dt>
-<dd><p>Returns true if the device supports independent forward progress of
+<dd><p>Returns True if the device supports independent forward progress of
 sub-groups with respect to other sub-groups in the same work-group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Indicates if the device supports independent forward progress
+of sub-groups.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
