@@ -100,7 +100,8 @@ struct dpctl_capi
     DPCTLSyclKernelRef (*SyclKernel_GetKernelRef_)(PySyclKernelObject *);
     PySyclKernelObject *(*SyclKernel_Make_)(DPCTLSyclKernelRef);
 
-    DPCTLSyclKernelBundleRef (*SyclProgram_GetKernelBundleRef_)(PySyclProgramObject *);
+    DPCTLSyclKernelBundleRef (*SyclProgram_GetKernelBundleRef_)(
+        PySyclProgramObject *);
     PySyclProgramObject *(*SyclProgram_Make_)(DPCTLSyclKernelBundleRef);
 
     // tensor
@@ -551,8 +552,8 @@ public:
             return true;
         }
         else {
-            throw py::type_error(
-                "Input is of unexpected type, expected dpctl.program.SyclKernel");
+            throw py::type_error("Input is of unexpected type, expected "
+                                 "dpctl.program.SyclKernel");
         }
     }
 
@@ -567,11 +568,13 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.program.SyclKernel"));
 };
 
-/* This type caster associates ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
+/* This type caster associates
+ * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
  * :class:`dpctl.program.SyclProgram` for the purposes of generation of
  * Python bindings by pybind11.
  */
-template <> struct type_caster<sycl::kernel_bundle<sycl::bundle_state::executable>>
+template <>
+struct type_caster<sycl::kernel_bundle<sycl::bundle_state::executable>>
 {
 public:
     bool load(handle src, bool)
@@ -579,10 +582,14 @@ public:
         PyObject *source = src.ptr();
         auto &api = ::dpctl::detail::dpctl_capi::get();
         if (api.PySyclProgram_Check_(source)) {
-            DPCTLSyclKernelBundleRef KBRef = api.SyclProgram_GetKernelBundleRef_(
-                reinterpret_cast<PySyclProgramObject *>(source));
-            value = std::make_unique<sycl::kernel_bundle<sycl::bundle_state::executable>>(
-                *(reinterpret_cast<sycl::kernel_bundle<sycl::bundle_state::executable> *>(KBRef)));
+            DPCTLSyclKernelBundleRef KBRef =
+                api.SyclProgram_GetKernelBundleRef_(
+                    reinterpret_cast<PySyclProgramObject *>(source));
+            value = std::make_unique<
+                sycl::kernel_bundle<sycl::bundle_state::executable>>(
+                *(reinterpret_cast<
+                    sycl::kernel_bundle<sycl::bundle_state::executable> *>(
+                    KBRef)));
             return true;
         }
         else {
@@ -591,15 +598,18 @@ public:
         }
     }
 
-    static handle cast(sycl::kernel_bundle<sycl::bundle_state::executable> src, return_value_policy, handle)
+    static handle cast(sycl::kernel_bundle<sycl::bundle_state::executable> src,
+                       return_value_policy,
+                       handle)
     {
         auto &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp =
-            api.SyclProgram_Make_(reinterpret_cast<DPCTLSyclKernelBundleRef>(&src));
+        auto tmp = api.SyclProgram_Make_(
+            reinterpret_cast<DPCTLSyclKernelBundleRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
-    DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>, _("dpctl.program.SyclProgram"));
+    DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
+                      _("dpctl.program.SyclProgram"));
 };
 } // namespace detail
 } // namespace pybind11

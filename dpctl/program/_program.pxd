@@ -59,4 +59,3 @@ cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
 cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
 cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL,
                                  unicode copts=*)
-

@@ -30,8 +30,8 @@ from libc.stdint cimport uint32_t
 
 from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLCString_Delete,
-    DPCTLKernel_Delete,
     DPCTLKernel_Copy,
+    DPCTLKernel_Delete,
     DPCTLKernel_GetCompileNumSubGroups,
     DPCTLKernel_GetCompileSubGroupSize,
     DPCTLKernel_GetMaxNumSubGroups,
@@ -39,10 +39,10 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
     DPCTLKernel_GetWorkGroupSize,
+    DPCTLKernelBundle_Copy,
     DPCTLKernelBundle_CreateFromOCLSource,
     DPCTLKernelBundle_CreateFromSpirv,
     DPCTLKernelBundle_Delete,
-    DPCTLKernelBundle_Copy,
     DPCTLKernelBundle_GetKernel,
     DPCTLKernelBundle_HasKernel,
     DPCTLSyclContextRef,
