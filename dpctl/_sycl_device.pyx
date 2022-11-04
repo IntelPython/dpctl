@@ -298,7 +298,7 @@ cdef class SyclDevice(_SyclDevice):
             if ret == -1:
                 raise SyclDeviceCreationError(
                     "Could not create a SyclDevice with the selector string "
-		    "'{selector_string}'".format(selector_string=arg)
+		            "'{selector_string}'".format(selector_string=arg)
                 )
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
@@ -544,7 +544,7 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_usm_device_allocations(self):
         """ Returns True if this device supports explicit USM allocations,
-        False otherwise (refer Siction 4.8 of SYCL 2020 specs).
+        False otherwise (refer Section 4.8 of SYCL 2020 specs).
 
         Returns:
             bool: Indicates that the device supports explicit USM allocations.
@@ -555,11 +555,11 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_usm_host_allocations(self):
         """ Returns True if this device can access USM-host memory,
-        False otherwise (refer Siction 4.8 of SYCL 2020 specs).
+        False otherwise (refer Section 4.8 of SYCL 2020 specs).
 
         Returns:
             bool: Indicates that the device can access USM memory
-            allocated via ``usm::alloc::host``.
+            allocated using ``sycl::malloc_host``.
         """
         cdef _aspect_type AT = _aspect_type._usm_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -571,7 +571,7 @@ cdef class SyclDevice(_SyclDevice):
 
         Returns:
             bool: Indicates that the device supports USM memory
-            allocated via ``usm::alloc::shared``.
+            allocated using ``sycl::malloc_shared``.
         """
         cdef _aspect_type AT = _aspect_type._usm_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -582,8 +582,8 @@ cdef class SyclDevice(_SyclDevice):
         allocated as restricted USM, False otherwise.
 
         Returns:
-            bool: Indicates that the device supports USM memory allocated via
-            ``usm::alloc::shared`` as restricted USM.
+            bool: Indicates that the device supports USM memory allocated using
+            ``sycl::malloc_shared`` as restricted USM.
 
         .. deprecated:: 0.14
         """
@@ -597,8 +597,8 @@ cdef class SyclDevice(_SyclDevice):
         False otherwise.
 
         Returns:
-            bool: Indicates that system allocator may be used instead of SYCL
-            ``usm::alloc::shared``.
+            bool: Indicates that system allocator may be used instead of
+            ``sycl::malloc_shared``.
         """
         cdef _aspect_type AT = _aspect_type._usm_system_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -607,7 +607,10 @@ cdef class SyclDevice(_SyclDevice):
     def has_aspect_usm_atomic_host_allocations(self):
         """ Returns True if this device supports USM-host allocations and
         the host and this device may concurrently access and atomically
-        modify host allocations, False otherwise
+        modify host allocations, False otherwise.
+
+        Returns:
+            bool: Indicates if the device supports USM atomic host allocations.
         """
         cdef _aspect_type AT = _aspect_type._usm_atomic_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -991,7 +994,11 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def __name__(self):
-        "Name of the class `dpctl.SyclDevice`"
+        """ Returns the name of the class  :class:`dpctl.SyclDevice`
+
+        Returns:
+            str: Name of the class as a string.
+        """
         return "SyclDevice"
 
     def __repr__(self):
@@ -1009,9 +1016,8 @@ cdef class SyclDevice(_SyclDevice):
         )
 
     def __hash__(self):
-        """
-        Returns a hash value by hashing the underlying ``sycl::device`` object.
-
+        """Returns a hash value by hashing the underlying ``sycl::device``
+        object.
         """
         return DPCTLDevice_Hash(self._device_ref)
 
