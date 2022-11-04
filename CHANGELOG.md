@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Implemented `dpctl.tensor.linspace` function from array-API [#875](https://github.com/IntelPython/dpctl/pull/875).
 * Implemented `dpctl.tensor.eye` function from array-API [#896](https://github.com/IntelPython/dpctl/pull/896).
 * Implemented `dpctl.tensor.tril` and `dpctl.tensor.triu` functions from array-API [#910](https://github.com/IntelPython/dpctl/pull/910).
-* Added data type objects to `dpctl.tensor` namespace, and `finfo` and `iinfo` functions [#913](https://github.com/IntelPython/dpctl/pull/913).
+* Added data type objects to `dpctl.tensor` namespace, `finfo`, `iinfo`, `can_cast`, and `result_type` functions [#913](https://github.com/IntelPython/dpctl/pull/913).
 * Implemented `dpctl.tensor.meshgrid` creation function from array-API [#920](https://github.com/IntelPython/dpctl/pull/920).
 * Implemented convenience class to represent output of `dpctl.tensor.usm_ndarray.flags` property [#921](https://github.com/IntelPython/dpctl/pull/921).
 * Added new device attributes and kernel's device-specific attributes [#894](https://github.com/IntelPython/dpctl/pull/894).
