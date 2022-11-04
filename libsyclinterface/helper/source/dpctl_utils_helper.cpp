@@ -177,9 +177,11 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
 {
     std::stringstream ss;
     switch (aspectTy) {
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case aspect::host:
         ss << "host";
         break;
+#endif
     case aspect::cpu:
         ss << "cpu";
         break;
@@ -249,9 +251,13 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
 aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
 {
     aspect aspectTy;
-    if (aspectTyStr == "host") {
+    if (false) {
+    }
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
+    else if (aspectTyStr == "host") {
         aspectTy = aspect::host;
     }
+#endif
     else if (aspectTyStr == "cpu") {
         aspectTy = aspect::cpu;
     }
@@ -319,8 +325,10 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
 aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
 {
     switch (AspectTy) {
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case DPCTLSyclAspectType::host:
         return aspect::host;
+#endif
     case DPCTLSyclAspectType::cpu:
         return aspect::cpu;
     case DPCTLSyclAspectType::gpu:
@@ -367,8 +375,10 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
 DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
 {
     switch (Aspect) {
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case aspect::host:
         return DPCTLSyclAspectType::host;
+#endif
     case aspect::cpu:
         return DPCTLSyclAspectType::cpu;
     case aspect::gpu:
