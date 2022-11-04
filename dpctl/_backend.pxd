@@ -262,6 +262,7 @@ cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
 
 cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef size_t DPCTLKernel_GetNumArgs(const DPCTLSyclKernelRef KRef)
+    cdef const char *DPCTLKernel_GetName(const DPCTLSyclKernelRef KRef)
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
     cdef DPCTLSyclKernelRef DPCTLKernel_Copy(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetWorkGroupSize(const DPCTLSyclKernelRef KRef)

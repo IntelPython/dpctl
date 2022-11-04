@@ -36,6 +36,7 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetCompileSubGroupSize,
     DPCTLKernel_GetMaxNumSubGroups,
     DPCTLKernel_GetNumArgs,
+    DPCTLKernel_GetName,
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
     DPCTLKernel_GetWorkGroupSize,
@@ -178,7 +179,9 @@ cdef api SyclKernel SyclKernel_Make(DPCTLSyclKernelRef KRef):
     instance from opaque sycl kernel reference.
     """
     cdef DPCTLSyclKernelRef copied_KRef = DPCTLKernel_Copy(KRef)
-    return SyclKernel._create(copied_KRef, "foo")
+    cdef const char *name = DPCTLKernel_GetName(copied_KRef)
+    copied_name = name.decode("UTF-8")
+    return SyclKernel._create(copied_KRef, copied_name)
 
 cdef class SyclProgram:
     """ Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
