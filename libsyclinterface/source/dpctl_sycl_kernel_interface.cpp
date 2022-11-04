@@ -59,6 +59,24 @@ void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef)
     delete unwrap(KRef);
 }
 
+__dpctl_give DPCTLSyclKernelRef
+DPCTLKernel_Copy(__dpctl_keep const DPCTLSyclKernelRef KRef)
+{
+    auto Kernel = unwrap(KRef);
+    if (!Kernel) {
+        error_handler("Cannot copy DPCTLSyclKernelRef as input is a nullptr",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    try {
+        auto CopiedKernel = new kernel(*Kernel);
+        return wrap(CopiedKernel);
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
+
 size_t DPCTLKernel_GetWorkGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
 {
     if (!KRef) {

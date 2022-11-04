@@ -63,6 +63,18 @@ DPCTL_API
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef);
 
 /*!
+ * @brief Returns a copy of the DPCTLSyclKernelRef object.
+ *
+ * @param    KRef           DPCTLSyclKernelRef object to be copied.
+ * @return   A new DPCTLSyclKernelRef created by copying the passed in
+ * DPCTLSyclKernelRef object.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclKernelRef
+DPCTLKernel_Copy(__dpctl_keep const DPCTLSyclKernelRef KRef);
+
+/*!
  * !brief Wrapper around
  * `kernel::get_info<info::kernel_device_specific::work_group_size>()`.
  *
