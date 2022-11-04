@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0dev1+2.g75479ea36 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0dev1+3.gb555cd69f documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+2.g75479ea36
+                0.14.0dev1+3.gb555cd69f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -240,16 +240,16 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns True if this device supports queue profiling, False otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_host_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports USM-host allocations and the host and this device may concurrently access and atomically modify host allocations, False otherwise</p></td>
+<td><p>Returns True if this device supports USM-host allocations and the host and this device may concurrently access and atomically modify host allocations, False otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></code></a></p></td>
 <td><p>Returns True if this device supports USM-shared allocations and the host and other devices in the same context as this device may concurrently access and atomically modify shared allocations, False otherwise</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="dpctl.SyclDevice.has_aspect_usm_device_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_device_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports explicit USM allocations, False otherwise (refer Siction 4.8 of SYCL 2020 specs).</p></td>
+<td><p>Returns True if this device supports explicit USM allocations, False otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_host_allocations</span></code></a></p></td>
-<td><p>Returns True if this device can access USM-host memory, False otherwise (refer Siction 4.8 of SYCL 2020 specs).</p></td>
+<td><p>Returns True if this device can access USM-host memory, False otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></code></a></p></td>
 <td><p>Returns True if this device supports USM memory allocated as restricted USM, False otherwise.</p></td>
@@ -732,7 +732,15 @@ False otherwise.</p>
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports USM-host allocations and
 the host and this device may concurrently access and atomically
-modify host allocations, False otherwise</p>
+modify host allocations, False otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Indicates if the device supports USM atomic host allocations.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -748,7 +756,7 @@ False otherwise</p>
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_device_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_device_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports explicit USM allocations,
-False otherwise (refer Siction 4.8 of SYCL 2020 specs).</p>
+False otherwise (refer Section 4.8 of SYCL 2020 specs).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Indicates that the device supports explicit USM allocations.</p>
@@ -763,11 +771,11 @@ False otherwise (refer Siction 4.8 of SYCL 2020 specs).</p>
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_host_allocations">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device can access USM-host memory,
-False otherwise (refer Siction 4.8 of SYCL 2020 specs).</p>
+False otherwise (refer Section 4.8 of SYCL 2020 specs).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Indicates that the device can access USM memory
-allocated via <code class="docutils literal notranslate"><span class="pre">usm::alloc::host</span></code>.</p>
+allocated using <code class="docutils literal notranslate"><span class="pre">sycl::malloc_host</span></code>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>bool</p>
@@ -782,8 +790,8 @@ allocated via <code class="docutils literal notranslate"><span class="pre">usm::
 allocated as restricted USM, False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Indicates that the device supports USM memory allocated via
-<code class="docutils literal notranslate"><span class="pre">usm::alloc::shared</span></code> as restricted USM.</p>
+<dd class="field-odd"><p>Indicates that the device supports USM memory allocated using
+<code class="docutils literal notranslate"><span class="pre">sycl::malloc_shared</span></code> as restricted USM.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>bool</p>
@@ -802,7 +810,7 @@ allocated on the same device, False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Indicates that the device supports USM memory
-allocated via <code class="docutils literal notranslate"><span class="pre">usm::alloc::shared</span></code>.</p>
+allocated using <code class="docutils literal notranslate"><span class="pre">sycl::malloc_shared</span></code>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>bool</p>
@@ -818,8 +826,8 @@ allocation mechanism for USM-shared allocations on this device,
 False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Indicates that system allocator may be used instead of SYCL
-<code class="docutils literal notranslate"><span class="pre">usm::alloc::shared</span></code>.</p>
+<dd class="field-odd"><p>Indicates that system allocator may be used instead of
+<code class="docutils literal notranslate"><span class="pre">sycl::malloc_shared</span></code>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>bool</p>
