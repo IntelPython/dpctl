@@ -98,7 +98,7 @@ struct dpctl_capi
 
     // program
     DPCTLSyclKernelRef (*SyclKernel_GetKernelRef_)(PySyclKernelObject *);
-    PySyclKernelObject *(*SyclKernel_Make_)(DPCTLSyclKernelRef);
+    PySyclKernelObject *(*SyclKernel_Make_)(DPCTLSyclKernelRef, const char *);
 
     DPCTLSyclKernelBundleRef (*SyclProgram_GetKernelBundleRef_)(
         PySyclProgramObject *);
@@ -561,7 +561,8 @@ public:
     {
         auto &api = ::dpctl::detail::dpctl_capi::get();
         auto tmp =
-            api.SyclKernel_Make_(reinterpret_cast<DPCTLSyclKernelRef>(&src));
+            api.SyclKernel_Make_(reinterpret_cast<DPCTLSyclKernelRef>(&src),
+                                 "dpctl4pybind11_kernel");
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 

@@ -35,8 +35,8 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetCompileNumSubGroups,
     DPCTLKernel_GetCompileSubGroupSize,
     DPCTLKernel_GetMaxNumSubGroups,
-    DPCTLKernel_GetNumArgs,
     DPCTLKernel_GetName,
+    DPCTLKernel_GetNumArgs,
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
     DPCTLKernel_GetWorkGroupSize,
@@ -167,21 +167,25 @@ cdef class SyclKernel:
         cdef size_t n = DPCTLKernel_GetCompileSubGroupSize(self._kernel_ref)
         return n
 
+
 cdef api DPCTLSyclKernelRef SyclKernel_GetKernelRef(SyclKernel ker):
     """ C-API function to access opaque kernel reference from
     Python object of type :class:`dpctl.program.SyclKernel`.
     """
     return ker.get_kernel_ref()
 
-cdef api SyclKernel SyclKernel_Make(DPCTLSyclKernelRef KRef):
+
+cdef api SyclKernel SyclKernel_Make(DPCTLSyclKernelRef KRef, const char *name):
     """
     C-API function to create :class:`dpctl.program.SyclKernel`
     instance from opaque sycl kernel reference.
     """
     cdef DPCTLSyclKernelRef copied_KRef = DPCTLKernel_Copy(KRef)
-    cdef const char *name = DPCTLKernel_GetName(copied_KRef)
-    copied_name = name.decode("UTF-8")
-    return SyclKernel._create(copied_KRef, copied_name)
+    if (name is NULL):
+        return SyclKernel._create(copied_KRef, "default_name")
+    else:
+        return SyclKernel._create(copied_KRef, name.decode("utf-8"))
+
 
 cdef class SyclProgram:
     """ Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
@@ -309,11 +313,13 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
 
     return SyclProgram._create(KBref)
 
+
 cdef api DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(SyclProgram pro):
     """ C-API function to access opaque kernel bundle reference from
     Python object of type :class:`dpctl.program.SyclKernel`.
     """
     return pro.get_program_ref()
+
 
 cdef api SyclProgram SyclProgram_Make(DPCTLSyclKernelBundleRef KBRef):
     """
