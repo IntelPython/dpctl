@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl._sycl_timer &mdash; Data-parallel Control (dpctl) 0.14.0dev1+2.g6f7e7c3c3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/target-highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.14.0dev1+2.g6f7e7c3c3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../dpctl.html">dpctl</a></li>
+      <li class="breadcrumb-item active">dpctl._sycl_timer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpctl._sycl_timer</h1><div class="highlight"><pre>
+<span></span><span class="c1">#                      Data Parallel Control (dpctl)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2020-2022 Intel Corporation</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+
+<span class="kn">import</span> <span class="nn">timeit</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SyclQueue</span>
+
+
+<div class="viewcode-block" id="SyclTimer"><a class="viewcode-back" href="../../docfiles/dpctl/SyclTimer.html#dpctl.SyclTimer">[docs]</a><span class="k">class</span> <span class="nc">SyclTimer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SyclTimer(host_timer=timeit.default_timer, time_scale=1)</span>
+<span class="sd">    Python class to measure device time of execution of commands submitted to</span>
+<span class="sd">    :class:`dpctl.SyclQueue` as well as the wall-time.</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import dpctl</span>
+
+<span class="sd">            # Create a default SyclQueue</span>
+<span class="sd">            q = dpctl.SyclQueue(property=&#39;enable_profiling&#39;)</span>
+
+<span class="sd">            # create the timer</span>
+<span class="sd">            miliseconds_sc = 1e-3</span>
+<span class="sd">            timer = dpctl.SyclTimer(time_scale = miliseconds_sc)</span>
+
+<span class="sd">            # use the timer</span>
+<span class="sd">            with timer(queue=q):</span>
+<span class="sd">                code_block</span>
+
+<span class="sd">            # retrieve elapsed times in miliseconds</span>
+<span class="sd">            sycl_dt, wall_dt = timer.dt</span>
+
+<span class="sd">    Remark:</span>
+<span class="sd">        The timer submits barriers to the queue at the entrance and the</span>
+<span class="sd">        exit of the context and uses profiling information from events</span>
+<span class="sd">        associated with these submissions to perform the timing. Thus</span>
+<span class="sd">        :class:`dpctl.SyclTimer` requires the queue with &quot;enable_profiling&quot;</span>
+<span class="sd">        property. In order to be able to collect the profiling information</span>
+<span class="sd">        the property `dt` ensures that both submitted barriers complete</span>
+<span class="sd">        their execution and thus effectively synchronizing the queue.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        host_timer (callable): A callable such that host_timer() returns current</span>
+<span class="sd">            host time in seconds.</span>
+<span class="sd">        time_scale (int, float): Ratio of the unit of time of interest and</span>
+<span class="sd">            one second.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_timer</span><span class="o">=</span><span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">,</span> <span class="n">time_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">host_timer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_scale</span> <span class="o">=</span> <span class="n">time_scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">SyclQueue</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">queue</span><span class="o">.</span><span class="n">has_enable_profiling</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The given queue was not created with the &quot;</span>
+                    <span class="s2">&quot;enable_profiling property&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The passed queue must have type dpctl.SyclQueue, &quot;</span>
+                <span class="s2">&quot;got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">queue</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">submit_barrier</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_finish</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">submit_barrier</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_finish</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a tuple of elapsed times where first</span>
+<span class="sd">        element is the duration as measured by the host timer,</span>
+<span class="sd">        while the second element is the duration as measured by</span>
+<span class="sd">        the device timer and encoded in profiling events&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_start</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_finish</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host_finish</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">host_start</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_scale</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">event_finish</span><span class="o">.</span><span class="n">profiling_info_start</span>
+                <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_start</span><span class="o">.</span><span class="n">profiling_info_end</span>
+            <span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mf">1e-9</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_scale</span><span class="p">),</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
