@@ -13,8 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(FetchContent)
 FetchContent_Declare(
   pybind11
-  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.0.tar.gz
-  URL_HASH SHA256=eacf582fa8f696227988d08cfc46121770823839fe9e301a20fbce67e7cd70ec
+  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.1.tar.gz
+  URL_HASH SHA256=111014b516b625083bef701df7880f78c2243835abdb263065b6b59b960b6bad
 )
 FetchContent_MakeAvailable(pybind11)
 
