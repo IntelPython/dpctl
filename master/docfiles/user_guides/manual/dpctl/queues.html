@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data-parallel Control (dpctl) 0.14.0dev1+4.g94fc13f90 documentation</title>
+  <title>Queue &mdash; Data-parallel Control (dpctl) 0.14.0dev1+8.gbab5d108e documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+4.g94fc13f90
+                0.14.0dev1+8.gbab5d108e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -161,7 +161,7 @@ associated task completes, set a keyword <code class="docutils literal notransla
 <p>A possible output for the <a class="reference internal" href="#fig-constructing-queue-context-device-property"><span class="std std-ref">Constructing SyclQueue from context and device</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_subdevice_multidevice_context
 Could not create sub device.
-&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz] at 0x7ff16cb2d430&gt; has 2 compute units
+&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz] at 0x7f36c0c94230&gt; has 2 compute units
 INFO: ===========================
 </pre></div>
 </div>
@@ -192,9 +192,9 @@ is called.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7fa51ccd9440, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7f450eae7180, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
-    Name            Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz
+    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
     Driver version  2022.14.7.0.30_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
