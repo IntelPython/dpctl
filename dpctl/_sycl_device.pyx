@@ -393,61 +393,115 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def has_aspect_host(self):
-        "Returns True if this device is a host device, False otherwise"
+        """ Returns True if this device is a host device, False otherwise.
+
+        Returns:
+            bool: Indicates if the device is a host device.
+        """
         cdef _aspect_type AT = _aspect_type._host
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_cpu(self):
-        "Returns True if this device is a CPU device, False otherwise"
+        """ Returns True if this device is a CPU device, False otherwise.
+
+        Returns:
+            bool: Indicates if the device is a cpu.
+        """
         cdef _aspect_type AT = _aspect_type._cpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_gpu(self):
-        "Returns True if this device is a GPU device, False otherwise"
+        """ Returns True if this device is a GPU device, False otherwise.
+
+        Returns:
+            bool: Indicates if the device is a gpu.
+        """
         cdef _aspect_type AT = _aspect_type._gpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_accelerator(self):
-        "Returns True if this device is an accelerator device, False otherwise"
+        """ Returns True if this device is an accelerator device, False
+        otherwise.
+
+        SYCL considers an accelerator to be a device that usually uses a
+        peripheral interconnect for communication.
+
+        Returns:
+            bool: Indicates if the device is an accelerator.
+        """
         cdef _aspect_type AT = _aspect_type._accelerator
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_custom(self):
-        "Returns True if this device is a custom device, False otherwise"
+        """ Returns True if this device is a custom device, False otherwise.
+
+        A custom device can be a dedicated accelerator that can use the
+        SYCL API, but programmable kernels cannot be dispatched to the device,
+        only fixed functionality is available. Refer SYCL spec for more details.
+
+        Returns:
+            bool: Indicates if the device is a custom SYCL device.
+        """
         cdef _aspect_type AT = _aspect_type._custom
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_fp16(self):
-        """ Returns True if kernels submitted to this device
-        may use 16-bit floating point types, False otherwise
+        """ Returns True if the device supports half-precision floating point
+        operations, False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports half precision floating
+            point operations.
         """
         cdef _aspect_type AT = _aspect_type._fp16
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_fp64(self):
-        """  Returns True if kernels submitted to this device
-        may use 64-bit floating point types, False otherwise
+        """ Returns True if the device supports 64-bit precision floating point
+        operations, False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports 64-bit precision floating
+            point operations.
         """
         cdef _aspect_type AT = _aspect_type._fp64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_atomic64(self):
-        """ Returns True if kernels submitted to this device
-        may perform 64-bit atomic operations, False otherwise
+        """ Returns true if the device supports a basic set of atomic
+        operations, False otherwise.
+
+        Indicates that the device supports the following atomic operations on
+        64-bit values:
+            - atomic::load
+            - atomic::store
+            - atomic::fetch_add
+            - atomic::fetch_sub
+            - atomic::exchange
+            - atomic::compare_exchange_strong
+            - atomic::compare_exchange_weak
+
+        Returns:
+            bool: Indicates that the device supports a basic set of atomic
+            operations on 64-bit values.
         """
         cdef _aspect_type AT = _aspect_type._atomic64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_image(self):
-        """ Returns True if this device supports images, False otherwise
+        """ Returns True if the device supports images, False otherwise (refer
+        Sec 4.7.3 of SYCL 2020 spec).
+
+        Returns:
+            bool: Indicates that the device supports images
         """
         cdef _aspect_type AT = _aspect_type._image
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -455,7 +509,11 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_online_compiler(self):
         """ Returns True if this device supports online compilation of
-        device code, False otherwise
+        device code, False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports online compilation of
+            device code.
         """
         cdef _aspect_type AT = _aspect_type._online_compiler
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -463,7 +521,11 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_online_linker(self):
         """ Returns True if this device supports online linking of
-        device code, False otherwise
+        device code, False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports online linking of device
+            code.
         """
         cdef _aspect_type AT = _aspect_type._online_linker
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -471,7 +533,10 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_queue_profiling(self):
         """ Returns True if this device supports queue profiling,
-        False otherwise
+        False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports queue profiling.
         """
         cdef _aspect_type AT = _aspect_type._queue_profiling
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -479,7 +544,10 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_usm_device_allocations(self):
         """ Returns True if this device supports explicit USM allocations,
-        False otherwise
+        False otherwise (refer Siction 4.8 of SYCL 2020 specs).
+
+        Returns:
+            bool: Indicates that the device supports explicit USM allocations.
         """
         cdef _aspect_type AT = _aspect_type._usm_device_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -487,7 +555,11 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_usm_host_allocations(self):
         """ Returns True if this device can access USM-host memory,
-        False otherwise
+        False otherwise (refer Siction 4.8 of SYCL 2020 specs).
+
+        Returns:
+            bool: Indicates that the device can access USM memory
+            allocated via ``usm::alloc::host``.
         """
         cdef _aspect_type AT = _aspect_type._usm_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -495,14 +567,25 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def has_aspect_usm_shared_allocations(self):
         """ Returns True if this device supports USM-shared memory
-        allocated on the same device, False otherwise
+        allocated on the same device, False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports USM memory
+            allocated via ``usm::alloc::shared``.
         """
         cdef _aspect_type AT = _aspect_type._usm_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_restricted_shared_allocations(self):
-        """ Deprecated property, do not use.
+        """ Returns True if this device supports USM memory
+        allocated as restricted USM, False otherwise.
+
+        Returns:
+            bool: Indicates that the device supports USM memory allocated via
+            ``usm::alloc::shared`` as restricted USM.
+
+        .. deprecated:: 0.14
         """
         cdef _aspect_type AT = _aspect_type._usm_restricted_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -511,7 +594,11 @@ cdef class SyclDevice(_SyclDevice):
     def has_aspect_usm_system_allocations(self):
         """ Returns True if system allocator may be used instead of SYCL USM
         allocation mechanism for USM-shared allocations on this device,
-        False otherwise
+        False otherwise.
+
+        Returns:
+            bool: Indicates that system allocator may be used instead of SYCL
+            ``usm::alloc::shared``.
         """
         cdef _aspect_type AT = _aspect_type._usm_system_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
