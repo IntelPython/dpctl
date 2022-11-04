@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "Config/dpctl_config.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_enum_types.h"
@@ -100,7 +101,9 @@ auto build_params()
 
     constexpr auto param_2 =
         get_param_list<std::pair<const char *, sycl::aspect>>(
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
             std::make_pair("host", sycl::aspect::host),
+#endif
             std::make_pair("cpu", sycl::aspect::cpu),
             std::make_pair("gpu", sycl::aspect::gpu),
             std::make_pair("accelerator", sycl::aspect::accelerator),
