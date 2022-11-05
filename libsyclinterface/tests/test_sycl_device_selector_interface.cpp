@@ -24,20 +24,14 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
 using namespace sycl;
-
-namespace
-{
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef)
-} // namespace
 
 struct TestDeviceSelectorInterface : public ::testing::Test
 {

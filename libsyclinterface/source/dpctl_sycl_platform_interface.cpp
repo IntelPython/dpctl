@@ -25,9 +25,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_interface.h"
-#include "Support/CBindingWrapping.h"
+#include "Config/dpctl_config.h"
+#include "dpctl_device_selection.hpp"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <iomanip>
@@ -40,17 +42,25 @@ using namespace sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device_selector, DPCTLSyclDeviceSelectorRef);
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
-                                   DPCTLPlatformVectorRef);
-} // namespace
+
+using namespace dpctl::syclinterface;
+
+platform *new_platform_from_selector(const dpctl_device_selector *sel)
+{
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
+    return new platform(
+        [=](const device &d) -> int { return sel->operator()(d); });
+#else
+    return new platform(*sel);
+#endif
+}
+
+} // end of anonymous namespace
 
 __dpctl_give DPCTLSyclPlatformRef
 DPCTLPlatform_Copy(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    auto Platform = unwrap(PRef);
+    auto Platform = unwrap<platform>(PRef);
     if (!Platform) {
         error_handler("Cannot copy DPCTLSyclPlatformRef as input is a nullptr.",
                       __FILE__, __func__, __LINE__);
@@ -58,7 +68,7 @@ DPCTLPlatform_Copy(__dpctl_keep const DPCTLSyclPlatformRef PRef)
     }
     try {
         auto CopiedPlatform = new platform(*Platform);
-        return wrap(CopiedPlatform);
+        return wrap<platform>(CopiedPlatform);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
@@ -70,7 +80,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create()
     DPCTLSyclPlatformRef PRef = nullptr;
     try {
         auto P = new platform();
-        PRef = wrap(P);
+        PRef = wrap<platform>(P);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
@@ -81,11 +91,11 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef)
 {
     if (DSRef) {
-        auto DS = unwrap(DSRef);
+        auto DS = unwrap<dpctl_device_selector>(DSRef);
         platform *P = nullptr;
         try {
-            P = new platform(*DS);
-            return wrap(P);
+            P = new_platform_from_selector(DS);
+            return wrap<platform>(P);
         } catch (std::exception const &e) {
             delete P;
             error_handler(e, __FILE__, __func__, __LINE__);
@@ -102,7 +112,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
 
 void DPCTLPlatform_Delete(__dpctl_take DPCTLSyclPlatformRef PRef)
 {
-    auto P = unwrap(PRef);
+    auto P = unwrap<platform>(PRef);
     delete P;
 }
 
@@ -110,7 +120,7 @@ DPCTLSyclBackendType
 DPCTLPlatform_GetBackend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
-    auto P = unwrap(PRef);
+    auto P = unwrap<platform>(PRef);
     if (P) {
         BTy = DPCTL_SyclBackendToDPCTLBackendType(P->get_backend());
     }
@@ -124,7 +134,7 @@ DPCTLPlatform_GetBackend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 __dpctl_give const char *
 DPCTLPlatform_GetName(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    auto P = unwrap(PRef);
+    auto P = unwrap<platform>(PRef);
     if (P) {
         try {
             auto name = P->get_info<info::platform::name>();
@@ -144,7 +154,7 @@ DPCTLPlatform_GetName(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 __dpctl_give const char *
 DPCTLPlatform_GetVendor(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    auto P = unwrap(PRef);
+    auto P = unwrap<platform>(PRef);
     if (P) {
         try {
             auto vendor = P->get_info<info::platform::vendor>();
@@ -164,7 +174,7 @@ DPCTLPlatform_GetVendor(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 __dpctl_give const char *
 DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    auto P = unwrap(PRef);
+    auto P = unwrap<platform>(PRef);
     if (P) {
         try {
             auto driver = P->get_info<info::platform::version>();
@@ -183,12 +193,13 @@ DPCTLPlatform_GetVersion(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 
 __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
 {
-    std::vector<DPCTLSyclPlatformRef> *Platforms = nullptr;
+    using vecTy = std::vector<DPCTLSyclPlatformRef>;
+    vecTy *Platforms = nullptr;
 
     auto platforms = platform::get_platforms();
 
     try {
-        Platforms = new std::vector<DPCTLSyclPlatformRef>();
+        Platforms = new vecTy();
         Platforms->reserve(platforms.size());
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -197,20 +208,20 @@ __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
 
     // populate the vector
     for (const auto &P : platforms) {
-        Platforms->emplace_back(wrap(new platform(P)));
+        Platforms->emplace_back(wrap<platform>(new platform(P)));
     }
 
     // the wrap function is defined inside dpctl_vector_templ.cpp
-    return wrap(Platforms);
+    return wrap<vecTy>(Platforms);
 }
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
-    auto P = unwrap(PRef);
+    auto P = unwrap<platform>(PRef);
     if (P) {
         auto default_ctx = P->ext_oneapi_get_default_context();
-        return wrap(new context(default_ctx));
+        return wrap<context>(new context(default_ctx));
     }
     else {
         error_handler(

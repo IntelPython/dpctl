@@ -24,9 +24,9 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "dpctl_sycl_queue_manager.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_manager.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <vector>
 
@@ -37,10 +37,8 @@ using namespace sycl;
 // Anonymous namespace for private helpers
 namespace
 {
-// Create wrappers for C Binding types (see CBindingWrapping.h).
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
+
+using namespace dpctl::syclinterface;
 
 struct QueueManager
 {
@@ -49,12 +47,13 @@ struct QueueManager
     {
         thread_local static QueueStack *activeQueues = new QueueStack([] {
             QueueStack qs;
-            auto DS = default_selector();
+            auto DS = dpctl_default_selector();
             try {
-                auto DRef = wrap(new device(DS.select_device()));
+                auto DRef = wrap<device>(new device(DS));
                 auto CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
                 if (CRef) {
-                    qs.emplace_back(*unwrap(CRef), *unwrap(DRef));
+                    qs.emplace_back(*unwrap<context>(CRef),
+                                    *unwrap<device>(DRef));
                 }
                 else {
                     error_handler("Fatal Error: No cached context for default "
@@ -62,8 +61,8 @@ struct QueueManager
                                   __FILE__, __func__, __LINE__);
                     std::terminate();
                 }
-                delete unwrap(DRef);
-                delete unwrap(CRef);
+                delete unwrap<device>(DRef);
+                delete unwrap<context>(CRef);
             } catch (std::exception const &e) {
                 error_handler(e, __FILE__, __func__, __LINE__);
             }
@@ -109,7 +108,7 @@ DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
         return nullptr;
     }
     auto last = qs.size() - 1;
-    return wrap(new queue(qs[last]));
+    return wrap<queue>(new queue(qs[last]));
 }
 
 // Relies on sycl::queue class' operator= to check for equivalent of queues.
@@ -126,7 +125,7 @@ bool DPCTLQueueMgr_IsCurrentQueue(__dpctl_keep const DPCTLSyclQueueRef QRef)
     }
     auto last = qs.size() - 1;
     auto currQ = qs[last];
-    return (*unwrap(QRef) == currQ);
+    return (*unwrap<queue>(QRef) == currQ);
 }
 
 // The function sets the global queue, i.e., the sycl::queue object at
@@ -135,7 +134,7 @@ void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
 {
     auto &qs = QueueManager::getQueueStack();
     if (qRef) {
-        qs[0] = *unwrap(qRef);
+        qs[0] = *unwrap<queue>(qRef);
     }
     else {
         error_handler("Error: Failed to set the global queue.", __FILE__,
@@ -149,7 +148,7 @@ void DPCTLQueueMgr_PushQueue(__dpctl_keep const DPCTLSyclQueueRef qRef)
 {
     auto &qs = QueueManager::getQueueStack();
     if (qRef) {
-        qs.emplace_back(*unwrap(qRef));
+        qs.emplace_back(*unwrap<queue>(qRef));
     }
     else {
         error_handler("Error: Failed to set the current queue.", __FILE__,
