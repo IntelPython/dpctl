@@ -251,16 +251,14 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
 aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
 {
     aspect aspectTy;
-    if (false) {
+    if (aspectTyStr == "cpu") {
+        aspectTy = aspect::cpu;
     }
 #if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     else if (aspectTyStr == "host") {
         aspectTy = aspect::host;
     }
 #endif
-    else if (aspectTyStr == "cpu") {
-        aspectTy = aspect::cpu;
-    }
     else if (aspectTyStr == "gpu") {
         aspectTy = aspect::gpu;
     }

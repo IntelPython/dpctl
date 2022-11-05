@@ -1,4 +1,4 @@
-//===- dpctl_device_selector.cpp - Implementation of classes    -*-C++-*- ===//
+//===- dpctl_device_selection.cpp - Implementation of classes   -*-C++-*- ===//
 // dpctl_device_selector, dpctl_default_selector, etc.
 //
 //                      Data Parallel Control (dpctl)

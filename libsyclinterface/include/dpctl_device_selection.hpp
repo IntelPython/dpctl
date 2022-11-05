@@ -1,4 +1,4 @@
-//===-- dpctl_device_selectors.h - Device selector class declar. --*-C++-*- =//
+//===-- dpctl_device_selection.h - Device selector class declar. --*-C++-*- =//
 //
 //
 //                      Data Parallel Control (dpctl)
