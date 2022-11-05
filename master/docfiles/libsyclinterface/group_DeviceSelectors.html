@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device selection &mdash; Data-parallel Control (dpctl) 0.14.0dev1+8.gbab5d108e documentation</title>
+  <title>Device selection &mdash; Data-parallel Control (dpctl) 0.14.0dev1+19.g2c86ef66b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+8.gbab5d108e
+                0.14.0dev1+19.g2c86ef66b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -198,7 +198,7 @@
 <p>A integer score. The negative value indicates select rejected the device.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga1cfad5b95c7793766cf863378cdccf3d"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLFilterSelector_Create</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filter_str</span><span class="p">)</span></pre>
-<p>Returns an opaque wrapper for sycl::ONEAPI::filter_selector object based on the passed in filter string.</p>
+<p>Returns an opaque wrapper for sycl::ext::oneapi::filter_selector object based on the passed in filter string.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -207,22 +207,22 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>filter_str</p></td>
-<td><p>A C string providing a filter based on which to create a device_selector.</p></td>
+<td><p>A C string providing a filter based on which to create a device selector.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Returns:</p>
-<p>An opaque pointer to a sycl::ONEAPI::filter_selector object.</p>
+<p>An opaque pointer to a sycl::ext::oneapi::filter_selector object.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga1dabb6a4adf35a193d6d05240d8ed534"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLGPUSelector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
-<p>Returns an opaque wrapper for sycl::gpu_selector object.</p>
+<p>Returns an opaque wrapper for dpctl_gpu_selector object.</p>
 <p class="rubric">Returns:</p>
-<p>An opaque pointer to a sycl::gpu_selector object.</p>
+<p>An opaque pointer to a dpctl_gpu_selector object.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga3034644611fde17dd85949705d61e25d"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLHostSelector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
-<p>Returns an opaque wrapper for sycl::host_selector object.</p>
+<p>Returns an opaque wrapper for dpctl_host_selector object.</p>
 <p class="rubric">Returns:</p>
-<p>An opaque pointer to a sycl::host_selector object.</p>
+<p>An opaque pointer to a dpctl_host_selector object.</p>
 </section>
 </section>
 </section>

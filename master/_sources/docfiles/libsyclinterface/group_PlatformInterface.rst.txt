@@ -114,7 +114,7 @@ A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object.
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	DPCTLPlatform_CreateFromSelector(__dpctl_keep const :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>` DSRef)
 
-Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using the device_selector wrapped by DPCTLSyclDeviceSelectorRef.
+Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using the dpctl_device_selector wrapped by DPCTLSyclDeviceSelectorRef.
 
 
 
@@ -126,7 +126,7 @@ Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using the dev
 	*
 		- DSRef
 
-		- An opaque pointer to a SYCL device_selector object.
+		- An opaque pointer to a SYCL dpctl_device_selector object.
 
 
 

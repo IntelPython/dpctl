@@ -176,7 +176,7 @@ A integer score. The negative value indicates select rejected the device.
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
 	DPCTLFilterSelector_Create(__dpctl_keep const char* filter_str)
 
-Returns an opaque wrapper for sycl::ONEAPI::filter_selector object based on the passed in filter string.
+Returns an opaque wrapper for sycl::ext::oneapi::filter_selector object based on the passed in filter string.
 
 
 
@@ -188,13 +188,13 @@ Returns an opaque wrapper for sycl::ONEAPI::filter_selector object based on the 
 	*
 		- filter_str
 
-		- A C string providing a filter based on which to create a device_selector.
+		- A C string providing a filter based on which to create a device selector.
 
 
 
 .. rubric:: Returns:
 
-An opaque pointer to a sycl::ONEAPI::filter_selector object.
+An opaque pointer to a sycl::ext::oneapi::filter_selector object.
 
 .. index:: pair: function; DPCTLGPUSelector_Create
 .. _doxid-d8/d27/group___device_selectors_1ga1dabb6a4adf35a193d6d05240d8ed534:
@@ -205,13 +205,13 @@ An opaque pointer to a sycl::ONEAPI::filter_selector object.
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
 	DPCTLGPUSelector_Create(void)
 
-Returns an opaque wrapper for sycl::gpu_selector object.
+Returns an opaque wrapper for dpctl_gpu_selector object.
 
 
 
 .. rubric:: Returns:
 
-An opaque pointer to a sycl::gpu_selector object.
+An opaque pointer to a dpctl_gpu_selector object.
 
 .. index:: pair: function; DPCTLHostSelector_Create
 .. _doxid-d8/d27/group___device_selectors_1ga3034644611fde17dd85949705d61e25d:
@@ -222,11 +222,11 @@ An opaque pointer to a sycl::gpu_selector object.
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
 	DPCTLHostSelector_Create(void)
 
-Returns an opaque wrapper for sycl::host_selector object.
+Returns an opaque wrapper for dpctl_host_selector object.
 
 
 
 .. rubric:: Returns:
 
-An opaque pointer to a sycl::host_selector object.
+An opaque pointer to a dpctl_host_selector object.
 

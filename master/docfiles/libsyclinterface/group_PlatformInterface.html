@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+8.gbab5d108e documentation</title>
+  <title>Platform class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+19.g2c86ef66b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+8.gbab5d108e
+                0.14.0dev1+19.g2c86ef66b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -170,7 +170,7 @@
 <p>A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-dbd-group-platform-interface-1ga71cf26d634573b7cc86b013f65374015"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span>
 <span class="n">DPCTLPlatform_CreateFromSelector</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">)</span></pre>
-<p>Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using the device_selector wrapped by DPCTLSyclDeviceSelectorRef.</p>
+<p>Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed using the dpctl_device_selector wrapped by DPCTLSyclDeviceSelectorRef.</p>
 <p class="rubric">Parameters:</p>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -179,7 +179,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>DSRef</p></td>
-<td><p>An opaque pointer to a SYCL device_selector object.</p></td>
+<td><p>An opaque pointer to a SYCL dpctl_device_selector object.</p></td>
 </tr>
 </tbody>
 </table>
