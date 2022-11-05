@@ -743,7 +743,7 @@ void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef)
 __dpctl_give DPCTLSyclKernelBundleRef
 DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
 {
-    auto Bundle = unwrap(KBRef);
+    auto Bundle = unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
     if (!Bundle) {
         error_handler(
             "Cannot copy DPCTLSyclKernelBundleRef as input is a nullptr",
@@ -753,7 +753,7 @@ DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
     try {
         auto CopiedBundle =
             new kernel_bundle<bundle_state::executable>(*Bundle);
-        return wrap(CopiedBundle);
+        return wrap<kernel_bundle<bundle_state::executable>>(CopiedBundle);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;

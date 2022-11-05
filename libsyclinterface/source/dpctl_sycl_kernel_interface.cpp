@@ -62,7 +62,7 @@ DPCTLKernel_GetName(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return nullptr;
     }
 
-    auto sycl_kernel = unwrap(KRef);
+    auto sycl_kernel = unwrap<kernel>(KRef);
     auto name = sycl_kernel->get_info<info::kernel::function_name>();
     return dpctl::helper::cstring_from_string(name);
 }
@@ -75,7 +75,7 @@ void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef)
 __dpctl_give DPCTLSyclKernelRef
 DPCTLKernel_Copy(__dpctl_keep const DPCTLSyclKernelRef KRef)
 {
-    auto Kernel = unwrap(KRef);
+    auto Kernel = unwrap<kernel>(KRef);
     if (!Kernel) {
         error_handler("Cannot copy DPCTLSyclKernelRef as input is a nullptr",
                       __FILE__, __func__, __LINE__);
@@ -83,7 +83,7 @@ DPCTLKernel_Copy(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
     try {
         auto CopiedKernel = new kernel(*Kernel);
-        return wrap(CopiedKernel);
+        return wrap<kernel>(CopiedKernel);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
