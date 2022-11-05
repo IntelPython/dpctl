@@ -25,9 +25,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_kernel_interface.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* Sycl headers */
 #include <cstdint>
 
@@ -35,10 +35,8 @@ using namespace sycl;
 
 namespace
 {
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
-
-} /* end of anonymous namespace */
+using namespace dpctl::syclinterface;
+} // end of anonymous namespace
 
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef)
 {
@@ -49,7 +47,7 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return -1;
     }
 
-    auto sycl_kernel = unwrap(KRef);
+    auto sycl_kernel = unwrap<kernel>(KRef);
     auto num_args = sycl_kernel->get_info<info::kernel::num_args>();
     return static_cast<size_t>(num_args);
 }
@@ -71,7 +69,7 @@ DPCTLKernel_GetName(__dpctl_keep const DPCTLSyclKernelRef KRef)
 
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef)
 {
-    delete unwrap(KRef);
+    delete unwrap<kernel>(KRef);
 }
 
 __dpctl_give DPCTLSyclKernelRef
@@ -100,7 +98,7 @@ size_t DPCTLKernel_GetWorkGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
@@ -121,7 +119,7 @@ size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
@@ -142,7 +140,7 @@ size_t DPCTLKernel_GetPrivateMemSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
@@ -164,7 +162,7 @@ DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
@@ -189,7 +187,7 @@ DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
@@ -211,7 +209,7 @@ DPCTLKernel_GetCompileNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
@@ -234,7 +232,7 @@ DPCTLKernel_GetCompileSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
         return 0;
     }
 
-    auto sycl_kern = unwrap(KRef);
+    auto sycl_kern = unwrap<kernel>(KRef);
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",

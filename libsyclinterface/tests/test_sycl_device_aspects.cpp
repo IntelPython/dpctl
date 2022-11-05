@@ -24,10 +24,11 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
@@ -35,7 +36,6 @@
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(sycl::device, DPCTLSyclDeviceRef);
 
 template <typename...> struct are_same : std::true_type
 {
@@ -101,7 +101,9 @@ auto build_params()
 
     constexpr auto param_2 =
         get_param_list<std::pair<const char *, sycl::aspect>>(
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
             std::make_pair("host", sycl::aspect::host),
+#endif
             std::make_pair("cpu", sycl::aspect::cpu),
             std::make_pair("gpu", sycl::aspect::gpu),
             std::make_pair("accelerator", sycl::aspect::accelerator),
@@ -135,6 +137,8 @@ auto build_params()
     return build_gtest_values(pairs);
 }
 
+using namespace dpctl::syclinterface;
+
 } // namespace
 
 struct TestDPCTLSyclDeviceInterfaceAspects
@@ -162,7 +166,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
         EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
         if (!DRef)
             GTEST_SKIP_("Device not found");
-        auto D = unwrap(DRef);
+        auto D = unwrap<sycl::device>(DRef);
         auto syclAspect = GetParam().second.second;
         try {
             hasAspect = D->has(syclAspect);

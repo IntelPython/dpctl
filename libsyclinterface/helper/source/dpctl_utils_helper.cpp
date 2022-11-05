@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_utils_helper.h"
+#include "Config/dpctl_config.h"
 #include <sstream>
 #include <string>
 
@@ -48,9 +49,11 @@ std::string DPCTL_DeviceTypeToStr(info::device_type devTy)
     case info::device_type::custom:
         ss << "custom";
         break;
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case info::device_type::host:
         ss << "host";
         break;
+#endif
     default:
         ss << "unknown";
     }
@@ -90,8 +93,10 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
     switch (BeTy) {
     case DPCTLSyclBackendType::DPCTL_CUDA:
         return backend::ext_oneapi_cuda;
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case DPCTLSyclBackendType::DPCTL_HOST:
         return backend::host;
+#endif
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
         return backend::ext_oneapi_level_zero;
     case DPCTLSyclBackendType::DPCTL_OPENCL:
@@ -108,8 +113,10 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
     switch (B) {
     case backend::ext_oneapi_cuda:
         return DPCTLSyclBackendType::DPCTL_CUDA;
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case backend::host:
         return DPCTLSyclBackendType::DPCTL_HOST;
+#endif
     case backend::ext_oneapi_level_zero:
         return DPCTLSyclBackendType::DPCTL_LEVEL_ZERO;
     case backend::opencl:
@@ -170,9 +177,11 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
 {
     std::stringstream ss;
     switch (aspectTy) {
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case aspect::host:
         ss << "host";
         break;
+#endif
     case aspect::cpu:
         ss << "cpu";
         break;
@@ -242,12 +251,14 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
 aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
 {
     aspect aspectTy;
-    if (aspectTyStr == "host") {
-        aspectTy = aspect::host;
-    }
-    else if (aspectTyStr == "cpu") {
+    if (aspectTyStr == "cpu") {
         aspectTy = aspect::cpu;
     }
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
+    else if (aspectTyStr == "host") {
+        aspectTy = aspect::host;
+    }
+#endif
     else if (aspectTyStr == "gpu") {
         aspectTy = aspect::gpu;
     }
@@ -312,8 +323,10 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
 aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
 {
     switch (AspectTy) {
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case DPCTLSyclAspectType::host:
         return aspect::host;
+#endif
     case DPCTLSyclAspectType::cpu:
         return aspect::cpu;
     case DPCTLSyclAspectType::gpu:
@@ -360,8 +373,10 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
 DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
 {
     switch (Aspect) {
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case aspect::host:
         return DPCTLSyclAspectType::host;
+#endif
     case aspect::cpu:
         return DPCTLSyclAspectType::cpu;
     case aspect::gpu:
@@ -487,9 +502,11 @@ std::string DPCTL_GetDeviceFilterString(const device &Device)
     case backend::opencl:
         ss << "opencl";
         break;
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case backend::host:
         ss << "host";
         break;
+#endif
     default:
         ss << "unknown";
     };

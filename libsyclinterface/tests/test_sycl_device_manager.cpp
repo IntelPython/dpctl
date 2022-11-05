@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "dpctl_device_selection.hpp"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -31,6 +32,8 @@
 #include "dpctl_utils_helper.h"
 #include <gtest/gtest.h>
 #include <string>
+
+using dpctl::syclinterface::dpctl_default_selector;
 
 struct TestDPCTLDeviceManager : public ::testing::TestWithParam<const char *>
 {
@@ -154,7 +157,7 @@ TEST_P(TestGetNumDevicesForDTy, ChkGetNumDevices)
 {
     auto devices = sycl::device::get_devices(sycl_dty);
     size_t nDevices = 0;
-    sycl::default_selector mRanker;
+    dpctl_default_selector mRanker;
     for (const sycl::device &d : devices) {
         if (mRanker(d) < 0)
             continue;
@@ -188,7 +191,7 @@ TEST_P(TestGetNumDevicesForBTy, ChkGetNumDevices)
 {
     auto platforms = sycl::platform::get_platforms();
     size_t nDevices = 0;
-    sycl::default_selector mRanker;
+    dpctl_default_selector mRanker;
     for (const auto &P : platforms) {
         if ((P.get_backend() == sycl_bty) || (sycl_bty == sycl::backend::all)) {
             auto devices = P.get_devices();
