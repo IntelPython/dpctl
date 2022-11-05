@@ -1,0 +1,40 @@
+.. index:: pair: class; dpctl::syclinterface::dpctl_accelerator_selector
+.. _doxid-de/d9f/classdpctl_1_1syclinterface_1_1dpctl__accelerator__selector:
+
+class dpctl::syclinterface::dpctl_accelerator_selector
+======================================================
+
+.. toctree::
+	:hidden:
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_device_selection.hpp>
+	
+	class dpctl_accelerator_selector: public :ref:`dpctl::syclinterface::dpctl_device_selector<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector>`
+	{
+	public:
+		// methods
+	
+		virtual
+		int
+		:target:`operator ()<doxid-de/d9f/classdpctl_1_1syclinterface_1_1dpctl__accelerator__selector_1ad4711d348042a573a04fa80ab216445f>` (const sycl::device& d) const;
+	};
+
+Inherited Members
+-----------------
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-inherited-code-block
+
+	public:
+		// methods
+	
+		virtual
+		int
+		:ref:`operator ()<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a29af8b291686453af8f2de7b8a280527>` (const sycl::device& device) const = 0;
+

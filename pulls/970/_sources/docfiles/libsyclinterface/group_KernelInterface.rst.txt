@@ -1,0 +1,345 @@
+.. index:: pair: group; Kernel class C wrapper
+.. _doxid-da/df6/group___kernel_interface:
+
+Kernel class C wrapper
+======================
+
+.. toctree::
+	:hidden:
+
+Overview
+~~~~~~~~
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	// global functions
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	:ref:`DPCTLKernel_Copy<doxid-da/df6/group___kernel_interface_1gae6d5f7dcf1d42d6e1edc2b911386c22f>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API void
+	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetCompileNumSubGroups<doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetCompileSubGroupSize<doxid-da/df6/group___kernel_interface_1gaac45a42a0c66f550c099b635f2cecad7>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetMaxNumSubGroups<doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API const __dpctl_give char*
+	:ref:`DPCTLKernel_GetName<doxid-da/df6/group___kernel_interface_1ga704c4529ec591c05ac6a3a268ba9693f>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetPreferredWorkGroupSizeMultiple<doxid-da/df6/group___kernel_interface_1ga54f99084068d619b9bd5a624c02b5fbb>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetPrivateMemSize<doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API size_t
+	:ref:`DPCTLKernel_GetWorkGroupSize<doxid-da/df6/group___kernel_interface_1ga2ddbfad26249fccbf46c8f044c4244d4>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+.. _details-da/df6/group___kernel_interface:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+Global Functions
+----------------
+
+.. index:: pair: function; DPCTLKernel_Copy
+.. _doxid-da/df6/group___kernel_interface_1gae6d5f7dcf1d42d6e1edc2b911386c22f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	DPCTLKernel_Copy(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Returns a copy of the DPCTLSyclKernelRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclKernelRef created by copying the passed in DPCTLSyclKernelRef object.
+
+.. index:: pair: function; DPCTLKernel_Delete
+.. _doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API void
+	DPCTLKernel_Delete(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Deletes the DPCTLSyclKernelRef after casting it to a ``sycl::kernel``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
+
+.. index:: pair: function; DPCTLKernel_GetCompileNumSubGroups
+.. _doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLKernel_GetCompileNumSubGroups(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+!brief Wrapper around ``kernel::get_info<info::kernel_device_specific::compile_num_sub_groups>()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the number of sub-groups specified by the kernel, or 0 (if not specified).
+
+.. index:: pair: function; DPCTLKernel_GetCompileSubGroupSize
+.. _doxid-da/df6/group___kernel_interface_1gaac45a42a0c66f550c099b635f2cecad7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLKernel_GetCompileSubGroupSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+!brief Wrapper around ``kernel::get_info<info::kernel_device_specific::compile_sub_group_size>()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the required sub-group size specified by this kernel, or 0 (if not specified).
+
+.. index:: pair: function; DPCTLKernel_GetMaxNumSubGroups
+.. _doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+!brief Wrapper around ``kernel::get_info<info::kernel_device_specific::max_num_sub_groups>()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to an SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum number of sub-groups for this kernel.
+
+.. index:: pair: function; DPCTLKernel_GetName
+.. _doxid-da/df6/group___kernel_interface_1ga704c4529ec591c05ac6a3a268ba9693f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API const __dpctl_give char*
+	DPCTLKernel_GetName(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Returns a C string for the function name.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+A C string containing the name of the function.
+
+.. index:: pair: function; DPCTLKernel_GetNumArgs
+.. _doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLKernel_GetNumArgs(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Returns the number of arguments for the sycl interoperability kernel.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the number of arguments for the interoperability kernel.
+
+.. index:: pair: function; DPCTLKernel_GetPreferredWorkGroupSizeMultiple
+.. _doxid-da/df6/group___kernel_interface_1ga54f99084068d619b9bd5a624c02b5fbb:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLKernel_GetPreferredWorkGroupSizeMultiple(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+!brief Wrapper around ``kernel::get_info<info::kernel_device_specific::preferred_work_group_size_multiple>()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns a value, of which work-group size is preferred to be a multiple, for executing a kernel on the device it was built for.
+
+.. index:: pair: function; DPCTLKernel_GetPrivateMemSize
+.. _doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLKernel_GetPrivateMemSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+!brief Wrapper around ``kernel::get_info<info::kernel_device_specific::private_mem_size>()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the minimum amount of private memory, in bytes, used by each work-item in the kernel.
+
+.. index:: pair: function; DPCTLKernel_GetWorkGroupSize
+.. _doxid-da/df6/group___kernel_interface_1ga2ddbfad26249fccbf46c8f044c4244d4:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLKernel_GetWorkGroupSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+!brief Wrapper around ``kernel::get_info<info::kernel_device_specific::work_group_size>()``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef pointer to a SYCL interoperability kernel.
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum number of work-items in a work-group that can be used to execute a kernel on the device it was built for.
+
