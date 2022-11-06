@@ -594,8 +594,8 @@ public:
             return true;
         }
         else {
-            throw py::type_error(
-                "Input is of unexpected type, expected dpctl.SyclEvent");
+            throw py::type_error("Input is of unexpected type, expected "
+                                 "dpctl.program.SyclProgram");
         }
     }
 
