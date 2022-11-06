@@ -52,18 +52,6 @@ DPCTL_API
 size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
 /*!
- * @brief Returns a C string for the function name.
- *
- * @param    KRef           DPCTLSyclKernelRef pointer to a SYCL
- *                          interoperability kernel.
- * @return   A C string containing the name of the function.
- * @ingroup KernelInterface
- */
-DPCTL_API
-__dpctl_give const char *
-DPCTLKernel_GetName(__dpctl_keep const DPCTLSyclKernelRef KRef);
-
-/*!
  * @brief Deletes the DPCTLSyclKernelRef after casting it to a
  * ``sycl::kernel``.
  *

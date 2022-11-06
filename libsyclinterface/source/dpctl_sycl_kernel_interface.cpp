@@ -52,21 +52,6 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef)
     return static_cast<size_t>(num_args);
 }
 
-__dpctl_give const char *
-DPCTLKernel_GetName(__dpctl_keep const DPCTLSyclKernelRef KRef)
-{
-    if (!KRef) {
-        error_handler("Cannot get the name from "
-                      "DPCTLSyclKernelRef as input is a nullptr.",
-                      __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-
-    auto sycl_kernel = unwrap<kernel>(KRef);
-    auto name = sycl_kernel->get_info<info::kernel::function_name>();
-    return dpctl::helper::cstring_from_string(name);
-}
-
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef)
 {
     delete unwrap<kernel>(KRef);

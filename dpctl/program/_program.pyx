@@ -35,7 +35,6 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetCompileNumSubGroups,
     DPCTLKernel_GetCompileSubGroupSize,
     DPCTLKernel_GetMaxNumSubGroups,
-    DPCTLKernel_GetName,
     DPCTLKernel_GetNumArgs,
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
