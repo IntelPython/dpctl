@@ -165,7 +165,7 @@ struct usm_ndarray_types
     int typenum_to_lookup_id(int typenum)
     {
         using typenum_t = dpctl::tensor::detail::typenum_t;
-        auto &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
 
         if (typenum == api.UAR_DOUBLE_) {
             return static_cast<int>(typenum_t::DOUBLE);
