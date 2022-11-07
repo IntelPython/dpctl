@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+23.g71783262e documentation</title>
+  <title>Queue class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+31.g7d8b00369 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+23.g71783262e
+                0.14.0dev1+31.g7d8b00369
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -769,7 +769,7 @@
     <span class="kt">size_t</span> <span class="n">NDepEvents</span>
     <span class="p">)</span></pre>
 <p>Submits the kernel to the specified queue with the provided nd_range argument.</p>
-<p>A wrapper over <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code>. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as <code class="docutils literal notranslate"><span class="pre">parallel_for(nd_range&lt;NRange&gt;,</span> <span class="pre">*unwrap(KRef))</span></code>.</p>
+<p>A wrapper over <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code>. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as <code class="docutils literal notranslate"><span class="pre">parallel_for(nd_range&lt;NRange&gt;,</span> <span class="pre">*unwrap&lt;kernel&gt;(KRef))</span></code>.</p>
 <p>Todo sycl::buffer arguments are not supported yet.</p>
 <p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
 <p class="rubric">Parameters:</p>
@@ -826,7 +826,7 @@
     <span class="kt">size_t</span> <span class="n">NDepEvents</span>
     <span class="p">)</span></pre>
 <p>Submits the kernel to the specified queue with the provided range argument.</p>
-<p>A wrapper over <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code>. The function takes an interoperability kernel, the kernel arguments, and a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> as input. The kernel is submitted as <code class="docutils literal notranslate"><span class="pre">parallel_for(range&lt;NRange&gt;,</span> <span class="pre">*unwrap(KRef))</span></code>.</p>
+<p>A wrapper over <code class="docutils literal notranslate"><span class="pre">sycl::queue.submit()</span></code>. The function takes an interoperability kernel, the kernel arguments, and a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> as input. The kernel is submitted as <code class="docutils literal notranslate"><span class="pre">parallel_for(range&lt;NRange&gt;,</span> <span class="pre">*unwrap&lt;kernel&gt;(KRef))</span></code>.</p>
 <p>Todo <code class="docutils literal notranslate"><span class="pre">sycl::buffer</span></code> arguments are not supported yet.</p>
 <p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
 <p class="rubric">Parameters:</p>
