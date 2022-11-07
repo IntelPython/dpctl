@@ -325,6 +325,7 @@ def test_queue_memops():
 
 @pytest.fixture(scope="session")
 def dpctl_cython_extension(tmp_path_factory):
+    import os
     import os.path
     import shutil
     import subprocess
@@ -342,6 +343,7 @@ def dpctl_cython_extension(tmp_path_factory):
     res = subprocess.run(
         [sys.executable, "setup_cython_api.py", "build_ext", "--inplace"],
         cwd=dr,
+        env=os.environ,
     )
     if res.returncode == 0:
         import glob
