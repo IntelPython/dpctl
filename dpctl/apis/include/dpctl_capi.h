@@ -40,6 +40,9 @@
 #include "../memory/_memory_api.h"
 #include "../tensor/_usmarray.h"
 #include "../tensor/_usmarray_api.h"
+#include "../program/_program.h"
+#include "../program/_program_api.h"
+
 // clang-format on
 
 /*
@@ -59,5 +62,6 @@ static inline void import_dpctl(void)
     import_dpctl___sycl_queue();
     import_dpctl__memory___memory();
     import_dpctl__tensor___usmarray();
+    import_dpctl__program___program();
     return;
 }

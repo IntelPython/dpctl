@@ -102,6 +102,27 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirv)
     ASSERT_FALSE(DPCTLKernelBundle_HasKernel(KBRef, nullptr));
 }
 
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCopy)
+{
+    DPCTLSyclKernelBundleRef Copied_KBRef = nullptr;
+    ASSERT_TRUE(KBRef != nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(Copied_KBRef = DPCTLKernelBundle_Copy(KBRef));
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(Copied_KBRef, "add"));
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(Copied_KBRef, "axpy"));
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLKernelBundle_Delete(Copied_KBRef));
+}
+
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCopyNullArgument)
+{
+    DPCTLSyclKernelBundleRef Null_KBRef = nullptr;
+    DPCTLSyclKernelBundleRef Copied_KBRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(Copied_KBRef = DPCTLKernelBundle_Copy(Null_KBRef));
+    ASSERT_TRUE(Copied_KBRef == nullptr);
+}
+
 TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNull)
 {
     DPCTLSyclContextRef Null_CRef = nullptr;

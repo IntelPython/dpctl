@@ -12,6 +12,8 @@ include dpctl/_sycl_event.h
 include dpctl/_sycl_event_api.h
 include dpctl/memory/_memory.h
 include dpctl/memory/_memory_api.h
+include dpctl/program/_program.h
+include dpctl/program/_program_api.h
 include dpctl/tensor/_usmarray.h
 include dpctl/tensor/_usmarray_api.h
 recursive-include dpctl/tensor/include *

@@ -30,6 +30,7 @@ from libc.stdint cimport uint32_t
 
 from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLCString_Delete,
+    DPCTLKernel_Copy,
     DPCTLKernel_Delete,
     DPCTLKernel_GetCompileNumSubGroups,
     DPCTLKernel_GetCompileSubGroupSize,
@@ -38,6 +39,7 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
     DPCTLKernel_GetWorkGroupSize,
+    DPCTLKernelBundle_Copy,
     DPCTLKernelBundle_CreateFromOCLSource,
     DPCTLKernelBundle_CreateFromSpirv,
     DPCTLKernelBundle_Delete,
@@ -165,6 +167,25 @@ cdef class SyclKernel:
         return n
 
 
+cdef api DPCTLSyclKernelRef SyclKernel_GetKernelRef(SyclKernel ker):
+    """ C-API function to access opaque kernel reference from
+    Python object of type :class:`dpctl.program.SyclKernel`.
+    """
+    return ker.get_kernel_ref()
+
+
+cdef api SyclKernel SyclKernel_Make(DPCTLSyclKernelRef KRef, const char *name):
+    """
+    C-API function to create :class:`dpctl.program.SyclKernel`
+    instance from opaque sycl kernel reference.
+    """
+    cdef DPCTLSyclKernelRef copied_KRef = DPCTLKernel_Copy(KRef)
+    if (name is NULL):
+        return SyclKernel._create(copied_KRef, "default_name")
+    else:
+        return SyclKernel._create(copied_KRef, name.decode("utf-8"))
+
+
 cdef class SyclProgram:
     """ Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
     created using SYCL interoperability layer with underlying backends. Only the
@@ -290,3 +311,19 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
         raise SyclProgramCompilationError()
 
     return SyclProgram._create(KBref)
+
+
+cdef api DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(SyclProgram pro):
+    """ C-API function to access opaque kernel bundle reference from
+    Python object of type :class:`dpctl.program.SyclKernel`.
+    """
+    return pro.get_program_ref()
+
+
+cdef api SyclProgram SyclProgram_Make(DPCTLSyclKernelBundleRef KBRef):
+    """
+    C-API function to create :class:`dpctl.program.SyclProgram`
+    instance from opaque sycl kernel bundle reference.
+    """
+    cdef DPCTLSyclKernelBundleRef copied_KBRef = DPCTLKernelBundle_Copy(KBRef)
+    return SyclProgram._create(copied_KBRef)
