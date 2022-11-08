@@ -3,8 +3,8 @@
 ## Description
 
 This extension demonstrates how you can use dpctl Python types,
-such as ``dpctl.SyclQueue``, in Pybind11
-extensions.
+such as ``dpctl.SyclQueue`` and ``dpctl.program.SyclKernel``, in
+Pybind11 extensions.
 
 
 ## Building
@@ -20,10 +20,6 @@ python example.py
 # Sample output
 
 ```
-(idp) [17:25:27 ansatnuc04 use_dpctl_syclqueue]$ python example.py
-EU count returned by Pybind11 extension 24
-EU count computed by dpctl 24
-
-Computing modular reduction using SYCL on a NumPy array
-Offloaded result agrees with reference one computed by NumPy
+(dpctl) [17:25:27 ubuntu_vm use_dpctl_syclkernel]$ python example.py
+[ 0  2  4  6  8 10 12 14 16 18 20 22 24]
 ```

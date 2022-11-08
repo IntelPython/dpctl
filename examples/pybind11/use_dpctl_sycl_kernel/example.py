@@ -22,20 +22,26 @@ import dpctl
 import dpctl.program as dppr
 import dpctl.tensor as dpt
 
+# create execution queue, targeting default selected device
 q = dpctl.SyclQueue()
 
+# read SPIR-V: a program in Khronos standardized intermediate form
 with open("resource/double_it.spv", "br") as fh:
     il = fh.read()
 
+# Build the program for the selected device
 pr = dppr.create_program_from_spirv(q, il, "")
 assert pr.has_sycl_kernel("double_it")
 
+# Retrieve the kernel from the problem
 krn = pr.get_sycl_kernel("double_it")
 assert krn.num_args == 2
 
+# Construct the argument, and allocate memory for the result
 x = dpt.arange(0, stop=13, step=1, dtype="i4", sycl_queue=q)
 y = dpt.empty_like(x)
 
-eg.submit_custom_kernel(q, krn, x, y)
+eg.submit_custom_kernel(q, krn, src=x, dst=y)
 
+# output the result
 print(dpt.asnumpy(y))
