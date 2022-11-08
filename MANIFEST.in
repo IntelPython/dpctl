@@ -1,4 +1,5 @@
 recursive-include dpctl/include *.h
+recursive-include dpctl/include *.hpp
 include dpctl/include/dpctl4pybind11.hpp
 recursive-include dpctl *.pxd
 recursive-include dpctl *.cmake
