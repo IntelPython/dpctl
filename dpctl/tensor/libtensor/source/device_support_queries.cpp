@@ -71,7 +71,7 @@ std::string _default_device_bool_type(sycl::device)
 
 sycl::device _extract_device(py::object arg)
 {
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     PyObject *source = arg.ptr();
     if (api.PySyclQueue_Check_(source)) {
