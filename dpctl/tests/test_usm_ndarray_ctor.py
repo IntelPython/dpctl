@@ -989,6 +989,17 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
 
 
+def test_full_fill_array():
+    q = get_queue_or_skip()
+
+    dtype = np.float16
+    X = dpt.full(10, dpt.usm_ndarray(1, dtype=dtype), sycl_queue=q)
+    assert dtype == X.dtype
+
+    X = dpt.full(10, np.ndarray(1, dtype=dtype), sycl_queue=q)
+    assert dtype == X.dtype
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes[1:],

@@ -763,6 +763,8 @@ def full(
         order = order[0].upper()
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    if dtype is None and isinstance(fill_value, (dpt.usm_ndarray, np.ndarray)):
+        dtype = fill_value.dtype
     dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
     res = dpt.usm_ndarray(
         sh,
