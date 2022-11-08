@@ -473,7 +473,12 @@ jobs:
             CC=dpcpp CXX=dpcpp LDSHARED="dpcpp -shared" \
                    python setup.py build_ext --inplace || exit 1
             conda deactivate
-            LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python run.py || exit 1
+            if [ -e tests ]
+            then
+               LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python -m pytest tests || exit 1
+            else
+               LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python run.py || exit 1
+            fi
             popd
           done
           cd ../c
