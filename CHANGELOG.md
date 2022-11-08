@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `dpctl.utils.onetrace_enabled` context manager for targeted trace collection [#903](https://github.com/IntelPython/dpctl/pull/903).
 * Added support for `stream` keyword in `__dlpack__` method, enabling support for sending `usm_ndarray` using mpi4py [#906](https://github.com/IntelPython/dpctl/pull/906).
 * `dpctl.tensor.asarray` can now transition data between incompatible devices, [#951](https://github.com/IntelPython/dpctl/pull/951).
+* Introduced `"syclinterface/dpctl_sycl_types_casters.hpp"` header file with declaration of conversion routines between SYCL type pointers and SyclInterface library opaque pointers [#960](https://github.com/IntelPython/dpctl/pull/960).
+* Added C-API to `dpctl.program.SyclKernel` and `dpctl.program.SyclProgram`. Added type casters for new types to "dpctl4pybind11" and added an example demonstrating its use [#970](https://github.com/IntelPython/dpctl/pull/970).
+* Introduced "dpctl/sycl.pxd" Cython declaration file to streamline use of SYCL functions from Cython, and added an example demonstrating its use [#981](https://github.com/IntelPython/dpctl/pull/981).
 
 ### Changed
 * Improved queue compatibility testing in `dpctl.tensor`'s implementation module [#900](https://github.com/IntelPython/dpctl/pull/900).
@@ -27,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Refactored `dpctl.tensor`'s implementation module [#941](https://github.com/IntelPython/dpctl/pull/941) to streamline adding new functionality. Streamlined `dpctl::tensor::usm_ndarray` class implementation.
 * Added debugging messaging in case when `DPCTLDynamicLib::getSymbol` encounters errors [#956](https://github.com/IntelPython/dpctl/pull/956).
 * Updated code base according to changes in DPC++ compiler [#952](https://github.com/IntelPython/dpctl/pull/952), [#957](https://github.com/IntelPython/dpctl/pull/957), [#958](https://github.com/IntelPython/dpctl/pull/958).
+* Changed `dpctl` to use pybind11 2.10.1 [#967](https://github.com/IntelPython/dpctl/pull/967).
 
 ### Fixed
 * Improved SyclDevice constructor error message [#893](https://github.com/IntelPython/dpctl/pull/893).
@@ -34,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed unexpected `UnboundLocalError` exception in [#922](https://github.com/IntelPython/dpctl/pull/922).
 * Fixed bugs in `dpctl.tensor.arange` in [#945](https://github.com/IntelPython/dpctl/pull/945).
 * Fixed issue with type inferencing in `dpctl.tensor.asarray` in [#949](https://github.com/IntelPython/dpctl/pull/949).
+* Added missing docstrings for `dpctl.SyclDevice` properties [#964](https://github.com/IntelPython/dpctl/pull/964).
 
 ## [0.13.0] - 07/28/2022
 
