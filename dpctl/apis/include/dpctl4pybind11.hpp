@@ -54,9 +54,9 @@ constexpr int platform_typeid_lookup(int I, Ints... Is)
                : platform_typeid_lookup<Concrete, Ts...>(Is...);
 }
 
-struct dpctl_capi
+class dpctl_capi
 {
-
+public:
     // dpctl type objects
     PyTypeObject *Py_SyclDeviceType_;
     PyTypeObject *PySyclDeviceType_;
@@ -160,19 +160,19 @@ struct dpctl_capi
 
     py::object default_sycl_queue_pyobj()
     {
-        return *default_sycl_queue;
+        return *default_sycl_queue_;
     }
     py::object default_usm_memory_pyobj()
     {
-        return *default_usm_memory;
+        return *default_usm_memory_;
     }
     py::object default_usm_ndarray_pyobj()
     {
-        return *default_usm_ndarray;
+        return *default_usm_ndarray_;
     }
     py::object as_usm_memory_pyobj()
     {
-        return *as_usm_memory;
+        return *as_usm_memory_;
     }
 
 private:
@@ -188,16 +188,14 @@ private:
         }
     };
 
-    std::shared_ptr<py::object> default_sycl_queue;
-    std::shared_ptr<py::object> default_usm_memory;
-    std::shared_ptr<py::object> default_usm_ndarray;
-    std::shared_ptr<py::object> as_usm_memory;
-    std::shared_ptr<py::object> default_sycl_kernel;
-    std::shared_ptr<py::object> default_sycl_program;
+    std::shared_ptr<py::object> default_sycl_queue_;
+    std::shared_ptr<py::object> default_usm_memory_;
+    std::shared_ptr<py::object> default_usm_ndarray_;
+    std::shared_ptr<py::object> as_usm_memory_;
 
     dpctl_capi()
-        : default_sycl_queue{}, default_usm_memory{}, default_usm_ndarray{},
-          as_usm_memory{}
+        : default_sycl_queue_{}, default_usm_memory_{}, default_usm_ndarray_{},
+          as_usm_memory_{}
     {
         // Import Cython-generated C-API for dpctl
         // This imports python modules and initializes
@@ -312,18 +310,18 @@ private:
         py::object py_sycl_queue = py::reinterpret_steal<py::object>(
             reinterpret_cast<PyObject *>(py_q_tmp));
 
-        default_sycl_queue = std::shared_ptr<py::object>(
+        default_sycl_queue_ = std::shared_ptr<py::object>(
             new py::object(py_sycl_queue), Deleter{});
 
         py::module_ mod_memory = py::module_::import("dpctl.memory");
         py::object py_as_usm_memory = mod_memory.attr("as_usm_memory");
-        as_usm_memory = std::shared_ptr<py::object>(
+        as_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_as_usm_memory}, Deleter{});
 
         auto mem_kl = mod_memory.attr("MemoryUSMHost");
         py::object py_default_usm_memory =
             mem_kl(1, py::arg("queue") = py_sycl_queue);
-        default_usm_memory = std::shared_ptr<py::object>(
+        default_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_default_usm_memory}, Deleter{});
 
         py::module_ mod_usmarray =
@@ -334,7 +332,7 @@ private:
             tensor_kl(py::tuple(), py::arg("dtype") = py::str("u1"),
                       py::arg("buffer") = py_default_usm_memory);
 
-        default_usm_ndarray = std::shared_ptr<py::object>(
+        default_usm_ndarray_ = std::shared_ptr<py::object>(
             new py::object{py_default_usm_ndarray}, Deleter{});
     }
 
