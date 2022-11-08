@@ -229,11 +229,11 @@ usm_ndarray_triul(sycl::queue exec_q,
     (*shp_host_shape_and_strides)[3 * nd - 1] = dst_strides[src_nd - 1];
 
     py::ssize_t *dev_shape_and_strides =
-        sycl::malloc_device<ssize_t>(3 * nd, exec_q);
+        sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
     if (dev_shape_and_strides == nullptr) {
         throw std::runtime_error("Unabled to allocate device memory");
     }
-    sycl::event copy_shape_and_strides = exec_q.copy<ssize_t>(
+    sycl::event copy_shape_and_strides = exec_q.copy<py::ssize_t>(
         shp_host_shape_and_strides->data(), dev_shape_and_strides, 3 * nd);
 
     py::ssize_t inner_range = src_shape[src_nd - 1] * src_shape[src_nd - 2];
