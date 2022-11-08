@@ -43,17 +43,25 @@ cdef extern from "CL/sycl.hpp" namespace "sycl":
 cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
     namespace "dpctl::syclinterface":
     # queue
-    cdef dpctl_backend.DPCTLSyclQueueRef wrap_queue "dpctl::syclinterface::wrap<sycl::queue>" (const queue *)
-    cdef queue * unwrap_queue "dpctl::syclinterface::unwrap<sycl::queue>" (dpctl_backend.DPCTLSyclQueueRef)
+    cdef dpctl_backend.DPCTLSyclQueueRef wrap_queue \
+        "dpctl::syclinterface::wrap<sycl::queue>" (const queue *)
+    cdef queue * unwrap_queue "dpctl::syclinterface::unwrap<sycl::queue>" (
+        dpctl_backend.DPCTLSyclQueueRef)
 
     # device
-    cdef dpctl_backend.DPCTLSyclDeviceRef wrap_device "dpctl::syclinterface::wrap<sycl::device>" (const device *)
-    cdef device * unwrap_device "dpctl::syclinterface::unwrap<sycl::device>" (dpctl_backend.DPCTLSyclDeviceRef)
+    cdef dpctl_backend.DPCTLSyclDeviceRef wrap_device \
+        "dpctl::syclinterface::wrap<sycl::device>" (const device *)
+    cdef device * unwrap_device "dpctl::syclinterface::unwrap<sycl::device>" (
+        dpctl_backend.DPCTLSyclDeviceRef)
 
     # context
-    cdef dpctl_backend.DPCTLSyclContextRef wrap_context "dpctl::syclinterface::wrap<sycl::context>" (const context *)
-    cdef context * unwrap_context "dpctl::syclinterface::unwrap<sycl::context>" (dpctl_backend.DPCTLSyclContextRef)
+    cdef dpctl_backend.DPCTLSyclContextRef wrap_context \
+        "dpctl::syclinterface::wrap<sycl::context>" (const context *)
+    cdef context * unwrap_context "dpctl::syclinterface::unwrap<sycl::context>" (
+        dpctl_backend.DPCTLSyclContextRef)
 
     # event
-    cdef dpctl_backend.DPCTLSyclEventRef wrap_event "dpctl::syclinterface::wrap<sycl::event>" (const event *)
-    cdef event * unwrap_event "dpctl::syclinterface::unwrap<sycl::event>" (dpctl_backend.DPCTLSyclEventRef)
+    cdef dpctl_backend.DPCTLSyclEventRef wrap_event \
+        "dpctl::syclinterface::wrap<sycl::event>" (const event *)
+    cdef event * unwrap_event "dpctl::syclinterface::unwrap<sycl::event>" (
+        dpctl_backend.DPCTLSyclEventRef)
