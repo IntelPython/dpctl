@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kernel class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+28.gfafa97953 documentation</title>
+  <title>Kernel class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+47.g70ec4d76 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+28.gfafa97953
+                0.14.0dev1+47.g70ec4d76
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -112,6 +112,9 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span>
+<a class="reference internal" href="#doxid-da-df6-group-kernel-interface-1gae6d5f7dcf1d42d6e1edc2b911386c22f"><span class="std std-ref">DPCTLKernel_Copy</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
+
 <span class="n">DPCTL_API</span> <span class="kt">void</span>
 <a class="reference internal" href="#doxid-da-df6-group-kernel-interface-1ga02cb1ddc64d9f78d228a5dc222c8862b"><span class="std std-ref">DPCTLKernel_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">);</span>
 
@@ -140,7 +143,24 @@
 <span id="details-da-df6-group-kernel-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga02cb1ddc64d9f78d228a5dc222c8862b"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gae6d5f7dcf1d42d6e1edc2b911386c22f"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span>
+<span class="n">DPCTLKernel_Copy</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
+<p>Returns a copy of the DPCTLSyclKernelRef object.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>KRef</p></td>
+<td><p>DPCTLSyclKernelRef object to be copied.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A new DPCTLSyclKernelRef created by copying the passed in DPCTLSyclKernelRef object.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga02cb1ddc64d9f78d228a5dc222c8862b"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLKernel_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>Deletes the DPCTLSyclKernelRef after casting it to a <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -155,7 +175,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gab94f84a23cabefeda98896a35707c694"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gab94f84a23cabefeda98896a35707c694"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLKernel_GetCompileNumSubGroups</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>!brief Wrapper around <code class="docutils literal notranslate"><span class="pre">kernel::get_info&lt;info::kernel_device_specific::compile_num_sub_groups&gt;()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -172,7 +192,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the number of sub-groups specified by the kernel, or 0 (if not specified).</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gaac45a42a0c66f550c099b635f2cecad7"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gaac45a42a0c66f550c099b635f2cecad7"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLKernel_GetCompileSubGroupSize</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>!brief Wrapper around <code class="docutils literal notranslate"><span class="pre">kernel::get_info&lt;info::kernel_device_specific::compile_sub_group_size&gt;()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -189,7 +209,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the required sub-group size specified by this kernel, or 0 (if not specified).</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga87026b11e734302aa8238ad38fc6b14a"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga87026b11e734302aa8238ad38fc6b14a"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLKernel_GetMaxNumSubGroups</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>!brief Wrapper around <code class="docutils literal notranslate"><span class="pre">kernel::get_info&lt;info::kernel_device_specific::max_num_sub_groups&gt;()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -206,7 +226,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum number of sub-groups for this kernel.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gae585c0ae9e5e1826ca24aac6f9b2a71d"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1gae585c0ae9e5e1826ca24aac6f9b2a71d"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLKernel_GetNumArgs</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>Returns the number of arguments for the sycl interoperability kernel.</p>
 <p class="rubric">Parameters:</p>
@@ -223,7 +243,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the number of arguments for the interoperability kernel.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga54f99084068d619b9bd5a624c02b5fbb"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga54f99084068d619b9bd5a624c02b5fbb"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLKernel_GetPreferredWorkGroupSizeMultiple</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>!brief Wrapper around <code class="docutils literal notranslate"><span class="pre">kernel::get_info&lt;info::kernel_device_specific::preferred_work_group_size_multiple&gt;()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -240,7 +260,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a value, of which work-group size is preferred to be a multiple, for executing a kernel on the device it was built for.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga8b5b72e2f69a5eaeab645e96bf28b411"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga8b5b72e2f69a5eaeab645e96bf28b411"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLKernel_GetPrivateMemSize</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>!brief Wrapper around <code class="docutils literal notranslate"><span class="pre">kernel::get_info&lt;info::kernel_device_specific::private_mem_size&gt;()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -257,7 +277,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the minimum amount of private memory, in bytes, used by each work-item in the kernel.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga2ddbfad26249fccbf46c8f044c4244d4"><span id="index-8"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-df6-group-kernel-interface-1ga2ddbfad26249fccbf46c8f044c4244d4"><span id="index-9"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLKernel_GetWorkGroupSize</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span> <span class="n">KRef</span><span class="p">)</span></pre>
 <p>!brief Wrapper around <code class="docutils literal notranslate"><span class="pre">kernel::get_info&lt;info::kernel_device_specific::work_group_size&gt;()</span></code>.</p>
 <p class="rubric">Parameters:</p>

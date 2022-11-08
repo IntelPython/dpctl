@@ -20,6 +20,9 @@ Overview
 	// global functions
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	:ref:`DPCTLKernelBundle_Copy<doxid-d2/d0d/group___kernel_bundle_interface_1gaf16f028b8fd7c1fa145768892fd1bfdb>`(__dpctl_keep const :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
 	:ref:`DPCTLKernelBundle_CreateFromOCLSource<doxid-d2/d0d/group___kernel_bundle_interface_1gaa753c9ba7f39524d2f87cb7caae74350>`(
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` Ctx,
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` Dev,
@@ -60,6 +63,35 @@ Detailed Documentation
 
 Global Functions
 ----------------
+
+.. index:: pair: function; DPCTLKernelBundle_Copy
+.. _doxid-d2/d0d/group___kernel_bundle_interface_1gaf16f028b8fd7c1fa145768892fd1bfdb:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>`
+	DPCTLKernelBundle_Copy(__dpctl_keep const :ref:`DPCTLSyclKernelBundleRef<doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd>` KBRef)
+
+Returns a copy of the DPCTLSyclKernelBundleRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KBRef
+
+		- DPCTLSyclKernelBundleRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclKernelBundleRef created by copying the passed in DPCTLSyclKernelBundleRef object.
 
 .. index:: pair: function; DPCTLKernelBundle_CreateFromOCLSource
 .. _doxid-d2/d0d/group___kernel_bundle_interface_1gaa753c9ba7f39524d2f87cb7caae74350:

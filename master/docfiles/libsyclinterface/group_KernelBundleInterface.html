@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kernel_bundle class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+28.gfafa97953 documentation</title>
+  <title>Kernel_bundle class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.0dev1+47.g70ec4d76 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+28.gfafa97953
+                0.14.0dev1+47.g70ec4d76
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -113,6 +113,9 @@
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d2-d0d-group-kernel-bundle-interface-1gaf16f028b8fd7c1fa145768892fd1bfdb"><span class="std std-ref">DPCTLKernelBundle_Copy</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
 <a class="reference internal" href="#doxid-d2-d0d-group-kernel-bundle-interface-1gaa753c9ba7f39524d2f87cb7caae74350"><span class="std std-ref">DPCTLKernelBundle_CreateFromOCLSource</span></a><span></span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">Dev</span><span class="p">,</span>
@@ -148,7 +151,24 @@
 <span id="details-d2-d0d-group-kernel-bundle-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1gaa753c9ba7f39524d2f87cb7caae74350"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1gaf16f028b8fd7c1fa145768892fd1bfdb"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
+<span class="n">DPCTLKernelBundle_Copy</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">)</span></pre>
+<p>Returns a copy of the DPCTLSyclKernelBundleRef object.</p>
+<p class="rubric">Parameters:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>KBRef</p></td>
+<td><p>DPCTLSyclKernelBundleRef object to be copied.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Returns:</p>
+<p>A new DPCTLSyclKernelBundleRef created by copying the passed in DPCTLSyclKernelBundleRef object.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1gaa753c9ba7f39524d2f87cb7caae74350"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
 <span class="n">DPCTLKernelBundle_CreateFromOCLSource</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">Dev</span><span class="p">,</span>
@@ -179,7 +199,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A new SyclKernelBundleRef pointer if the program creation succeeded, else returns NULL.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1ga6062cc6a4c81ca4f4079d792c9f135b8"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1ga6062cc6a4c81ca4f4079d792c9f135b8"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span>
 <span class="n">DPCTLKernelBundle_CreateFromSpirv</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span> <span class="n">Ctx</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">Dev</span><span class="p">,</span>
@@ -215,7 +235,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A new SyclKernelBundleRef pointer if the kernel_bundle creation succeeded, else returns NULL.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1ga0bf45ad7930bf8e973be31e48b0fde9d"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1ga0bf45ad7930bf8e973be31e48b0fde9d"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
 <span class="n">DPCTLKernelBundle_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">)</span></pre>
 <p>Frees the DPCTLSyclKernelBundleRef pointer.</p>
 <p class="rubric">Parameters:</p>
@@ -230,7 +250,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1ga7826d57d69cf2d000ccd332541159e33"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1ga7826d57d69cf2d000ccd332541159e33"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a><span></span>
 <span class="n">DPCTLKernelBundle_GetKernel</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">KernelName</span>
@@ -253,7 +273,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A SyclKernel reference if the kernel exists, else NULL</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1gaec25b409112401cd5ca12edbc96d4dbf"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d0d-group-kernel-bundle-interface-1gaec25b409112401cd5ca12edbc96d4dbf"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <span class="n">DPCTLKernelBundle_HasKernel</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span class="std std-ref">DPCTLSyclKernelBundleRef</span></a><span></span> <span class="n">KBRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">KernelName</span>

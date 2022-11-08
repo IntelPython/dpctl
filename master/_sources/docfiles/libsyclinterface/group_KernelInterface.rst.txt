@@ -19,6 +19,9 @@ Overview
 	
 	// global functions
 
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	:ref:`DPCTLKernel_Copy<doxid-da/df6/group___kernel_interface_1gae6d5f7dcf1d42d6e1edc2b911386c22f>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
 	DPCTL_API void
 	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
@@ -52,6 +55,35 @@ Detailed Documentation
 
 Global Functions
 ----------------
+
+.. index:: pair: function; DPCTLKernel_Copy
+.. _doxid-da/df6/group___kernel_interface_1gae6d5f7dcf1d42d6e1edc2b911386c22f:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	DPCTLKernel_Copy(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+
+Returns a copy of the DPCTLSyclKernelRef object.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- KRef
+
+		- DPCTLSyclKernelRef object to be copied.
+
+
+
+.. rubric:: Returns:
+
+A new DPCTLSyclKernelRef created by copying the passed in DPCTLSyclKernelRef object.
 
 .. index:: pair: function; DPCTLKernel_Delete
 .. _doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b:
