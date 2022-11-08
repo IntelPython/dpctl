@@ -16,14 +16,12 @@
 
 import Cython.Build
 import setuptools
-import setuptools.command.build_ext
+from setuptools.command.build_ext import build_ext as build_ext_base
 
 import dpctl
 
 
-class custom_build_ext(
-    setuptools.command.build_ext.build_ext, Cython.Build.build_ext
-):
+class custom_build_ext(build_ext_base):
     def build_extensions(self):
         self.compiler.set_executable("compiler_so", "icx -fsycl -fPIC")
         self.compiler.set_executable("compiler_cxx", "icpx -fsycl -fPIC")
@@ -41,9 +39,15 @@ ext = setuptools.Extension(
     language="c++",
 )
 
+(cythonized_ext,) = Cython.Build.cythonize(
+    [
+        ext,
+    ]
+)
+
 setuptools.setup(
     name="use_dpctl_sycl",
     version="0.0.0",
-    ext_modules=[ext],
+    ext_modules=[cythonized_ext],
     cmdclass={"build_ext": custom_build_ext},
 )
