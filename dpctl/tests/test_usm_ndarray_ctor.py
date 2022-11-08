@@ -992,7 +992,7 @@ def test_full_dtype_inference():
 def test_full_fill_array():
     q = get_queue_or_skip()
 
-    dtype = np.float16
+    dtype = np.int32
     X = dpt.full(10, dpt.usm_ndarray(1, dtype=dtype), sycl_queue=q)
     assert dtype == X.dtype
 
