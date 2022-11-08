@@ -251,6 +251,7 @@ endif()
 # Install all headers
 
 file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 file(GLOB SUPPORT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
 file(GLOB CONFIG_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
 
