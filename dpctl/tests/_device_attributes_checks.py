@@ -115,6 +115,11 @@ def check_max_num_sub_groups(device):
         assert max_num_sub_groups > 0
 
 
+def check_sub_group_sizes(device):
+    sg_sizes = device.sub_group_sizes
+    assert all(el > 0 for el in sg_sizes)
+
+
 def check_has_aspect_host(device):
     try:
         device.has_aspect_host
@@ -605,6 +610,7 @@ list_of_checks = [
     check_max_work_item_sizes,
     check_max_work_group_size,
     check_max_num_sub_groups,
+    check_sub_group_sizes,
     check_is_accelerator,
     check_is_cpu,
     check_is_gpu,
