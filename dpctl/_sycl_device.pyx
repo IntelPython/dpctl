@@ -65,6 +65,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetPreferredVectorWidthShort,
     DPCTLDevice_GetProfilingTimerResolution,
     DPCTLDevice_GetSubGroupIndependentForwardProgress,
+    DPCTLDevice_GetSubGroupSizes,
     DPCTLDevice_GetVendor,
     DPCTLDevice_HasAspect,
     DPCTLDevice_Hash,
@@ -883,6 +884,28 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_GetSubGroupIndependentForwardProgress(
             self._device_ref
         )
+
+    @property
+    def sub_group_sizes(self):
+        """ Returns list of supported sub-group sizes for this device.
+
+        Returns:
+            List[int]: List of supported sub-group sizes.
+        """
+        cdef size_t *sg_sizes = NULL
+        cdef size_t sg_sizes_len = 0
+        cdef size_t i
+
+        sg_sizes = DPCTLDevice_GetSubGroupSizes(
+            self._device_ref, &sg_sizes_len)
+        if (sg_sizes is not NULL and sg_sizes_len > 0):
+            res = list()
+            for i in range(sg_sizes_len):
+                res.append(sg_sizes[i])
+            DPCTLSize_t_Array_Delete(sg_sizes)
+            return res
+        else:
+           return []
 
     @property
     def sycl_platform(self):

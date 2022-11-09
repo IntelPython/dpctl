@@ -33,11 +33,17 @@ from .._backend cimport (
 )
 from ._usmarray cimport usm_ndarray
 
+from platform import system as sys_platform
+
 import numpy as np
 
 import dpctl
 import dpctl.memory as dpmem
 
+
+cdef bint _IS_LINUX = sys_platform() == "Linux"
+
+del sys_platform
 
 cdef extern from 'dlpack/dlpack.h' nogil:
     cdef int DLPACK_VERSION
@@ -140,6 +146,7 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     cdef c_dpctl.SyclQueue ary_sycl_queue
     cdef c_dpctl.SyclDevice ary_sycl_device
     cdef DPCTLSyclDeviceRef pDRef = NULL
+    cdef DPCTLSyclDeviceRef tDRef = NULL
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef DLTensor *dl_tensor = NULL
     cdef int nd = usm_ary.get_ndim()
@@ -157,19 +164,45 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     ary_sycl_queue = usm_ary.get_sycl_queue()
     ary_sycl_device = ary_sycl_queue.get_sycl_device()
 
-    # check that ary_sycl_device is a non-partitioned device
-    pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())
-    if pDRef is not NULL:
-        DPCTLDevice_Delete(pDRef)
+    try:
+        if _IS_LINUX:
+            default_context = ary_sycl_device.sycl_platform.default_context
+        else:
+            default_context = None
+    except RuntimeError:
+        # RT does not support default_context, e.g. Windows
+        default_context = None
+    if default_context is None:
+        # check that ary_sycl_device is a non-partitioned device
+        pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())
+        if pDRef is not NULL:
+            DPCTLDevice_Delete(pDRef)
+            raise DLPackCreationError(
+                "to_dlpack_capsule: DLPack can only export arrays allocated "
+                "on non-partitioned SYCL devices on platforms where "
+                "default_context oneAPI extension is not supported."
+            )
+    else:
+        if not usm_ary.sycl_context == default_context:
+            raise DLPackCreationError(
+                "to_dlpack_capsule: DLPack can only export arrays based on USM "
+                "allocations bound to a default platform SYCL context"
+            )
+        # Find the unpartitioned parent of the allocation device
+        pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())
+        if pDRef is not NULL:
+            tDRef = DPCTLDevice_GetParentDevice(pDRef)
+            while tDRef is not NULL:
+                DPCTLDevice_Delete(pDRef)
+                pDRef = tDRef
+                tDRef = DPCTLDevice_GetParentDevice(pDRef)
+            ary_sycl_device = c_dpctl.SyclDevice._create(pDRef)
+
+    # Find ordinal number of the parent device
+    device_id = ary_sycl_device.get_overall_ordinal()
+    if device_id < 0:
         raise DLPackCreationError(
-            "to_dlpack_capsule: DLPack can only export arrays allocated on "
-            "non-partitioned SYCL devices."
-        )
-    default_context = dpctl.SyclQueue(ary_sycl_device).sycl_context
-    if not usm_ary.sycl_context == default_context:
-        raise DLPackCreationError(
-            "to_dlpack_capsule: DLPack can only export arrays based on USM "
-            "allocations bound to a default platform SYCL context"
+            "to_dlpack_capsule: failed to determine device_id"
         )
 
     dlm_tensor = <DLManagedTensor *> stdlib.malloc(
@@ -191,14 +224,6 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     if strides_ptr:
         for i in range(nd):
             shape_strides_ptr[nd + i] = strides_ptr[i]
-
-    device_id = ary_sycl_device.get_overall_ordinal()
-    if device_id < 0:
-        stdlib.free(shape_strides_ptr)
-        stdlib.free(dlm_tensor)
-        raise DLPackCreationError(
-            "to_dlpack_capsule: failed to determine device_id"
-        )
 
     ary_dt = usm_ary.dtype
     ary_dtk = ary_dt.kind
@@ -278,8 +303,8 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
         success.
     Raises:
         TypeError: if argument is not a "dltensor" capsule.
-        ValueError: if argument is "used_dltensor" capsule,
-             if the USM pointer is not bound to the reconstructed
+        ValueError: if argument is "used_dltensor" capsule
+        BufferError:  if the USM pointer is not bound to the reconstructed
              sycl context, or the DLPack's device_type is not supported
              by dpctl.
     """
@@ -287,6 +312,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     cdef bytes usm_type
     cdef size_t sz = 1
     cdef int i
+    cdef int device_id = -1
     cdef int element_bytesize = 0
     cdef Py_ssize_t offset_min = 0
     cdef Py_ssize_t offset_max = 0
@@ -308,26 +334,40 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             py_caps, "dltensor")
     # Verify that we can work with this device
     if dlm_tensor.dl_tensor.device.device_type == kDLOneAPI:
-        q = dpctl.SyclQueue(str(<int>dlm_tensor.dl_tensor.device.device_id))
+        device_id = dlm_tensor.dl_tensor.device.device_id
+        root_device = dpctl.SyclDevice(str(<int>device_id))
+        try:
+            if _IS_LINUX:
+                default_context = root_device.sycl_platform.default_context
+            else:
+                default_context = dpctl.SyclQueue(root_device).sycl_context
+        except RuntimeError:
+            default_context = dpctl.SyclQueue(root_device).sycl_context
         if dlm_tensor.dl_tensor.data is NULL:
             usm_type = b"device"
+            q = dpctl.SyclQueue(default_context, root_device)
         else:
             usm_type = c_dpmem._Memory.get_pointer_type(
                 <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
-                <c_dpctl.SyclContext>q.sycl_context)
-        if usm_type == b"unknown":
-            raise ValueError(
-                f"Data pointer in DLPack is not bound to default sycl "
-                "context of device '{device_id}', translated to "
-                "{q.sycl_device.filter_string}"
+                <c_dpctl.SyclContext>default_context)
+            if usm_type == b"unknown":
+                raise BufferError(
+                    "Data pointer in DLPack is not bound to default sycl "
+                    f"context of device '{device_id}', translated to "
+                    f"{root_device.filter_string}"
+                )
+            alloc_device = c_dpmem._Memory.get_pointer_device(
+                <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
+                <c_dpctl.SyclContext>default_context
             )
+            q = dpctl.SyclQueue(default_context, alloc_device)
         if dlm_tensor.dl_tensor.dtype.bits % 8:
-            raise ValueError(
+            raise BufferError(
                 "Can not import DLPack tensor whose element's "
                 "bitsize is not a multiple of 8"
             )
         if dlm_tensor.dl_tensor.dtype.lanes != 1:
-            raise ValueError(
+            raise BufferError(
                 "Can not import DLPack tensor with lanes != 1"
             )
         if dlm_tensor.dl_tensor.strides is NULL:

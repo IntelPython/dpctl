@@ -204,6 +204,8 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef uint64_t DPCTLDevice_GetGlobalMemCacheSize(const DPCTLSyclDeviceRef DRef)
     cdef _global_mem_cache_type DPCTLDevice_GetGlobalMemCacheType(
         const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetSubGroupSizes(const DPCTLSyclDeviceRef DRef,
+        size_t *res_len)
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":

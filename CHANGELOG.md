@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Introduced `"syclinterface/dpctl_sycl_types_casters.hpp"` header file with declaration of conversion routines between SYCL type pointers and SyclInterface library opaque pointers [#960](https://github.com/IntelPython/dpctl/pull/960).
 * Added C-API to `dpctl.program.SyclKernel` and `dpctl.program.SyclProgram`. Added type casters for new types to "dpctl4pybind11" and added an example demonstrating its use [#970](https://github.com/IntelPython/dpctl/pull/970).
 * Introduced "dpctl/sycl.pxd" Cython declaration file to streamline use of SYCL functions from Cython, and added an example demonstrating its use [#981](https://github.com/IntelPython/dpctl/pull/981).
+* Added experimental support for sharing data allocated on sub-devices via dlpack [#984](https://github.com/IntelPython/dpctl/pull/984).
+* Added `dpctl.SyclDevice.sub_group_sizes` property to retrieve supported sizes of sub-group by the device [#985](https://github.com/IntelPython/dpctl/pull/985).
 
 ### Changed
 * Improved queue compatibility testing in `dpctl.tensor`'s implementation module [#900](https://github.com/IntelPython/dpctl/pull/900).
