@@ -272,7 +272,7 @@ cdef class SyclPlatform(_SyclPlatform):
         )
 
         if (CRef == NULL):
-            raise
+            raise RuntimeError("Getting default error ran into a problem")
         else:
             return SyclContext._create(CRef)
 
