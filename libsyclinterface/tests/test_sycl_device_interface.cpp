@@ -205,6 +205,22 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxNumSubGroups)
         EXPECT_TRUE(n > 0);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupSizes)
+{
+    size_t sg_sizes_len = 0;
+    size_t *sg_sizes = nullptr;
+    EXPECT_NO_FATAL_FAILURE(
+        sg_sizes = DPCTLDevice_GetSubGroupSizes(DRef, &sg_sizes_len));
+    if (DPCTLDevice_IsAccelerator(DRef))
+        EXPECT_TRUE(sg_sizes_len >= 0);
+    else
+        EXPECT_TRUE(sg_sizes_len > 0);
+    for (size_t i = 0; i < sg_sizes_len; ++i) {
+        EXPECT_TRUE(sg_sizes > 0);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sg_sizes));
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPlatform)
 {
     DPCTLSyclPlatformRef PRef = nullptr;
@@ -750,4 +766,14 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheType)
     DPCTLGlobalMemCacheType res = DPCTL_MEM_CACHE_TYPE_NONE;
     EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheType(Null_DRef));
     ASSERT_TRUE(res == DPCTL_MEM_CACHE_TYPE_INDETERMINATE);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetSubGroupSizes)
+{
+    size_t *sg_sizes = nullptr;
+    size_t sg_sizes_len = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        sg_sizes = DPCTLDevice_GetSubGroupSizes(Null_DRef, &sg_sizes_len));
+    ASSERT_TRUE(sg_sizes == nullptr);
+    ASSERT_TRUE(sg_sizes_len == 0);
 }
