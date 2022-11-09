@@ -651,4 +651,17 @@ DPCTL_API
 DPCTLGlobalMemCacheType
 DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
+/*!
+ * @brief Wrapper for get_info<info::device::sub_group_sizes>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns the valid result if device exists else returns NULL.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep size_t *
+DPCTLDevice_GetSubGroupSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                             size_t *res_len);
+
 DPCTL_C_EXTERN_C_END

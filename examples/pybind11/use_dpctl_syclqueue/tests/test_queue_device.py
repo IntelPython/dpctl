@@ -55,3 +55,11 @@ def test_offload_array_mod():
     Ynp = X % modulus_p
 
     assert np.array_equal(Y, Ynp)
+
+
+def test_get_sub_group_sizes():
+    d = dpctl.SyclDevice()
+    szs = uqd.get_sub_group_sizes(d)
+    assert type(szs) is list
+    assert all(type(el) is int for el in szs)
+    szs == d.sub_group_sizes
