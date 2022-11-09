@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0dev1+64.gc1335f141 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0dev2+9.gfa8eb175b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+64.gc1335f141
+                0.14.0dev2+9.gfa8eb175b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -353,10 +353,13 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
 <td><p>Returns True if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
+<td><p>Returns list of supported sub-group sizes for this device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
 <td><p>Returns the platform associated with this device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the device vendor name as a string.</p></td>
 </tr>
 </tbody>
@@ -1193,6 +1196,20 @@ of sub-groups.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_sizes">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_sizes" title="Permalink to this definition"></a></dt>
+<dd><p>Returns list of supported sub-group sizes for this device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of supported sub-group sizes.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[int]</p>
 </dd>
 </dl>
 </dd></dl>

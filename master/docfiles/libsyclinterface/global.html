@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.14.0dev1+64.gc1335f141 documentation</title>
+  <title>Global Namespace &mdash; Data-parallel Control (dpctl) 0.14.0dev2+9.gfa8eb175b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0dev1+64.gc1335f141
+                0.14.0dev2+9.gfa8eb175b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -348,6 +348,12 @@
 
 <span class="n">DPCTL_API</span> <span class="kt">bool</span>
 <a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1ga04b9c4bc38af587f9498ec9b39152e8f"><span class="std std-ref">DPCTLDevice_GetSubGroupIndependentForwardProgress</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_keep</span> <span class="kt">size_t</span><span class="o">*</span>
+<a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1ga6172290a95990b1ff6f5e64ef3d6e391"><span class="std std-ref">DPCTLDevice_GetSubGroupSizes</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">,</span>
+    <span class="kt">size_t</span><span class="o">*</span> <span class="n">res_len</span>
+    <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="k">const</span> <span class="n">__dpctl_give</span> <span class="kt">char</span><span class="o">*</span>
 <a class="reference internal" href="group_DeviceInterface.html#doxid-db-dd1-group-device-interface-1gae1af63c0f0016c766dd2703abc657bec"><span class="std std-ref">DPCTLDevice_GetVendor</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>

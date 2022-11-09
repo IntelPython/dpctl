@@ -125,6 +125,12 @@ Overview
 	DPCTL_API bool
 	:ref:`DPCTLDevice_GetSubGroupIndependentForwardProgress<doxid-db/dd1/group___device_interface_1ga04b9c4bc38af587f9498ec9b39152e8f>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API __dpctl_keep size_t*
+	:ref:`DPCTLDevice_GetSubGroupSizes<doxid-db/dd1/group___device_interface_1ga6172290a95990b1ff6f5e64ef3d6e391>`(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		size_t* res_len
+		);
+
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetVendor<doxid-db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -1074,6 +1080,43 @@ Wrapper over device.get_info<info::device::sub_group_independent_forward_progres
 .. rubric:: Returns:
 
 Returns true if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.
+
+.. index:: pair: function; DPCTLDevice_GetSubGroupSizes
+.. _doxid-db/dd1/group___device_interface_1ga6172290a95990b1ff6f5e64ef3d6e391:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_keep size_t*
+	DPCTLDevice_GetSubGroupSizes(
+		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		size_t* res_len
+		)
+
+Wrapper for get_info<info::device::sub_group_sizes>().
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+	*
+		- res_len
+
+		- Populated with size of the returned array
+
+
+
+.. rubric:: Returns:
+
+Returns the valid result if device exists else returns NULL.
 
 .. index:: pair: function; DPCTLDevice_GetVendor
 .. _doxid-db/dd1/group___device_interface_1gae1af63c0f0016c766dd2703abc657bec:
