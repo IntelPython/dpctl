@@ -25,10 +25,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_platform_manager.h"
-#include "Support/CBindingWrapping.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_platform_interface.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <CL/sycl.hpp>
 #include <iomanip>
@@ -40,7 +41,8 @@ using namespace sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(platform, DPCTLSyclPlatformRef);
+
+using namespace dpctl::syclinterface;
 
 std::string platform_print_info_impl(const platform &p, size_t verbosity)
 {
@@ -69,7 +71,11 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
            << p.get_info<info::platform::version>() << _endl << std::setw(4)
            << " " << std::left << std::setw(12) << "Vendor" << vendor << _endl
            << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
+        ss << p.get_backend();
+#else
         p.is_host() ? (ss << "unknown") : (ss << p.get_backend());
+#endif
         ss << _endl;
 
         // Get number of devices on the platform
@@ -98,14 +104,17 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
 } // namespace
 
 #undef EL
+#undef EL_SYCL_TYPE
 #define EL Platform
+#define EL_SYCL_TYPE sycl::platform
 #include "dpctl_vector_templ.cpp"
 #undef EL
+#undef EL_SYCL_TYPE
 
 void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                                 size_t verbosity)
 {
-    auto p = unwrap(PRef);
+    auto p = unwrap<platform>(PRef);
     if (p) {
         std::cout << platform_print_info_impl(*p, verbosity);
     }
@@ -120,7 +129,7 @@ DPCTLPlatformMgr_GetInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                          size_t verbosity)
 {
     const char *cstr_info = nullptr;
-    auto p = unwrap(PRef);
+    auto p = unwrap<platform>(PRef);
     if (p) {
         auto infostr = platform_print_info_impl(*p, verbosity);
         cstr_info = dpctl::helper::cstring_from_string(infostr);

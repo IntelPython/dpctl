@@ -27,9 +27,9 @@
 
 #include "dpctl_sycl_kernel_bundle_interface.h"
 #include "Config/dpctl_config.h"
-#include "Support/CBindingWrapping.h"
 #include "dpctl_dynamic_lib_helper.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include <CL/cl.h>     /* OpenCL headers     */
 #include <CL/sycl.hpp> /* Sycl headers       */
 #if __has_include(<sycl/backend/opencl.hpp>)
@@ -56,11 +56,8 @@ using namespace sycl;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(context, DPCTLSyclContextRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(device, DPCTLSyclDeviceRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel_bundle<bundle_state::executable>,
-                                   DPCTLSyclKernelBundleRef)
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(kernel, DPCTLSyclKernelRef)
+
+using namespace dpctl::syclinterface;
 
 #ifdef __linux__
 static const char *clLoaderName = DPCTL_LIBCL_LOADER_FILENAME;
@@ -202,9 +199,10 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
         return nullptr;
     }
 
-    kernel_bundle<bundle_state::executable> kb =
+    using ekbTy = kernel_bundle<bundle_state::executable>;
+    ekbTy kb =
         make_kernel_bundle<cl_be, bundle_state::executable>(clProgram, ctx);
-    return wrap(new kernel_bundle<bundle_state::executable>(kb));
+    return wrap<ekbTy>(new ekbTy(kb));
 }
 
 DPCTLSyclKernelBundleRef
@@ -319,7 +317,7 @@ _GetKernel_ocl_impl(const kernel_bundle<bundle_state::executable> &kb,
 
             kernel interop_kernel = make_kernel<cl_be>(ocl_kernel_from_kb, ctx);
 
-            return wrap(new kernel(interop_kernel));
+            return wrap<kernel>(new kernel(interop_kernel));
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
@@ -476,7 +474,8 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
         auto kb = make_kernel_bundle<ze_be, bundle_state::executable>(
             {ZeModule, ext::oneapi::level_zero::ownership::keep}, SyclCtx);
 
-        return wrap(new kernel_bundle<bundle_state::executable>(kb));
+        return wrap<kernel_bundle<bundle_state::executable>>(
+            new kernel_bundle<bundle_state::executable>(kb));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
         auto zeModuleDestroyFn = get_zeModuleDestroy();
@@ -530,7 +529,7 @@ _GetKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
     }
 
     if (found) {
-        return wrap(new kernel(*syclInteropKern_ptr));
+        return wrap<kernel>(new kernel(*syclInteropKern_ptr));
     }
     else {
         error_handler("Kernel named " + std::string(kernel_name) +
@@ -608,8 +607,8 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
         return KBRef;
     }
 
-    context *SyclCtx = unwrap(CtxRef);
-    device *SyclDev = unwrap(DevRef);
+    context *SyclCtx = unwrap<context>(CtxRef);
+    device *SyclDev = unwrap<device>(DevRef);
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
     switch (BE) {
@@ -654,8 +653,8 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
         return nullptr;
     }
 
-    SyclCtx = unwrap(Ctx);
-    SyclDev = unwrap(Dev);
+    SyclCtx = unwrap<context>(Ctx);
+    SyclDev = unwrap<device>(Dev);
 
     // get the backend type
     auto BE = SyclCtx->get_platform().get_backend();
@@ -693,7 +692,7 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                       __LINE__);
         return nullptr;
     }
-    auto SyclKB = unwrap(KBRef);
+    auto SyclKB = unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
     sycl::backend be = SyclKB->get_backend();
     switch (be) {
     case sycl::backend::opencl:
@@ -721,7 +720,7 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         return false;
     }
 
-    auto SyclKB = unwrap(KBRef);
+    auto SyclKB = unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
     sycl::backend be = SyclKB->get_backend();
     switch (be) {
     case sycl::backend::opencl:
@@ -738,5 +737,25 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
 
 void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef)
 {
-    delete unwrap(KBRef);
+    delete unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
+}
+
+__dpctl_give DPCTLSyclKernelBundleRef
+DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
+{
+    auto Bundle = unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
+    if (!Bundle) {
+        error_handler(
+            "Cannot copy DPCTLSyclKernelBundleRef as input is a nullptr",
+            __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    try {
+        auto CopiedBundle =
+            new kernel_bundle<bundle_state::executable>(*Bundle);
+        return wrap<kernel_bundle<bundle_state::executable>>(CopiedBundle);
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
 }

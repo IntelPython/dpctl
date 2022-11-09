@@ -29,6 +29,14 @@
 #cmakedefine DPCTL_ENABLE_L0_PROGRAM_CREATION                                  \
     @DPCTL_ENABLE_L0_PROGRAM_CREATION@
 
+/* Version of SYCL DPC++ 2023 compiler at which transition to SYCL 2020 occurs */
+/* Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L */
+#define __SYCL_COMPILER_2023_SWITCHOVER 20221021L
+
+/* Version of SYCL DPC++ compiler at which info::max_work_item_size was
+   made templated */
+#define __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD __SYCL_COMPILER_2023_SWITCHOVER
+
 /* The DPCPP version used to build dpctl */
 #define DPCTL_DPCPP_VERSION "@IntelSycl_VERSION@"
 

@@ -24,7 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_types.h"
 #include <CL/sycl.hpp>
@@ -157,7 +157,12 @@ TEST_F(TestDPCTLSyclEventInterface, ChkGetCommandExecutionStatus)
 TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling)
 {
     property_list propList{property::queue::enable_profiling()};
+
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
+    queue Q(cpu_selector_v, propList);
+#else
     queue Q(cpu_selector(), propList);
+#endif
     auto eA = Q.submit(
         [&](handler &h) { h.parallel_for(1000, [=](id<1>) { /*...*/ }); });
     DPCTLSyclEventRef ERef = reinterpret_cast<DPCTLSyclEventRef>(&eA);

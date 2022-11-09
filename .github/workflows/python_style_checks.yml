@@ -27,10 +27,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: ['3.10']
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -38,7 +34,7 @@ jobs:
       # Set up a Python environment for use in actions
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.10'
 
       # Run black code formatter
       - uses: psf/black@stable
@@ -49,16 +45,12 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: ['3.10']
-
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.10'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

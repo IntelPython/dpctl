@@ -344,7 +344,7 @@ cdef class SyclQueue(_SyclQueue):
                 )
             elif status == -3 or status == -7:
                 raise SyclQueueCreationError(
-                    "SYCL Context could not be created "
+                    "SYCL Context could not be created " +
                     ("by default constructor" if len_args == 0 else
                      "from '{}'.".format(arg)
                     )

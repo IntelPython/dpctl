@@ -32,3 +32,4 @@ per-file-ignores =
     examples/cython/sycl_buffer/_buffer_example.pyx: E999, E225, E402
     examples/cython/sycl_direct_linkage/_buffer_example.pyx: E999, E225, E402
     examples/cython/usm_memory/blackscholes.pyx: E999, E225, E226, E402
+    examples/cython/use_dpctl_sycl/use_dpctl_sycl/_cython_api.pyx: E999, E225, E226, E402

@@ -25,14 +25,10 @@
 //===----------------------------------------------------------------------===//
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_vector_macros.h"
 #include <type_traits>
 #include <vector>
-
-namespace
-{
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<SYCLREF(EL)>, VECTOR(EL))
-}
 
 /*!
  * @brief Creates a new std::vector of the opaque SYCL pointer types.
@@ -41,10 +37,11 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<SYCLREF(EL)>, VECTOR(EL))
  */
 __dpctl_give VECTOR(EL) FN(EL, Create)()
 {
-    std::vector<SYCLREF(EL)> *Vec = nullptr;
+    using vecTy = std::vector<SYCLREF(EL)>;
+    vecTy *Vec = nullptr;
     try {
         Vec = new std::vector<SYCLREF(EL)>();
-        return wrap(Vec);
+        return ::dpctl::syclinterface::wrap<vecTy>(Vec);
     } catch (std::exception const &e) {
         delete Vec;
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -61,15 +58,16 @@ __dpctl_give VECTOR(EL) FN(EL, Create)()
 __dpctl_give VECTOR(EL)
     FN(EL, CreateFromArray)(size_t n, __dpctl_keep SYCLREF(EL) * elems)
 {
-    std::vector<SYCLREF(EL)> *Vec = nullptr;
+    using vecTy = std::vector<SYCLREF(EL)>;
+    vecTy *Vec = nullptr;
     try {
-        Vec = new std::vector<SYCLREF(EL)>();
+        Vec = new vecTy();
         for (size_t i = 0; i < n; ++i) {
-            auto Ref = unwrap(elems[i]);
-            Vec->emplace_back(
-                wrap(new std::remove_pointer<decltype(Ref)>::type(*Ref)));
+            auto Ref = ::dpctl::syclinterface::unwrap<EL_SYCL_TYPE>(elems[i]);
+            Vec->emplace_back(::dpctl::syclinterface::wrap<EL_SYCL_TYPE>(
+                new EL_SYCL_TYPE(*Ref)));
         }
-        return wrap(Vec);
+        return ::dpctl::syclinterface::wrap<vecTy>(Vec);
     } catch (std::exception const &e) {
         delete Vec;
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -84,10 +82,11 @@ __dpctl_give VECTOR(EL)
  */
 void FN(EL, Delete)(__dpctl_take VECTOR(EL) VRef)
 {
-    auto Vec = unwrap(VRef);
+    using vecTy = std::vector<SYCLREF(EL)>;
+    auto Vec = ::dpctl::syclinterface::unwrap<vecTy>(VRef);
     if (Vec) {
         for (auto i = 0ul; i < Vec->size(); ++i) {
-            auto D = unwrap((*Vec)[i]);
+            auto D = ::dpctl::syclinterface::unwrap<EL_SYCL_TYPE>((*Vec)[i]);
             delete D;
         }
     }
@@ -100,10 +99,11 @@ void FN(EL, Delete)(__dpctl_take VECTOR(EL) VRef)
  */
 void FN(EL, Clear)(__dpctl_keep VECTOR(EL) VRef)
 {
-    auto Vec = unwrap(VRef);
+    using vecTy = std::vector<SYCLREF(EL)>;
+    auto Vec = ::dpctl::syclinterface::unwrap<vecTy>(VRef);
     if (Vec) {
         for (auto i = 0ul; i < Vec->size(); ++i) {
-            auto D = unwrap((*Vec)[i]);
+            auto D = ::dpctl::syclinterface::unwrap<EL_SYCL_TYPE>((*Vec)[i]);
             delete D;
         }
         Vec->clear();
@@ -116,7 +116,8 @@ void FN(EL, Clear)(__dpctl_keep VECTOR(EL) VRef)
  */
 size_t FN(EL, Size)(__dpctl_keep VECTOR(EL) VRef)
 {
-    auto V = unwrap(VRef);
+    using vecTy = std::vector<SYCLREF(EL)>;
+    auto V = ::dpctl::syclinterface::unwrap<vecTy>(VRef);
     if (V)
         return V->size();
     else
@@ -130,7 +131,8 @@ size_t FN(EL, Size)(__dpctl_keep VECTOR(EL) VRef)
  */
 SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
 {
-    auto Vec = unwrap(VRef);
+    using vecTy = std::vector<SYCLREF(EL)>;
+    auto Vec = ::dpctl::syclinterface::unwrap<vecTy>(VRef);
     SYCLREF(EL) copy = nullptr;
     if (Vec) {
         SYCLREF(EL) ret;
@@ -140,11 +142,11 @@ SYCLREF(EL) FN(EL, GetAt)(__dpctl_keep VECTOR(EL) VRef, size_t index)
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        auto Ref = unwrap(ret);
-        std::remove_pointer<decltype(Ref)>::type *elPtr = nullptr;
+        auto Ref = ::dpctl::syclinterface::unwrap<EL_SYCL_TYPE>(ret);
+        EL_SYCL_TYPE *elPtr = nullptr;
         try {
-            elPtr = new std::remove_pointer<decltype(Ref)>::type(*Ref);
-            copy = wrap(elPtr);
+            elPtr = new EL_SYCL_TYPE(*Ref);
+            copy = ::dpctl::syclinterface::wrap<EL_SYCL_TYPE>(elPtr);
         } catch (std::exception const &e) {
             delete elPtr;
             error_handler(e, __FILE__, __func__, __LINE__);

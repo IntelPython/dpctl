@@ -24,13 +24,13 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
 #include <cstring>
@@ -41,8 +41,6 @@ using namespace sycl;
 namespace
 {
 constexpr size_t SIZE = 1024;
-
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef);
 
 void common_test_body(size_t nbytes,
                       const DPCTLSyclUSMRef Ptr,

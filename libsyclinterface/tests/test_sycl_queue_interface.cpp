@@ -24,7 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
@@ -32,15 +32,16 @@
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
+#include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
 #include <CL/sycl.hpp>
 #include <gtest/gtest.h>
 
 using namespace sycl;
+using namespace dpctl::syclinterface;
 
 namespace
 {
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(queue, DPCTLSyclQueueRef);
 
 void error_handler_fn(int /*err*/)
 {
@@ -348,16 +349,18 @@ TEST(TestDPCTLSyclQueueInterface, CheckMemOpsZeroQRef)
 
 TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
 {
-    auto q = unwrap(QRef);
+    auto q = unwrap<queue>(QRef);
     auto Backend = q->get_device().get_platform().get_backend();
     auto Bty = DPCTLQueue_GetBackend(QRef);
     switch (Bty) {
     case DPCTL_CUDA:
         EXPECT_TRUE(Backend == backend::ext_oneapi_cuda);
         break;
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     case DPCTL_HOST:
         EXPECT_TRUE(Backend == backend::host);
         break;
+#endif
     case DPCTL_LEVEL_ZERO:
         EXPECT_TRUE(Backend == backend::ext_oneapi_level_zero);
         break;

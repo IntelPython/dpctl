@@ -45,9 +45,12 @@ TEST_F(TestHelperFns, ChkDeviceTypeToStr)
         res = DPCTL_DeviceTypeToStr(sycl::info::device_type::gpu));
     ASSERT_TRUE(res == "gpu");
 
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTL_DeviceTypeToStr(sycl::info::device_type::host));
+    // since host device is being deprecated in SYCL 2020, accept unknown
     ASSERT_TRUE(res == "host");
+#endif
 
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTL_DeviceTypeToStr(sycl::info::device_type::custom));
@@ -72,8 +75,10 @@ TEST_F(TestHelperFns, ChkStrToDeviceType)
     EXPECT_NO_FATAL_FAILURE(dev_type = DPCTL_StrToDeviceType("gpu"));
     ASSERT_TRUE(dev_type == sycl::info::device_type::gpu);
 
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     EXPECT_NO_FATAL_FAILURE(dev_type = DPCTL_StrToDeviceType("host"));
     ASSERT_TRUE(dev_type == sycl::info::device_type::host);
+#endif
 
     EXPECT_NO_FATAL_FAILURE(dev_type = DPCTL_StrToDeviceType("accelerator"));
     ASSERT_TRUE(dev_type == sycl::info::device_type::accelerator);
@@ -92,9 +97,11 @@ TEST_F(TestHelperFns, ChkDPCTLBackendTypeToSyclBackend)
                                 DPCTLSyclBackendType::DPCTL_CUDA));
     ASSERT_TRUE(res == sycl::backend::ext_oneapi_cuda);
 
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     EXPECT_NO_FATAL_FAILURE(res = DPCTL_DPCTLBackendTypeToSyclBackend(
                                 DPCTLSyclBackendType::DPCTL_HOST));
     ASSERT_TRUE(res == sycl::backend::host);
+#endif
 
     EXPECT_NO_FATAL_FAILURE(res = DPCTL_DPCTLBackendTypeToSyclBackend(
                                 DPCTLSyclBackendType::DPCTL_OPENCL));
@@ -121,9 +128,11 @@ TEST_F(TestHelperFns, ChkSyclBackendToDPCTLBackendType)
         DTy = DPCTL_SyclBackendToDPCTLBackendType(sycl::backend::opencl));
     ASSERT_TRUE(DTy == DPCTLSyclBackendType::DPCTL_OPENCL);
 
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     EXPECT_NO_FATAL_FAILURE(
         DTy = DPCTL_SyclBackendToDPCTLBackendType(sycl::backend::host));
     ASSERT_TRUE(DTy == DPCTLSyclBackendType::DPCTL_HOST);
+#endif
 
     EXPECT_NO_FATAL_FAILURE(DTy = DPCTL_SyclBackendToDPCTLBackendType(
                                 sycl::backend::ext_oneapi_cuda));
@@ -154,9 +163,11 @@ TEST_F(TestHelperFns, ChkDPCTLDeviceTypeToSyclDeviceType)
                                 DPCTLSyclDeviceType::DPCTL_CUSTOM));
     ASSERT_TRUE(dev_type == sycl::info::device_type::custom);
 
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     EXPECT_NO_FATAL_FAILURE(dev_type = DPCTL_DPCTLDeviceTypeToSyclDeviceType(
                                 DPCTLSyclDeviceType::DPCTL_HOST_DEVICE));
     ASSERT_TRUE(dev_type == sycl::info::device_type::host);
+#endif
 
     EXPECT_NO_FATAL_FAILURE(dev_type = DPCTL_DPCTLDeviceTypeToSyclDeviceType(
                                 DPCTLSyclDeviceType::DPCTL_AUTOMATIC));
@@ -179,9 +190,11 @@ TEST_F(TestHelperFns, SyclDeviceTypeToDPCTLDeviceType)
                                 sycl::info::device_type::gpu));
     ASSERT_TRUE(DTy == DPCTLSyclDeviceType::DPCTL_GPU);
 
+#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
     EXPECT_NO_FATAL_FAILURE(DTy = DPCTL_SyclDeviceTypeToDPCTLDeviceType(
                                 sycl::info::device_type::host));
     ASSERT_TRUE(DTy == DPCTLSyclDeviceType::DPCTL_HOST_DEVICE);
+#endif
 
     EXPECT_NO_FATAL_FAILURE(DTy = DPCTL_SyclDeviceTypeToDPCTLDeviceType(
                                 sycl::info::device_type::accelerator));

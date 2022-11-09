@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include "Config/dpctl_config.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
@@ -61,6 +62,18 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef);
  */
 DPCTL_API
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef);
+
+/*!
+ * @brief Returns a copy of the DPCTLSyclKernelRef object.
+ *
+ * @param    KRef           DPCTLSyclKernelRef object to be copied.
+ * @return   A new DPCTLSyclKernelRef created by copying the passed in
+ * DPCTLSyclKernelRef object.
+ * @ingroup KernelInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclKernelRef
+DPCTLKernel_Copy(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
 /*!
  * !brief Wrapper around
@@ -117,7 +130,7 @@ DPCTL_API
 uint32_t
 DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
-#if 0
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 /*!
  * !brief Wrapper around
  * `kernel::get_info<info::kernel_device_specific::max_sub_group_size>()`.

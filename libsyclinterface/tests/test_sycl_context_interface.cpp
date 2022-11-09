@@ -25,7 +25,6 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Support/CBindingWrapping.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -104,9 +103,6 @@ TEST_P(TestDPCTLContextInterface, ChkCreateWithDevicesGetDevices)
     DPCTLDeviceVectorRef DVRef = nullptr;
     DPCTLDeviceVectorRef Res_DVRef = nullptr;
 
-    /* TODO: Once we have wrappers for sub-device creation let us use those
-     * functions.
-     */
     EXPECT_NO_FATAL_FAILURE(nCUs = DPCTLDevice_GetMaxComputeUnits(DRef));
     if (nCUs > 1) {
         EXPECT_NO_FATAL_FAILURE(

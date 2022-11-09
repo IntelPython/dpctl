@@ -63,9 +63,10 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_Create(void);
 
 /*!
  * @brief Creates a new DPCTLSyclPlatformRef for a SYCL platform constructed
- * using the device_selector wrapped by DPCTLSyclDeviceSelectorRef.
+ * using the dpctl_device_selector wrapped by DPCTLSyclDeviceSelectorRef.
  *
- * @param    DSRef          An opaque pointer to a SYCL device_selector object.
+ * @param    DSRef          An opaque pointer to a SYCL dpctl_device_selector
+ * object.
  * @return   A new DPCTLSyclPlatformRef pointer wrapping a SYCL platform object.
  * @ingroup PlatformInterface
  */
