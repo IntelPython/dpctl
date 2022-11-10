@@ -26,7 +26,7 @@ requirements:
     run:
         - python
         - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
-        - dpcpp-cpp-rt >=2022.1
+        - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
 
 test:
     requires:
