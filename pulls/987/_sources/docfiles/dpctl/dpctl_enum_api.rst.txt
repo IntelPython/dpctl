@@ -1,0 +1,17 @@
+.. _dpctl_enum_api:
+
+###########
+dpctl Enums
+###########
+
+
+.. currentmodule:: dpctl
+
+.. autoclass:: backend_type
+    :members:
+.. autoclass:: device_type
+    :members:
+.. autoclass:: event_status_type
+    :members:
+.. autoclass:: global_mem_cache_type
+    :members:
