@@ -20,6 +20,11 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._device import normalize_queue_device
 
+__doc__ = (
+    "Implementation module for copy- and cast- operations on "
+    ":class:`dpctl.tensor.usm_ndarray`."
+)
+
 
 def _has_memory_overlap(x1, x2):
     if x1.size and x2.size:
@@ -33,15 +38,13 @@ def _has_memory_overlap(x1, x2):
             p2_end = p2_beg + m2.nbytes
             # may intersect if not ((p1_beg >= p2_end) or (p2_beg >= p2_end))
             return (p1_beg < p2_end) and (p2_beg < p1_end)
-        else:
-            return False
-    else:
-        # zero element array do not overlap anything
         return False
+    # zero element array do not overlap anything
+    return False
 
 
 def _copy_to_numpy(ary):
-    if type(ary) is not dpt.usm_ndarray:
+    if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError
     h = ary.usm_data.copy_to_host().view(ary.dtype)
     itsz = ary.itemsize
@@ -78,9 +81,9 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
 def _copy_from_numpy_into(dst, np_ary):
     "Copies `np_ary` into `dst` of type :class:`dpctl.tensor.usm_ndarray"
     if not isinstance(np_ary, np.ndarray):
-        raise TypeError("Expected numpy.ndarray, got {}".format(type(np_ary)))
+        raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
-        raise TypeError("Expected usm_ndarray, got {}".format(type(dst)))
+        raise TypeError(f"Expected usm_ndarray, got {type(dst)}")
     src_ary = np.broadcast_to(np_ary, dst.shape)
     copy_q = dst.sycl_queue
     if copy_q.sycl_device.has_aspect_fp64 is False:
@@ -143,6 +146,8 @@ def asnumpy(usm_ary):
 
 
 class Dummy:
+    "Helper class with specified __sycl_usm_array_interface__ attribute"
+
     def __init__(self, iface):
         self.__sycl_usm_array_interface__ = iface
 
@@ -160,7 +165,7 @@ def _copy_overlapping(dst, src):
     hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=src, dst=tmp, sycl_queue=q
     )
-    hcp2, cp2 = ti._copy_usm_ndarray_into_usm_ndarray(
+    hcp2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
         src=tmp, dst=dst, sycl_queue=q, depends=[cp1]
     )
     hcp2.wait()
@@ -174,7 +179,7 @@ def _copy_same_shape(dst, src):
         _copy_overlapping(src=src, dst=dst)
         return
 
-    hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
+    hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
         src=src, dst=dst, sycl_queue=dst.sycl_queue
     )
     hev.wait()
@@ -197,7 +202,13 @@ else:
 
 
 def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
-    if type(dst) is not dpt.usm_ndarray or type(src) is not dpt.usm_ndarray:
+    if any(
+        not isinstance(arg, dpt.usm_ndarray)
+        for arg in (
+            dst,
+            src,
+        )
+    ):
         raise TypeError(
             "Both types are expected to be dpctl.tensor.usm_ndarray, "
             f"got {type(dst)} and {type(src)}."
@@ -209,8 +220,8 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
 
     try:
         common_shape = _broadcast_shapes(dst.shape, src.shape)
-    except ValueError:
-        raise ValueError("Shapes of two arrays are not compatible")
+    except ValueError as exc:
+        raise ValueError("Shapes of two arrays are not compatible") from exc
 
     if dst.size < src.size:
         raise ValueError("Destination is smaller ")
@@ -251,9 +262,7 @@ def copy(usm_ary, order="K"):
     """
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
-            "Expected object of type dpt.usm_ndarray, got {}".format(
-                type(usm_ary)
-            )
+            f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
         )
     copy_order = "C"
     if order == "C":
@@ -308,9 +317,7 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
     """
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
-            "Expected object of type dpt.usm_ndarray, got {}".format(
-                type(usm_ary)
-            )
+            f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
         )
     if not isinstance(order, str) or order not in ["A", "C", "F", "K"]:
         raise ValueError(
@@ -321,56 +328,54 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
     target_dtype = dpt.dtype(newdtype)
     if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
         raise TypeError(
-            "Can not cast from {} to {} according to rule {}".format(
-                ary_dtype, newdtype, casting
-            )
+            f"Can not cast from {ary_dtype} to {newdtype} "
+            f"according to rule {casting}."
         )
     c_contig = usm_ary.flags.c_contiguous
     f_contig = usm_ary.flags.f_contiguous
-    needs_copy = copy or not (ary_dtype == target_dtype)
+    needs_copy = copy or not ary_dtype == target_dtype
     if not needs_copy and (order != "K"):
         needs_copy = (c_contig and order not in ["A", "C"]) or (
             f_contig and order not in ["A", "F"]
         )
-    if needs_copy:
-        copy_order = "C"
-        if order == "C":
-            pass
-        elif order == "F":
-            copy_order = order
-        elif order == "A":
-            if usm_ary.flags.f_contiguous:
-                copy_order = "F"
-        elif order == "K":
-            if usm_ary.flags.f_contiguous:
-                copy_order = "F"
-        else:
-            raise ValueError(
-                "Unrecognized value of the order keyword. "
-                "Recognized values are 'A', 'C', 'F', or 'K'"
-            )
+    if not needs_copy:
+        return usm_ary
+    copy_order = "C"
+    if order == "C":
+        pass
+    elif order == "F":
+        copy_order = order
+    elif order == "A":
+        if usm_ary.flags.f_contiguous:
+            copy_order = "F"
+    elif order == "K":
+        if usm_ary.flags.f_contiguous:
+            copy_order = "F"
+    else:
+        raise ValueError(
+            "Unrecognized value of the order keyword. "
+            "Recognized values are 'A', 'C', 'F', or 'K'"
+        )
+    R = dpt.usm_ndarray(
+        usm_ary.shape,
+        dtype=target_dtype,
+        buffer=usm_ary.usm_type,
+        order=copy_order,
+        buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
+    )
+    if order == "K" and (not c_contig and not f_contig):
+        original_strides = usm_ary.strides
+        ind = sorted(
+            range(usm_ary.ndim),
+            key=lambda i: abs(original_strides[i]),
+            reverse=True,
+        )
+        new_strides = tuple(R.strides[ind[i]] for i in ind)
         R = dpt.usm_ndarray(
             usm_ary.shape,
             dtype=target_dtype,
-            buffer=usm_ary.usm_type,
-            order=copy_order,
-            buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
+            buffer=R.usm_data,
+            strides=new_strides,
         )
-        if order == "K" and (not c_contig and not f_contig):
-            original_strides = usm_ary.strides
-            ind = sorted(
-                range(usm_ary.ndim),
-                key=lambda i: abs(original_strides[i]),
-                reverse=True,
-            )
-            new_strides = tuple(R.strides[ind[i]] for i in ind)
-            R = dpt.usm_ndarray(
-                usm_ary.shape,
-                dtype=target_dtype,
-                buffer=R.usm_data,
-                strides=new_strides,
-            )
-        _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
-        return R
-    else:
-        return usm_ary
+    _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
+    return R
