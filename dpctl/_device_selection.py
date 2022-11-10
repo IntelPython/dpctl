@@ -21,7 +21,7 @@ from ._sycl_device import SyclDevice, SyclDeviceCreationError
 from ._sycl_device_factory import get_devices
 
 
-def select_device_with_aspects(required_aspects, excluded_aspects=[]):
+def select_device_with_aspects(required_aspects, excluded_aspects=None):
     """Selects the root :class:`dpctl.SyclDevice` that has the highest
     default selector score among devices that have all aspects in the
     `required_aspects` list, and do not have any aspects in `excluded_aspects`
@@ -41,10 +41,16 @@ def select_device_with_aspects(required_aspects, excluded_aspects=[]):
                 dpctl.select_device_with_aspects(
                     ['usm_shared_allocations'], excluded_aspects=['custom'])
     """
+    if excluded_aspects is None:
+        excluded_aspects = []
     if isinstance(required_aspects, str):
-        required_aspects = [required_aspects]
+        required_aspects = [
+            required_aspects,
+        ]
     if isinstance(excluded_aspects, str):
-        excluded_aspects = [excluded_aspects]
+        excluded_aspects = [
+            excluded_aspects,
+        ]
     seq = collections.abc.Sequence
     input_types_ok = isinstance(required_aspects, seq) and isinstance(
         excluded_aspects, seq
@@ -55,7 +61,7 @@ def select_device_with_aspects(required_aspects, excluded_aspects=[]):
             "e.g. lists, of strings"
         )
     for asp in chain(required_aspects, excluded_aspects):
-        if type(asp) != str:
+        if not isinstance(asp, str):
             raise TypeError("The list objects must be of a string type")
         if not hasattr(SyclDevice, "has_aspect_" + asp):
             raise AttributeError(f"The {asp} aspect is not supported in dpctl")
