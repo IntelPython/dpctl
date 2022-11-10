@@ -212,7 +212,7 @@ cdef class SyclDevice(_SyclDevice):
 
                 # Create a SyclDevice with an explicit filter string,
                 # in this case the first level_zero gpu device.
-                level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0"):
+                level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0")
                 level_zero_gpu.print_device_info()
 
         - by calling one of the device selector helper functions:
@@ -231,7 +231,7 @@ cdef class SyclDevice(_SyclDevice):
 
                 # Create a SyclDevice of type GPU based on whatever is returned
                 # by the SYCL `gpu_selector` device selector class.
-                gpu = dpctl.select_gpu_device():
+                gpu = dpctl.select_gpu_device()
                 gpu.print_device_info()
 
     Args:

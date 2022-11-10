@@ -15,6 +15,8 @@
 #  limitations under the License.
 import dpctl
 
+__doc__ = "Implementation of array API mandated Device class"
+
 
 class Device:
     """
@@ -29,7 +31,8 @@ class Device:
     or ``sycl_device``.
     """
 
-    __device_queue_map__ = dict()
+    __device_queue_map__ = {}
+    sycl_queue_ = None
 
     def __new__(cls, *args, **kwargs):
         raise TypeError("No public constructor")
@@ -62,9 +65,9 @@ class Device:
                 obj.sycl_queue_ = cls.__device_queue_map__[dev]
             else:
                 raise ValueError(
-                    "Using non-root device {} to specify offloading "
+                    f"Using non-root device {dev} to specify offloading "
                     "target is ambiguous. Please use dpctl.SyclQueue "
-                    "targeting this device".format(dev)
+                    "targeting this device"
                 )
         else:
             if dev is None:
@@ -100,13 +103,13 @@ class Device:
     def __repr__(self):
         try:
             sd = self.sycl_device
-        except AttributeError:
+        except AttributeError as exc:
             raise ValueError(
-                "Instance of {} is not initialized".format(self.__class__)
-            )
+                f"Instance of {self.__class__} is not initialized"
+            ) from exc
         try:
             fs = sd.filter_string
-            return "Device({})".format(fs)
+            return f"Device({fs})"
         except TypeError:
             # This is a sub-device
             return repr(self.sycl_queue)
@@ -150,20 +153,19 @@ def normalize_queue_device(sycl_queue=None, device=None):
     if q is None:
         d = Device.create_device(d)
         return d.sycl_queue
-    else:
-        if not isinstance(q, dpctl.SyclQueue):
-            raise TypeError(f"Expected dpctl.SyclQueue, got {type(q)}")
-        if d is None:
-            return q
-        d = Device.create_device(d)
-        qq = dpctl.utils.get_execution_queue(
-            (
-                q,
-                d.sycl_queue,
-            )
+    if not isinstance(q, dpctl.SyclQueue):
+        raise TypeError(f"Expected dpctl.SyclQueue, got {type(q)}")
+    if d is None:
+        return q
+    d = Device.create_device(d)
+    qq = dpctl.utils.get_execution_queue(
+        (
+            q,
+            d.sycl_queue,
         )
-        if qq is None:
-            raise TypeError(
-                "sycl_queue and device keywords can not be both specified"
-            )
-        return qq
+    )
+    if qq is None:
+        raise TypeError(
+            "sycl_queue and device keywords can not be both specified"
+        )
+    return qq

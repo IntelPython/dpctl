@@ -25,6 +25,11 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dputils
 
+__doc__ = (
+    "Implementation module for array manipulation "
+    "functions in :module:`dpctl.tensor`"
+)
+
 
 def _broadcast_strides(X_shape, X_strides, res_ndim):
     """
@@ -248,14 +253,14 @@ def roll(X, shift, axes=None):
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     if axes is None:
-        R = dpt.empty(
+        res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )
         hev, _ = ti._copy_usm_ndarray_for_reshape(
-            src=X, dst=R, shift=shift, sycl_queue=X.sycl_queue
+            src=X, dst=res, shift=shift, sycl_queue=X.sycl_queue
         )
         hev.wait()
-        return R
+        return res
     axes = normalize_axis_tuple(axes, X.ndim, allow_duplicate=True)
     broadcasted = np.broadcast(shift, axes)
     if broadcasted.ndim > 1:
@@ -325,6 +330,19 @@ def _arrays_validation(arrays):
     return res_dtype, res_usm_type, exec_q
 
 
+def _check_same_shapes(X0_shape, axis, n, arrays):
+    for i in range(1, n):
+        Xi_shape = arrays[i].shape
+        for j, X0j in enumerate(X0_shape):
+            if X0j != Xi_shape[j] and j != axis:
+                raise ValueError(
+                    "All the input array dimensions for the concatenation "
+                    f"axis must match exactly, but along dimension {j}, the "
+                    f"array at index 0 has size {X0j} and the array "
+                    f"at index {i} has size {Xi_shape[j]}"
+                )
+
+
 def concat(arrays, axis=0):
     """
     concat(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
@@ -338,16 +356,7 @@ def concat(arrays, axis=0):
 
     axis = normalize_axis_index(axis, X0.ndim)
     X0_shape = X0.shape
-    for i in range(1, n):
-        Xi_shape = arrays[i].shape
-        for j in range(X0.ndim):
-            if X0_shape[j] != Xi_shape[j] and j != axis:
-                raise ValueError(
-                    "All the input array dimensions for the concatenation "
-                    f"axis must match exactly, but along dimension {j}, the "
-                    f"array at index 0 has size {X0_shape[j]} and the array "
-                    f"at index {i} has size {Xi_shape[j]}"
-                )
+    _check_same_shapes(X0_shape, axis, n, arrays)
 
     res_shape_axis = 0
     for X in arrays:
@@ -461,28 +470,28 @@ def result_type(*arrays_and_dtypes):
     return np.result_type(*dtypes)
 
 
-def iinfo(type):
+def iinfo(dtype):
     """
-    iinfo(type: integer data-type) -> iinfo_object
+    iinfo(dtype: integer data-type) -> iinfo_object
 
     Returns machine limits for integer data types.
     """
-    if isinstance(type, dpt.usm_ndarray):
-        raise TypeError("Expected dtype type, get {to}.")
-    _supported_dtype([dpt.dtype(type)])
-    return np.iinfo(type)
+    if isinstance(dtype, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type, got {to}.")
+    _supported_dtype([dpt.dtype(dtype)])
+    return np.iinfo(dtype)
 
 
-def finfo(type):
+def finfo(dtype):
     """
     finfo(type: float data-type) -> finfo_object
 
     Returns machine limits for float data types.
     """
-    if isinstance(type, dpt.usm_ndarray):
-        raise TypeError("Expected dtype type, get {to}.")
-    _supported_dtype([dpt.dtype(type)])
-    return np.finfo(type)
+    if isinstance(dtype, dpt.usm_ndarray):
+        raise TypeError("Expected dtype type, got {to}.")
+    _supported_dtype([dpt.dtype(dtype)])
+    return np.finfo(dtype)
 
 
 def _supported_dtype(dtypes):
