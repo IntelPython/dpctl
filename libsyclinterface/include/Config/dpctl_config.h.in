@@ -30,8 +30,9 @@
     @DPCTL_ENABLE_L0_PROGRAM_CREATION@
 
 /* Version of SYCL DPC++ 2023 compiler at which transition to SYCL 2020 occurs */
-/* Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L */
-#define __SYCL_COMPILER_2023_SWITCHOVER 20221021L
+/* Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L on Linux and
+   20221101L on Windows */
+#define __SYCL_COMPILER_2023_SWITCHOVER 20221102L
 
 /* Version of SYCL DPC++ compiler at which info::max_work_item_size was
    made templated */
