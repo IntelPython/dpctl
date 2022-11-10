@@ -25,6 +25,8 @@ import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 from dpctl.tensor._device import normalize_queue_device
 
+__doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
+
 _empty_tuple = tuple()
 _host_set = frozenset([None])
 
@@ -34,45 +36,42 @@ def _get_dtype(dtype, sycl_obj, ref_type=None):
         if ref_type in [None, float] or np.issubdtype(ref_type, np.floating):
             dtype = ti.default_device_fp_type(sycl_obj)
             return dpt.dtype(dtype)
-        elif ref_type in [bool, np.bool_]:
+        if ref_type in [bool, np.bool_]:
             dtype = ti.default_device_bool_type(sycl_obj)
             return dpt.dtype(dtype)
-        elif ref_type is int or np.issubdtype(ref_type, np.integer):
+        if ref_type is int or np.issubdtype(ref_type, np.integer):
             dtype = ti.default_device_int_type(sycl_obj)
             return dpt.dtype(dtype)
-        elif ref_type is complex or np.issubdtype(ref_type, np.complexfloating):
+        if ref_type is complex or np.issubdtype(ref_type, np.complexfloating):
             dtype = ti.default_device_complex_type(sycl_obj)
             return dpt.dtype(dtype)
-        else:
-            raise TypeError(f"Reference type {ref_type} not recognized.")
-    else:
-        return dpt.dtype(dtype)
+        raise TypeError(f"Reference type {ref_type} not recognized.")
+    return dpt.dtype(dtype)
 
 
 def _array_info_dispatch(obj):
     if isinstance(obj, dpt.usm_ndarray):
         return obj.shape, obj.dtype, frozenset([obj.sycl_queue])
-    elif isinstance(obj, np.ndarray):
+    if isinstance(obj, np.ndarray):
         return obj.shape, obj.dtype, _host_set
-    elif isinstance(obj, range):
+    if isinstance(obj, range):
         return (len(obj),), int, _host_set
-    elif isinstance(obj, bool):
+    if isinstance(obj, bool):
         return _empty_tuple, bool, _host_set
-    elif isinstance(obj, float):
+    if isinstance(obj, float):
         return _empty_tuple, float, _host_set
-    elif isinstance(obj, int):
+    if isinstance(obj, int):
         return _empty_tuple, int, _host_set
-    elif isinstance(obj, complex):
+    if isinstance(obj, complex):
         return _empty_tuple, complex, _host_set
-    elif isinstance(obj, (list, tuple, range)):
+    if isinstance(obj, (list, tuple, range)):
         return _array_info_sequence(obj)
-    elif any(
+    if any(
         isinstance(obj, s)
         for s in [np.integer, np.floating, np.complexfloating, np.bool_]
     ):
         return _empty_tuple, obj.dtype, _host_set
-    else:
-        raise ValueError(type(obj))
+    raise ValueError(type(obj))
 
 
 def _array_info_sequence(li):
@@ -91,9 +90,7 @@ def _array_info_sequence(li):
             dt = np.promote_types(dt, el_dt)
             device = device.union(el_dev)
         else:
-            raise ValueError(
-                "Inconsistent dimensions, {} and {}".format(dim, el_dim)
-            )
+            raise ValueError(f"Inconsistent dimensions, {dim} and {el_dim}")
     if dim is None:
         dim = tuple()
         dt = float
@@ -206,18 +203,18 @@ def _map_to_device_dtype(dt, q):
     if np.issubdtype(dt, np.floating):
         if dtc == "f":
             return dt
-        else:
-            if dtc == "d" and d.has_aspect_fp64:
-                return dt
-            if dtc == "h" and d.has_aspect_fp16:
-                return dt
-            return dpt.dtype("f4")
-    elif np.issubdtype(dt, np.complexfloating):
+        if dtc == "d" and d.has_aspect_fp64:
+            return dt
+        if dtc == "h" and d.has_aspect_fp16:
+            return dt
+        return dpt.dtype("f4")
+    if np.issubdtype(dt, np.complexfloating):
         if dtc == "F":
             return dt
         if dtc == "D" and d.has_aspect_fp64:
             return dt
         return dpt.dtype("c8")
+    raise RuntimeError(f"Unrecognized data type '{dt}' encountered.")
 
 
 def _asarray_from_numpy_ndarray(
@@ -349,8 +346,7 @@ def asarray(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'K', 'A', 'F', or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     # 4. Check that usm_type is None, or a valid value
     dpctl.utils.validate_usm_type(usm_type, allow_none=True)
     # 5. Normalize device/sycl_queue [keep it None if was None]
@@ -369,7 +365,7 @@ def asarray(
             sycl_queue=sycl_queue,
             order=order,
         )
-    elif hasattr(obj, "__sycl_usm_array_interface__"):
+    if hasattr(obj, "__sycl_usm_array_interface__"):
         sua_iface = getattr(obj, "__sycl_usm_array_interface__")
         membuf = dpm.as_usm_memory(obj)
         ary = dpt.usm_ndarray(
@@ -386,7 +382,7 @@ def asarray(
             sycl_queue=sycl_queue,
             order=order,
         )
-    elif isinstance(obj, np.ndarray):
+    if isinstance(obj, np.ndarray):
         if copy is False:
             raise ValueError(
                 "Converting numpy.ndarray to usm_ndarray requires a copy"
@@ -398,7 +394,7 @@ def asarray(
             sycl_queue=sycl_queue,
             order=order,
         )
-    elif _is_object_with_buffer_protocol(obj):
+    if _is_object_with_buffer_protocol(obj):
         if copy is False:
             raise ValueError(
                 f"Converting {type(obj)} to usm_ndarray requires a copy"
@@ -410,12 +406,12 @@ def asarray(
             sycl_queue=sycl_queue,
             order=order,
         )
-    elif isinstance(obj, (list, tuple, range)):
+    if isinstance(obj, (list, tuple, range)):
         if copy is False:
             raise ValueError(
                 "Converting Python sequence to usm_ndarray requires a copy"
             )
-        _, dt, devs = _array_info_sequence(obj)
+        _, _, devs = _array_info_sequence(obj)
         if devs == _host_set:
             return _asarray_from_numpy_ndarray(
                 np.asarray(obj, dtype=dtype, order=order),
@@ -474,8 +470,7 @@ def empty(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
@@ -497,14 +492,13 @@ def _coerce_and_infer_dt(*args, dt, sycl_queue, err_msg, allow_bool=False):
     dt = _get_dtype(dt, sycl_queue, ref_type=seq_dt)
     if np.issubdtype(dt, np.integer):
         return tuple(int(v) for v in args), dt
-    elif np.issubdtype(dt, np.floating):
+    if np.issubdtype(dt, np.floating):
         return tuple(float(v) for v in args), dt
-    elif np.issubdtype(dt, np.complexfloating):
+    if np.issubdtype(dt, np.complexfloating):
         return tuple(complex(v) for v in args), dt
-    elif allow_bool and dt.char == "?":
+    if allow_bool and dt.char == "?":
         return tuple(bool(v) for v in args), dt
-    else:
-        raise ValueError(f"Data type {dt} is not supported")
+    raise ValueError(f"Data type {dt} is not supported")
 
 
 def _round_for_arange(tmp):
@@ -569,7 +563,7 @@ def arange(
     is_bool = False
     if dtype:
         is_bool = (dtype is bool) or (dpt.dtype(dtype) == dpt.bool)
-    (start_, stop_, step_), dt = _coerce_and_infer_dt(
+    _, dt = _coerce_and_infer_dt(
         start,
         stop,
         step,
@@ -580,9 +574,7 @@ def arange(
     )
     try:
         tmp = _get_arange_length(start, stop, step)
-        sh = int(tmp)
-        if sh < 0:
-            sh = 0
+        sh = max(int(tmp), 0)
     except TypeError:
         sh = 0
     if is_bool and sh > 2:
@@ -654,8 +646,7 @@ def zeros(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
@@ -702,8 +693,7 @@ def ones(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
@@ -714,7 +704,7 @@ def ones(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    hev, ev = ti._full_usm_ndarray(1, res, sycl_queue)
+    hev, _ = ti._full_usm_ndarray(1, res, sycl_queue)
     hev.wait()
     return res
 
@@ -758,8 +748,7 @@ def full(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
@@ -770,7 +759,7 @@ def full(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    hev, ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
+    hev, _ = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     hev.wait()
     return res
 
@@ -810,8 +799,7 @@ def empty_like(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -867,8 +855,7 @@ def zeros_like(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -924,8 +911,7 @@ def ones_like(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -988,8 +974,7 @@ def full_like(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -1141,8 +1126,7 @@ def eye(
         raise ValueError(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
-    else:
-        order = order[0].upper()
+    order = order[0].upper()
     n_rows = operator.index(n_rows)
     n_cols = n_rows if n_cols is None else operator.index(n_cols)
     k = operator.index(k)
@@ -1177,12 +1161,14 @@ def tril(X, k=0):
 
     Returns the lower triangular part of a matrix (or a stack of matrices) X.
     """
-    if type(X) is not dpt.usm_ndarray:
-        raise TypeError
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(
+            "Expected argument of type dpctl.tensor.usm_ndarray, "
+            f"got {type(X)}."
+        )
 
     k = operator.index(k)
 
-    # F_CONTIGUOUS = 2
     order = "F" if (X.flags.f_contiguous) else "C"
 
     shape = X.shape
@@ -1218,12 +1204,14 @@ def triu(X, k=0):
 
     Returns the upper triangular part of a matrix (or a stack of matrices) X.
     """
-    if type(X) is not dpt.usm_ndarray:
-        raise TypeError
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(
+            "Expected argument of type dpctl.tensor.usm_ndarray, "
+            f"got {type(X)}."
+        )
 
     k = operator.index(k)
 
-    # F_CONTIGUOUS = 2
     order = "F" if (X.flags.f_contiguous) else "C"
 
     shape = X.shape
