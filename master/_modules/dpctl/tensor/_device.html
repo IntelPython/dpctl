@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.0rc1+2.ga2a62dca documentation</title>
+  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.0rc1+16.g853ace968 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc1+2.ga2a62dca
+                0.14.0rc1+16.g853ace968
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -95,6 +95,8 @@
 <span class="c1">#  limitations under the License.</span>
 <span class="kn">import</span> <span class="nn">dpctl</span>
 
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Implementation of array API mandated Device class&quot;</span>
+
 
 <div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../../docfiles/dpctl/Device.html#dpctl.tensor.Device">[docs]</a><span class="k">class</span> <span class="nc">Device</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -109,7 +111,8 @@
 <span class="sd">    or ``sycl_device``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__device_queue_map__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">__device_queue_map__</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">sycl_queue_</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No public constructor&quot;</span><span class="p">)</span>
@@ -142,9 +145,9 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__device_queue_map__</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Using non-root device </span><span class="si">{}</span><span class="s2"> to specify offloading &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Using non-root device </span><span class="si">{</span><span class="n">dev</span><span class="si">}</span><span class="s2"> to specify offloading &quot;</span>
                     <span class="s2">&quot;target is ambiguous. Please use dpctl.SyclQueue &quot;</span>
-                    <span class="s2">&quot;targeting this device&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+                    <span class="s2">&quot;targeting this device&quot;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dev</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -180,13 +183,13 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Instance of </span><span class="si">{}</span><span class="s2"> is not initialized&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Instance of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2"> is not initialized&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">filter_string</span>
-            <span class="k">return</span> <span class="s2">&quot;Device(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Device(</span><span class="si">{</span><span class="n">fs</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="c1"># This is a sub-device</span>
             <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
@@ -230,23 +233,22 @@
     <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">sycl_queue</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclQueue, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">q</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="n">qq</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">q</span><span class="p">,</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-            <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclQueue, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">q</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">qq</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">qq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;sycl_queue and device keywords can not be both specified&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">qq</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">qq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;sycl_queue and device keywords can not be both specified&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">qq</span>
 </pre></div>
 
            </div>

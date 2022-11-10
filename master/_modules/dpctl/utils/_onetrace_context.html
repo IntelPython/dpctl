@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils._onetrace_context &mdash; Data-parallel Control (dpctl) 0.14.0rc1+2.ga2a62dca documentation</title>
+  <title>dpctl.utils._onetrace_context &mdash; Data-parallel Control (dpctl) 0.14.0rc1+16.g853ace968 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc1+2.ga2a62dca
+                0.14.0rc1+16.g853ace968
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -97,6 +97,11 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span><span class="p">,</span> <span class="n">getenv</span>
 <span class="kn">from</span> <span class="nn">platform</span> <span class="kn">import</span> <span class="n">system</span> <span class="k">as</span> <span class="n">sys_platform</span>
+
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Implementation module of :class:`dpctl.utils.onetrace_enabled` &quot;</span>
+    <span class="s2">&quot;context manager.&quot;</span>
+<span class="p">)</span>
 
 <span class="n">_UNCHECKED</span> <span class="o">=</span> <span class="n">sys_platform</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Linux&quot;</span>
 <span class="k">del</span> <span class="n">sys_platform</span>

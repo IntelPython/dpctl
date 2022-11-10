@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.14.0rc1+2.ga2a62dca documentation</title>
+  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.14.0rc1+16.g853ace968 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc1+2.ga2a62dca
+                0.14.0rc1+16.g853ace968
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -519,7 +519,7 @@ returned by the SYCL <code class="docutils literal notranslate"><span class="pre
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.select_device_with_aspects">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_device_with_aspects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">required_aspects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_aspects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/_device_selection.html#select_device_with_aspects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.select_device_with_aspects" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_device_with_aspects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">required_aspects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_aspects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/_device_selection.html#select_device_with_aspects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.select_device_with_aspects" title="Permalink to this definition"></a></dt>
 <dd><p>Selects the root <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> that has the highest
 default selector score among devices that have all aspects in the
 <cite>required_aspects</cite> list, and do not have any aspects in <cite>excluded_aspects</cite>

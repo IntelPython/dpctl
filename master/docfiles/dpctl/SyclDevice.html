@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0rc1+2.ga2a62dca documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.0rc1+16.g853ace968 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc1+2.ga2a62dca
+                0.14.0rc1+16.g853ace968
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -121,7 +121,7 @@ constructor. The filter string needs to conform to the
 
 <span class="c1"># Create a SyclDevice with an explicit filter string,</span>
 <span class="c1"># in this case the first level_zero gpu device.</span>
-<span class="n">level_zero_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;level_zero:gpu:0&quot;</span><span class="p">):</span>
+<span class="n">level_zero_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;level_zero:gpu:0&quot;</span><span class="p">)</span>
 <span class="n">level_zero_gpu</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -142,7 +142,7 @@ constructor. The filter string needs to conform to the
 
 <span class="c1"># Create a SyclDevice of type GPU based on whatever is returned</span>
 <span class="c1"># by the SYCL `gpu_selector` device selector class.</span>
-<span class="n">gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_gpu_device</span><span class="p">():</span>
+<span class="n">gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_gpu_device</span><span class="p">()</span>
 <span class="n">gpu</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
 </pre></div>
 </div>
