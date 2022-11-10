@@ -25,7 +25,6 @@ a OpenCL source string or a SPIR-V binary file.
 
 """
 
-cimport cython.array
 from libc.stdint cimport uint32_t
 
 from dpctl._backend cimport (  # noqa: E211, E402;
