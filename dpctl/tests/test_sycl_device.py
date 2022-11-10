@@ -176,11 +176,17 @@ def unsupported_aspect(request):
 
 def test_supported_aspect(supported_aspect):
     try:
-        dpctl.select_device_with_aspects(supported_aspect)
+        d = dpctl.SyclDevice()
+        has_it = getattr(d, "has_aspect_" + supported_aspect)
+    except dpctl.SyclDevieCreationError:
+        has_it = False
+    try:
+        d_wa = dpctl.select_device_with_aspects(supported_aspect)
+        assert getattr(d_wa, "has_aspect_" + supported_aspect)
     except dpctl.SyclDeviceCreationError:
         # ValueError may be raised if no device with
         # requested aspect charateristics is available
-        pass
+        assert not has_it
 
 
 def test_unsupported_aspect(unsupported_aspect):
