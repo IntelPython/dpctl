@@ -1,0 +1,35 @@
+.. index:: pair: class; dpctl::syclinterface::dpctl_device_selector
+.. _doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector:
+
+class dpctl::syclinterface::dpctl_device_selector
+=================================================
+
+.. toctree::
+	:hidden:
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_device_selection.hpp>
+	
+	class dpctl_device_selector: public device_selector
+	{
+	public:
+		// methods
+	
+		virtual
+		int
+		:target:`operator ()<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a29af8b291686453af8f2de7b8a280527>` (const sycl::device& device) const = 0;
+	};
+
+	// direct descendants
+
+	class :ref:`dpctl_accelerator_selector<doxid-de/d9f/classdpctl_1_1syclinterface_1_1dpctl__accelerator__selector>`;
+	class :ref:`dpctl_cpu_selector<doxid-d4/d09/classdpctl_1_1syclinterface_1_1dpctl__cpu__selector>`;
+	class :ref:`dpctl_default_selector<doxid-dd/d0e/classdpctl_1_1syclinterface_1_1dpctl__default__selector>`;
+	class :ref:`dpctl_filter_selector<doxid-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector>`;
+	class :ref:`dpctl_gpu_selector<doxid-dc/d55/classdpctl_1_1syclinterface_1_1dpctl__gpu__selector>`;
+	class :ref:`dpctl_host_selector<doxid-d0/da1/classdpctl_1_1syclinterface_1_1dpctl__host__selector>`;
