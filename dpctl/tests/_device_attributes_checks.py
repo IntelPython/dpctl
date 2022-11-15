@@ -39,7 +39,7 @@ list_of_valid_filter_selectors = [
     "level_zero:gpu:0",
     "gpu:0",
     "gpu:1",
-    "1",
+    "0",
 ]
 
 list_of_invalid_filter_selectors = [
@@ -113,6 +113,11 @@ def check_max_num_sub_groups(device):
         assert max_num_sub_groups >= 0
     else:
         assert max_num_sub_groups > 0
+
+
+def check_sub_group_sizes(device):
+    sg_sizes = device.sub_group_sizes
+    assert all(el > 0 for el in sg_sizes)
 
 
 def check_has_aspect_host(device):
@@ -566,7 +571,11 @@ def check_vendor(device):
 def check_default_selector_score(device):
     sc = device.default_selector_score
     assert type(sc) is int
-    assert sc > 0
+    assert sc > 0 or not (
+        device.has_aspect_cpu
+        or device.has_aspect_gpu
+        or device.has_aspect_accelerator
+    )
 
 
 def check_backend(device):
@@ -605,6 +614,7 @@ list_of_checks = [
     check_max_work_item_sizes,
     check_max_work_group_size,
     check_max_num_sub_groups,
+    check_sub_group_sizes,
     check_is_accelerator,
     check_is_cpu,
     check_is_gpu,

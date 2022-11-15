@@ -204,6 +204,8 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef uint64_t DPCTLDevice_GetGlobalMemCacheSize(const DPCTLSyclDeviceRef DRef)
     cdef _global_mem_cache_type DPCTLDevice_GetGlobalMemCacheType(
         const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetSubGroupSizes(const DPCTLSyclDeviceRef DRef,
+        size_t *res_len)
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
@@ -263,6 +265,7 @@ cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
 cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef size_t DPCTLKernel_GetNumArgs(const DPCTLSyclKernelRef KRef)
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
+    cdef DPCTLSyclKernelRef DPCTLKernel_Copy(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetWorkGroupSize(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetPrivateMemSize(const DPCTLSyclKernelRef KRef)
@@ -341,6 +344,7 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef bool DPCTLKernelBundle_HasKernel(DPCTLSyclKernelBundleRef KBRef,
                                      const char *KernelName)
     cdef void DPCTLKernelBundle_Delete(DPCTLSyclKernelBundleRef KBRef)
+    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(const DPCTLSyclKernelBundleRef KBRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":

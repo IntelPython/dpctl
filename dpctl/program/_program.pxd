@@ -28,7 +28,7 @@ from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
 
 
-cdef class SyclKernel:
+cdef api class SyclKernel [object PySyclKernelObject, type PySyclKernelType]:
     ''' Wraps a sycl::kernel object created from an OpenCL interoperability
         kernel.
     '''
@@ -40,7 +40,7 @@ cdef class SyclKernel:
     cdef SyclKernel _create (DPCTLSyclKernelRef kref, str name)
 
 
-cdef class SyclProgram:
+cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
     ''' Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created by
         using SYCL interoperability layer for OpenCL and Level-Zero backends.
 

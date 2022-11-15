@@ -117,4 +117,16 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
 DPCTL_API
 void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef);
 
+/*!
+ * @brief Returns a copy of the DPCTLSyclKernelBundleRef object.
+ *
+ * @param    KBRef           DPCTLSyclKernelBundleRef object to be copied.
+ * @return   A new DPCTLSyclKernelBundleRef created by copying the passed in
+ * DPCTLSyclKernelBundleRef object.
+ * @ingroup KernelBundleInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclKernelBundleRef
+DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef);
+
 DPCTL_C_EXTERN_C_END

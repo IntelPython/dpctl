@@ -24,6 +24,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "Config/dpctl_config.h"
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
@@ -99,9 +100,16 @@ struct TestDPCTLSyclKernelInterface
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetNumArgs)
 {
-
     ASSERT_EQ(DPCTLKernel_GetNumArgs(AddKRef), 3ul);
     ASSERT_EQ(DPCTLKernel_GetNumArgs(AxpyKRef), 4ul);
+}
+
+TEST_P(TestDPCTLSyclKernelInterface, CheckCopy)
+{
+    DPCTLSyclKernelRef Copied_KRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(Copied_KRef = DPCTLKernel_Copy(AddKRef));
+    ASSERT_EQ(DPCTLKernel_GetNumArgs(Copied_KRef), 3ul);
+    EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(Copied_KRef));
 }
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetWorkGroupSize)
@@ -159,7 +167,7 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxNumSubGroups)
     ASSERT_TRUE(axpy_mnsg != 0);
 }
 
-/*
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxSubGroupSize)
 {
 
@@ -172,7 +180,7 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxSubGroupSize)
     ASSERT_TRUE(add_msg_sz != 0);
     ASSERT_TRUE(axpy_msg_sz != 0);
 }
-*/
+#endif
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetCompileNumSubGroups)
 {
@@ -215,6 +223,11 @@ TEST_F(TestDPCTLSyclKernelNullArgs, CheckNumArgsNullKRef)
     ASSERT_EQ(DPCTLKernel_GetNumArgs(Null_KRef), -1);
 }
 
+TEST_F(TestDPCTLSyclKernelNullArgs, CheckCopyNullKRef)
+{
+    ASSERT_TRUE(DPCTLKernel_Copy(Null_KRef) == nullptr);
+}
+
 TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetWorkGroupsSizeNullKRef)
 {
     DPCTLSyclKernelRef NullKRef = nullptr;
@@ -244,14 +257,14 @@ TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetMaxNumSubGroupsNullKRef)
     ASSERT_EQ(DPCTLKernel_GetMaxNumSubGroups(NullKRef), 0);
 }
 
-/*
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetMaxSubGroupSizeNullKRef)
 {
     DPCTLSyclKernelRef NullKRef = nullptr;
 
     ASSERT_EQ(DPCTLKernel_GetMaxSubGroupSize(NullKRef), 0);
 }
-*/
+#endif
 
 TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetCompileNumSubGroupsNullKRef)
 {

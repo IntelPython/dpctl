@@ -69,7 +69,7 @@ py_gemv(sycl::queue q,
             "USM allocations are not compatible with the execution queue.");
     }
 
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     if (!((matrix.is_c_contiguous()) &&
           (vector.is_c_contiguous() || vector.is_f_contiguous()) &&
@@ -188,7 +188,7 @@ py_sub(sycl::queue q,
             "USM allocation is not bound to the context in execution queue");
     }
 
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     if (!((in_v1.is_c_contiguous() || in_v1.is_f_contiguous()) &&
           (in_v2.is_c_contiguous() || in_v2.is_f_contiguous()) &&
@@ -294,7 +294,7 @@ py_axpby_inplace(sycl::queue q,
         throw std::runtime_error(
             "USM allocation is not bound to the context in execution queue");
     }
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     if (!((x.is_c_contiguous() || x.is_f_contiguous()) &&
           (y.is_c_contiguous() || y.is_f_contiguous())))
@@ -394,7 +394,7 @@ py::object py_norm_squared_blocking(sycl::queue q,
             "USM allocation is not bound to the context in execution queue");
     }
 
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     int r_typenum = r.get_typenum();
     if ((r_typenum != api.UAR_DOUBLE_) && (r_typenum != api.UAR_FLOAT_) &&
@@ -464,7 +464,7 @@ py::object py_dot_blocking(sycl::queue q,
             "USM allocation is not bound to the context in execution queue");
     }
 
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     int v1_typenum = v1.get_typenum();
     int v2_typenum = v2.get_typenum();
@@ -581,7 +581,7 @@ int py_cg_solve(sycl::queue exec_q,
     const char *b_ch = bvec.get_data();
     char *x_ch = xvec.get_data();
 
-    auto &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = dpctl::detail::dpctl_capi::get();
 
     if (A_typenum == api.UAR_DOUBLE_) {
         using T = double;

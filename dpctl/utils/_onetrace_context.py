@@ -18,6 +18,11 @@ from contextlib import contextmanager
 from os import environ, getenv
 from platform import system as sys_platform
 
+__doc__ = (
+    "Implementation module of :class:`dpctl.utils.onetrace_enabled` "
+    "context manager."
+)
+
 _UNCHECKED = sys_platform() == "Linux"
 del sys_platform
 

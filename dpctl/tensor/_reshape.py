@@ -21,6 +21,8 @@ import dpctl.tensor as dpt
 from dpctl.tensor._copy_utils import _copy_from_usm_ndarray_to_usm_ndarray
 from dpctl.tensor._tensor_impl import _copy_usm_ndarray_for_reshape
 
+__doc__ = "Implementation module for :func:`dpctl.tensor.reshape`."
+
 
 def _make_unit_indexes(shape):
     """
@@ -67,10 +69,8 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
         ]
     ]
     valid = all(
-        [
-            check_st == old_st or old_dim == 1
-            for check_st, old_st, old_dim in zip(check_sts, old_sts, old_sh)
-        ]
+        check_st == old_st or old_dim == 1
+        for check_st, old_st, old_dim in zip(check_sts, old_sts, old_sh)
     )
     return new_sts if valid else None
 
@@ -82,7 +82,7 @@ def reshape(X, newshape, order="C", copy=None):
     Reshapes given usm_ndarray into new shape. Returns a view, if possible,
     a copy otherwise. Memory layout of the copy is controlled by order keyword.
     """
-    if type(X) is not dpt.usm_ndarray:
+    if not isinstance(X, dpt.usm_ndarray):
         raise TypeError
     if not isinstance(newshape, (list, tuple)):
         newshape = (newshape,)
@@ -99,10 +99,10 @@ def reshape(X, newshape, order="C", copy=None):
         )
     newshape = [operator.index(d) for d in newshape]
     negative_ones_count = 0
-    for i in range(len(newshape)):
-        if newshape[i] == -1:
+    for nshi in newshape:
+        if nshi == -1:
             negative_ones_count = negative_ones_count + 1
-        if (newshape[i] < -1) or negative_ones_count > 1:
+        if (nshi < -1) or negative_ones_count > 1:
             raise ValueError(
                 "Target shape should have at most 1 negative "
                 "value which can only be -1"
@@ -111,7 +111,7 @@ def reshape(X, newshape, order="C", copy=None):
         v = X.size // (-np.prod(newshape))
         newshape = [v if d == -1 else d for d in newshape]
     if X.size != np.prod(newshape):
-        raise ValueError("Can not reshape into {}".format(newshape))
+        raise ValueError(f"Can not reshape into {newshape}")
     if X.size:
         newsts = reshaped_strides(X.shape, X.strides, newshape, order=order)
     else:
@@ -143,12 +143,11 @@ def reshape(X, newshape, order="C", copy=None):
         return dpt.usm_ndarray(
             tuple(newshape), dtype=X.dtype, buffer=flat_res, order=order
         )
-    else:
-        # can form a view
-        return dpt.usm_ndarray(
-            newshape,
-            dtype=X.dtype,
-            buffer=X,
-            strides=tuple(newsts),
-            offset=X.__sycl_usm_array_interface__.get("offset", 0),
-        )
+    # can form a view
+    return dpt.usm_ndarray(
+        newshape,
+        dtype=X.dtype,
+        buffer=X,
+        strides=tuple(newsts),
+        offset=X.__sycl_usm_array_interface__.get("offset", 0),
+    )
