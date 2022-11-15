@@ -119,4 +119,4 @@ jobs:
           sycl-ls
           CC=clang CXX=clang++ python setup.py develop -G Ninja
           python -c "import dpctl; dpctl.lsplatform()" || exit 1
-          SYCL_ENABLE_HOST_DEVICE=1 python -m pytest -v dpctl/tests
+          python -m pytest -v dpctl/tests
