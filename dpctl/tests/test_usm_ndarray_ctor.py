@@ -992,12 +992,15 @@ def test_full_dtype_inference():
 def test_full_fill_array():
     q = get_queue_or_skip()
 
-    dtype = np.int32
-    X = dpt.full(10, dpt.usm_ndarray(1, dtype=dtype), sycl_queue=q)
-    assert dtype == X.dtype
+    Xnp = np.array([1, 2, 3], dtype=np.int32)
+    X = dpt.asarray(Xnp, sycl_queue=q)
 
-    X = dpt.full(10, np.ndarray(1, dtype=dtype), sycl_queue=q)
-    assert dtype == X.dtype
+    shape = (3, 3)
+    Y = dpt.full(shape, X)
+    Ynp = np.full(shape, Xnp)
+
+    assert np.array_equal(dpt.asnumpy(Y), Ynp)
+    assert Ynp.dtype == Y.dtype
 
 
 @pytest.mark.parametrize(
