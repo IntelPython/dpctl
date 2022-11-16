@@ -19,6 +19,8 @@ import timeit
 
 from . import SyclQueue
 
+__doc__ = "This module implements :class:`dpctl.SyclTimer`."
+
 
 class SyclTimer:
     """
@@ -65,6 +67,10 @@ class SyclTimer:
         self.timer = host_timer
         self.time_scale = time_scale
         self.queue = None
+        self.host_start = None
+        self.host_finish = None
+        self.event_start = None
+        self.event_finish = None
 
     def __call__(self, queue=None):
         if isinstance(queue, SyclQueue):
@@ -78,7 +84,7 @@ class SyclTimer:
         else:
             raise TypeError(
                 "The passed queue must have type dpctl.SyclQueue, "
-                "got {}".format(type(queue))
+                f"got {type(queue)}"
             )
         return self
 

@@ -825,8 +825,11 @@ def test_astype():
     X[:] = np.full((5, 5), 7, dtype="i4")
     Y = dpt.astype(X, "c8", order="C")
     assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="c8"))
-    Y = dpt.astype(X[::2, ::-1], "f2", order="K")
-    assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f2"))
+    if Y.sycl_device.has_aspect_fp16:
+        Y = dpt.astype(X[::2, ::-1], "f2", order="K")
+        assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f2"))
+    Y = dpt.astype(X[::2, ::-1], "f4", order="K")
+    assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f4"))
     Y = dpt.astype(X[::2, ::-1], "i4", order="K", copy=False)
     assert Y.usm_data is X.usm_data
 

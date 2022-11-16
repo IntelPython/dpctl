@@ -23,7 +23,6 @@ import sys
 import skbuild
 import skbuild.setuptools_wrap
 import skbuild.utils
-from setuptools import find_packages
 from skbuild.command.build_py import build_py as _skbuild_build_py
 from skbuild.command.install import install as _skbuild_install
 
@@ -140,7 +139,13 @@ skbuild.setup(
     license="Apache 2.0",
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpctl",
-    packages=find_packages(include=["*"]),
+    packages=[
+        "dpctl",
+        "dpctl.memory",
+        "dpctl.tensor",
+        "dpctl.program",
+        "dpctl.utils",
+    ],
     package_data={"dpctl": ["tests/*.*", "tests/helper/*.py"]},
     include_package_data=True,
     zip_safe=False,

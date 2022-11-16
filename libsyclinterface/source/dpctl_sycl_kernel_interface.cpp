@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_kernel_interface.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_type_casters.hpp"
@@ -55,6 +56,24 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef)
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef)
 {
     delete unwrap<kernel>(KRef);
+}
+
+__dpctl_give DPCTLSyclKernelRef
+DPCTLKernel_Copy(__dpctl_keep const DPCTLSyclKernelRef KRef)
+{
+    auto Kernel = unwrap<kernel>(KRef);
+    if (!Kernel) {
+        error_handler("Cannot copy DPCTLSyclKernelRef as input is a nullptr",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    try {
+        auto CopiedKernel = new kernel(*Kernel);
+        return wrap<kernel>(CopiedKernel);
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
 }
 
 size_t DPCTLKernel_GetWorkGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
@@ -142,7 +161,7 @@ DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef)
     return static_cast<uint32_t>(v);
 }
 
-#if 0
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 // commented out due to bug in DPC++ runtime, get_info for max_sub_group_size
 // exported by libsycl has different, not SPEC-compliant signature
 uint32_t
@@ -161,8 +180,9 @@ DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
                       __FILE__, __func__, __LINE__);
         return 0;
     }
-    auto v = sycl_kern
-      ->get_info<info::kernel_device_specific::max_sub_group_size>(devs[0]);
+    auto v =
+        sycl_kern->get_info<info::kernel_device_specific::max_sub_group_size>(
+            devs[0]);
     return v;
 }
 #endif

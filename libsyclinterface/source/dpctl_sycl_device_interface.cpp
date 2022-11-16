@@ -743,3 +743,30 @@ DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
     }
 }
+
+__dpctl_keep size_t *
+DPCTLDevice_GetSubGroupSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                             size_t *res_len)
+{
+    size_t *sizes = nullptr;
+    std::vector<size_t> sg_sizes;
+    *res_len = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            sg_sizes = D->get_info<info::device::sub_group_sizes>();
+            *res_len = sg_sizes.size();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+        try {
+            sizes = new size_t[sg_sizes.size()];
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+        for (auto i = 0ul; (sizes != nullptr) && i < sg_sizes.size(); ++i) {
+            sizes[i] = sg_sizes[i];
+        }
+    }
+    return sizes;
+}

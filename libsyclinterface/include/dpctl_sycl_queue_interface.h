@@ -178,7 +178,7 @@ DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * A wrapper over ``sycl::queue.submit()``. The function takes an
  * interoperability kernel, the kernel arguments, and a ``sycl::queue`` as
  * input. The kernel is submitted as
- * ``parallel_for(range<NRange>, *unwrap(KRef))``.
+ * ``parallel_for(range<NRange>, *unwrap<kernel>(KRef))``.
  *
  * \todo ``sycl::buffer`` arguments are not supported yet.
  * \todo Add support for id<Dims> WorkItemOffset
@@ -222,7 +222,8 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
  *
  * A wrapper over ``sycl::queue.submit()``. The function takes an
  * interoperability kernel, the kernel arguments, and a Sycl queue as input.
- * The kernel is submitted as ``parallel_for(nd_range<NRange>, *unwrap(KRef))``.
+ * The kernel is submitted as
+ * ``parallel_for(nd_range<NRange>, *unwrap<kernel>(KRef))``.
  *
  * \todo sycl::buffer arguments are not supported yet.
  * \todo Add support for id<Dims> WorkItemOffset

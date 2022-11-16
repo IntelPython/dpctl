@@ -115,11 +115,27 @@ if(${clangxx_result} MATCHES "0")
     set(IntelSycl_SYCL_INCLUDE_DIR ${SYCL_INCLUDE_DIR}/sycl)
     set(IntelSycl_LIBRARY_DIR ${SYCL_LIBRARY_DIR})
     if("x${CMAKE_SYSTEM_NAME}" STREQUAL "xWindows")
-        set(IntelSycl_SYCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/sycl.lib)
-        set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/OpenCL.lib)
+        find_file(
+            IntelSycl_SYCL_LIBRARY
+            NAMES "sycl.lib" "sycl6.lib" "sycl7.lib"
+            PATHS ${IntelSycl_LIBRARY_DIR}
+        )
+        find_file(
+            IntelSycl_OPENCL_LIBRARY
+            NAMES "OpenCL.lib"
+            PATHS ${IntelSycl_LIBRARY_DIR}
+        )
     elseif("x${CMAKE_SYSTEM_NAME}" STREQUAL "xLinux")
-        set(IntelSycl_SYCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/libsycl.so)
-        set(IntelSycl_OPENCL_LIBRARY ${IntelSycl_LIBRARY_DIR}/libOpenCL.so)
+        find_file(
+            IntelSycl_SYCL_LIBRARY
+            NAMES "libsycl.so"
+            PATHS ${IntelSycl_LIBRARY_DIR}
+        )
+        find_file(
+            IntelSycl_OPENCL_LIBRARY
+            NAMES "libOpenCL.so"
+            PATHS ${IntelSycl_LIBRARY_DIR}
+        )
     endif()
 
 endif()

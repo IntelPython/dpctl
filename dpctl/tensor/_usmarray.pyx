@@ -138,7 +138,6 @@ cdef class usm_ndarray:
         """
         Provides a copy of Python object pointing to the same data
         """
-        cdef int item_size = self.get_itemsize()
         cdef Py_ssize_t offset_elems = self.get_offset()
         cdef usm_ndarray res = usm_ndarray.__new__(
             usm_ndarray, _make_int_tuple(self.nd_, self.shape_),
@@ -178,14 +177,12 @@ cdef class usm_ndarray:
         cdef Py_ssize_t _offset = offset
         cdef Py_ssize_t ary_min_displacement = 0
         cdef Py_ssize_t ary_max_displacement = 0
-        cdef Py_ssize_t tmp = 0
-        cdef char * data_ptr = NULL
 
         self._reset()
         if (not isinstance(shape, (list, tuple))
                 and not hasattr(shape, 'tolist')):
             try:
-                tmp = <Py_ssize_t> shape
+                <Py_ssize_t> shape
                 shape = [shape, ]
             except Exception:
                 raise TypeError("Argument shape must be a list or a tuple.")
