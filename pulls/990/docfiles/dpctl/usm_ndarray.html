@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.0rc2+7.gb7ec270a documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.0rc2+7.g3adb140f1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc2+7.gb7ec270a
+                0.14.0rc2+7.g3adb140f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -341,11 +341,11 @@ change of respective index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>target_device</strong> – array API concept of target device.
-<cite>target_device</cite> can be a oneAPI filter selector string,
+target_device can be a oneAPI filter selector string,
 an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
 non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<cite>dpctl.tensor.usm_array.device</cite>.</p>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>
+object returned by <a href="#id1"><span class="problematic" id="id2">:method:`dpctl.tensor.usm_array.device`</span></a>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A view if data copy is not required, and a copy otherwise.
