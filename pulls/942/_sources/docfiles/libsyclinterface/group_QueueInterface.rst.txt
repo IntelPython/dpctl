@@ -987,7 +987,7 @@ An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::prefetch
 
 Submits the kernel to the specified queue with the provided nd_range argument.
 
-A wrapper over ``sycl::queue.submit()``. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as ``parallel_for(nd_range<NRange>, *unwrap(KRef))``.
+A wrapper over ``sycl::queue.submit()``. The function takes an interoperability kernel, the kernel arguments, and a Sycl queue as input. The kernel is submitted as ``parallel_for(nd_range<NRange>, *unwrap<kernel>(KRef))``.
 
 Todo sycl::buffer arguments are not supported yet.
 
@@ -1077,7 +1077,7 @@ An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue.submit()`
 
 Submits the kernel to the specified queue with the provided range argument.
 
-A wrapper over ``sycl::queue.submit()``. The function takes an interoperability kernel, the kernel arguments, and a ``sycl::queue`` as input. The kernel is submitted as ``parallel_for(range<NRange>, *unwrap(KRef))``.
+A wrapper over ``sycl::queue.submit()``. The function takes an interoperability kernel, the kernel arguments, and a ``sycl::queue`` as input. The kernel is submitted as ``parallel_for(range<NRange>, *unwrap<kernel>(KRef))``.
 
 Todo ``sycl::buffer`` arguments are not supported yet.
 
