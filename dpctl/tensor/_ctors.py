@@ -762,18 +762,27 @@ def full(
     else:
         order = order[0].upper()
     dpctl.utils.validate_usm_type(usm_type, allow_none=True)
-    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
 
     if isinstance(fill_value, (dpt.usm_ndarray, np.ndarray, tuple, list)):
+        if (
+            isinstance(fill_value, dpt.usm_ndarray)
+            and sycl_queue is None
+            and device is None
+        ):
+            sycl_queue = fill_value.sycl_queue
+        else:
+            sycl_queue = normalize_queue_device(
+                sycl_queue=sycl_queue, device=device
+            )
         X = dpt.asarray(
             fill_value,
             dtype=dtype,
-            device=device,
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
         return dpt.broadcast_to(X, sh)
 
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
     dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
     res = dpt.usm_ndarray(
