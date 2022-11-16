@@ -638,13 +638,43 @@ cdef class usm_ndarray:
         res.array_namespace_ = self.array_namespace_
         return res
 
-    def to_device(self, target_device):
+    def to_device(self, target):
         """
-        Transfer array to target device
+        Transfers this array to specified target device.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+                import dpctl.tensor as dpt
+
+                x = dpt.full(10**6, 2, dtype="int64")
+                q_prof = dpctl.SyclQueue(
+                    x.sycl_device, property="enable_profiling")
+                # return a view with profile-enabled queue
+                y = x.to_device(q_prof)
+                timer = dpctl.SyclTimer()
+                with timer(q_prof):
+                    z = y * y
+                print(timer.dt)
+
+        Args:
+            target: array API concept of target device.
+                It can be a oneAPI filter selector string,
+                an instance of :class:`dpctl.SyclDevice` corresponding to a
+                non-partitioned SYCL device, an instance of
+                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
+                object returned by :attr:`dpctl.tensor.usm_array.device`.
+
+        Returns:
+            A view if data copy is not required, and a copy otherwise.
+            If copying is required, it is done by copying from the original
+            allocation device to the host, followed by copying from host
+            to the target device.
         """
         cdef c_dpctl.DPCTLSyclQueueRef QRef = NULL
         cdef c_dpmem._Memory arr_buf
-        d = Device.create_device(target_device)
+        d = Device.create_device(target)
         if (d.sycl_context == self.sycl_context):
             arr_buf = <c_dpmem._Memory> self.usm_data
             QRef = (<c_dpctl.SyclQueue> d.sycl_queue).get_queue_ref()
