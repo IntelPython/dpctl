@@ -1027,6 +1027,31 @@ def test_full_compute_follows_data():
     assert np.array_equal(dpt.asnumpy(Y), np.full(10, 3, dtype="f4"))
 
 
+@pytest.mark.parametrize("order1", ["F", "C"])
+@pytest.mark.parametrize("order2", ["F", "C"])
+def test_full_order(order1, order2):
+    q = get_queue_or_skip()
+    Xnp = np.array([1,2,3], order=order1)
+    Ynp = np.full((3), Xnp, order=order2)
+    Y = dpt.full((3), Xnp, order=order2, sycl_queue=q)
+    assert Y.flags.f_contiguous == Ynp.flags.f_contiguous
+    assert Y.flags.c_contiguous == Ynp.flags.c_contiguous
+    assert np.array_equal(dpt.asnumpy(Y), Ynp)
+
+
+def test_full_strides():
+    q = get_queue_or_skip()
+    X = dpt.full((3,3), dpt.arange(3, dtype='i4'), sycl_queue=q)
+    Xnp = np.full((3,3), np.arange(3, dtype='i4'))
+    assert X.strides == tuple( el // Xnp.itemsize for el in Xnp.strides)
+    assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+    X = dpt.full((3,3), dpt.arange(6, dtype='i4')[::2], sycl_queue=q)
+    Xnp = np.full((3,3), np.arange(6, dtype='i4')[::2])
+    assert X.strides == tuple( el // Xnp.itemsize for el in Xnp.strides)
+    assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes[1:],
