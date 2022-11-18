@@ -770,7 +770,7 @@ def full(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-        return dpt.copy(dpt.broadcast_to(X, sh))
+        return dpt.copy(dpt.broadcast_to(X, sh), order=order)
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
