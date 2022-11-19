@@ -448,15 +448,37 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
 
 cpdef from_dlpack(array):
     """
-    dpctl.tensor.from_dlpack(obj)
+    dpctl.tensor.from_dlpack(obj) -> dpctl.tensor.usm_ndarray
 
     Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
     object `obj` that implements `__dlpack__` protocol. The output
     array is always a zero-copy view of the input.
 
+    See https://dmlc.github.io/dlpack/latest/ for more details.
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            import dpctl.tensor as dpt
+
+            class Container:
+                "Helper class implementing `__dlpack__` protocol"
+                def __init__(self, array):
+                    self._array = array
+
+                def __dlpack__(self, stream=None):
+                    return self._array.__dlpack__(stream=stream)
+
+                def __dlpack_device__(self):
+                    return self._array.__dlpack_device__()
+
+            C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
+            X = dpt.from_dlpack(C)
+
     Args:
-        A Python object representing an array that supports `__dlpack__`
-        protocol.
+        obj: A Python object representing an array that supports `__dlpack__`
+            protocol.
     Raises:
         TypeError: if `obj` does not implement `__dlpack__` method.
         ValueError: if zero copy view can not be constructed because
