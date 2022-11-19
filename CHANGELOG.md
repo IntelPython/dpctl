@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev]
+## [0.14.0] - 11/18/2022
 
 ### Added
 
@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added debugging messaging in case when `DPCTLDynamicLib::getSymbol` encounters errors [#956](https://github.com/IntelPython/dpctl/pull/956).
 * Updated code base according to changes in DPC++ compiler [#952](https://github.com/IntelPython/dpctl/pull/952), [#957](https://github.com/IntelPython/dpctl/pull/957), [#958](https://github.com/IntelPython/dpctl/pull/958).
 * Changed `dpctl` to use pybind11 2.10.1 [#967](https://github.com/IntelPython/dpctl/pull/967).
+* Extended `dpctl.tensor.full` to accept 0d and higher dimensional arrays for fill-value parameter [#982](https://github.com/IntelPython/dpctl/pull/982) and [#995](https://github.com/IntelPython/dpctl/pull/995).
 
 ### Fixed
 * Improved SyclDevice constructor error message [#893](https://github.com/IntelPython/dpctl/pull/893).
