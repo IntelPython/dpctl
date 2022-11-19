@@ -150,9 +150,10 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install dpctl
         run: |
-          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export TEST_DEPENDENCIES="pytest pytest-cov cython"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
+          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python=${{ matrix.python }} ${CHANNELS}
           # Test installed packages
           conda list -n test_dpctl
       - name: Smoke test
@@ -249,7 +250,8 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% pytest python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+          SET "TEST_DEPENDENCIES=pytest pytest-cov cython"
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
       - name: Report content of test environemtn
         shell: cmd /C CALL {0}
         run: |
