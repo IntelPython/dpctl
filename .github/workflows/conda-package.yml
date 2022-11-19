@@ -160,7 +160,6 @@ jobs:
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
           export OCL_ICD_FILENAMES=libintelocl.so
-          export SYCL_ENABLE_HOST_DEVICE=1
           python -c "import dpctl; dpctl.lsplatform()"
       - name: Run tests
         run: |
@@ -168,7 +167,6 @@ jobs:
           conda activate test_dpctl
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
-          export SYCL_ENABLE_HOST_DEVICE=1
           # clinfo -l
           python -m pytest -p no:faulthandler --pyargs $MODULE_NAME
 
@@ -297,14 +295,12 @@ jobs:
         shell: cmd /C CALL {0}
         run: |
           python -c "import sys; print(sys.executable)"
-          set SYCL_ENABLE_HOST_DEVICE=1
           python -c "import dpctl; dpctl.lsplatform()"
           python -c "import dpctl; print(dpctl.get_devices(backend='opencl', device_type='gpu'))"
           python -c "import dpctl; print(dpctl.get_num_devices(backend='opencl', device_type='gpu'))"
       - name: Run tests
         shell: cmd /C CALL {0}
         run: |
-          set SYCL_ENABLE_HOST_DEVICE=1
           python -c "import sys; print(sys.executable)"
           python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
 
@@ -435,7 +431,6 @@ jobs:
         run: |
           source $CONDA/etc/profile.d/conda.sh
           export OCL_ICD_FILENAMES=libintelocl.so
-          export SYCL_ENABLE_HOST_DEVICE=1
           conda activate examples
           conda list
           cd examples/pybind11
@@ -497,7 +492,6 @@ jobs:
           cd examples/python
           source $CONDA/etc/profile.d/conda.sh
           export OCL_ICD_FILENAMES=libintelocl.so
-          export SYCL_ENABLE_HOST_DEVICE=1
           conda activate examples
           for script in $(find . \( -not -name "_*" -and -name "*.py" \))
           do
@@ -603,7 +597,6 @@ jobs:
           conda activate test_dpctl
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
-          export SYCL_ENABLE_HOST_DEVICE=1
           python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests

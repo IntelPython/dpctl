@@ -992,6 +992,66 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
 
 
+def test_full_fill_array():
+    q = get_queue_or_skip()
+
+    Xnp = np.array([1, 2, 3], dtype="i4")
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    shape = (3, 3)
+    Y = dpt.full(shape, X)
+    Ynp = np.full(shape, Xnp)
+
+    assert Y.dtype == Ynp.dtype
+    assert Y.usm_type == "device"
+    assert np.array_equal(dpt.asnumpy(Y), Ynp)
+
+
+def test_full_compute_follows_data():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    X = dpt.arange(10, dtype="i4", sycl_queue=q1, usm_type="shared")
+    Y = dpt.full(10, X[3])
+
+    assert Y.dtype == X.dtype
+    assert Y.usm_type == X.usm_type
+    assert dpctl.utils.get_execution_queue((Y.sycl_queue, X.sycl_queue))
+    assert np.array_equal(dpt.asnumpy(Y), np.full(10, 3, dtype="i4"))
+
+    Y = dpt.full(10, X[3], dtype="f4", sycl_queue=q2, usm_type="host")
+
+    assert Y.dtype == dpt.dtype("f4")
+    assert Y.usm_type == "host"
+    assert dpctl.utils.get_execution_queue((Y.sycl_queue, q2))
+    assert np.array_equal(dpt.asnumpy(Y), np.full(10, 3, dtype="f4"))
+
+
+@pytest.mark.parametrize("order1", ["F", "C"])
+@pytest.mark.parametrize("order2", ["F", "C"])
+def test_full_order(order1, order2):
+    q = get_queue_or_skip()
+    Xnp = np.array([1, 2, 3], order=order1)
+    Ynp = np.full((3, 3), Xnp, order=order2)
+    Y = dpt.full((3, 3), Xnp, order=order2, sycl_queue=q)
+    assert Y.flags.c_contiguous == Ynp.flags.c_contiguous
+    assert Y.flags.f_contiguous == Ynp.flags.f_contiguous
+    assert np.array_equal(dpt.asnumpy(Y), Ynp)
+
+
+def test_full_strides():
+    q = get_queue_or_skip()
+    X = dpt.full((3, 3), dpt.arange(3, dtype="i4"), sycl_queue=q)
+    Xnp = np.full((3, 3), np.arange(3, dtype="i4"))
+    assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
+    assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+    X = dpt.full((3, 3), dpt.arange(6, dtype="i4")[::2], sycl_queue=q)
+    Xnp = np.full((3, 3), np.arange(6, dtype="i4")[::2])
+    assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
+    assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes[1:],

@@ -39,7 +39,7 @@ list_of_valid_filter_selectors = [
     "level_zero:gpu:0",
     "gpu:0",
     "gpu:1",
-    "1",
+    "0",
 ]
 
 list_of_invalid_filter_selectors = [
@@ -571,7 +571,11 @@ def check_vendor(device):
 def check_default_selector_score(device):
     sc = device.default_selector_score
     assert type(sc) is int
-    assert sc > 0
+    assert sc > 0 or not (
+        device.has_aspect_cpu
+        or device.has_aspect_gpu
+        or device.has_aspect_accelerator
+    )
 
 
 def check_backend(device):
