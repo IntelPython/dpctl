@@ -102,7 +102,7 @@ cdef str _make_typestr(int typenum):
     return type_to_str[typenum] + str(type_bytesize(typenum))
 
 
-cdef int typenum_from_format(str s) except *:
+cdef int typenum_from_format(str s):
     """
     Internal utility to convert string describing type format
 
@@ -110,20 +110,21 @@ cdef int typenum_from_format(str s) except *:
     Shortcuts for formats are i, u, d, D
     """
     if not s:
-        raise TypeError("Format string '" + s + "' cannot be empty.")
+        return -1
     try:
         dt = np.dtype(s)
-    except Exception as e:
-        raise TypeError("Format '" + s + "' is not understood.") from e
+    except Exception:
+        return -1
     if (dt.byteorder == ">"):
-        raise TypeError("Format '" + s + "' can only have native byteorder.")
+        return -2
     return dt.num
+
 
 cdef int descr_to_typenum(object dtype):
     "Returns typenum for argumentd dtype that has attribute descr, assumed numpy.dtype"
     obj = getattr(dtype, 'descr')
     if (not isinstance(obj, list) or len(obj) != 1):
-        return -1
+        return -1    # token for ValueError
     obj = obj[0]
     if (not isinstance(obj, tuple) or len(obj) != 2 or obj[0]):
         return -1
@@ -143,9 +144,11 @@ cdef int dtype_to_typenum(dtype) except *:
     else:
         try:
             dt = np.dtype(dtype)
-            if hasattr(dt, 'descr'):
-                return descr_to_typenum(dt)
-            else:
-                return -1
+        except TypeError:
+            return -3
         except Exception:
             return -1
+        if hasattr(dt, 'descr'):
+            return descr_to_typenum(dt)
+        else:
+            return -3  # token for TypeError
