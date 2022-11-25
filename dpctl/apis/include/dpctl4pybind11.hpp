@@ -150,7 +150,13 @@ public:
         return PyObject_TypeCheck(obj, PySyclProgramType_) != 0;
     }
 
-    ~dpctl_capi(){};
+    ~dpctl_capi()
+    {
+        as_usm_memory_.reset();
+        default_usm_ndarray_.reset();
+        default_usm_memory_.reset();
+        default_sycl_queue_.reset();
+    };
 
     static auto &get()
     {
@@ -194,8 +200,36 @@ private:
     std::shared_ptr<py::object> as_usm_memory_;
 
     dpctl_capi()
-        : default_sycl_queue_{}, default_usm_memory_{}, default_usm_ndarray_{},
-          as_usm_memory_{}
+        : Py_SyclDeviceType_(nullptr), PySyclDeviceType_(nullptr),
+          Py_SyclContextType_(nullptr), PySyclContextType_(nullptr),
+          Py_SyclEventType_(nullptr), PySyclEventType_(nullptr),
+          Py_SyclQueueType_(nullptr), PySyclQueueType_(nullptr),
+          Py_MemoryType_(nullptr), PyMemoryUSMDeviceType_(nullptr),
+          PyMemoryUSMSharedType_(nullptr), PyMemoryUSMHostType_(nullptr),
+          PyUSMArrayType_(nullptr), PySyclProgramType_(nullptr),
+          PySyclKernelType_(nullptr), SyclDevice_GetDeviceRef_(nullptr),
+          SyclDevice_Make_(nullptr), SyclContext_GetContextRef_(nullptr),
+          SyclContext_Make_(nullptr), SyclEvent_GetEventRef_(nullptr),
+          SyclEvent_Make_(nullptr), SyclQueue_GetQueueRef_(nullptr),
+          SyclQueue_Make_(nullptr), Memory_GetUsmPointer_(nullptr),
+          Memory_GetContextRef_(nullptr), Memory_GetQueueRef_(nullptr),
+          Memory_GetNumBytes_(nullptr), Memory_Make_(nullptr),
+          SyclKernel_GetKernelRef_(nullptr), SyclKernel_Make_(nullptr),
+          SyclProgram_GetKernelBundleRef_(nullptr), SyclProgram_Make_(nullptr),
+          UsmNDArray_GetData_(nullptr), UsmNDArray_GetNDim_(nullptr),
+          UsmNDArray_GetShape_(nullptr), UsmNDArray_GetStrides_(nullptr),
+          UsmNDArray_GetTypenum_(nullptr), UsmNDArray_GetElementSize_(nullptr),
+          UsmNDArray_GetFlags_(nullptr), UsmNDArray_GetQueueRef_(nullptr),
+          UsmNDArray_GetOffset_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
+          USM_ARRAY_F_CONTIGUOUS_(0), USM_ARRAY_WRITABLE_(0), UAR_BOOL_(-1),
+          UAR_SHORT_(-1), UAR_USHORT_(-1), UAR_INT_(-1), UAR_UINT_(-1),
+          UAR_LONG_(-1), UAR_ULONG_(-1), UAR_LONGLONG_(-1), UAR_ULONGLONG_(-1),
+          UAR_FLOAT_(-1), UAR_DOUBLE_(-1), UAR_CFLOAT_(-1), UAR_CDOUBLE_(-1),
+          UAR_TYPE_SENTINEL_(-1), UAR_HALF_(-1), UAR_INT8_(-1), UAR_UINT8_(-1),
+          UAR_INT16_(-1), UAR_UINT16_(-1), UAR_INT32_(-1), UAR_UINT32_(-1),
+          UAR_INT64_(-1), UAR_UINT64_(-1), default_sycl_queue_{},
+          default_usm_memory_{}, default_usm_ndarray_{}, as_usm_memory_{}
+
     {
         // Import Cython-generated C-API for dpctl
         // This imports python modules and initializes
