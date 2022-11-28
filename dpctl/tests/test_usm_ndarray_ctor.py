@@ -991,6 +991,10 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
     assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
 
+    assert np.issubdtype(dpt.full(10, 12.3, dtype=int).dtype, np.integer)
+    assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=int).dtype, np.integer)
+    assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=float).dtype, np.floating)
+
 
 def test_full_fill_array():
     q = get_queue_or_skip()
