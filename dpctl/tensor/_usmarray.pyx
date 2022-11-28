@@ -188,9 +188,15 @@ cdef class usm_ndarray:
                 raise TypeError("Argument shape must be a list or a tuple.")
         nd = len(shape)
         typenum = dtype_to_typenum(dtype)
+        if (typenum < 0):
+            if typenum == -2:
+                raise ValueError("Data type '" + str(dtype) + "' can only have native byteorder.")
+            elif typenum == -1:
+                raise ValueError("Data type '" + str(dtype) + "' is not understood.")
+            raise TypeError(f"Expected string or a dtype object, got {type(dtype)}")
         itemsize = type_bytesize(typenum)
         if (itemsize < 1):
-            raise TypeError("dtype=" + dtype + " is not supported.")
+            raise TypeError("dtype=" + np.dtype(dtype).name + " is not supported.")
         # allocate host C-arrays for shape, strides
         err = _from_input_shape_strides(
             nd, shape, strides, itemsize, <char> ord(order),
