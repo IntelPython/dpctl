@@ -5,7 +5,9 @@
 # activation scripts.
 export LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
 
-${PYTHON} setup.py clean --all
+if [ -e "_skbuild" ]; then
+    ${PYTHON} setup.py clean --all
+fi
 export CMAKE_GENERATOR="Ninja"
 SKBUILD_ARGS="-- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx"
 echo "${PYTHON} setup.py install ${SKBUILD_ARGS}"
