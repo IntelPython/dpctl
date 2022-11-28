@@ -134,7 +134,7 @@ cdef int descr_to_typenum(object dtype):
     return typenum_from_format(obj)
 
 
-cdef int dtype_to_typenum(dtype) except *:
+cdef int dtype_to_typenum(dtype):
     if isinstance(dtype, str):
         return typenum_from_format(dtype)
     elif isinstance(dtype, bytes):
