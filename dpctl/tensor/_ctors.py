@@ -774,7 +774,8 @@ def full(
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
-    dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
+    fill_value_type = type(fill_value)
+    dtype = _get_dtype(dtype, sycl_queue, ref_type=fill_value_type)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -782,6 +783,11 @@ def full(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
+    if fill_value_type in [float, complex] and np.issubdtype(dtype, np.integer):
+        fill_value = int(fill_value.real)
+    elif fill_value_type is complex and np.issubdtype(dtype, np.floating):
+        fill_value = fill_value.real
+
     hev, _ = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     hev.wait()
     return res
