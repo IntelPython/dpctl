@@ -206,6 +206,7 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef)
     cdef size_t *DPCTLDevice_GetSubGroupSizes(const DPCTLSyclDeviceRef DRef,
         size_t *res_len)
+    cdef uint32_t DPCTLDevice_GetPartitionMaxSubDevices(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":

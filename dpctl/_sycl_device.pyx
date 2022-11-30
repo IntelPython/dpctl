@@ -55,6 +55,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetName,
     DPCTLDevice_GetParentDevice,
+    DPCTLDevice_GetPartitionMaxSubDevices,
     DPCTLDevice_GetPlatform,
     DPCTLDevice_GetPreferredVectorWidthChar,
     DPCTLDevice_GetPreferredVectorWidthDouble,
@@ -1292,8 +1293,24 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef uint64_t cache_line_sz = DPCTLDevice_GetGlobalMemCacheLineSize(
             self._device_ref
-	)
+	    )
         return cache_line_sz
+
+    @property
+    def partition_max_sub_devices(self):
+        """ The maximum number of sub-devices this :class:`dpctl.SyclDevice`
+        instance can be partitioned into. The value returned cannot exceed the
+        value returned by :attr:`dpctl.SyclDevice.max_compute_units`.
+
+        Returns:
+            int: The maximum number of sub-devices that can be created when this
+                device is partitioned. Zero value indicates that device can not
+                be partitioned.
+        """
+        cdef uint32_t max_part = DPCTLDevice_GetPartitionMaxSubDevices(
+            self._device_ref
+        )
+        return max_part
 
     cdef cpp_bool equals(self, SyclDevice other):
         """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the
