@@ -90,6 +90,11 @@ std::vector<std::size_t> get_sub_group_sizes(const sycl::device &d)
     return d.get_info<sycl::info::device::sub_group_sizes>();
 }
 
+std::uint32_t get_partition_max_sub_devices(const sycl::device &d)
+{
+    return d.get_info<sycl::info::device::partition_max_sub_devices>();
+}
+
 PYBIND11_MODULE(_use_queue_device, m)
 {
     m.def(
@@ -108,4 +113,7 @@ PYBIND11_MODULE(_use_queue_device, m)
           "Compute offloaded modular reduction of integer-valued NumPy array");
     m.def("get_sub_group_sizes", &get_sub_group_sizes,
           "Gets info::device::sub_group_sizes property of given device");
+    m.def("get_partition_max_sub_devices", &get_partition_max_sub_devices,
+          "Gets info::device::partition_max_sub_devices for given "
+          "dpctl.SyclDevice");
 }

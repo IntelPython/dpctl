@@ -63,3 +63,11 @@ def test_get_sub_group_sizes():
     assert type(szs) is list
     assert all(type(el) is int for el in szs)
     szs == d.sub_group_sizes
+
+
+def test_get_partition_max_sub_devices():
+    d = dpctl.SyclDevice()
+    mt = uqd.get_partition_max_sub_devices(d)
+    assert type(mt) is int
+    assert mt >= 0
+    assert mt <= d.max_compute_units
