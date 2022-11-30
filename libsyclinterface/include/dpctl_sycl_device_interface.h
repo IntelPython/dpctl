@@ -599,6 +599,18 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over
+ * device.get_info<info::device::partition_max_sub_devices>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum number of sub-devices that can be created
+ * when this device is partitioned.
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetPartitionMaxSubDevices(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
  * std::hash<sycl::device>'s operator()
  *
  * @param    DRef           Opaque pointer to a sycl::device
