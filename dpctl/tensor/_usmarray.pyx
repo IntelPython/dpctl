@@ -26,6 +26,7 @@ import dpctl
 import dpctl.memory as dpmem
 
 from ._device import Device
+from ._print import usm_ndarray_repr, usm_ndarray_str
 
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
@@ -1130,6 +1131,12 @@ cdef class usm_ndarray:
             return res
         self.__setitem__(Ellipsis, res)
         return self
+
+    def __str__(self):
+        return usm_ndarray_str(self)
+
+    def __repr__(self):
+        return usm_ndarray_repr(self)
 
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
