@@ -573,6 +573,24 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return nullptr;
 }
 
+uint32_t DPCTLDevice_GetPartitionMaxSubDevices(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            uint32_t part_max_sub_devs =
+                D->get_info<info::device::partition_max_sub_devices>();
+            return part_max_sub_devs;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return 0;
+        }
+    }
+    else
+        return 0;
+}
+
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                     size_t count)

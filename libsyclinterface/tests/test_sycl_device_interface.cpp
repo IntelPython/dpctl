@@ -415,6 +415,17 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetParentDevice)
     EXPECT_TRUE(pDRef == nullptr);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionMaxSubDevices)
+{
+    uint32_t max_part = 0;
+    size_t max_cu = 0;
+    EXPECT_NO_FATAL_FAILURE(max_part =
+                                DPCTLDevice_GetPartitionMaxSubDevices(DRef));
+    EXPECT_TRUE(max_part >= 0);
+    EXPECT_NO_FATAL_FAILURE(max_cu = DPCTLDevice_GetMaxComputeUnits(DRef));
+    EXPECT_TRUE(max_part <= max_cu);
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetProfilingTimerResolution)
 {
     size_t res = 0;
@@ -703,6 +714,14 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetParentDevice)
     DPCTLSyclDeviceRef pDRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(pDRef = DPCTLDevice_GetParentDevice(Null_DRef));
     ASSERT_TRUE(pDRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionMaxSubDevices)
+{
+    uint32_t max_part = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        max_part = DPCTLDevice_GetPartitionMaxSubDevices(Null_DRef));
+    ASSERT_TRUE(max_part == 0);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkCreateSubDevicesEqually)

@@ -540,6 +540,13 @@ def check_parent_device(device):
     assert pd is None or isinstance(pd, dpctl.SyclDevice)
 
 
+def check_partition_max_sub_devices(device):
+    max_part = device.partition_max_sub_devices
+    assert isinstance(max_part, int)
+    assert max_part >= 0
+    assert max_part <= device.max_compute_units
+
+
 def check_filter_string(device):
     try:
         fs = device.filter_string
@@ -670,6 +677,7 @@ list_of_checks = [
     check_profiling_timer_resolution,
     check_platform,
     check_parent_device,
+    check_partition_max_sub_devices,
     check_filter_string,
     check_vendor,
     check_driver_version,
