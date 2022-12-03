@@ -226,6 +226,9 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLDevice_GetParentDevice<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acccdc3f034e6c5fd2a249907355169bc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPartitionMaxSubDevices<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ab48d25118cd217ccd917993afba98570>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLDevice_GetPlatform<doxid-db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -1229,6 +1232,35 @@ Wrapper over device.get_info<info::device::parent_device>
 .. rubric:: Returns:
 
 Returns an opaque pointer to the parent device for a sub-device, or nullptr otherwise.
+
+.. index:: pair: function; DPCTLDevice_GetPartitionMaxSubDevices
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ab48d25118cd217ccd917993afba98570:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPartitionMaxSubDevices(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::partition_max_sub_devices>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum number of sub-devices that can be created when this device is partitioned.
 
 .. index:: pair: function; DPCTLDevice_GetProfilingTimerResolution
 .. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5fe67bf4915e62ce08d80d810f0e8632:
