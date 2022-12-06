@@ -257,7 +257,7 @@ cdef class usm_ndarray:
         self.shape_ = shape_ptr
         self.strides_ = strides_ptr
         self.typenum_ = typenum
-        self.flags_ = contig_flag
+        self.flags_ = (contig_flag | USM_ARRAY_WRITABLE)
         self.nd_ = nd
         self.array_namespace_ = array_namespace
 
@@ -952,6 +952,8 @@ cdef class usm_ndarray:
             _copy_from_numpy_into,
             _copy_from_usm_ndarray_to_usm_ndarray,
         )
+        if ((<usm_ndarray> Xv).flags_ & USM_ARRAY_WRITABLE) == 0:
+            raise ValueError("Can not modify read-only array.")
         if isinstance(val, usm_ndarray):
             _copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
         else:
