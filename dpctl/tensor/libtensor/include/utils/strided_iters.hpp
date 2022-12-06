@@ -30,6 +30,7 @@
 #include <array>
 #include <numeric> // std::iota
 #include <vector>
+#include <tuple>
 
 /* An N-dimensional array can be stored in a single
  * contiguous chunk of memory by contiguously laying
