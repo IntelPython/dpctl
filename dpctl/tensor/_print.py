@@ -183,23 +183,12 @@ def usm_ndarray_str(
     if x.size > threshold:
         # need edge_items + 1 elements for np.array2string to abbreviate
         data = dpt.asnumpy(_nd_corners(x, edge_items + 1))
-        forward_threshold = 0
+        options["threshold"] = 0
     else:
         data = dpt.asnumpy(x)
-        forward_threshold = threshold
-    return np.array2string(
-        data,
-        max_line_width=options["linewidth"],
-        edgeitems=options["edgeitems"],
-        threshold=forward_threshold,
-        precision=options["precision"],
-        floatmode=options["floatmode"],
-        suppress_small=options["suppress"],
-        sign=options["sign"],
-        separator=separator,
-        prefix=prefix,
-        suffix=suffix,
-    )
+    with np.printoptions(**options):
+        s = np.array2string(data, separator=separator, prefix=prefix, suffix=suffix)
+    return s
 
 
 def usm_ndarray_repr(x, line_width=None, precision=None, suppress=None):
@@ -224,6 +213,7 @@ def usm_ndarray_repr(x, line_width=None, precision=None, suppress=None):
         line_width=line_width,
         precision=precision,
         suppress=suppress,
+        separator=", ",
         prefix=prefix,
         suffix=suffix,
     )
