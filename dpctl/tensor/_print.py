@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import contextlib
 import operator
 
 import numpy as np
@@ -125,6 +126,16 @@ def get_print_options():
     return _print_options.copy()
 
 
+@contextlib.contextmanager
+def print_options(*args, **kwargs):
+    options = dpt.get_print_options()
+    try:
+        dpt.set_print_options(*args, **kwargs)
+        yield dpt.get_print_options()
+    finally:
+        dpt.set_print_options(**options)
+
+
 def _nd_corners(x, edge_items, slices=()):
     axes_reduced = len(slices)
     if axes_reduced == x.ndim:
@@ -187,7 +198,9 @@ def usm_ndarray_str(
     else:
         data = dpt.asnumpy(x)
     with np.printoptions(**options):
-        s = np.array2string(data, separator=separator, prefix=prefix, suffix=suffix)
+        s = np.array2string(
+            data, separator=separator, prefix=prefix, suffix=suffix
+        )
     return s
 
 

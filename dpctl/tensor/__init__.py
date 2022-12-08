@@ -58,7 +58,11 @@ from dpctl.tensor._manipulation_functions import (
     squeeze,
     stack,
 )
-from dpctl.tensor._print import get_print_options, set_print_options
+from dpctl.tensor._print import (
+    get_print_options,
+    print_options,
+    set_print_options,
+)
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
 
@@ -132,4 +136,5 @@ __all__ = [
     "meshgrid",
     "get_print_options",
     "set_print_options",
+    "print_options",
 ]
