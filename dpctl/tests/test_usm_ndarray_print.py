@@ -1,0 +1,274 @@
+#                      Data Parallel Control (dpctl)
+#
+# Copyright 2020-2022 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import numpy as np
+import pytest
+from helper import get_queue_or_skip, skip_if_dtype_not_supported
+
+import dpctl.tensor as dpt
+
+
+class TestPrint:
+    def setup_method(self):
+        self._retain_options = dpt.get_print_options()
+
+    def teardown_method(self):
+        dpt.set_print_options(**self._retain_options)
+
+
+class TestArgValidation(TestPrint):
+    @pytest.mark.parametrize(
+        "arg,err",
+        [
+            ({"linewidth": "I"}, TypeError),
+            ({"edgeitems": "I"}, TypeError),
+            ({"threshold": "I"}, TypeError),
+            ({"precision": "I"}, TypeError),
+            ({"floatmode": "I"}, ValueError),
+            ({"edgeitems": "I"}, TypeError),
+            ({"sign": "I"}, ValueError),
+            ({"nanstr": np.nan}, TypeError),
+            ({"infstr": np.nan}, TypeError),
+        ],
+    )
+    def test_print_option_arg_validation(self, arg, err):
+        with pytest.raises(err):
+            dpt.set_print_options(**arg)
+
+
+class TestSetPrintOptions(TestPrint):
+    def test_set_linewidth(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(linewidth=1)
+        x = dpt.asarray([0, 1], sycl_queue=q)
+        assert str(x) == "[0\n 1]"
+
+    def test_set_precision(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(precision=4)
+        x = dpt.asarray([1.23450], sycl_queue=q)
+        assert str(x) == "[1.2345]"
+
+    def test_threshold_edgeitems(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(threshold=1, edgeitems=1)
+        x = dpt.arange(9, sycl_queue=q)
+        assert str(x) == "[0 ... 8]"
+        dpt.set_print_options(edgeitems=9)
+        assert str(x) == "[0 1 2 3 4 5 6 7 8]"
+
+    def test_floatmodes(self):
+        q = get_queue_or_skip()
+
+        x = dpt.asarray([0.1234, 0.1234678], sycl_queue=q)
+        dpt.set_print_options(floatmode="fixed", precision=4)
+        assert str(x) == "[0.1234 0.1235]"
+
+        dpt.set_print_options(floatmode="unique")
+        assert str(x) == "[0.1234    0.1234678]"
+
+        dpt.set_print_options(floatmode="maxprec")
+        assert str(x) == "[0.1234 0.1235]"
+
+        dpt.set_print_options(floatmode="maxprec", precision=8)
+        assert str(x) == "[0.1234    0.1234678]"
+
+        dpt.set_print_options(floatmode="maxprec_equal", precision=4)
+        assert str(x) == "[0.1234 0.1235]"
+
+        dpt.set_print_options(floatmode="maxprec_equal", precision=8)
+        assert str(x) == "[0.1234000 0.1234678]"
+
+    def test_nan_inf_suppress(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(nanstr="nan1", infstr="inf1")
+        x = dpt.asarray([np.nan, np.inf], sycl_queue=q)
+        assert str(x) == "[nan1 inf1]"
+
+    def test_suppress_small(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(suppress=True)
+        x = dpt.asarray(5e-10, sycl_queue=q)
+        assert str(x) == "0."
+
+    def test_sign(self):
+        q = get_queue_or_skip()
+
+        x = dpt.asarray([0.0, 1.0, 2.0], sycl_queue=q)
+        y = dpt.asarray(1.0, sycl_queue=q)
+        z = dpt.asarray([1.0 + 1.0j], sycl_queue=q)
+        assert str(x) == "[0. 1. 2.]"
+        assert str(y) == "1."
+        assert str(z) == "[1.+1.j]"
+
+        dpt.set_print_options(sign="+")
+        assert str(x) == "[+0. +1. +2.]"
+        assert str(y) == "+1."
+        assert str(z) == "[+1.+1.j]"
+
+        dpt.set_print_options(sign=" ")
+        assert str(x) == "[ 0.  1.  2.]"
+        assert str(y) == " 1."
+        assert str(z) == "[ 1.+1.j]"
+
+    def test_numpy(self):
+        dpt.set_print_options(numpy=True)
+        options = dpt.get_print_options()
+        np_options = np.get_printoptions()
+        assert all(np_options[k] == options[k] for k in options.keys())
+
+
+class TestPrintFns(TestPrint):
+    @pytest.mark.parametrize(
+        "dtype,x_str",
+        [
+            ("b1", "[False  True  True  True]"),
+            ("i1", "[0 1 2 3]"),
+            ("u1", "[0 1 2 3]"),
+            ("i2", "[0 1 2 3]"),
+            ("u2", "[0 1 2 3]"),
+            ("i4", "[0 1 2 3]"),
+            ("u4", "[0 1 2 3]"),
+            ("i8", "[0 1 2 3]"),
+            ("u8", "[0 1 2 3]"),
+            ("f2", "[0. 1. 2. 3.]"),
+            ("f4", "[0. 1. 2. 3.]"),
+            ("f8", "[0. 1. 2. 3.]"),
+            ("c8", "[0.+0.j 1.+0.j 2.+0.j 3.+0.j]"),
+            ("c16", "[0.+0.j 1.+0.j 2.+0.j 3.+0.j]"),
+        ],
+    )
+    def test_print_types(self, dtype, x_str):
+        q = get_queue_or_skip()
+        skip_if_dtype_not_supported(dtype, q)
+
+        x = dpt.asarray([0, 1, 2, 3], dtype=dtype, sycl_queue=q)
+        assert str(x) == x_str
+
+    def test_print_str(self):
+        q = get_queue_or_skip()
+
+        x = dpt.asarray(0, sycl_queue=q)
+        assert str(x) == "0"
+
+        x = dpt.asarray([np.nan, np.inf], sycl_queue=q)
+        assert str(x) == "[nan inf]"
+
+        x = dpt.arange(9, sycl_queue=q)
+        assert str(x) == "[0 1 2 3 4 5 6 7 8]"
+
+        y = dpt.reshape(x, (3, 3), copy=True)
+        assert str(y) == "[[0 1 2]\n [3 4 5]\n [6 7 8]]"
+
+    def test_print_str_abbreviated(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(threshold=0, edgeitems=1)
+        x = dpt.arange(9, sycl_queue=q)
+        assert str(x) == "[0 ... 8]"
+
+        x = dpt.reshape(x, (3, 3))
+        assert str(x) == "[[0 ... 2]\n ...\n [6 ... 8]]"
+
+    def test_print_repr(self):
+        q = get_queue_or_skip()
+
+        x = dpt.asarray(0, sycl_queue=q)
+        assert repr(x) == "usm_ndarray(0)"
+
+        x = dpt.asarray([np.nan, np.inf], sycl_queue=q)
+        assert repr(x) == "usm_ndarray([nan, inf])"
+
+        x = dpt.arange(9, sycl_queue=q)
+        assert repr(x) == "usm_ndarray([0, 1, 2, 3, 4, 5, 6, 7, 8])"
+
+        x = dpt.reshape(x, (3, 3))
+        np.testing.assert_equal(
+            repr(x),
+            "usm_ndarray([[0, 1, 2],"
+            "\n             [3, 4, 5],"
+            "\n             [6, 7, 8]])",
+        )
+
+        x = dpt.arange(4, dtype="f2", sycl_queue=q)
+        assert repr(x) == "usm_ndarray([0., 1., 2., 3.], dtype=float16)"
+
+    def test_print_repr_abbreviated(self):
+        q = get_queue_or_skip()
+
+        dpt.set_print_options(threshold=0, edgeitems=1)
+        x = dpt.arange(9, sycl_queue=q)
+        assert repr(x) == "usm_ndarray([0, ..., 8])"
+
+        y = dpt.asarray(x, dtype="f2", copy=True)
+        assert repr(y) == "usm_ndarray([0., ..., 8.], dtype=float16)"
+
+        x = dpt.reshape(x, (3, 3))
+        np.testing.assert_equal(
+            repr(x),
+            "usm_ndarray([[0, ..., 2],"
+            "\n             ...,"
+            "\n             [6, ..., 8]])",
+        )
+
+        y = dpt.reshape(y, (3, 3))
+        np.testing.assert_equal(
+            repr(y),
+            "usm_ndarray([[0., ..., 2.],"
+            "\n             ...,"
+            "\n             [6., ..., 8.]], dtype=float16)",
+        )
+
+    @pytest.mark.parametrize(
+        "dtype",
+        [
+            "i1",
+            "u1",
+            "i2",
+            "u2",
+            "i4",
+            "u4",
+            "u8",
+            "f2",
+            "f4",
+            "c8",
+        ],
+    )
+    def test_repr_appended_dtype(self, dtype):
+        q = get_queue_or_skip()
+        skip_if_dtype_not_supported(dtype, q)
+
+        x = dpt.empty(4, dtype=dtype)
+        assert repr(x).split("=")[-1][:-1] == x.dtype.name
+
+
+class TestContextManager:
+    def test_context_manager_basic(self):
+        options = dpt.get_print_options()
+        with dpt.print_options(precision=4):
+            s = str(dpt.asarray(1.234567))
+        assert s == "1.2346"
+        assert options == dpt.get_print_options()
+
+    def test_context_manager_as(self):
+        with dpt.print_options(precision=4) as x:
+            options = x.copy()
+        assert options["precision"] == 4

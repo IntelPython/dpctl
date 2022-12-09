@@ -157,7 +157,7 @@ def _nd_corners(x, edge_items, slices=()):
         return _nd_corners(x, edge_items, slices + (slice(None, None, None),))
 
 
-def usm_ndarray_str(
+def _usm_ndarray_str(
     x,
     line_width=None,
     edge_items=None,
@@ -204,7 +204,7 @@ def usm_ndarray_str(
     return s
 
 
-def usm_ndarray_repr(x, line_width=None, precision=None, suppress=None):
+def _usm_ndarray_repr(x, line_width=None, precision=None, suppress=None):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
 
@@ -221,7 +221,7 @@ def usm_ndarray_repr(x, line_width=None, precision=None, suppress=None):
     prefix = "usm_ndarray("
     suffix = ")"
 
-    s = usm_ndarray_str(
+    s = _usm_ndarray_str(
         x,
         line_width=line_width,
         precision=precision,
