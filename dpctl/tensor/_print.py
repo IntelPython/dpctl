@@ -21,9 +21,7 @@ import numpy as np
 
 import dpctl.tensor as dpt
 
-__doc__ = (
-    "Implementation module for printing " ":class:`dpctl.tensor.usm_ndarray`."
-)
+__doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
 
 _print_options = {
     "linewidth": 75,
@@ -107,6 +105,68 @@ def set_print_options(
     sign=None,
     numpy=False,
 ):
+    """
+    set_print_options(linewidth=None, edgeitems=None, threshold=None,
+    precision=None, floatmode=None, suppress=None, nanstr=None,
+    infstr=None, sign=None, numpy=False)
+
+    Set options for printing ``dpctl.tensor.usm_ndarray`` class.
+
+    Args:
+        linewidth (int, optional): Number of characters printed per line.
+            Raises `TypeError` if linewidth is not an integer.
+            Default: `75`.
+        edgeitems (int, optional): Number of elements at the beginning and end
+            when the printed array is abbreviated.
+            Raises `TypeError` if edgeitems is not an integer.
+            Default: `3`.
+        threshold (int, optional): Number of elements that triggers array
+            abbreviation.
+            Raises `TypeError` if threshold is not an integer.
+            Default: `1000`.
+        precision (int or None, optional): Number of digits printed for
+            floating point numbers. If `floatmode` is not `"fixed",`
+            `precision` may be `None` to print each float with as many
+            digits as necessary to produce a unique output.
+            Raises `TypeError` if precision is not an integer.
+            Default: `8`.
+        floatmode (str, optional): Controls how floating point
+            numbers are interpreted.
+
+            `"fixed:`: Always prints exactly `precision` digits.
+            `"unique"`: Ignores precision, prints the number of
+                digits necessary to uniquely specify each number.
+            `"maxprec"`: Prints `precision` digits or fewer,
+                if fewer will uniquely represent a number.
+            `"maxprec_equal"`: Prints an equal number of digits
+                for each number. This number is `precision` digits or fewer,
+                if fewer will uniquely represent each number.
+            Raises `ValueError` if floatmode is not one of
+            `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
+            Default: "maxprec_equal"
+        suppress (bool, optional): If `True,` numbers equal to zero
+            in the current precision will print as zero.
+            Default: `False`.
+        nanstr (str, optional): String used to repesent nan.
+            Raises `TypeError` if nanstr is not a string.
+            Default: `"nan"`.
+        infstr (str, optional): String used to represent infinity.
+            Raises `TypeError` if infstr is not a string.
+            Default: `"inf"`.
+        sign (str, optional): Controls the sign of floating point
+            numbers.
+            `"-"`: Omit the sign of positive numbers.
+            `"+"`: Always print the sign of positive numbers.
+            `" "`: Always print a whitespace in place of the
+                sign of positive numbers.
+            Raises `ValueError` if sign is not one of
+            `"-"`, `"+"`, or `" "`.
+            Default: `"-"`.
+        numpy (bool, optional): If `True,` then before other specified print
+            options are set, a dictionary of Numpy's print options
+            will be used to initialize dpctl's print options.
+            Default: "False"
+    """
     options = _options_dict(
         linewidth=linewidth,
         edgeitems=edgeitems,
@@ -123,11 +183,34 @@ def set_print_options(
 
 
 def get_print_options():
+    """
+    get_print_options() -> dict
+
+    Returns a copy of current options for printing
+    ``dpctl.tensor.usm_ndarray`` class.
+
+    Options:
+        - "linewidth" : int, default 75
+        - "edgeitems" : int, default 3
+        - "threshold" : int, default 1000
+        - "precision" : int, default 8
+        - "floatmode" : str, default "maxprec_equal"
+        - "suppress" : bool, default False
+        - "nanstr" : str, default "nan"
+        - "infstr" : str, default "inf"
+        - "sign" : str, default "-"
+    """
     return _print_options.copy()
 
 
 @contextlib.contextmanager
 def print_options(*args, **kwargs):
+    """
+    Context manager for print options.
+
+    Set print options for the scope of a `with` block.
+    `as` yields dictionary of print options.
+    """
     options = dpt.get_print_options()
     try:
         dpt.set_print_options(*args, **kwargs)
