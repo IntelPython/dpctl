@@ -125,9 +125,7 @@ def set_print_options(
             Raises `TypeError` if threshold is not an integer.
             Default: `1000`.
         precision (int or None, optional): Number of digits printed for
-            floating point numbers. If `floatmode` is not `"fixed",`
-            `precision` may be `None` to print each float with as many
-            digits as necessary to produce a unique output.
+            floating point numbers.
             Raises `TypeError` if precision is not an integer.
             Default: `8`.
         floatmode (str, optional): Controls how floating point

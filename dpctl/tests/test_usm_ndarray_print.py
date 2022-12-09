@@ -191,13 +191,13 @@ class TestPrintFns(TestPrint):
     def test_print_repr(self):
         q = get_queue_or_skip()
 
-        x = dpt.asarray(0, sycl_queue=q)
+        x = dpt.asarray(0, dtype="int64", sycl_queue=q)
         assert repr(x) == "usm_ndarray(0)"
 
         x = dpt.asarray([np.nan, np.inf], sycl_queue=q)
         assert repr(x) == "usm_ndarray([nan, inf])"
 
-        x = dpt.arange(9, sycl_queue=q)
+        x = dpt.arange(9, sycl_queue=q, dtype="int64")
         assert repr(x) == "usm_ndarray([0, 1, 2, 3, 4, 5, 6, 7, 8])"
 
         x = dpt.reshape(x, (3, 3))
@@ -208,18 +208,18 @@ class TestPrintFns(TestPrint):
             "\n             [6, 7, 8]])",
         )
 
-        x = dpt.arange(4, dtype="f2", sycl_queue=q)
-        assert repr(x) == "usm_ndarray([0., 1., 2., 3.], dtype=float16)"
+        x = dpt.arange(4, dtype="i4", sycl_queue=q)
+        assert repr(x) == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
 
     def test_print_repr_abbreviated(self):
         q = get_queue_or_skip()
 
         dpt.set_print_options(threshold=0, edgeitems=1)
-        x = dpt.arange(9, sycl_queue=q)
+        x = dpt.arange(9, dtype="int64", sycl_queue=q)
         assert repr(x) == "usm_ndarray([0, ..., 8])"
 
-        y = dpt.asarray(x, dtype="f2", copy=True)
-        assert repr(y) == "usm_ndarray([0., ..., 8.], dtype=float16)"
+        y = dpt.asarray(x, dtype="i4", copy=True)
+        assert repr(y) == "usm_ndarray([0, ..., 8], dtype=int32)"
 
         x = dpt.reshape(x, (3, 3))
         np.testing.assert_equal(
@@ -232,9 +232,9 @@ class TestPrintFns(TestPrint):
         y = dpt.reshape(y, (3, 3))
         np.testing.assert_equal(
             repr(y),
-            "usm_ndarray([[0., ..., 2.],"
+            "usm_ndarray([[0, ..., 2],"
             "\n             ...,"
-            "\n             [6., ..., 8.]], dtype=float16)",
+            "\n             [6, ..., 8]], dtype=int32)",
         )
 
     @pytest.mark.parametrize(
