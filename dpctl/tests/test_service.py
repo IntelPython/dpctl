@@ -182,3 +182,49 @@ def test_cmakedir():
     assert res.stdout
     cmake_dir = res.stdout.decode("utf-8").strip()
     assert os.path.exists(os.path.join(cmake_dir, "FindDpctl.cmake"))
+
+
+def test_main_full_list():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "-f"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert res.stdout.decode("utf-8")
+
+
+def test_main_long_list():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "-l"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert res.stdout.decode("utf-8")
+
+
+def test_main_summary():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "-s"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert res.stdout.decode("utf-8")
+
+
+def test_main_warnings():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "-s", "--includes"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert "UserWarning" in res.stderr.decode("utf-8")
+    assert "is being ignored." in res.stderr.decode("utf-8")
+
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "-s", "--includes", "--cmakedir"],
+        capture_output=True,
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    assert "UserWarning" in res.stderr.decode("utf-8")
+    assert "are being ignored." in res.stderr.decode("utf-8")
