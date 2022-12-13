@@ -50,3 +50,10 @@ Array Manipulation
 .. autofunction:: roll
 .. autofunction:: squeeze
 .. autofunction:: stack
+
+Other Functions
+---------------
+
+.. autofunction:: get_print_options
+.. autofunction:: print_options
+.. autofunction:: set_print_options

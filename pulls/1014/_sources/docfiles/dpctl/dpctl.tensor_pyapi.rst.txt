@@ -120,6 +120,21 @@ Array Manipulation
     * - :func:`stack()`
       - -> usm_ndarray Joins a sequence of arrays along a new axis.
 
+.. _dpctl.tensor_other_functions:
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`get_print_options()`
+      - -> dict Returns a copy of current options for printing ``dpctl.tensor.usm_ndarray`` class.
+    * - :func:`print_options()`
+      - Context manager for print options.
+    * - :func:`set_print_options()`
+      - Set options for printing ``dpctl.tensor.usm_ndarray`` class.
+
 
 
 
