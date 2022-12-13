@@ -196,16 +196,16 @@ def _asarray_from_usm_ndarray(
 
 
 def _map_to_device_dtype(dt, q):
-    if dt.char == "?" or np.issubdtype(dt, np.integer):
+    dtc = dt.char
+    if dtc == "?" or np.issubdtype(dt, np.integer):
         return dt
     d = q.sycl_device
-    dtc = dt.char
     if np.issubdtype(dt, np.floating):
         if dtc == "f":
             return dt
         if dtc == "d" and d.has_aspect_fp64:
             return dt
-        if dtc == "h" and d.has_aspect_fp16:
+        if dtc == "e" and d.has_aspect_fp16:
             return dt
         return dpt.dtype("f4")
     if np.issubdtype(dt, np.complexfloating):
