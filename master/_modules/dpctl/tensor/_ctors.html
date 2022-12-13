@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.1dev0+13.g395f3bc04 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.1dev0+15.gda56dce4e documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev0+13.g395f3bc04
+                0.14.1dev0+15.gda56dce4e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -276,16 +276,16 @@
 
 
 <span class="k">def</span> <span class="nf">_map_to_device_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+    <span class="n">dtc</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span>
+    <span class="k">if</span> <span class="n">dtc</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dt</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span>
-    <span class="n">dtc</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dtc</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dt</span>
         <span class="k">if</span> <span class="n">dtc</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">has_aspect_fp64</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dt</span>
-        <span class="k">if</span> <span class="n">dtc</span> <span class="o">==</span> <span class="s2">&quot;h&quot;</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">has_aspect_fp16</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtc</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">has_aspect_fp16</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dt</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;f4&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
