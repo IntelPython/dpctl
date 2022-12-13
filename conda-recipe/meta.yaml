@@ -16,10 +16,11 @@ requirements:
         - {{ compiler('dpcpp') }}  >=2022.1  # [not osx]
     host:
         - setuptools
-        - cython
         - cmake  >=3.21
-        - python
         - ninja
+        - git
+        - cython
+        - python
         - scikit-build
         - numpy 1.19
         - wheel

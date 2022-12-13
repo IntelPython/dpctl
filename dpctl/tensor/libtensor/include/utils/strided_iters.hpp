@@ -29,6 +29,7 @@
 #include <algorithm> // sort
 #include <array>
 #include <numeric> // std::iota
+#include <tuple>
 #include <vector>
 
 /* An N-dimensional array can be stored in a single

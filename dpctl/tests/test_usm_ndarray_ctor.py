@@ -95,13 +95,23 @@ def test_dtypes(dtype):
     assert expected_fmt == actual_fmt
 
 
-@pytest.mark.parametrize("dtype", ["", ">f4", "invalid", 123])
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        "",
+        ">f4",
+        "invalid",
+        123,
+        np.dtype(">f4"),
+        np.dtype([("a", ">f4"), ("b", "i4")]),
+    ],
+)
 def test_dtypes_invalid(dtype):
     with pytest.raises((TypeError, ValueError)):
         dpt.usm_ndarray((1,), dtype=dtype)
 
 
-@pytest.mark.parametrize("dt", ["d", "c16"])
+@pytest.mark.parametrize("dt", ["f", "c8"])
 def test_properties(dt):
     """
     Test that properties execute
@@ -989,7 +999,13 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 4).dtype, np.integer)
     assert dpt.full(10, True).dtype is dpt.dtype(np.bool_)
     assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
-    assert np.issubdtype(dpt.full(10, 0.3 - 2j).dtype, np.complexfloating)
+    cdt = dpt.full(10, 0.3 - 2j).dtype
+    assert np.issubdtype(cdt, np.complexfloating)
+
+    assert np.issubdtype(dpt.full(10, 12.3, dtype=int).dtype, np.integer)
+    assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=int).dtype, np.integer)
+    rdt = np.finfo(cdt).dtype
+    assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=rdt).dtype, np.floating)
 
 
 def test_full_fill_array():
@@ -1179,6 +1195,11 @@ def test_empty_like(dt, usm_kind):
     assert X.dtype == Y.dtype
     assert X.usm_type == Y.usm_type
     assert X.sycl_queue == Y.sycl_queue
+
+
+def test_empty_unexpected_data_type():
+    with pytest.raises(TypeError):
+        dpt.empty(1, dtype=np.object_)
 
 
 @pytest.mark.parametrize(

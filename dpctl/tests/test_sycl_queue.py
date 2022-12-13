@@ -325,6 +325,7 @@ def test_queue_memops():
 
 @pytest.fixture(scope="session")
 def dpctl_cython_extension(tmp_path_factory):
+    import os
     import os.path
     import shutil
     import subprocess
@@ -342,6 +343,7 @@ def dpctl_cython_extension(tmp_path_factory):
     res = subprocess.run(
         [sys.executable, "setup_cython_api.py", "build_ext", "--inplace"],
         cwd=dr,
+        env=os.environ,
     )
     if res.returncode == 0:
         import glob
@@ -350,13 +352,13 @@ def dpctl_cython_extension(tmp_path_factory):
         sfx = sysconfig.get_config_vars()["EXT_SUFFIX"]
         pth = glob.glob(os.path.join(dr, "_cython_api*" + sfx))
         if not pth:
-            pytest.skip("Cython extension was not built")
+            pytest.fail("Cython extension was not built")
         spec = spec_from_file_location("_cython_api", pth[0])
         builder_module = module_from_spec(spec)
         spec.loader.exec_module(builder_module)
         return builder_module
     else:
-        pytest.skip("Cython extension could not be built")
+        pytest.fail("Cython extension could not be built")
 
 
 def test_cython_api(dpctl_cython_extension):

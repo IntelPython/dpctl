@@ -14,7 +14,7 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
@@ -104,7 +104,7 @@ jobs:
       matrix:
         python: ['3.8', '3.9', '3.10']
         experimental: [false]
-        runner: [ubuntu-latest]
+        runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c main --override-channels
@@ -150,9 +150,10 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install dpctl
         run: |
-          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export TEST_DEPENDENCIES="pytest pytest-cov cython"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
+          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python=${{ matrix.python }} ${CHANNELS}
           # Test installed packages
           conda list -n test_dpctl
       - name: Smoke test
@@ -249,10 +250,12 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% pytest python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
-      - name: Report content of test environemtn
+          SET "TEST_DEPENDENCIES=pytest pytest-cov cython"
+          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+      - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
+          pip install --no-cache-dir brotli
           echo "Value of CONDA enviroment variable was: " %CONDA%
           conda list
       - name: Add library
@@ -307,7 +310,7 @@ jobs:
   upload_linux:
     needs: test_linux
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python: ['3.8', '3.9', '3.10']
@@ -362,7 +365,7 @@ jobs:
       matrix:
         python: ['3.9']
         experimental: [false]
-        runner: [ubuntu-latest]
+        runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c main --override-channels
@@ -507,7 +510,7 @@ jobs:
       matrix:
         python: ['3.10']
         experimental: [false]
-        runner: [ubuntu-latest]
+        runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c main --override-channels

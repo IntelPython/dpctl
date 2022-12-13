@@ -26,6 +26,7 @@ import dpctl
 import dpctl.memory as dpmem
 
 from ._device import Device
+from ._print import _usm_ndarray_repr, _usm_ndarray_str
 
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
@@ -188,9 +189,15 @@ cdef class usm_ndarray:
                 raise TypeError("Argument shape must be a list or a tuple.")
         nd = len(shape)
         typenum = dtype_to_typenum(dtype)
+        if (typenum < 0):
+            if typenum == -2:
+                raise ValueError("Data type '" + str(dtype) + "' can only have native byteorder.")
+            elif typenum == -1:
+                raise ValueError("Data type '" + str(dtype) + "' is not understood.")
+            raise TypeError(f"Expected string or a dtype object, got {type(dtype)}")
         itemsize = type_bytesize(typenum)
         if (itemsize < 1):
-            raise TypeError("dtype=" + dtype + " is not supported.")
+            raise TypeError("dtype=" + np.dtype(dtype).name + " is not supported.")
         # allocate host C-arrays for shape, strides
         err = _from_input_shape_strides(
             nd, shape, strides, itemsize, <char> ord(order),
@@ -251,7 +258,7 @@ cdef class usm_ndarray:
         self.shape_ = shape_ptr
         self.strides_ = strides_ptr
         self.typenum_ = typenum
-        self.flags_ = contig_flag
+        self.flags_ = (contig_flag | USM_ARRAY_WRITABLE)
         self.nd_ = nd
         self.array_namespace_ = array_namespace
 
@@ -946,6 +953,8 @@ cdef class usm_ndarray:
             _copy_from_numpy_into,
             _copy_from_usm_ndarray_to_usm_ndarray,
         )
+        if ((<usm_ndarray> Xv).flags_ & USM_ARRAY_WRITABLE) == 0:
+            raise ValueError("Can not modify read-only array.")
         if isinstance(val, usm_ndarray):
             _copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
         else:
@@ -1122,6 +1131,12 @@ cdef class usm_ndarray:
             return res
         self.__setitem__(Ellipsis, res)
         return self
+
+    def __str__(self):
+        return _usm_ndarray_str(self)
+
+    def __repr__(self):
+        return _usm_ndarray_repr(self)
 
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
