@@ -78,8 +78,7 @@ usm_ndarray_linear_sequence_step(py::object start,
             "usm_ndarray_linspace: Non-contiguous arrays are not supported");
     }
 
-    sycl::queue dst_q = dst.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error(
             "Execution queue is not compatible with the allocation queue");
     }
@@ -127,8 +126,7 @@ usm_ndarray_linear_sequence_affine(py::object start,
             "usm_ndarray_linspace: Non-contiguous arrays are not supported");
     }
 
-    sycl::queue dst_q = dst.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst_q})) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error(
             "Execution queue context is not the same as allocation context");
     }

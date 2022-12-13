@@ -101,10 +101,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     }
 
     // check same contexts
-    sycl::queue src_q = src.get_queue();
-    sycl::queue dst_q = dst.get_queue();
-
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
