@@ -160,10 +160,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     }
 
     // check compatibility of execution queue and allocation queue
-    sycl::queue src_q = src.get_queue();
-    sycl::queue dst_q = dst.get_queue();
-
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
