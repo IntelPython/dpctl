@@ -121,11 +121,8 @@ usm_ndarray_triul(sycl::queue exec_q,
         throw py::value_error("Array dtype are not the same.");
     }
 
-    // check same contexts
-    sycl::queue src_q = src.get_queue();
-    sycl::queue dst_q = dst.get_queue();
-
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src_q, dst_q})) {
+    // check same queues
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue context is not the same as allocation contexts");
     }

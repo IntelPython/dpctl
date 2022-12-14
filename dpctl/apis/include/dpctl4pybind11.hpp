@@ -987,6 +987,8 @@ sycl::event keep_args_alive(sycl::queue q,
     return host_task_ev;
 }
 
+/*! @brief Check if all allocation queues are the same as the
+    execution queue */
 template <std::size_t num>
 bool queues_are_compatible(sycl::queue exec_q,
                            const sycl::queue (&alloc_qs)[num])
@@ -994,6 +996,21 @@ bool queues_are_compatible(sycl::queue exec_q,
     for (std::size_t i = 0; i < num; ++i) {
 
         if (exec_q != alloc_qs[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/*! @brief Check if all allocation queues of  usm_ndarays are the same as
+    the execution queue */
+template <std::size_t num>
+bool queues_are_compatible(sycl::queue exec_q,
+                           const ::dpctl::tensor::usm_ndarray (&arrs)[num])
+{
+    for (std::size_t i = 0; i < num; ++i) {
+
+        if (exec_q != arrs[i].get_queue()) {
             return false;
         }
     }
