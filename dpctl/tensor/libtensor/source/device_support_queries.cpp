@@ -51,7 +51,9 @@ std::string _default_device_fp_type(sycl::device d)
 
 std::string _default_device_int_type(sycl::device)
 {
-    return "i8";
+    return "l"; // code for numpy.dtype('long') to be consisent
+                // with NumPy's default integer type across
+                // platforms.
 }
 
 std::string _default_device_complex_type(sycl::device d)
