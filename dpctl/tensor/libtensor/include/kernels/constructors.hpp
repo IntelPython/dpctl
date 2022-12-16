@@ -129,6 +129,7 @@ sycl::event lin_space_step_impl(sycl::queue exec_q,
                                 char *array_data,
                                 const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
     sycl::event lin_space_step_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.parallel_for<linear_sequence_step_kernel<Ty>>(
@@ -270,6 +271,8 @@ sycl::event lin_space_affine_impl(sycl::queue exec_q,
                                   char *array_data,
                                   const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+
     bool device_supports_doubles = exec_q.get_device().has(sycl::aspect::fp64);
     sycl::event lin_space_affine_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -378,6 +381,7 @@ sycl::event full_contig_impl(sycl::queue q,
                              char *dst_p,
                              const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
     sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         dstTy *p = reinterpret_cast<dstTy *>(dst_p);
@@ -496,6 +500,7 @@ sycl::event eye_impl(sycl::queue exec_q,
                      char *array_data,
                      const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
     sycl::event eye_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.parallel_for<eye_kernel<Ty>>(
@@ -575,6 +580,8 @@ sycl::event tri_impl(sycl::queue exec_q,
     py::ssize_t nd_2 = nd - 2;
     Ty *src = reinterpret_cast<Ty *>(src_p);
     Ty *dst = reinterpret_cast<Ty *>(dst_p);
+
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
 
     sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);

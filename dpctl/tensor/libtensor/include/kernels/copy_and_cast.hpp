@@ -215,6 +215,9 @@ copy_and_cast_generic_impl(sycl::queue q,
                            const std::vector<sycl::event> &depends,
                            const std::vector<sycl::event> &additional_depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
@@ -317,6 +320,9 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
                                   py::ssize_t dst_offset,
                                   const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.parallel_for<copy_cast_spec_kernel<srcTy, dstTy, nd>>(
@@ -486,6 +492,10 @@ void copy_and_cast_from_host_impl(
     const std::vector<sycl::event> &additional_depends)
 {
     py::ssize_t nelems_range = src_max_nelem_offset - src_min_nelem_offset + 1;
+
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+
     sycl::buffer<srcTy, 1> npy_buf(
         reinterpret_cast<const srcTy *>(host_src_p) + src_min_nelem_offset,
         sycl::range<1>(nelems_range), {sycl::property::buffer::use_host_ptr{}});
@@ -637,6 +647,8 @@ copy_for_reshape_generic_impl(sycl::queue q,
                               char *dst_p,
                               const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+
     sycl::event copy_for_reshape_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.parallel_for<copy_for_reshape_generic_kernel<Ty>>(

@@ -23,7 +23,9 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <CL/sycl.hpp>
 #include <complex>
+#include <exception>
 
 namespace dpctl
 {
@@ -66,6 +68,29 @@ template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
     else {
         return static_cast<dstTy>(v);
     }
+}
+
+template <typename T> void validate_type_for_device(const sycl::device &d)
+{
+    if constexpr (std::is_same_v<T, double>) {
+        if (!d.has(sycl::aspect::fp64)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'double'");
+        }
+    }
+    else if constexpr (std::is_same_v<T, sycl::half>) {
+        if (!d.has(sycl::aspect::fp16)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'half'");
+        }
+    }
+}
+
+template <typename T> void validate_type_for_device(const sycl::queue &q)
+{
+    validate_type_for_device<T>(q.get_device());
 }
 
 } // namespace type_utils
