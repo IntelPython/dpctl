@@ -29,6 +29,7 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
 )
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
+target_link_options(${python_module_name} PRIVATE -fsycl-link-huge-device-code)
 target_include_directories(${python_module_name}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
