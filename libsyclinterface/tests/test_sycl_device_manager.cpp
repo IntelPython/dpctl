@@ -134,8 +134,7 @@ TEST_P(TestDPCTLGetDevices, ChkGetAt)
 INSTANTIATE_TEST_SUITE_P(
     GetDevices,
     TestDPCTLGetDevices,
-    ::testing::Values(DPCTLSyclBackendType::DPCTL_HOST,
-                      DPCTLSyclBackendType::DPCTL_LEVEL_ZERO,
+    ::testing::Values(DPCTLSyclBackendType::DPCTL_LEVEL_ZERO,
                       DPCTLSyclBackendType::DPCTL_OPENCL,
                       DPCTLSyclBackendType::DPCTL_OPENCL |
                           DPCTLSyclDeviceType::DPCTL_GPU));
@@ -172,8 +171,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(DPCTLSyclDeviceType::DPCTL_ACCELERATOR,
                       DPCTLSyclDeviceType::DPCTL_ALL,
                       DPCTLSyclDeviceType::DPCTL_CPU,
-                      DPCTLSyclDeviceType::DPCTL_GPU,
-                      DPCTLSyclDeviceType::DPCTL_HOST_DEVICE));
+                      DPCTLSyclDeviceType::DPCTL_GPU));
 
 struct TestGetNumDevicesForBTy : public ::testing::TestWithParam<int>
 {
@@ -210,7 +208,6 @@ INSTANTIATE_TEST_SUITE_P(
     TestGetNumDevicesForBTy,
     ::testing::Values(DPCTLSyclBackendType::DPCTL_CUDA,
                       DPCTLSyclBackendType::DPCTL_ALL_BACKENDS,
-                      DPCTLSyclBackendType::DPCTL_HOST,
                       DPCTLSyclBackendType::DPCTL_LEVEL_ZERO,
                       DPCTLSyclBackendType::DPCTL_OPENCL));
 
@@ -289,8 +286,7 @@ TEST_P(TestDPCTLGetDevicesOrdering, ChkConsistencyWithFilterSelector)
 INSTANTIATE_TEST_SUITE_P(
     GetDevices,
     TestDPCTLGetDevicesOrdering,
-    ::testing::Values(DPCTLSyclDeviceType::DPCTL_HOST_DEVICE,
-                      DPCTLSyclDeviceType::DPCTL_ACCELERATOR,
+    ::testing::Values(DPCTLSyclDeviceType::DPCTL_ACCELERATOR,
                       DPCTLSyclDeviceType::DPCTL_GPU,
                       DPCTLSyclDeviceType::DPCTL_CPU));
 
