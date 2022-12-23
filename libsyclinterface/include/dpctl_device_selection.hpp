@@ -35,8 +35,6 @@ namespace dpctl
 namespace syclinterface
 {
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
-
 class DPCTL_API dpctl_device_selector
 {
 public:
@@ -89,79 +87,6 @@ public:
     dpctl_host_selector() = default;
     int operator()(const sycl::device &) const override;
 };
-
-#else
-
-class DPCTL_API dpctl_device_selector : public sycl::device_selector
-{
-public:
-    virtual ~dpctl_device_selector() = default;
-
-    virtual int operator()(const sycl::device &device) const = 0;
-};
-
-class DPCTL_API dpctl_accelerator_selector : public dpctl_device_selector
-{
-public:
-    dpctl_accelerator_selector() : _impl(){};
-    int operator()(const sycl::device &d) const override;
-
-private:
-    sycl::accelerator_selector _impl;
-};
-
-class DPCTL_API dpctl_default_selector : public dpctl_device_selector
-{
-public:
-    dpctl_default_selector() : _impl(){};
-    int operator()(const sycl::device &d) const override;
-
-private:
-    sycl::default_selector _impl;
-};
-
-class DPCTL_API dpctl_gpu_selector : public dpctl_device_selector
-{
-public:
-    dpctl_gpu_selector() : _impl(){};
-    int operator()(const sycl::device &d) const override;
-
-private:
-    sycl::gpu_selector _impl;
-};
-
-class DPCTL_API dpctl_cpu_selector : public dpctl_device_selector
-{
-public:
-    dpctl_cpu_selector() : _impl(){};
-    int operator()(const sycl::device &d) const override;
-
-private:
-    sycl::cpu_selector _impl;
-};
-
-class DPCTL_API dpctl_filter_selector : public dpctl_device_selector
-{
-public:
-    dpctl_filter_selector(const std::string &fs) : _impl(fs) {}
-
-    int operator()(const sycl::device &d) const override;
-
-private:
-    sycl::ext::oneapi::filter_selector _impl;
-};
-
-class DPCTL_API dpctl_host_selector : public dpctl_device_selector
-{
-public:
-    dpctl_host_selector() : _impl(){};
-    int operator()(const sycl::device &d) const override;
-
-private:
-    sycl::host_selector _impl;
-};
-
-#endif
 
 } // namespace syclinterface
 } // namespace dpctl

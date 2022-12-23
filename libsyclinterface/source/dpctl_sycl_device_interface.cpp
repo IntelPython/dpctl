@@ -46,12 +46,8 @@ using namespace dpctl::syclinterface;
 
 device *new_device_from_selector(const dpctl_device_selector *sel)
 {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
     return new device(
         [=](const device &d) -> int { return sel->operator()(d); });
-#else
-    return new device(*sel);
-#endif
 }
 
 template <int dim>
@@ -181,11 +177,7 @@ bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap<device>(DRef);
     if (D) {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
         return false;
-#else
-        return D->is_host();
-#endif
     }
     return false;
 }

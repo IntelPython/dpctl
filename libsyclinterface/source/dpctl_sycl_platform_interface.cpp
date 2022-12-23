@@ -47,12 +47,8 @@ using namespace dpctl::syclinterface;
 
 platform *new_platform_from_selector(const dpctl_device_selector *sel)
 {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
     return new platform(
         [=](const device &d) -> int { return sel->operator()(d); });
-#else
-    return new platform(*sel);
-#endif
 }
 
 } // end of anonymous namespace
