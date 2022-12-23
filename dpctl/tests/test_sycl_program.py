@@ -180,9 +180,7 @@ def _check_multi_kernel_program(prog):
         vmnsg = krn.max_num_sub_groups
         assert type(vmnsg) is int
         v = krn.max_sub_group_size
-        assert (
-            v == NotImplemented
-        ), "SyclKernel.max_sub_group_size acquired implementation, fix the test"
+        assert type(v) is int
         cmnsg = krn.compile_num_sub_groups
         assert type(cmnsg) is int
         cmsgsz = krn.compile_sub_group_size
