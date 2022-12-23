@@ -29,6 +29,12 @@
 #include "Config/dpctl_config.h"
 #include <CL/sycl.hpp>
 
+namespace
+{
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+}
+
 namespace dpctl
 {
 namespace syclinterface

@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_device_selector_interface.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_device_selection.hpp"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
@@ -33,6 +34,9 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
 

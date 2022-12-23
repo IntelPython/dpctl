@@ -36,6 +36,9 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
 
