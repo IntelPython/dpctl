@@ -164,8 +164,6 @@ DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef)
     return static_cast<uint32_t>(v);
 }
 
-// commented out due to bug in DPC++ runtime, get_info for max_sub_group_size
-// exported by libsycl has different, not SPEC-compliant signature
 uint32_t
 DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
 {
