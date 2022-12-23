@@ -32,6 +32,7 @@
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_types.h"
+#include <CL/sycl.hpp>
 
 DPCTL_C_EXTERN_C_BEGIN
 
