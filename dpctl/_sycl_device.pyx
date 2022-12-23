@@ -162,8 +162,6 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 cdef str _backend_type_to_filter_string_part(_backend_type BTy):
     if BTy == _backend_type._CUDA:
         return "cuda"
-    elif BTy == _backend_type._HOST:
-        return "host"
     elif BTy == _backend_type._LEVEL_ZERO:
         return "level_zero"
     elif BTy == _backend_type._OPENCL:
@@ -181,8 +179,6 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
         return "cpu"
     elif DTy == _device_type._GPU:
         return "gpu"
-    elif DTy == _device_type._HOST_DEVICE:
-        return "host"
     else:
         return "unknown"
 
@@ -222,7 +218,6 @@ cdef class SyclDevice(_SyclDevice):
           :func:`dpctl.select_cpu_device()`,
           :func:`dpctl.select_default_device()`,
           :func:`dpctl.select_gpu_device()`,
-          :func:`dpctl.select_host_device()`.
 
 
         :Example:
@@ -359,8 +354,6 @@ cdef class SyclDevice(_SyclDevice):
         )
         if BTy == _backend_type._CUDA:
             return backend_type.cuda
-        elif BTy == _backend_type._HOST:
-            return backend_type.host
         elif BTy == _backend_type._LEVEL_ZERO:
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:
@@ -388,20 +381,8 @@ cdef class SyclDevice(_SyclDevice):
             return device_type.cpu
         elif DTy == _device_type._GPU:
             return device_type.gpu
-        elif DTy == _device_type._HOST_DEVICE:
-            return device_type.host
         else:
             raise ValueError("Unknown device type.")
-
-    @property
-    def has_aspect_host(self):
-        """ Returns True if this device is a host device, False otherwise.
-
-        Returns:
-            bool: Indicates if the device is a host device.
-        """
-        cdef _aspect_type AT = _aspect_type._host
-        return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_cpu(self):

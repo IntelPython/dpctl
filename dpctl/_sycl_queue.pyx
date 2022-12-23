@@ -676,8 +676,6 @@ cdef class SyclQueue(_SyclQueue):
             return backend_type.opencl
         elif BE == _backend_type._LEVEL_ZERO:
             return backend_type.level_zero
-        elif BE == _backend_type._HOST:
-            return backend_type.host
         elif BE == _backend_type._CUDA:
             return backend_type.cuda
         else:

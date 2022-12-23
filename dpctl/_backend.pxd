@@ -37,7 +37,6 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
-        _HOST            'DPCTL_HOST'
         _LEVEL_ZERO      'DPCTL_LEVEL_ZERO'
         _OPENCL          'DPCTL_OPENCL'
         _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'
@@ -49,7 +48,6 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _CPU            'DPCTL_CPU'
         _CUSTOM         'DPCTL_CUSTOM'
         _GPU            'DPCTL_GPU'
-        _HOST_DEVICE    'DPCTL_HOST_DEVICE'
         _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
 
     ctypedef enum _arg_data_type 'DPCTLKernelArgType':
@@ -236,7 +234,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(const char *)
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
-    DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
     void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef)
     int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 

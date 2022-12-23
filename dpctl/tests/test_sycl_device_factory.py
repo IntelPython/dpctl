@@ -27,24 +27,20 @@ argument_list_1 = [
     (bty.level_zero, dty.gpu),
     (bty.opencl, dty.gpu),
     (bty.opencl, dty.cpu),
-    (bty.host, dty.host),
 ]
 
 argument_list_2 = [
-    ("host", "host"),
     ("level_zero", "gpu"),
     ("opencl", "gpu"),
     ("opencl", "cpu"),
 ]
 
 list_of_backend_str = [
-    "host",
     "level_zero",
     "opencl",
 ]
 
 list_of_device_type_str = [
-    "host",
     "gpu",
     "cpu",
 ]

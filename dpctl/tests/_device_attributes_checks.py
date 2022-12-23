@@ -23,7 +23,6 @@ list_of_standard_selectors = [
     dpctl.select_cpu_device,
     dpctl.select_default_device,
     dpctl.select_gpu_device,
-    dpctl.select_host_device,
 ]
 
 list_of_valid_filter_selectors = [
@@ -118,13 +117,6 @@ def check_max_num_sub_groups(device):
 def check_sub_group_sizes(device):
     sg_sizes = device.sub_group_sizes
     assert all(el > 0 for el in sg_sizes)
-
-
-def check_has_aspect_host(device):
-    try:
-        device.has_aspect_host
-    except Exception:
-        pytest.fail("has_aspect_host call failed")
 
 
 def check_has_aspect_cpu(device):
@@ -634,7 +626,6 @@ list_of_checks = [
     check_preferred_vector_width_float,
     check_preferred_vector_width_double,
     check_preferred_vector_width_half,
-    check_has_aspect_host,
     check_has_aspect_cpu,
     check_has_aspect_gpu,
     check_has_aspect_accelerator,
