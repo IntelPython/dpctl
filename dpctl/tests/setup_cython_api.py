@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import Cython.Build
 import setuptools
+from Cython.Build import build_ext
 
 import dpctl
 
@@ -27,8 +27,8 @@ ext = setuptools.Extension(
 )
 
 setuptools.setup(
-    name="_cython_api",
+    name="test_cython_api",
     version="0.0.0",
     ext_modules=[ext],
-    cmdclass={"build_ext": Cython.Build.build_ext},
+    cmdclass={"build_ext": build_ext},
 )
