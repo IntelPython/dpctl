@@ -128,8 +128,6 @@ info::device_type DPCTL_DPCTLDeviceTypeToSyclDeviceType(DPCTLSyclDeviceType DTy)
         return info::device_type::custom;
     case DPCTLSyclDeviceType::DPCTL_GPU:
         return info::device_type::gpu;
-    case DPCTLSyclDeviceType::DPCTL_HOST_DEVICE:
-        return info::device_type::host;
     default:
         throw std::runtime_error("Unsupported device type");
     }
@@ -150,8 +148,6 @@ DPCTLSyclDeviceType DPCTL_SyclDeviceTypeToDPCTLDeviceType(info::device_type D)
         return DPCTLSyclDeviceType::DPCTL_CUSTOM;
     case info::device_type::gpu:
         return DPCTLSyclDeviceType::DPCTL_GPU;
-    case info::device_type::host:
-        return DPCTLSyclDeviceType::DPCTL_HOST_DEVICE;
     default:
         return DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE;
     }
