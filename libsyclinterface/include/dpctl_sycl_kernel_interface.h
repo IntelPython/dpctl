@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include "Config/dpctl_config.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"

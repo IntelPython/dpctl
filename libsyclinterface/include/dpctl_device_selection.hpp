@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include "Config/dpctl_config.h"
 #include "Support/DllExport.h"
 #include <CL/sycl.hpp>
 
