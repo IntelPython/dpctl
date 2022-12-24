@@ -36,4 +36,3 @@ class dpctl::syclinterface::dpctl_device_selector
 	class :ref:`dpctl_default_selector<doxid-dd/d0e/classdpctl_1_1syclinterface_1_1dpctl__default__selector>`;
 	class :ref:`dpctl_filter_selector<doxid-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector>`;
 	class :ref:`dpctl_gpu_selector<doxid-dc/d55/classdpctl_1_1syclinterface_1_1dpctl__gpu__selector>`;
-	class :ref:`dpctl_host_selector<doxid-d0/da1/classdpctl_1_1syclinterface_1_1dpctl__host__selector>`;
