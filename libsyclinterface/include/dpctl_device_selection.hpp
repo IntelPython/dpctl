@@ -80,12 +80,5 @@ private:
     sycl::ext::oneapi::filter_selector _impl;
 };
 
-class DPCTL_API dpctl_host_selector : public dpctl_device_selector
-{
-public:
-    dpctl_host_selector() = default;
-    int operator()(const sycl::device &) const override;
-};
-
 } // namespace syclinterface
 } // namespace dpctl

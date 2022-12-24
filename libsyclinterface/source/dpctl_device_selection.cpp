@@ -71,10 +71,5 @@ int dpctl_filter_selector::operator()(const sycl::device &d) const
     return _impl(d);
 }
 
-int dpctl_host_selector::operator()(const sycl::device &) const
-{
-    return REJECT_DEVICE;
-}
-
 } // namespace syclinterface
 } // namespace dpctl
