@@ -97,17 +97,6 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
     }
 }
 
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
-{
-    try {
-        auto Selector = new dpctl_host_selector();
-        return wrap<dpctl_device_selector>(Selector);
-    } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-}
-
 int DPCTLDeviceSelector_Score(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef,
                               __dpctl_keep DPCTLSyclDeviceRef DRef)
 {

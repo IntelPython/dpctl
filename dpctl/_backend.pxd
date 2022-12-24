@@ -172,7 +172,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthShort(const DPCTLSyclDeviceRef DRef)

@@ -242,11 +242,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkIsGPU)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsGPU(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, ChkIsHost)
-{
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsHost(DRef));
-}
-
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupIndependentForwardProgress)
 {
     bool sub_group_progress = 0;
@@ -526,13 +521,6 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsGPU)
     bool is_gpu = true;
     EXPECT_NO_FATAL_FAILURE(is_gpu = DPCTLDevice_IsGPU(Null_DRef));
     ASSERT_FALSE(is_gpu);
-}
-
-TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsHost)
-{
-    bool is_host = true;
-    EXPECT_NO_FATAL_FAILURE(is_host = DPCTLDevice_IsHost(Null_DRef));
-    ASSERT_FALSE(is_host);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxComputeUnits)

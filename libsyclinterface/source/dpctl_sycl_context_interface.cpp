@@ -169,15 +169,6 @@ size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef)
     return Devices.size();
 }
 
-bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
-{
-    auto Ctx = unwrap<context>(CtxRef);
-    if (Ctx) {
-        return false;
-    }
-    return false;
-}
-
 void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef)
 {
     delete unwrap<context>(CtxRef);

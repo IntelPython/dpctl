@@ -73,7 +73,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
-    DPCTLDevice_IsHost,
     DPCTLDeviceMgr_GetDeviceInfoStr,
     DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetPositionInDevices,
@@ -711,15 +710,6 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_IsGPU(self._device_ref)
 
     @property
-    def is_host(self):
-        """ Returns True if the SyclDevice instance is a SYCL host device.
-
-        Returns:
-            bool: True if the SyclDevice is a SYCL host device, else False.
-        """
-        return DPCTLDevice_IsHost(self._device_ref)
-
-    @property
     def max_work_item_dims(self):
         """ Returns the maximum dimensions that specify the global and local
         work-item IDs used by the data parallel execution model.
@@ -847,11 +837,9 @@ cdef class SyclDevice(_SyclDevice):
             int: The maximum number of sub-groups support per work-group by
             the device.
         """
-        cdef uint32_t max_num_sub_groups = 0
-        if (not self.is_host):
-            max_num_sub_groups = (
-                DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
-            )
+        cdef uint32_t max_num_sub_groups = (
+            DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
+        )
         return max_num_sub_groups
 
     @property

@@ -131,16 +131,6 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
- * @brief Returns true if this SYCL context is a host context.
- *
- * @param    CtxRef        An opaque pointer to a sycl::context.
- * @return   True if the SYCL context is a host context, else False.
- * @ingroup ContextInterface
- */
-DPCTL_API
-bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef);
-
-/*!
  * @brief Returns the sycl backend for the DPCTLSyclContextRef pointer.
  *
  * @param    CtxRef         An opaque pointer to a sycl::context.

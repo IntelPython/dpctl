@@ -176,15 +176,6 @@ bool DPCTLDevice_IsGPU(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return false;
 }
 
-bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        return false;
-    }
-    return false;
-}
-
 DPCTLSyclBackendType
 DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
