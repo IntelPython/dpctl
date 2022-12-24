@@ -57,9 +57,6 @@ Overview
 	DPCTL_API size_t
 	:ref:`DPCTLContext_Hash<doxid-d6/dad/group___context_interface_1ga8bf9355c979e31f4714a0c2208f1ed14>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
 
-	DPCTL_API bool
-	:ref:`DPCTLContext_IsHost<doxid-d6/dad/group___context_interface_1ga24db0f38d9acb63c50c686f848b21a53>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
-
 .. _details-d6/dad/group___context_interface:
 
 Detailed Documentation
@@ -360,33 +357,4 @@ Wrapper over std::hash<sycl::context>'s operator()
 .. rubric:: Returns:
 
 Hash value of the underlying ``sycl::context`` instance.
-
-.. index:: pair: function; DPCTLContext_IsHost
-.. _doxid-d6/dad/group___context_interface_1ga24db0f38d9acb63c50c686f848b21a53:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API bool
-	DPCTLContext_IsHost(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef)
-
-Returns true if this SYCL context is a host context.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- CtxRef
-
-		- An opaque pointer to a sycl::context.
-
-
-
-.. rubric:: Returns:
-
-True if the SYCL context is a host context, else False.
 

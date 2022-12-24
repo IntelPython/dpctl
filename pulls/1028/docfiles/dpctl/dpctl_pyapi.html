@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.1dev0+53.g4b31a9ff8 documentation</title>
+  <title>dpctl &mdash; Data-parallel Control (dpctl) 0.14.1dev0+63.gd760cbea1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev0+53.g4b31a9ff8
+                0.14.1dev0+63.gd760cbea1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -218,9 +218,6 @@ to create a queue object for use only within a specific scope.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.select_gpu_device" title="dpctl.select_gpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_gpu_device()</span></code></a></p></td>
 <td><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code> class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.select_host_device" title="dpctl.select_host_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_host_device()</span></code></a></p></td>
-<td><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">host_selector</span></code> class.</p></td>
-</tr>
 </tbody>
 </table>
 </section>
@@ -256,16 +253,13 @@ to create a queue object for use only within a specific scope.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_gpu_devices" title="dpctl.has_gpu_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_gpu_devices()</span></code></a></p></td>
 <td><p>A helper function to check if there are any SYCL GPU devices available.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.has_host_device" title="dpctl.has_host_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_host_device()</span></code></a></p></td>
-<td><p>A helper function to check if there are any SYCL Host devices available.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.is_in_device_context" title="dpctl.is_in_device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_in_device_context()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.is_in_device_context" title="dpctl.is_in_device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_in_device_context()</span></code></a></p></td>
 <td><p>Checks if the control is inside a <a class="reference internal" href="dpctl_functions_api.html#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsplatform()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsplatform()</span></code></a></p></td>
 <td><p>Prints out the list of available SYCL platforms, and optionally extra metadata about each platform.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.set_global_queue" title="dpctl.set_global_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_global_queue()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl_functions_api.html#dpctl.set_global_queue" title="dpctl.set_global_queue"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_global_queue()</span></code></a></p></td>
 <td><p>Sets the global queue to the SYCL queue specified explicitly, or created from given arguments.</p></td>
 </tr>
 </tbody>

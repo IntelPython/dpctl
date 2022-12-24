@@ -15,14 +15,18 @@ class dpctl::syclinterface::dpctl_device_selector
 
 	#include <dpctl_device_selection.hpp>
 	
-	class dpctl_device_selector: public device_selector
+	class dpctl_device_selector
 	{
 	public:
+		// fields
+	
+		static constexpr int :target:`REJECT_DEVICE<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a3803a4a44ef1315dbb40f5c78ed9e326>` = -1;
+
 		// methods
 	
 		virtual
 		int
-		:target:`operator ()<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a29af8b291686453af8f2de7b8a280527>` (const sycl::device& device) const = 0;
+		:target:`operator ()<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a897941b230c0931aaab9d513be091136>` (const sycl::device&) const;
 	};
 
 	// direct descendants

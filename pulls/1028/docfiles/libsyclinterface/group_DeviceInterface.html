@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.1dev0+53.g4b31a9ff8 documentation</title>
+  <title>Device class C wrapper &mdash; Data-parallel Control (dpctl) 0.14.1dev0+63.gd760cbea1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev0+53.g4b31a9ff8
+                0.14.1dev0+63.gd760cbea1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -240,10 +240,7 @@
 <a class="reference internal" href="#doxid-db-dd1-group-device-interface-1gab5f205e2cc7e3112c6265c0ffdffaa57"><span class="std std-ref">DPCTLDevice_IsCPU</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="kt">bool</span>
-<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1gaf8f14aedc1fd3b836bd07c2e4be5d541"><span class="std std-ref">DPCTLDevice_IsGPU</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
-
-<span class="n">DPCTL_API</span> <span class="kt">bool</span>
-<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1gabad898eaf8374c3259598a140e7abd7c"><span class="std std-ref">DPCTLDevice_IsHost</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span></pre>
+<a class="reference internal" href="#doxid-db-dd1-group-device-interface-1gaf8f14aedc1fd3b836bd07c2e4be5d541"><span class="std std-ref">DPCTLDevice_IsGPU</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
 <span id="details-db-dd1-group-device-interface"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
@@ -904,23 +901,6 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>True if the device type is a gpu, else False.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-db-dd1-group-device-interface-1gabad898eaf8374c3259598a140e7abd7c"><span id="index-38"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">bool</span>
-<span class="n">DPCTLDevice_IsHost</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
-<p>Returns true if this SYCL device is a host device.</p>
-<p class="rubric">Parameters:</p>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>DRef</p></td>
-<td><p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code></p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Returns:</p>
-<p>True if the device is a host device, else False.</p>
 </section>
 </section>
 </section>

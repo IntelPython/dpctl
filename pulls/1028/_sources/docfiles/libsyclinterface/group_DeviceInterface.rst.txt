@@ -149,9 +149,6 @@ Overview
 	DPCTL_API bool
 	:ref:`DPCTLDevice_IsGPU<doxid-db/dd1/group___device_interface_1gaf8f14aedc1fd3b836bd07c2e4be5d541>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_API bool
-	:ref:`DPCTLDevice_IsHost<doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
-
 .. _details-db/dd1/group___device_interface:
 
 Detailed Documentation
@@ -1270,33 +1267,4 @@ Returns true if this SYCL device is an OpenCL device and the device type is ``sy
 .. rubric:: Returns:
 
 True if the device type is a gpu, else False.
-
-.. index:: pair: function; DPCTLDevice_IsHost
-.. _doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API bool
-	DPCTLDevice_IsHost(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
-
-Returns true if this SYCL device is a host device.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- DRef
-
-		- Opaque pointer to a ``sycl::device``
-
-
-
-.. rubric:: Returns:
-
-True if the device is a host device, else False.
 
