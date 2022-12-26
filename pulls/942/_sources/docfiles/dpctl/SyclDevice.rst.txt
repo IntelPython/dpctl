@@ -38,7 +38,6 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.has_aspect_fp16
 .. autoattribute:: dpctl.SyclDevice.has_aspect_fp64
 .. autoattribute:: dpctl.SyclDevice.has_aspect_gpu
-.. autoattribute:: dpctl.SyclDevice.has_aspect_host
 .. autoattribute:: dpctl.SyclDevice.has_aspect_host_debuggable
 .. autoattribute:: dpctl.SyclDevice.has_aspect_image
 .. autoattribute:: dpctl.SyclDevice.has_aspect_online_compiler
@@ -59,7 +58,6 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.is_accelerator
 .. autoattribute:: dpctl.SyclDevice.is_cpu
 .. autoattribute:: dpctl.SyclDevice.is_gpu
-.. autoattribute:: dpctl.SyclDevice.is_host
 .. autoattribute:: dpctl.SyclDevice.local_mem_size
 .. autoattribute:: dpctl.SyclDevice.max_compute_units
 .. autoattribute:: dpctl.SyclDevice.max_num_sub_groups
@@ -73,6 +71,7 @@ Attributes
 .. autoattribute:: dpctl.SyclDevice.max_write_image_args
 .. autoattribute:: dpctl.SyclDevice.name
 .. autoattribute:: dpctl.SyclDevice.parent_device
+.. autoattribute:: dpctl.SyclDevice.partition_max_sub_devices
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_char
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_double
 .. autoattribute:: dpctl.SyclDevice.preferred_vector_width_float

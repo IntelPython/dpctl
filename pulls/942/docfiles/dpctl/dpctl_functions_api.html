@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.14.0rc2+9.gc5a8b618 documentation</title>
+  <title>dpctl Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev0+75.g8f5fc93c3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -33,7 +33,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc2+9.gc5a8b618
+                0.14.1dev0+75.g8f5fc93c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -336,21 +336,6 @@ present, <code class="docutils literal notranslate"><span class="pre">False</spa
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dpctl.has_host_device">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">has_host_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.has_host_device" title="Permalink to this definition"></a></dt>
-<dd><p>A helper function to check if there are any SYCL Host devices available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">sycl::device_type::host</span></code> devices are present,
-<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.is_in_device_context">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">is_in_device_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.is_in_device_context" title="Permalink to this definition"></a></dt>
 <dd><p>Checks if the control is inside a <a class="reference internal" href="#dpctl.device_context" title="dpctl.device_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.device_context()</span></code></a> scope.</p>
@@ -557,27 +542,6 @@ returned by the SYCL <code class="docutils literal notranslate"><span class="pre
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclDeviceCreationError" title="dpctl.SyclDeviceCreationError"><strong>dpctl.SyclDeviceCreationError</strong></a> – If the SYCL <code class="docutils literal notranslate"><span class="pre">gpu_selector</span></code> is</p></li>
-<li><p><strong>unable to select a device.</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.select_host_device">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">select_host_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.select_host_device" title="Permalink to this definition"></a></dt>
-<dd><p>A wrapper for SYCL’s <code class="docutils literal notranslate"><span class="pre">host_selector</span></code> class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A Python object wrapping the SYCL <code class="docutils literal notranslate"><span class="pre">device</span></code>
-returned by the SYCL <code class="docutils literal notranslate"><span class="pre">host_selector</span></code>.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclDeviceCreationError" title="dpctl.SyclDeviceCreationError"><strong>dpctl.SyclDeviceCreationError</strong></a> – If the SYCL <code class="docutils literal notranslate"><span class="pre">host_selector</span></code> is</p></li>
 <li><p><strong>unable to select a device.</strong> – </p></li>
 </ul>
 </dd>

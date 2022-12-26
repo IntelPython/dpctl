@@ -112,9 +112,6 @@ Overview
 	:ref:`DPCTLContext_Hash<doxid-d6/dad/group___context_interface_1ga8bf9355c979e31f4714a0c2208f1ed14>`(__dpctl_take :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
 
 	DPCTL_API bool
-	:ref:`DPCTLContext_IsHost<doxid-d6/dad/group___context_interface_1ga24db0f38d9acb63c50c686f848b21a53>`(__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CtxRef);
-
-	DPCTL_API bool
 	:ref:`DPCTLDevice_AreEq<doxid-db/dd1/group___device_interface_1gaba5f155a106aa09f770639cc22ee0ddd>`(
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef1,
 		__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef2
@@ -226,6 +223,9 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	:ref:`DPCTLDevice_GetParentDevice<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1acccdc3f034e6c5fd2a249907355169bc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetPartitionMaxSubDevices<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ab48d25118cd217ccd917993afba98570>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLDevice_GetPlatform<doxid-db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -282,9 +282,6 @@ Overview
 
 	DPCTL_API bool
 	:ref:`DPCTLDevice_IsGPU<doxid-db/dd1/group___device_interface_1gaf8f14aedc1fd3b836bd07c2e4be5d541>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
-
-	DPCTL_API bool
-	:ref:`DPCTLDevice_IsHost<doxid-db/dd1/group___device_interface_1gabad898eaf8374c3259598a140e7abd7c>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
 	:ref:`DPCTLDeviceMgr_GetCachedContext<doxid-dc/ddc/group___device_manager_1gabb587f003e809eaef26d7dbd253ec88e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
@@ -357,9 +354,6 @@ Overview
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
 	:ref:`DPCTLGPUSelector_Create<doxid-d8/d27/group___device_selectors_1ga1dabb6a4adf35a193d6d05240d8ed534>`(void);
-
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
-	:ref:`DPCTLHostSelector_Create<doxid-d8/d27/group___device_selectors_1ga3034644611fde17dd85949705d61e25d>`(void);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLEvent_Copy<doxid-df/d2d/group___event_interface_1ga0e67256b553c86cc2c01b8ba2ed18378>`(__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` ERef);
@@ -467,6 +461,9 @@ Overview
 
 	DPCTL_API uint32_t
 	:ref:`DPCTLKernel_GetMaxNumSubGroups<doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLKernel_GetMaxSubGroupSize<doxid-da/df6/group___kernel_interface_1gae84f948176f0eff5519fdb9a0ec4a3e7>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
 	DPCTL_API size_t
 	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
@@ -1229,6 +1226,35 @@ Wrapper over device.get_info<info::device::parent_device>
 .. rubric:: Returns:
 
 Returns an opaque pointer to the parent device for a sub-device, or nullptr otherwise.
+
+.. index:: pair: function; DPCTLDevice_GetPartitionMaxSubDevices
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ab48d25118cd217ccd917993afba98570:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetPartitionMaxSubDevices(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::partition_max_sub_devices>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns the maximum number of sub-devices that can be created when this device is partitioned.
 
 .. index:: pair: function; DPCTLDevice_GetProfilingTimerResolution
 .. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a5fe67bf4915e62ce08d80d810f0e8632:

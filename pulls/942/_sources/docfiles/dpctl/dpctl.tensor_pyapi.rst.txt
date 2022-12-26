@@ -57,7 +57,7 @@ Array Construction
     * - :func:`eye()`
       - -> usm_ndarray Creates `usm_ndarray` with ones on the `k`th diagonal.
     * - :func:`from_dlpack()`
-      - dpctl.tensor.from_dlpack(obj) Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
+      - dpctl.tensor.from_dlpack(obj) -> dpctl.tensor.usm_ndarray Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
       - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
     * - :func:`full()`
@@ -119,6 +119,21 @@ Array Manipulation
       - -> usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.
     * - :func:`stack()`
       - -> usm_ndarray Joins a sequence of arrays along a new axis.
+
+.. _dpctl.tensor_other_functions:
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`get_print_options()`
+      - -> dict Returns a copy of current options for printing ``dpctl.tensor.usm_ndarray`` class.
+    * - :func:`print_options()`
+      - Context manager for print options.
+    * - :func:`set_print_options()`
+      - Set options for printing ``dpctl.tensor.usm_ndarray`` class.
 
 
 

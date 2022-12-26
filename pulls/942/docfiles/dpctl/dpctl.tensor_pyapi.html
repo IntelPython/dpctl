@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.0rc2+9.gc5a8b618 documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.1dev0+75.g8f5fc93c3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -35,7 +35,7 @@
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.0rc2+9.gc5a8b618
+                0.14.1dev0+75.g8f5fc93c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -59,6 +59,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#array-construction">Array Construction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#array-manipulation">Array Manipulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-functions">Other Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.utils_pyapi.html">dpctl.utils</a></li>
@@ -160,7 +161,7 @@ implementations that implement Python data API
 <td><p>-&gt; usm_ndarray Creates <cite>usm_ndarray</cite> with ones on the <a href="#id1"><span class="problematic" id="id2">`</span></a>k`th diagonal.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_dlpack" title="dpctl.tensor.from_dlpack"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_dlpack()</span></code></a></p></td>
-<td><p>dpctl.tensor.from_dlpack(obj) Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output array is always a zero-copy view of the input.</p></td>
+<td><p>dpctl.tensor.from_dlpack(obj) -&gt; dpctl.tensor.usm_ndarray Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output array is always a zero-copy view of the input.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
 <td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of <cite>numpy.ndarray</cite>.</p></td>
@@ -250,6 +251,26 @@ implementations that implement Python data API
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Joins a sequence of arrays along a new axis.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="other-functions">
+<span id="dpctl-tensor-other-functions"></span><h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.get_print_options" title="dpctl.tensor.get_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_print_options()</span></code></a></p></td>
+<td><p>-&gt; dict Returns a copy of current options for printing <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.print_options" title="dpctl.tensor.print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_options()</span></code></a></p></td>
+<td><p>Context manager for print options.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.set_print_options" title="dpctl.tensor.set_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_print_options()</span></code></a></p></td>
+<td><p>Set options for printing <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> class.</p></td>
 </tr>
 </tbody>
 </table>
