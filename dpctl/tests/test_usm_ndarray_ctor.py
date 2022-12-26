@@ -363,6 +363,7 @@ def test_datapi_device():
     X.device.sycl_queue
     X.device.sycl_device
     repr(X.device)
+    X.device.print_device_info()
 
 
 def _pyx_capi_fnptr_to_callable(

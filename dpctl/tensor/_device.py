@@ -114,6 +114,10 @@ class Device:
             # This is a sub-device
             return repr(self.sycl_queue)
 
+    def print_device_info(self):
+        "Outputs information about targeted SYCL device"
+        self.sycl_device.print_device_info()
+
     def wait(self):
         """
         Call ``wait`` method of the underlying ``sycl_queue``.
