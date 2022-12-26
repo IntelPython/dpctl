@@ -140,7 +140,7 @@ def run(
                 os.path.join(bin_llvm, "llvm-cov"),
                 "export",
                 "-format=lcov",
-                "-ignore-filename-regex=*tmp*/dpctl_*.h*",
+                "-ignore-filename-regex=/tmp/icpx*",
                 "-instr-profile=" + instr_profile_fn,
             ]
             + objects,
