@@ -43,9 +43,6 @@ Overview
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
 	:ref:`DPCTLGPUSelector_Create<doxid-d8/d27/group___device_selectors_1ga1dabb6a4adf35a193d6d05240d8ed534>`(void);
 
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
-	:ref:`DPCTLHostSelector_Create<doxid-d8/d27/group___device_selectors_1ga3034644611fde17dd85949705d61e25d>`(void);
-
 .. _details-d8/d27/group___device_selectors:
 
 Detailed Documentation
@@ -212,21 +209,4 @@ Returns an opaque wrapper for dpctl_gpu_selector object.
 .. rubric:: Returns:
 
 An opaque pointer to a dpctl_gpu_selector object.
-
-.. index:: pair: function; DPCTLHostSelector_Create
-.. _doxid-d8/d27/group___device_selectors_1ga3034644611fde17dd85949705d61e25d:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`
-	DPCTLHostSelector_Create(void)
-
-Returns an opaque wrapper for dpctl_host_selector object.
-
-
-
-.. rubric:: Returns:
-
-An opaque pointer to a dpctl_host_selector object.
 

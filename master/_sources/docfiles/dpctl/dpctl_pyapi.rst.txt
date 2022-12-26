@@ -100,8 +100,6 @@ Device Selection Functions
       - Selects the root :class:`dpctl.SyclDevice` that has the highest default selector score among devices that have all aspects in the `required_aspects` list, and do not have any aspects in `excluded_aspects` list.
     * - :func:`select_gpu_device()`
       - A wrapper for SYCL's ``gpu_selector`` class.
-    * - :func:`select_host_device()`
-      - A wrapper for SYCL's ``host_selector`` class.
 
 .. _dpctl_other_functions:
 
@@ -127,8 +125,6 @@ Other Functions
       - A helper function to check if there are any SYCL CPU devices available.
     * - :func:`has_gpu_devices()`
       - A helper function to check if there are any SYCL GPU devices available.
-    * - :func:`has_host_device()`
-      - A helper function to check if there are any SYCL Host devices available.
     * - :func:`is_in_device_context()`
       - Checks if the control is inside a :func:`dpctl.device_context()` scope.
     * - :func:`lsplatform()`
