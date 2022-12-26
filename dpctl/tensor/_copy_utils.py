@@ -46,7 +46,10 @@ def _has_memory_overlap(x1, x2):
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError
-    h = ary.usm_data.copy_to_host().view(ary.dtype)
+    nb = ary.usm_data.nbytes
+    hh = dpm.MemoryUSMHost(nb, queue=ary.sycl_queue)
+    hh.copy_from_device(ary.usm_data)
+    h = np.ndarray(nb, dtype="u1", buffer=hh).view(ary.dtype)
     itsz = ary.itemsize
     strides_bytes = tuple(si * itsz for si in ary.strides)
     offset = ary.__sycl_usm_array_interface__.get("offset", 0) * itsz
