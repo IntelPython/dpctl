@@ -37,7 +37,6 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
-        _HOST            'DPCTL_HOST'
         _LEVEL_ZERO      'DPCTL_LEVEL_ZERO'
         _OPENCL          'DPCTL_OPENCL'
         _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'
@@ -49,7 +48,6 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _CPU            'DPCTL_CPU'
         _CUSTOM         'DPCTL_CUSTOM'
         _GPU            'DPCTL_GPU'
-        _HOST_DEVICE    'DPCTL_HOST_DEVICE'
         _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
 
     ctypedef enum _arg_data_type 'DPCTLKernelArgType':
@@ -174,7 +172,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthShort(const DPCTLSyclDeviceRef DRef)
@@ -236,7 +233,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(const char *)
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
-    DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
     void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef)
     int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 
@@ -271,8 +267,7 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetPrivateMemSize(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetMaxNumSubGroups(const DPCTLSyclKernelRef KRef)
-##  Next line is commented out due to issue in DPC++ runtime
-#   cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetCompileNumSubGroups(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetCompileSubGroupSize(const DPCTLSyclKernelRef KRef)
 

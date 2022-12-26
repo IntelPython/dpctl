@@ -29,12 +29,16 @@
 #include "Config/dpctl_config.h"
 #include <CL/sycl.hpp>
 
+namespace
+{
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+}
+
 namespace dpctl
 {
 namespace syclinterface
 {
-
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 
 int dpctl_device_selector::operator()(const sycl::device &) const
 {
@@ -66,45 +70,6 @@ int dpctl_filter_selector::operator()(const sycl::device &d) const
 {
     return _impl(d);
 }
-
-int dpctl_host_selector::operator()(const sycl::device &) const
-{
-    return REJECT_DEVICE;
-}
-
-#else
-
-int dpctl_accelerator_selector::operator()(const sycl::device &d) const
-{
-    return _impl(d);
-}
-
-int dpctl_default_selector::operator()(const sycl::device &d) const
-{
-    return _impl(d);
-}
-
-int dpctl_gpu_selector::operator()(const sycl::device &d) const
-{
-    return _impl(d);
-}
-
-int dpctl_cpu_selector::operator()(const sycl::device &d) const
-{
-    return _impl(d);
-}
-
-int dpctl_filter_selector::operator()(const sycl::device &d) const
-{
-    return _impl(d);
-}
-
-int dpctl_host_selector::operator()(const sycl::device &d) const
-{
-    return _impl(d);
-}
-
-#endif
 
 } // namespace syclinterface
 } // namespace dpctl

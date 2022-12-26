@@ -87,15 +87,6 @@ DPCTL_API
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create(void);
 
 /*!
- * @brief Returns an opaque wrapper for dpctl_host_selector object.
- *
- * @return An opaque pointer to a dpctl_host_selector object.
- * @ingroup DeviceSelectors
- */
-DPCTL_API
-__dpctl_give DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create(void);
-
-/*!
  * @brief Deletes the DPCTLSyclDeviceSelectorRef after casting it to a
  * sycl::device_selector.
  *

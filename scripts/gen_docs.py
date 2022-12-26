@@ -46,7 +46,7 @@ def run(
         sys.executable,
         "setup.py",
         "develop",
-        "--build-type=Debug",
+        "--build-type=Release",
         "--generator=Ninja",
         "--",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,

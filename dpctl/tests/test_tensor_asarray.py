@@ -35,11 +35,6 @@ import dpctl.tensor as dpt
 )
 def test_asarray_change_usm_type(src_usm_type, dst_usm_type):
     d = dpctl.SyclDevice()
-    if d.is_host:
-        pytest.skip(
-            "Skip test of host device, which only "
-            "supports host USM allocations"
-        )
     X = dpt.empty(10, dtype="u1", usm_type=src_usm_type)
     Y = dpt.asarray(X, usm_type=dst_usm_type)
     assert X.shape == Y.shape

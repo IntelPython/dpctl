@@ -70,8 +70,6 @@ void check_platform_backend(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         switch (BTy) {
         case DPCTLSyclBackendType::DPCTL_CUDA:
             return true;
-        case DPCTLSyclBackendType::DPCTL_HOST:
-            return true;
         case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
             return true;
         case DPCTLSyclBackendType::DPCTL_OPENCL:

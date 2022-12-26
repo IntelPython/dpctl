@@ -35,6 +35,9 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
 
@@ -166,19 +169,6 @@ size_t DPCTLContext_DeviceCount(__dpctl_keep const DPCTLSyclContextRef CRef)
     return Devices.size();
 }
 
-bool DPCTLContext_IsHost(__dpctl_keep const DPCTLSyclContextRef CtxRef)
-{
-    auto Ctx = unwrap<context>(CtxRef);
-    if (Ctx) {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
-        return false;
-#else
-        return Ctx->is_host();
-#endif
-    }
-    return false;
-}
-
 void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef)
 {
     delete unwrap<context>(CtxRef);
@@ -194,10 +184,6 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
     auto BE = unwrap<context>(CtxRef)->get_platform().get_backend();
 
     switch (BE) {
-#if __SYCL_COMPILER_VERSION < __SYCL_COMPILER_2023_SWITCHOVER
-    case backend::host:
-        return DPCTL_HOST;
-#endif
     case backend::opencl:
         return DPCTL_OPENCL;
     case backend::ext_oneapi_level_zero:

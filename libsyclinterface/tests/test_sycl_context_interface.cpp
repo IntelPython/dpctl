@@ -162,21 +162,6 @@ TEST_P(TestDPCTLContextInterface, ChkAreEq)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef3));
 }
 
-TEST_P(TestDPCTLContextInterface, ChkIsHost)
-{
-    DPCTLSyclContextRef CRef = nullptr;
-    bool is_host_device = false, is_host_context = false;
-
-    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
-    ASSERT_TRUE(CRef);
-
-    EXPECT_NO_FATAL_FAILURE(is_host_device = DPCTLDevice_IsHost(DRef));
-    EXPECT_NO_FATAL_FAILURE(is_host_context = DPCTLContext_IsHost(CRef));
-    EXPECT_TRUE(is_host_device == is_host_context);
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
-}
-
 TEST_P(TestDPCTLContextInterface, ChkGetBackend)
 {
     DPCTLSyclContextRef CRef = nullptr;
@@ -260,13 +245,6 @@ TEST_F(TestDPCTLContextNullArgs, ChkDeviceCount)
     size_t count = -1;
     EXPECT_NO_FATAL_FAILURE(count = DPCTLContext_DeviceCount(Null_CRef));
     ASSERT_TRUE(count == 0);
-}
-
-TEST_F(TestDPCTLContextNullArgs, ChkIsHost)
-{
-    bool is_host = true;
-    EXPECT_NO_FATAL_FAILURE(is_host = DPCTLContext_IsHost(Null_CRef));
-    ASSERT_FALSE(is_host);
 }
 
 TEST_F(TestDPCTLContextNullArgs, ChkHash)

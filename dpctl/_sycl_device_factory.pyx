@@ -39,7 +39,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLDeviceVector_Size,
     DPCTLDeviceVectorRef,
     DPCTLGPUSelector_Create,
-    DPCTLHostSelector_Create,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     _backend_type,
@@ -56,12 +55,10 @@ __all__ = [
     "select_cpu_device",
     "select_default_device",
     "select_gpu_device",
-    "select_host_device",
     "get_num_devices",
     "has_cpu_devices",
     "has_gpu_devices",
     "has_accelerator_devices",
-    "has_host_device",
 ]
 
 
@@ -71,8 +68,6 @@ cdef _backend_type _string_to_dpctl_sycl_backend_ty(str backend_str):
         return _backend_type._ALL_BACKENDS
     elif backend_str == "cuda":
         return _backend_type._CUDA
-    elif backend_str == "host":
-        return _backend_type._HOST
     elif backend_str == "level_zero":
         return _backend_type._LEVEL_ZERO
     elif backend_str == "opencl":
@@ -95,8 +90,6 @@ cdef _device_type _string_to_dpctl_sycl_device_ty(str dty_str):
         return _device_type._CUSTOM
     elif dty_str == "gpu":
         return _device_type._GPU
-    elif dty_str == "host":
-        return _device_type._HOST_DEVICE
     else:
         return _device_type._UNKNOWN_DEVICE
 
@@ -106,8 +99,6 @@ cdef _backend_type _enum_to_dpctl_sycl_backend_ty(BTy):
         return _backend_type._ALL_BACKENDS
     elif BTy == backend_type.cuda:
         return _backend_type._CUDA
-    elif BTy == backend_type.host:
-        return _backend_type._HOST
     elif BTy == backend_type.level_zero:
         return _backend_type._LEVEL_ZERO
     elif BTy == backend_type.opencl:
@@ -129,8 +120,6 @@ cdef _device_type _enum_to_dpctl_sycl_device_ty(DTy):
         return _device_type._CUSTOM
     elif DTy == device_type_t.gpu:
         return _device_type._GPU
-    elif DTy == device_type_t.host:
-        return _device_type._HOST_DEVICE
     else:
         return _device_type._UNKNOWN_DEVICE
 
@@ -288,19 +277,6 @@ cpdef cpp_bool has_accelerator_devices():
     return <cpp_bool>num_accelerator_dev
 
 
-cpdef cpp_bool has_host_device():
-    """ A helper function to check if there are any SYCL Host devices available.
-
-    Returns:
-        bool: ``True`` if ``sycl::device_type::host`` devices are present,
-        ``False`` otherwise.
-    """
-    cdef int num_host_dev = DPCTLDeviceMgr_GetNumDevices(
-        _device_type._HOST_DEVICE
-    )
-    return <cpp_bool>num_host_dev
-
-
 cpdef SyclDevice select_accelerator_device():
     """ A wrapper for SYCL's ``accelerator_selector`` class.
 
@@ -377,25 +353,5 @@ cpdef SyclDevice select_gpu_device():
     DPCTLDeviceSelector_Delete(DSRef)
     if DRef is NULL:
         raise SyclDeviceCreationError("Device unavailable.")
-    Device = SyclDevice._create(DRef)
-    return Device
-
-
-cpdef SyclDevice select_host_device():
-    """ A wrapper for SYCL's ``host_selector`` class.
-
-    Returns:
-        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
-        returned by the SYCL ``host_selector``.
-    Raises:
-        dpctl.SyclDeviceCreationError: If the SYCL ``host_selector`` is
-        unable to select a ``device``.
-    """
-    cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLHostSelector_Create()
-    cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
-    # Free up the device selector
-    DPCTLDeviceSelector_Delete(DSRef)
-    if DRef is NULL:
-        raise SyclDeviceCreationError("Host device is unavailable.")
     Device = SyclDevice._create(DRef)
     return Device

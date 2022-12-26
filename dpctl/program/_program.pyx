@@ -34,6 +34,7 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetCompileNumSubGroups,
     DPCTLKernel_GetCompileSubGroupSize,
     DPCTLKernel_GetMaxNumSubGroups,
+    DPCTLKernel_GetMaxSubGroupSize,
     DPCTLKernel_GetNumArgs,
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
@@ -146,8 +147,8 @@ cdef class SyclKernel:
     def max_sub_group_size(self):
         """ Returns the maximum sub-groups size for this kernel.
         """
-        cdef uint32_t sz = 0
-        return NotImplemented
+        cdef uint32_t sz = DPCTLKernel_GetMaxSubGroupSize(self._kernel_ref)
+        return sz
 
     @property
     def compile_num_sub_groups(self):

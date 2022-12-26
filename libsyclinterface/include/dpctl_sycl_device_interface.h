@@ -121,16 +121,6 @@ DPCTL_API
 bool DPCTLDevice_IsGPU(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
- * @brief Returns true if this SYCL device is a host device.
- *
- * @param    DRef           Opaque pointer to a ``sycl::device``
- * @return   True if the device is a host device, else False.
- * @ingroup DeviceInterface
- */
-DPCTL_API
-bool DPCTLDevice_IsHost(__dpctl_keep const DPCTLSyclDeviceRef DRef);
-
-/*!
  * @brief Returns the backend for the device.
  *
  * @param    DRef           Opaque pointer to a ``sycl::device``

@@ -23,7 +23,6 @@ list_of_standard_selectors = [
     dpctl.select_cpu_device,
     dpctl.select_default_device,
     dpctl.select_gpu_device,
-    dpctl.select_host_device,
 ]
 
 list_of_valid_filter_selectors = [
@@ -109,7 +108,7 @@ def check_max_work_group_size(device):
 def check_max_num_sub_groups(device):
     max_num_sub_groups = device.max_num_sub_groups
     # Special case for FPGA simulator
-    if device.is_accelerator or device.is_host:
+    if device.is_accelerator:
         assert max_num_sub_groups >= 0
     else:
         assert max_num_sub_groups > 0
@@ -118,13 +117,6 @@ def check_max_num_sub_groups(device):
 def check_sub_group_sizes(device):
     sg_sizes = device.sub_group_sizes
     assert all(el > 0 for el in sg_sizes)
-
-
-def check_has_aspect_host(device):
-    try:
-        device.has_aspect_host
-    except Exception:
-        pytest.fail("has_aspect_host call failed")
 
 
 def check_has_aspect_cpu(device):
@@ -279,13 +271,6 @@ def check_is_gpu(device):
         device.is_gpu
     except Exception:
         pytest.fail("is_gpu call failed")
-
-
-def check_is_host(device):
-    try:
-        device.is_host
-    except Exception:
-        pytest.fail("is_hostcall failed")
 
 
 def check_max_read_image_args(device):
@@ -571,7 +556,7 @@ def check_driver_version(device):
 
 def check_vendor(device):
     ve = device.vendor
-    assert ve or device.is_host
+    assert ve
     assert type(ve) is str
 
 
@@ -625,7 +610,6 @@ list_of_checks = [
     check_is_accelerator,
     check_is_cpu,
     check_is_gpu,
-    check_is_host,
     check_sub_group_independent_forward_progress,
     check_preferred_vector_width_char,
     check_preferred_vector_width_short,
@@ -634,7 +618,6 @@ list_of_checks = [
     check_preferred_vector_width_float,
     check_preferred_vector_width_double,
     check_preferred_vector_width_half,
-    check_has_aspect_host,
     check_has_aspect_cpu,
     check_has_aspect_gpu,
     check_has_aspect_accelerator,

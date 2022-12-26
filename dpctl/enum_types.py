@@ -54,7 +54,6 @@ class device_type(Enum):
     cpu = auto()
     custom = auto()
     gpu = auto()
-    host = auto()
 
 
 class backend_type(Enum):
@@ -74,7 +73,6 @@ class backend_type(Enum):
 
     all = auto()
     cuda = auto()
-    host = auto()
     level_zero = auto()
     opencl = auto()
 

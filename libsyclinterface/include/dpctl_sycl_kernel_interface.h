@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include "Config/dpctl_config.h"
 #include "Support/DllExport.h"
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
@@ -130,7 +129,6 @@ DPCTL_API
 uint32_t
 DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef);
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 /*!
  * !brief Wrapper around
  * `kernel::get_info<info::kernel_device_specific::max_sub_group_size>()`.
@@ -143,7 +141,6 @@ DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef);
 DPCTL_API
 uint32_t
 DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef);
-#endif
 
 /*!
  * !brief Wrapper around

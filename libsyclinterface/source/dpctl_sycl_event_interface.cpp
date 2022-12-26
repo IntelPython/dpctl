@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_event_interface.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
@@ -35,6 +36,9 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
 

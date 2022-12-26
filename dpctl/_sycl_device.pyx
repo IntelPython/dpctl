@@ -73,7 +73,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_IsAccelerator,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
-    DPCTLDevice_IsHost,
     DPCTLDeviceMgr_GetDeviceInfoStr,
     DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetPositionInDevices,
@@ -162,8 +161,6 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 cdef str _backend_type_to_filter_string_part(_backend_type BTy):
     if BTy == _backend_type._CUDA:
         return "cuda"
-    elif BTy == _backend_type._HOST:
-        return "host"
     elif BTy == _backend_type._LEVEL_ZERO:
         return "level_zero"
     elif BTy == _backend_type._OPENCL:
@@ -181,8 +178,6 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
         return "cpu"
     elif DTy == _device_type._GPU:
         return "gpu"
-    elif DTy == _device_type._HOST_DEVICE:
-        return "host"
     else:
         return "unknown"
 
@@ -222,7 +217,6 @@ cdef class SyclDevice(_SyclDevice):
           :func:`dpctl.select_cpu_device()`,
           :func:`dpctl.select_default_device()`,
           :func:`dpctl.select_gpu_device()`,
-          :func:`dpctl.select_host_device()`.
 
 
         :Example:
@@ -359,8 +353,6 @@ cdef class SyclDevice(_SyclDevice):
         )
         if BTy == _backend_type._CUDA:
             return backend_type.cuda
-        elif BTy == _backend_type._HOST:
-            return backend_type.host
         elif BTy == _backend_type._LEVEL_ZERO:
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:
@@ -388,20 +380,8 @@ cdef class SyclDevice(_SyclDevice):
             return device_type.cpu
         elif DTy == _device_type._GPU:
             return device_type.gpu
-        elif DTy == _device_type._HOST_DEVICE:
-            return device_type.host
         else:
             raise ValueError("Unknown device type.")
-
-    @property
-    def has_aspect_host(self):
-        """ Returns True if this device is a host device, False otherwise.
-
-        Returns:
-            bool: Indicates if the device is a host device.
-        """
-        cdef _aspect_type AT = _aspect_type._host
-        return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_cpu(self):
@@ -730,15 +710,6 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_IsGPU(self._device_ref)
 
     @property
-    def is_host(self):
-        """ Returns True if the SyclDevice instance is a SYCL host device.
-
-        Returns:
-            bool: True if the SyclDevice is a SYCL host device, else False.
-        """
-        return DPCTLDevice_IsHost(self._device_ref)
-
-    @property
     def max_work_item_dims(self):
         """ Returns the maximum dimensions that specify the global and local
         work-item IDs used by the data parallel execution model.
@@ -866,11 +837,9 @@ cdef class SyclDevice(_SyclDevice):
             int: The maximum number of sub-groups support per work-group by
             the device.
         """
-        cdef uint32_t max_num_sub_groups = 0
-        if (not self.is_host):
-            max_num_sub_groups = (
-                DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
-            )
+        cdef uint32_t max_num_sub_groups = (
+            DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
+        )
         return max_num_sub_groups
 
     @property
