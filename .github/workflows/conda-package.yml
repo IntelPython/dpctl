@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9']
+        python: ['3.8', '3.9', '3.10']
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
@@ -177,7 +177,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9']
+        python: ['3.8', '3.9', '3.10']
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
