@@ -73,6 +73,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: true
+          conda-build-version: "*"
           activate-environment: ""
 
       - name: Cache conda packages
@@ -86,8 +87,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-      - name: Install conda-build
-        run: conda install conda-build
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} -c intel -c main --override-channels conda-recipe
       - name: Upload artifact
@@ -194,30 +193,32 @@ jobs:
         with:
           use-only-tar-bz2: true
           auto-update-conda: true
+          conda-build-version: '*'
           miniconda-version: 'latest'
           activate-environment: "dpctl_test"
-      - name: Install conda-build
-        shell: cmd /C CALL {0}
-        # Needed to be able to run conda index
-        run: conda install conda-build
-      - name: Create conda channel
+      - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
         run: |
           echo ${{ env.workdir }}
           mkdir ${{ env.workdir }}\channel\win-64
           move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.workdir }}\channel\win-64
-          conda index ${{ env.workdir }}/channel
-          # Test channel
+          dir ${{ env.workdir }}\channel\win-64
+      - name: Index the channel
+        shell: cmd /C CALL {0}
+        run: conda index ${{ env.workdir }}\channel
+
+      - name: Dump dpctl version info from created channel
+        shell: cmd /C CALL {0}
+        run: |
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
           type ${{ env.workdir }}\ver.json
       - name: Collect dependencies
         shell: cmd /C CALL {0}
         run: |
-          @ECHO ON
-          if not exist ver.json (
+          IF NOT EXIST ver.json (
               copy /Y ${{ env.workdir }}\ver.json .
           )
-          set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
+          SET "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
@@ -245,7 +246,9 @@ jobs:
         shell: cmd /C CALL {0}
         run: |
           @ECHO ON
-          copy /Y ${{ env.workdir }}\ver.json .
+          IF NOT EXIST ver.json (
+              copy /Y ${{ env.workdir }}\ver.json .
+          )
           set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
