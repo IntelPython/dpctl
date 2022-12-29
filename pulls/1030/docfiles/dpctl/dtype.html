@@ -1,42 +1,80 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>numpy.dtype &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.g3fef51e9f documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  
+  <title>numpy.dtype &mdash; Data-parallel Control (dpctl) 0.14.1dev1+8.g745eacb0b documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/target-highlight.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.tensor.usm_ndarray" href="usm_ndarray.html" />
     <link rel="prev" title="dpctl.tensor.Device" href="Device.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
+          
+
+          
           </a>
+
+          
+            
+            
               <div class="version">
-                0.14.1dev1+7.g3fef51e9f
+                0.14.1dev1+8.g745eacb0b
               </div>
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -44,7 +82,18 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
@@ -76,43 +125,86 @@
 <li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
+            
+          
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Data-parallel Control (dpctl)</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
-          <li class="breadcrumb-item"><a href="dpctl_pyapi.html">dpctl</a></li>
-          <li class="breadcrumb-item"><a href="dpctl.tensor_pyapi.html">dpctl.tensor</a></li>
-      <li class="breadcrumb-item active">numpy.dtype</li>
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
+        
+          <li><a href="dpctl.tensor_pyapi.html">dpctl.tensor</a> &raquo;</li>
+        
+      <li>numpy.dtype</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+          
             <a href="../../_sources/docfiles/dpctl/dtype.rst.txt" rel="nofollow"> View page source</a>
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <section id="numpy-dtype">
-<span id="dtype-api"></span><h1>numpy.dtype<a class="headerlink" href="#numpy-dtype" title="Permalink to this heading"></a></h1>
+<span id="dtype-api"></span><h1>numpy.dtype<a class="headerlink" href="#numpy-dtype" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="numpy.dtype">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">numpy.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#numpy.dtype" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">numpy.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#numpy.dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a data type object.</p>
 <p>A numpy array is homogeneous, and contains elements described by a
 dtype object. A dtype object can be constructed from different
 combinations of fundamental numeric types.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dtype</strong> – Object to be converted to a data type object.</p></li>
 <li><p><strong>align</strong> (<em>bool</em><em>, </em><em>optional</em>) – Add padding to the fields to match what a C compiler would output
@@ -185,10 +277,6 @@ the offsets in bytes:</p>
 </div>
 <p class="rubric">Attributes:</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">alignment</span></code></p></td>
 <td><p>The required alignment (bytes) of this data-type according to the compiler.</p></td>
@@ -260,10 +348,6 @@ the offsets in bytes:</p>
 </table>
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#numpy.dtype.newbyteorder" title="numpy.dtype.newbyteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">newbyteorder</span></code></a>([new_order])</p></td>
 <td><p>Return a new dtype with a different byte order.</p></td>
@@ -273,10 +357,10 @@ the offsets in bytes:</p>
 </dd></dl>
 
 <section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.base">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">base</span></span><a class="headerlink" href="#numpy.dtype.base" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">base</span></span><a class="headerlink" href="#numpy.dtype.base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns dtype for the base element of the subarrays,
 regardless of their dimension or shape.</p>
 <div class="admonition seealso">
@@ -298,7 +382,7 @@ regardless of their dimension or shape.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.descr">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">descr</span></span><a class="headerlink" href="#numpy.dtype.descr" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">descr</span></span><a class="headerlink" href="#numpy.dtype.descr" title="Permalink to this definition">¶</a></dt>
 <dd><p><cite>__array_interface__</cite> description of the data-type.</p>
 <p>The format is that required by the ‘descr’ key in the
 <cite>__array_interface__</cite> attribute.</p>
@@ -320,7 +404,7 @@ some dtypes (e.g., scalar and subarray dtypes).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.fields">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">fields</span></span><a class="headerlink" href="#numpy.dtype.fields" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">fields</span></span><a class="headerlink" href="#numpy.dtype.fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary of named fields defined for this data type, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p>The dictionary is indexed by keys that are the names of the fields.
 Each entry in the dictionary is a tuple fully describing the field:</p>
@@ -347,7 +431,7 @@ and <code class="docutils literal notranslate"><span class="pre">ndarray.setfiel
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.hasobject">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">hasobject</span></span><a class="headerlink" href="#numpy.dtype.hasobject" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">hasobject</span></span><a class="headerlink" href="#numpy.dtype.hasobject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether this dtype contains any reference-counted
 objects in any fields or sub-dtypes.</p>
 <p>Recall that what is actually in the ndarray memory representing
@@ -359,7 +443,7 @@ and data-types that won’t.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.isalignedstruct">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">isalignedstruct</span></span><a class="headerlink" href="#numpy.dtype.isalignedstruct" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">isalignedstruct</span></span><a class="headerlink" href="#numpy.dtype.isalignedstruct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether the dtype is a struct which maintains
 field alignment. This flag is sticky, so when combining multiple
 structs together, it is preserved and produces new dtypes which
@@ -368,14 +452,10 @@ are also aligned.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.isbuiltin">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">isbuiltin</span></span><a class="headerlink" href="#numpy.dtype.isbuiltin" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">isbuiltin</span></span><a class="headerlink" href="#numpy.dtype.isbuiltin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integer indicating how this dtype relates to the built-in dtypes.</p>
 <p>Read-only.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 1%" />
-<col style="width: 99%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p>0</p></td>
 <td><p>if this is a structured array type, with fields</p></td>
@@ -407,14 +487,14 @@ numpy to handle a new array type. See
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.isnative">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">isnative</span></span><a class="headerlink" href="#numpy.dtype.isnative" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">isnative</span></span><a class="headerlink" href="#numpy.dtype.isnative" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating whether the byte order of this dtype is native
 to the platform.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.metadata">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#numpy.dtype.metadata" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#numpy.dtype.metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Either <code class="docutils literal notranslate"><span class="pre">None</span></code> or a readonly dictionary of metadata (mappingproxy).</p>
 <p>The metadata field can be set using any dictionary at data-type
 creation. NumPy currently has no uniform approach to propagating
@@ -452,7 +532,7 @@ dropped:</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.name">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#numpy.dtype.name" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#numpy.dtype.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A bit-width name for this data-type.</p>
 <p>Un-sized flexible data-type objects do not have this attribute.</p>
 <p class="rubric">Examples</p>
@@ -468,7 +548,7 @@ dropped:</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.names">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#numpy.dtype.names" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#numpy.dtype.names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ordered list of field names, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there are no fields.</p>
 <p>The names are ordered according to increasing byte offset. This can be
 used, for example, to walk through all of the named fields in offset order.</p>
@@ -482,7 +562,7 @@ used, for example, to walk through all of the named fields in offset order.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.ndim">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#numpy.dtype.ndim" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#numpy.dtype.ndim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of dimensions of the sub-array if this data type describes a
 sub-array, and <code class="docutils literal notranslate"><span class="pre">0</span></code> otherwise.</p>
 <div class="versionadded">
@@ -508,7 +588,7 @@ sub-array, and <code class="docutils literal notranslate"><span class="pre">0</s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.shape">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#numpy.dtype.shape" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#numpy.dtype.shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape tuple of the sub-array if this data type describes a sub-array,
 and <code class="docutils literal notranslate"><span class="pre">()</span></code> otherwise.</p>
 <p class="rubric">Examples</p>
@@ -526,13 +606,13 @@ and <code class="docutils literal notranslate"><span class="pre">()</span></code
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.str">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">str</span></span><a class="headerlink" href="#numpy.dtype.str" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">str</span></span><a class="headerlink" href="#numpy.dtype.str" title="Permalink to this definition">¶</a></dt>
 <dd><p>The array-protocol typestring of this data-type object.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="numpy.dtype.subdtype">
-<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">subdtype</span></span><a class="headerlink" href="#numpy.dtype.subdtype" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dtype.</span></span><span class="sig-name descname"><span class="pre">subdtype</span></span><a class="headerlink" href="#numpy.dtype.subdtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tuple <code class="docutils literal notranslate"><span class="pre">(item_dtype,</span> <span class="pre">shape)</span></code> if this <cite>dtype</cite> describes a sub-array, and
 None otherwise.</p>
 <p>The <em>shape</em> is the fixed shape of the sub-array described by this
@@ -559,14 +639,14 @@ the end of the retrieved array.</p>
 
 </section>
 <section id="public-methods">
-<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="numpy.dtype.newbyteorder">
-<span class="sig-prename descclassname"><span class="pre">numpy.dtype.</span></span><span class="sig-name descname"><span class="pre">newbyteorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'S'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#numpy.dtype.newbyteorder" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">numpy.dtype.</span></span><span class="sig-name descname"><span class="pre">newbyteorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'S'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#numpy.dtype.newbyteorder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a new dtype with a different byte order.</p>
 <p>Changes are also made in all fields and sub-arrays of the data type.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>new_order</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Byte order to force; a value from the byte order specifications
 below.  The default value (‘S’) results in swapping the current
 byte order.  <cite>new_order</cite> codes can be any of:</p>
@@ -579,10 +659,10 @@ byte order.  <cite>new_order</cite> codes can be any of:</p>
 </ul>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>new_dtype</strong> – New dtype object with the given change to the byte order.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#numpy.dtype" title="numpy.dtype">dtype</a></p>
 </dd>
 </dl>
@@ -624,33 +704,50 @@ byte order.  <cite>new_order</cite> codes can be any of:</p>
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Device.html" class="btn btn-neutral float-left" title="dpctl.tensor.Device" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="usm_ndarray.html" class="btn btn-neutral float-right" title="dpctl.tensor.usm_ndarray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Device.html" class="btn btn-neutral float-left" title="dpctl.tensor.Device" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-21, Intel Corp..</p>
-  </div>
+    <p>
+        &#169; Copyright 2020-21, Intel Corp..
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
