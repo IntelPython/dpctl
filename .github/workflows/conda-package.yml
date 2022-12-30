@@ -207,11 +207,12 @@ jobs:
         shell: cmd /C CALL {0}
         run: conda index ${{ env.workdir }}\channel
 
-      - name: Dump dpctl version info from created channel
+      - name: Dump dpctl version info from created channel into ver.json
         shell: cmd /C CALL {0}
         run: |
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
-          type ${{ env.workdir }}\ver.json
+      - name: Output content of produced ver.json
+        run: Get-Content -Path ${{ env.workdir }}\ver.json
       - name: Collect dependencies
         shell: cmd /C CALL {0}
         run: |
@@ -224,10 +225,7 @@ jobs:
           )
           conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
       - name: Display lockfile content
-        shell: cmd /C CALL {0}
-        run: |
-          echo "Outputting content of lockfile:"
-          type lockfile
+        run: Get-Content -Path .\lockfile
       - name: Cache conda packages
         uses: actions/cache@v3
         env:
