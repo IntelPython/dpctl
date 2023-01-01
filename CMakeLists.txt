@@ -33,8 +33,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.1.tar.gz
-    URL_HASH SHA256=111014b516b625083bef701df7880f78c2243835abdb263065b6b59b960b6bad
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.2.tar.gz
+    URL_HASH SHA256=93bd1e625e43e03028a3ea7389bba5d3f9f2596abc074b068e70f4ef9b1314ae
 )
 FetchContent_MakeAvailable(pybind11)
 
