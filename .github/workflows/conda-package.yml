@@ -452,7 +452,7 @@ jobs:
                     -DMKL_INCLUDE_DIR=${MKLROOT}/include \
                     -DTBB_INCLUDE_DIR=${TBBROOT}/include || exit 1
             else
-               CC=dpcpp CXX=dpcpp LDSHARED="dpcpp -shared" \
+               CC=icx CXX=icpx CFLAGS="-fsycl" LDSHARED="dpcpp -shared" \
                     python setup.py build_ext --inplace || exit 1
             fi
             conda deactivate
