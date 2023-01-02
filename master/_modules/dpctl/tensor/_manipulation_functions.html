@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+4.g41c48b46f documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.gafa1b8654 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.14.1dev1+4.g41c48b46f
+                0.14.1dev1+7.gafa1b8654
               </div>
             
           
@@ -201,7 +201,7 @@
 
 
 <span class="k">def</span> <span class="nf">_broadcast_strides</span><span class="p">(</span><span class="n">X_shape</span><span class="p">,</span> <span class="n">X_strides</span><span class="p">,</span> <span class="n">res_ndim</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcasts strides to match the given dimensions;</span>
 <span class="sd">    returns tuple type strides.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -218,7 +218,7 @@
 
 
 <span class="k">def</span> <span class="nf">_broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcast the input shapes into a single shape;</span>
 <span class="sd">    returns tuple broadcasted shape.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -259,7 +259,7 @@
 
 
 <div class="viewcode-block" id="permute_dims"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims">[docs]</a><span class="k">def</span> <span class="nf">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    permute_dims(X: usm_ndarray, axes: tuple or list) -&gt; usm_ndarray</span>
 
 <span class="sd">    Permute the axes (dimensions) of an array; returns the permuted</span>
@@ -287,7 +287,7 @@
 
 
 <div class="viewcode-block" id="expand_dims"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims">[docs]</a><span class="k">def</span> <span class="nf">expand_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    expand_dims(X: usm_ndarray, axes: int or tuple or list) -&gt; usm_ndarray</span>
 
 <span class="sd">    Expands the shape of an array by inserting a new axis (dimension)</span>
@@ -309,7 +309,7 @@
 
 
 <div class="viewcode-block" id="squeeze"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.squeeze">[docs]</a><span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    squeeze(X: usm_ndarray, axes: int or tuple or list) -&gt; usm_ndarray</span>
 
 <span class="sd">    Removes singleton dimensions (axes) from X; returns a view, if possible,</span>
@@ -343,7 +343,7 @@
 
 
 <div class="viewcode-block" id="broadcast_to"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_to">[docs]</a><span class="k">def</span> <span class="nf">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    broadcast_to(X: usm_ndarray, shape: tuple or list) -&gt; usm_ndarray</span>
 
 <span class="sd">    Broadcast an array to a new shape; returns the broadcasted</span>
@@ -369,7 +369,7 @@
 
 
 <div class="viewcode-block" id="broadcast_arrays"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_arrays">[docs]</a><span class="k">def</span> <span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    broadcast_arrays(*args: usm_ndarrays) -&gt; list of usm_ndarrays</span>
 
 <span class="sd">    Broadcasts one or more usm_ndarrays against one another.</span>
@@ -387,7 +387,7 @@
 
 
 <div class="viewcode-block" id="flip"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.flip">[docs]</a><span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    flip(X: usm_ndarray, axes: int or tuple or list) -&gt; usm_ndarray</span>
 
 <span class="sd">    Reverses the order of elements in an array along the given axis.</span>
@@ -408,7 +408,7 @@
 
 
 <div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    roll(X: usm_ndarray, shift: int or tuple or list,\</span>
 <span class="sd">         axes: int or tuple or list) -&gt; usm_ndarray</span>
 
@@ -513,7 +513,7 @@
 
 
 <div class="viewcode-block" id="concat"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.concat">[docs]</a><span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    concat(arrays: tuple or list of usm_ndarrays, axis: int) -&gt; usm_ndarray</span>
 
 <span class="sd">    Joins a sequence of arrays along an existing axis.</span>
@@ -559,7 +559,7 @@
 
 
 <div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    stack(arrays: tuple or list of usm_ndarrays, axis: int) -&gt; usm_ndarray</span>
 
 <span class="sd">    Joins a sequence of arrays along a new axis.</span>
@@ -601,7 +601,7 @@
 
 
 <div class="viewcode-block" id="can_cast"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.can_cast">[docs]</a><span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    can_cast(from: usm_ndarray or dtype, to: dtype) -&gt; bool</span>
 
 <span class="sd">    Determines if one data type can be cast to another data type according \</span>
@@ -622,7 +622,7 @@
 
 
 <div class="viewcode-block" id="result_type"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.result_type">[docs]</a><span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    result_type(arrays_and_dtypes: an arbitrary number usm_ndarrays or dtypes)\</span>
 <span class="sd">         -&gt; dtype</span>
 
@@ -640,7 +640,7 @@
 
 
 <div class="viewcode-block" id="iinfo"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.iinfo">[docs]</a><span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    iinfo(dtype: integer data-type) -&gt; iinfo_object</span>
 
 <span class="sd">    Returns machine limits for integer data types.</span>
@@ -652,7 +652,7 @@
 
 
 <div class="viewcode-block" id="finfo"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.finfo">[docs]</a><span class="k">def</span> <span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    finfo(type: float data-type) -&gt; finfo_object</span>
 
 <span class="sd">    Returns machine limits for float data types.</span>

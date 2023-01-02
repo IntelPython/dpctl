@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor._reshape &mdash; Data-parallel Control (dpctl) 0.14.1dev1+4.g41c48b46f documentation</title>
+  <title>dpctl.tensor._reshape &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.gafa1b8654 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.14.1dev1+4.g41c48b46f
+                0.14.1dev1+7.gafa1b8654
               </div>
             
           
@@ -194,7 +194,7 @@
 
 
 <span class="k">def</span> <span class="nf">_make_unit_indexes</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a diagonal matrix with with one on the diagonal</span>
 <span class="sd">    except if the corresponding element of shape is 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -206,7 +206,7 @@
 
 
 <span class="k">def</span> <span class="nf">reshaped_strides</span><span class="p">(</span><span class="n">old_sh</span><span class="p">,</span> <span class="n">old_sts</span><span class="p">,</span> <span class="n">new_sh</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When reshaping array with `old_sh` shape and `old_sts` strides</span>
 <span class="sd">    into the new shape `new_sh`, returns the new stride if the reshape</span>
 <span class="sd">    can be a view, otherwise returns `None`.</span>
@@ -245,7 +245,7 @@
 
 
 <div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    reshape(X: usm_ndarray, newshape: tuple, order=&quot;C&quot;) -&gt; usm_ndarray</span>
 
 <span class="sd">    Reshapes given usm_ndarray into new shape. Returns a view, if possible,</span>

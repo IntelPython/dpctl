@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.14.1dev1+4.g41c48b46f documentation</title>
+  <title>Device Selection &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.gafa1b8654 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.14.1dev1+4.g41c48b46f
+                0.14.1dev1+7.gafa1b8654
               </div>
             
           
@@ -216,7 +216,7 @@ device, a <code class="docutils literal notranslate"><span class="pre">ValueErro
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="k">def</span> <span class="nf">create_gpu_device</span><span class="p">():</span>
-<span class="linenos"> 4</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 5</span><span class="sd">    Create a GPU device.</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="sd">    Device created can be influenced by environment variable</span>
@@ -256,7 +256,7 @@ strings.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="k">def</span> <span class="nf">select_using_filter</span><span class="p">():</span>
-<span class="linenos"> 4</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 5</span><span class="sd">    Demonstrate the usage of a filter string to create a SyclDevice.</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="sd">    &quot;&quot;&quot;</span>
@@ -291,12 +291,12 @@ strings.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-filter-selection"><span class="std std-ref">Device Creation With Filter Strings</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example select_using_filter
-    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
     Driver version  2022.15.12.0.01_081451
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
 
-    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
     Driver version  2022.15.12.0.01_081451
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
@@ -319,7 +319,7 @@ otherwise a CPU device should be selected.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="k">def</span> <span class="nf">create_gpu_device_if_present</span><span class="p">():</span>
-<span class="linenos"> 4</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 5</span><span class="sd">    Select from union of two selections using default_selector.</span>
 <span class="linenos"> 6</span><span class="sd">    If a GPU device is available, it will be selected, if not,</span>
 <span class="linenos"> 7</span><span class="sd">    a CPU device will be selected, if available, otherwise an error</span>
@@ -386,7 +386,7 @@ Dpctl helps you to accomplish more advanced device selection.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="k">def</span> <span class="nf">custom_select_device</span><span class="p">():</span>
-<span class="linenos"> 4</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 5</span><span class="sd">    Programmatically select among available devices.</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="sd">    Device created can be influenced by environment variable</span>
@@ -439,7 +439,7 @@ supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="k">def</span> <span class="nf">create_device_with_aspects</span><span class="p">():</span>
-<span class="linenos"> 4</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 5</span><span class="sd">    Programmatically select a device based on specific set of aspects.</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="sd">    Demonstrate the usage of :func:`dpctl.select_device_with_aspects()`.</span>
@@ -453,7 +453,7 @@ supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_device_with_aspects
-    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
     Driver version  2022.15.12.0.01_081451
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.1dev1+4.g41c48b46f documentation</title>
+  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.gafa1b8654 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.14.1dev1+4.g41c48b46f
+                0.14.1dev1+7.gafa1b8654
               </div>
             
           
@@ -188,7 +188,7 @@
 
 
 <div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../../docfiles/dpctl/Device.html#dpctl.tensor.Device">[docs]</a><span class="k">class</span> <span class="nc">Device</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class representing Data-API concept of device.</span>
 
 <span class="sd">    This is a wrapper around :class:`dpctl.SyclQueue` with custom</span>
@@ -208,7 +208,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates instance of Device from argument.</span>
 
 <span class="sd">        Args:</span>
@@ -250,21 +250,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :class:`dpctl.SyclQueue` used to offload to this :class:`.Device`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sycl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :class:`dpctl.SyclContext` associated with this :class:`.Device`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">sycl_context</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :class:`dpctl.SyclDevice` targed by this :class:`.Device`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">sycl_device</span>
@@ -288,14 +288,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call ``wait`` method of the underlying ``sycl_queue``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    normalize_queue_device(sycl_queue=None, device=None)</span>
 
 <span class="sd">    Utility to process exclusive keyword arguments &#39;device&#39;</span>

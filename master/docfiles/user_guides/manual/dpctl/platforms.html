@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Platform &mdash; Data-parallel Control (dpctl) 0.14.1dev1+4.g41c48b46f documentation</title>
+  <title>Platform &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.gafa1b8654 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.14.1dev1+4.g41c48b46f
+                0.14.1dev1+7.gafa1b8654
               </div>
             
           
@@ -200,7 +200,7 @@ abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">def</span> <span class="nf">print_available_platforms</span><span class="p">():</span>
-<span class="linenos"> 5</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 6</span><span class="sd">    Print information about SYCL platforms visible to runtime.</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="sd">    Environment variable `SYCL_DEVICE_FILTER` affects this list.</span>
@@ -209,7 +209,7 @@ abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en
 <span class="linenos">11</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="k">def</span> <span class="nf">list_available_platforms</span><span class="p">():</span>
-<span class="linenos">14</span>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">14</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">15</span><span class="sd">    Get a list of SyclPlatform instances corresponding to platforms</span>
 <span class="linenos">16</span><span class="sd">    visible to SYCL runtime.</span>
 <span class="linenos">17</span>
@@ -221,7 +221,7 @@ abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en
 </pre></div>
 </div>
 <p>To execute the example, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python dpctl/examples/python/lsplatform.py -r all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>dpctl/examples/python/lsplatform.py<span class="w"> </span>-r<span class="w"> </span>all
 </pre></div>
 </div>
 <p>The possible output for the example:</p>
@@ -231,8 +231,8 @@ Intel(R) OpenCL OpenCL 3.0 LINUX
 INFO: ===========================
 
 INFO: Executing example list_available_platforms
-&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fda2f15a230&gt;
-&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fda2f159530&gt;
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7f1828464f30&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7f181ff6d9f0&gt;
 INFO: ===========================
 </pre></div>
 </div>

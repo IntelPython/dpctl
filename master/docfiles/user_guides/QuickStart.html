@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.14.1dev1+4.g41c48b46f documentation</title>
+  <title>Quick Start Guide &mdash; Data-parallel Control (dpctl) 0.14.1dev1+7.gafa1b8654 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.14.1dev1+4.g41c48b46f
+                0.14.1dev1+7.gafa1b8654
               </div>
             
           
@@ -209,8 +209,8 @@ directory:</p>
 <p>Once oneAPI is installed, dpctl is ready to be used by setting up IDP from
 the oneAPI installation. IDP can be set up as follows:</p>
 <p>On Linux OS</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> <span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/intelpython/latest/env/vars.sh
-python -c <span class="s2">&quot;import dpctl; dpctl.lsplatform()&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span><span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/intelpython/latest/env/vars.sh
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import dpctl; dpctl.lsplatform()&quot;</span>
 </pre></div>
 </div>
 <p>On Windows OS</p>
@@ -228,7 +228,7 @@ See <a class="reference external" href="https://dgpu-docs.intel.com/installation
 <section id="install-the-wheel-package-from-pypi">
 <h2>Install the Wheel Package from PyPi<a class="headerlink" href="#install-the-wheel-package-from-pypi" title="Permalink to this heading">¶</a></h2>
 <p>To install dpctl from PyPi, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--index-url<span class="w"> </span>https://pypi.anaconda.org/intel/simple<span class="w"> </span>dpctl
 </pre></div>
 </div>
 <div class="admonition note">
@@ -240,7 +240,7 @@ Anaconda cloud. You also need to set the <code class="docutils literal notransla
 or <code class="docutils literal notranslate"><span class="pre">PATH</span></code> correctly.</p>
 </div>
 <p>On Linux OS</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>&lt;path_to_your_env&gt;/lib
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>&lt;path_to_your_env&gt;/lib
 </pre></div>
 </div>
 <p>On Windows OS</p>
@@ -261,7 +261,7 @@ to proceeding further.</p>
 <section id="activate-oneapi">
 <h4>Activate oneAPI<a class="headerlink" href="#activate-oneapi" title="Permalink to this heading">¶</a></h4>
 <p>On Linux OS</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> <span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/setvars.sh
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span><span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/setvars.sh
 </pre></div>
 </div>
 <p>On Windows OS</p>
@@ -274,8 +274,8 @@ to proceeding further.</p>
 <p>You can use the conda-recipe included with the sources to build the dpctl
 package. The advantage of this approach is that all dependencies are pulled in
 from oneAPI’s intelpython conda channel that is installed as a part of oneAPI.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
-conda build conda-recipe -c <span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/conda_channel
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
+conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span><span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/conda_channel
 </pre></div>
 </div>
 <p>On Windows OS to cope with <a class="reference external" href="https://github.com/IntelPython/dpctl/issues/15">long file names</a>,
@@ -285,7 +285,7 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 </pre></div>
 </div>
 <p>After building the Conda package, install it by executing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install dpctl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>dpctl
 </pre></div>
 </div>
 <div class="admonition note">
@@ -311,16 +311,16 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 </div></blockquote>
 <p>Once the prerequisites are installed, building using <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code> involves the usual steps.</p>
 <p>To build and install, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
 </pre></div>
 </div>
 <p>To develop, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>develop<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
 </pre></div>
 </div>
 <p>On Windows OS, use <code class="docutils literal notranslate"><span class="pre">icx</span></code> for both C and CXX compilers.</p>
 <p>To develop on Linux OS, use the driver script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py
 </pre></div>
 </div>
 </section>
@@ -332,11 +332,11 @@ instead of the DPC++ compiler that comes with oneAPI.</p>
 <p>Do this, to enable support for CUDA devices.</p>
 <p>Following steps in the <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use a command-line option to set
 the relevant CMake variables, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which clang<span class="k">)</span> -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which clang++<span class="k">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>develop<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>clang<span class="k">)</span><span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>clang++<span class="k">)</span>
 </pre></div>
 </div>
 <p>Or you can use the driver script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py --c-compiler<span class="o">=</span><span class="k">$(</span>which clang<span class="k">)</span> --cxx-compiler<span class="o">=</span><span class="k">$(</span>which clang++<span class="k">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--c-compiler<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>clang<span class="k">)</span><span class="w"> </span>--cxx-compiler<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>clang++<span class="k">)</span>
 </pre></div>
 </div>
 <p>You can retrieve available options and their descriptions using the option
@@ -356,10 +356,10 @@ oneAPI.</p>
 <section id="running-the-examples">
 <h3>Running the Examples<a class="headerlink" href="#running-the-examples" title="Permalink to this heading">¶</a></h3>
 <p>After setting up dpctl, you can test the Python examples as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> script <span class="k">in</span> <span class="sb">`</span>ls examples/python/<span class="sb">`</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>script<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>ls<span class="w"> </span>examples/python/<span class="sb">`</span>
 <span class="k">do</span>
-<span class="nb">echo</span> <span class="s2">&quot;executing </span><span class="si">${</span><span class="nv">script</span><span class="si">}</span><span class="s2">&quot;</span>
-python examples/python/<span class="si">${</span><span class="nv">script</span><span class="si">}</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;executing </span><span class="si">${</span><span class="nv">script</span><span class="si">}</span><span class="s2">&quot;</span>
+python<span class="w"> </span>examples/python/<span class="si">${</span><span class="nv">script</span><span class="si">}</span>
 <span class="k">done</span>
 </pre></div>
 </div>
@@ -373,7 +373,7 @@ examples.</p>
 <section id="running-the-python-tests">
 <h3>Running the Python Tests<a class="headerlink" href="#running-the-python-tests" title="Permalink to this heading">¶</a></h3>
 <p>You can execute the dpctl Python test suite as follow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest --pyargs dpctl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pyargs<span class="w"> </span>dpctl
 </pre></div>
 </div>
 </section>
@@ -391,27 +391,27 @@ To build the library, you need:</p>
 <p>For example, on Linux OS the following script can be used to build the C oneAPI
 library.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="nb">set</span> +xe
-rm -rf build
-mkdir build
-<span class="nb">pushd</span> build
+<span class="nb">set</span><span class="w"> </span>+xe
+rm<span class="w"> </span>-rf<span class="w"> </span>build
+mkdir<span class="w"> </span>build
+<span class="nb">pushd</span><span class="w"> </span>build
 
 <span class="nv">INSTALL_PREFIX</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/../install
-rm -rf <span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>
-<span class="nb">export</span> <span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
+rm<span class="w"> </span>-rf<span class="w"> </span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
 <span class="nv">DPCPP_ROOT</span><span class="o">=</span><span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/compiler/latest/linux
 
-cmake                                                       <span class="se">\</span>
-    -DCMAKE_BUILD_TYPE<span class="o">=</span>Release                              <span class="se">\</span>
-    -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>                <span class="se">\</span>
-    -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>                   <span class="se">\</span>
-    -DDPCPP_INSTALL_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>                       <span class="se">\</span>
-    -DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/icx           <span class="se">\</span>
-    -DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/dpcpp       <span class="se">\</span>
-    -DDPCTL_BUILD_CAPI_TESTS<span class="o">=</span>ON                             <span class="se">\</span>
-    ..
+cmake<span class="w">                                                       </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w">                              </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="w">                </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_PREFIX_PATH<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="w">                   </span><span class="se">\</span>
+<span class="w">    </span>-DDPCPP_INSTALL_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span><span class="w">                       </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/icx<span class="w">           </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/dpcpp<span class="w">       </span><span class="se">\</span>
+<span class="w">    </span>-DDPCTL_BUILD_CAPI_TESTS<span class="o">=</span>ON<span class="w">                             </span><span class="se">\</span>
+<span class="w">    </span>..
 
-make <span class="nv">V</span><span class="o">=</span><span class="m">1</span> -n -j <span class="m">4</span> <span class="o">&amp;&amp;</span> make check <span class="o">&amp;&amp;</span> make install
+make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-n<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>check<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
 </pre></div>
 </div>
 </section>
