@@ -120,11 +120,6 @@ void simplify_iteration_space(int &nd,
         simplified_dst_strides.resize(contracted_nd);
 
         nd = contracted_nd;
-        shape = const_cast<const py::ssize_t *>(simplified_shape.data());
-        src_strides =
-            const_cast<const py::ssize_t *>(simplified_src_strides.data());
-        dst_strides =
-            const_cast<const py::ssize_t *>(simplified_dst_strides.data());
     }
     else if (nd == 1) {
         // Populate vectors
@@ -171,6 +166,11 @@ void simplify_iteration_space(int &nd,
         assert(simplified_src_strides.size() == static_cast<size_t>(nd));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
+    shape = const_cast<const py::ssize_t *>(simplified_shape.data());
+    src_strides =
+        const_cast<const py::ssize_t *>(simplified_src_strides.data());
+    dst_strides =
+        const_cast<const py::ssize_t *>(simplified_dst_strides.data());
 }
 
 } // namespace py_internal
