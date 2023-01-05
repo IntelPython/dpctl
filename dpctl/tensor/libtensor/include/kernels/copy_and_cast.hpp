@@ -51,14 +51,14 @@ template <typename srcT, typename dstT> class Caster
 {
 public:
     Caster() = default;
-    void operator()(char *src,
+    void operator()(const char *src,
                     std::ptrdiff_t src_offset,
                     char *dst,
                     std::ptrdiff_t dst_offset) const
     {
         using dpctl::tensor::type_utils::convert_impl;
 
-        srcT *src_ = reinterpret_cast<srcT *>(src) + src_offset;
+        const srcT *src_ = reinterpret_cast<const srcT *>(src) + src_offset;
         dstT *dst_ = reinterpret_cast<dstT *>(dst) + dst_offset;
         *dst_ = convert_impl<dstT, srcT>(*src_);
     }
@@ -67,17 +67,17 @@ public:
 template <typename CastFnT> class GenericCopyFunctor
 {
 private:
-    char *src_ = nullptr;
+    const char *src_ = nullptr;
     char *dst_ = nullptr;
-    py::ssize_t *shape_strides_ = nullptr;
+    const py::ssize_t *shape_strides_ = nullptr;
     int nd_ = 0;
     py::ssize_t src_offset0 = 0;
     py::ssize_t dst_offset0 = 0;
 
 public:
-    GenericCopyFunctor(char *src_cp,
+    GenericCopyFunctor(const char *src_cp,
                        char *dst_cp,
-                       py::ssize_t *shape_strides,
+                       const py::ssize_t *shape_strides,
                        int nd,
                        py::ssize_t src_offset,
                        py::ssize_t dst_offset)
@@ -93,13 +93,11 @@ public:
         CIndexer_vector<py::ssize_t> indxr(nd_);
         indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
             static_cast<py::ssize_t>(wiid.get(0)),
-            const_cast<const py::ssize_t *>(shape_strides_), // common shape
-            const_cast<const py::ssize_t *>(shape_strides_ +
-                                            nd_), // src strides
-            const_cast<const py::ssize_t *>(shape_strides_ +
-                                            2 * nd_), // dst strides
-            src_offset,                               // modified by reference
-            dst_offset                                // modified by reference
+            shape_strides_,           // common shape
+            shape_strides_ + nd_,     // src strides
+            shape_strides_ + 2 * nd_, // dst strides
+            src_offset,               // modified by reference
+            dst_offset                // modified by reference
         );
         CastFnT fn{};
         fn(src_, src_offset0 + src_offset, dst_, dst_offset0 + dst_offset);
@@ -109,7 +107,7 @@ public:
 template <int nd, typename CastFnT> class NDSpecializedCopyFunctor
 {
 private:
-    char *src_ = nullptr;
+    const char *src_ = nullptr;
     char *dst_ = nullptr;
     CIndexer_array<nd, py::ssize_t> indxr;
     const std::array<py::ssize_t, nd> src_strides_;
@@ -119,8 +117,8 @@ private:
     py::ssize_t dst_offset0 = 0;
 
 public:
-    NDSpecializedCopyFunctor(char *src_cp, // USM pointer
-                             char *dst_cp, // USM pointer
+    NDSpecializedCopyFunctor(const char *src_cp, // USM pointer
+                             char *dst_cp,       // USM pointer
                              const std::array<py::ssize_t, nd> shape,
                              const std::array<py::ssize_t, nd> src_strides,
                              const std::array<py::ssize_t, nd> dst_strides,
@@ -140,8 +138,10 @@ public:
 
         local_indxr.set(wiid.get(0));
         auto mi = local_indxr.get();
+#pragma unroll
         for (int i = 0; i < nd; ++i)
             src_offset += mi[i] * src_strides_[i];
+#pragma unroll
         for (int i = 0; i < nd; ++i)
             dst_offset += mi[i] * dst_strides_[i];
 
@@ -161,8 +161,8 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     sycl::queue,
     size_t,
     int,
-    py::ssize_t *,
-    char *,
+    const py::ssize_t *,
+    const char *,
     py::ssize_t,
     char *,
     py::ssize_t,
@@ -207,8 +207,8 @@ sycl::event
 copy_and_cast_generic_impl(sycl::queue q,
                            size_t nelems,
                            int nd,
-                           py::ssize_t *shape_and_strides,
-                           char *src_p,
+                           const py::ssize_t *shape_and_strides,
+                           const char *src_p,
                            py::ssize_t src_offset,
                            char *dst_p,
                            py::ssize_t dst_offset,
@@ -256,7 +256,7 @@ typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     const std::array<py::ssize_t, 1>,
     const std::array<py::ssize_t, 1>,
     const std::array<py::ssize_t, 1>,
-    char *,
+    const char *,
     py::ssize_t,
     char *,
     py::ssize_t,
@@ -272,7 +272,7 @@ typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     const std::array<py::ssize_t, 2>,
     const std::array<py::ssize_t, 2>,
     const std::array<py::ssize_t, 2>,
-    char *,
+    const char *,
     py::ssize_t,
     char *,
     py::ssize_t,
@@ -314,7 +314,7 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
                                   const std::array<py::ssize_t, nd> shape,
                                   const std::array<py::ssize_t, nd> src_strides,
                                   const std::array<py::ssize_t, nd> dst_strides,
-                                  char *src_p,
+                                  const char *src_p,
                                   py::ssize_t src_offset,
                                   char *dst_p,
                                   py::ssize_t dst_offset,
