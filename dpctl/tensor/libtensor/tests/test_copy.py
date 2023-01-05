@@ -40,6 +40,14 @@ _typestrs_list = [
 ]
 
 
+def _typestr_has_fp64(arr_typestr):
+    return arr_typestr in ["f8", "c16"]
+
+
+def _typestr_has_fp16(arr_typestr):
+    return arr_typestr in ["f2"]
+
+
 @pytest.fixture(params=_usm_types_list)
 def usm_type(request):
     return request.param
@@ -95,6 +103,14 @@ def test_copy1d_c_contig(src_typestr, dst_typestr):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
+    if not q.sycl_device.has_aspect_fp64 and (
+        _typestr_has_fp64(src_typestr) or _typestr_has_fp64(dst_typestr)
+    ):
+        pytest.skip("Device does not support double precision")
+    if not q.sycl_device.has_aspect_fp16 and (
+        _typestr_has_fp16(src_typestr) or _typestr_has_fp16(dst_typestr)
+    ):
+        pytest.skip("Device does not support half precision")
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
     Xnp = _random_vector(4096, src_dt)
@@ -113,6 +129,14 @@ def test_copy1d_strided(src_typestr, dst_typestr):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
+    if not q.sycl_device.has_aspect_fp64 and (
+        _typestr_has_fp64(src_typestr) or _typestr_has_fp64(dst_typestr)
+    ):
+        pytest.skip("Device does not support double precision")
+    if not q.sycl_device.has_aspect_fp16 and (
+        _typestr_has_fp16(src_typestr) or _typestr_has_fp16(dst_typestr)
+    ):
+        pytest.skip("Device does not support half precision")
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
     Xnp = _random_vector(4096, src_dt)
@@ -131,7 +155,12 @@ def test_copy1d_strided(src_typestr, dst_typestr):
         assert are_close(Ynp, dpt.asnumpy(Y))
 
     # now 0-strided source
-    X = dpt.usm_ndarray((4096,), dtype=src_typestr, strides=(0,))
+    X = dpt.usm_ndarray(
+        (4096,),
+        dtype=src_typestr,
+        strides=(0,),
+        buffer_ctor_kwargs={"queue": q},
+    )
     X[0] = Xnp[0]
     Y = dpt.empty(X.shape, dtype=dst_typestr, sycl_queue=q)
     hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
@@ -145,6 +174,14 @@ def test_copy1d_strided2(src_typestr, dst_typestr):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
+    if not q.sycl_device.has_aspect_fp64 and (
+        _typestr_has_fp64(src_typestr) or _typestr_has_fp64(dst_typestr)
+    ):
+        pytest.skip("Device does not support double precision")
+    if not q.sycl_device.has_aspect_fp16 and (
+        _typestr_has_fp16(src_typestr) or _typestr_has_fp16(dst_typestr)
+    ):
+        pytest.skip("Device does not support half precision")
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
     Xnp = _random_vector(4096, src_dt)
@@ -172,6 +209,14 @@ def test_copy2d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
+    if not q.sycl_device.has_aspect_fp64 and (
+        _typestr_has_fp64(src_typestr) or _typestr_has_fp64(dst_typestr)
+    ):
+        pytest.skip("Device does not support double precision")
+    if not q.sycl_device.has_aspect_fp16 and (
+        _typestr_has_fp16(src_typestr) or _typestr_has_fp16(dst_typestr)
+    ):
+        pytest.skip("Device does not support half precision")
 
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
@@ -188,16 +233,16 @@ def test_copy2d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2):
         slice(None, None, st1 * sgn1),
         slice(None, None, st2 * sgn2),
     ]
-    Y = dpt.empty((n1, n2), dtype=dst_dt)
+    Y = dpt.empty((n1, n2), dtype=dst_dt, device=X.device)
     hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
     Ynp = _force_cast(Xnp, dst_dt)
     hev.wait()
     assert are_close(Ynp, dpt.asnumpy(Y))
-    Yst = dpt.empty((2 * n1, n2), dtype=dst_dt)[::2, ::-1]
+    Yst = dpt.empty((2 * n1, n2), dtype=dst_dt, device=X.device)[::2, ::-1]
     hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=X, dst=Yst, sycl_queue=q
     )
-    Y = dpt.empty((n1, n2), dtype=dst_dt)
+    Y = dpt.empty((n1, n2), dtype=dst_dt, device=X.device)
     hev2, ev2 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=Yst, dst=Y, sycl_queue=q, depends=[ev]
     )
@@ -220,6 +265,14 @@ def test_copy3d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2, st3, sgn3):
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
 
+    if not q.sycl_device.has_aspect_fp64 and (
+        _typestr_has_fp64(src_typestr) or _typestr_has_fp64(dst_typestr)
+    ):
+        pytest.skip("Device does not support double precision")
+    if not q.sycl_device.has_aspect_fp16 and (
+        _typestr_has_fp16(src_typestr) or _typestr_has_fp16(dst_typestr)
+    ):
+        pytest.skip("Device does not support half precision")
     src_dt = np.dtype(src_typestr)
     dst_dt = np.dtype(dst_typestr)
     n1, n2, n3 = 5, 4, 6
@@ -237,16 +290,16 @@ def test_copy3d(src_typestr, dst_typestr, st1, sgn1, st2, sgn2, st3, sgn3):
         slice(None, None, st2 * sgn2),
         slice(None, None, st3 * sgn3),
     ]
-    Y = dpt.empty((n1, n2, n3), dtype=dst_dt)
+    Y = dpt.empty((n1, n2, n3), dtype=dst_dt, device=X.device)
     hev, ev = ti._copy_usm_ndarray_into_usm_ndarray(src=X, dst=Y, sycl_queue=q)
     Ynp = _force_cast(Xnp, dst_dt)
     hev.wait()
     assert are_close(Ynp, dpt.asnumpy(Y)), "1"
-    Yst = dpt.empty((2 * n1, n2, n3), dtype=dst_dt)[::2, ::-1]
+    Yst = dpt.empty((2 * n1, n2, n3), dtype=dst_dt, device=X.device)[::2, ::-1]
     hev2, ev2 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=X, dst=Yst, sycl_queue=q
     )
-    Y2 = dpt.empty((n1, n2, n3), dtype=dst_dt)
+    Y2 = dpt.empty((n1, n2, n3), dtype=dst_dt, device=X.device)
     hev3, ev3 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=Yst, dst=Y2, sycl_queue=q, depends=[ev2]
     )
