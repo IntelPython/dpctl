@@ -1168,6 +1168,21 @@ def test_linspace_fp():
     assert X.strides == (1,)
 
 
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_linspace_fp_max(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    n = 16
+    dt = dpt.dtype(dtype)
+    max_ = dpt.finfo(dt).max
+    X = dpt.linspace(max_, max_, endpoint=True, num=n, dtype=dt, sycl_queue=q)
+    assert X.shape == (n,)
+    assert X.strides == (1,)
+    assert np.allclose(
+        dpt.asnumpy(X), np.linspace(max_, max_, endpoint=True, num=n, dtype=dt)
+    )
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes,
