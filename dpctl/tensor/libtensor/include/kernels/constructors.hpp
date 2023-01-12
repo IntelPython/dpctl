@@ -230,11 +230,26 @@ public:
         wTy w = wTy(n - i) / n;
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (is_complex<Ty>::value) {
-            auto _w = static_cast<typename Ty::value_type>(w);
-            auto _wc = static_cast<typename Ty::value_type>(wc);
-            auto re_comb = start_v.real() * _w + end_v.real() * _wc;
-            auto im_comb = start_v.imag() * _w + end_v.imag() * _wc;
+            using reT = typename Ty::value_type;
+            auto _w = static_cast<reT>(w);
+            auto _wc = static_cast<reT>(wc);
+            auto re_comb = sycl::fma(start_v.real(), _w, reT(0));
+            re_comb =
+                sycl::fma(end_v.real(), _wc,
+                          re_comb); // start_v.real() * _w + end_v.real() * _wc;
+            auto im_comb =
+                sycl::fma(start_v.imag(), _w,
+                          reT(0)); // start_v.imag() * _w + end_v.imag() * _wc;
+            im_comb = sycl::fma(end_v.imag(), _wc, im_comb);
             Ty affine_comb = Ty{re_comb, im_comb};
+            p[i] = affine_comb;
+        }
+        else if constexpr (std::is_floating_point<Ty>::value) {
+            Ty _w = static_cast<Ty>(w);
+            Ty _wc = static_cast<Ty>(wc);
+            auto affine_comb =
+                sycl::fma(start_v, _w, Ty(0)); // start_v * w + end_v * wc;
+            affine_comb = sycl::fma(end_v, _wc, affine_comb);
             p[i] = affine_comb;
         }
         else {
