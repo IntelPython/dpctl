@@ -35,10 +35,10 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install doxygen
-      - name: Install CMake and Ninja
+      - name: Install Ninja
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
-          sudo apt-get install cmake ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         uses: actions/setup-python@v4
@@ -49,7 +49,7 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools scikit-build sphinx sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput
+          pip install numpy cython setuptools scikit-build cmake sphinx sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
