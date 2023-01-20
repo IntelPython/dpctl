@@ -76,14 +76,21 @@ template <typename T> void validate_type_for_device(const sycl::device &d)
         if (!d.has(sycl::aspect::fp64)) {
             throw std::runtime_error("Device " +
                                      d.get_info<sycl::info::device::name>() +
-                                     " does not support type 'double'");
+                                     " does not support type 'float64'");
+        }
+    }
+    else if constexpr (std::is_same_v<T, std::complex<double>>) {
+        if (!d.has(sycl::aspect::fp64)) {
+            throw std::runtime_error("Device " +
+                                     d.get_info<sycl::info::device::name>() +
+                                     " does not support type 'complex128'");
         }
     }
     else if constexpr (std::is_same_v<T, sycl::half>) {
         if (!d.has(sycl::aspect::fp16)) {
             throw std::runtime_error("Device " +
                                      d.get_info<sycl::info::device::name>() +
-                                     " does not support type 'half'");
+                                     " does not support type 'float16'");
         }
     }
 }
