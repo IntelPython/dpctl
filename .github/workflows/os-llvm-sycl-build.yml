@@ -15,6 +15,7 @@ jobs:
       OCLCPUEXP_FN: oclcpuexp-2022.15.12.0.01_rel.tar.gz
       FPGAEMU_FN: fpgaemu-2022.15.12.0.01_rel.tar.gz
       TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2021.7.0/
+      TBB_INSTALL_DIR: oneapi-tbb-2021.7.0
       TBB_FN: oneapi-tbb-2021.7.0-lin.tgz
 
     steps:
@@ -79,7 +80,7 @@ jobs:
               mkdir -p fpgaemu
               [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
               [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
-              [ -d oneapi-tbb-2021.5.0/lib ] || tar xf ${TBB_FN}
+              [ -d ${TBB_INSTALL_DIR}/lib ] || tar xf ${TBB_FN}
               mkdir -p dpcpp_compiler/lib
               mkdir -p dpcpp_compiler/lib/oclfpga
               touch dpcpp_compiler/lib/oclfpga/fpgavars.sh
@@ -106,6 +107,28 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Report compiler version
+        shell: bash -l {0}
+        run: |
+          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
+          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          clang++ --version
+
+      - name: Run sycl-ls
+        shell: bash -l {0}
+        run: |
+          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
+          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          sycl-ls
+
       - name: build dpctl
         shell: bash -l {0}
         run: |
@@ -113,10 +136,29 @@ jobs:
           source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oneapi-tbb-2021.5.0/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
           export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
-          clang++ --version
-          sycl-ls
           CC=clang CXX=clang++ python setup.py develop -G Ninja
-          python -c "import dpctl; dpctl.lsplatform()" || exit 1
+
+      - name: Run lsplatforms
+        shell: bash -l {0}
+        run: |
+          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
+          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          python -m dpctl -f || exit 1
+          python -m pytest -v dpctl/tests
+
+      - name: Run dpctl/tests
+        shell: bash -l {0}
+        run: |
+          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
+          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
           python -m pytest -v dpctl/tests
