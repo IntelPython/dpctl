@@ -283,6 +283,35 @@ def _is_object_with_buffer_protocol(obj):
         return False
 
 
+def _ensure_native_dtype_device_support(dtype, dev) -> None:
+    """Check that dtype is natively supported by device.
+
+    Arg:
+       dtype: elemental data-type
+       dev: :class:`dpctl.SyclDevice`
+    Return:
+       None
+    Raise:
+       ValueError is device does not natively support this dtype.
+    """
+    if dtype in [dpt.float64, dpt.complex128] and not dev.has_aspect_fp64:
+        raise ValueError(
+            f"Device {dev.name} does not provide native support "
+            "for double-precision floating point type."
+        )
+    if (
+        dtype
+        in [
+            dpt.float16,
+        ]
+        and not dev.has_aspect_fp16
+    ):
+        raise ValueError(
+            f"Device {dev.name} does not provide native support "
+            "for half-precision floating point type."
+        )
+
+
 def asarray(
     obj,
     dtype=None,
@@ -474,6 +503,7 @@ def empty(
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -651,6 +681,7 @@ def zeros(
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
