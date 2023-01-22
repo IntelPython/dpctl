@@ -39,7 +39,7 @@
 #endif
 #include <sstream>
 
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
 // clang-format off
@@ -332,7 +332,7 @@ _GetKernel_ocl_impl(const kernel_bundle<bundle_state::executable> &kb,
     }
 }
 
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM
 
 #ifdef __linux__
 static const char *zeLoaderName = DPCTL_LIBZE_LOADER_FILENAME;
@@ -579,7 +579,7 @@ bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
     return false;
 }
 
-#endif /* #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION */
+#endif /* #ifdef DPCTL_ENABLE_L0_PROGRAM */
 
 } /* end of anonymous namespace */
 
@@ -619,11 +619,11 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
                                                    length, CompileOpts);
         break;
     case backend::ext_oneapi_level_zero:
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_PROGRAM
         KBRef = _CreateKernelBundleWithIL_ze_impl(*SyclCtx, *SyclDev, IL,
                                                   length, CompileOpts);
-#endif
         break;
+#endif
     default:
         error_handler("Backend " + std::to_string(static_cast<int>(BE)) +
                           " is not supported",
@@ -671,8 +671,9 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
         }
         break;
     case backend::ext_oneapi_level_zero:
-        error_handler("CreateFromSource is not supported in Level Zero.",
-                      __FILE__, __func__, __LINE__);
+        error_handler(
+            "CreateFromSource is not supported for Level Zero backend.",
+            __FILE__, __func__, __LINE__);
         return nullptr;
     default:
         error_handler("CreateFromSource is not supported in unknown backend.",
@@ -700,7 +701,9 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
     case sycl::backend::opencl:
         return _GetKernel_ocl_impl(*SyclKB, KernelName);
     case sycl::backend::ext_oneapi_level_zero:
+#ifdef DPCTL_ENABLE_L0_PROGRAM
         return _GetKernel_ze_impl(*SyclKB, KernelName);
+#endif
     default:
         error_handler("Backend " + std::to_string(static_cast<int>(be)) +
                           " is not supported.",
@@ -728,7 +731,9 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
     case sycl::backend::opencl:
         return _HasKernel_ocl_impl(*SyclKB, KernelName);
     case sycl::backend::ext_oneapi_level_zero:
+#ifdef DPCTL_ENABLE_L0_PROGRAM
         return _HasKernel_ze_impl(*SyclKB, KernelName);
+#endif
     default:
         error_handler("Backend " + std::to_string(static_cast<int>(be)) +
                           " is not supported.",
