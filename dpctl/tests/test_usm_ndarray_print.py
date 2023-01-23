@@ -211,6 +211,16 @@ class TestPrintFns(TestPrint):
         x = dpt.arange(4, dtype="i4", sycl_queue=q)
         assert repr(x) == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
 
+        dpt.set_print_options(linewidth=1)
+        np.testing.assert_equal(
+            repr(x),
+            "usm_ndarray([0,"
+            "\n             1,"
+            "\n             2,"
+            "\n             3],"
+            "\n            dtype=int32)",
+        )
+
     def test_print_repr_abbreviated(self):
         q = get_queue_or_skip()
 
@@ -235,6 +245,19 @@ class TestPrintFns(TestPrint):
             "usm_ndarray([[0, ..., 2],"
             "\n             ...,"
             "\n             [6, ..., 8]], dtype=int32)",
+        )
+
+        dpt.set_print_options(linewidth=1)
+        np.testing.assert_equal(
+            repr(y),
+            "usm_ndarray([[0,"
+            "\n              ...,"
+            "\n              2],"
+            "\n             ...,"
+            "\n             [6,"
+            "\n              ...,"
+            "\n              8]],"
+            "\n            dtype=int32)",
         )
 
     @pytest.mark.parametrize(
