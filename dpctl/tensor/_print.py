@@ -316,7 +316,11 @@ def _usm_ndarray_repr(x, line_width=None, precision=None, suppress=None):
         dtype_str = "dtype={}".format(x.dtype.name)
         bottom_len = len(s) - (s.rfind("\n") + 1)
         next_line = bottom_len + len(dtype_str) + 1 > line_width
-        dtype_str = ",\n" + dtype_str if next_line else ", " + dtype_str
+        dtype_str = (
+            ",\n" + " " * len(prefix) + dtype_str
+            if next_line
+            else ", " + dtype_str
+        )
     else:
         dtype_str = ""
 
