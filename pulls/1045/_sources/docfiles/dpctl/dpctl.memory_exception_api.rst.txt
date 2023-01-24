@@ -1,0 +1,9 @@
+.. _dpctl.memory_exception_api:
+
+#######################
+dpctl.memory Exceptions
+#######################
+
+
+.. currentmodule:: dpctl.memory
+
