@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.1dev1+31.g313bd8a78 documentation</title>
+  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.1dev1+35.g701d8212f documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.14.1dev1+31.g313bd8a78
+                0.14.1dev1+35.g701d8212f
               </div>
             
           
@@ -485,7 +485,11 @@
         <span class="n">dtype_str</span> <span class="o">=</span> <span class="s2">&quot;dtype=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">bottom_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">next_line</span> <span class="o">=</span> <span class="n">bottom_len</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">dtype_str</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">line_width</span>
-        <span class="n">dtype_str</span> <span class="o">=</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">dtype_str</span> <span class="k">if</span> <span class="n">next_line</span> <span class="k">else</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">dtype_str</span>
+        <span class="n">dtype_str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="n">dtype_str</span>
+            <span class="k">if</span> <span class="n">next_line</span>
+            <span class="k">else</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">dtype_str</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dtype_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
