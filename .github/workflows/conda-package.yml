@@ -175,7 +175,9 @@ jobs:
   test_windows:
     needs: build_windows
     runs-on:  ${{ matrix.runner }}
-
+    defaults:
+          run:
+            shell: cmd /C CALL {0}
     strategy:
       matrix:
         python: ['3.8', '3.9', '3.10']
@@ -197,8 +199,7 @@ jobs:
           auto-update-conda: true
           conda-build-version: '*'
           miniconda-version: 'latest'
-          auto-activate-base: true
-          activate-environment: "dpctl_test"
+          activate-environment: dpctl_test
           python-version: ${{ matrix.python }}
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
@@ -216,6 +217,7 @@ jobs:
         run: |
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
       - name: Output content of produced ver.json
+        shell: pwsh
         run: Get-Content -Path ${{ env.workdir }}\ver.json
       - name: Collect dependencies
         shell: cmd /C CALL {0}
@@ -229,6 +231,7 @@ jobs:
           )
           conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
       - name: Display lockfile content
+        shell: pwsh
         run: Get-Content -Path .\lockfile
       - name: Cache conda packages
         uses: actions/cache@v3
