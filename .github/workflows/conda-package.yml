@@ -262,7 +262,7 @@ jobs:
           REM pip install --no-cache-dir brotli
           echo "Value of CONDA enviroment variable was: " %CONDA%
           conda list
-      - name: Add library
+      - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
           $conda_env_library = "$env:CONDA_PREFIX\Library"
@@ -281,17 +281,6 @@ jobs:
               New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name $conda_env_library\lib\intelocl64.dll -Value 0
               try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
               Write-Output $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
-              # Now copy OpenCL.dll into system folder
-              $system_ocl_icd_loader="C:\Windows\System32\OpenCL.dll"
-              $python_ocl_icd_loader="$conda_env_library\bin\OpenCL.dll"
-              Copy-Item -Path $python_ocl_icd_loader -Destination $system_ocl_icd_loader
-              if (Test-Path -Path $system_ocl_icd_loader) {
-                 Write-Output "$system_ocl_icd_loader has been copied"
-                 $acl = Get-Acl $system_ocl_icd_loader
-                 Write-Output $acl
-              } else {
-                 Write-Output "OCL-ICD-Loader was not copied"
-              }
               # Variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
               $cl_cfg="$conda_env_library\lib\cl.cfg"
               Write-Output $cl_cfg
