@@ -72,9 +72,11 @@ jobs:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          use-only-tar-bz2: true
           auto-activate-base: true
           conda-build-version: "*"
-          activate-environment: ""
+          activate-environment: true
+          python-version: ${{ matrix.python }}
 
       - name: Cache conda packages
         uses: actions/cache@v3
@@ -196,6 +198,7 @@ jobs:
           conda-build-version: '*'
           miniconda-version: 'latest'
           activate-environment: "dpctl_test"
+          python-version: ${{ matrix.python }}
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
         run: |
