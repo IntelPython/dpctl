@@ -197,6 +197,7 @@ jobs:
           auto-update-conda: true
           conda-build-version: '*'
           miniconda-version: 'latest'
+          auto-activate-base: true
           activate-environment: "dpctl_test"
           python-version: ${{ matrix.python }}
       - name: Create conda channel with the artifact bit
@@ -259,8 +260,8 @@ jobs:
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
-          REM pip install --no-cache-dir brotli
           echo "Value of CONDA enviroment variable was: " %CONDA%
+          echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
           conda list
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
