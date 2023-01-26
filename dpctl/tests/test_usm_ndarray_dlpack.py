@@ -17,6 +17,7 @@
 import ctypes
 
 import pytest
+from helper import skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.tensor as dpt
@@ -71,6 +72,7 @@ def test_dlpack_exporter(typestr, usm_type):
     caps_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
     all_root_devices = dpctl.get_devices()
     for sycl_dev in all_root_devices:
+        skip_if_dtype_not_supported(typestr, sycl_dev)
         X = dpt.empty((64,), dtype=typestr, usm_type=usm_type, device=sycl_dev)
         caps = X.__dlpack__()
         assert caps_fn(caps, b"dltensor")
@@ -95,6 +97,7 @@ def test_dlpack_exporter_stream():
 def test_from_dlpack(shape, typestr, usm_type):
     all_root_devices = dpctl.get_devices()
     for sycl_dev in all_root_devices:
+        skip_if_dtype_not_supported(typestr, sycl_dev)
         X = dpt.empty(shape, dtype=typestr, usm_type=usm_type, device=sycl_dev)
         Y = dpt.from_dlpack(X)
         assert X.shape == Y.shape

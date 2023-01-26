@@ -153,6 +153,7 @@ def _asarray_from_usm_ndarray(
     if order == "K" and fc_contig:
         order = "C" if c_contig else "F"
     if order == "K":
+        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         # new USM allocation
         res = dpt.usm_ndarray(
             usm_ndary.shape,
@@ -176,6 +177,7 @@ def _asarray_from_usm_ndarray(
             strides=new_strides,
         )
     else:
+        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = dpt.usm_ndarray(
             usm_ndary.shape,
             dtype=dtype,
@@ -242,6 +244,7 @@ def _asarray_from_numpy_ndarray(
         order = "C" if c_contig else "F"
     if order == "K":
         # new USM allocation
+        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = dpt.usm_ndarray(
             ary.shape,
             dtype=dtype,
@@ -261,6 +264,7 @@ def _asarray_from_numpy_ndarray(
             res.shape, dtype=res.dtype, buffer=res.usm_data, strides=new_strides
         )
     else:
+        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = dpt.usm_ndarray(
             ary.shape,
             dtype=dtype,
@@ -281,6 +285,35 @@ def _is_object_with_buffer_protocol(obj):
             return True
     except TypeError:
         return False
+
+
+def _ensure_native_dtype_device_support(dtype, dev) -> None:
+    """Check that dtype is natively supported by device.
+
+    Arg:
+       dtype: elemental data-type
+       dev: :class:`dpctl.SyclDevice`
+    Return:
+       None
+    Raise:
+       ValueError is device does not natively support this dtype.
+    """
+    if dtype in [dpt.float64, dpt.complex128] and not dev.has_aspect_fp64:
+        raise ValueError(
+            f"Device {dev.name} does not provide native support "
+            "for double-precision floating point type."
+        )
+    if (
+        dtype
+        in [
+            dpt.float16,
+        ]
+        and not dev.has_aspect_fp16
+    ):
+        raise ValueError(
+            f"Device {dev.name} does not provide native support "
+            "for half-precision floating point type."
+        )
 
 
 def asarray(
@@ -474,6 +507,7 @@ def empty(
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -651,6 +685,7 @@ def zeros(
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -839,6 +874,7 @@ def empty_like(
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
     dtype = dpt.dtype(dtype)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
         sh,
         dtype=dtype,
@@ -1171,6 +1207,7 @@ def eye(
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
         (n_rows, n_cols),
         dtype=dtype,

@@ -178,6 +178,8 @@ cdef class usm_ndarray:
         cdef Py_ssize_t _offset = offset
         cdef Py_ssize_t ary_min_displacement = 0
         cdef Py_ssize_t ary_max_displacement = 0
+        cdef bint is_fp64 = False
+        cdef bint is_fp16 = False
 
         self._reset()
         if (not isinstance(shape, (list, tuple))
@@ -253,6 +255,16 @@ cdef class usm_ndarray:
             self._cleanup()
             raise ValueError(("buffer='{}' can not accomodate "
                               "the requested array.").format(buffer))
+        is_fp64 = (typenum == UAR_DOUBLE or typenum == UAR_CDOUBLE)
+        is_fp16 = (typenum == UAR_HALF)
+        if (is_fp64 or is_fp16):
+            if ((is_fp64 and not _buffer.sycl_device.has_aspect_fp64) or
+                (is_fp16 and not _buffer.sycl_device.has_aspect_fp16)
+            ):
+                raise ValueError(
+                    f"Device {_buffer.sycl_device.name} does"
+                    f" not support {dtype} natively."
+                )
         self.base_ = _buffer
         self.data_ = (<char *> (<size_t> _buffer._pointer)) + itemsize * _offset
         self.shape_ = shape_ptr

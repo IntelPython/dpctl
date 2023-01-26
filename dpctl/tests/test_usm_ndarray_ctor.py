@@ -45,9 +45,9 @@ from dpctl.tensor import Device
 def test_allocate_usm_ndarray(shape, usm_type):
     q = get_queue_or_skip()
     X = dpt.usm_ndarray(
-        shape, dtype="d", buffer=usm_type, buffer_ctor_kwargs={"queue": q}
+        shape, dtype="i8", buffer=usm_type, buffer_ctor_kwargs={"queue": q}
     )
-    Xnp = np.ndarray(shape, dtype="d")
+    Xnp = np.ndarray(shape, dtype="i8")
     assert X.usm_type == usm_type
     assert X.sycl_context == q.sycl_context
     assert X.sycl_device == q.sycl_device
@@ -57,13 +57,17 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 
 def test_usm_ndarray_flags():
-    assert dpt.usm_ndarray((5,)).flags.fc
-    assert dpt.usm_ndarray((5, 2)).flags.c_contiguous
-    assert dpt.usm_ndarray((5, 2), order="F").flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), order="F").flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags.c_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.fc
+    assert dpt.usm_ndarray((5,), dtype="i4").flags.fc
+    assert dpt.usm_ndarray((5, 2), dtype="i4").flags.c_contiguous
+    assert dpt.usm_ndarray((5, 2), dtype="i4", order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", order="F").flags.f_contiguous
+    assert dpt.usm_ndarray(
+        (5, 1, 2), dtype="i4", strides=(2, 0, 1)
+    ).flags.c_contiguous
+    assert dpt.usm_ndarray(
+        (5, 1, 2), dtype="i4", strides=(1, 0, 5)
+    ).flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags.fc
 
 
 @pytest.mark.parametrize(
@@ -88,6 +92,8 @@ def test_usm_ndarray_flags():
     ],
 )
 def test_dtypes(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     Xusm = dpt.usm_ndarray((1,), dtype=dtype)
     assert Xusm.itemsize == dpt.dtype(dtype).itemsize
     expected_fmt = (dpt.dtype(dtype).str)[1:]
@@ -169,7 +175,7 @@ def test_copy_scalar_with_method(method, shape, dtype):
 @pytest.mark.parametrize("func", [bool, float, int, complex])
 @pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
 def test_copy_scalar_invalid_shape(func, shape):
-    X = dpt.usm_ndarray(shape)
+    X = dpt.usm_ndarray(shape, dtype="i8")
     with pytest.raises(ValueError):
         func(X)
 
@@ -177,7 +183,7 @@ def test_copy_scalar_invalid_shape(func, shape):
 def test_index_noninteger():
     import operator
 
-    X = dpt.usm_ndarray(1, "d")
+    X = dpt.usm_ndarray(1, "f4")
     with pytest.raises(IndexError):
         operator.index(X)
 
@@ -283,7 +289,7 @@ def test_slice_suai(usm_type):
 
 
 def test_slicing_basic():
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
     Xusm[None]
     Xusm[...]
     Xusm[8]
@@ -318,20 +324,20 @@ def test_ctor_invalid_order():
 
 
 def test_ctor_buffer_kwarg():
-    dpt.usm_ndarray(10, buffer=b"device")
+    dpt.usm_ndarray(10, dtype="i8", buffer=b"device")
     with pytest.raises(ValueError):
         dpt.usm_ndarray(10, buffer="invalid_param")
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
     X2 = dpt.usm_ndarray(Xusm.shape, buffer=Xusm, dtype=Xusm.dtype)
     assert np.array_equal(
         Xusm.usm_data.copy_to_host(), X2.usm_data.copy_to_host()
     )
     with pytest.raises(ValueError):
-        dpt.usm_ndarray(10, buffer=dict())
+        dpt.usm_ndarray(10, dtype="i4", buffer=dict())
 
 
 def test_usm_ndarray_props():
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c16", order="F")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c8", order="F")
     Xusm.ndim
     repr(Xusm)
     Xusm.flags
@@ -348,7 +354,7 @@ def test_usm_ndarray_props():
 
 
 def test_datapi_device():
-    X = dpt.usm_ndarray(1)
+    X = dpt.usm_ndarray(1, dtype="i4")
     dev_t = type(X.device)
     with pytest.raises(TypeError):
         dev_t()
@@ -387,7 +393,7 @@ def _pyx_capi_fnptr_to_callable(
 
 
 def test_pyx_capi_get_data():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i8")[1::2]
     get_data_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetData",
@@ -400,7 +406,7 @@ def test_pyx_capi_get_data():
 
 
 def test_pyx_capi_get_shape():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="u4")[1::2]
     get_shape_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetShape",
@@ -413,7 +419,7 @@ def test_pyx_capi_get_shape():
 
 
 def test_pyx_capi_get_strides():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="f4")[1::2]
     get_strides_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetStrides",
@@ -429,7 +435,7 @@ def test_pyx_capi_get_strides():
 
 
 def test_pyx_capi_get_ndim():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="?")[1::2]
     get_ndim_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetNDim",
@@ -440,7 +446,7 @@ def test_pyx_capi_get_ndim():
 
 
 def test_pyx_capi_get_typenum():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="c8")[1::2]
     get_typenum_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetTypenum",
@@ -453,7 +459,7 @@ def test_pyx_capi_get_typenum():
 
 
 def test_pyx_capi_get_elemsize():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="u8")[1::2]
     get_elemsize_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetElementSize",
@@ -466,7 +472,7 @@ def test_pyx_capi_get_elemsize():
 
 
 def test_pyx_capi_get_flags():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i8")[1::2]
     get_flags_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetFlags",
@@ -478,7 +484,7 @@ def test_pyx_capi_get_flags():
 
 
 def test_pyx_capi_get_offset():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="u2")[1::2]
     get_offset_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetOffset",
@@ -491,7 +497,7 @@ def test_pyx_capi_get_offset():
 
 
 def test_pyx_capi_get_queue_ref():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i2")[1::2]
     get_queue_ref_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetQueueRef",
@@ -521,7 +527,7 @@ def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
 
 
 def test_pyx_capi_check_constants():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i1")[1::2]
     cc_flag = _pyx_capi_int(X, "USM_ARRAY_C_CONTIGUOUS")
     assert cc_flag > 0 and 0 == (cc_flag & (cc_flag - 1))
     fc_flag = _pyx_capi_int(X, "USM_ARRAY_F_CONTIGUOUS")
@@ -598,6 +604,7 @@ _all_dtypes = [
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_tofrom_numpy(shape, dtype, usm_type):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     Xnp = np.zeros(shape, dtype=dtype)
     Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
@@ -733,7 +740,7 @@ def test_shape_setter():
         4,
         5,
     )
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="i8")
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
@@ -750,27 +757,27 @@ def test_shape_setter():
         4,
         5,
     )
-    X = dpt.usm_ndarray(sh_s, dtype="d", order="C")
+    X = dpt.usm_ndarray(sh_s, dtype="u4", order="C")
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
 
     sh_s = (2, 3, 4, 5)
     sh_f = (4, 3, 2, 5)
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="f4")
     X.shape = sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
 
     sh_s = (2, 3, 4, 5)
     sh_f = (4, 3, 1, 2, 5)
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="?")
     X.shape = sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
 
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="u4")
     with pytest.raises(TypeError):
         X.shape = "abcbe"
-    X = dpt.usm_ndarray((4, 4), dtype="d")[::2, ::2]
+    X = dpt.usm_ndarray((4, 4), dtype="u1")[::2, ::2]
     with pytest.raises(AttributeError):
         X.shape = (4,)
     X = dpt.usm_ndarray((0,), dtype="i4")
@@ -814,7 +821,7 @@ def test_dlpack():
 
 
 def test_to_device():
-    X = dpt.usm_ndarray(1, "d")
+    X = dpt.usm_ndarray(1, "f4")
     for dev in dpctl.get_devices():
         if dev.default_selector_score > 0:
             Y = X.to_device(dev)
@@ -900,7 +907,7 @@ def test_reshape():
     W = dpt.reshape(Z, (-1,), order="C")
     assert W.shape == (Z.size,)
 
-    X = dpt.usm_ndarray((1,))
+    X = dpt.usm_ndarray((1,), dtype="i8")
     Y = dpt.reshape(X, X.shape)
     assert Y.flags == X.flags
 
@@ -970,7 +977,9 @@ def test_real_imag_views():
     _all_dtypes,
 )
 def test_zeros(dtype):
-    X = dpt.zeros(10, dtype=dtype)
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.zeros(10, dtype=dtype, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(X), np.zeros(10, dtype=dtype))
 
 
@@ -1197,6 +1206,7 @@ def test_linspace_fp_max(dtype):
 )
 def test_empty_like(dt, usm_kind):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.empty_like(X)
@@ -1232,6 +1242,7 @@ def test_empty_unexpected_data_type():
 )
 def test_zeros_like(dt, usm_kind):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.zeros_like(X)
