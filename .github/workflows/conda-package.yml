@@ -176,8 +176,8 @@ jobs:
     needs: build_windows
     runs-on:  ${{ matrix.runner }}
     defaults:
-          run:
-            shell: cmd /C CALL {0}
+      run:
+        shell: cmd /C CALL {0}
     strategy:
       matrix:
         python: ['3.8', '3.9', '3.10']
@@ -229,7 +229,7 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+          conda install -n dpctl_test ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
       - name: Display lockfile content
         shell: pwsh
         run: Get-Content -Path .\lockfile
@@ -246,7 +246,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install opencl_rt
         shell: cmd /C CALL {0}
-        run: conda install opencl_rt -c intel --override-channels
+        run: conda install -n dpctl_test opencl_rt -c intel --override-channels
       - name: Install dpctl
         shell: cmd /C CALL {0}
         run: |
@@ -259,13 +259,13 @@ jobs:
              SET PACKAGE_VERSION=%%F
           )
           SET "TEST_DEPENDENCIES=pytest pytest-cov cython"
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+          conda install -n dpctl_test ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
           echo "Value of CONDA enviroment variable was: " %CONDA%
           echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
-          conda list
+          conda info && conda list -n dpctl_test
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
@@ -291,18 +291,18 @@ jobs:
               (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =', "CL_CONFIG_TBB_DLL_PATH = $conda_env_library\bin" | Set-Content $cl_cfg
               Get-Content -Tail 5 -Path $cl_cfg
           }
-      - name: Smoke test
+      - name: Smoke test, step 1
         shell: cmd /C CALL {0}
-        run: |
-          python -c "import sys; print(sys.executable)"
-          python -c "import dpctl; dpctl.lsplatform()"
-          python -c "import dpctl; print(dpctl.get_devices(backend='opencl', device_type='gpu'))"
-          python -c "import dpctl; print(dpctl.get_num_devices(backend='opencl', device_type='gpu'))"
+        run: >-
+          conda activate dpctl_test && python -c "import sys; print(sys.executable)"
+      - name: Smoke test, step 2
+        shell: cmd /C CALL {0}
+        run: >-
+          conda activate dpctl_test && python -c "import dpctl; dpctl.lsplatform()"
       - name: Run tests
         shell: cmd /C CALL {0}
-        run: |
-          python -c "import sys; print(sys.executable)"
-          python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
+        run: >-
+          conda activate dpctl_test && python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
