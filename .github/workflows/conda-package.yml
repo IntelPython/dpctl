@@ -72,9 +72,11 @@ jobs:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          use-only-tar-bz2: true
           auto-activate-base: true
           conda-build-version: "*"
-          activate-environment: ""
+          activate-environment: true
+          python-version: ${{ matrix.python }}
 
       - name: Cache conda packages
         uses: actions/cache@v3
@@ -173,7 +175,9 @@ jobs:
   test_windows:
     needs: build_windows
     runs-on:  ${{ matrix.runner }}
-
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
     strategy:
       matrix:
         python: ['3.8', '3.9', '3.10']
@@ -195,7 +199,8 @@ jobs:
           auto-update-conda: true
           conda-build-version: '*'
           miniconda-version: 'latest'
-          activate-environment: "dpctl_test"
+          activate-environment: dpctl_test
+          python-version: ${{ matrix.python }}
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
         run: |
@@ -212,6 +217,7 @@ jobs:
         run: |
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
       - name: Output content of produced ver.json
+        shell: pwsh
         run: Get-Content -Path ${{ env.workdir }}\ver.json
       - name: Collect dependencies
         shell: cmd /C CALL {0}
@@ -223,8 +229,9 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+          conda install -n dpctl_test ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
       - name: Display lockfile content
+        shell: pwsh
         run: Get-Content -Path .\lockfile
       - name: Cache conda packages
         uses: actions/cache@v3
@@ -239,7 +246,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install opencl_rt
         shell: cmd /C CALL {0}
-        run: conda install opencl_rt -c intel --override-channels
+        run: conda install -n dpctl_test opencl_rt -c intel --override-channels
       - name: Install dpctl
         shell: cmd /C CALL {0}
         run: |
@@ -252,14 +259,14 @@ jobs:
              SET PACKAGE_VERSION=%%F
           )
           SET "TEST_DEPENDENCIES=pytest pytest-cov cython"
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+          conda install -n dpctl_test ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
-          pip install --no-cache-dir brotli
           echo "Value of CONDA enviroment variable was: " %CONDA%
-          conda list
-      - name: Add library
+          echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
+          conda info && conda list -n dpctl_test
+      - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
           $conda_env_library = "$env:CONDA_PREFIX\Library"
@@ -278,35 +285,24 @@ jobs:
               New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name $conda_env_library\lib\intelocl64.dll -Value 0
               try {$list = Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors | Select-Object -ExpandProperty Property } catch {$list=@()}
               Write-Output $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
-              # Now copy OpenCL.dll into system folder
-              $system_ocl_icd_loader="C:\Windows\System32\OpenCL.dll"
-              $python_ocl_icd_loader="$conda_env_library\bin\OpenCL.dll"
-              Copy-Item -Path $python_ocl_icd_loader -Destination $system_ocl_icd_loader
-              if (Test-Path -Path $system_ocl_icd_loader) {
-                 Write-Output "$system_ocl_icd_loader has been copied"
-                 $acl = Get-Acl $system_ocl_icd_loader
-                 Write-Output $acl
-              } else {
-                 Write-Output "OCL-ICD-Loader was not copied"
-              }
               # Variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
               $cl_cfg="$conda_env_library\lib\cl.cfg"
               Write-Output $cl_cfg
               (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =', "CL_CONFIG_TBB_DLL_PATH = $conda_env_library\bin" | Set-Content $cl_cfg
               Get-Content -Tail 5 -Path $cl_cfg
           }
-      - name: Smoke test
+      - name: Smoke test, step 1
         shell: cmd /C CALL {0}
-        run: |
-          python -c "import sys; print(sys.executable)"
-          python -c "import dpctl; dpctl.lsplatform()"
-          python -c "import dpctl; print(dpctl.get_devices(backend='opencl', device_type='gpu'))"
-          python -c "import dpctl; print(dpctl.get_num_devices(backend='opencl', device_type='gpu'))"
+        run: >-
+          conda activate dpctl_test && python -c "import sys; print(sys.executable)"
+      - name: Smoke test, step 2
+        shell: cmd /C CALL {0}
+        run: >-
+          conda activate dpctl_test && python -c "import dpctl; dpctl.lsplatform()"
       - name: Run tests
         shell: cmd /C CALL {0}
-        run: |
-          python -c "import sys; print(sys.executable)"
-          python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
+        run: >-
+          conda activate dpctl_test && python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
