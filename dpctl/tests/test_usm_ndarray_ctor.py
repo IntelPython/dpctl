@@ -1575,3 +1575,19 @@ def test_asarray_uint64():
     Xnp = np.ndarray(1, dtype=np.uint64)
     X = dpt.asarray(Xnp)
     assert X.dtype == Xnp.dtype
+
+
+def test_Device():
+    try:
+        dev = dpctl.select_default_device()
+        d1 = dpt.Device.create_device(dev)
+        d2 = dpt.Device.create_device(dev)
+    except (dpctl.SyclQueueCreationError, dpctl.SyclDeviceCreationError):
+        pytest.skip(
+            "Could not create default device, or a queue that targets it"
+        )
+    assert d1 == d2
+    dict = {d1: 1}
+    assert dict[d2] == 1
+    assert d1 == d2.sycl_queue
+    assert not d1 == Ellipsis
