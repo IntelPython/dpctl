@@ -1192,6 +1192,13 @@ def test_linspace_fp_max(dtype):
     )
 
 
+def test_linspace_int():
+    q = get_queue_or_skip()
+    X = dpt.linspace(0.1, 9.1, 11, endpoint=True, dtype=int, sycl_queue=q)
+    Xnp = np.linspace(0.1, 9.1, 11, endpoint=True, dtype=int)
+    assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes,
