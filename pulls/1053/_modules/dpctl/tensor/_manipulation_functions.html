@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+53.gc6a952ad7 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+52.gf915c539 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.14.1dev1+53.gc6a952ad7
+                0.14.1dev1+52.gf915c539
               </div>
             
           
@@ -630,13 +630,15 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected sycl_device type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
-            <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span>
+            <span class="ow">and</span> <span class="n">dtype_to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span>
             <span class="ow">or</span> <span class="ow">not</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float64</span> <span class="ow">or</span> <span class="n">to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">dtype_to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float64</span> <span class="ow">or</span> <span class="n">dtype_to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="n">to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span> <span class="ow">or</span> <span class="n">to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span> <span class="ow">and</span> <span class="n">from_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">complex</span>
+            <span class="n">dtype_to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span>
+            <span class="ow">or</span> <span class="n">dtype_to</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span>
+            <span class="ow">and</span> <span class="n">dtype_from</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">complex</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
 
