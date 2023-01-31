@@ -84,6 +84,14 @@ def test_invalid_filter_selectors(invalid_filter):
         dpctl.SyclQueue(invalid_filter)
 
 
+def test_unexpected_keyword():
+    """
+    An unexpected keyword use raises TypeError.
+    """
+    with pytest.raises(TypeError):
+        dpctl.SyclQueue(device="cpu")
+
+
 def test_context_not_equals():
     try:
         gpuQ = dpctl.SyclQueue("gpu")
