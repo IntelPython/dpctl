@@ -1,0 +1,24 @@
+.. index:: pair: enum; DPCTLPartitionAffinityDomainType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670:
+
+enum DPCTLPartitionAffinityDomainType
+=====================================
+
+DPCTL analogue of ``sycl::info::partition_affinity_domain`` enum.
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLPartitionAffinityDomainType
+	{
+	    :target:`not_applicable<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670adfdf5aee2b344ddcbb05eec6b8ac6527>`,
+	    :target:`numa<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670ac0dad2a8daa7c1a5c29c13b44c58f5fe>`,
+	    :target:`L4_cache<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670a6de123a8f5577ea7cba48552a72f31d1>`,
+	    :target:`L3_cache<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670abaed35f39c3656e82a383885193b8411>`,
+	    :target:`L2_cache<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670a0922fd20c583077efb06a644ad8c3ba3>`,
+	    :target:`L1_cache<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670af3fd4a8897ead01c87569bfd476aed80>`,
+	    :target:`next_partitionable<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670a7f790f663d1ebd95f2da826c35c2d37f>`,
+	};
+
