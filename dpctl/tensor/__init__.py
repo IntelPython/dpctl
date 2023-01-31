@@ -48,6 +48,7 @@ from dpctl.tensor._manipulation_functions import (
     broadcast_to,
     can_cast,
     concat,
+    device_result_type,
     expand_dims,
     finfo,
     flip,
@@ -137,4 +138,5 @@ __all__ = [
     "get_print_options",
     "set_print_options",
     "print_options",
+    "device_result_type",
 ]
