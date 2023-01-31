@@ -99,6 +99,8 @@ Array Manipulation
       - -> bool Determines if one data type can be cast to another data type according to Type Promotion Rules rules.
     * - :func:`concat()`
       - -> usm_ndarray Joins a sequence of arrays along an existing axis.
+    * - :func:`device_result_type()`
+      - -> dtype Returns the dtype that results from applying the Type Promotion Rules to the arguments on current device.
     * - :func:`expand_dims()`
       - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.
     * - :func:`finfo()`

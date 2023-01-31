@@ -40,6 +40,7 @@ Array Manipulation
 .. autofunction:: broadcast_to
 .. autofunction:: can_cast
 .. autofunction:: concat
+.. autofunction:: device_result_type
 .. autofunction:: expand_dims
 .. autofunction:: finfo
 .. autofunction:: flip

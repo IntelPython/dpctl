@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.1dev1+52.g8f24dca0b documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.1dev1+53.gc6a952ad7 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.14.1dev1+52.g8f24dca0b
+                0.14.1dev1+53.gc6a952ad7
               </div>
             
           
@@ -313,34 +313,37 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Joins a sequence of arrays along an existing axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.device_result_type" title="dpctl.tensor.device_result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">device_result_type()</span></code></a></p></td>
+<td><p>-&gt; dtype Returns the dtype that results from applying the Type Promotion Rules to the arguments on current device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.finfo" title="dpctl.tensor.finfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">finfo()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.finfo" title="dpctl.tensor.finfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">finfo()</span></code></a></p></td>
 <td><p>-&gt; finfo_object Returns machine limits for float data types.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.flip" title="dpctl.tensor.flip"><code class="xref py py-func docutils literal notranslate"><span class="pre">flip()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.flip" title="dpctl.tensor.flip"><code class="xref py py-func docutils literal notranslate"><span class="pre">flip()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Reverses the order of elements in an array along the given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.iinfo" title="dpctl.tensor.iinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">iinfo()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.iinfo" title="dpctl.tensor.iinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">iinfo()</span></code></a></p></td>
 <td><p>-&gt; iinfo_object Returns machine limits for integer data types.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Permute the axes (dimensions) of an array; returns the permuted array as a view.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
 <td><p>-&gt; dtype Returns the dtype that results from applying the Type Promotion Rules to the arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Rolls array elements along a specified axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Joins a sequence of arrays along a new axis.</p></td>
 </tr>
 </tbody>

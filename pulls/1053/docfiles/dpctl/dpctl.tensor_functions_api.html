@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+52.g8f24dca0b documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+53.gc6a952ad7 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.14.1dev1+52.g8f24dca0b
+                0.14.1dev1+53.gc6a952ad7
               </div>
             
           
@@ -765,6 +765,12 @@ array as a view.</p>
 <dt class="sig sig-object py" id="dpctl.tensor.concat">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays:</span> <span class="pre">tuple</span> <span class="pre">or</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">usm_ndarrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis:</span> <span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><span class="pre">usm_ndarray</span></a></span></span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.concat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Joins a sequence of arrays along an existing axis.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.device_result_type">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">device_result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device:</span> <span class="pre">sycl_device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays_and_dtypes:</span> <span class="pre">an</span> <span class="pre">arbitrary</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">number</span> <span class="pre">usm_ndarrays</span> <span class="pre">or</span> <span class="pre">dtypes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><span class="pre">dtype</span></a></span></span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#device_result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.device_result_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dtype that results from applying the Type Promotion Rules to         the arguments on current device.</p>
 </dd></dl>
 
 <dl class="py function">
