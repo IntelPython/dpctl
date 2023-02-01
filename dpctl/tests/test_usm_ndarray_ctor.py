@@ -532,7 +532,7 @@ def test_pyx_capi_make_from_memory():
         any_usm_ndarray,
         "UsmNDArray_MakeFromMemory",
         b"PyObject *(int, Py_ssize_t const *, int, "
-        b"struct Py_MemoryObject *, Py_ssize_t)",
+        b"struct Py_MemoryObject *, Py_ssize_t, char)",
         fn_restype=ctypes.py_object,
         fn_argtypes=(
             ctypes.c_int,
@@ -540,6 +540,7 @@ def test_pyx_capi_make_from_memory():
             ctypes.c_int,
             ctypes.py_object,
             ctypes.c_ssize_t,
+            ctypes.c_char,
         ),
     )
     r = make_from_memory_fn(
@@ -548,6 +549,7 @@ def test_pyx_capi_make_from_memory():
         ctypes.c_int(typenum),
         mem,
         ctypes.c_ssize_t(0),
+        ctypes.c_char(b"C"),
     )
     assert isinstance(r, dpt.usm_ndarray)
     assert r.ndim == 2
@@ -555,6 +557,23 @@ def test_pyx_capi_make_from_memory():
     assert r._pointer == mem._pointer
     assert r.usm_type == "shared"
     assert r.sycl_queue == q
+    assert r.flags["C"]
+    r2 = make_from_memory_fn(
+        ctypes.c_int(2),
+        c_tuple,
+        ctypes.c_int(typenum),
+        mem,
+        ctypes.c_ssize_t(0),
+        ctypes.c_char(b"F"),
+    )
+    ptr = mem._pointer
+    del mem
+    del r
+    assert isinstance(r2, dpt.usm_ndarray)
+    assert r2._pointer == ptr
+    assert r2.usm_type == "shared"
+    assert r2.sycl_queue == q
+    assert r2.flags["F"]
 
 
 def test_pyx_capi_set_writable_flag():
