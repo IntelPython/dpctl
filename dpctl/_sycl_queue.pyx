@@ -290,6 +290,11 @@ cdef class SyclQueue(_SyclQueue):
         props = _parse_queue_properties(
             kwargs.pop('property', _queue_property_type._DEFAULT_PROPERTY)
         )
+        if (kwargs):
+            raise TypeError(
+                f"Unsupported keyword arguments {kwargs} to "
+                "SyclQueue constructor encountered."
+            )
         len_args = len(args)
         if len_args == 0:
             status = self._init_queue_default(props)
