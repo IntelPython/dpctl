@@ -1318,7 +1318,7 @@ cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
 
 cdef api object UsmNDArray_MakeFromMemory(
     int nd, const Py_ssize_t *shape, int typenum,
-    c_dpmem._Memory mobj, Py_ssize_t offset
+    c_dpmem._Memory mobj, Py_ssize_t offset, char order
 ):
     """Create usm_ndarray.
 
@@ -1331,7 +1331,8 @@ cdef api object UsmNDArray_MakeFromMemory(
         shape_tuple,
         dtype=_make_typestr(typenum),
         buffer=mobj,
-        offset=offset
+        offset=offset,
+        order=<bytes>(order)
     )
     return arr
 
