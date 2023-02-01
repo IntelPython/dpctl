@@ -119,7 +119,8 @@ public:
                                             const py::ssize_t *,
                                             int,
                                             Py_MemoryObject *,
-                                            py::ssize_t);
+                                            py::ssize_t,
+                                            char);
     PyObject *(*UsmNDArray_MakeFromPtr_)(size_t,
                                          int,
                                          DPCTLSyclUSMRef,
