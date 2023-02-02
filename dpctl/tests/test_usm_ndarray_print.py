@@ -48,6 +48,57 @@ class TestArgValidation(TestPrint):
         with pytest.raises(err):
             dpt.set_print_options(**arg)
 
+    def test_usm_ndarray_repr_arg_validation(self):
+        X = dict()
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_repr(X)
+
+        X = dpt.arange(4)
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_repr(X, line_width="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_repr(X, precision="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_repr(X, prefix=4)
+
+    def test_usm_ndarray_str_arg_validation(self):
+        X = dict()
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X)
+
+        X = dpt.arange(4)
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, line_width="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, edge_items="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, threshold="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, precision="I")
+
+        with pytest.raises(ValueError):
+            dpt.usm_ndarray_str(X, floatmode="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, edge_items="I")
+
+        with pytest.raises(ValueError):
+            dpt.usm_ndarray_str(X, sign="I")
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, prefix=4)
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, prefix=4)
+
+        with pytest.raises(TypeError):
+            dpt.usm_ndarray_str(X, suffix=4)
+
 
 class TestSetPrintOptions(TestPrint):
     def test_set_linewidth(self):
@@ -188,6 +239,16 @@ class TestPrintFns(TestPrint):
         x = dpt.reshape(x, (3, 3))
         assert str(x) == "[[0 ... 2]\n ...\n [6 ... 8]]"
 
+    def test_usm_ndarray_str_separator(self):
+        q = get_queue_or_skip()
+
+        x = dpt.reshape(dpt.arange(4, sycl_queue=q), (2, 2))
+
+        np.testing.assert_equal(
+            dpt.usm_ndarray_str(x, prefix="test", separator="   "),
+            "[[0   1]\n     [2   3]]",
+        )
+
     def test_print_repr(self):
         q = get_queue_or_skip()
 
@@ -281,6 +342,19 @@ class TestPrintFns(TestPrint):
 
         x = dpt.empty(4, dtype=dtype)
         assert repr(x).split("=")[-1][:-1] == x.dtype.name
+
+    def test_usm_ndarray_repr_prefix(self):
+        q = get_queue_or_skip()
+
+        x = dpt.arange(4, dtype=np.intp, sycl_queue=q)
+        np.testing.assert_equal(
+            dpt.usm_ndarray_repr(x, prefix="test"), "test([0, 1, 2, 3])"
+        )
+        x = dpt.reshape(x, (2, 2))
+        np.testing.assert_equal(
+            dpt.usm_ndarray_repr(x, prefix="test"),
+            "test([[0, 1]," "\n      [2, 3]])",
+        )
 
 
 class TestContextManager:
