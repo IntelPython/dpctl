@@ -41,6 +41,7 @@ jobs:
         with:
           src: "."
           options: "--check"
+          version: "22.12.0"
 
   flake8:
     runs-on: ubuntu-latest
