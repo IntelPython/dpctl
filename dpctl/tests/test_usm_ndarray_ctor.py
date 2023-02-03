@@ -373,7 +373,11 @@ def test_datapi_device():
 
 
 def _pyx_capi_fnptr_to_callable(
-    X, pyx_capi_name, caps_name, fn_restype=ctypes.c_void_p
+    X,
+    pyx_capi_name,
+    caps_name,
+    fn_restype=ctypes.c_void_p,
+    fn_argtypes=(ctypes.py_object,),
 ):
     import sys
 
@@ -388,7 +392,7 @@ def _pyx_capi_fnptr_to_callable(
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
     fn_ptr = cap_ptr_fn(cap, caps_name)
-    callable_maker_ptr = ctypes.PYFUNCTYPE(fn_restype, ctypes.py_object)
+    callable_maker_ptr = ctypes.PYFUNCTYPE(fn_restype, *fn_argtypes)
     return callable_maker_ptr(fn_ptr)
 
 
@@ -399,6 +403,7 @@ def test_pyx_capi_get_data():
         "UsmNDArray_GetData",
         b"char *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     r1 = get_data_fn(X)
     sua_iface = X.__sycl_usm_array_interface__
@@ -412,6 +417,7 @@ def test_pyx_capi_get_shape():
         "UsmNDArray_GetShape",
         b"Py_ssize_t *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     c_longlong_p = ctypes.POINTER(ctypes.c_longlong)
     shape0 = ctypes.cast(get_shape_fn(X), c_longlong_p).contents.value
@@ -425,6 +431,7 @@ def test_pyx_capi_get_strides():
         "UsmNDArray_GetStrides",
         b"Py_ssize_t *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     c_longlong_p = ctypes.POINTER(ctypes.c_longlong)
     strides0_p = get_strides_fn(X)
@@ -441,6 +448,7 @@ def test_pyx_capi_get_ndim():
         "UsmNDArray_GetNDim",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     assert get_ndim_fn(X) == X.ndim
 
@@ -452,6 +460,7 @@ def test_pyx_capi_get_typenum():
         "UsmNDArray_GetTypenum",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     typenum = get_typenum_fn(X)
     assert type(typenum) is int
@@ -465,6 +474,7 @@ def test_pyx_capi_get_elemsize():
         "UsmNDArray_GetElementSize",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     itemsize = get_elemsize_fn(X)
     assert type(itemsize) is int
@@ -478,6 +488,7 @@ def test_pyx_capi_get_flags():
         "UsmNDArray_GetFlags",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     flags = get_flags_fn(X)
     assert type(flags) is int and X.flags == flags
@@ -490,6 +501,7 @@ def test_pyx_capi_get_offset():
         "UsmNDArray_GetOffset",
         b"Py_ssize_t (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_longlong,
+        fn_argtypes=(ctypes.py_object,),
     )
     offset = get_offset_fn(X)
     assert type(offset) is int
@@ -503,9 +515,121 @@ def test_pyx_capi_get_queue_ref():
         "UsmNDArray_GetQueueRef",
         b"DPCTLSyclQueueRef (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     queue_ref = get_queue_ref_fn(X)  # address of a copy, should be unequal
     assert queue_ref != X.sycl_queue.addressof_ref()
+
+
+def test_pyx_capi_make_from_memory():
+    q = get_queue_or_skip()
+    n0, n1 = 4, 6
+    c_tuple = (ctypes.c_ssize_t * 2)(n0, n1)
+    mem = dpm.MemoryUSMShared(n0 * n1 * 4, queue=q)
+    typenum = dpt.dtype("single").num
+    any_usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    make_from_memory_fn = _pyx_capi_fnptr_to_callable(
+        any_usm_ndarray,
+        "UsmNDArray_MakeFromMemory",
+        b"PyObject *(int, Py_ssize_t const *, int, "
+        b"struct Py_MemoryObject *, Py_ssize_t, char)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_int,
+            ctypes.py_object,
+            ctypes.c_ssize_t,
+            ctypes.c_char,
+        ),
+    )
+    r = make_from_memory_fn(
+        ctypes.c_int(2),
+        c_tuple,
+        ctypes.c_int(typenum),
+        mem,
+        ctypes.c_ssize_t(0),
+        ctypes.c_char(b"C"),
+    )
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.ndim == 2
+    assert r.shape == (n0, n1)
+    assert r._pointer == mem._pointer
+    assert r.usm_type == "shared"
+    assert r.sycl_queue == q
+    assert r.flags["C"]
+    r2 = make_from_memory_fn(
+        ctypes.c_int(2),
+        c_tuple,
+        ctypes.c_int(typenum),
+        mem,
+        ctypes.c_ssize_t(0),
+        ctypes.c_char(b"F"),
+    )
+    ptr = mem._pointer
+    del mem
+    del r
+    assert isinstance(r2, dpt.usm_ndarray)
+    assert r2._pointer == ptr
+    assert r2.usm_type == "shared"
+    assert r2.sycl_queue == q
+    assert r2.flags["F"]
+
+
+def test_pyx_capi_set_writable_flag():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty((4, 5), dtype="i4", sycl_queue=q)
+    assert isinstance(usm_ndarray, dpt.usm_ndarray)
+    assert usm_ndarray.flags["WRITABLE"] is True
+    set_writable = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_SetWritableFlag",
+        b"void (struct PyUSMArrayObject *, int)",
+        fn_restype=None,
+        fn_argtypes=(ctypes.py_object, ctypes.c_int),
+    )
+    set_writable(usm_ndarray, ctypes.c_int(0))
+    assert isinstance(usm_ndarray, dpt.usm_ndarray)
+    assert usm_ndarray.flags["WRITABLE"] is False
+    set_writable(usm_ndarray, ctypes.c_int(1))
+    assert isinstance(usm_ndarray, dpt.usm_ndarray)
+    assert usm_ndarray.flags["WRITABLE"] is True
+
+
+def test_pyx_capi_make_from_ptr():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    make_from_ptr = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_MakeFromPtr",
+        b"PyObject *(size_t, int, DPCTLSyclUSMRef, "
+        b"DPCTLSyclQueueRef, PyObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_size_t,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.py_object,
+        ),
+    )
+    nelems = 10
+    dt = dpt.int64
+    mem = dpm.MemoryUSMDevice(nelems * dt.itemsize, queue=q)
+    arr = make_from_ptr(
+        ctypes.c_size_t(nelems),
+        dt.num,
+        mem._pointer,
+        mem.sycl_queue.addressof_ref(),
+        mem,
+    )
+    assert isinstance(arr, dpt.usm_ndarray)
+    assert arr.shape == (nelems,)
+    assert arr.dtype == dt
+    assert arr.sycl_queue == q
+    assert arr._pointer == mem._pointer
+    del mem
+    assert isinstance(arr.__repr__(), str)
 
 
 def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):

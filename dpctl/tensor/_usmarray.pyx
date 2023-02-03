@@ -1308,3 +1308,55 @@ cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     """Get offset of zero-index array element from the beginning of the USM
     allocation"""
     return arr.get_offset()
+
+cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
+    """Set/unset USM_ARRAY_WRITABLE in the given array `arr`."""
+    cdef int arr_fl = arr.flags_
+    arr_fl ^= (arr_fl & USM_ARRAY_WRITABLE)  # unset WRITABLE flag
+    arr_fl |= (USM_ARRAY_WRITABLE if flag else 0)
+    arr.flags_ = arr_fl
+
+cdef api object UsmNDArray_MakeFromMemory(
+    int nd, const Py_ssize_t *shape, int typenum,
+    c_dpmem._Memory mobj, Py_ssize_t offset, char order
+):
+    """Create usm_ndarray.
+
+    Equivalent to usm_ndarray(
+        _make_tuple(nd, shape), dtype=_make_dtype(typenum),
+        buffer=mobj, offset=offset)
+    """
+    cdef object shape_tuple = _make_int_tuple(nd, <Py_ssize_t *>shape)
+    cdef usm_ndarray arr = usm_ndarray(
+        shape_tuple,
+        dtype=_make_typestr(typenum),
+        buffer=mobj,
+        offset=offset,
+        order=<bytes>(order)
+    )
+    return arr
+
+
+cdef api object UsmNDArray_MakeFromPtr(
+    size_t nelems,
+    int typenum,
+    c_dpctl.DPCTLSyclUSMRef ptr,
+    c_dpctl.DPCTLSyclQueueRef QRef,
+    object owner
+):
+    """Create usm_ndarray from pointer.
+
+    Argument owner=None implies transert of USM allocation ownership
+    to create array object.
+    """
+    cdef size_t itemsize = type_bytesize(typenum)
+    cdef size_t nbytes = itemsize * nelems
+    cdef c_dpmem._Memory mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+        ptr, nbytes, QRef, memory_owner=owner
+    )
+    cdef usm_ndarray arr = usm_ndarray(
+        (nelems,),
+        dtype=_make_typestr(typenum),
+        buffer=mobj
+    )
+    return arr
