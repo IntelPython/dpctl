@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.1dev1+73.g1ed9a6dd3 documentation</title>
+  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.1dev1+75.gd77f570d1 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.14.1dev1+73.g1ed9a6dd3
+                0.14.1dev1+75.gd77f570d1
               </div>
             
           
@@ -276,8 +276,8 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    set_print_options(linewidth=None, edgeitems=None, threshold=None,</span>
-<span class="sd">    precision=None, floatmode=None, suppress=None, nanstr=None,</span>
-<span class="sd">    infstr=None, sign=None, numpy=False)</span>
+<span class="sd">                      precision=None, floatmode=None, suppress=None,</span>
+<span class="sd">                      nanstr=None, infstr=None, sign=None, numpy=False)</span>
 
 <span class="sd">    Set options for printing ``dpctl.tensor.usm_ndarray`` class.</span>
 
@@ -407,7 +407,7 @@
         <span class="k">return</span> <span class="n">_nd_corners</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">,</span> <span class="n">slices</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),))</span>
 
 
-<span class="k">def</span> <span class="nf">_usm_ndarray_str</span><span class="p">(</span>
+<div class="viewcode-block" id="usm_ndarray_str"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_str">[docs]</a><span class="k">def</span> <span class="nf">usm_ndarray_str</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="n">line_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">edge_items</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -421,6 +421,72 @@
     <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,</span>
+<span class="sd">                    precision=None, floatmode=None, suppress=None,</span>
+<span class="sd">                    sign=None, numpy=False, separator=&quot; &quot;, prefix=&quot;&quot;,</span>
+<span class="sd">                    suffix=&quot;&quot;) -&gt; str</span>
+
+<span class="sd">    Returns a string representing the elements of a</span>
+<span class="sd">    ``dpctl.tensor.usm_ndarray``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array.</span>
+<span class="sd">        line_width (int, optional): Number of characters printed per line.</span>
+<span class="sd">            Raises `TypeError` if line_width is not an integer.</span>
+<span class="sd">            Default: `75`.</span>
+<span class="sd">        edgeitems (int, optional): Number of elements at the beginning and end</span>
+<span class="sd">            when the printed array is abbreviated.</span>
+<span class="sd">            Raises `TypeError` if edgeitems is not an integer.</span>
+<span class="sd">            Default: `3`.</span>
+<span class="sd">        threshold (int, optional): Number of elements that triggers array</span>
+<span class="sd">            abbreviation.</span>
+<span class="sd">            Raises `TypeError` if threshold is not an integer.</span>
+<span class="sd">            Default: `1000`.</span>
+<span class="sd">        precision (int or None, optional): Number of digits printed for</span>
+<span class="sd">            floating point numbers.</span>
+<span class="sd">            Raises `TypeError` if precision is not an integer.</span>
+<span class="sd">            Default: `8`.</span>
+<span class="sd">        floatmode (str, optional): Controls how floating point</span>
+<span class="sd">            numbers are interpreted.</span>
+
+<span class="sd">            `&quot;fixed:`: Always prints exactly `precision` digits.</span>
+<span class="sd">            `&quot;unique&quot;`: Ignores precision, prints the number of</span>
+<span class="sd">                digits necessary to uniquely specify each number.</span>
+<span class="sd">            `&quot;maxprec&quot;`: Prints `precision` digits or fewer,</span>
+<span class="sd">                if fewer will uniquely represent a number.</span>
+<span class="sd">            `&quot;maxprec_equal&quot;`: Prints an equal number of digits</span>
+<span class="sd">                for each number. This number is `precision` digits or fewer,</span>
+<span class="sd">                if fewer will uniquely represent each number.</span>
+<span class="sd">            Raises `ValueError` if floatmode is not one of</span>
+<span class="sd">            `fixed`, `unique`, `maxprec`, or `maxprec_equal`.</span>
+<span class="sd">            Default: &quot;maxprec_equal&quot;</span>
+<span class="sd">        suppress (bool, optional): If `True,` numbers equal to zero</span>
+<span class="sd">            in the current precision will print as zero.</span>
+<span class="sd">            Default: `False`.</span>
+<span class="sd">        sign (str, optional): Controls the sign of floating point</span>
+<span class="sd">            numbers.</span>
+<span class="sd">            `&quot;-&quot;`: Omit the sign of positive numbers.</span>
+<span class="sd">            `&quot;+&quot;`: Always print the sign of positive numbers.</span>
+<span class="sd">            `&quot; &quot;`: Always print a whitespace in place of the</span>
+<span class="sd">                sign of positive numbers.</span>
+<span class="sd">            Raises `ValueError` if sign is not one of</span>
+<span class="sd">            `&quot;-&quot;`, `&quot;+&quot;`, or `&quot; &quot;`.</span>
+<span class="sd">            Default: `&quot;-&quot;`.</span>
+<span class="sd">        numpy (bool, optional): If `True,` then before other specified print</span>
+<span class="sd">            options are set, a dictionary of Numpy&#39;s print options</span>
+<span class="sd">            will be used to initialize dpctl&#39;s print options.</span>
+<span class="sd">            Default: &quot;False&quot;</span>
+<span class="sd">        separator (str, optional): String inserted between elements of</span>
+<span class="sd">            the array string.</span>
+<span class="sd">            Default: &quot; &quot;</span>
+<span class="sd">        prefix (str, optional): String used to determine spacing to the left</span>
+<span class="sd">            of the array string.</span>
+<span class="sd">            Default: &quot;&quot;</span>
+<span class="sd">        suffix (str, optional): String that determines length of the last line</span>
+<span class="sd">            of the array string.</span>
+<span class="sd">            Default: &quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -451,10 +517,36 @@
         <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">s</span></div>
 
 
-<span class="k">def</span> <span class="nf">_usm_ndarray_repr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="usm_ndarray_repr"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_repr">[docs]</a><span class="k">def</span> <span class="nf">usm_ndarray_repr</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;usm_ndarray&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    usm_ndarray_repr(x, line_width=None, precision=None,</span>
+<span class="sd">                     suppress=None, prefix=&quot;&quot;) -&gt; str</span>
+
+<span class="sd">        Returns a formatted string representing the elements</span>
+<span class="sd">        of a ``dpctl.tensor.usm_ndarray`` and its data type,</span>
+<span class="sd">        if not a default type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array.</span>
+<span class="sd">        line_width (int, optional): Number of characters printed per line.</span>
+<span class="sd">            Raises `TypeError` if line_width is not an integer.</span>
+<span class="sd">            Default: `75`.</span>
+<span class="sd">        precision (int or None, optional): Number of digits printed for</span>
+<span class="sd">            floating point numbers.</span>
+<span class="sd">            Raises `TypeError` if precision is not an integer.</span>
+<span class="sd">            Default: `8`.</span>
+<span class="sd">        suppress (bool, optional): If `True,` numbers equal to zero</span>
+<span class="sd">            in the current precision will print as zero.</span>
+<span class="sd">            Default: `False`.</span>
+<span class="sd">        prefix (str, optional): String inserted at the start of the array</span>
+<span class="sd">            string.</span>
+<span class="sd">            Default: &quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -468,10 +560,10 @@
         <span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;usm_ndarray(&quot;</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;(&quot;</span>
     <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;)&quot;</span>
 
-    <span class="n">s</span> <span class="o">=</span> <span class="n">_usm_ndarray_str</span><span class="p">(</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">usm_ndarray_str</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">line_width</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span>
         <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
@@ -493,7 +585,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dtype_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">dtype_str</span> <span class="o">+</span> <span class="n">suffix</span>
+    <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">dtype_str</span> <span class="o">+</span> <span class="n">suffix</span></div>
 </pre></div>
 
            </div>

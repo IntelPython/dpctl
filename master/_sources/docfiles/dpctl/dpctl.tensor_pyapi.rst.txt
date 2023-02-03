@@ -134,6 +134,10 @@ Other Functions
       - Context manager for print options.
     * - :func:`set_print_options()`
       - Set options for printing ``dpctl.tensor.usm_ndarray`` class.
+    * - :func:`usm_ndarray_repr()`
+      - -> str Returns a formatted string representing the elements of a ``dpctl.tensor.usm_ndarray`` and its data type, if not a default type.
+    * - :func:`usm_ndarray_str()`
+      - -> str Returns a string representing the elements of a ``dpctl.tensor.usm_ndarray``.
 
 
 

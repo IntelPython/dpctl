@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+73.g1ed9a6dd3 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev1+75.gd77f570d1 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.14.1dev1+73.g1ed9a6dd3
+                0.14.1dev1+75.gd77f570d1
               </div>
             
           
@@ -875,9 +875,11 @@ of length 1 removed.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.set_print_options">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">set_print_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgeitems</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floatmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nanstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#set_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.set_print_options" title="Permalink to this definition">¶</a></dt>
-<dd><p>set_print_options(linewidth=None, edgeitems=None, threshold=None,
-precision=None, floatmode=None, suppress=None, nanstr=None,
-infstr=None, sign=None, numpy=False)</p>
+<dd><dl class="simple">
+<dt>set_print_options(linewidth=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
+nanstr=None, infstr=None, sign=None, numpy=False)</p>
+</dd>
+</dl>
 <p>Set options for printing <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -940,6 +942,121 @@ Default: <cite>“-”</cite>.</p>
 options are set, a dictionary of Numpy’s print options
 will be used to initialize dpctl’s print options.
 Default: “False”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_repr">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usm_ndarray'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_repr" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>usm_ndarray_repr(x, line_width=None, precision=None,</dt><dd><blockquote>
+<div><p>suppress=None, prefix=””) -&gt; str</p>
+</div></blockquote>
+<p>Returns a formatted string representing the elements
+of a <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> and its data type,
+if not a default type.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>line_width</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
+Raises <cite>TypeError</cite> if line_width is not an integer.
+Default: <cite>75</cite>.</p></li>
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
+floating point numbers.
+Raises <cite>TypeError</cite> if precision is not an integer.
+Default: <cite>8</cite>.</p></li>
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
+in the current precision will print as zero.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted at the start of the array
+string.
+Default: “”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_str">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floatmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_str" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
+sign=None, numpy=False, separator=” “, prefix=””,
+suffix=””) -&gt; str</p>
+</dd>
+</dl>
+<p>Returns a string representing the elements of a
+<code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>line_width</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
+Raises <cite>TypeError</cite> if line_width is not an integer.
+Default: <cite>75</cite>.</p></li>
+<li><p><strong>edgeitems</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements at the beginning and end
+when the printed array is abbreviated.
+Raises <cite>TypeError</cite> if edgeitems is not an integer.
+Default: <cite>3</cite>.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
+abbreviation.
+Raises <cite>TypeError</cite> if threshold is not an integer.
+Default: <cite>1000</cite>.</p></li>
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
+floating point numbers.
+Raises <cite>TypeError</cite> if precision is not an integer.
+Default: <cite>8</cite>.</p></li>
+<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
+numbers are interpreted.</p>
+<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
+<cite>“unique”</cite>: Ignores precision, prints the number of</p>
+<blockquote>
+<div><p>digits necessary to uniquely specify each number.</p>
+</div></blockquote>
+<dl class="simple">
+<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
+</dd>
+<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
+if fewer will uniquely represent each number.</p>
+</dd>
+</dl>
+<p>Raises <cite>ValueError</cite> if floatmode is not one of
+<cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
+Default: “maxprec_equal”</p>
+</p></li>
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
+in the current precision will print as zero.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
+numbers.
+<cite>“-”</cite>: Omit the sign of positive numbers.
+<cite>“+”</cite>: Always print the sign of positive numbers.
+<cite>“ “</cite>: Always print a whitespace in place of the</p>
+<blockquote>
+<div><p>sign of positive numbers.</p>
+</div></blockquote>
+<p>Raises <cite>ValueError</cite> if sign is not one of
+<cite>“-”</cite>, <cite>“+”</cite>, or <cite>“ “</cite>.
+Default: <cite>“-”</cite>.</p>
+</p></li>
+<li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
+options are set, a dictionary of Numpy’s print options
+will be used to initialize dpctl’s print options.
+Default: “False”</p></li>
+<li><p><strong>separator</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted between elements of
+the array string.
+Default: “ “</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to determine spacing to the left
+of the array string.
+Default: “”</p></li>
+<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – String that determines length of the last line
+of the array string.
+Default: “”</p></li>
 </ul>
 </dd>
 </dl>

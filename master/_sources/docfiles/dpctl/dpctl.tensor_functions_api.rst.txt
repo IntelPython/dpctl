@@ -57,3 +57,5 @@ Other Functions
 .. autofunction:: get_print_options
 .. autofunction:: print_options
 .. autofunction:: set_print_options
+.. autofunction:: usm_ndarray_repr
+.. autofunction:: usm_ndarray_str
