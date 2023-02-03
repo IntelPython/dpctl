@@ -1119,7 +1119,7 @@ def linspace(
     num = operator.index(num)
     if num < 0:
         raise ValueError("Number of points must be non-negative")
-    ((start, stop,), dt) = _coerce_and_infer_dt(
+    _, dt = _coerce_and_infer_dt(
         start,
         stop,
         dt=dtype,
@@ -1127,17 +1127,20 @@ def linspace(
         err_msg="start and stop must be Python scalars.",
         allow_bool=True,
     )
-    if dtype is None and np.issubdtype(dt, np.integer):
+    int_dt = None
+    if np.issubdtype(dt, np.integer):
+        if dtype is not None:
+            int_dt = dt
         dt = ti.default_device_fp_type(sycl_queue)
         dt = dpt.dtype(dt)
         start = float(start)
         stop = float(stop)
-    res = dpt.empty(num, dtype=dt, sycl_queue=sycl_queue)
+    res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
     hev, _ = ti._linspace_affine(
         start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
     )
     hev.wait()
-    return res
+    return res if int_dt is None else dpt.astype(res, int_dt)
 
 
 def eye(
