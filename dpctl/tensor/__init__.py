@@ -62,6 +62,8 @@ from dpctl.tensor._print import (
     get_print_options,
     print_options,
     set_print_options,
+    usm_ndarray_repr,
+    usm_ndarray_str,
 )
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
@@ -137,4 +139,6 @@ __all__ = [
     "get_print_options",
     "set_print_options",
     "print_options",
+    "usm_ndarray_repr",
+    "usm_ndarray_str",
 ]
