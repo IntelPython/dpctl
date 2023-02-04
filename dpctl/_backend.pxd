@@ -34,6 +34,12 @@ cdef extern from "syclinterface/dpctl_utils.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
+    ctypedef enum _usm_type 'DPCTLSyclUSMType':
+        _USM_UNKNOWN     'DPCTL_USM_UNKNOWN'
+        _USM_DEVICE      'DPCTL_USM_DEVICE'
+        _USM_HOST        'DPCTL_USM_HOST'
+        _USM_SHARED      'DPCTL_USM_SHARED'
+
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
@@ -340,7 +346,8 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef bool DPCTLKernelBundle_HasKernel(DPCTLSyclKernelBundleRef KBRef,
                                      const char *KernelName)
     cdef void DPCTLKernelBundle_Delete(DPCTLSyclKernelBundleRef KBRef)
-    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(const DPCTLSyclKernelBundleRef KBRef)
+    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(
+        const DPCTLSyclKernelBundleRef KBRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
@@ -450,7 +457,7 @@ cdef extern from "syclinterface/dpctl_sycl_usm_interface.h":
     cdef void DPCTLfree_with_context(
         DPCTLSyclUSMRef MRef,
         DPCTLSyclContextRef CRef)
-    cdef const char* DPCTLUSM_GetPointerType(
+    cdef _usm_type DPCTLUSM_GetPointerType(
         DPCTLSyclUSMRef MRef,
         DPCTLSyclContextRef CRef)
     cdef DPCTLSyclDeviceRef DPCTLUSM_GetPointerDevice(

@@ -32,6 +32,18 @@
 DPCTL_C_EXTERN_C_BEGIN
 
 /*!
+ * @brief Enum types for SYCL's USM allocator types.
+ *
+ */
+typedef enum
+{
+    DPCTL_USM_UNKNOWN = 0,
+    DPCTL_USM_DEVICE,
+    DPCTL_USM_HOST,
+    DPCTL_USM_SHARED
+} DPCTLSyclUSMType;
+
+/*!
  * @brief Redefinition of DPC++-specific Sycl backend types.
  *
  */
