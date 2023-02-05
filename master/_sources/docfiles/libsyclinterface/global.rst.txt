@@ -16,6 +16,7 @@ Global Namespace
 	enum_DPCTLSyclBackendType.rst
 	enum_DPCTLSyclDeviceType.rst
 	enum_DPCTLSyclEventStatusType.rst
+	enum_DPCTLSyclUSMType.rst
 
 Overview
 ~~~~~~~~
@@ -58,6 +59,7 @@ Overview
 	enum :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`;
 	enum :ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>`;
 	enum :ref:`DPCTLSyclEventStatusType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1ac950d7ef3975b7c553971613f4a27021>`;
+	enum :ref:`DPCTLSyclUSMType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844>`;
 
 	// global functions
 
@@ -777,8 +779,8 @@ Overview
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);
 
-	const DPCTL_API char*
-	:ref:`DPCTLUSM_GetPointerType<doxid-df/d6e/group___u_s_m_interface_1ga1e8658653d946578f1b4deb3333ec41c>`(
+	DPCTL_API :ref:`DPCTLSyclUSMType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844>`
+	:ref:`DPCTLUSM_GetPointerType<doxid-df/d6e/group___u_s_m_interface_1ga8cdbaff72515ca1f9caa745cf342f5cc>`(
 		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);

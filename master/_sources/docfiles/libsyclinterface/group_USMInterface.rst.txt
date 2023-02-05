@@ -76,8 +76,8 @@ Overview
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);
 
-	const DPCTL_API char*
-	:ref:`DPCTLUSM_GetPointerType<doxid-df/d6e/group___u_s_m_interface_1ga1e8658653d946578f1b4deb3333ec41c>`(
+	DPCTL_API :ref:`DPCTLSyclUSMType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844>`
+	:ref:`DPCTLUSM_GetPointerType<doxid-df/d6e/group___u_s_m_interface_1ga8cdbaff72515ca1f9caa745cf342f5cc>`(
 		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		);
@@ -434,18 +434,18 @@ Get the device associated with USM pointer.
 A DPCTLSyclDeviceRef pointer to the sycl device.
 
 .. index:: pair: function; DPCTLUSM_GetPointerType
-.. _doxid-df/d6e/group___u_s_m_interface_1ga1e8658653d946578f1b4deb3333ec41c:
+.. _doxid-df/d6e/group___u_s_m_interface_1ga8cdbaff72515ca1f9caa745cf342f5cc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	const DPCTL_API char*
+	DPCTL_API :ref:`DPCTLSyclUSMType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844>`
 	DPCTLUSM_GetPointerType(
 		__dpctl_keep const :ref:`DPCTLSyclUSMRef<doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6>` MRef,
 		__dpctl_keep const :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>` CRef
 		)
 
-Get pointer type.
+Returns the USM allocator type for a pointer.
 
 
 
@@ -457,7 +457,7 @@ Get pointer type.
 	*
 		- MRef
 
-		- USM Memory
+		- USM allocated pointer
 
 	*
 		- CRef
@@ -468,5 +468,5 @@ Get pointer type.
 
 .. rubric:: Returns:
 
-"host", "device", "shared" or "unknown"
+DPCTLSyclUSMType enum value indicating if the pointer is of USM type "shared", "host", or "device".
 
