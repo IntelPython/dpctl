@@ -29,6 +29,7 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
 DPCTL_C_EXTERN_C_BEGIN
@@ -152,16 +153,17 @@ void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
                             __dpctl_keep const DPCTLSyclContextRef CRef);
 
 /*!
- * @brief Get pointer type.
+ * @brief Returns the USM allocator type for a pointer.
  *
- * @param    MRef      USM Memory
+ * @param    MRef      USM allocated pointer
  * @param    CRef      Sycl context reference associated with the pointer
  *
- * @return "host", "device", "shared" or "unknown"
+ * @return DPCTLSyclUSMType enum value indicating if the pointer is of USM type
+ *         "shared", "host", or "device".
  * @ingroup USMInterface
  */
 DPCTL_API
-const char *
+DPCTLSyclUSMType
 DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
                         __dpctl_keep const DPCTLSyclContextRef CRef);
 
