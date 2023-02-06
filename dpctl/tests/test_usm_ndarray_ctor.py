@@ -1503,6 +1503,28 @@ def test_triu(dtype):
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
 
 
+@pytest.mark.parametrize("tri_fn", [dpt.tril, dpt.triu])
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+def test_tri_usm_type(tri_fn, usm_type):
+    q = get_queue_or_skip()
+    dtype = dpt.uint16
+
+    shape = (2, 3, 4, 5, 5)
+    size = np.prod(shape)
+    X = dpt.reshape(
+        dpt.arange(size, dtype=dtype, usm_type=usm_type, sycl_queue=q), shape
+    )
+    Y = tri_fn(X)  # main execution branch
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == q
+    Y = tri_fn(X, k=-6)  # special case of Y == X
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == q
+    Y = tri_fn(X, k=6)  # special case of Y == 0
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == q
+
+
 def test_tril_slice():
     q = get_queue_or_skip()
 
