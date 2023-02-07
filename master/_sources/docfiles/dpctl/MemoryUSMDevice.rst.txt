@@ -39,6 +39,7 @@ Public methods
 .. autofunction:: dpctl.memory.MemoryUSMDevice.copy_from_host
 .. autofunction:: dpctl.memory.MemoryUSMDevice.copy_to_host
 .. autofunction:: dpctl.memory.MemoryUSMDevice.get_usm_type
+.. autofunction:: dpctl.memory.MemoryUSMDevice.get_usm_type_enum
 .. autofunction:: dpctl.memory.MemoryUSMDevice.memset
 .. autofunction:: dpctl.memory.MemoryUSMDevice.tobytes
 
