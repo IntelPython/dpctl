@@ -201,7 +201,7 @@ def test_pickling_reconstructor_invalid_type(memory_ctor):
 
     mobj = memory_ctor(1024, alignment=64)
     good_pickle_bytes = pickle.dumps(mobj)
-    usm_types = expected_usm_type(memory_ctor).encode("utf-8")
+    usm_types = expected_usm_type_str(memory_ctor).encode("utf-8")
     i = good_pickle_bytes.rfind(usm_types)
     bad_pickle_bytes = good_pickle_bytes[:i] + b"u" + good_pickle_bytes[i + 1 :]
     with pytest.raises(ValueError):
@@ -213,13 +213,22 @@ def memory_ctor(request):
     return request.param
 
 
-def expected_usm_type(ctor):
+def expected_usm_type_str(ctor):
     mapping = {
         MemoryUSMShared: "shared",
         MemoryUSMDevice: "device",
         MemoryUSMHost: "host",
     }
     return mapping.get(ctor, "unknown")
+
+
+def expected_usm_type_enum(ctor):
+    mapping = {
+        MemoryUSMShared: 2,
+        MemoryUSMDevice: 1,
+        MemoryUSMHost: 3,
+    }
+    return mapping.get(ctor, 0)
 
 
 @pytest.mark.skipif(
@@ -230,7 +239,8 @@ def test_create_with_size_and_alignment_and_queue(memory_ctor):
     q = dpctl.SyclQueue()
     m = memory_ctor(1024, alignment=64, queue=q)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
@@ -241,7 +251,8 @@ def test_create_with_size_and_queue(memory_ctor):
     q = dpctl.SyclQueue()
     m = memory_ctor(1024, queue=q)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
@@ -251,7 +262,8 @@ def test_create_with_size_and_queue(memory_ctor):
 def test_create_with_size_and_alignment(memory_ctor):
     m = memory_ctor(1024, alignment=64)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
@@ -261,7 +273,8 @@ def test_create_with_size_and_alignment(memory_ctor):
 def test_create_with_only_size(memory_ctor):
     m = memory_ctor(1024)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
