@@ -113,14 +113,3 @@ class global_mem_cache_type(Enum):
     none = auto()
     read_only = auto()
     read_write = auto()
-
-
-class usm_type(Enum):
-    """
-    An enumeration of USM allocation types.
-    """
-
-    unknown = auto()
-    device = auto()
-    shared = auto()
-    host = auto()
