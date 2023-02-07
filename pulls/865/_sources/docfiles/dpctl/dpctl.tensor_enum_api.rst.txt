@@ -1,9 +1,0 @@
-.. _dpctl.tensor_enum_api:
-
-##################
-dpctl.tensor Enums
-##################
-
-
-.. currentmodule:: dpctl.tensor
-
