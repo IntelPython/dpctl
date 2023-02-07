@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>dpctl.memory.MemoryUSMShared &mdash; Data-parallel Control (dpctl) 0.14.1dev1+84.g0c86633fc documentation</title>
+  <title>dpctl.memory.MemoryUSMShared &mdash; Data-parallel Control (dpctl) 0.14.1dev1+90.g4fd76c24c documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.14.1dev1+84.g0c86633fc
+                0.14.1dev1+90.g4fd76c24c
               </div>
             
           
@@ -244,10 +244,13 @@ is other than ‘shared’.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type" title="dpctl.memory.MemoryUSMShared.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a>([syclobj])</p></td>
 <td><p>Returns the type of USM allocation using Sycl context carried by <cite>syclobj</cite> keyword argument.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.memset" title="dpctl.memory.MemoryUSMShared.memset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memset</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="dpctl.memory.MemoryUSMShared.get_usm_type_enum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type_enum</span></code></a></p></td>
+<td><p>get_usm_type(syclobj=None)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.memset" title="dpctl.memory.MemoryUSMShared.memset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memset</span></code></a></p></td>
 <td><p>Populates this USM allocation with given value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.tobytes" title="dpctl.memory.MemoryUSMShared.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.tobytes" title="dpctl.memory.MemoryUSMShared.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a></p></td>
 <td><p>Constructs bytes object populated with copy of USM memory.</p></td>
 </tr>
 </tbody>
@@ -342,6 +345,16 @@ NumPy array of <code class="docutils literal notranslate"><span class="pre">obj<
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.get_usm_type">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">get_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syclobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.get_usm_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the type of USM allocation using Sycl context carried by
+<cite>syclobj</cite> keyword argument. Value of None is understood to query
+against <cite>self.sycl_context</cite> - the context used to create the
+allocation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.get_usm_type_enum">
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">get_usm_type_enum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_usm_type(syclobj=None)</p>
+<p>Returns the type of USM allocation using Sycl context carried by
 <cite>syclobj</cite> keyword argument. Value of None is understood to query
 against <cite>self.sycl_context</cite> - the context used to create the
 allocation.</p>
