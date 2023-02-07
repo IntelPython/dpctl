@@ -271,8 +271,15 @@ def test_create_with_size_and_alignment(memory_ctor):
     reason="No SYCL devices except the default host device.",
 )
 def test_usm_type_execeptions():
-    m = MemoryUSMDevice(1024)
+    ctor = MemoryUSMDevice
+    m = ctor(1024)
     assert m.nbytes == 1024
+    q = m.sycl_queue
+    assert m.get_usm_type(syclobj=q) == expected_usm_type_str(ctor)
+    assert m.get_usm_type_enum(syclobj=q) == expected_usm_type_enum(ctor)
+    ctx = q.sycl_context
+    assert m.get_usm_type(syclobj=ctx) == expected_usm_type_str(ctor)
+    assert m.get_usm_type_enum(syclobj=ctx) == expected_usm_type_enum(ctor)
     with pytest.raises(TypeError):
         m.get_usm_type(syclobj=Ellipsis)
     with pytest.raises(TypeError):
