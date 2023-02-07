@@ -376,6 +376,39 @@ cdef class _Memory:
             "SyclContext or SyclQueue"
         )
 
+    def get_usm_type_enum(self, syclobj=None):
+        """
+        get_usm_type(syclobj=None)
+
+        Returns the type of USM allocation using Sycl context carried by
+        `syclobj` keyword argument. Value of None is understood to query
+        against `self.sycl_context` - the context used to create the
+        allocation.
+        """
+        cdef const char* kind
+        cdef SyclContext ctx
+        cdef SyclQueue q
+        if syclobj is None:
+            ctx = self._context
+            return _Memory.get_pointer_type_enum(
+                self.memory_ptr, ctx
+            )
+        elif isinstance(syclobj, SyclContext):
+            ctx = <SyclContext>(syclobj)
+            return _Memory.get_pointer_type_enum(
+                self.memory_ptr, ctx
+            )
+        elif isinstance(syclobj, SyclQueue):
+            q = <SyclQueue>(syclobj)
+            ctx = q.get_sycl_context()
+            return _Memory.get_pointer_type_enum(
+                self.memory_ptr, ctx
+            )
+        raise TypeError(
+            "syclobj keyword can be either None, or an instance of "
+            "SyclContext or SyclQueue"
+        )
+
     cpdef copy_to_host(self, obj=None):
         """
         Copy content of instance's memory into memory of ``obj``, or allocate
@@ -553,12 +586,34 @@ cdef class _Memory:
         )
         if usm_ty == _usm_type._USM_DEVICE:
             return b'device'
-        elif usm_ty == _usm_type._USM_HOST:
-            return b'host'
         elif usm_ty == _usm_type._USM_SHARED:
             return b'shared'
+        elif usm_ty == _usm_type._USM_HOST:
+            return b'host'
         else:
             return b'unknown'
+
+    @staticmethod
+    cdef _usm_type get_pointer_type_enum(DPCTLSyclUSMRef p, SyclContext ctx):
+        """
+        get_pointer_type(p, ctx)
+
+        Gives the SYCL(TM) USM pointer type, using ``sycl::get_pointer_type``,
+        returning an enum value.
+
+        Args:
+            p: DPCTLSyclUSMRef
+                A pointer to test the type of.
+            ctx: :class:`dpctl.SyclContext`
+                Python object providing :class:`dpctl.SyclContext` against
+                which to query for the pointer type.
+        Returns:
+            An enum value corresponding to the type of allocation.
+        """
+        cdef _usm_type usm_ty = DPCTLUSM_GetPointerType(
+            p, ctx.get_context_ref()
+        )
+        return usm_ty
 
     @staticmethod
     cdef object create_from_usm_pointer_size_qref(

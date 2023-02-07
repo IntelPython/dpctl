@@ -39,8 +39,8 @@ typedef enum
 {
     DPCTL_USM_UNKNOWN = 0,
     DPCTL_USM_DEVICE,
-    DPCTL_USM_HOST,
-    DPCTL_USM_SHARED
+    DPCTL_USM_SHARED,
+    DPCTL_USM_HOST
 } DPCTLSyclUSMType;
 
 /*!

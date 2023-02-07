@@ -37,8 +37,8 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
     ctypedef enum _usm_type 'DPCTLSyclUSMType':
         _USM_UNKNOWN     'DPCTL_USM_UNKNOWN'
         _USM_DEVICE      'DPCTL_USM_DEVICE'
-        _USM_HOST        'DPCTL_USM_HOST'
         _USM_SHARED      'DPCTL_USM_SHARED'
+        _USM_HOST        'DPCTL_USM_HOST'
 
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
