@@ -1,0 +1,21 @@
+.. index:: pair: enum; DPCTLSyclUSMType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844:
+
+enum DPCTLSyclUSMType
+=====================
+
+Enum types for SYCL's USM allocator types.
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLSyclUSMType
+	{
+	    :target:`DPCTL_USM_UNKNOWN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844aa4750e548c4285a7ff8bcd7cf35dc840>` = 0,
+	    :target:`DPCTL_USM_DEVICE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844a1b0d823beecf234de8fbab4c05361757>`,
+	    :target:`DPCTL_USM_HOST<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844ab92233cd4affe24d0ba56a467eb1eb8b>`,
+	    :target:`DPCTL_USM_SHARED<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844a9bea7de7b31039f7d98a5d2594fc1759>`,
+	};
+
