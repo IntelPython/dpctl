@@ -1,0 +1,9 @@
+.. _dpctl.utils_exception_api:
+
+######################
+dpctl.utils Exceptions
+######################
+
+
+.. currentmodule:: dpctl.utils
+
