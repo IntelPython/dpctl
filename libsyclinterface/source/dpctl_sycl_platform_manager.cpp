@@ -41,6 +41,8 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
 
 using namespace dpctl::syclinterface;
 
@@ -71,11 +73,7 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
            << p.get_info<info::platform::version>() << _endl << std::setw(4)
            << " " << std::left << std::setw(12) << "Vendor" << vendor << _endl
            << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
         ss << p.get_backend();
-#else
-        p.is_host() ? (ss << "unknown") : (ss << p.get_backend());
-#endif
         ss << _endl;
 
         // Get number of devices on the platform

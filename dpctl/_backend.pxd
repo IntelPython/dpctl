@@ -34,10 +34,15 @@ cdef extern from "syclinterface/dpctl_utils.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
+    ctypedef enum _usm_type 'DPCTLSyclUSMType':
+        _USM_UNKNOWN     'DPCTL_USM_UNKNOWN'
+        _USM_DEVICE      'DPCTL_USM_DEVICE'
+        _USM_SHARED      'DPCTL_USM_SHARED'
+        _USM_HOST        'DPCTL_USM_HOST'
+
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
-        _HOST            'DPCTL_HOST'
         _LEVEL_ZERO      'DPCTL_LEVEL_ZERO'
         _OPENCL          'DPCTL_OPENCL'
         _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'
@@ -49,7 +54,6 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _CPU            'DPCTL_CPU'
         _CUSTOM         'DPCTL_CUSTOM'
         _GPU            'DPCTL_GPU'
-        _HOST_DEVICE    'DPCTL_HOST_DEVICE'
         _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
 
     ctypedef enum _arg_data_type 'DPCTLKernelArgType':
@@ -174,7 +178,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_IsHost(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthShort(const DPCTLSyclDeviceRef DRef)
@@ -236,7 +239,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create()
     DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(const char *)
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
-    DPCTLSyclDeviceSelectorRef DPCTLHostSelector_Create()
     void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef)
     int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
 
@@ -271,8 +273,7 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetPrivateMemSize(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetMaxNumSubGroups(const DPCTLSyclKernelRef KRef)
-##  Next line is commented out due to issue in DPC++ runtime
-#   cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetCompileNumSubGroups(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetCompileSubGroupSize(const DPCTLSyclKernelRef KRef)
 
@@ -345,7 +346,8 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef bool DPCTLKernelBundle_HasKernel(DPCTLSyclKernelBundleRef KBRef,
                                      const char *KernelName)
     cdef void DPCTLKernelBundle_Delete(DPCTLSyclKernelBundleRef KBRef)
-    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(const DPCTLSyclKernelBundleRef KBRef)
+    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(
+        const DPCTLSyclKernelBundleRef KBRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
@@ -455,7 +457,7 @@ cdef extern from "syclinterface/dpctl_sycl_usm_interface.h":
     cdef void DPCTLfree_with_context(
         DPCTLSyclUSMRef MRef,
         DPCTLSyclContextRef CRef)
-    cdef const char* DPCTLUSM_GetPointerType(
+    cdef _usm_type DPCTLUSM_GetPointerType(
         DPCTLSyclUSMRef MRef,
         DPCTLSyclContextRef CRef)
     cdef DPCTLSyclDeviceRef DPCTLUSM_GetPointerDevice(

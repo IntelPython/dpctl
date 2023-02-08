@@ -201,7 +201,7 @@ def test_pickling_reconstructor_invalid_type(memory_ctor):
 
     mobj = memory_ctor(1024, alignment=64)
     good_pickle_bytes = pickle.dumps(mobj)
-    usm_types = expected_usm_type(memory_ctor).encode("utf-8")
+    usm_types = expected_usm_type_str(memory_ctor).encode("utf-8")
     i = good_pickle_bytes.rfind(usm_types)
     bad_pickle_bytes = good_pickle_bytes[:i] + b"u" + good_pickle_bytes[i + 1 :]
     with pytest.raises(ValueError):
@@ -213,13 +213,22 @@ def memory_ctor(request):
     return request.param
 
 
-def expected_usm_type(ctor):
+def expected_usm_type_str(ctor):
     mapping = {
         MemoryUSMShared: "shared",
         MemoryUSMDevice: "device",
         MemoryUSMHost: "host",
     }
     return mapping.get(ctor, "unknown")
+
+
+def expected_usm_type_enum(ctor):
+    mapping = {
+        MemoryUSMShared: 2,
+        MemoryUSMDevice: 1,
+        MemoryUSMHost: 3,
+    }
+    return mapping.get(ctor, 0)
 
 
 @pytest.mark.skipif(
@@ -230,7 +239,8 @@ def test_create_with_size_and_alignment_and_queue(memory_ctor):
     q = dpctl.SyclQueue()
     m = memory_ctor(1024, alignment=64, queue=q)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
@@ -241,7 +251,8 @@ def test_create_with_size_and_queue(memory_ctor):
     q = dpctl.SyclQueue()
     m = memory_ctor(1024, queue=q)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
@@ -251,17 +262,28 @@ def test_create_with_size_and_queue(memory_ctor):
 def test_create_with_size_and_alignment(memory_ctor):
     m = memory_ctor(1024, alignment=64)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
+    assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
 @pytest.mark.skipif(
     not has_sycl_platforms(),
     reason="No SYCL devices except the default host device.",
 )
-def test_create_with_only_size(memory_ctor):
-    m = memory_ctor(1024)
+def test_usm_type_execeptions():
+    ctor = MemoryUSMDevice
+    m = ctor(1024)
     assert m.nbytes == 1024
-    assert m.get_usm_type() == expected_usm_type(memory_ctor)
+    q = m.sycl_queue
+    assert m.get_usm_type(syclobj=q) == expected_usm_type_str(ctor)
+    assert m.get_usm_type_enum(syclobj=q) == expected_usm_type_enum(ctor)
+    ctx = q.sycl_context
+    assert m.get_usm_type(syclobj=ctx) == expected_usm_type_str(ctor)
+    assert m.get_usm_type_enum(syclobj=ctx) == expected_usm_type_enum(ctor)
+    with pytest.raises(TypeError):
+        m.get_usm_type(syclobj=Ellipsis)
+    with pytest.raises(TypeError):
+        m.get_usm_type_enum(syclobj=list())
 
 
 @pytest.mark.skipif(
@@ -545,6 +567,7 @@ def test_cpython_api(memory_ctor):
     mem_q_ref_fn_cap = mod.__pyx_capi__["Memory_GetQueueRef"]
     mem_ctx_ref_fn_cap = mod.__pyx_capi__["Memory_GetContextRef"]
     mem_nby_fn_cap = mod.__pyx_capi__["Memory_GetNumBytes"]
+    mem_make_fn_cap = mod.__pyx_capi__["Memory_Make"]
     # construct Python callable to invoke functions
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
@@ -561,11 +584,23 @@ def test_cpython_api(memory_ctor):
     mem_nby_fn_ptr = cap_ptr_fn(
         mem_nby_fn_cap, b"size_t (struct Py_MemoryObject *)"
     )
+    mem_make_fn_ptr = cap_ptr_fn(
+        mem_make_fn_cap,
+        b"PyObject *(DPCTLSyclUSMRef, size_t, DPCTLSyclQueueRef, PyObject *)",
+    )
     callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
     get_ptr_fn = callable_maker(mem_ptr_fn_ptr)
     get_ctx_ref_fn = callable_maker(mem_ctx_ref_fn_ptr)
     get_q_ref_fn = callable_maker(mem_q_ref_fn_ptr)
     get_nby_fn = callable_maker(mem_nby_fn_ptr)
+    make_callable_maker = ctypes.PYFUNCTYPE(
+        ctypes.py_object,
+        ctypes.c_void_p,
+        ctypes.c_size_t,
+        ctypes.c_void_p,
+        ctypes.py_object,
+    )
+    make_fn = make_callable_maker(mem_make_fn_ptr)
 
     capi_ptr = get_ptr_fn(mobj)
     direct_ptr = mobj._pointer
@@ -579,6 +614,15 @@ def test_cpython_api(memory_ctor):
     capi_nbytes = get_nby_fn(mobj)
     direct_nbytes = mobj.nbytes
     assert capi_nbytes == direct_nbytes
+
+    mobj2 = make_fn(
+        mobj._pointer,
+        ctypes.c_size_t(mobj.nbytes),
+        mobj.sycl_queue.addressof_ref(),
+        mobj,
+    )
+    assert mobj2._pointer == mobj._pointer
+    assert mobj2.reference_obj is mobj
 
 
 def test_memory_construction_from_other_memory_objects():

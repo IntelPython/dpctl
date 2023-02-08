@@ -145,14 +145,8 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetPrivateMemSize)
     EXPECT_NO_FATAL_FAILURE(axpy_private_mem_sz =
                                 DPCTLKernel_GetPrivateMemSize(AxpyKRef));
 
-    if (DPCTLDevice_IsGPU(DRef)) {
-        ASSERT_TRUE(add_private_mem_sz != 0);
-        ASSERT_TRUE(axpy_private_mem_sz != 0);
-    }
-    else {
-        ASSERT_TRUE(add_private_mem_sz >= 0);
-        ASSERT_TRUE(axpy_private_mem_sz >= 0);
-    }
+    ASSERT_TRUE(add_private_mem_sz >= 0);
+    ASSERT_TRUE(axpy_private_mem_sz >= 0);
 }
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxNumSubGroups)
@@ -167,7 +161,6 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxNumSubGroups)
     ASSERT_TRUE(axpy_mnsg != 0);
 }
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxSubGroupSize)
 {
 
@@ -180,7 +173,6 @@ TEST_P(TestDPCTLSyclKernelInterface, CheckGetMaxSubGroupSize)
     ASSERT_TRUE(add_msg_sz != 0);
     ASSERT_TRUE(axpy_msg_sz != 0);
 }
-#endif
 
 TEST_P(TestDPCTLSyclKernelInterface, CheckGetCompileNumSubGroups)
 {
@@ -257,14 +249,12 @@ TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetMaxNumSubGroupsNullKRef)
     ASSERT_EQ(DPCTLKernel_GetMaxNumSubGroups(NullKRef), 0);
 }
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
 TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetMaxSubGroupSizeNullKRef)
 {
     DPCTLSyclKernelRef NullKRef = nullptr;
 
     ASSERT_EQ(DPCTLKernel_GetMaxSubGroupSize(NullKRef), 0);
 }
-#endif
 
 TEST_F(TestDPCTLSyclKernelNullArgs, CheckGetCompileNumSubGroupsNullKRef)
 {

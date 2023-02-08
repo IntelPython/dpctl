@@ -45,9 +45,9 @@ from dpctl.tensor import Device
 def test_allocate_usm_ndarray(shape, usm_type):
     q = get_queue_or_skip()
     X = dpt.usm_ndarray(
-        shape, dtype="d", buffer=usm_type, buffer_ctor_kwargs={"queue": q}
+        shape, dtype="i8", buffer=usm_type, buffer_ctor_kwargs={"queue": q}
     )
-    Xnp = np.ndarray(shape, dtype="d")
+    Xnp = np.ndarray(shape, dtype="i8")
     assert X.usm_type == usm_type
     assert X.sycl_context == q.sycl_context
     assert X.sycl_device == q.sycl_device
@@ -57,13 +57,17 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 
 def test_usm_ndarray_flags():
-    assert dpt.usm_ndarray((5,)).flags.fc
-    assert dpt.usm_ndarray((5, 2)).flags.c_contiguous
-    assert dpt.usm_ndarray((5, 2), order="F").flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), order="F").flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), strides=(2, 0, 1)).flags.c_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), strides=(1, 0, 5)).flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 1), strides=(1, 0, 1)).flags.fc
+    assert dpt.usm_ndarray((5,), dtype="i4").flags.fc
+    assert dpt.usm_ndarray((5, 2), dtype="i4").flags.c_contiguous
+    assert dpt.usm_ndarray((5, 2), dtype="i4", order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", order="F").flags.f_contiguous
+    assert dpt.usm_ndarray(
+        (5, 1, 2), dtype="i4", strides=(2, 0, 1)
+    ).flags.c_contiguous
+    assert dpt.usm_ndarray(
+        (5, 1, 2), dtype="i4", strides=(1, 0, 5)
+    ).flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags.fc
 
 
 @pytest.mark.parametrize(
@@ -88,6 +92,8 @@ def test_usm_ndarray_flags():
     ],
 )
 def test_dtypes(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     Xusm = dpt.usm_ndarray((1,), dtype=dtype)
     assert Xusm.itemsize == dpt.dtype(dtype).itemsize
     expected_fmt = (dpt.dtype(dtype).str)[1:]
@@ -169,7 +175,7 @@ def test_copy_scalar_with_method(method, shape, dtype):
 @pytest.mark.parametrize("func", [bool, float, int, complex])
 @pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
 def test_copy_scalar_invalid_shape(func, shape):
-    X = dpt.usm_ndarray(shape)
+    X = dpt.usm_ndarray(shape, dtype="i8")
     with pytest.raises(ValueError):
         func(X)
 
@@ -177,7 +183,7 @@ def test_copy_scalar_invalid_shape(func, shape):
 def test_index_noninteger():
     import operator
 
-    X = dpt.usm_ndarray(1, "d")
+    X = dpt.usm_ndarray(1, "f4")
     with pytest.raises(IndexError):
         operator.index(X)
 
@@ -283,7 +289,7 @@ def test_slice_suai(usm_type):
 
 
 def test_slicing_basic():
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
     Xusm[None]
     Xusm[...]
     Xusm[8]
@@ -318,20 +324,20 @@ def test_ctor_invalid_order():
 
 
 def test_ctor_buffer_kwarg():
-    dpt.usm_ndarray(10, buffer=b"device")
+    dpt.usm_ndarray(10, dtype="i8", buffer=b"device")
     with pytest.raises(ValueError):
         dpt.usm_ndarray(10, buffer="invalid_param")
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c16")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
     X2 = dpt.usm_ndarray(Xusm.shape, buffer=Xusm, dtype=Xusm.dtype)
     assert np.array_equal(
         Xusm.usm_data.copy_to_host(), X2.usm_data.copy_to_host()
     )
     with pytest.raises(ValueError):
-        dpt.usm_ndarray(10, buffer=dict())
+        dpt.usm_ndarray(10, dtype="i4", buffer=dict())
 
 
 def test_usm_ndarray_props():
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c16", order="F")
+    Xusm = dpt.usm_ndarray((10, 5), dtype="c8", order="F")
     Xusm.ndim
     repr(Xusm)
     Xusm.flags
@@ -348,7 +354,7 @@ def test_usm_ndarray_props():
 
 
 def test_datapi_device():
-    X = dpt.usm_ndarray(1)
+    X = dpt.usm_ndarray(1, dtype="i4")
     dev_t = type(X.device)
     with pytest.raises(TypeError):
         dev_t()
@@ -363,10 +369,15 @@ def test_datapi_device():
     X.device.sycl_queue
     X.device.sycl_device
     repr(X.device)
+    X.device.print_device_info()
 
 
 def _pyx_capi_fnptr_to_callable(
-    X, pyx_capi_name, caps_name, fn_restype=ctypes.c_void_p
+    X,
+    pyx_capi_name,
+    caps_name,
+    fn_restype=ctypes.c_void_p,
+    fn_argtypes=(ctypes.py_object,),
 ):
     import sys
 
@@ -381,17 +392,18 @@ def _pyx_capi_fnptr_to_callable(
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
     fn_ptr = cap_ptr_fn(cap, caps_name)
-    callable_maker_ptr = ctypes.PYFUNCTYPE(fn_restype, ctypes.py_object)
+    callable_maker_ptr = ctypes.PYFUNCTYPE(fn_restype, *fn_argtypes)
     return callable_maker_ptr(fn_ptr)
 
 
 def test_pyx_capi_get_data():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i8")[1::2]
     get_data_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetData",
         b"char *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     r1 = get_data_fn(X)
     sua_iface = X.__sycl_usm_array_interface__
@@ -399,12 +411,13 @@ def test_pyx_capi_get_data():
 
 
 def test_pyx_capi_get_shape():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="u4")[1::2]
     get_shape_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetShape",
         b"Py_ssize_t *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     c_longlong_p = ctypes.POINTER(ctypes.c_longlong)
     shape0 = ctypes.cast(get_shape_fn(X), c_longlong_p).contents.value
@@ -412,12 +425,13 @@ def test_pyx_capi_get_shape():
 
 
 def test_pyx_capi_get_strides():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="f4")[1::2]
     get_strides_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetStrides",
         b"Py_ssize_t *(struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     c_longlong_p = ctypes.POINTER(ctypes.c_longlong)
     strides0_p = get_strides_fn(X)
@@ -428,23 +442,25 @@ def test_pyx_capi_get_strides():
 
 
 def test_pyx_capi_get_ndim():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="?")[1::2]
     get_ndim_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetNDim",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     assert get_ndim_fn(X) == X.ndim
 
 
 def test_pyx_capi_get_typenum():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="c8")[1::2]
     get_typenum_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetTypenum",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     typenum = get_typenum_fn(X)
     assert type(typenum) is int
@@ -452,12 +468,13 @@ def test_pyx_capi_get_typenum():
 
 
 def test_pyx_capi_get_elemsize():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="u8")[1::2]
     get_elemsize_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetElementSize",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     itemsize = get_elemsize_fn(X)
     assert type(itemsize) is int
@@ -465,24 +482,26 @@ def test_pyx_capi_get_elemsize():
 
 
 def test_pyx_capi_get_flags():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i8")[1::2]
     get_flags_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetFlags",
         b"int (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_int,
+        fn_argtypes=(ctypes.py_object,),
     )
     flags = get_flags_fn(X)
     assert type(flags) is int and X.flags == flags
 
 
 def test_pyx_capi_get_offset():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="u2")[1::2]
     get_offset_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetOffset",
         b"Py_ssize_t (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_longlong,
+        fn_argtypes=(ctypes.py_object,),
     )
     offset = get_offset_fn(X)
     assert type(offset) is int
@@ -490,15 +509,229 @@ def test_pyx_capi_get_offset():
 
 
 def test_pyx_capi_get_queue_ref():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i2")[1::2]
     get_queue_ref_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetQueueRef",
         b"DPCTLSyclQueueRef (struct PyUSMArrayObject *)",
         fn_restype=ctypes.c_void_p,
+        fn_argtypes=(ctypes.py_object,),
     )
     queue_ref = get_queue_ref_fn(X)  # address of a copy, should be unequal
     assert queue_ref != X.sycl_queue.addressof_ref()
+
+
+def test_pyx_capi_make_from_memory():
+    q = get_queue_or_skip()
+    n0, n1 = 4, 6
+    c_tuple = (ctypes.c_ssize_t * 2)(n0, n1)
+    mem = dpm.MemoryUSMShared(n0 * n1 * 4, queue=q)
+    typenum = dpt.dtype("single").num
+    any_usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    make_from_memory_fn = _pyx_capi_fnptr_to_callable(
+        any_usm_ndarray,
+        "UsmNDArray_MakeSimpleFromMemory",
+        b"PyObject *(int, Py_ssize_t const *, int, "
+        b"struct Py_MemoryObject *, Py_ssize_t, char)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_int,
+            ctypes.py_object,
+            ctypes.c_ssize_t,
+            ctypes.c_char,
+        ),
+    )
+    r = make_from_memory_fn(
+        ctypes.c_int(2),
+        c_tuple,
+        ctypes.c_int(typenum),
+        mem,
+        ctypes.c_ssize_t(0),
+        ctypes.c_char(b"C"),
+    )
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.ndim == 2
+    assert r.shape == (n0, n1)
+    assert r._pointer == mem._pointer
+    assert r.usm_type == "shared"
+    assert r.sycl_queue == q
+    assert r.flags["C"]
+    r2 = make_from_memory_fn(
+        ctypes.c_int(2),
+        c_tuple,
+        ctypes.c_int(typenum),
+        mem,
+        ctypes.c_ssize_t(0),
+        ctypes.c_char(b"F"),
+    )
+    ptr = mem._pointer
+    del mem
+    del r
+    assert isinstance(r2, dpt.usm_ndarray)
+    assert r2._pointer == ptr
+    assert r2.usm_type == "shared"
+    assert r2.sycl_queue == q
+    assert r2.flags["F"]
+
+
+def test_pyx_capi_set_writable_flag():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty((4, 5), dtype="i4", sycl_queue=q)
+    assert isinstance(usm_ndarray, dpt.usm_ndarray)
+    assert usm_ndarray.flags["WRITABLE"] is True
+    set_writable = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_SetWritableFlag",
+        b"void (struct PyUSMArrayObject *, int)",
+        fn_restype=None,
+        fn_argtypes=(ctypes.py_object, ctypes.c_int),
+    )
+    set_writable(usm_ndarray, ctypes.c_int(0))
+    assert isinstance(usm_ndarray, dpt.usm_ndarray)
+    assert usm_ndarray.flags["WRITABLE"] is False
+    set_writable(usm_ndarray, ctypes.c_int(1))
+    assert isinstance(usm_ndarray, dpt.usm_ndarray)
+    assert usm_ndarray.flags["WRITABLE"] is True
+
+
+def test_pyx_capi_make_from_ptr():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    make_from_ptr = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_MakeSimpleFromPtr",
+        b"PyObject *(size_t, int, DPCTLSyclUSMRef, "
+        b"DPCTLSyclQueueRef, PyObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_size_t,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.py_object,
+        ),
+    )
+    nelems = 10
+    dt = dpt.int64
+    mem = dpm.MemoryUSMDevice(nelems * dt.itemsize, queue=q)
+    arr = make_from_ptr(
+        ctypes.c_size_t(nelems),
+        dt.num,
+        mem._pointer,
+        mem.sycl_queue.addressof_ref(),
+        mem,
+    )
+    assert isinstance(arr, dpt.usm_ndarray)
+    assert arr.shape == (nelems,)
+    assert arr.dtype == dt
+    assert arr.sycl_queue == q
+    assert arr._pointer == mem._pointer
+    del mem
+    assert isinstance(arr.__repr__(), str)
+
+
+def test_pyx_capi_make_general():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    make_from_ptr = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_MakeFromPtr",
+        b"PyObject *(int, Py_ssize_t const *, int, Py_ssize_t const *, "
+        b"DPCTLSyclUSMRef, DPCTLSyclQueueRef, Py_ssize_t, PyObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_ssize_t,
+            ctypes.py_object,
+        ),
+    )
+    # Create array to view into diagonal of a matrix
+    n = 5
+    mat = dpt.reshape(
+        dpt.arange(n * n, dtype="i4", sycl_queue=q),
+        (
+            n,
+            n,
+        ),
+    )
+    c_shape = (ctypes.c_ssize_t * 1)(
+        n,
+    )
+    c_strides = (ctypes.c_ssize_t * 1)(
+        n + 1,
+    )
+    diag = make_from_ptr(
+        ctypes.c_int(1),
+        c_shape,
+        ctypes.c_int(mat.dtype.num),
+        c_strides,
+        mat._pointer,
+        mat.sycl_queue.addressof_ref(),
+        ctypes.c_ssize_t(0),
+        mat,
+    )
+    assert isinstance(diag, dpt.usm_ndarray)
+    assert diag.shape == (n,)
+    assert diag.strides == (n + 1,)
+    assert diag.dtype == mat.dtype
+    assert diag.sycl_queue == q
+    assert diag._pointer == mat._pointer
+    del mat
+    assert isinstance(diag.__repr__(), str)
+    # create 0d scalar
+    mat = dpt.reshape(
+        dpt.arange(n * n, dtype="i4", sycl_queue=q),
+        (
+            n,
+            n,
+        ),
+    )
+    sc = make_from_ptr(
+        ctypes.c_int(0),
+        None,  # NULL pointer
+        ctypes.c_int(mat.dtype.num),
+        None,  # NULL pointer
+        mat._pointer,
+        mat.sycl_queue.addressof_ref(),
+        ctypes.c_ssize_t(0),
+        mat,
+    )
+    assert isinstance(sc, dpt.usm_ndarray)
+    assert sc.shape == tuple()
+    assert sc.dtype == mat.dtype
+    assert sc.sycl_queue == q
+    assert sc._pointer == mat._pointer
+    c_shape = (ctypes.c_ssize_t * 2)(0, n)
+    c_strides = (ctypes.c_ssize_t * 2)(0, 1)
+    zd_arr = make_from_ptr(
+        ctypes.c_int(2),
+        c_shape,
+        ctypes.c_int(mat.dtype.num),
+        c_strides,
+        mat._pointer,
+        mat.sycl_queue.addressof_ref(),
+        ctypes.c_ssize_t(0),
+        mat,
+    )
+    assert isinstance(zd_arr, dpt.usm_ndarray)
+    assert zd_arr.shape == (
+        0,
+        n,
+    )
+    assert zd_arr.strides == (
+        0,
+        1,
+    )
+    assert zd_arr.dtype == mat.dtype
+    assert zd_arr.sycl_queue == q
+    assert zd_arr._pointer == mat._pointer
 
 
 def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
@@ -520,7 +753,7 @@ def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
 
 
 def test_pyx_capi_check_constants():
-    X = dpt.usm_ndarray(17)[1::2]
+    X = dpt.usm_ndarray(17, dtype="i1")[1::2]
     cc_flag = _pyx_capi_int(X, "USM_ARRAY_C_CONTIGUOUS")
     assert cc_flag > 0 and 0 == (cc_flag & (cc_flag - 1))
     fc_flag = _pyx_capi_int(X, "USM_ARRAY_F_CONTIGUOUS")
@@ -597,6 +830,7 @@ _all_dtypes = [
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_tofrom_numpy(shape, dtype, usm_type):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
     Xnp = np.zeros(shape, dtype=dtype)
     Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
@@ -732,7 +966,7 @@ def test_shape_setter():
         4,
         5,
     )
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="i8")
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
@@ -749,27 +983,27 @@ def test_shape_setter():
         4,
         5,
     )
-    X = dpt.usm_ndarray(sh_s, dtype="d", order="C")
+    X = dpt.usm_ndarray(sh_s, dtype="u4", order="C")
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
 
     sh_s = (2, 3, 4, 5)
     sh_f = (4, 3, 2, 5)
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="f4")
     X.shape = sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
 
     sh_s = (2, 3, 4, 5)
     sh_f = (4, 3, 1, 2, 5)
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="?")
     X.shape = sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
 
-    X = dpt.usm_ndarray(sh_s, dtype="d")
+    X = dpt.usm_ndarray(sh_s, dtype="u4")
     with pytest.raises(TypeError):
         X.shape = "abcbe"
-    X = dpt.usm_ndarray((4, 4), dtype="d")[::2, ::2]
+    X = dpt.usm_ndarray((4, 4), dtype="u1")[::2, ::2]
     with pytest.raises(AttributeError):
         X.shape = (4,)
     X = dpt.usm_ndarray((0,), dtype="i4")
@@ -813,7 +1047,7 @@ def test_dlpack():
 
 
 def test_to_device():
-    X = dpt.usm_ndarray(1, "d")
+    X = dpt.usm_ndarray(1, "f4")
     for dev in dpctl.get_devices():
         if dev.default_selector_score > 0:
             Y = X.to_device(dev)
@@ -899,7 +1133,7 @@ def test_reshape():
     W = dpt.reshape(Z, (-1,), order="C")
     assert W.shape == (Z.size,)
 
-    X = dpt.usm_ndarray((1,))
+    X = dpt.usm_ndarray((1,), dtype="i8")
     Y = dpt.reshape(X, X.shape)
     assert Y.flags == X.flags
 
@@ -969,7 +1203,9 @@ def test_real_imag_views():
     _all_dtypes,
 )
 def test_zeros(dtype):
-    X = dpt.zeros(10, dtype=dtype)
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.zeros(10, dtype=dtype, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(X), np.zeros(10, dtype=dtype))
 
 
@@ -1167,6 +1403,28 @@ def test_linspace_fp():
     assert X.strides == (1,)
 
 
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_linspace_fp_max(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    n = 16
+    dt = dpt.dtype(dtype)
+    max_ = dpt.finfo(dt).max
+    X = dpt.linspace(max_, max_, endpoint=True, num=n, dtype=dt, sycl_queue=q)
+    assert X.shape == (n,)
+    assert X.strides == (1,)
+    assert np.allclose(
+        dpt.asnumpy(X), np.linspace(max_, max_, endpoint=True, num=n, dtype=dt)
+    )
+
+
+def test_linspace_int():
+    q = get_queue_or_skip()
+    X = dpt.linspace(0.1, 9.1, 11, endpoint=True, dtype=int, sycl_queue=q)
+    Xnp = np.linspace(0.1, 9.1, 11, endpoint=True, dtype=int)
+    assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes,
@@ -1181,6 +1439,7 @@ def test_linspace_fp():
 )
 def test_empty_like(dt, usm_kind):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.empty_like(X)
@@ -1216,6 +1475,7 @@ def test_empty_unexpected_data_type():
 )
 def test_zeros_like(dt, usm_kind):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
 
     X = dpt.empty((4, 5), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.zeros_like(X)
@@ -1343,6 +1603,28 @@ def test_triu(dtype):
     Ynp = np.triu(Xnp, 1)
     assert Y.dtype == Ynp.dtype
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("tri_fn", [dpt.tril, dpt.triu])
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+def test_tri_usm_type(tri_fn, usm_type):
+    q = get_queue_or_skip()
+    dtype = dpt.uint16
+
+    shape = (2, 3, 4, 5, 5)
+    size = np.prod(shape)
+    X = dpt.reshape(
+        dpt.arange(size, dtype=dtype, usm_type=usm_type, sycl_queue=q), shape
+    )
+    Y = tri_fn(X)  # main execution branch
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == q
+    Y = tri_fn(X, k=-6)  # special case of Y == X
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == q
+    Y = tri_fn(X, k=6)  # special case of Y == 0
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == q
 
 
 def test_tril_slice():
@@ -1548,3 +1830,19 @@ def test_asarray_uint64():
     Xnp = np.ndarray(1, dtype=np.uint64)
     X = dpt.asarray(Xnp)
     assert X.dtype == Xnp.dtype
+
+
+def test_Device():
+    try:
+        dev = dpctl.select_default_device()
+        d1 = dpt.Device.create_device(dev)
+        d2 = dpt.Device.create_device(dev)
+    except (dpctl.SyclQueueCreationError, dpctl.SyclDeviceCreationError):
+        pytest.skip(
+            "Could not create default device, or a queue that targets it"
+        )
+    assert d1 == d2
+    dict = {d1: 1}
+    assert dict[d2] == 1
+    assert d1 == d2.sycl_queue
+    assert not d1 == Ellipsis

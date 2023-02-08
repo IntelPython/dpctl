@@ -17,8 +17,8 @@ include(GNUInstallDirs)
 include(FetchContent)
 FetchContent_Declare(
   pybind11
-  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.1.tar.gz
-  URL_HASH SHA256=111014b516b625083bef701df7880f78c2243835abdb263065b6b59b960b6bad
+  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.10.2.tar.gz
+  URL_HASH SHA256=93bd1e625e43e03028a3ea7389bba5d3f9f2596abc074b068e70f4ef9b1314ae
 )
 FetchContent_MakeAvailable(pybind11)
 
@@ -38,8 +38,9 @@ pybind11_add_module(${py_module_name}
     MODULE
     sycl_gemm/_onemkl.cpp
 )
+target_compile_definitions(${py_module_name} PRIVATE -DMKL_ILP64)
 target_include_directories(${py_module_name}
-    PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR} sycl_gemm
+    PUBLIC ${MKL_INCLUDE_DIR} sycl_gemm
 )
 target_link_libraries(${py_module_name}
     PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb}

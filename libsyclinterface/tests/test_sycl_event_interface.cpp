@@ -125,8 +125,6 @@ TEST_F(TestDPCTLSyclEventInterface, CheckEvent_GetBackend)
         switch (BTy) {
         case DPCTLSyclBackendType::DPCTL_CUDA:
             return true;
-        case DPCTLSyclBackendType::DPCTL_HOST:
-            return true;
         case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
             return true;
         case DPCTLSyclBackendType::DPCTL_OPENCL:
@@ -158,11 +156,8 @@ TEST_F(TestDPCTLSyclEventInterface, CheckGetProfiling)
 {
     property_list propList{property::queue::enable_profiling()};
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_2023_SWITCHOVER
     queue Q(cpu_selector_v, propList);
-#else
-    queue Q(cpu_selector(), propList);
-#endif
+
     auto eA = Q.submit(
         [&](handler &h) { h.parallel_for(1000, [=](id<1>) { /*...*/ }); });
     DPCTLSyclEventRef ERef = reinterpret_cast<DPCTLSyclEventRef>(&eA);

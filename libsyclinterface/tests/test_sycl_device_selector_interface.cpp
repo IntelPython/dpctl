@@ -159,27 +159,6 @@ TEST_F(TestDeviceSelectorInterface, ChkDPCTLGPUSelectorCreate)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 }
 
-TEST_F(TestDeviceSelectorInterface, ChkDPCTLHostSelectorCreate)
-{
-    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
-
-    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLHostSelector_Create());
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-
-    if (!DRef) {
-        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
-        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
-        GTEST_SKIP_("Device not found. Skip tests.");
-    }
-
-    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceMgr_PrintDeviceInfo(DRef));
-    // FIXME: DPCPP's host_selector returns a CPU device for some reason.
-    // EXPECT_TRUE(DPCTLDevice_IsHost(DRef));
-    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
-    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
-}
-
 TEST_P(TestFilterSelector, ChkDPCTLFilterSelectorCreate)
 {
     ASSERT_TRUE(DRef != nullptr);

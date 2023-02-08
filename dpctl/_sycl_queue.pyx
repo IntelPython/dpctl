@@ -290,6 +290,11 @@ cdef class SyclQueue(_SyclQueue):
         props = _parse_queue_properties(
             kwargs.pop('property', _queue_property_type._DEFAULT_PROPERTY)
         )
+        if (kwargs):
+            raise TypeError(
+                f"Unsupported keyword arguments {kwargs} to "
+                "SyclQueue constructor encountered."
+            )
         len_args = len(args)
         if len_args == 0:
             status = self._init_queue_default(props)
@@ -676,8 +681,6 @@ cdef class SyclQueue(_SyclQueue):
             return backend_type.opencl
         elif BE == _backend_type._LEVEL_ZERO:
             return backend_type.level_zero
-        elif BE == _backend_type._HOST:
-            return backend_type.host
         elif BE == _backend_type._CUDA:
             return backend_type.cuda
         else:

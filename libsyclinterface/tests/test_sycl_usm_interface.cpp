@@ -45,12 +45,12 @@ constexpr size_t SIZE = 1024;
 void common_test_body(size_t nbytes,
                       const DPCTLSyclUSMRef Ptr,
                       const DPCTLSyclQueueRef Q,
-                      const char *expected)
+                      DPCTLSyclUSMType expected)
 {
     auto Ctx = DPCTLQueue_GetContext(Q);
 
     auto kind = DPCTLUSM_GetPointerType(Ptr, Ctx);
-    EXPECT_TRUE(0 == std::strncmp(kind, expected, 4));
+    EXPECT_TRUE(kind == expected);
 
     auto Dev = DPCTLUSM_GetPointerDevice(Ptr, Ctx);
     auto QueueDev = DPCTLQueue_GetDevice(Q);
@@ -100,7 +100,7 @@ TEST_F(TestDPCTLSyclUSMInterface, MallocShared)
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLmalloc_shared(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, "shared");
+    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_SHARED);
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
 }
@@ -112,7 +112,7 @@ TEST_F(TestDPCTLSyclUSMInterface, MallocDevice)
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLmalloc_device(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, "device");
+    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
 }
@@ -124,7 +124,7 @@ TEST_F(TestDPCTLSyclUSMInterface, MallocHost)
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLmalloc_host(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, "host");
+    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_HOST);
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
 }
@@ -136,7 +136,7 @@ TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocShared)
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLaligned_alloc_shared(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, "shared");
+    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_SHARED);
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
 }
@@ -148,7 +148,7 @@ TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocDevice)
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLaligned_alloc_device(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, "device");
+    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
     DPCTLfree_with_queue(Ptr, Q);
     DPCTLQueue_Delete(Q);
 }
@@ -160,7 +160,7 @@ TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocHost)
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLaligned_alloc_host(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, "host");
+    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_HOST);
     DPCTLfree_with_queue(Ptr, Q);
 }
 
@@ -234,13 +234,10 @@ TEST_F(TestDPCTLSyclUSMNullArgs, ChkPointerQueries)
 {
     DPCTLSyclContextRef Null_CRef = nullptr;
     DPCTLSyclUSMRef Null_MRef = nullptr;
-    const char *t = nullptr;
-    auto is_unknown = [=](const char *t) -> bool {
-        return strncmp(t, "unknown", 7) == 0;
-    };
+    DPCTLSyclUSMType t = DPCTLSyclUSMType::DPCTL_USM_UNKNOWN;
 
     EXPECT_NO_FATAL_FAILURE(t = DPCTLUSM_GetPointerType(Null_MRef, Null_CRef));
-    ASSERT_TRUE(is_unknown(t));
+    ASSERT_TRUE(t == DPCTLSyclUSMType::DPCTL_USM_UNKNOWN);
 
     DPCTLSyclDeviceSelectorRef DSRef = nullptr;
     DPCTLSyclDeviceRef DRef = nullptr;
@@ -253,9 +250,8 @@ TEST_F(TestDPCTLSyclUSMNullArgs, ChkPointerQueries)
     EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
 
-    t = nullptr;
     EXPECT_NO_FATAL_FAILURE(t = DPCTLUSM_GetPointerType(Null_MRef, CRef));
-    ASSERT_TRUE(is_unknown(t));
+    ASSERT_TRUE(t == DPCTLSyclUSMType::DPCTL_USM_UNKNOWN);
 
     DPCTLSyclDeviceRef D2Ref = nullptr;
     EXPECT_NO_FATAL_FAILURE(D2Ref = DPCTLUSM_GetPointerDevice(Null_MRef, CRef));

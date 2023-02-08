@@ -55,6 +55,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLSyclUSMRef,
     DPCTLUSM_GetPointerDevice,
     DPCTLUSM_GetPointerType,
+    _usm_type,
 )
 
 from .._sycl_context cimport SyclContext
@@ -232,10 +233,10 @@ cdef class _Memory:
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
         cdef SyclContext ctx = self._context
-        cdef const char *kind = DPCTLUSM_GetPointerType(
+        cdef _usm_type UsmTy = DPCTLUSM_GetPointerType(
             self.memory_ptr, ctx.get_context_ref()
         )
-        if kind == b'device':
+        if UsmTy == _usm_type._USM_DEVICE:
             raise ValueError("USM Device memory is not host accessible")
         buffer.buf = <char*>self.memory_ptr
         buffer.format = 'B'                     # byte
@@ -370,6 +371,39 @@ cdef class _Memory:
             return _Memory.get_pointer_type(
                 self.memory_ptr, ctx
             ).decode("UTF-8")
+        raise TypeError(
+            "syclobj keyword can be either None, or an instance of "
+            "SyclContext or SyclQueue"
+        )
+
+    def get_usm_type_enum(self, syclobj=None):
+        """
+        get_usm_type(syclobj=None)
+
+        Returns the type of USM allocation using Sycl context carried by
+        `syclobj` keyword argument. Value of None is understood to query
+        against `self.sycl_context` - the context used to create the
+        allocation.
+        """
+        cdef const char* kind
+        cdef SyclContext ctx
+        cdef SyclQueue q
+        if syclobj is None:
+            ctx = self._context
+            return _Memory.get_pointer_type_enum(
+                self.memory_ptr, ctx
+            )
+        elif isinstance(syclobj, SyclContext):
+            ctx = <SyclContext>(syclobj)
+            return _Memory.get_pointer_type_enum(
+                self.memory_ptr, ctx
+            )
+        elif isinstance(syclobj, SyclQueue):
+            q = <SyclQueue>(syclobj)
+            ctx = q.get_sycl_context()
+            return _Memory.get_pointer_type_enum(
+                self.memory_ptr, ctx
+            )
         raise TypeError(
             "syclobj keyword can be either None, or an instance of "
             "SyclContext or SyclQueue"
@@ -547,11 +581,39 @@ cdef class _Memory:
             using the given context. Otherwise, returns b'shared', b'device',
             or b'host' type of the allocation.
         """
-        cdef const char * usm_type = DPCTLUSM_GetPointerType(
+        cdef _usm_type usm_ty = DPCTLUSM_GetPointerType(
             p, ctx.get_context_ref()
         )
+        if usm_ty == _usm_type._USM_DEVICE:
+            return b'device'
+        elif usm_ty == _usm_type._USM_SHARED:
+            return b'shared'
+        elif usm_ty == _usm_type._USM_HOST:
+            return b'host'
+        else:
+            return b'unknown'
 
-        return <bytes>usm_type
+    @staticmethod
+    cdef _usm_type get_pointer_type_enum(DPCTLSyclUSMRef p, SyclContext ctx):
+        """
+        get_pointer_type(p, ctx)
+
+        Gives the SYCL(TM) USM pointer type, using ``sycl::get_pointer_type``,
+        returning an enum value.
+
+        Args:
+            p: DPCTLSyclUSMRef
+                A pointer to test the type of.
+            ctx: :class:`dpctl.SyclContext`
+                Python object providing :class:`dpctl.SyclContext` against
+                which to query for the pointer type.
+        Returns:
+            An enum value corresponding to the type of allocation.
+        """
+        cdef _usm_type usm_ty = DPCTLUSM_GetPointerType(
+            p, ctx.get_context_ref()
+        )
+        return usm_ty
 
     @staticmethod
     cdef object create_from_usm_pointer_size_qref(
@@ -569,7 +631,7 @@ cdef class _Memory:
         The object may not be a no-op dummy Python object to
         delay freeing the memory until later times.
         """
-        cdef const char *usm_type
+        cdef _usm_type usm_ty
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclQueueRef QRef_copy = NULL
         cdef _Memory _mem
@@ -581,13 +643,13 @@ cdef class _Memory:
         CRef = DPCTLQueue_GetContext(QRef)
         if (CRef is NULL):
             raise ValueError("Could not retrieve context from QRef")
-        usm_type = DPCTLUSM_GetPointerType(USMRef, CRef)
+        usm_ty = DPCTLUSM_GetPointerType(USMRef, CRef)
         DPCTLContext_Delete(CRef)
-        if usm_type == b"shared":
+        if usm_ty == _usm_type._USM_SHARED:
             mem_ty = MemoryUSMShared
-        elif usm_type == b"device":
+        elif usm_ty == _usm_type._USM_DEVICE:
             mem_ty = MemoryUSMDevice
-        elif usm_type == b"host":
+        elif usm_ty == _usm_type._USM_HOST:
             mem_ty = MemoryUSMHost
         else:
             raise ValueError(

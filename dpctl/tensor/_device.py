@@ -114,11 +114,27 @@ class Device:
             # This is a sub-device
             return repr(self.sycl_queue)
 
+    def print_device_info(self):
+        "Outputs information about targeted SYCL device"
+        self.sycl_device.print_device_info()
+
     def wait(self):
         """
         Call ``wait`` method of the underlying ``sycl_queue``.
         """
         self.sycl_queue_.wait()
+
+    def __eq__(self, other):
+        """Equality comparison based on underlying ``sycl_queue``."""
+        if isinstance(other, Device):
+            return self.sycl_queue.__eq__(other.sycl_queue)
+        elif isinstance(other, dpctl.SyclQueue):
+            return self.sycl_queue.__eq__(other)
+        return False
+
+    def __hash__(self):
+        """Compute object's hash value."""
+        return self.sycl_queue.__hash__()
 
 
 def normalize_queue_device(sycl_queue=None, device=None):

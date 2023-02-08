@@ -141,9 +141,9 @@ cdef int _from_input_shape_strides(
             str_i = <Py_ssize_t> strides[i]
             strides_arr[i] = str_i
             if str_i > 0:
-                max_shift += strides_arr[i] * (shape_arr[i] - 1)
+                max_shift += str_i * (shape_arr[i] - 1)
             else:
-                min_shift += strides_arr[i] * (shape_arr[i] - 1)
+                min_shift += str_i * (shape_arr[i] - 1)
         min_disp[0] = min_shift
         max_disp[0] = max_shift
         if max_shift == min_shift + (elem_count - 1):
@@ -199,7 +199,7 @@ cdef int _from_input_shape_strides(
     # return ERROR_INTERNAL
 
 
-cdef object _make_int_tuple(int nd, Py_ssize_t *ary):
+cdef object _make_int_tuple(int nd, const Py_ssize_t *ary):
     """
     Makes Python tuple from C array
     """
@@ -216,7 +216,7 @@ cdef object _make_int_tuple(int nd, Py_ssize_t *ary):
         return None
 
 
-cdef object _make_reversed_int_tuple(int nd, Py_ssize_t *ary):
+cdef object _make_reversed_int_tuple(int nd, const Py_ssize_t *ary):
     """
     Makes Python reversed tuple from C array
     """

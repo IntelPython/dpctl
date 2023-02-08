@@ -156,7 +156,8 @@ def test_async_submit():
     assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
     assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
 
-    n = 1024 * 1024
+    status_complete = dpctl.event_status_type.complete
+    n = 1024 * 1024 * 4
     X = dpt.empty((3, n), dtype="u4", usm_type="device", sycl_queue=q)
     first_row = dpctl_mem.as_usm_memory(X[0])
     second_row = dpctl_mem.as_usm_memory(X[1])
@@ -191,14 +192,16 @@ def test_async_submit():
         None,
         [e1, e2],
     )
-    status_complete = dpctl.event_status_type.complete
+    e3_st = e3.execution_status
+    e2_st = e2.execution_status
+    e1_st = e1.execution_status
     assert not all(
         [
             e == status_complete
             for e in (
-                e1.execution_status,
-                e2.execution_status,
-                e3.execution_status,
+                e1_st,
+                e2_st,
+                e3_st,
             )
         ]
     )

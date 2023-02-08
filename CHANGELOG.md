@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `dpctl.program.SyclKernel.max_sub_group_size` property [#1208](https://github.com/IntelPython/dpctl/pull/1028).
+
 ### Changed
+
+* Removed `dpctl.select_host_device`, `dpctl.has_host_device`, `dpctl.SyclDevice.is_host`, and `dpctl.SyclDevice.has_aspect_host` since support for host device has been removed in DPC++ 2023 and from SYCL 2020 spec [#1208](https://github.com/IntelPython/dpctl/pull/1028).
 
 ### Fixed
 

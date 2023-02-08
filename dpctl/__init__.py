@@ -48,12 +48,10 @@ from ._sycl_device_factory import (
     has_accelerator_devices,
     has_cpu_devices,
     has_gpu_devices,
-    has_host_device,
     select_accelerator_device,
     select_cpu_device,
     select_default_device,
     select_gpu_device,
-    select_host_device,
 )
 from ._sycl_event import SyclEvent
 from ._sycl_platform import SyclPlatform, get_platforms, lsplatform

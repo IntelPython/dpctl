@@ -35,10 +35,10 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install doxygen
-      - name: Install CMake and Ninja
+      - name: Install Ninja
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
-          sudo apt-get install cmake ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         uses: actions/setup-python@v4
@@ -49,7 +49,7 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools scikit-build sphinx sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput
+          pip install numpy cython setuptools scikit-build cmake sphinx sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -63,7 +63,7 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
           tar xf doxyrest-2.1.2-linux-amd64.tar.xz
-          python setup.py develop -G Ninja --build-type=Debug \
+          python setup.py develop -G Ninja --build-type=Release \
               --                                              \
               -DCMAKE_C_COMPILER:PATH=$(which icx)            \
               -DCMAKE_CXX_COMPILER:PATH=$(which icpx)         \

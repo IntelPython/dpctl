@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_usm_interface.h"
+#include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
@@ -34,6 +35,9 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
+
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
 
@@ -173,16 +177,17 @@ void DPCTLfree_with_context(__dpctl_take DPCTLSyclUSMRef MRef,
     free(Ptr, *C);
 }
 
-const char *DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
-                                    __dpctl_keep const DPCTLSyclContextRef CRef)
+DPCTLSyclUSMType
+DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
+                        __dpctl_keep const DPCTLSyclContextRef CRef)
 {
     if (!CRef) {
         error_handler("Input CRef is nullptr.", __FILE__, __func__, __LINE__);
-        return "unknown";
+        return DPCTLSyclUSMType::DPCTL_USM_UNKNOWN;
     }
     if (!MRef) {
         error_handler("Input MRef is nullptr.", __FILE__, __func__, __LINE__);
-        return "unknown";
+        return DPCTLSyclUSMType::DPCTL_USM_UNKNOWN;
     }
     auto Ptr = unwrap<void>(MRef);
     auto C = unwrap<context>(CRef);
@@ -190,13 +195,13 @@ const char *DPCTLUSM_GetPointerType(__dpctl_keep const DPCTLSyclUSMRef MRef,
     auto kind = get_pointer_type(Ptr, *C);
     switch (kind) {
     case usm::alloc::host:
-        return "host";
+        return DPCTLSyclUSMType::DPCTL_USM_HOST;
     case usm::alloc::device:
-        return "device";
+        return DPCTLSyclUSMType::DPCTL_USM_DEVICE;
     case usm::alloc::shared:
-        return "shared";
+        return DPCTLSyclUSMType::DPCTL_USM_SHARED;
     default:
-        return "unknown";
+        return DPCTLSyclUSMType::DPCTL_USM_UNKNOWN;
     }
 }
 

@@ -22,7 +22,7 @@ in dpctl.memory._memory.pyx.
 
 """
 
-from .._backend cimport DPCTLSyclQueueRef, DPCTLSyclUSMRef
+from .._backend cimport DPCTLSyclQueueRef, DPCTLSyclUSMRef, _usm_type
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
@@ -56,6 +56,8 @@ cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
         DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
     cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
+    @staticmethod
+    cdef _usm_type get_pointer_type_enum(DPCTLSyclUSMRef p, SyclContext ctx)
     @staticmethod
     cdef object create_from_usm_pointer_size_qref(
         DPCTLSyclUSMRef USMRef,

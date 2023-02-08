@@ -56,6 +56,8 @@ using namespace sycl;
 
 namespace
 {
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
 
 using namespace dpctl::syclinterface;
 
@@ -620,8 +622,8 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
         KBRef = _CreateKernelBundleWithIL_ze_impl(*SyclCtx, *SyclDev, IL,
                                                   length, CompileOpts);
-#endif
         break;
+#endif
     default:
         error_handler("Backend " + std::to_string(static_cast<int>(BE)) +
                           " is not supported",
@@ -669,8 +671,9 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
         }
         break;
     case backend::ext_oneapi_level_zero:
-        error_handler("CreateFromSource is not supported in Level Zero.",
-                      __FILE__, __func__, __LINE__);
+        error_handler(
+            "CreateFromSource is not supported for Level Zero backend.",
+            __FILE__, __func__, __LINE__);
         return nullptr;
     default:
         error_handler("CreateFromSource is not supported in unknown backend.",
@@ -698,7 +701,9 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
     case sycl::backend::opencl:
         return _GetKernel_ocl_impl(*SyclKB, KernelName);
     case sycl::backend::ext_oneapi_level_zero:
+#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
         return _GetKernel_ze_impl(*SyclKB, KernelName);
+#endif
     default:
         error_handler("Backend " + std::to_string(static_cast<int>(be)) +
                           " is not supported.",
@@ -726,7 +731,9 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
     case sycl::backend::opencl:
         return _HasKernel_ocl_impl(*SyclKB, KernelName);
     case sycl::backend::ext_oneapi_level_zero:
+#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
         return _HasKernel_ze_impl(*SyclKB, KernelName);
+#endif
     default:
         error_handler("Backend " + std::to_string(static_cast<int>(be)) +
                           " is not supported.",

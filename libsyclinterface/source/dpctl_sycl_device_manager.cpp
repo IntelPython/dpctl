@@ -29,7 +29,8 @@
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
-#include <CL/sycl.hpp> /* SYCL headers   */
+#include <CL/sycl.hpp>           /* SYCL headers   */
+#include <Config/dpctl_config.h> /* Config */
 #include <iomanip>
 #include <iostream>
 #include <unordered_map>
@@ -39,6 +40,9 @@ using namespace sycl;
 
 namespace
 {
+
+static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
+              "The compiler does not meet minimum version requirement");
 
 using namespace dpctl::syclinterface;
 
