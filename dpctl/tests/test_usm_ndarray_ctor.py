@@ -530,7 +530,7 @@ def test_pyx_capi_make_from_memory():
     any_usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
     make_from_memory_fn = _pyx_capi_fnptr_to_callable(
         any_usm_ndarray,
-        "UsmNDArray_MakeFromMemory",
+        "UsmNDArray_MakeSimpleFromMemory",
         b"PyObject *(int, Py_ssize_t const *, int, "
         b"struct Py_MemoryObject *, Py_ssize_t, char)",
         fn_restype=ctypes.py_object,
@@ -601,7 +601,7 @@ def test_pyx_capi_make_from_ptr():
     usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
     make_from_ptr = _pyx_capi_fnptr_to_callable(
         usm_ndarray,
-        "UsmNDArray_MakeFromPtr",
+        "UsmNDArray_MakeSimpleFromPtr",
         b"PyObject *(size_t, int, DPCTLSyclUSMRef, "
         b"DPCTLSyclQueueRef, PyObject *)",
         fn_restype=ctypes.py_object,
@@ -630,6 +630,108 @@ def test_pyx_capi_make_from_ptr():
     assert arr._pointer == mem._pointer
     del mem
     assert isinstance(arr.__repr__(), str)
+
+
+def test_pyx_capi_make_general():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    make_from_ptr = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_MakeFromPtr",
+        b"PyObject *(int, Py_ssize_t const *, int, Py_ssize_t const *, "
+        b"DPCTLSyclUSMRef, DPCTLSyclQueueRef, Py_ssize_t, PyObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_ssize_t,
+            ctypes.py_object,
+        ),
+    )
+    # Create array to view into diagonal of a matrix
+    n = 5
+    mat = dpt.reshape(
+        dpt.arange(n * n, dtype="i4", sycl_queue=q),
+        (
+            n,
+            n,
+        ),
+    )
+    c_shape = (ctypes.c_ssize_t * 1)(
+        n,
+    )
+    c_strides = (ctypes.c_ssize_t * 1)(
+        n + 1,
+    )
+    diag = make_from_ptr(
+        ctypes.c_int(1),
+        c_shape,
+        ctypes.c_int(mat.dtype.num),
+        c_strides,
+        mat._pointer,
+        mat.sycl_queue.addressof_ref(),
+        ctypes.c_ssize_t(0),
+        mat,
+    )
+    assert isinstance(diag, dpt.usm_ndarray)
+    assert diag.shape == (n,)
+    assert diag.strides == (n + 1,)
+    assert diag.dtype == mat.dtype
+    assert diag.sycl_queue == q
+    assert diag._pointer == mat._pointer
+    del mat
+    assert isinstance(diag.__repr__(), str)
+    # create 0d scalar
+    mat = dpt.reshape(
+        dpt.arange(n * n, dtype="i4", sycl_queue=q),
+        (
+            n,
+            n,
+        ),
+    )
+    sc = make_from_ptr(
+        ctypes.c_int(0),
+        None,  # NULL pointer
+        ctypes.c_int(mat.dtype.num),
+        None,  # NULL pointer
+        mat._pointer,
+        mat.sycl_queue.addressof_ref(),
+        ctypes.c_ssize_t(0),
+        mat,
+    )
+    assert isinstance(sc, dpt.usm_ndarray)
+    assert sc.shape == tuple()
+    assert sc.dtype == mat.dtype
+    assert sc.sycl_queue == q
+    assert sc._pointer == mat._pointer
+    c_shape = (ctypes.c_ssize_t * 2)(0, n)
+    c_strides = (ctypes.c_ssize_t * 2)(0, 1)
+    zd_arr = make_from_ptr(
+        ctypes.c_int(2),
+        c_shape,
+        ctypes.c_int(mat.dtype.num),
+        c_strides,
+        mat._pointer,
+        mat.sycl_queue.addressof_ref(),
+        ctypes.c_ssize_t(0),
+        mat,
+    )
+    assert isinstance(zd_arr, dpt.usm_ndarray)
+    assert zd_arr.shape == (
+        0,
+        n,
+    )
+    assert zd_arr.strides == (
+        0,
+        1,
+    )
+    assert zd_arr.dtype == mat.dtype
+    assert zd_arr.sycl_queue == q
+    assert zd_arr._pointer == mat._pointer
 
 
 def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):

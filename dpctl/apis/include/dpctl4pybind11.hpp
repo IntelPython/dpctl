@@ -115,16 +115,24 @@ public:
     DPCTLSyclQueueRef (*UsmNDArray_GetQueueRef_)(PyUSMArrayObject *);
     py::ssize_t (*UsmNDArray_GetOffset_)(PyUSMArrayObject *);
     void (*UsmNDArray_SetWritableFlag_)(PyUSMArrayObject *, int);
-    PyObject *(*UsmNDArray_MakeFromMemory_)(int,
-                                            const py::ssize_t *,
-                                            int,
-                                            Py_MemoryObject *,
-                                            py::ssize_t,
-                                            char);
-    PyObject *(*UsmNDArray_MakeFromPtr_)(size_t,
+    PyObject *(*UsmNDArray_MakeSimpleFromMemory_)(int,
+                                                  const py::ssize_t *,
+                                                  int,
+                                                  Py_MemoryObject *,
+                                                  py::ssize_t,
+                                                  char);
+    PyObject *(*UsmNDArray_MakeSimpleFromPtr_)(size_t,
+                                               int,
+                                               DPCTLSyclUSMRef,
+                                               DPCTLSyclQueueRef,
+                                               PyObject *);
+    PyObject *(*UsmNDArray_MakeFromPtr_)(int,
+                                         const py::ssize_t *,
                                          int,
+                                         const py::ssize_t *,
                                          DPCTLSyclUSMRef,
                                          DPCTLSyclQueueRef,
+                                         py::ssize_t,
                                          PyObject *);
 
     int USM_ARRAY_C_CONTIGUOUS_;
@@ -233,12 +241,13 @@ private:
           UsmNDArray_GetTypenum_(nullptr), UsmNDArray_GetElementSize_(nullptr),
           UsmNDArray_GetFlags_(nullptr), UsmNDArray_GetQueueRef_(nullptr),
           UsmNDArray_GetOffset_(nullptr), UsmNDArray_SetWritableFlag_(nullptr),
-          UsmNDArray_MakeFromMemory_(nullptr), UsmNDArray_MakeFromPtr_(nullptr),
-          USM_ARRAY_C_CONTIGUOUS_(0), USM_ARRAY_F_CONTIGUOUS_(0),
-          USM_ARRAY_WRITABLE_(0), UAR_BOOL_(-1), UAR_SHORT_(-1),
-          UAR_USHORT_(-1), UAR_INT_(-1), UAR_UINT_(-1), UAR_LONG_(-1),
-          UAR_ULONG_(-1), UAR_LONGLONG_(-1), UAR_ULONGLONG_(-1), UAR_FLOAT_(-1),
-          UAR_DOUBLE_(-1), UAR_CFLOAT_(-1), UAR_CDOUBLE_(-1),
+          UsmNDArray_MakeSimpleFromMemory_(nullptr),
+          UsmNDArray_MakeSimpleFromPtr_(nullptr),
+          UsmNDArray_MakeFromPtr_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
+          USM_ARRAY_F_CONTIGUOUS_(0), USM_ARRAY_WRITABLE_(0), UAR_BOOL_(-1),
+          UAR_SHORT_(-1), UAR_USHORT_(-1), UAR_INT_(-1), UAR_UINT_(-1),
+          UAR_LONG_(-1), UAR_ULONG_(-1), UAR_LONGLONG_(-1), UAR_ULONGLONG_(-1),
+          UAR_FLOAT_(-1), UAR_DOUBLE_(-1), UAR_CFLOAT_(-1), UAR_CDOUBLE_(-1),
           UAR_TYPE_SENTINEL_(-1), UAR_HALF_(-1), UAR_INT8_(-1), UAR_UINT8_(-1),
           UAR_INT16_(-1), UAR_UINT16_(-1), UAR_INT32_(-1), UAR_UINT32_(-1),
           UAR_INT64_(-1), UAR_UINT64_(-1), default_sycl_queue_{},
@@ -310,7 +319,9 @@ private:
         this->UsmNDArray_GetQueueRef_ = UsmNDArray_GetQueueRef;
         this->UsmNDArray_GetOffset_ = UsmNDArray_GetOffset;
         this->UsmNDArray_SetWritableFlag_ = UsmNDArray_SetWritableFlag;
-        this->UsmNDArray_MakeFromMemory_ = UsmNDArray_MakeFromMemory;
+        this->UsmNDArray_MakeSimpleFromMemory_ =
+            UsmNDArray_MakeSimpleFromMemory;
+        this->UsmNDArray_MakeSimpleFromPtr_ = UsmNDArray_MakeSimpleFromPtr;
         this->UsmNDArray_MakeFromPtr_ = UsmNDArray_MakeFromPtr;
 
         // constants
