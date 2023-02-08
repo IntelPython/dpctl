@@ -1,99 +1,52 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.1dev1+88.g6308866ea documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.1dev2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/target-highlight.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpctl.SyclEvent" href="SyclEvent.html" />
     <link rel="prev" title="dpctl.SyclContext" href="SyclContext.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html" class="icon icon-home"> Data-parallel Control (dpctl)
           
-
-          
+          <a href="../../index.html" class="icon icon-home">
+            Data-parallel Control (dpctl)
           </a>
-
-          
-            
-            
               <div class="version">
-                0.14.1dev1+88.g6308866ea
+                0.14.1dev2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
@@ -126,78 +79,36 @@
 <li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Data-parallel Control (dpctl)</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="dpctl_pyapi.html">dpctl</a> &raquo;</li>
-        
-      <li>dpctl.SyclDevice</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="dpctl_pyapi.html">dpctl</a></li>
+      <li class="breadcrumb-item active">dpctl.SyclDevice</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/docfiles/dpctl/SyclDevice.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="dpctl-sycldevice">
-<span id="sycldevice-api"></span><h1>dpctl.SyclDevice<a class="headerlink" href="#dpctl-sycldevice" title="Permalink to this heading">¶</a></h1>
+<span id="sycldevice-api"></span><h1>dpctl.SyclDevice<a class="headerlink" href="#dpctl-sycldevice" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.SyclDevice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice" title="Permalink to this definition"></a></dt>
 <dd><p>A Python wrapper for the <a class="reference external" href="https://sycl.readthedocs.io/en/latest/iface/device.html">sycl::device</a> C++ class.</p>
 <p>There are two ways of creating a SyclDevice instance:</p>
 <blockquote>
@@ -467,10 +378,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 </dd></dl>
 
 <section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h2>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.backend">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclDevice.backend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclDevice.backend" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the backend_type enum value for this device</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -484,7 +395,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.default_selector_score">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">default_selector_score</span></span><a class="headerlink" href="#dpctl.SyclDevice.default_selector_score" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">default_selector_score</span></span><a class="headerlink" href="#dpctl.SyclDevice.default_selector_score" title="Permalink to this definition"></a></dt>
 <dd><p>Integer score assigned to this device by DPC++ runtime’s default
 scoring function. Score of -1 denotes that this device was rejected
 and may not be properly programmed by the DPC++ runtime.</p>
@@ -492,7 +403,7 @@ and may not be properly programmed by the DPC++ runtime.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.device_type">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><a class="headerlink" href="#dpctl.SyclDevice.device_type" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><a class="headerlink" href="#dpctl.SyclDevice.device_type" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the type of the device as a <cite>device_type</cite> enum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -509,7 +420,7 @@ and may not be properly programmed by the DPC++ runtime.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.driver_version">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">driver_version</span></span><a class="headerlink" href="#dpctl.SyclDevice.driver_version" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">driver_version</span></span><a class="headerlink" href="#dpctl.SyclDevice.driver_version" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a backend-defined driver version as a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -523,7 +434,7 @@ and may not be properly programmed by the DPC++ runtime.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.filter_string">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">filter_string</span></span><a class="headerlink" href="#dpctl.SyclDevice.filter_string" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">filter_string</span></span><a class="headerlink" href="#dpctl.SyclDevice.filter_string" title="Permalink to this definition"></a></dt>
 <dd><p>For a parent device, returns a fully specified filter selector
 string``backend:device_type:relative_id`` selecting the device.</p>
 <dl class="field-list">
@@ -553,7 +464,7 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.global_mem_cache_line_size">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_line_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_cache_line_size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_line_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_cache_line_size" title="Permalink to this definition"></a></dt>
 <dd><p>Global device memory cache line size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -567,7 +478,7 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.global_mem_cache_size">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_cache_size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_cache_size" title="Permalink to this definition"></a></dt>
 <dd><p>Global device memory cache size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -581,7 +492,7 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.global_mem_cache_type">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_type</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_cache_type" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_cache_type</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_cache_type" title="Permalink to this definition"></a></dt>
 <dd><p>Global device cache memory type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -598,13 +509,13 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.global_mem_size">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">global_mem_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.global_mem_size" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the size of global memory on this device in bytes.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_accelerator">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_accelerator" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_accelerator" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device is an accelerator device, False
 otherwise.</p>
 <p>SYCL considers an accelerator to be a device that usually uses a
@@ -621,7 +532,7 @@ peripheral interconnect for communication.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_atomic64">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_atomic64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_atomic64" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_atomic64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_atomic64" title="Permalink to this definition"></a></dt>
 <dd><p>Returns true if the device supports a basic set of atomic
 operations, False otherwise.</p>
 <p>Indicates that the device supports the following atomic operations on
@@ -650,7 +561,7 @@ operations on 64-bit values.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_cpu">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_cpu" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_cpu" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device is a CPU device, False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -664,7 +575,7 @@ operations on 64-bit values.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_custom">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_custom</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_custom" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_custom</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_custom" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device is a custom device, False otherwise.</p>
 <p>A custom device can be a dedicated accelerator that can use the
 SYCL API, but programmable kernels cannot be dispatched to the device,
@@ -681,7 +592,7 @@ only fixed functionality is available. Refer SYCL spec for more details.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_fp16">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp16</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp16" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp16</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp16" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the device supports half-precision floating point
 operations, False otherwise.</p>
 <dl class="field-list simple">
@@ -697,7 +608,7 @@ point operations.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_fp64">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp64" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_fp64</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_fp64" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the device supports 64-bit precision floating point
 operations, False otherwise.</p>
 <dl class="field-list simple">
@@ -713,7 +624,7 @@ point operations.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_gpu">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_gpu" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_gpu" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device is a GPU device, False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -727,7 +638,7 @@ point operations.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_host_debuggable">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host_debuggable</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_host_debuggable" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_host_debuggable</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_host_debuggable" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if kernels running on this device can be debugged
 using standard debuggers that are normally available on the host
 system, False otherwise</p>
@@ -735,7 +646,7 @@ system, False otherwise</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_image">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_image</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_image" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_image</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_image" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the device supports images, False otherwise (refer
 Sec 4.7.3 of SYCL 2020 spec).</p>
 <dl class="field-list simple">
@@ -750,7 +661,7 @@ Sec 4.7.3 of SYCL 2020 spec).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_online_compiler">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_compiler</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_compiler</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_compiler" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports online compilation of
 device code, False otherwise.</p>
 <dl class="field-list simple">
@@ -766,7 +677,7 @@ device code.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_online_linker">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_linker</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_linker" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_online_linker</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_online_linker" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports online linking of
 device code, False otherwise.</p>
 <dl class="field-list simple">
@@ -782,7 +693,7 @@ code.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_queue_profiling">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_queue_profiling</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_queue_profiling</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_queue_profiling" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports queue profiling,
 False otherwise.</p>
 <dl class="field-list simple">
@@ -797,7 +708,7 @@ False otherwise.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports USM-host allocations and
 the host and this device may concurrently access and atomically
 modify host allocations, False otherwise.</p>
@@ -813,7 +724,7 @@ modify host allocations, False otherwise.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports USM-shared allocations and
 the host and other devices in the same context as this device may
 concurrently access and atomically modify shared allocations,
@@ -822,7 +733,7 @@ False otherwise</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_device_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_device_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_device_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports explicit USM allocations,
 False otherwise (refer Section 4.8 of SYCL 2020 specs).</p>
 <dl class="field-list simple">
@@ -837,7 +748,7 @@ False otherwise (refer Section 4.8 of SYCL 2020 specs).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_host_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_host_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device can access USM-host memory,
 False otherwise (refer Section 4.8 of SYCL 2020 specs).</p>
 <dl class="field-list simple">
@@ -853,7 +764,7 @@ allocated using <code class="docutils literal notranslate"><span class="pre">syc
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports USM memory
 allocated as restricted USM, False otherwise.</p>
 <dl class="field-list simple">
@@ -872,7 +783,7 @@ allocated as restricted USM, False otherwise.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_shared_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this device supports USM-shared memory
 allocated on the same device, False otherwise.</p>
 <dl class="field-list simple">
@@ -888,7 +799,7 @@ allocated using <code class="docutils literal notranslate"><span class="pre">syc
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_system_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_system_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_system_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if system allocator may be used instead of SYCL USM
 allocation mechanism for USM-shared allocations on this device,
 False otherwise.</p>
@@ -905,42 +816,42 @@ False otherwise.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.image_2d_max_height">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_height</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_height" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_height</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_height" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum height of a 2D image or 1D image in pixels.
 The minimum value is 8192 if the SYCL device has aspect::image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.image_2d_max_width">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_width</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_width" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_2d_max_width</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_2d_max_width" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum width of a 2D image or 1D image in pixels.
 The minimum value is 8192 if the SYCL device has aspect::image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.image_3d_max_depth">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_depth</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_depth" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_depth</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_depth" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum depth of a 3D image in pixels.
 The minimum value is 2048 if the SYCL device has aspect::image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.image_3d_max_height">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_height</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_height" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_height</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_height" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum height of a 3D image in pixels.
 The minimum value is 2048 if the SYCL device has aspect::image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.image_3d_max_width">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_width</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_width" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">image_3d_max_width</span></span><a class="headerlink" href="#dpctl.SyclDevice.image_3d_max_width" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum width of a 3D image in pixels.
 The minimum value is 2048 if the SYCL device has aspect::image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.is_accelerator">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_accelerator" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_accelerator</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_accelerator" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the SyclDevice instance is a SYCL accelerator
 device.</p>
 <dl class="field-list simple">
@@ -956,7 +867,7 @@ else False.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.is_cpu">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_cpu" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_cpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_cpu" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the SyclDevice instance is a SYCL CPU device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -970,7 +881,7 @@ else False.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.is_gpu">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_gpu" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_gpu</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_gpu" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the SyclDevice instance is a SYCL GPU device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -984,13 +895,13 @@ else False.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.local_mem_size">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">local_mem_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.local_mem_size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">local_mem_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.local_mem_size" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the size of local memory on this device in bytes.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_compute_units">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_compute_units</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_compute_units" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_compute_units</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_compute_units" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of parallel compute units available to the
 device. The minimum value is 1.</p>
 <dl class="field-list simple">
@@ -1005,7 +916,7 @@ device. The minimum value is 1.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_num_sub_groups">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_num_sub_groups</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_num_sub_groups" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_num_sub_groups</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_num_sub_groups" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of sub-groups
 in a work-group for any kernel executed on the
 device. The minimum value is 1.</p>
@@ -1022,7 +933,7 @@ the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_read_image_args">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_read_image_args</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_read_image_args" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_read_image_args</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_read_image_args" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of simultaneous image objects that
 can be read from by a kernel. The minimum value is 128 if the
 SYCL device has aspect::image.</p>
@@ -1030,7 +941,7 @@ SYCL device has aspect::image.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_group_size">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_group_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_group_size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_group_size</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_group_size" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in a
 work-group executing a kernel on a single compute unit. The minimum
 value is 1.</p>
@@ -1046,7 +957,7 @@ value is 1.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_dims">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_dims</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_dims" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_dims</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_dims" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum dimensions that specify the global and local
 work-item IDs used by the data parallel execution model.</p>
 <dl class="field-list simple">
@@ -1061,7 +972,7 @@ work-item IDs used by the data parallel execution model.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_sizes">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
 dimension of the work-group of the nd_range. The minimum value is
 <cite>(1; 1; 1)</cite> for devices that evaluate to False for
@@ -1083,7 +994,7 @@ instead.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_sizes1d">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes1d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes1d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes1d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes1d" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
 dimension of the work-group of the nd_range&lt;1&gt;. The minimum value is
 <cite>(1 )</cite> for devices that evaluate to False for
@@ -1101,7 +1012,7 @@ used to enqueue a kernel on the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_sizes2d">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes2d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes2d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes2d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes2d" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
 dimension of the work-group of the nd_range&lt;2&gt;. The minimum value is
 <cite>(1; 1)</cite> for devices that evaluate to False for
@@ -1119,7 +1030,7 @@ dimension of a 2D range used to enqueue a kernel on the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_sizes3d">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes3d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes3d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
 dimension of the work-group of the nd_range&lt;3&gt;. The minimum value is
 <cite>(1; 1; 1)</cite> for devices that evaluate to False for
@@ -1137,7 +1048,7 @@ each dimension of a 3D range used to enqueue a kernel on the device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_write_image_args">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_write_image_args</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_write_image_args" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_write_image_args</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_write_image_args" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the maximum number of simultaneous image objects that
 can be written to by a kernel. The minimum value is 8 if the SYCL
 device has aspect::image.</p>
@@ -1145,7 +1056,7 @@ device has aspect::image.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.name">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclDevice.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclDevice.name" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the name of the device as a string</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1159,7 +1070,7 @@ device has aspect::image.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.parent_device">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">parent_device</span></span><a class="headerlink" href="#dpctl.SyclDevice.parent_device" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">parent_device</span></span><a class="headerlink" href="#dpctl.SyclDevice.parent_device" title="Permalink to this definition"></a></dt>
 <dd><p>Parent device for a sub-device, or None for a root device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1174,7 +1085,7 @@ device is a sub-device, <code class="docutils literal notranslate"><span class="
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.partition_max_sub_devices">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">partition_max_sub_devices</span></span><a class="headerlink" href="#dpctl.SyclDevice.partition_max_sub_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">partition_max_sub_devices</span></span><a class="headerlink" href="#dpctl.SyclDevice.partition_max_sub_devices" title="Permalink to this definition"></a></dt>
 <dd><p>The maximum number of sub-devices this <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
 instance can be partitioned into. The value returned cannot exceed the
 value returned by <a class="reference internal" href="#dpctl.SyclDevice.max_compute_units" title="dpctl.SyclDevice.max_compute_units"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclDevice.max_compute_units</span></code></a>.</p>
@@ -1195,56 +1106,56 @@ be partitioned.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_char">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_char</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_char" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_char</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_char" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_double">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_double</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_double" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_double</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_double" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_float">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_float</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_float" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_float</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_float" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_half">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_half</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_half" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_half</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_half" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_int">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_int</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_int" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_int</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_int" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_long">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_long</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_long" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_long</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_long" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.preferred_vector_width_short">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_short</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_short" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">preferred_vector_width_short</span></span><a class="headerlink" href="#dpctl.SyclDevice.preferred_vector_width_short" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the preferred native vector width size for built-in scalar
 types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.profiling_timer_resolution">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">profiling_timer_resolution</span></span><a class="headerlink" href="#dpctl.SyclDevice.profiling_timer_resolution" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">profiling_timer_resolution</span></span><a class="headerlink" href="#dpctl.SyclDevice.profiling_timer_resolution" title="Permalink to this definition"></a></dt>
 <dd><p>Profiling timer resolution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1258,7 +1169,7 @@ types that can be put into vectors.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_independent_forward_progress">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if the device supports independent forward progress of
 sub-groups with respect to other sub-groups in the same work-group.</p>
 <dl class="field-list simple">
@@ -1274,7 +1185,7 @@ of sub-groups.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_sizes">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_sizes" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_sizes</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_sizes" title="Permalink to this definition"></a></dt>
 <dd><p>Returns list of supported sub-group sizes for this device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1288,7 +1199,7 @@ of sub-groups.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.sycl_platform">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sycl_platform</span></span><a class="headerlink" href="#dpctl.SyclDevice.sycl_platform" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sycl_platform</span></span><a class="headerlink" href="#dpctl.SyclDevice.sycl_platform" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the platform associated with this device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1303,7 +1214,7 @@ device.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.vendor">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclDevice.vendor" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclDevice.vendor" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the device vendor name as a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1317,10 +1228,10 @@ device.</p>
 
 </section>
 <section id="public-methods">
-<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading">¶</a></h2>
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclDeviceRef</span></code> pointer as a
 <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
@@ -1336,7 +1247,7 @@ this <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDev
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.create_sub_devices">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">parition_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.create_sub_devices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">parition_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.create_sub_devices" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a list of sub-devices by partitioning a root device based on the
 provided partion specifier.</p>
 <p>A partition specifier must be provided using a “partition”
@@ -1400,7 +1311,7 @@ created.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.get_filter_string">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_filter_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_filter_string" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_filter_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_filter_string" title="Permalink to this definition"></a></dt>
 <dd><p>For a parent device, returns a filter selector string
 that includes backend or device type based on the value
 of the given keyword arguments.</p>
@@ -1445,7 +1356,7 @@ in the filter string.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.print_device_info">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition"></a></dt>
 <dd><p>Print information about the SYCL device.</p>
 </dd></dl>
 
@@ -1454,50 +1365,33 @@ in the filter string.</p></li>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="SyclEvent.html" class="btn btn-neutral float-right" title="dpctl.SyclEvent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="SyclContext.html" class="btn btn-neutral float-left" title="dpctl.SyclContext" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SyclEvent.html" class="btn btn-neutral float-right" title="dpctl.SyclEvent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-21, Intel Corp..
-
-    </p>
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
