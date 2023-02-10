@@ -256,7 +256,10 @@ class TestPrintFns(TestPrint):
         assert repr(x) == "usm_ndarray(0)"
 
         x = dpt.asarray([np.nan, np.inf], sycl_queue=q)
-        assert repr(x) == "usm_ndarray([nan, inf])"
+        if x.sycl_device.has_aspect_fp64:
+            assert repr(x) == "usm_ndarray([nan, inf])"
+        else:
+            assert repr(x) == "usm_ndarray([nan, inf], dtype=float32)"
 
         x = dpt.arange(9, sycl_queue=q, dtype="int64")
         assert repr(x) == "usm_ndarray([0, 1, 2, 3, 4, 5, 6, 7, 8])"
