@@ -34,23 +34,41 @@ cdef Py_ssize_t _slice_len(
         return 1 + ((sl_stop - sl_start + 1) // sl_step)
 
 
-cdef object _basic_slice_meta(object ind, tuple shape,
-                              tuple strides, Py_ssize_t offset):
+cdef bint _is_integral(object x) except *:
+    """Gives True if x is an integral slice spec"""
+    if isinstance(x, (int, numbers.Integral)):
+        return True
+    if isinstance(x, usm_ndarray):
+        if x.ndim > 0:
+            return False
+        if x.dtype.kind not in "ui":
+            return False
+        return True
+    if callable(getattr(x, "__index__", None)):
+        try:
+            x.__index__()
+        except (TypeError, ValueError):
+            return False
+        return True
+    return False
+
+
+def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
     """
     Give basic slicing index `ind` and array layout information produce
-    a tuple (resulting_shape, resulting_strides, resulting_offset)
-    used to contruct a view into underlying array.
+    a 5-tuple (resulting_shape, resulting_strides, resulting_offset,
+       advanced_ind, resulting_advanced_ind_pos)
+    used to contruct a view into underlying array over which advanced
+    indexing, if any, is to be performed.
 
-    Raises IndexError for invalid index `ind`, and NotImplementedError
-    if `ind` is an array.
+    Raises IndexError for invalid index `ind`.
     """
-    is_integral = lambda x: (
-        isinstance(x, numbers.Integral) or callable(getattr(x, "__index__", None))
-    )
+    _no_advanced_ind = tuple()
+    _no_advanced_pos = -1
     if ind is Ellipsis:
-        return (shape, strides, offset)
+        return (shape, strides, offset, _no_advanced_ind, _no_advanced_pos)
     elif ind is None:
-        return ((1,) + shape, (0,) + strides, offset)
+        return ((1,) + shape, (0,) + strides, offset, _no_advanced_ind, _no_advanced_pos)
     elif isinstance(ind, slice):
         sl_start, sl_stop, sl_step = ind.indices(shape[0])
         sh0 = _slice_len(sl_start, sl_stop, sl_step)
@@ -60,38 +78,70 @@ cdef object _basic_slice_meta(object ind, tuple shape,
         return (
             (sh0, ) + shape[1:],
             new_strides,
-            new_offset
+            new_offset,
+            _no_advanced_ind,
+            _no_advanced_pos
         )
-    elif is_integral(ind):
+    elif _is_integral(ind):
         ind = ind.__index__()
         if 0 <= ind < shape[0]:
-            return (shape[1:], strides[1:], offset + ind * strides[0])
+            return (shape[1:], strides[1:], offset + ind * strides[0], _no_advanced_ind, _no_advanced_pos)
         elif -shape[0] <= ind < 0:
             return (shape[1:], strides[1:],
-                    offset + (shape[0] + ind) * strides[0])
+                    offset + (shape[0] + ind) * strides[0], _no_advanced_ind, _no_advanced_pos)
         else:
             raise IndexError(
                 "Index {0} is out of range for axes 0 with "
                 "size {1}".format(ind, shape[0]))
-    elif isinstance(ind, list):
-        raise NotImplemented
+    elif isinstance(ind, usm_ndarray):
+        return (shape, strides, 0, (ind,), 0)
     elif isinstance(ind, tuple):
         axes_referenced = 0
         ellipses_count = 0
         newaxis_count = 0
         explicit_index = 0
+        array_count = 0
+        seen_arrays_yet = False
+        array_streak_started = False
+        array_streak_interrupted = False
         for i in ind:
             if i is None:
-                newaxis_count = newaxis_count + 1
+                newaxis_count += 1
+                if array_streak_started:
+                    array_streak_interrupted = True
             elif i is Ellipsis:
-                ellipses_count = ellipses_count + 1
+                ellipses_count += 1
+                if array_streak_started:
+                    array_streak_interrupted = True
             elif isinstance(i, slice):
-                axes_referenced = axes_referenced + 1
-            elif is_integral(i):
-                explicit_index = explicit_index + 1
-                axes_referenced = axes_referenced + 1
-            elif isinstance(i, list):
-                raise NotImplemented
+                axes_referenced += 1
+                if array_streak_started:
+                    array_streak_interrupted = True
+            elif _is_integral(i):
+                explicit_index += 1
+                axes_referenced += 1
+                if array_streak_started:
+                    array_streak_interrupted = True
+            elif isinstance(i, usm_ndarray):
+                if not seen_arrays_yet:
+                    seen_arrays_yet = True
+                    array_streak_started = True
+                    array_streak_interrupted = False
+                if array_streak_interrupted:
+                    raise IndexError(
+                        "Advanced indexing array specs may not be "
+                        "separated by basic slicing specs."
+                    )
+                dt_k = i.dtype.kind
+                if dt_k == "b":
+                    axes_referenced += i.ndim
+                elif dt_k in "ui":
+                    axes_referenced += 1
+                else:
+                    raise IndexError(
+                        "arrays used as indices must be of integer (or boolean) type"
+                    )
+                array_count += 1
             else:
                 raise TypeError
         if ellipses_count > 1:
@@ -108,7 +158,10 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                          + axes_referenced - explicit_index)
         new_shape = list()
         new_strides = list()
+        new_advanced_ind = list()
         k = 0
+        new_advanced_start_pos = -1
+        advanced_start_pos_set = False
         new_offset = offset
         is_empty = False
         for i in range(len(ind)):
@@ -133,7 +186,7 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                 if sh_i == 0:
                     is_empty = True
                 k = k_new
-            elif is_integral(ind_i):
+            elif _is_integral(ind_i):
                 ind_i = ind_i.__index__()
                 if 0 <= ind_i < shape[k]:
                     k_new = k + 1
@@ -149,8 +202,25 @@ cdef object _basic_slice_meta(object ind, tuple shape,
                     raise IndexError(
                         ("Index {0} is out of range for "
                         "axes {1} with size {2}").format(ind_i, k, shape[k]))
+            elif isinstance(ind_i, usm_ndarray):
+                if not advanced_start_pos_set:
+                    new_advanced_start_pos = len(new_shape)
+                    advanced_start_pos_set = True
+                new_advanced_ind.append(ind_i)
+                dt_k = ind_i.dtype.kind
+                if dt_k == "b":
+                    k_new = k + ind_i.ndim
+                else:
+                    k_new = k + 1
+                new_shape.extend(shape[k:k_new])
+                new_strides.extend(strides[k:k_new])
+                k = k_new
         new_shape.extend(shape[k:])
         new_strides.extend(strides[k:])
-        return (tuple(new_shape), tuple(new_strides), new_offset)
+        new_shape_len += len(shape) - k
+#        assert len(new_shape) == new_shape_len, f"{len(new_shape)} vs {new_shape_len}"
+#        assert len(new_strides) == new_shape_len, f"{len(new_strides)} vs {new_shape_len}"
+#        assert len(new_advanced_ind) == array_count
+        return (tuple(new_shape), tuple(new_strides), new_offset, tuple(new_advanced_ind), new_advanced_start_pos)
     else:
         raise TypeError
