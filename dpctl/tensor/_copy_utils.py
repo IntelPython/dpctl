@@ -15,9 +15,11 @@
 #  limitations under the License.
 import numpy as np
 
+import dpctl
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils
 from dpctl.tensor._device import normalize_queue_device
 
 __doc__ = (
@@ -382,3 +384,124 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         )
     _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
     return R
+
+
+def _mock_extract(ary, ary_mask, p):
+    exec_q = dpctl.utils.get_execution_queue(
+        (
+            ary.sycl_queue,
+            ary_mask.sycl_queue,
+        )
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Can not automatically determine where to allocate the "
+            "result or performance execution. "
+            "Use `usm_ndarray.to_device` method to migrate data to "
+            "be associated with the same queue."
+        )
+
+    res_usm_type = dpctl.utils.get_coerced_usm_type(
+        (
+            ary.usm_type,
+            ary_mask.usm_type,
+        )
+    )
+    ary_np = dpt.asnumpy(ary)
+    mask_np = dpt.asnumpy(ary_mask)
+    res_np = ary_np[(slice(None),) * p + (mask_np,)]
+    res = dpt.empty(
+        res_np.shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+    res[...] = res_np
+    return res
+
+
+def _mock_nonzero(ary):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError
+    q = ary.sycl_queue
+    usm_type = ary.usm_type
+    ary_np = dpt.asnumpy(ary)
+    nz = ary_np.nonzero()
+    return tuple(dpt.asarray(i, usm_type=usm_type, sycl_queue=q) for i in nz)
+
+
+def _mock_take_multi_index(ary, inds, p):
+    queues_ = [
+        ary.sycl_queue,
+    ]
+    usm_types_ = [
+        ary.usm_type,
+    ]
+    all_integers = True
+    for ind in inds:
+        queues_.append(ind.sycl_queue)
+        usm_types_.append(ind.usm_type)
+        if all_integers:
+            all_integers = ind.dtype.kind in "ui"
+    exec_q = dpctl.utils.get_execution_queue(queues_)
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError("")
+    if not all_integers:
+        raise IndexError(
+            "arrays used as indices must be of integer (or boolean) type"
+        )
+    ary_np = dpt.asnumpy(ary)
+    ind_np = (slice(None),) * p + tuple(dpt.asnumpy(ind) for ind in inds)
+    res_np = ary_np[ind_np]
+    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    res = dpt.empty(
+        res_np.shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+    res[...] = res_np
+    return res
+
+
+def _mock_place(ary, ary_mask, p, vals):
+    exec_q = dpctl.utils.get_execution_queue(
+        (ary.sycl_queue, ary_mask.sycl_queue, vals.sycl_queue)
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Can not automatically determine where to allocate the "
+            "result or performance execution. "
+            "Use `usm_ndarray.to_device` method to migrate data to "
+            "be associated with the same queue."
+        )
+
+    ary_np = dpt.asnumpy(ary)
+    mask_np = dpt.asnumpy(ary_mask)
+    vals_np = dpt.asnumpy(vals)
+    ary_np[(slice(None),) * p + (mask_np,)] = vals_np
+    ary[...] = ary_np
+    return
+
+
+def _mock_put_multi_index(ary, inds, p, vals):
+    queues_ = [ary.sycl_queue, vals.sycl_queue]
+    usm_types_ = [ary.usm_type, vals.usm_type]
+    all_integers = True
+    for ind in inds:
+        queues_.append(ind.sycl_queue)
+        usm_types_.append(ind.usm_type)
+        if all_integers:
+            all_integers = ind.dtype.kind in "ui"
+    exec_q = dpctl.utils.get_execution_queue(queues_)
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Can not automatically determine where to allocate the "
+            "result or performance execution. "
+            "Use `usm_ndarray.to_device` method to migrate data to "
+            "be associated with the same queue."
+        )
+    if not all_integers:
+        raise IndexError(
+            "arrays used as indices must be of integer (or boolean) type"
+        )
+    ary_np = dpt.asnumpy(ary)
+    vals_np = dpt.asnumpy(vals)
+    ind_np = (slice(None),) * p + tuple(dpt.asnumpy(ind) for ind in inds)
+    ary_np[ind_np] = vals_np
+    ary[...] = ary_np
+    return

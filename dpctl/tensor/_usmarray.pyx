@@ -25,6 +25,7 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpmem
 
+from ._data_types import bool as dpt_bool
 from ._device import Device
 from ._print import usm_ndarray_repr, usm_ndarray_str
 
@@ -34,6 +35,7 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 cimport dpctl.tensor._dlpack as c_dlpack
+
 import dpctl.tensor._flags as _flags
 
 include "_stride_utils.pxi"
@@ -648,6 +650,9 @@ cdef class usm_ndarray:
             self.get_offset())
         cdef usm_ndarray res
 
+        if len(_meta) < 5:
+            raise RuntimeError
+
         res = usm_ndarray.__new__(
             usm_ndarray,
             _meta[0],
@@ -658,7 +663,32 @@ cdef class usm_ndarray:
         )
         res.flags_ |= (self.flags_ & USM_ARRAY_WRITABLE)
         res.array_namespace_ = self.array_namespace_
-        return res
+
+        adv_ind = _meta[3]
+        adv_ind_start_p = _meta[4]
+
+        if adv_ind_start_p < 0:
+            return res
+
+        from ._copy_utils import (
+            _mock_extract,
+            _mock_nonzero,
+            _mock_take_multi_index,
+        )
+        if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
+            return _mock_extract(res, adv_ind[0], adv_ind_start_p)
+
+        if any(ind.dtype == dpt_bool for ind in adv_ind):
+            adv_ind_int = list()
+            for ind in adv_ind:
+                if ind.dtype == dpt_bool:
+                    adv_ind_int.extend(_mock_nonzero(ind))
+                else:
+                    adv_ind_int.append(ind)
+            return _mock_take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
+
+        return _mock_take_multi_index(res, adv_ind, adv_ind_start_p)
+
 
     def to_device(self, target):
         """
@@ -959,39 +989,87 @@ cdef class usm_ndarray:
             return _dispatch_binary_elementwise2(first, "right_shift", other)
         return NotImplemented
 
-    def __setitem__(self, key, val):
-        try:
-            Xv = self.__getitem__(key)
-        except (ValueError, IndexError) as e:
-            raise e
+    def __setitem__(self, key, rhs):
+        cdef tuple _meta
+        cdef usm_ndarray Xv
+
+        if (self.flags_ & USM_ARRAY_WRITABLE) == 0:
+            raise ValueError("Can not modify read-only array.")
+
+        _meta = _basic_slice_meta(
+            key, (<object>self).shape, (<object> self).strides,
+            self.get_offset()
+        )
+
+        if len(_meta) < 5:
+            raise RuntimeError
+
+        Xv = usm_ndarray.__new__(
+            usm_ndarray,
+            _meta[0],
+            dtype=_make_typestr(self.typenum_),
+            strides=_meta[1],
+            buffer=self.base_,
+            offset=_meta[2],
+        )
+        # set flags and namespace
+        Xv.flags_ |= (self.flags_ & USM_ARRAY_WRITABLE)
+        Xv.array_namespace_ = self.array_namespace_
+
         from ._copy_utils import (
             _copy_from_numpy_into,
             _copy_from_usm_ndarray_to_usm_ndarray,
+            _mock_nonzero,
+            _mock_place,
+            _mock_put_multi_index,
         )
-        if ((<usm_ndarray> Xv).flags_ & USM_ARRAY_WRITABLE) == 0:
-            raise ValueError("Can not modify read-only array.")
-        if isinstance(val, usm_ndarray):
-            _copy_from_usm_ndarray_to_usm_ndarray(Xv, val)
-        else:
-            if hasattr(val, "__sycl_usm_array_interface__"):
-                from dpctl.tensor import asarray
-                try:
-                    val_ar = asarray(val)
-                    _copy_from_usm_ndarray_to_usm_ndarray(Xv, val_ar)
-                except Exception:
-                    raise ValueError(
-                        f"Input of type {type(val)} could not be "
-                        "converted to usm_ndarray"
-                    )
+
+        adv_ind = _meta[3]
+        adv_ind_start_p = _meta[4]
+
+        if adv_ind_start_p < 0:
+            # basic slicing
+            if isinstance(rhs, usm_ndarray):
+                _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs)
             else:
-                try:
-                    val_np = np.asarray(val)
-                    _copy_from_numpy_into(Xv, val_np)
-                except Exception:
-                    raise ValueError(
-                        f"Input of type {type(val)} could not be "
-                        "converted to usm_ndarray"
-                    )
+                if hasattr(rhs, "__sycl_usm_array_interface__"):
+                    from dpctl.tensor import asarray
+                    try:
+                        rhs_ar = asarray(rhs)
+                        _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs_ar)
+                    except Exception:
+                        raise ValueError(
+                            f"Input of type {type(rhs)} could not be "
+                            "converted to usm_ndarray"
+                        )
+                else:
+                    try:
+                        rhs_np = np.asarray(rhs)
+                        _copy_from_numpy_into(Xv, rhs_np)
+                    except Exception:
+                        raise ValueError(
+                            f"Input of type {type(rhs)} could not be "
+                            "converted to usm_ndarray"
+                        )
+            return
+
+        if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
+            _mock_place(Xv, adv_ind[0], adv_ind_start_p, rhs)
+            return
+
+        if any(ind.dtype == dpt_bool for ind in adv_ind):
+            adv_ind_int = list()
+            for ind in adv_ind:
+                if ind.dtype == dpt_bool:
+                    adv_ind_int.extend(_mock_nonzero(ind))
+                else:
+                    adv_ind_int.append(ind)
+            _mock_put_multi_index(Xv, tuple(adv_ind_int), adv_ind_start_p, rhs)
+            return
+
+        _mock_put_multi_index(Xv, adv_ind, adv_ind_start_p, rhs)
+        return
+
 
     def __sub__(first, other):
         "See comment in __add__"
