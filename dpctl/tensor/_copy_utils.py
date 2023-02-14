@@ -428,6 +428,8 @@ def _mock_nonzero(ary):
 
 
 def _mock_take_multi_index(ary, inds, p):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError
     queues_ = [
         ary.sycl_queue,
     ]
@@ -459,9 +461,15 @@ def _mock_take_multi_index(ary, inds, p):
 
 
 def _mock_place(ary, ary_mask, p, vals):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError
+    if not isinstance(ary_mask, dpt.usm_ndarray):
+        raise TypeError
     exec_q = dpctl.utils.get_execution_queue(
-        (ary.sycl_queue, ary_mask.sycl_queue, vals.sycl_queue)
+        (ary.sycl_queue, ary_mask.sycl_queue)
     )
+    if exec_q is not None and isinstance(vals, dpt.usm_ndarray):
+        exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
@@ -472,17 +480,32 @@ def _mock_place(ary, ary_mask, p, vals):
 
     ary_np = dpt.asnumpy(ary)
     mask_np = dpt.asnumpy(ary_mask)
-    vals_np = dpt.asnumpy(vals)
+    if isinstance(vals, dpt.usm_ndarray) or hasattr(
+        vals, "__sycl_usm_array_interface__"
+    ):
+        vals_np = dpt.asnumpy(vals)
+    else:
+        vals_np = vals
     ary_np[(slice(None),) * p + (mask_np,)] = vals_np
     ary[...] = ary_np
     return
 
 
 def _mock_put_multi_index(ary, inds, p, vals):
-    queues_ = [ary.sycl_queue, vals.sycl_queue]
-    usm_types_ = [ary.usm_type, vals.usm_type]
+    if isinstance(vals, dpt.ums_ndarray):
+        queues_ = [ary.sycl_queue, vals.sycl_queue]
+        usm_types_ = [ary.usm_type, vals.usm_type]
+    else:
+        queues_ = [
+            ary.sycl_queue,
+        ]
+        usm_types_ = [
+            ary.usm_type,
+        ]
     all_integers = True
     for ind in inds:
+        if not isinstance(ind, dpt.usm_ndarray):
+            raise TypeError
         queues_.append(ind.sycl_queue)
         usm_types_.append(ind.usm_type)
         if all_integers:
@@ -500,7 +523,12 @@ def _mock_put_multi_index(ary, inds, p, vals):
             "arrays used as indices must be of integer (or boolean) type"
         )
     ary_np = dpt.asnumpy(ary)
-    vals_np = dpt.asnumpy(vals)
+    if isinstance(vals, dpt.usm_ndarray) or hasattr(
+        vals, "__sycl_usm_array_interface__"
+    ):
+        vals_np = dpt.asnumpy(vals)
+    else:
+        vals_np = vals
     ind_np = (slice(None),) * p + tuple(dpt.asnumpy(ind) for ind in inds)
     ary_np[ind_np] = vals_np
     ary[...] = ary_np
