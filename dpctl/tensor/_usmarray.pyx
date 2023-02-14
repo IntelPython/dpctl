@@ -1258,12 +1258,13 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     Make C-contiguous array of zero elements with same shape
     and type as ary.
     """
+    cdef dt = _make_typestr(ary.typenum_)
     cdef usm_ndarray r = usm_ndarray(
         _make_int_tuple(ary.nd_, ary.shape_),
-        dtype=_make_typestr(ary.typenum_),
+        dtype=dt,
         buffer=ary.base_.get_usm_type()
     )
-    # TODO: call function to set array elements to zero
+    r.base_.memset()
     return r
 
 
