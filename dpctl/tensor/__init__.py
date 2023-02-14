@@ -21,8 +21,6 @@
 
 """
 
-from numpy import dtype
-
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
 from dpctl.tensor._ctors import (
     arange,
@@ -40,6 +38,23 @@ from dpctl.tensor._ctors import (
     triu,
     zeros,
     zeros_like,
+)
+from dpctl.tensor._data_types import (
+    bool,
+    complex64,
+    complex128,
+    dtype,
+    float16,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
 )
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
@@ -67,21 +82,6 @@ from dpctl.tensor._print import (
 )
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
-
-bool = dtype("bool")
-int8 = dtype("int8")
-int16 = dtype("int16")
-int32 = dtype("int32")
-int64 = dtype("int64")
-uint8 = dtype("uint8")
-uint16 = dtype("uint16")
-uint32 = dtype("uint32")
-uint64 = dtype("uint64")
-float16 = dtype("float16")
-float32 = dtype("float32")
-float64 = dtype("float64")
-complex64 = dtype("complex64")
-complex128 = dtype("complex128")
 
 __all__ = [
     "Device",
