@@ -83,6 +83,8 @@ from dpctl.tensor._print import (
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._usmarray import usm_ndarray
 
+from ._constants import e, inf, nan, newaxis, pi
+
 __all__ = [
     "Device",
     "usm_ndarray",
@@ -141,4 +143,9 @@ __all__ = [
     "print_options",
     "usm_ndarray_repr",
     "usm_ndarray_str",
+    "newaxis",
+    "e",
+    "pi",
+    "nan",
+    "inf",
 ]
