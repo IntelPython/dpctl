@@ -10,6 +10,11 @@ echo "--gcc-toolchain=$PREFIX --sysroot=$PREFIX/$HOST/sysroot -target $HOST" > i
 export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG="$(pwd)/icpx_for_conda.cfg"
 
+echo $ICPXCFG
+cat $ICPXCFG
+echo $ICXCFG
+cat $ICXCFG
+
 if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
 fi
