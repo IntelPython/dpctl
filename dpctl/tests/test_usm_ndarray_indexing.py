@@ -16,7 +16,7 @@
 
 
 # import numpy as np
-# import pytest
+import pytest
 from helper import get_queue_or_skip
 
 # import dpctl
@@ -144,6 +144,10 @@ def test_basic_slice10():
     assert y.strides == (0, n1 * n2, n2, 1)
 
 
+def _all_equal(it1, it2):
+    return all(dpt.asnumpy(x) == dpt.asnumpy(y) for x, y in zip(it1, it2))
+
+
 def test_advanced_slice1():
     q = get_queue_or_skip()
     ii = dpt.asarray([1, 2], sycl_queue=q)
@@ -154,6 +158,208 @@ def test_advanced_slice1():
     assert y.strides == (1,)
     # FIXME, once usm_ndarray.__equal__ is implemented,
     # use of asnumpy should be removed
-    assert all(
-        dpt.asnumpy(x[ii[k]]) == dpt.asnumpy(y[k]) for k in range(ii.shape[0])
+    assert _all_equal(
+        (x[ii[k]] for k in range(ii.shape[0])),
+        (y[k] for k in range(ii.shape[0])),
     )
+    y = x[(ii,)]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == ii.shape
+    assert y.strides == (1,)
+    # FIXME, once usm_ndarray.__equal__ is implemented,
+    # use of asnumpy should be removed
+    assert _all_equal(
+        (x[ii[k]] for k in range(ii.shape[0])),
+        (y[k] for k in range(ii.shape[0])),
+    )
+
+
+def test_advanced_slice2():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = dpt.arange(10, dtype="i4", sycl_queue=q)
+    y = x[ii, dpt.newaxis]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == ii.shape + (1,)
+    assert y.flags["C"]
+
+
+def test_advanced_slice3():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = dpt.arange(10, dtype="i4", sycl_queue=q)
+    y = x[dpt.newaxis, ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == (1,) + ii.shape
+    assert y.flags["C"]
+
+
+def _make_3d(dt, q):
+    return dpt.reshape(
+        dpt.arange(3 * 3 * 3, dtype=dt, sycl_queue=q),
+        (
+            3,
+            3,
+            3,
+        ),
+    )
+
+
+def test_advanced_slice4():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = _make_3d("i4", q)
+    y = x[ii, ii, ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == ii.shape
+    assert _all_equal(
+        (x[ii[k], ii[k], ii[k]] for k in range(ii.shape[0])),
+        (y[k] for k in range(ii.shape[0])),
+    )
+
+
+def test_advanced_slice5():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = _make_3d("i4", q)
+    with pytest.raises(IndexError):
+        x[ii, 0, ii]
+
+
+def test_advanced_slice6():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = _make_3d("i4", q)
+    y = x[:, ii, ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == (
+        x.shape[0],
+        ii.shape[0],
+    )
+    assert _all_equal(
+        (
+            x[i, ii[k], ii[k]]
+            for i in range(x.shape[0])
+            for k in range(ii.shape[0])
+        ),
+        (y[i, k] for i in range(x.shape[0]) for k in range(ii.shape[0])),
+    )
+
+
+def test_advanced_slice7():
+    q = get_queue_or_skip()
+    mask = dpt.asarray(
+        [
+            [[True, True, False], [False, True, True], [True, False, True]],
+            [[True, False, False], [False, False, True], [False, True, False]],
+            [[True, True, True], [False, False, False], [False, False, True]],
+        ],
+        sycl_queue=q,
+    )
+    x = _make_3d("i2", q)
+    y = x[mask]
+    expected = [0, 1, 4, 5, 6, 8, 9, 14, 16, 18, 19, 20, 26]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == (len(expected),)
+    assert all(dpt.asnumpy(y[k]) == expected[k] for k in range(len(expected)))
+
+
+def test_advanced_slice8():
+    q = get_queue_or_skip()
+    mask = dpt.asarray(
+        [[True, False, False], [False, True, False], [False, True, False]],
+        sycl_queue=q,
+    )
+    x = _make_3d("u2", q)
+    y = x[mask]
+    expected = dpt.asarray(
+        [[0, 1, 2], [12, 13, 14], [21, 22, 23]], sycl_queue=q
+    )
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == expected.shape
+    assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
+
+
+def test_advanced_slice9():
+    q = get_queue_or_skip()
+    mask = dpt.asarray(
+        [[True, False, False], [False, True, False], [False, True, False]],
+        sycl_queue=q,
+    )
+    x = _make_3d("u4", q)
+    y = x[:, mask]
+    expected = dpt.asarray([[0, 4, 7], [9, 13, 16], [18, 22, 25]], sycl_queue=q)
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == expected.shape
+    assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
+
+
+def lin_id(i, j, k):
+    """global_linear_id for (3,3,3) range traversed in C-contiguous order"""
+    return 9 * i + 3 * j + k
+
+
+def test_advanced_slice10():
+    q = get_queue_or_skip()
+    x = _make_3d("u8", q)
+    i0 = dpt.asarray([0, 1, 1], device=x.device)
+    i1 = dpt.asarray([1, 1, 2], device=x.device)
+    i2 = dpt.asarray([2, 0, 1], device=x.device)
+    y = x[i0, i1, i2]
+    res_expected = dpt.asarray(
+        [
+            lin_id(0, 1, 2),
+            lin_id(1, 1, 0),
+            lin_id(1, 2, 1),
+        ],
+        sycl_queue=q,
+    )
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == res_expected.shape
+    assert (dpt.asnumpy(y) == dpt.asnumpy(res_expected)).all()
+
+
+def test_advanced_slice11():
+    q = get_queue_or_skip()
+    x = _make_3d("u8", q)
+    i0 = dpt.asarray([0, 1, 1], device=x.device)
+    i2 = dpt.asarray([2, 0, 1], device=x.device)
+    with pytest.raises(IndexError):
+        x[i0, :, i2]
+
+
+def test_advanced_slice12():
+    q = get_queue_or_skip()
+    x = _make_3d("u8", q)
+    i1 = dpt.asarray([1, 1, 2], device=x.device)
+    i2 = dpt.asarray([2, 0, 1], device=x.device)
+    y = x[:, dpt.newaxis, i1, i2, dpt.newaxis]
+    res_expected = dpt.asarray(
+        [
+            [[[lin_id(0, 1, 2)], [lin_id(0, 1, 0)], [lin_id(0, 2, 1)]]],
+            [[[lin_id(1, 1, 2)], [lin_id(1, 1, 0)], [lin_id(1, 2, 1)]]],
+            [[[lin_id(2, 1, 2)], [lin_id(2, 1, 0)], [lin_id(2, 2, 1)]]],
+        ],
+        sycl_queue=q,
+    )
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == res_expected.shape
+    assert (dpt.asnumpy(y) == dpt.asnumpy(res_expected)).all()
+
+
+def test_advanced_slice13():
+    q = get_queue_or_skip()
+    x = _make_3d("u8", q)
+    i1 = dpt.asarray([[1], [2]], device=x.device)
+    i2 = dpt.asarray([[0, 1]], device=x.device)
+    y = x[i1, i2, 0]
+    expected = dpt.asarray(
+        [
+            [lin_id(1, 0, 0), lin_id(1, 1, 0)],
+            [lin_id(2, 0, 0), lin_id(2, 1, 0)],
+        ],
+        device=x.device,
+    )
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == expected.shape
+    assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
