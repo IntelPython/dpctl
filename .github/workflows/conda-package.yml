@@ -293,7 +293,7 @@ jobs:
       - name: Smoke test, step 2
         shell: cmd /C CALL {0}
         run: >-
-          conda activate dpctl_test && python -c "import dpctl; dpctl.lsplatform()"
+          conda activate dpctl_test && python -m dpctl -f
       - name: Run tests
         shell: cmd /C CALL {0}
         run: >-
