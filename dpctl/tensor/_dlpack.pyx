@@ -71,6 +71,7 @@ cdef extern from 'dlpack/dlpack.h' nogil:
         kDLFloat
         kDLBfloat
         kDLComplex
+        kDLBool
 
     ctypedef struct DLDataType:
         uint8_t code
@@ -244,7 +245,7 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     dl_tensor.dtype.lanes = <uint16_t>1
     dl_tensor.dtype.bits = <uint8_t>(ary_dt.itemsize * 8)
     if (ary_dtk == "b"):
-        dl_tensor.dtype.code = <uint8_t>kDLUInt
+        dl_tensor.dtype.code = <uint8_t>kDLBool
     elif (ary_dtk == "u"):
         dl_tensor.dtype.code = <uint8_t>kDLUInt
     elif (ary_dtk == "i"):
@@ -444,6 +445,8 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             ary_dt = np.dtype("f" + str(element_bytesize))
         elif (dlm_tensor.dl_tensor.dtype.code == kDLComplex):
             ary_dt = np.dtype("c" + str(element_bytesize))
+        elif (dlm_tensor.dl_tensor.dtype.code == kDLBool):
+            ary_dt = np.dtype("?")
         else:
             raise BufferError(
                 "Can not import DLPack tensor with type code {}.".format(
