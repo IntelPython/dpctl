@@ -113,6 +113,30 @@ def test_from_dlpack(shape, typestr, usm_type):
             assert V.strides == W.strides
 
 
+@pytest.mark.parametrize("mod", [2, 5])
+def test_from_dlpack_strides(mod, typestr, usm_type):
+    all_root_devices = dpctl.get_devices()
+    for sycl_dev in all_root_devices:
+        skip_if_dtype_not_supported(typestr, sycl_dev)
+        X0 = dpt.empty(
+            3 * mod, dtype=typestr, usm_type=usm_type, device=sycl_dev
+        )
+        for start in range(mod):
+            X = X0[slice(-start - 1, None, -mod)]
+            Y = dpt.from_dlpack(X)
+            assert X.shape == Y.shape
+            assert X.dtype == Y.dtype or (
+                str(X.dtype) == "bool" and str(Y.dtype) == "uint8"
+            )
+            assert X.sycl_device == Y.sycl_device
+            assert X.usm_type == Y.usm_type
+            assert X._pointer == Y._pointer
+            if Y.ndim:
+                V = Y[::-1]
+                W = dpt.from_dlpack(V)
+                assert V.strides == W.strides
+
+
 def test_from_dlpack_input_validation():
     vstr = dpt._dlpack.get_build_dlpack_version()
     assert type(vstr) is str
