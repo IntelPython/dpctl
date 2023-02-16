@@ -71,6 +71,7 @@ cdef extern from 'dlpack/dlpack.h' nogil:
         kDLFloat
         kDLBfloat
         kDLComplex
+        kDLBool
 
     ctypedef struct DLDataType:
         uint8_t code
@@ -244,7 +245,7 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     dl_tensor.dtype.lanes = <uint16_t>1
     dl_tensor.dtype.bits = <uint8_t>(ary_dt.itemsize * 8)
     if (ary_dtk == "b"):
-        dl_tensor.dtype.code = <uint8_t>kDLUInt
+        dl_tensor.dtype.code = <uint8_t>kDLBool
     elif (ary_dtk == "u"):
         dl_tensor.dtype.code = <uint8_t>kDLUInt
     elif (ary_dtk == "i"):
@@ -311,14 +312,17 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef bytes usm_type
     cdef size_t sz = 1
+    cdef size_t alloc_sz = 1
     cdef int i
     cdef int device_id = -1
     cdef int element_bytesize = 0
     cdef Py_ssize_t offset_min = 0
     cdef Py_ssize_t offset_max = 0
-    cdef int64_t stride_i
     cdef char *mem_ptr = NULL
+    cdef Py_ssize_t mem_ptr_delta = 0
     cdef Py_ssize_t element_offset = 0
+    cdef int64_t stride_i = -1
+    cdef int64_t shape_i = -1
 
     if not cpython.PyCapsule_IsValid(py_caps, 'dltensor'):
         if cpython.PyCapsule_IsValid(py_caps, 'used_dltensor'):
@@ -370,22 +374,22 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             raise BufferError(
                 "Can not import DLPack tensor with lanes != 1"
             )
+        offset_min = 0
         if dlm_tensor.dl_tensor.strides is NULL:
             for i in range(dlm_tensor.dl_tensor.ndim):
                 sz = sz * dlm_tensor.dl_tensor.shape[i]
+            offset_max = sz - 1
         else:
-            offset_min = 0
             offset_max = 0
             for i in range(dlm_tensor.dl_tensor.ndim):
                 stride_i = dlm_tensor.dl_tensor.strides[i]
-                if stride_i > 0:
-                    offset_max = offset_max + stride_i * (
-                        dlm_tensor.dl_tensor.shape[i] - 1
-                    )
-                else:
-                    offset_min = offset_min + stride_i * (
-                        dlm_tensor.dl_tensor.shape[i] - 1
-                    )
+                shape_i = dlm_tensor.dl_tensor.shape[i]
+                if shape_i > 1:
+                    shape_i -= 1
+                    if stride_i > 0:
+                        offset_max = offset_max + stride_i * shape_i
+                    else:
+                        offset_min = offset_min + stride_i * shape_i
             sz = offset_max - offset_min + 1
         if sz == 0:
             sz = 1
@@ -401,14 +405,29 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
         if dlm_tensor.dl_tensor.data is NULL:
             usm_mem = dpmem.MemoryUSMDevice(sz, q)
         else:
-            mem_ptr = <char *>dlm_tensor.dl_tensor.data + dlm_tensor.dl_tensor.byte_offset
-            mem_ptr = mem_ptr - (element_offset * element_bytesize)
-            usm_mem = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+            mem_ptr_delta = dlm_tensor.dl_tensor.byte_offset - (
+                element_offset * element_bytesize
+            )
+            mem_ptr = <char *>dlm_tensor.dl_tensor.data
+            alloc_sz = dlm_tensor.dl_tensor.byte_offset + <uint64_t>(
+                (offset_max + 1) * element_bytesize)
+            tmp = c_dpmem._Memory.create_from_usm_pointer_size_qref(
                 <DPCTLSyclUSMRef> mem_ptr,
-                sz,
+                max(alloc_sz, <uint64_t>element_bytesize),
                 (<c_dpctl.SyclQueue>q).get_queue_ref(),
                 memory_owner=dlm_holder
             )
+            if mem_ptr_delta == 0:
+                usm_mem = tmp
+            else:
+                alloc_sz = dlm_tensor.dl_tensor.byte_offset + <uint64_t>(
+                    (offset_max * element_bytesize + mem_ptr_delta))
+                usm_mem = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+                    <DPCTLSyclUSMRef> (mem_ptr + (element_bytesize - mem_ptr_delta)),
+                    max(alloc_sz, <uint64_t>element_bytesize),
+                    (<c_dpctl.SyclQueue>q).get_queue_ref(),
+                    memory_owner=tmp
+                )
         py_shape = list()
         for i in range(dlm_tensor.dl_tensor.ndim):
             py_shape.append(dlm_tensor.dl_tensor.shape[i])
@@ -426,8 +445,10 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             ary_dt = np.dtype("f" + str(element_bytesize))
         elif (dlm_tensor.dl_tensor.dtype.code == kDLComplex):
             ary_dt = np.dtype("c" + str(element_bytesize))
+        elif (dlm_tensor.dl_tensor.dtype.code == kDLBool):
+            ary_dt = np.dtype("?")
         else:
-            raise ValueError(
+            raise BufferError(
                 "Can not import DLPack tensor with type code {}.".format(
                     <object>dlm_tensor.dl_tensor.dtype.code
                 )
@@ -441,7 +462,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
         )
         return res_ary
     else:
-        raise ValueError(
+        raise BufferError(
             "The DLPack tensor resides on unsupported device."
         )
 
