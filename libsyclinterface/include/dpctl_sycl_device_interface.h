@@ -577,6 +577,97 @@ uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
 
 /*!
  * @brief Wrapper over
+ * device.get_info<info::device::native_vector_width_char>.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * types that can be put into vectors.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetNativeVectorWidthChar(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::native_vector_width_short>.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * types that can be put into vectors.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetNativeVectorWidthShort(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::native_vector_width_int>.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * types that can be put into vectors.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t
+DPCTLDevice_GetNativeVectorWidthInt(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::native_vector_width_long>.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * types that can be put into vectors.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetNativeVectorWidthLong(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::native_vector_width_float>.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * type.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetNativeVectorWidthFloat(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::native_vector_width_double>.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * types that can be put into vectors.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetNativeVectorWidthDouble(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * ``device.get_info<info::device::native_vector_width_half>``.
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the native ISA vector width size for built-in scalar
+ * types that can be put into vectors.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetNativeVectorWidthHalf(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
  * device.get_info<info::device::parent_device>
  *
  * @param    DRef           Opaque pointer to a sycl::device
