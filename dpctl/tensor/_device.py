@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import dpctl
+from dpctl._sycl_queue_manager import get_device_cached_queue
 
 __doc__ = "Implementation of array API mandated Device class"
 
@@ -60,9 +61,7 @@ class Device:
         elif isinstance(dev, dpctl.SyclDevice):
             par = dev.parent_device
             if par is None:
-                if dev not in cls.__device_queue_map__:
-                    cls.__device_queue_map__[dev] = dpctl.SyclQueue(dev)
-                obj.sycl_queue_ = cls.__device_queue_map__[dev]
+                obj.sycl_queue_ = get_device_cached_queue(dev)
             else:
                 raise ValueError(
                     f"Using non-root device {dev} to specify offloading "
@@ -74,9 +73,7 @@ class Device:
                 _dev = dpctl.SyclDevice()
             else:
                 _dev = dpctl.SyclDevice(dev)
-            if _dev not in cls.__device_queue_map__:
-                cls.__device_queue_map__[_dev] = dpctl.SyclQueue(_dev)
-            obj.sycl_queue_ = cls.__device_queue_map__[_dev]
+            obj.sycl_queue_ = get_device_cached_queue(_dev)
         return obj
 
     @property
