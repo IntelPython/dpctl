@@ -24,6 +24,7 @@ from libc.stdint cimport int32_t, int64_t, uint8_t, uint16_t, uint64_t
 
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
+from dpctl._sycl_queue_manager cimport get_device_cached_queue
 
 from .._backend cimport (
     DPCTLDevice_Delete,
@@ -344,12 +345,12 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
             if _IS_LINUX:
                 default_context = root_device.sycl_platform.default_context
             else:
-                default_context = dpctl.SyclQueue(root_device).sycl_context
+                default_context = get_device_cached_queue(root_device).sycl_context
         except RuntimeError:
-            default_context = dpctl.SyclQueue(root_device).sycl_context
+            default_context = get_device_cached_queue(root_device).sycl_context
         if dlm_tensor.dl_tensor.data is NULL:
             usm_type = b"device"
-            q = dpctl.SyclQueue(default_context, root_device)
+            q = get_device_cached_queue((default_context, root_device,))
         else:
             usm_type = c_dpmem._Memory.get_pointer_type(
                 <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
@@ -364,7 +365,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
                 <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
                 <c_dpctl.SyclContext>default_context
             )
-            q = dpctl.SyclQueue(default_context, alloc_device)
+            q = get_device_cached_queue((default_context, alloc_device,))
         if dlm_tensor.dl_tensor.dtype.bits % 8:
             raise BufferError(
                 "Can not import DLPack tensor whose element's "
