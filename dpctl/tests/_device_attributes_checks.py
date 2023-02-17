@@ -378,6 +378,55 @@ def check_preferred_vector_width_half(device):
         pytest.fail("preferred_vector_width_half call failed")
 
 
+def check_native_vector_width_char(device):
+    try:
+        device.native_vector_width_char
+    except Exception:
+        pytest.fail("native_vector_width_char call failed")
+
+
+def check_native_vector_width_short(device):
+    try:
+        device.native_vector_width_short
+    except Exception:
+        pytest.fail("native_vector_width_short call failed")
+
+
+def check_native_vector_width_int(device):
+    try:
+        device.native_vector_width_int
+    except Exception:
+        pytest.fail("native_vector_width_int call failed")
+
+
+def check_native_vector_width_long(device):
+    try:
+        device.native_vector_width_long
+    except Exception:
+        pytest.fail("native_vector_width_long call failed")
+
+
+def check_native_vector_width_float(device):
+    try:
+        device.native_vector_width_float
+    except Exception:
+        pytest.fail("native_vector_width_float call failed")
+
+
+def check_native_vector_width_double(device):
+    try:
+        device.native_vector_width_double
+    except Exception:
+        pytest.fail("native_vector_width_double call failed")
+
+
+def check_native_vector_width_half(device):
+    try:
+        device.native_vector_width_half
+    except Exception:
+        pytest.fail("native_vector_width_half call failed")
+
+
 def check_create_sub_devices_equally(device):
     try:
         n = int(device.max_compute_units / 2)
