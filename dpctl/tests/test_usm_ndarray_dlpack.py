@@ -81,6 +81,28 @@ def test_dlpack_exporter(typestr, usm_type):
         assert caps_fn(caps2, b"dltensor")
 
 
+def test_dlpack_exporter_empty(typestr, usm_type):
+    caps_fn = ctypes.pythonapi.PyCapsule_IsValid
+    caps_fn.restype = bool
+    caps_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    sycl_dev = dpctl.select_default_device()
+    skip_if_dtype_not_supported(typestr, sycl_dev)
+    X = dpt.empty((0,), dtype=typestr, usm_type=usm_type, device=sycl_dev)
+    caps = X.__dlpack__()
+    assert caps_fn(caps, b"dltensor")
+    Y = dpt.empty(
+        (
+            1,
+            0,
+        ),
+        dtype=typestr,
+        usm_type=usm_type,
+        device=sycl_dev,
+    )
+    caps = Y.__dlpack__()
+    assert caps_fn(caps, b"dltensor")
+
+
 def test_dlpack_exporter_stream():
     try:
         q1 = dpctl.SyclQueue()
