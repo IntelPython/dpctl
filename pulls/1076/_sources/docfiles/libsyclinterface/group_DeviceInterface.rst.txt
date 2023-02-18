@@ -98,6 +98,27 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLDevice_GetName<doxid-db/dd1/group___device_interface_1ga36ca01c406d1200b56e94a98595ffb0d>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthChar<doxid-db/dd1/group___device_interface_1ga151239c1d7f628ddfafcc6a04f1b1b65>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthDouble<doxid-db/dd1/group___device_interface_1gadb8950fc6d41c7f39938dce3f9ee58e0>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthFloat<doxid-db/dd1/group___device_interface_1gaf642a805664cc56175850a2b4c807aa8>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthHalf<doxid-db/dd1/group___device_interface_1ga0fdf320b7958405c8fcbcdaded3604e4>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthInt<doxid-db/dd1/group___device_interface_1gaea1e33bf9308243da2d960127ba263ae>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthLong<doxid-db/dd1/group___device_interface_1ga25682e53c3aa02c22e4d6b271ab0755a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	DPCTL_API uint32_t
+	:ref:`DPCTLDevice_GetNativeVectorWidthShort<doxid-db/dd1/group___device_interface_1ga49c104020f5c922c696fb30847d632e7>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLDevice_GetPlatform<doxid-db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -816,6 +837,209 @@ Returns a C string for the device name.
 .. rubric:: Returns:
 
 A C string containing the OpenCL device name.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthChar
+.. _doxid-db/dd1/group___device_interface_1ga151239c1d7f628ddfafcc6a04f1b1b65:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthChar(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::native_vector_width_char>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthDouble
+.. _doxid-db/dd1/group___device_interface_1gadb8950fc6d41c7f39938dce3f9ee58e0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthDouble(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::native_vector_width_double>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthFloat
+.. _doxid-db/dd1/group___device_interface_1gaf642a805664cc56175850a2b4c807aa8:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthFloat(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::native_vector_width_float>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar type.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthHalf
+.. _doxid-db/dd1/group___device_interface_1ga0fdf320b7958405c8fcbcdaded3604e4:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthHalf(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over ``device.get_info<info::device::native_vector_width_half>``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthInt
+.. _doxid-db/dd1/group___device_interface_1gaea1e33bf9308243da2d960127ba263ae:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthInt(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::native_vector_width_int>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthLong
+.. _doxid-db/dd1/group___device_interface_1ga25682e53c3aa02c22e4d6b271ab0755a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthLong(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::native_vector_width_long>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar types that can be put into vectors.
+
+.. index:: pair: function; DPCTLDevice_GetNativeVectorWidthShort
+.. _doxid-db/dd1/group___device_interface_1ga49c104020f5c922c696fb30847d632e7:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API uint32_t
+	DPCTLDevice_GetNativeVectorWidthShort(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::native_vector_width_short>.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a ``sycl::device``
+
+
+
+.. rubric:: Returns:
+
+Returns the native ISA vector width size for built-in scalar types that can be put into vectors.
 
 .. index:: pair: function; DPCTLDevice_GetPlatform
 .. _doxid-db/dd1/group___device_interface_1ga7a5b8354f2f4937eb0b6229ba8436ecc:

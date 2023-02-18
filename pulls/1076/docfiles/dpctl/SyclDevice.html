@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.1dev2+21.g1ba1035e9 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.1dev2+29.g68e65ce1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -37,7 +37,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev2+21.g1ba1035e9
+                0.14.1dev2+29.g68e65ce1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -314,46 +314,67 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.name" title="dpctl.SyclDevice.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>Returns the name of the device as a string</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.parent_device" title="dpctl.SyclDevice.parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_char" title="dpctl.SyclDevice.native_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_char</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_double" title="dpctl.SyclDevice.native_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_double</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_float" title="dpctl.SyclDevice.native_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_float</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_half" title="dpctl.SyclDevice.native_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_half</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_int" title="dpctl.SyclDevice.native_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_int</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_long" title="dpctl.SyclDevice.native_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_long</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_short" title="dpctl.SyclDevice.native_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_short</span></code></a></p></td>
+<td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.parent_device" title="dpctl.SyclDevice.parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent_device</span></code></a></p></td>
 <td><p>Parent device for a sub-device, or None for a root device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.partition_max_sub_devices" title="dpctl.SyclDevice.partition_max_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition_max_sub_devices</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.partition_max_sub_devices" title="dpctl.SyclDevice.partition_max_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition_max_sub_devices</span></code></a></p></td>
 <td><p>The maximum number of sub-devices this <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance can be partitioned into.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_char" title="dpctl.SyclDevice.preferred_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_char</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_char" title="dpctl.SyclDevice.preferred_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_char</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_double" title="dpctl.SyclDevice.preferred_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_double</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_double" title="dpctl.SyclDevice.preferred_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_double</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_float" title="dpctl.SyclDevice.preferred_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_float</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_float" title="dpctl.SyclDevice.preferred_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_float</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_half" title="dpctl.SyclDevice.preferred_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_half</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_half" title="dpctl.SyclDevice.preferred_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_half</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_int" title="dpctl.SyclDevice.preferred_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_int</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_int" title="dpctl.SyclDevice.preferred_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_int</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_long" title="dpctl.SyclDevice.preferred_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_long</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_long" title="dpctl.SyclDevice.preferred_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_long</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_short" title="dpctl.SyclDevice.preferred_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_short" title="dpctl.SyclDevice.preferred_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.profiling_timer_resolution" title="dpctl.SyclDevice.profiling_timer_resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_timer_resolution</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.profiling_timer_resolution" title="dpctl.SyclDevice.profiling_timer_resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_timer_resolution</span></code></a></p></td>
 <td><p>Profiling timer resolution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
 <td><p>Returns True if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
 <td><p>Returns list of supported sub-group sizes for this device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
 <td><p>Returns the platform associated with this device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the device vendor name as a string.</p></td>
 </tr>
 </tbody>
@@ -1066,6 +1087,55 @@ device has aspect::image.</p>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_char">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_char</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_char" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_double">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_double</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_double" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_float">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_float</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_float" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_half">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_half</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_half" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_int">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_int</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_int" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_long">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_long</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_long" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.native_vector_width_short">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">native_vector_width_short</span></span><a class="headerlink" href="#dpctl.SyclDevice.native_vector_width_short" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the native ISA vector width size for built-in scalar
+types that can be put into vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
