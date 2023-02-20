@@ -226,3 +226,22 @@ def test_nested_context_factory_exception_if_wrong_factory(
         with _register_nested_context_factory(factory):
             with dpctl.device_context("opencl:cpu:0"):
                 pass
+
+
+def test__DeviceDefaultQueueCache():
+    import copy
+
+    from dpctl._sycl_queue_manager import _global_device_queue_cache as cache
+    from dpctl._sycl_queue_manager import get_device_cached_queue
+
+    try:
+        d = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default device")
+
+    q1 = get_device_cached_queue(d)
+    cache_copy = copy.copy(cache.get())
+    q2, changed = cache_copy.get_or_create(d)
+
+    assert not changed
+    assert q1 == q2
