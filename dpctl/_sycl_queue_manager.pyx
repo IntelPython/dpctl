@@ -310,6 +310,9 @@ cdef class _DeviceDefaultQueueCache:
         elif isinstance(key, SyclDevice):
             q = SyclQueue(key)
             ctx_dev = q.sycl_context, key
+        elif isinstance(key, str):
+            q = SyclQueue(key)
+            ctx_dev = q.sycl_context, q.sycl_device
         else:
             raise TypeError
         if ctx_dev in self.__device_queue_map__:
