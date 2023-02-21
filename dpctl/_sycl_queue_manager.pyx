@@ -303,13 +303,22 @@ cdef class _DeviceDefaultQueueCache:
         self.__device_queue_map__ = dict()
 
     def get_or_create(self, key):
-        """Return instance of SyclQueue and indicator if cache has been modified"""
-        if isinstance(key, tuple) and len(key) == 2 and isinstance(key[0], SyclContext) and isinstance(key[1], SyclDevice):
+        """Return instance of SyclQueue and indicator if cache
+        has been modified"""
+        if (
+            isinstance(key, tuple)
+            and len(key) == 2
+            and isinstance(key[0], SyclContext)
+            and isinstance(key[1], SyclDevice)
+        ):
             ctx_dev = key
             q = None
         elif isinstance(key, SyclDevice):
             q = SyclQueue(key)
             ctx_dev = q.sycl_context, key
+        elif isinstance(key, str):
+            q = SyclQueue(key)
+            ctx_dev = q.sycl_context, q.sycl_device
         else:
             raise TypeError
         if ctx_dev in self.__device_queue_map__:
@@ -322,12 +331,16 @@ cdef class _DeviceDefaultQueueCache:
         self.__device_queue_map__.update(dev_queue_map)
 
     def __copy__(self):
-        cdef _DeviceDefaultQueueCache _copy = _DeviceDefaultQueueCache.__new__(_DeviceDefaultQueueCache)
+        cdef _DeviceDefaultQueueCache _copy = _DeviceDefaultQueueCache.__new__(
+	     _DeviceDefaultQueueCache)
         _copy._update_map(self.__device_queue_map__)
         return _copy
 
 
-_global_device_queue_cache = ContextVar('global_device_queue_cache', default=_DeviceDefaultQueueCache())
+_global_device_queue_cache = ContextVar(
+    'global_device_queue_cache',
+    default=_DeviceDefaultQueueCache()
+)
 
 
 cpdef object get_device_cached_queue(object key):
