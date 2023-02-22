@@ -33,6 +33,7 @@
 
 #include "dpctl4pybind11.hpp"
 
+#include "advanced_indexing.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -70,6 +71,10 @@ using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
 
 using dpctl::tensor::py_internal::usm_ndarray_full;
 
+/* ============== Advanced Indexing ============= */
+using dpctl::tensor::py_internal::usm_ndarray_put;
+using dpctl::tensor::py_internal::usm_ndarray_take;
+
 /* ================ Eye ================== */
 
 using dpctl::tensor::py_internal::usm_ndarray_eye;
@@ -85,6 +90,7 @@ void init_dispatch_tables(void)
 
     init_copy_and_cast_usm_to_usm_dispatch_tables();
     init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
+    init_advanced_indexing_dispatch_tables();
     return;
 }
 
@@ -177,6 +183,24 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("_full_usm_ndarray", &usm_ndarray_full,
           "Populate usm_ndarray `dst` with given fill_value.",
           py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_take", &usm_ndarray_take,
+          "Takes elements at usm_ndarray indices `ind` and axes starting "
+          "at axis `axis_start` from array `src` and copies them "
+          "into usm_ndarray `dst` synchronously."
+          "Returns a tuple of events: (hev, ev)",
+          py::arg("src"), py::arg("ind"), py::arg("dst"), py::arg("axis_start"),
+          py::arg("mode"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_put", &usm_ndarray_put,
+          "Puts elements at usm_ndarray indices `ind` and axes starting "
+          "at axis `axis_start` into array `dst` from "
+          "usm_ndarray `val` synchronously."
+          "Returns a tuple of events: (hev, ev)",
+          py::arg("dst"), py::arg("ind"), py::arg("val"), py::arg("axis_start"),
+          py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
     m.def("_eye", &usm_ndarray_eye,

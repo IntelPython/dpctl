@@ -58,6 +58,7 @@ from dpctl.tensor._data_types import (
 )
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
+from dpctl.tensor._indexing_functions import put, take
 from dpctl.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
@@ -112,6 +113,8 @@ __all__ = [
     "expand_dims",
     "permute_dims",
     "squeeze",
+    "take",
+    "put",
     "from_numpy",
     "to_numpy",
     "asnumpy",

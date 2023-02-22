@@ -13,7 +13,10 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import operator
+
 import numpy as np
+from numpy.core.numeric import normalize_axis_index
 
 import dpctl
 import dpctl.memory as dpm
@@ -449,14 +452,25 @@ def _mock_take_multi_index(ary, inds, p):
         raise IndexError(
             "arrays used as indices must be of integer (or boolean) type"
         )
-    ary_np = dpt.asnumpy(ary)
-    ind_np = (slice(None),) * p + tuple(dpt.asnumpy(ind) for ind in inds)
-    res_np = ary_np[ind_np]
+    inds = dpt.broadcast_arrays(*inds)
+    ary_ndim = ary.ndim
+    if ary_ndim > 0:
+        p = operator.index(p)
+        p = normalize_axis_index(p, ary_ndim)
+
+        res_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
+    else:
+        res_shape = inds[0].shape
     res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     res = dpt.empty(
-        res_np.shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
+        res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
-    res[...] = res_np
+
+    hev, _ = ti._take(
+        src=ary, ind=inds, dst=res, axis_start=p, mode=0, sycl_queue=exec_q
+    )
+    hev.wait()
+
     return res
 
 
@@ -492,7 +506,7 @@ def _mock_place(ary, ary_mask, p, vals):
 
 
 def _mock_put_multi_index(ary, inds, p, vals):
-    if isinstance(vals, dpt.ums_ndarray):
+    if isinstance(vals, dpt.usm_ndarray):
         queues_ = [ary.sycl_queue, vals.sycl_queue]
         usm_types_ = [ary.usm_type, vals.usm_type]
     else:
@@ -522,14 +536,27 @@ def _mock_put_multi_index(ary, inds, p, vals):
         raise IndexError(
             "arrays used as indices must be of integer (or boolean) type"
         )
-    ary_np = dpt.asnumpy(ary)
-    if isinstance(vals, dpt.usm_ndarray) or hasattr(
-        vals, "__sycl_usm_array_interface__"
-    ):
-        vals_np = dpt.asnumpy(vals)
+
+    inds = dpt.broadcast_arrays(*inds)
+    ary_ndim = ary.ndim
+    if ary_ndim > 0:
+        p = operator.index(p)
+        p = normalize_axis_index(p, ary_ndim)
+        vals_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
     else:
-        vals_np = vals
-    ind_np = (slice(None),) * p + tuple(dpt.asnumpy(ind) for ind in inds)
-    ary_np[ind_np] = vals_np
-    ary[...] = ary_np
+        vals_shape = inds[0].shape
+
+    vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    if not isinstance(vals, dpt.usm_ndarray):
+        vals = dpt.asarray(
+            vals, ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
+        )
+
+    vals = dpt.broadcast_to(vals, vals_shape)
+
+    hev, _ = ti._put(
+        dst=ary, ind=inds, val=vals, axis_start=p, mode=0, sycl_queue=exec_q
+    )
+    hev.wait()
+
     return
