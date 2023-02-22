@@ -30,3 +30,8 @@ else
     # Perform regular install
     ${PYTHON} setup.py install ${SKBUILD_ARGS}
 fi
+
+# need to create this folder so ensure that .dpctl-post-link.sh can work correctly
+mkdir -p $PREFIX/etc/OpenCL/vendors
+
+cp $RECIPE_DIR/dpctl-post-link.sh $PREFIX/bin/.dpctl-post-link.sh
