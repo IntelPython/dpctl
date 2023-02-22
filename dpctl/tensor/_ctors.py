@@ -1375,6 +1375,9 @@ def meshgrid(*arrays, indexing="xy"):
             "Unrecognized indexing keyword value, expecting 'xy' or 'ij.'"
         )
     n = len(arrays)
+    if n == 0:
+        return []
+
     sh = (-1,) + (1,) * (n - 1)
 
     res = []

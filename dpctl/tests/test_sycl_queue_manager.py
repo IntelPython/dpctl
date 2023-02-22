@@ -245,3 +245,5 @@ def test__DeviceDefaultQueueCache():
 
     assert not changed
     assert q1 == q2
+    q3 = get_device_cached_queue(d.filter_string)
+    assert q3 == q1
