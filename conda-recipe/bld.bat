@@ -18,11 +18,13 @@ set "FN=Windows-IntelLLVM.cmake"
 
 rem Save the original file, and copy patched file to
 rem fix the issue with IntelLLVM integration with cmake on Windows
-dir "%PLATFORM_DIR%\%FN%"
-copy /Y "%PLATFORM_DIR%\%FN%" .
-if errorlevel 1 exit 1
-copy /Y .github\workflows\Windows-IntelLLVM.cmake "%PLATFORM_DIR%"
-if errorlevel 1 exit 1
+if EXIST "%PLATFORM_DIR%" (
+  dir "%PLATFORM_DIR%\%FN%"
+  copy /Y "%PLATFORM_DIR%\%FN%" .
+  if errorlevel 1 exit 1
+  copy /Y .github\workflows\Windows-IntelLLVM.cmake "%PLATFORM_DIR%"
+  if errorlevel 1 exit 1
+)
 
 if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     rem Install and assemble wheel package from the build bits
