@@ -6,7 +6,7 @@ set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 "%PYTHON%" setup.py clean --all
 set "SKBUILD_ARGS=-G Ninja -- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx"
 
-FOR %%V IN (14.0.0 15.0.0 16.0.0) DO @(
+FOR %%V IN (14.0.0 14 15.0.0 15 16.0.0 16) DO @(
   REM set DIR_HINT if directory exists
   IF EXIST "%BUILD_PREFIX%\Library\lib\clang\%%V\" (
      SET "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\%%V"
