@@ -1,0 +1,9 @@
+.. _dpctl.utils_enum_api:
+
+#################
+dpctl.utils Enums
+#################
+
+
+.. currentmodule:: dpctl.utils
+
