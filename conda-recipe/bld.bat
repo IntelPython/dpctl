@@ -6,7 +6,7 @@ set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 "%PYTHON%" setup.py clean --all
 set "SKBUILD_ARGS=-G Ninja -- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx"
 
-FOR %%V IN (14.0.0 15.0.0 16.0.0) DO @(
+FOR %%V IN (14.0.0 14 15.0.0 15 16.0.0 16) DO @(
   REM set DIR_HINT if directory exists
   IF EXIST "%BUILD_PREFIX%\Library\lib\clang\%%V\" (
      SET "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\%%V"
@@ -18,11 +18,13 @@ set "FN=Windows-IntelLLVM.cmake"
 
 rem Save the original file, and copy patched file to
 rem fix the issue with IntelLLVM integration with cmake on Windows
-dir "%PLATFORM_DIR%\%FN%"
-copy /Y "%PLATFORM_DIR%\%FN%" .
-if errorlevel 1 exit 1
-copy /Y .github\workflows\Windows-IntelLLVM.cmake "%PLATFORM_DIR%"
-if errorlevel 1 exit 1
+if EXIST "%PLATFORM_DIR%" (
+  dir "%PLATFORM_DIR%\%FN%"
+  copy /Y "%PLATFORM_DIR%\%FN%" .
+  if errorlevel 1 exit 1
+  copy /Y .github\workflows\Windows-IntelLLVM.cmake "%PLATFORM_DIR%"
+  if errorlevel 1 exit 1
+)
 
 if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     rem Install and assemble wheel package from the build bits
