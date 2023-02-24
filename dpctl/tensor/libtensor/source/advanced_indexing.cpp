@@ -85,7 +85,7 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
     int arr_nd)
 {
 
-    int orthog_sh_elems = (inp_nd > 1) ? inp_nd - k : 1;
+    int orthog_sh_elems = ((inp_nd - k) > 1) ? (inp_nd - k) : 1;
     int along_sh_elems = (ind_nd > 1) ? ind_nd : 1;
 
     using usm_host_allocatorT =
@@ -291,12 +291,15 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     int k = ind.size();
 
     if (k == 0) {
-        // no indices to take from
-        return std::make_pair(sycl::event{}, sycl::event{});
+        throw py::value_error("List of indices is empty.");
     }
 
     if (axis_start < 0) {
         throw py::value_error("Axis cannot be negative.");
+    }
+
+    if (mode != 0 && mode != 1) {
+        throw py::value_error("Mode must be 0 or 1.");
     }
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
@@ -327,20 +330,17 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
+    int orthog_nd = ((src_nd - k) > 0) ? src_nd - k : 1;
+
     bool orthog_shapes_equal(true);
     size_t orthog_nelems(1);
-    for (int i = 0; i < axis_start; ++i) {
-        orthog_nelems *= static_cast<size_t>(src_shape[i]);
-        orthog_shapes_equal =
-            orthog_shapes_equal && (src_shape[i] == dst_shape[i]);
-    }
+    for (int i = 0; i < (src_nd - k); ++i) {
+        auto idx1 = (i < axis_start) ? i : i + k;
+        auto idx2 = (i < axis_start) ? i : i + ind_nd;
 
-    for (int i = (axis_start + k), j = (axis_start + ind_nd);
-         (i < src_nd && j < dst_nd); ++i, ++j)
-    {
-        orthog_nelems *= static_cast<size_t>(src_shape[i]);
+        orthog_nelems *= static_cast<size_t>(src_shape[idx1]);
         orthog_shapes_equal =
-            orthog_shapes_equal && (src_shape[i] == dst_shape[j]);
+            orthog_shapes_equal && (src_shape[idx1] == dst_shape[idx2]);
     }
 
     if (!orthog_shapes_equal) {
@@ -355,21 +355,18 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
     auto src_offsets = src.get_minmax_offsets();
     auto dst_offsets = dst.get_minmax_offsets();
     int src_elem_size = src.get_elemsize();
     int dst_elem_size = dst.get_elemsize();
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
-    }
     py::ssize_t src_offset = py::ssize_t(0);
     py::ssize_t dst_offset = py::ssize_t(0);
-
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
 
     bool memory_overlap =
         ((dst_data - src_data > src_offsets.second * src_elem_size -
@@ -377,7 +374,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
          (src_data - dst_data > dst_offsets.second * dst_elem_size -
                                     src_offsets.first * src_elem_size));
     if (memory_overlap) {
-        throw py::value_error("Arrays index overlapping segments of memory");
+        throw py::value_error("Array memory overlap.");
     }
 
     int src_typenum = src.get_typenum();
@@ -408,67 +405,16 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 
     auto ind_sh_elems = (ind_nd > 0) ? ind_nd : 1;
 
-    char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
-
-    if (packed_ind_ptrs == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_ptrs device memory");
-    }
-
-    // packed_ind_shapes_strides = [ind_shape,
-    //                              ind[0] strides,
-    //                              ...,
-    //                              ind[k] strides]
-    py::ssize_t *packed_ind_shapes_strides =
-        sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
-
-    if (packed_ind_shapes_strides == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_shapes_strides device memory");
-    }
-
-    py::ssize_t *packed_ind_offsets =
-        sycl::malloc_device<py::ssize_t>(k, exec_q);
-
-    if (packed_ind_offsets == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_offsets device memory");
-    }
-
-    using usm_host_allocator_T =
-        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
-    using ptrT = std::vector<char *, usm_host_allocator_T>;
-
-    usm_host_allocator_T ptr_allocator(exec_q);
-    std::shared_ptr<ptrT> host_ind_ptrs_shp =
-        std::make_shared<ptrT>(k, ptr_allocator);
-
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-
-    usm_host_allocatorT ind_allocator(exec_q);
-    std::shared_ptr<shT> host_ind_shapes_strides_shp =
-        std::make_shared<shT>(ind_sh_elems * (k + 1), ind_allocator);
-
-    // shape can be copied now (must be the same for every array)
-    if (ind_nd > 0) {
-        std::copy(ind_shape, ind_shape + ind_nd,
-                  host_ind_shapes_strides_shp->begin());
-    }
-    else {
-        // all strides are 0 for 0D array
-        host_ind_shapes_strides_shp->insert(host_ind_shapes_strides_shp->end(),
-                                            (k + 1), 0);
-    }
-
-    std::shared_ptr<shT> host_ind_offsets_shp =
-        std::make_shared<shT>(k, ind_allocator);
-
     std::vector<char *> ind_ptrs;
     ind_ptrs.reserve(k);
+
     std::vector<py::ssize_t> ind_offsets;
     ind_offsets.reserve(k);
+
+    std::vector<py::ssize_t> ind_sh_sts((k + 1) * ind_sh_elems, py::ssize_t(0));
+    if (ind_nd > 0) {
+        std::copy(ind_shape, ind_shape + ind_sh_elems, ind_sh_sts.begin());
+    }
     for (int i = 0; i < k; ++i) {
         dpctl::tensor::usm_ndarray ind_ = ind[i];
 
@@ -521,16 +467,14 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
                         c_contiguous_strides(ind_nd, ind_shape);
                     std::copy(ind_contig_strides_.begin(),
                               ind_contig_strides_.end(),
-                              host_ind_shapes_strides_shp->begin() +
-                                  (i + 1) * ind_nd);
+                              ind_sh_sts.begin() + (i + 1) * ind_nd);
                 }
                 else if (ind_.is_f_contiguous()) {
                     const auto &ind_contig_strides_ =
                         f_contiguous_strides(ind_nd, ind_shape);
                     std::copy(ind_contig_strides_.begin(),
                               ind_contig_strides_.end(),
-                              host_ind_shapes_strides_shp->begin() +
-                                  (i + 1) * ind_nd);
+                              ind_sh_sts.begin() + (i + 1) * ind_nd);
                 }
                 else {
                     throw std::runtime_error(
@@ -539,8 +483,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             }
             else {
                 std::copy(ind_strides, ind_strides + ind_nd,
-                          host_ind_shapes_strides_shp->begin() +
-                              (i + 1) * ind_nd);
+                          ind_sh_sts.begin() + (i + 1) * ind_nd);
             }
         }
 
@@ -548,36 +491,85 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         ind_offsets.push_back(py::ssize_t(0));
     }
 
+    char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
+
+    if (packed_ind_ptrs == nullptr) {
+        throw std::runtime_error(
+            "Unable to allocate packed_ind_ptrs device memory");
+    }
+
+    // rearrange to past where indices shapes are checked
+    // packed_ind_shapes_strides = [ind_shape,
+    //                              ind[0] strides,
+    //                              ...,
+    //                              ind[k] strides]
+    py::ssize_t *packed_ind_shapes_strides =
+        sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
+
+    if (packed_ind_shapes_strides == nullptr) {
+        throw std::runtime_error(
+            "Unable to allocate packed_ind_shapes_strides device memory");
+    }
+
+    py::ssize_t *packed_ind_offsets =
+        sycl::malloc_device<py::ssize_t>(k, exec_q);
+
+    if (packed_ind_offsets == nullptr) {
+        throw std::runtime_error(
+            "Unable to allocate packed_ind_offsets device memory");
+    }
+
+    using usm_host_allocator_T =
+        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
+    using ptrT = std::vector<char *, usm_host_allocator_T>;
+
+    usm_host_allocator_T ptr_allocator(exec_q);
+    std::shared_ptr<ptrT> host_ind_ptrs_shp =
+        std::make_shared<ptrT>(k, ptr_allocator);
+
+    using usm_host_allocatorT =
+        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
+
+    usm_host_allocatorT ind_allocator(exec_q);
+    std::shared_ptr<shT> host_ind_shapes_strides_shp =
+        std::make_shared<shT>(ind_sh_elems * (k + 1), ind_allocator);
+
+    std::shared_ptr<shT> host_ind_offsets_shp =
+        std::make_shared<shT>(k, ind_allocator);
+
+    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
+              host_ind_shapes_strides_shp->begin());
     std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
-    sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
+    sycl::event packed_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
     exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(device_ind_ptrs_copy_ev);
+        cgh.depends_on(packed_ind_ptrs_copy_ev);
         cgh.host_task([host_ind_ptrs_shp]() {});
     });
 
-    sycl::event device_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
+    sycl::event packed_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
         host_ind_shapes_strides_shp->size());
     exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(device_ind_shapes_strides_copy_ev);
+        cgh.depends_on(packed_ind_shapes_strides_copy_ev);
         cgh.host_task([host_ind_shapes_strides_shp]() {});
     });
 
-    sycl::event device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
+    sycl::event packed_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), packed_ind_offsets,
         host_ind_offsets_shp->size());
     exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(device_ind_offsets_copy_ev);
+        cgh.depends_on(packed_ind_offsets_copy_ev);
         cgh.host_task([host_ind_offsets_shp]() {});
     });
 
-    std::vector<sycl::event> ind_pack_depends = {
-        device_ind_ptrs_copy_ev, device_ind_shapes_strides_copy_ev,
-        device_ind_offsets_copy_ev};
+    std::vector<sycl::event> ind_pack_depends{packed_ind_ptrs_copy_ev,
+                                              packed_ind_shapes_strides_copy_ev,
+                                              packed_ind_offsets_copy_ev};
 
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_src_f_contig = src.is_f_contiguous();
@@ -588,20 +580,20 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     const py::ssize_t *src_strides = src.get_strides_raw();
     const py::ssize_t *dst_strides = dst.get_strides_raw();
 
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if ((range + 1) < (orthog_nelems * ind_nelems)) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }
 
-    // packed_shapes_strides = [src_shape[:axis] + src_shape[:axis+1],
-    //                         src_strides[:axis] + src_strides[:axis+1],
-    //                         dst_strides[:axis] + dst_strides[:axis+1]]
+    // packed_shapes_strides = [src_shape[:axis] + src_shape[axis+k:],
+    //                          src_strides[:axis] + src_strides[axis+k:],
+    //                          dst_strides[:axis] + dst_strides[axis+k:]]
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(3 * sh_elems, exec_q);
 
@@ -610,8 +602,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             "Unable to allocate packed_shapes_strides device memory");
     }
 
-    // packed_axes_shapes_strides = [src_shape[axis:k],
-    //                               src_strides[axis:k,
+    // packed_axes_shapes_strides = [src_shape[axis:axis+k],
+    //                               src_strides[axis:axis+k,
     //                               dst_strides[axis:ind.ndim]]
     py::ssize_t *packed_axes_shapes_strides =
         sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
@@ -643,47 +635,23 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
                                  std::to_string(ind_type_id));
     }
 
-    int orthog_nd = ((src_nd - k) > 0) ? src_nd - k : 1;
-
     sycl::event take_generic_ev =
         fn(exec_q, orthog_nelems, ind_nelems, orthog_nd, ind_nd, k,
            packed_shapes_strides, packed_axes_shapes_strides,
            packed_ind_shapes_strides, src_data, dst_data, packed_ind_ptrs,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
 
-    // free packed_shapes_strides temporary
-
+    // free packed temporaries
     auto ctx = exec_q.get_context();
     exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(take_generic_ev);
-        cgh.host_task([packed_shapes_strides, ctx]() {
+        cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
+                       packed_ind_shapes_strides, packed_ind_ptrs,
+                       packed_ind_offsets, ctx]() {
             sycl::free(packed_shapes_strides, ctx);
-        });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(take_generic_ev);
-        cgh.host_task([packed_axes_shapes_strides, ctx]() {
             sycl::free(packed_axes_shapes_strides, ctx);
-        });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(take_generic_ev);
-        cgh.host_task([packed_ind_shapes_strides, ctx]() {
             sycl::free(packed_ind_shapes_strides, ctx);
-        });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(take_generic_ev);
-        cgh.host_task(
-            [packed_ind_ptrs, ctx]() { sycl::free(packed_ind_ptrs, ctx); });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(take_generic_ev);
-        cgh.host_task([packed_ind_offsets, ctx]() {
+            sycl::free(packed_ind_ptrs, ctx);
             sycl::free(packed_ind_offsets, ctx);
         });
     });
@@ -702,16 +670,23 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
                 sycl::queue exec_q,
                 const std::vector<sycl::event> &depends = {})
 {
-    // check compatibility of execution queue and allocation queue
     int k = ind.size();
 
     if (k == 0) {
         // no indices to write to
-        return std::make_pair(sycl::event{}, sycl::event{});
+        throw py::value_error("List of indices is empty.");
     }
 
     if (axis_start < 0) {
         throw py::value_error("Axis cannot be negative.");
+    }
+
+    if (mode != 0 && mode != 1) {
+        throw py::value_error("Mode must be 0 or 1.");
+    }
+
+    if (!dst.is_writable()) {
+        throw py::value_error("Output array is read-only.");
     }
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
@@ -744,20 +719,17 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     const py::ssize_t *val_shape = val.get_shape_raw();
 
+    int orthog_nd = ((dst_nd - k) > 0) ? dst_nd - k : 1;
+
     bool orthog_shapes_equal(true);
     size_t orthog_nelems(1);
-    for (int i = 0; i < axis_start; ++i) {
-        orthog_nelems *= static_cast<size_t>(dst_shape[i]);
-        orthog_shapes_equal =
-            orthog_shapes_equal && (dst_shape[i] == val_shape[i]);
-    }
+    for (int i = 0; i < (dst_nd - k); ++i) {
+        auto idx1 = (i < axis_start) ? i : i + k;
+        auto idx2 = (i < axis_start) ? i : i + ind_nd;
 
-    for (int i = (axis_start + k), j = (axis_start + ind_nd);
-         (i < dst_nd && j < val_nd); ++i, ++j)
-    {
-        orthog_nelems *= static_cast<size_t>(dst_shape[i]);
+        orthog_nelems *= static_cast<size_t>(dst_shape[idx1]);
         orthog_shapes_equal =
-            orthog_shapes_equal && (dst_shape[i] == val_shape[j]);
+            orthog_shapes_equal && (dst_shape[idx1] == val_shape[idx2]);
     }
 
     if (!orthog_shapes_equal) {
@@ -783,10 +755,6 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     }
     py::ssize_t dst_offset = py::ssize_t(0);
     py::ssize_t val_offset = py::ssize_t(0);
-
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
 
     bool memory_overlap =
         ((val_data - dst_data > dst_offsets.second * dst_elem_size -
@@ -825,67 +793,14 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
     auto ind_sh_elems = (ind_nd > 0) ? ind_nd : 1;
 
-    char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
-
-    if (packed_ind_ptrs == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_ptrs device memory");
-    }
-
-    // packed_ind_shapes_strides = [ind_shape,
-    //                              ind[0] strides,
-    //                              ...,
-    //                              ind[k] strides]
-    py::ssize_t *packed_ind_shapes_strides =
-        sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
-
-    if (packed_ind_shapes_strides == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_shapes_strides device memory");
-    }
-
-    py::ssize_t *packed_ind_offsets =
-        sycl::malloc_device<py::ssize_t>(k, exec_q);
-
-    if (packed_ind_offsets == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_offsets device memory");
-    }
-
-    using usm_host_allocator_T =
-        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
-    using ptrT = std::vector<char *, usm_host_allocator_T>;
-
-    usm_host_allocator_T ptr_allocator(exec_q);
-    std::shared_ptr<ptrT> host_ind_ptrs_shp =
-        std::make_shared<ptrT>(k, ptr_allocator);
-
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-
-    usm_host_allocatorT ind_allocator(exec_q);
-    std::shared_ptr<shT> host_ind_shapes_strides_shp =
-        std::make_shared<shT>(ind_sh_elems * (k + 1), ind_allocator);
-
-    // shape can be copied now (must be the same for every array)
-    if (ind_nd > 0) {
-        std::copy(ind_shape, ind_shape + ind_nd,
-                  host_ind_shapes_strides_shp->begin());
-    }
-    else {
-        // all strides are 0 for 0D array
-        host_ind_shapes_strides_shp->insert(host_ind_shapes_strides_shp->end(),
-                                            (k + 1), 0);
-    }
-
-    std::shared_ptr<shT> host_ind_offsets_shp =
-        std::make_shared<shT>(k, ind_allocator);
-
     std::vector<char *> ind_ptrs;
     ind_ptrs.reserve(k);
     std::vector<py::ssize_t> ind_offsets;
     ind_offsets.reserve(k);
+    std::vector<py::ssize_t> ind_sh_sts((k + 1) * ind_sh_elems, py::ssize_t(0));
+    if (ind_nd > 0) {
+        std::copy(ind_shape, ind_shape + ind_sh_elems, ind_sh_sts.begin());
+    }
     for (int i = 0; i < k; ++i) {
         dpctl::tensor::usm_ndarray ind_ = ind[i];
 
@@ -938,16 +853,14 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
                         c_contiguous_strides(ind_nd, ind_shape);
                     std::copy(ind_contig_strides_.begin(),
                               ind_contig_strides_.end(),
-                              host_ind_shapes_strides_shp->begin() +
-                                  (i + 1) * ind_nd);
+                              ind_sh_sts.begin() + (i + 1) * ind_nd);
                 }
                 else if (ind_.is_f_contiguous()) {
                     const auto &ind_contig_strides_ =
                         f_contiguous_strides(ind_nd, ind_shape);
                     std::copy(ind_contig_strides_.begin(),
                               ind_contig_strides_.end(),
-                              host_ind_shapes_strides_shp->begin() +
-                                  (i + 1) * ind_nd);
+                              ind_sh_sts.begin() + (i + 1) * ind_nd);
                 }
                 else {
                     throw std::runtime_error(
@@ -956,8 +869,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
             }
             else {
                 std::copy(ind_strides, ind_strides + ind_nd,
-                          host_ind_shapes_strides_shp->begin() +
-                              (i + 1) * ind_nd);
+                          ind_sh_sts.begin() + (i + 1) * ind_nd);
             }
         }
 
@@ -965,6 +877,54 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         ind_offsets.push_back(py::ssize_t(0));
     }
 
+    char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
+
+    if (packed_ind_ptrs == nullptr) {
+        throw std::runtime_error(
+            "Unable to allocate packed_ind_ptrs device memory");
+    }
+
+    // packed_ind_shapes_strides = [ind_shape,
+    //                              ind[0] strides,
+    //                              ...,
+    //                              ind[k] strides]
+    py::ssize_t *packed_ind_shapes_strides =
+        sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
+
+    if (packed_ind_shapes_strides == nullptr) {
+        throw std::runtime_error(
+            "Unable to allocate packed_ind_shapes_strides device memory");
+    }
+
+    py::ssize_t *packed_ind_offsets =
+        sycl::malloc_device<py::ssize_t>(k, exec_q);
+
+    if (packed_ind_offsets == nullptr) {
+        throw std::runtime_error(
+            "Unable to allocate packed_ind_offsets device memory");
+    }
+
+    using usm_host_allocator_T =
+        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
+    using ptrT = std::vector<char *, usm_host_allocator_T>;
+
+    usm_host_allocator_T ptr_allocator(exec_q);
+    std::shared_ptr<ptrT> host_ind_ptrs_shp =
+        std::make_shared<ptrT>(k, ptr_allocator);
+
+    using usm_host_allocatorT =
+        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
+
+    usm_host_allocatorT ind_allocator(exec_q);
+    std::shared_ptr<shT> host_ind_shapes_strides_shp =
+        std::make_shared<shT>(ind_sh_elems * (k + 1), ind_allocator);
+
+    std::shared_ptr<shT> host_ind_offsets_shp =
+        std::make_shared<shT>(k, ind_allocator);
+
+    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
+              host_ind_shapes_strides_shp->begin());
     std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
@@ -973,11 +933,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
     exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(device_ind_ptrs_copy_ev);
-        cgh.host_task([host_ind_ptrs_shp]() {
-            // Capturing shared pointer ensures that the underlying vector is
-            // not destroyed until after its data are copied into packed USM
-            // vector
-        });
+        cgh.host_task([host_ind_ptrs_shp]() {});
     });
 
     sycl::event device_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
@@ -996,9 +952,9 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         cgh.host_task([host_ind_offsets_shp]() {});
     });
 
-    std::vector<sycl::event> ind_pack_depends = {
-        device_ind_ptrs_copy_ev, device_ind_shapes_strides_copy_ev,
-        device_ind_offsets_copy_ev};
+    std::vector<sycl::event> ind_pack_depends{device_ind_ptrs_copy_ev,
+                                              device_ind_shapes_strides_copy_ev,
+                                              device_ind_offsets_copy_ev};
 
     bool is_dst_c_contig = dst.is_c_contiguous();
     bool is_dst_f_contig = dst.is_f_contiguous();
@@ -1009,20 +965,20 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     const py::ssize_t *dst_strides = dst.get_strides_raw();
     const py::ssize_t *val_strides = val.get_strides_raw();
 
-    // destination must be ample enough to accomodate all possible elements
+    // destination must be ample enough to accommodate all possible elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if ((range + 1) < dst_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }
 
-    // packed_shapes_strides = [dst_shape[:axis] + dst_shape[:axis+1],
-    //                         dst_strides[:axis] + dst_strides[:axis+1],
-    //                         val_strides[:axis] + val_strides[:axis+1]]
+    // packed_shapes_strides = [dst_shape[:axis] + dst_shape[axis+k:],
+    //                          dst_strides[:axis] + dst_strides[axis+k:],
+    //                          val_strides[:axis] + val_strides[axis+k:]]
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(3 * sh_elems, exec_q);
 
@@ -1065,47 +1021,23 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
                                  std::to_string(ind_type_id));
     }
 
-    int orthog_nd = ((dst_nd - k) > 0) ? dst_nd - k : 1;
-
     sycl::event put_generic_ev =
         fn(exec_q, orthog_nelems, ind_nelems, orthog_nd, ind_nd, k,
            packed_shapes_strides, packed_axes_shapes_strides,
            packed_ind_shapes_strides, dst_data, val_data, packed_ind_ptrs,
            dst_offset, val_offset, packed_ind_offsets, all_deps);
 
-    // free packed_shapes_strides temporary
-
+    // free packed temporaries
     auto ctx = exec_q.get_context();
     exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(put_generic_ev);
-        cgh.host_task([packed_shapes_strides, ctx]() {
+        cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
+                       packed_ind_shapes_strides, packed_ind_ptrs,
+                       packed_ind_offsets, ctx]() {
             sycl::free(packed_shapes_strides, ctx);
-        });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(put_generic_ev);
-        cgh.host_task([packed_axes_shapes_strides, ctx]() {
             sycl::free(packed_axes_shapes_strides, ctx);
-        });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(put_generic_ev);
-        cgh.host_task([packed_ind_shapes_strides, ctx]() {
             sycl::free(packed_ind_shapes_strides, ctx);
-        });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(put_generic_ev);
-        cgh.host_task(
-            [packed_ind_ptrs, ctx]() { sycl::free(packed_ind_ptrs, ctx); });
-    });
-
-    exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(put_generic_ev);
-        cgh.host_task([packed_ind_offsets, ctx]() {
+            sycl::free(packed_ind_ptrs, ctx);
             sycl::free(packed_ind_offsets, ctx);
         });
     });
