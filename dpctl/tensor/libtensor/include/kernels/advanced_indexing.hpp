@@ -54,7 +54,9 @@ public:
     {
         max_item = (max_item > 0) ? max_item : 1;
         py::ssize_t clip_ind = static_cast<py::ssize_t>(ind);
-        ind = (ind < 0) ? 0 : (clip_ind >= max_item) ? (max_item - 1) : ind;
+        ind = (ind < 0) ? (clip_ind <= -max_item) ? (0) : (clip_ind + max_item)
+              : (clip_ind >= max_item) ? (max_item - 1)
+                                       : ind;
         return;
     }
 };

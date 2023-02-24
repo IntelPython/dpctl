@@ -197,7 +197,7 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
             std::copy(arr_strides, arr_strides + axis_start,
                       packed_host_shapes_strides_shp->begin() +
                           2 * orthog_sh_elems);
-            std::copy(arr_strides + axis_start + ind_nd, arr_strides + inp_nd,
+            std::copy(arr_strides + axis_start + ind_nd, arr_strides + arr_nd,
                       packed_host_shapes_strides_shp->begin() +
                           2 * orthog_sh_elems + axis_start);
             std::copy(arr_strides + axis_start,
