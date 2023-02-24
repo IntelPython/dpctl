@@ -54,6 +54,13 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetMaxWorkItemSizes3d,
     DPCTLDevice_GetMaxWriteImageArgs,
     DPCTLDevice_GetName,
+    DPCTLDevice_GetNativeVectorWidthChar,
+    DPCTLDevice_GetNativeVectorWidthDouble,
+    DPCTLDevice_GetNativeVectorWidthFloat,
+    DPCTLDevice_GetNativeVectorWidthHalf,
+    DPCTLDevice_GetNativeVectorWidthInt,
+    DPCTLDevice_GetNativeVectorWidthLong,
+    DPCTLDevice_GetNativeVectorWidthShort,
     DPCTLDevice_GetParentDevice,
     DPCTLDevice_GetPartitionMaxSubDevices,
     DPCTLDevice_GetPlatform,
@@ -941,6 +948,55 @@ cdef class SyclDevice(_SyclDevice):
         types that can be put into vectors.
         """
         return DPCTLDevice_GetPreferredVectorWidthHalf(self._device_ref)
+
+    @property
+    def native_vector_width_char(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthChar(self._device_ref)
+
+    @property
+    def native_vector_width_short(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthShort(self._device_ref)
+
+    @property
+    def native_vector_width_int(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthInt(self._device_ref)
+
+    @property
+    def native_vector_width_long(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthLong(self._device_ref)
+
+    @property
+    def native_vector_width_float(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthFloat(self._device_ref)
+
+    @property
+    def native_vector_width_double(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthDouble(self._device_ref)
+
+    @property
+    def native_vector_width_half(self):
+        """ Returns the native ISA vector width size for built-in scalar
+        types that can be put into vectors.
+        """
+        return DPCTLDevice_GetNativeVectorWidthHalf(self._device_ref)
 
     @property
     def global_mem_size(self):

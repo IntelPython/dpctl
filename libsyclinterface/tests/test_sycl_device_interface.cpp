@@ -256,7 +256,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupIndependentForwardProgress)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthChar)
 {
-    size_t vector_width_char = 0;
+    uint32_t vector_width_char = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_char =
                                 DPCTLDevice_GetPreferredVectorWidthChar(DRef));
     EXPECT_TRUE(vector_width_char != 0);
@@ -264,7 +264,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthChar)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthShort)
 {
-    size_t vector_width_short = 0;
+    uint32_t vector_width_short = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_short =
                                 DPCTLDevice_GetPreferredVectorWidthShort(DRef));
     EXPECT_TRUE(vector_width_short != 0);
@@ -272,7 +272,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthShort)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthInt)
 {
-    size_t vector_width_int = 0;
+    uint32_t vector_width_int = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_int =
                                 DPCTLDevice_GetPreferredVectorWidthInt(DRef));
     EXPECT_TRUE(vector_width_int != 0);
@@ -280,7 +280,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthInt)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthLong)
 {
-    size_t vector_width_long = 0;
+    uint32_t vector_width_long = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_long =
                                 DPCTLDevice_GetPreferredVectorWidthLong(DRef));
     EXPECT_TRUE(vector_width_long != 0);
@@ -288,7 +288,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthLong)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthFloat)
 {
-    size_t vector_width_float = 0;
+    uint32_t vector_width_float = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_float =
                                 DPCTLDevice_GetPreferredVectorWidthFloat(DRef));
     EXPECT_TRUE(vector_width_float != 0);
@@ -296,7 +296,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthFloat)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthDouble)
 {
-    size_t vector_width_double = 0;
+    uint32_t vector_width_double = 0;
     EXPECT_NO_FATAL_FAILURE(
         vector_width_double = DPCTLDevice_GetPreferredVectorWidthDouble(DRef));
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
@@ -313,7 +313,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthDouble)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthHalf)
 {
-    size_t vector_width_half = 0;
+    uint32_t vector_width_half = 0;
     EXPECT_NO_FATAL_FAILURE(vector_width_half =
                                 DPCTLDevice_GetPreferredVectorWidthHalf(DRef));
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
@@ -325,6 +325,80 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthHalf)
         EXPECT_TRUE(vector_width_half == 0);
     }
 }
+
+//
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthChar)
+{
+    uint32_t vector_width_char = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_char =
+                                DPCTLDevice_GetNativeVectorWidthChar(DRef));
+    EXPECT_TRUE(vector_width_char != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthShort)
+{
+    uint32_t vector_width_short = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_short =
+                                DPCTLDevice_GetNativeVectorWidthShort(DRef));
+    EXPECT_TRUE(vector_width_short != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthInt)
+{
+    uint32_t vector_width_int = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_int =
+                                DPCTLDevice_GetNativeVectorWidthInt(DRef));
+    EXPECT_TRUE(vector_width_int != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthLong)
+{
+    uint32_t vector_width_long = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_long =
+                                DPCTLDevice_GetNativeVectorWidthLong(DRef));
+    EXPECT_TRUE(vector_width_long != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthFloat)
+{
+    uint32_t vector_width_float = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_float =
+                                DPCTLDevice_GetNativeVectorWidthFloat(DRef));
+    EXPECT_TRUE(vector_width_float != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthDouble)
+{
+    uint32_t vector_width_double = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_double =
+                                DPCTLDevice_GetNativeVectorWidthDouble(DRef));
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("fp64"))))
+    {
+        EXPECT_TRUE(vector_width_double != 0);
+    }
+    else {
+        // FIXME: DPC++ 2023 RT must have a bug, since it returns 1 for
+        // devices without aspect::fp64
+        // EXPECT_TRUE(vector_width_double == 0);
+    }
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthHalf)
+{
+    uint32_t vector_width_half = 0;
+    EXPECT_NO_FATAL_FAILURE(vector_width_half =
+                                DPCTLDevice_GetNativeVectorWidthHalf(DRef));
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("fp16"))))
+    {
+        EXPECT_TRUE(vector_width_half != 0);
+    }
+    else {
+        EXPECT_TRUE(vector_width_half == 0);
+    }
+}
+//
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxReadImageArgs)
 {

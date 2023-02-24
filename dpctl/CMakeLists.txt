@@ -23,7 +23,7 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG
         "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -g1 -DDEBUG"
     )
-    set(DPCTL_LDFLAGS "/link /NXCompat /DynamicBase")
+    set(DPCTL_LDFLAGS "/NXCompat;/DynamicBase")
 elseif(UNIX)
     string(CONCAT WARNING_FLAGS
         "-Wall "
@@ -140,7 +140,8 @@ function(build_dpctl_ext _trgt _src _dest)
         target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
     endif()
     target_link_libraries(${_trgt} DPCTLSyclInterface)
-    target_link_options(${_trgt} PRIVATE "LINKER:${DPCTL_LDFLAGS}")
+    set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
+    target_link_options(${_trgt} PRIVATE ${_linker_options})
     python_extension_module(${_trgt})
     get_filename_component(_name_wle ${_generated_src} NAME_WLE)
     get_filename_component(_generated_src_dir ${_generated_src} DIRECTORY)

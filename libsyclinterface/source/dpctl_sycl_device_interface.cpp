@@ -430,116 +430,117 @@ bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
     return SubGroupProgress;
 }
 
-uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+namespace
 {
-    size_t vector_width_char = 0;
+
+template <typename descriptorT>
+uint32_t get_uint32_descriptor(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t descr_val = 0;
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
-            vector_width_char =
-                D->get_info<info::device::preferred_vector_width_char>();
+            descr_val = D->get_info<descriptorT>();
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
-    return vector_width_char;
+    return descr_val;
+}
+
+} // end of anonymous namespace
+
+uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::preferred_vector_width_char>(
+        DRef);
 }
 
 uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t vector_width_short = 0;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            vector_width_short =
-                D->get_info<info::device::preferred_vector_width_short>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return vector_width_short;
+    return get_uint32_descriptor<info::device::preferred_vector_width_short>(
+        DRef);
 }
 
 uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t vector_width_int = 0;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            vector_width_int =
-                D->get_info<info::device::preferred_vector_width_int>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return vector_width_int;
+    return get_uint32_descriptor<info::device::preferred_vector_width_int>(
+        DRef);
 }
 
 uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t vector_width_long = 0;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            vector_width_long =
-                D->get_info<info::device::preferred_vector_width_long>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return vector_width_long;
+    return get_uint32_descriptor<info::device::preferred_vector_width_long>(
+        DRef);
 }
 
 uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t vector_width_float = 0;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            vector_width_float =
-                D->get_info<info::device::preferred_vector_width_float>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return vector_width_float;
+    return get_uint32_descriptor<info::device::preferred_vector_width_float>(
+        DRef);
 }
 
 uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t vector_width_double = 0;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            vector_width_double =
-                D->get_info<info::device::preferred_vector_width_double>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return vector_width_double;
+    return get_uint32_descriptor<info::device::preferred_vector_width_double>(
+        DRef);
 }
 
 uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
     __dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
-    size_t vector_width_half = 0;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            vector_width_half =
-                D->get_info<info::device::preferred_vector_width_half>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return vector_width_half;
+    return get_uint32_descriptor<info::device::preferred_vector_width_half>(
+        DRef);
+}
+
+//
+uint32_t
+DPCTLDevice_GetNativeVectorWidthChar(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_char>(DRef);
+}
+
+uint32_t DPCTLDevice_GetNativeVectorWidthShort(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_short>(DRef);
+}
+
+uint32_t
+DPCTLDevice_GetNativeVectorWidthInt(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_int>(DRef);
+}
+
+uint32_t
+DPCTLDevice_GetNativeVectorWidthLong(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_long>(DRef);
+}
+
+uint32_t DPCTLDevice_GetNativeVectorWidthFloat(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_float>(DRef);
+}
+
+uint32_t DPCTLDevice_GetNativeVectorWidthDouble(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_double>(
+        DRef);
+}
+
+uint32_t
+DPCTLDevice_GetNativeVectorWidthHalf(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    return get_uint32_descriptor<info::device::native_vector_width_half>(DRef);
 }
 
 __dpctl_give DPCTLSyclDeviceRef

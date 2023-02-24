@@ -61,6 +61,7 @@ from dpctl._backend cimport (  # noqa: E211
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
+from .._sycl_queue_manager cimport get_device_cached_queue
 
 import collections
 import numbers
@@ -150,7 +151,7 @@ cdef class _Memory:
 
         if (nbytes > 0):
             if queue is None:
-                queue = dpctl.SyclQueue()
+                queue = get_device_cached_queue(dpctl.SyclDevice())
 
             QRef = queue.get_queue_ref()
             if (ptr_type == b"shared"):
