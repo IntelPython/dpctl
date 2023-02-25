@@ -44,6 +44,12 @@ static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
 
 using namespace dpctl::syclinterface;
 
+typedef struct complex
+{
+    uint64_t real;
+    uint64_t imag;
+} complexNumber;
+
 /*!
  * @brief Set the kernel arg object
  *
@@ -735,15 +741,6 @@ DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
 }
 
-namespace
-{
-typedef struct complex
-{
-    uint64_t real;
-    uint64_t imag;
-} coplexNumber;
-} // namespace
-
 __dpctl_give DPCTLSyclEventRef
 DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
                    void *USMRef,
@@ -754,7 +751,7 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
     if (Q && USMRef) {
         sycl::event ev;
         try {
-            coplexNumber Val;
+            complexNumber Val;
             Val.real = Value[0];
             Val.imag = Value[1];
             ev = Q->fill(USMRef, Val, Count);
