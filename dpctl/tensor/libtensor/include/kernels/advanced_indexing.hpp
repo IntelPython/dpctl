@@ -45,34 +45,32 @@ namespace py = pybind11;
 template <typename ProjectorT, typename Ty, typename indT> class take_kernel;
 template <typename ProjectorT, typename Ty, typename indT> class put_kernel;
 
-template <typename indT> class ClipIndex
+class ClipIndex
 {
 public:
     ClipIndex() = default;
 
-    void operator()(py::ssize_t max_item, indT &ind) const
+    void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
         max_item = (max_item > 0) ? max_item : 1;
-        py::ssize_t clip_ind = static_cast<py::ssize_t>(ind);
-        ind = (ind < 0) ? (clip_ind <= -max_item) ? (0) : (clip_ind + max_item)
-              : (clip_ind >= max_item) ? (max_item - 1)
-                                       : ind;
+        ind = (ind < 0)           ? (ind <= -max_item) ? (0) : (ind + max_item)
+                        : (ind >= max_item) ? (max_item - 1)
+                                  : ind;
         return;
     }
 };
 
-template <typename indT> class WrapIndex
+class WrapIndex
 {
 public:
     WrapIndex() = default;
 
-    void operator()(py::ssize_t max_item, indT &ind) const
+    void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
         max_item = (max_item > 0) ? max_item : 1;
-        py::ssize_t wrap_ind = static_cast<py::ssize_t>(ind);
-        ind = (ind < 0)                ? max_item - (-wrap_ind % max_item)
-              : (wrap_ind >= max_item) ? wrap_ind % max_item
-                                       : ind;
+        ind = (ind < 0)           ? max_item - (-ind % max_item)
+              : (ind >= max_item) ? ind % max_item
+                                  : ind;
         return;
     }
 };
@@ -146,7 +144,8 @@ public:
                 ind_shape_and_strides_ + ((axis_idx + 1) * ind_nd_),
                 ind_arr_idx);
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
-            indT i = ind_data[ind_arr_idx + ind_offsets_[axis_idx]];
+            py::ssize_t i = static_cast<py::ssize_t>(
+                ind_data[ind_arr_idx + ind_offsets_[axis_idx]]);
             proj(axes_shape_and_strides_[axis_idx], i);
             src_orthog_idx += i * axes_shape_and_strides_[k_ + axis_idx];
         }
@@ -282,7 +281,8 @@ public:
                 ind_shape_and_strides_ + ((axis_idx + 1) * ind_nd_),
                 ind_arr_idx);
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
-            indT i = ind_data[ind_arr_idx + ind_offsets_[axis_idx]];
+            py::ssize_t i = static_cast<py::ssize_t>(
+                ind_data[ind_arr_idx + ind_offsets_[axis_idx]]);
             proj(axes_shape_and_strides_[axis_idx], i);
             dst_orthog_idx += i * axes_shape_and_strides_[k_ + axis_idx];
         }
@@ -355,7 +355,7 @@ template <typename fnT, typename T, typename indT> struct TakeWrapFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            fnT fn = take_impl<WrapIndex<indT>, T, indT>;
+            fnT fn = take_impl<WrapIndex, T, indT>;
             return fn;
         }
         else {
@@ -371,7 +371,7 @@ template <typename fnT, typename T, typename indT> struct TakeClipFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            fnT fn = take_impl<ClipIndex<indT>, T, indT>;
+            fnT fn = take_impl<ClipIndex, T, indT>;
             return fn;
         }
         else {
@@ -387,7 +387,7 @@ template <typename fnT, typename T, typename indT> struct PutWrapFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            fnT fn = put_impl<WrapIndex<indT>, T, indT>;
+            fnT fn = put_impl<WrapIndex, T, indT>;
             return fn;
         }
         else {
@@ -403,7 +403,7 @@ template <typename fnT, typename T, typename indT> struct PutClipFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            fnT fn = put_impl<ClipIndex<indT>, T, indT>;
+            fnT fn = put_impl<ClipIndex, T, indT>;
             return fn;
         }
         else {
