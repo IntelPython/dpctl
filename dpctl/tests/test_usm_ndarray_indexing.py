@@ -17,12 +17,10 @@
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip
+from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 # import dpctl
 import dpctl.tensor as dpt
-
-# from helper import skip_if_dtype_not_supported
 
 
 def test_basic_slice1():
@@ -435,3 +433,82 @@ def test_integer_strided_indexing():
     zc = dpt.copy(z, order="C")
     yc = zc[ind0[:2, dpt.newaxis], ind1[dpt.newaxis, -2:]]
     assert (dpt.asnumpy(y) == dpt.asnumpy(yc)).all()
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8", "e", "f", "d", "F", "D"],
+)
+@pytest.mark.parametrize(
+    "ind_dt", ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8"]
+)
+def test_take_basic(data_dt, ind_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.arange(10, dtype=data_dt)
+    ind = dpt.arange(2, 5, dtype=ind_dt)
+    y = dpt.take(x, ind)
+    assert y.dtype == x.dtype
+    assert (dpt.asnumpy(y) == np.arange(2, 5, dtype=data_dt)).all()
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8", "e", "f", "d", "F", "D"],
+)
+@pytest.mark.parametrize(
+    "ind_dt", ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8"]
+)
+def test_put_basic(data_dt, ind_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.arange(10, dtype=data_dt)
+    ind = dpt.arange(2, 5, dtype=ind_dt)
+    val = dpt.ones(3, dtype=data_dt)
+    dpt.put(x, ind, val)
+    assert (
+        dpt.asnumpy(x)
+        == np.array([0, 1, 1, 1, 1, 5, 6, 7, 8, 9], dtype=data_dt)
+    ).all()
+
+
+def test_take_basic_axis():
+    get_queue_or_skip()
+
+    n0, n1 = 5, 7
+    x = dpt.reshape(
+        dpt.arange(n0 * n1, dtype="i4"),
+        (
+            n0,
+            n1,
+        ),
+    )
+    ind = dpt.arange(2, 4)
+    y0 = dpt.take(x, ind, axis=0)
+    y1 = dpt.take(x, ind, axis=1)
+    assert y0.shape == (2, n1)
+    assert y1.shape == (n0, 2)
+
+
+def test_put_basic_axis():
+    get_queue_or_skip()
+
+    n0, n1 = 5, 7
+    x = dpt.reshape(
+        dpt.arange(n0 * n1, dtype="i4"),
+        (
+            n0,
+            n1,
+        ),
+    )
+    ind = dpt.arange(2, 4)
+    v0 = dpt.zeros((2, n1), dtype=x.dtype)
+    v1 = dpt.zeros((n0, 2), dtype=x.dtype)
+    dpt.put(x, ind, v0, axis=0)
+    dpt.put(x, ind, v1, axis=1)
+    expected = np.arange(n0 * n1, dtype="i4").reshape((n0, n1))
+    expected[[2, 3], :] = 0
+    expected[:, [2, 3]] = 0
+    assert (expected == dpt.asnumpy(x)).all()
