@@ -15,6 +15,14 @@ add_custom_target(_dpctl4pybind11_deps
     _sycl_event_copy_capi_include
 )
 
+if(WIN32)
+    if (${CMAKE_VERSION} VERSION_LESS "3.23")
+        # this is a work-around for target_link_options inserting option after -link option, cause
+        # linker to ignore it.
+        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel")
+    endif()
+endif()
+
 set(python_module_name _tensor_impl)
 pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_py.cpp
@@ -30,7 +38,10 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
 )
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
-target_link_options(${python_module_name} PRIVATE -fsycl-link-huge-device-code)
+if(UNIX)
+    # this option is support on Linux only
+    target_link_options(${python_module_name} PRIVATE -fsycl-link-huge-device-code)
+endif()
 target_include_directories(${python_module_name}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include

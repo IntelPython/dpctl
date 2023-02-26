@@ -162,7 +162,7 @@ public:
 struct usm_ndarray_types
 {
 
-    int typenum_to_lookup_id(int typenum)
+    int typenum_to_lookup_id(int typenum) const
     {
         using typenum_t = dpctl::tensor::detail::typenum_t;
         auto const &api = ::dpctl::detail::dpctl_capi::get();
@@ -232,7 +232,7 @@ struct usm_ndarray_types
     }
 
 private:
-    void throw_unrecognized_typenum_error(int typenum)
+    void throw_unrecognized_typenum_error(int typenum) const
     {
         throw std::runtime_error("Unrecogized typenum " +
                                  std::to_string(typenum) + " encountered.");
