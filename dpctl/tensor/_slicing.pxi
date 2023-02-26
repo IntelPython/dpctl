@@ -94,7 +94,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 "Index {0} is out of range for axes 0 with "
                 "size {1}".format(ind, shape[0]))
     elif isinstance(ind, usm_ndarray):
-        return (shape, strides, 0, (ind,), 0)
+        return (shape, strides, offset, (ind,), 0)
     elif isinstance(ind, tuple):
         axes_referenced = 0
         ellipses_count = 0
