@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-# import numpy as np
+import numpy as np
 import pytest
 from helper import get_queue_or_skip
 
@@ -163,6 +163,22 @@ def test_advanced_slice1():
         (y[k] for k in range(ii.shape[0])),
     )
     y = x[(ii,)]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == ii.shape
+    assert y.strides == (1,)
+    # FIXME, once usm_ndarray.__equal__ is implemented,
+    # use of asnumpy should be removed
+    assert _all_equal(
+        (x[ii[k]] for k in range(ii.shape[0])),
+        (y[k] for k in range(ii.shape[0])),
+    )
+
+
+def test_advanced_slice1_negative_strides():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([0, 1], sycl_queue=q)
+    x = dpt.flip(dpt.arange(5, dtype="i4", sycl_queue=q))
+    y = x[ii]
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == ii.shape
     assert y.strides == (1,)
@@ -363,3 +379,59 @@ def test_advanced_slice13():
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == expected.shape
     assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
+
+
+def test_integer_indexing_1d():
+    get_queue_or_skip()
+    x = dpt.arange(10, dtype="i4")
+    ind_1d = dpt.asarray([7, 3, 1], dtype="u2")
+    ind_2d = dpt.asarray([[2, 3, 4], [3, 4, 5], [5, 6, 7]], dtype="i4")
+
+    y1 = x[ind_1d]
+    assert y1.shape == ind_1d.shape
+    y2 = x[ind_2d]
+    assert y2.shape == ind_2d.shape
+    assert (dpt.asnumpy(y1) == np.array([7, 3, 1], dtype="i4")).all()
+    assert (
+        dpt.asnumpy(y2)
+        == np.array([[2, 3, 4], [3, 4, 5], [5, 6, 7]], dtype="i4")
+    ).all()
+
+
+def test_integer_indexing_2d():
+    get_queue_or_skip()
+    n0, n1 = 5, 7
+    x = dpt.reshape(
+        dpt.arange(n0 * n1, dtype="i4"),
+        (
+            n0,
+            n1,
+        ),
+    )
+    ind0 = dpt.arange(n0)
+    ind1 = dpt.arange(n1)
+
+    y = x[ind0[:2, dpt.newaxis], ind1[dpt.newaxis, -2:]]
+    assert y.dtype == x.dtype
+    assert (dpt.asnumpy(y) == np.array([[5, 6], [12, 13]])).all()
+
+
+def test_integer_strided_indexing():
+    get_queue_or_skip()
+    n0, n1 = 5, 7
+    x = dpt.reshape(
+        dpt.arange(2 * n0 * n1, dtype="i4"),
+        (
+            2 * n0,
+            n1,
+        ),
+    )
+    ind0 = dpt.arange(n0)
+    ind1 = dpt.arange(n1)
+
+    z = x[::-2, :]
+    y = z[ind0[:2, dpt.newaxis], ind1[dpt.newaxis, -2:]]
+    assert y.dtype == x.dtype
+    zc = dpt.copy(z, order="C")
+    yc = zc[ind0[:2, dpt.newaxis], ind1[dpt.newaxis, -2:]]
+    assert (dpt.asnumpy(y) == dpt.asnumpy(yc)).all()
