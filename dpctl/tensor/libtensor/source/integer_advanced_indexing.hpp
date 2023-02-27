@@ -38,24 +38,24 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-usm_ndarray_take(dpctl::tensor::usm_ndarray src,
-                 std::vector<dpctl::tensor::usm_ndarray> ind,
-                 dpctl::tensor::usm_ndarray dst,
-                 int axis_start,
-                 uint8_t mode,
-                 sycl::queue exec_q,
-                 const std::vector<sycl::event> &depends = {});
+usm_ndarray_take(dpctl::tensor::usm_ndarray,
+                 py::object,
+                 dpctl::tensor::usm_ndarray,
+                 int,
+                 uint8_t,
+                 sycl::queue,
+                 const std::vector<sycl::event> & = {});
 
 extern std::pair<sycl::event, sycl::event>
-usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
-                std::vector<dpctl::tensor::usm_ndarray> ind,
-                dpctl::tensor::usm_ndarray val,
-                int axis_start,
-                uint8_t mode,
-                sycl::queue exec_q,
-                const std::vector<sycl::event> &depends = {});
+usm_ndarray_put(dpctl::tensor::usm_ndarray,
+                py::object,
+                dpctl::tensor::usm_ndarray,
+                int,
+                uint8_t,
+                sycl::queue,
+                const std::vector<sycl::event> & = {});
 
-extern void init_advanced_indexing_dispatch_tables();
+extern void init_advanced_indexing_dispatch_tables(void);
 
 } // namespace py_internal
 } // namespace tensor

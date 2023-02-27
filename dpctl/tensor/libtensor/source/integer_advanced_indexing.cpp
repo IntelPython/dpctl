@@ -27,7 +27,6 @@
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <iostream>
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -280,15 +279,50 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
     }
 }
 
+/* Utility to parse python object py_ind into vector of `usm_ndarray`s */
+std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
+                                                     py::object py_ind)
+{
+    size_t ind_count = py::len(py_ind);
+    std::vector<dpctl::tensor::usm_ndarray> res;
+    res.reserve(ind_count);
+
+    bool acquired = false;
+    int nd = -1;
+    for (size_t i = 0; i < ind_count; ++i) {
+        auto el_i = py_ind[py::cast(i)];
+        auto arr_i = py::cast<dpctl::tensor::usm_ndarray>(el_i);
+        if (!dpctl::utils::queues_are_compatible(q, {arr_i})) {
+            throw py::value_error("Index allocation queue is not compatible "
+                                  "with execution queue");
+        }
+        if (acquired) {
+            if (nd != arr_i.get_ndim()) {
+                throw py::value_error(
+                    "Indices must have the same number of dimensions.");
+            }
+        }
+        else {
+            acquired = true;
+            nd = arr_i.get_ndim();
+        }
+        res.push_back(arr_i);
+    }
+
+    return res;
+}
+
 std::pair<sycl::event, sycl::event>
 usm_ndarray_take(dpctl::tensor::usm_ndarray src,
-                 std::vector<dpctl::tensor::usm_ndarray> ind,
+                 py::object py_ind,
                  dpctl::tensor::usm_ndarray dst,
                  int axis_start,
                  uint8_t mode,
                  sycl::queue exec_q,
                  const std::vector<sycl::event> &depends)
 {
+    std::vector<dpctl::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
+
     int k = ind.size();
 
     if (k == 0) {
@@ -636,14 +670,11 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
                                  std::to_string(ind_type_id));
     }
 
-    std::cout << "Submitting take" << std::endl;
     sycl::event take_generic_ev =
         fn(exec_q, orthog_nelems, ind_nelems, orthog_nd, ind_nd, k,
            packed_shapes_strides, packed_axes_shapes_strides,
            packed_ind_shapes_strides, src_data, dst_data, packed_ind_ptrs,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
-
-    std::cout << "Submitting take clean-up host task" << std::endl;
 
     // free packed temporaries
     auto ctx = exec_q.get_context();
@@ -661,19 +692,20 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     });
 
     return std::make_pair(
-        keep_args_alive(exec_q, {src, dst}, {take_generic_ev}),
+        keep_args_alive(exec_q, {src, py_ind, dst}, {take_generic_ev}),
         take_generic_ev);
 }
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
-                std::vector<dpctl::tensor::usm_ndarray> ind,
+                py::object py_ind,
                 dpctl::tensor::usm_ndarray val,
                 int axis_start,
                 uint8_t mode,
                 sycl::queue exec_q,
                 const std::vector<sycl::event> &depends)
 {
+    std::vector<dpctl::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
     int k = ind.size();
 
     if (k == 0) {
@@ -1046,8 +1078,9 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         });
     });
 
-    return std::make_pair(keep_args_alive(exec_q, {dst, val}, {put_generic_ev}),
-                          put_generic_ev);
+    return std::make_pair(
+        keep_args_alive(exec_q, {dst, py_ind, val}, {put_generic_ev}),
+        put_generic_ev);
 }
 
 void init_advanced_indexing_dispatch_tables(void)
