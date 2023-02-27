@@ -97,10 +97,10 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
 
     usm_host_allocatorT allocator(exec_q);
     std::shared_ptr<shT> packed_host_shapes_strides_shp =
-        std::make_shared<shT>(3 * orthog_sh_elems, allocator);
+        std::make_shared<shT>(3 * orthog_sh_elems, 0, allocator);
 
     std::shared_ptr<shT> packed_host_axes_shapes_strides_shp =
-        std::make_shared<shT>(2 * k + along_sh_elems, allocator);
+        std::make_shared<shT>(2 * k + along_sh_elems, 0, allocator);
 
     if (inp_nd > 0) {
         std::copy(inp_shape, inp_shape + axis_start,
