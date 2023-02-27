@@ -99,8 +99,6 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
     std::shared_ptr<shT> packed_host_axes_shapes_strides_shp =
         std::make_shared<shT>(2 * k + along_sh_elems, allocator);
 
-    // can be made more efficient by checking if inp_nd > 1, then performing
-    // same treatment of orthog_sh_elems as for 0D (orthog will not exist)
     if (inp_nd > 0) {
         std::copy(inp_shape, inp_shape + axis_start,
                   packed_host_shapes_strides_shp->begin());
@@ -403,6 +401,17 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         }
     }
 
+    // destination must be ample enough to accommodate all elements
+    {
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if ((range + 1) < (orthog_nelems * ind_nelems)) {
+            throw py::value_error(
+                "Destination array can not accommodate all the "
+                "elements of source array.");
+        }
+    }
+
     auto ind_sh_elems = (ind_nd > 0) ? ind_nd : 1;
 
     std::vector<char *> ind_ptrs;
@@ -580,17 +589,6 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     const py::ssize_t *src_strides = src.get_strides_raw();
     const py::ssize_t *dst_strides = dst.get_strides_raw();
 
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if ((range + 1) < (orthog_nelems * ind_nelems)) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
-
     // packed_shapes_strides = [src_shape[:axis] + src_shape[axis+k:],
     //                          src_strides[:axis] + src_strides[axis+k:],
     //                          dst_strides[:axis] + dst_strides[axis+k:]]
@@ -763,6 +761,17 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
                                     dst_offsets.first * dst_elem_size));
     if (memory_overlap) {
         throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    // destination must be ample enough to accommodate all possible elements
+    {
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if ((range + 1) < dst_nelems) {
+            throw py::value_error(
+                "Destination array can not accommodate all the "
+                "elements of source array.");
+        }
     }
 
     int dst_typenum = dst.get_typenum();
@@ -964,17 +973,6 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
     const py::ssize_t *dst_strides = dst.get_strides_raw();
     const py::ssize_t *val_strides = val.get_strides_raw();
-
-    // destination must be ample enough to accommodate all possible elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if ((range + 1) < dst_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
 
     // packed_shapes_strides = [dst_shape[:axis] + dst_shape[axis+k:],
     //                          dst_strides[:axis] + dst_strides[axis+k:],
