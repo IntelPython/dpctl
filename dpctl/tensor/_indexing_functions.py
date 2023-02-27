@@ -48,7 +48,7 @@ def take(x, indices, /, *, axis=None, mode="clip"):
                 )
             )
         if not np.issubdtype(i.dtype, np.integer):
-            raise TypeError(
+            raise IndexError(
                 "`indices` expected integer data type, got `{}`".format(i.dtype)
             )
         queues_.append(i.sycl_queue)
@@ -126,7 +126,7 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
                 )
             )
         if not np.issubdtype(i.dtype, np.integer):
-            raise TypeError(
+            raise IndexError(
                 "`indices` expected integer data type, got `{}`".format(i.dtype)
             )
         queues_.append(i.sycl_queue)
