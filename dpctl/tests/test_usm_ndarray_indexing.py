@@ -18,9 +18,28 @@
 import numpy as np
 import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
+from numpy.testing import assert_array_equal
 
-# import dpctl
 import dpctl.tensor as dpt
+from dpctl.utils import ExecutionPlacementError
+
+_all_dtypes = [
+    "u1",
+    "i1",
+    "u2",
+    "i2",
+    "u4",
+    "i4",
+    "u8",
+    "i8",
+    "e",
+    "f",
+    "d",
+    "F",
+    "D",
+]
+
+_all_int_dtypes = ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8"]
 
 
 def test_basic_slice1():
@@ -437,10 +456,11 @@ def test_integer_strided_indexing():
 
 @pytest.mark.parametrize(
     "data_dt",
-    ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8", "e", "f", "d", "F", "D"],
+    _all_dtypes,
 )
 @pytest.mark.parametrize(
-    "ind_dt", ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8"]
+    "ind_dt",
+    _all_int_dtypes,
 )
 def test_take_basic(data_dt, ind_dt):
     q = get_queue_or_skip()
@@ -455,10 +475,11 @@ def test_take_basic(data_dt, ind_dt):
 
 @pytest.mark.parametrize(
     "data_dt",
-    ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8", "e", "f", "d", "F", "D"],
+    _all_dtypes,
 )
 @pytest.mark.parametrize(
-    "ind_dt", ["u1", "i1", "u2", "i2", "u4", "i4", "u8", "i8"]
+    "ind_dt",
+    _all_int_dtypes,
 )
 def test_put_basic(data_dt, ind_dt):
     q = get_queue_or_skip()
@@ -512,3 +533,412 @@ def test_put_basic_axis():
     expected[[2, 3], :] = 0
     expected[:, [2, 3]] = 0
     assert (expected == dpt.asnumpy(x)).all()
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+def test_take_0d_data(data_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.asarray(0, dtype=data_dt)
+    ind = dpt.arange(5)
+
+    y = dpt.take(x, ind)
+    assert (
+        dpt.asnumpy(y)
+        == np.broadcast_to(np.asarray(0, dtype=data_dt), ind.shape)
+    ).all()
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+def test_put_0d_data(data_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.asarray(0, dtype=data_dt)
+    ind = dpt.arange(5)
+    val = dpt.asarray(2, dtype=data_dt)
+
+    dpt.put(x, ind, val)
+    assert (
+        dpt.asnumpy(x)
+        == np.broadcast_to(np.asarray(2, dtype=data_dt), ind.shape)
+    ).all()
+
+
+@pytest.mark.parametrize(
+    "ind_dt",
+    _all_int_dtypes,
+)
+def test_take_0d_ind(ind_dt):
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype=ind_dt)
+    ind = dpt.asarray(3)
+
+    y = dpt.take(x, ind)
+    assert dpt.asnumpy(x[3]) == dpt.asnumpy(y)
+
+
+@pytest.mark.parametrize(
+    "ind_dt",
+    _all_int_dtypes,
+)
+def test_put_0d_ind(ind_dt):
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype=ind_dt)
+    ind = dpt.asarray(3)
+    val = dpt.asarray(5, dtype=ind_dt)
+
+    dpt.put(x, ind, val)
+    assert dpt.asnumpy(x[3]) == dpt.asnumpy(val)
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+def test_take_strided_1d_source(data_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.arange(27, dtype=data_dt, sycl_queue=q)
+    ind = dpt.arange(4, 9, dtype=np.intp, sycl_queue=q)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        assert_array_equal(
+            np.take(x_np[s], ind_np, axis=0),
+            dpt.asnumpy(dpt.take(x[s], ind, axis=0)),
+        )
+
+    # 0-strided
+    x = dpt.usm_ndarray(
+        (27,),
+        dtype=data_dt,
+        strides=(0,),
+        buffer_ctor_kwargs={"queue": q},
+    )
+    x[0] = x_np[0]
+    assert_array_equal(
+        np.broadcast_to(x_np[0], ind.shape),
+        dpt.asnumpy(dpt.take(x, ind, axis=0)),
+    )
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_take_strided(data_dt, order):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.reshape(_make_3d(data_dt, q), (9, 3), order=order)
+    ind = dpt.arange(2, dtype=np.intp, sycl_queue=q)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        for sgn in (-1, 1):
+            xs = x[s, ::sgn]
+            xs_np = x_np[s, ::sgn]
+            assert_array_equal(
+                np.take(xs_np, ind_np, axis=0),
+                dpt.asnumpy(dpt.take(xs, ind, axis=0)),
+            )
+            assert_array_equal(
+                np.take(xs_np, ind_np, axis=1),
+                dpt.asnumpy(dpt.take(xs, ind, axis=1)),
+            )
+            assert_array_equal(
+                xs_np[ind_np, ind_np],
+                dpt.asnumpy(dpt.take(xs, [ind, ind], axis=0)),
+            )
+
+
+@pytest.mark.parametrize(
+    "ind_dt",
+    _all_int_dtypes,
+)
+def test_take_strided_1d_indices(ind_dt):
+    q = get_queue_or_skip()
+
+    x = dpt.arange(27, dtype="i4", sycl_queue=q)
+    ind = dpt.arange(12, 24, dtype=ind_dt, sycl_queue=q)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind).astype(np.intp)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        assert_array_equal(
+            np.take(x_np, ind_np[s], axis=0),
+            dpt.asnumpy(dpt.take(x, ind[s], axis=0)),
+        )
+
+    # 0-strided
+    ind = dpt.usm_ndarray(
+        (12,),
+        dtype=ind_dt,
+        strides=(0,),
+        buffer_ctor_kwargs={"queue": q},
+    )
+    ind[0] = ind_np[0]
+    assert_array_equal(
+        np.broadcast_to(x_np[ind_np[0]], ind.shape),
+        dpt.asnumpy(dpt.take(x, ind, axis=0)),
+    )
+
+
+@pytest.mark.parametrize(
+    "ind_dt",
+    _all_int_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_take_strided_indices(ind_dt, order):
+    q = get_queue_or_skip()
+
+    x = dpt.arange(27, dtype="i4", sycl_queue=q)
+    ind = dpt.reshape(
+        dpt.arange(12, 24, dtype=ind_dt, sycl_queue=q), (4, 3), order=order
+    )
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind).astype(np.intp)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        for sgn in [-1, 1]:
+            inds = ind[s, ::sgn]
+            inds_np = ind_np[s, ::sgn]
+            assert_array_equal(
+                np.take(x_np, inds_np, axis=0),
+                dpt.asnumpy(dpt.take(x, inds, axis=0)),
+            )
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_put_strided_1d_destination(data_dt, order):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.arange(27, dtype=data_dt, sycl_queue=q)
+    ind = dpt.arange(4, 9, dtype=np.intp, sycl_queue=q)
+    val = dpt.asarray(9, dtype=data_dt, sycl_queue=q)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind)
+    val_np = dpt.asnumpy(val)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        x_np1 = x_np.copy()
+        x_np1[s][ind_np] = val_np
+
+        x1 = dpt.copy(x)
+        dpt.put(x1[s], ind, val, axis=0)
+
+        assert_array_equal(x_np1, dpt.asnumpy(x1))
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_put_strided_destination(data_dt, order):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    x = dpt.reshape(_make_3d(data_dt, q), (9, 3), order=order)
+    ind = dpt.arange(2, dtype=np.intp, sycl_queue=q)
+    val = dpt.asarray(9, dtype=data_dt, sycl_queue=q)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind)
+    val_np = dpt.asnumpy(val)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        for sgn in [-1, 1]:
+            xs = x[s, ::sgn]
+            xs_np = x_np[s, ::sgn]
+
+            x_np1 = xs_np.copy()
+            x_np1[ind_np] = val_np
+
+            x1 = dpt.copy(xs)
+            dpt.put(x1, ind, val, axis=0)
+            assert_array_equal(x_np1, dpt.asnumpy(x1))
+
+            x_np1 = xs_np.copy()
+            x_np1[:, ind_np] = val_np
+
+            x1 = dpt.copy(xs)
+            dpt.put(x1, ind, val, axis=1)
+            assert_array_equal(x_np1, dpt.asnumpy(x1))
+
+            x_np1 = xs_np.copy()
+            x_np1[ind_np, ind_np] = val_np
+
+            x1 = dpt.copy(xs)
+            dpt.put(x1, [ind, ind], val, axis=0)
+            assert_array_equal(x_np1, dpt.asnumpy(x1))
+
+
+@pytest.mark.parametrize(
+    "ind_dt",
+    _all_int_dtypes,
+)
+def test_put_strided_1d_indices(ind_dt):
+    q = get_queue_or_skip()
+
+    x = dpt.arange(27, dtype="i4", sycl_queue=q)
+    ind = dpt.arange(12, 24, dtype=ind_dt, sycl_queue=q)
+    val = dpt.asarray(-1, dtype="i4", sycl_queue=q)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind).astype(np.intp)
+    val_np = dpt.asnumpy(val)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        x_copy = dpt.copy(x)
+        dpt.put(x_copy, ind[s], val, axis=0)
+
+        x_np_copy = x_np.copy()
+        x_np_copy[ind_np[s]] = val_np
+
+        assert_array_equal(x_np_copy, dpt.asnumpy(x_copy))
+
+
+@pytest.mark.parametrize(
+    "ind_dt",
+    _all_int_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_put_strided_indices(ind_dt, order):
+    q = get_queue_or_skip()
+
+    x = dpt.arange(27, dtype="i4", sycl_queue=q)
+    ind = dpt.reshape(
+        dpt.arange(12, 24, dtype=ind_dt, sycl_queue=q), (4, 3), order=order
+    )
+    val = dpt.asarray(-1, sycl_queue=q, dtype=x.dtype)
+
+    x_np = dpt.asnumpy(x)
+    ind_np = dpt.asnumpy(ind).astype(np.intp)
+    val_np = dpt.asnumpy(val)
+
+    for s in (
+        slice(None, None, 2),
+        slice(None, None, -2),
+    ):
+        for sgn in [-1, 1]:
+            inds = ind[s, ::sgn]
+            inds_np = ind_np[s, ::sgn]
+
+            x_copy = dpt.copy(x)
+            dpt.put(x_copy, inds, val, axis=0)
+
+            x_np_copy = x_np.copy()
+            x_np_copy[inds_np] = val_np
+
+            assert_array_equal(x_np_copy, dpt.asnumpy(x_copy))
+
+
+def test_take_arg_validation():
+    get_queue_or_skip()
+
+    x = dpt.arange(4)
+    ind0 = dpt.arange(2)
+    ind1 = dpt.arange(2.0)
+
+    with pytest.raises(TypeError):
+        dpt.take(dict(), ind0, axis=0)
+    with pytest.raises(TypeError):
+        dpt.take(x, dict(), axis=0)
+    with pytest.raises(TypeError):
+        dpt.take(x, ind1, axis=0)
+
+    with pytest.raises(ValueError):
+        dpt.take(x, ind0, mode=0)
+    with pytest.raises(ValueError):
+        dpt.take(dpt.reshape(x, (2, 2)), ind0, axis=None)
+
+
+def test_put_arg_validation():
+    get_queue_or_skip()
+
+    x = dpt.arange(4)
+    ind0 = dpt.arange(2)
+    ind1 = dpt.arange(2.0)
+    val = dpt.asarray(2)
+
+    with pytest.raises(TypeError):
+        dpt.put(dict(), ind0, val, axis=0)
+    with pytest.raises(TypeError):
+        dpt.put(x, dict(), val, axis=0)
+    with pytest.raises(TypeError):
+        dpt.put(x, ind1, val, axis=0)
+    with pytest.raises(TypeError):
+        dpt.put(x, ind0, dict(), axis=0)
+
+    with pytest.raises(ValueError):
+        dpt.put(x, ind0, val, mode=0)
+
+
+def test_advanced_indexing_compute_follows_data():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    x = dpt.arange(4, sycl_queue=q1)
+    ind0 = dpt.asarray([0], sycl_queue=q1)
+    ind1 = dpt.asarray([0], sycl_queue=q2)
+    val0 = dpt.asarray(2, dtype=x.dtype, sycl_queue=q1)
+    val1 = dpt.asarray(2, dtype=x.dtype, sycl_queue=q2)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.take(x, ind1, axis=0)
+    with pytest.raises(ExecutionPlacementError):
+        x[ind1]
+    with pytest.raises(ExecutionPlacementError):
+        dpt.put(x, ind1, val0)
+    with pytest.raises(ExecutionPlacementError):
+        x[ind1] = val0
+    with pytest.raises(ExecutionPlacementError):
+        dpt.put(x, ind0, val1)
+    with pytest.raises(ExecutionPlacementError):
+        x[ind0] = val1
