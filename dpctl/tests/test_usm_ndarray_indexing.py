@@ -565,7 +565,7 @@ def test_put_0d_data(data_dt):
     ind = dpt.arange(5)
     val = dpt.asarray(2, dtype=data_dt)
 
-    dpt.put(x, ind, val)
+    dpt.put(x, ind, val, axis=0)
     assert (
         dpt.asnumpy(x)
         == np.broadcast_to(np.asarray(2, dtype=data_dt), ind.shape)
@@ -597,7 +597,7 @@ def test_put_0d_ind(ind_dt):
     ind = dpt.asarray(3)
     val = dpt.asarray(5, dtype=ind_dt)
 
-    dpt.put(x, ind, val)
+    dpt.put(x, ind, val, axis=0)
     assert dpt.asnumpy(x[3]) == dpt.asnumpy(val)
 
 
@@ -886,6 +886,8 @@ def test_take_arg_validation():
     ind0 = dpt.arange(2)
     ind1 = dpt.arange(2.0)
 
+    with pytest.raises(ValueError):
+        dpt.take(dpt.reshape(x, (2, 2)), ind0)
     with pytest.raises(TypeError):
         dpt.take(dict(), ind0, axis=0)
     with pytest.raises(TypeError):
@@ -935,10 +937,10 @@ def test_advanced_indexing_compute_follows_data():
     with pytest.raises(ExecutionPlacementError):
         x[ind1]
     with pytest.raises(ExecutionPlacementError):
-        dpt.put(x, ind1, val0)
+        dpt.put(x, ind1, val0, axis=0)
     with pytest.raises(ExecutionPlacementError):
         x[ind1] = val0
     with pytest.raises(ExecutionPlacementError):
-        dpt.put(x, ind0, val1)
+        dpt.put(x, ind0, val1, axis=0)
     with pytest.raises(ExecutionPlacementError):
         x[ind0] = val1

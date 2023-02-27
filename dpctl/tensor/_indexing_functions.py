@@ -104,12 +104,16 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
         raise TypeError(
             "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
         )
-    queues_ = [
-        x.sycl_queue,
-    ]
-    usm_types_ = [
-        x.usm_type,
-    ]
+    if isinstance(vals, dpt.usm_ndarray):
+        queues_ = [x.sycl_queue, vals.sycl_queue]
+        usm_types_ = [x.usm_type, vals.usm_type]
+    else:
+        queues_ = [
+            x.sycl_queue,
+        ]
+        usm_types_ = [
+            x.usm_type,
+        ]
 
     if not isinstance(indices, list) and not isinstance(indices, tuple):
         indices = (indices,)
