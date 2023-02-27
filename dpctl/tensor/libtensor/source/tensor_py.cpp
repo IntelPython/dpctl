@@ -33,13 +33,13 @@
 
 #include "dpctl4pybind11.hpp"
 
-#include "advanced_indexing.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
+#include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
 #include "triul_ctor.hpp"
 #include "utils/strided_iters.hpp"

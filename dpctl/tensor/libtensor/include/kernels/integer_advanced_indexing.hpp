@@ -26,6 +26,7 @@
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 #include <CL/sycl.hpp>
+#include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <pybind11/pybind11.h>
@@ -52,10 +53,9 @@ public:
 
     void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
-        max_item = (max_item > 0) ? max_item : 1;
-        ind = (ind < 0)           ? (ind <= -max_item) ? (0) : (ind + max_item)
-                        : (ind >= max_item) ? (max_item - 1)
-                                  : ind;
+        max_item = std::max<py::ssize_t>(max_item, 1);
+        ind = std::clamp<py::ssize_t>(ind, -max_item, max_item - 1);
+        ind = (ind < 0) ? ind + max_item : ind;
         return;
     }
 };
@@ -67,10 +67,8 @@ public:
 
     void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
-        max_item = (max_item > 0) ? max_item : 1;
-        ind = (ind < 0)           ? max_item - (-ind % max_item)
-              : (ind >= max_item) ? ind % max_item
-                                  : ind;
+        max_item = std::max<py::ssize_t>(max_item, 1);
+        ind = ind % max_item;
         return;
     }
 };
@@ -136,9 +134,9 @@ public:
             dst_orthog_idx);
 
         ProjectorT proj{};
-        py::ssize_t ind_arr_idx(0);
         CIndexer_vector<py::ssize_t> ind_indxr(ind_nd_);
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
+            py::ssize_t ind_arr_idx(0);
             ind_indxr.get_displacement<const py::ssize_t *>(
                 static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
                 ind_shape_and_strides_ + ((axis_idx + 1) * ind_nd_),

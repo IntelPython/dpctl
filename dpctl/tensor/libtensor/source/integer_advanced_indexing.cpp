@@ -27,15 +27,18 @@
 #include <algorithm>
 #include <complex>
 #include <cstdint>
+#include <iostream>
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <utility>
 
 #include "dpctl4pybind11.hpp"
-#include "kernels/advanced_indexing.hpp"
+#include "kernels/integer_advanced_indexing.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
+
+#include "integer_advanced_indexing.hpp"
 
 #define INDEXING_MODES 2
 #define CLIP_MODE 0
@@ -85,8 +88,8 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
     int arr_nd)
 {
 
-    int orthog_sh_elems = ((inp_nd - k) > 1) ? (inp_nd - k) : 1;
-    int along_sh_elems = (ind_nd > 1) ? ind_nd : 1;
+    int orthog_sh_elems = std::max<int>(inp_nd - k, 1);
+    int along_sh_elems = std::max<int>(ind_nd, 1);
 
     using usm_host_allocatorT =
         sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
@@ -284,7 +287,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
                  int axis_start,
                  uint8_t mode,
                  sycl::queue exec_q,
-                 const std::vector<sycl::event> &depends = {})
+                 const std::vector<sycl::event> &depends)
 {
     int k = ind.size();
 
@@ -328,7 +331,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
-    int orthog_nd = ((src_nd - k) > 0) ? src_nd - k : 1;
+    int orthog_nd = std::max<int>(src_nd - k, 1);
 
     bool orthog_shapes_equal(true);
     size_t orthog_nelems(1);
@@ -412,7 +415,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         }
     }
 
-    auto ind_sh_elems = (ind_nd > 0) ? ind_nd : 1;
+    int ind_sh_elems = std::max<int>(ind_nd, 1);
 
     std::vector<char *> ind_ptrs;
     ind_ptrs.reserve(k);
@@ -633,11 +636,14 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
                                  std::to_string(ind_type_id));
     }
 
+    std::cout << "Submitting take" << std::endl;
     sycl::event take_generic_ev =
         fn(exec_q, orthog_nelems, ind_nelems, orthog_nd, ind_nd, k,
            packed_shapes_strides, packed_axes_shapes_strides,
            packed_ind_shapes_strides, src_data, dst_data, packed_ind_ptrs,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
+
+    std::cout << "Submitting take clean-up host task" << std::endl;
 
     // free packed temporaries
     auto ctx = exec_q.get_context();
@@ -666,7 +672,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
                 int axis_start,
                 uint8_t mode,
                 sycl::queue exec_q,
-                const std::vector<sycl::event> &depends = {})
+                const std::vector<sycl::event> &depends)
 {
     int k = ind.size();
 
