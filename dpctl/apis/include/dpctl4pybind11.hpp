@@ -856,6 +856,15 @@ public:
         return api.UsmNDArray_GetShape_(raw_ar);
     }
 
+    const std::vector<py::ssize_t> get_shape_vector() const
+    {
+        auto raw_sh = this->get_shape_raw();
+        auto nd = this->get_ndim();
+
+        std::vector<py::ssize_t> shape_vector(raw_sh, raw_sh + nd);
+        return shape_vector;
+    }
+
     py::ssize_t get_shape(int i) const
     {
         auto shape_ptr = get_shape_raw();
@@ -868,6 +877,34 @@ public:
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetStrides_(raw_ar);
+    }
+
+    const std::vector<py::ssize_t> get_strides_vector() const
+    {
+        auto raw_st = this->get_strides_raw();
+        auto nd = this->get_ndim();
+
+        if (raw_st == nullptr) {
+            auto is_c_contig = this->is_c_contiguous();
+            auto is_f_contig = this->is_f_contiguous();
+            auto raw_sh = this->get_shape_raw();
+            if (is_c_contig) {
+                const auto &contig_strides = c_contiguous_strides(nd, raw_sh);
+                return contig_strides;
+            }
+            else if (is_f_contig) {
+                const auto &contig_strides = f_contiguous_strides(nd, raw_sh);
+                return contig_strides;
+            }
+            else {
+                throw std::runtime_error("Invalid array encountered when "
+                                         "building strides");
+            }
+        }
+        else {
+            std::vector<py::ssize_t> st_vec(raw_st, raw_st + nd);
+            return st_vec;
+        }
     }
 
     py::ssize_t get_size() const
