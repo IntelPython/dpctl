@@ -677,9 +677,9 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
 
     // free packed temporaries
-    auto ctx = exec_q.get_context();
     exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(take_generic_ev);
+        auto ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
                        packed_ind_shapes_strides, packed_ind_ptrs,
                        packed_ind_offsets, ctx]() {
@@ -691,9 +691,10 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         });
     });
 
-    return std::make_pair(
-        keep_args_alive(exec_q, {src, py_ind, dst}, {take_generic_ev}),
-        take_generic_ev);
+    sycl::event host_task_ev =
+        keep_args_alive(exec_q, {src, py_ind, dst}, {take_generic_ev});
+
+    return std::make_pair(host_task_ev, take_generic_ev);
 }
 
 std::pair<sycl::event, sycl::event>
