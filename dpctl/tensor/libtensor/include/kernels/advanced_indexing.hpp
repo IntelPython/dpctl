@@ -150,7 +150,7 @@ public:
             src_orthog_idx += i * axes_shape_and_strides_[k_ + axis_idx];
         }
         py::ssize_t ind_dst_idx(0);
-        ind_indxr.get_displacement<const ::py::ssize_t *>(
+        ind_indxr.get_displacement<const py::ssize_t *>(
             static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
             axes_shape_and_strides_ + (2 * k_), ind_dst_idx);
 
@@ -287,7 +287,7 @@ public:
             dst_orthog_idx += i * axes_shape_and_strides_[k_ + axis_idx];
         }
         py::ssize_t ind_val_idx(0);
-        ind_indxr.get_displacement<const ::py::ssize_t *>(
+        ind_indxr.get_displacement<const py::ssize_t *>(
             static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
             axes_shape_and_strides_ + (2 * k_), ind_val_idx);
 
