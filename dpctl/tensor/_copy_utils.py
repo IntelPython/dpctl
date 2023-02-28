@@ -430,7 +430,7 @@ def _mock_nonzero(ary):
     return tuple(dpt.asarray(i, usm_type=usm_type, sycl_queue=q) for i in nz)
 
 
-def _mock_take_multi_index(ary, inds, p):
+def _take_multi_index(ary, inds, p):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError
     queues_ = [
@@ -439,6 +439,8 @@ def _mock_take_multi_index(ary, inds, p):
     usm_types_ = [
         ary.usm_type,
     ]
+    if not isinstance(inds, list) and not isinstance(inds, tuple):
+        inds = (inds,)
     all_integers = True
     for ind in inds:
         queues_.append(ind.sycl_queue)
@@ -452,7 +454,8 @@ def _mock_take_multi_index(ary, inds, p):
         raise IndexError(
             "arrays used as indices must be of integer (or boolean) type"
         )
-    inds = dpt.broadcast_arrays(*inds)
+    if (len(inds) > 1):
+        inds = dpt.broadcast_arrays(*inds)
     ary_ndim = ary.ndim
     if ary_ndim > 0:
         p = operator.index(p)
@@ -505,7 +508,7 @@ def _mock_place(ary, ary_mask, p, vals):
     return
 
 
-def _mock_put_multi_index(ary, inds, p, vals):
+def _put_multi_index(ary, inds, p, vals):
     if isinstance(vals, dpt.usm_ndarray):
         queues_ = [ary.sycl_queue, vals.sycl_queue]
         usm_types_ = [ary.usm_type, vals.usm_type]
@@ -516,6 +519,8 @@ def _mock_put_multi_index(ary, inds, p, vals):
         usm_types_ = [
             ary.usm_type,
         ]
+    if not isinstance(inds, list) and not isinstance(inds, tuple):
+        inds = (inds,)
     all_integers = True
     for ind in inds:
         if not isinstance(ind, dpt.usm_ndarray):
@@ -536,8 +541,8 @@ def _mock_put_multi_index(ary, inds, p, vals):
         raise IndexError(
             "arrays used as indices must be of integer (or boolean) type"
         )
-
-    inds = dpt.broadcast_arrays(*inds)
+    if (len(inds) > 1):
+        inds = dpt.broadcast_arrays(*inds)
     ary_ndim = ary.ndim
     if ary_ndim > 0:
         p = operator.index(p)

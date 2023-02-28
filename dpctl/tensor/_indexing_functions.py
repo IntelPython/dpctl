@@ -79,7 +79,8 @@ def take(x, indices, /, *, axis=None, mode="clip"):
             )
         axis = 0
 
-    indices = dpt.broadcast_arrays(*indices)
+    if len(indices) > 1:
+        indices = dpt.broadcast_arrays(*indices)
     if x_ndim > 0:
         axis = operator.index(axis)
         axis = normalize_axis_index(axis, x_ndim)
@@ -149,10 +150,13 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
 
     # when axis is none, array is treated as 1D
     if axis is None:
-        x = dpt.reshape(x, (x.size,), copy=False)
-        axis = 0
-
-    indices = dpt.broadcast_arrays(*indices)
+        try:
+            x = dpt.reshape(x, (x.size,), copy=False)
+            axis = 0
+        except ValueError:
+            raise ValueError("Cannot create 1D view of array")
+    if len(indices) > 1:
+        indices = dpt.broadcast_arrays(*indices)
     x_ndim = x.ndim
     if x_ndim > 0:
         axis = operator.index(axis)

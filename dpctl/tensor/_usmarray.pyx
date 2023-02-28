@@ -673,7 +673,7 @@ cdef class usm_ndarray:
         from ._copy_utils import (
             _mock_extract,
             _mock_nonzero,
-            _mock_take_multi_index,
+            _take_multi_index,
         )
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
             return _mock_extract(res, adv_ind[0], adv_ind_start_p)
@@ -685,9 +685,9 @@ cdef class usm_ndarray:
                     adv_ind_int.extend(_mock_nonzero(ind))
                 else:
                     adv_ind_int.append(ind)
-            return _mock_take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
+            return _take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
 
-        return _mock_take_multi_index(res, adv_ind, adv_ind_start_p)
+        return _take_multi_index(res, adv_ind, adv_ind_start_p)
 
 
     def to_device(self, target):
@@ -1021,7 +1021,7 @@ cdef class usm_ndarray:
             _copy_from_usm_ndarray_to_usm_ndarray,
             _mock_nonzero,
             _mock_place,
-            _mock_put_multi_index,
+            _put_multi_index,
         )
 
         adv_ind = _meta[3]
@@ -1064,10 +1064,10 @@ cdef class usm_ndarray:
                     adv_ind_int.extend(_mock_nonzero(ind))
                 else:
                     adv_ind_int.append(ind)
-            _mock_put_multi_index(Xv, tuple(adv_ind_int), adv_ind_start_p, rhs)
+            _put_multi_index(Xv, tuple(adv_ind_int), adv_ind_start_p, rhs)
             return
 
-        _mock_put_multi_index(Xv, adv_ind, adv_ind_start_p, rhs)
+        _put_multi_index(Xv, adv_ind, adv_ind_start_p, rhs)
         return
 
 
