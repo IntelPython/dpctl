@@ -829,7 +829,7 @@ public:
 
     char *get_data() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetData_(raw_ar);
@@ -842,7 +842,7 @@ public:
 
     int get_ndim() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetNDim_(raw_ar);
@@ -850,7 +850,7 @@ public:
 
     const py::ssize_t *get_shape_raw() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetShape_(raw_ar);
@@ -858,8 +858,8 @@ public:
 
     const std::vector<py::ssize_t> get_shape_vector() const
     {
-        auto raw_sh = this->get_shape_raw();
-        auto nd = this->get_ndim();
+        auto raw_sh = get_shape_raw();
+        auto nd = get_ndim();
 
         std::vector<py::ssize_t> shape_vector(raw_sh, raw_sh + nd);
         return shape_vector;
@@ -873,7 +873,7 @@ public:
 
     const py::ssize_t *get_strides_raw() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetStrides_(raw_ar);
@@ -881,13 +881,13 @@ public:
 
     const std::vector<py::ssize_t> get_strides_vector() const
     {
-        auto raw_st = this->get_strides_raw();
-        auto nd = this->get_ndim();
+        auto raw_st = get_strides_raw();
+        auto nd = get_ndim();
 
         if (raw_st == nullptr) {
-            auto is_c_contig = this->is_c_contiguous();
-            auto is_f_contig = this->is_f_contiguous();
-            auto raw_sh = this->get_shape_raw();
+            auto is_c_contig = is_c_contiguous();
+            auto is_f_contig = is_f_contiguous();
+            auto raw_sh = get_shape_raw();
             if (is_c_contig) {
                 const auto &contig_strides = c_contiguous_strides(nd, raw_sh);
                 return contig_strides;
@@ -909,7 +909,7 @@ public:
 
     py::ssize_t get_size() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         int ndim = api.UsmNDArray_GetNDim_(raw_ar);
@@ -926,7 +926,7 @@ public:
 
     std::pair<py::ssize_t, py::ssize_t> get_minmax_offsets() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         int nd = api.UsmNDArray_GetNDim_(raw_ar);
@@ -960,7 +960,7 @@ public:
 
     sycl::queue get_queue() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
@@ -969,7 +969,7 @@ public:
 
     int get_typenum() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetTypenum_(raw_ar);
@@ -977,7 +977,7 @@ public:
 
     int get_flags() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetFlags_(raw_ar);
@@ -985,7 +985,7 @@ public:
 
     int get_elemsize() const
     {
-        PyUSMArrayObject *raw_ar = this->usm_array_ptr();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return api.UsmNDArray_GetElementSize_(raw_ar);
@@ -993,21 +993,21 @@ public:
 
     bool is_c_contiguous() const
     {
-        int flags = this->get_flags();
+        int flags = get_flags();
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_C_CONTIGUOUS_);
     }
 
     bool is_f_contiguous() const
     {
-        int flags = this->get_flags();
+        int flags = get_flags();
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_F_CONTIGUOUS_);
     }
 
     bool is_writable() const
     {
-        int flags = this->get_flags();
+        int flags = get_flags();
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_WRITABLE_);
     }
