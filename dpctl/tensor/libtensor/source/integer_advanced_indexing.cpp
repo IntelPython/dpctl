@@ -70,6 +70,7 @@ using dpctl::utils::keep_args_alive;
 
 std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
     sycl::queue exec_q,
+    std::vector<sycl::event> &host_task_events,
     py::ssize_t *device_orthog_shapes_strides,
     py::ssize_t *device_axes_shapes_strides,
     const py::ssize_t *inp_shape,
@@ -210,20 +211,21 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
             exec_q.copy<py::ssize_t>(packed_host_shapes_strides_shp->data(),
                                      device_orthog_shapes_strides,
                                      packed_host_shapes_strides_shp->size());
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(device_orthog_shapes_strides_copy_ev);
-            cgh.host_task([packed_host_shapes_strides_shp] {});
-        });
 
         sycl::event device_axes_shapes_strides_copy_ev =
             exec_q.copy<py::ssize_t>(
                 packed_host_axes_shapes_strides_shp->data(),
                 device_axes_shapes_strides,
                 packed_host_axes_shapes_strides_shp->size());
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(device_axes_shapes_strides_copy_ev);
-            cgh.host_task([packed_host_axes_shapes_strides_shp]() {});
-        });
+
+        sycl::event clean_up_host_task_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(device_axes_shapes_strides_copy_ev);
+                cgh.depends_on(device_orthog_shapes_strides_copy_ev);
+                cgh.host_task([packed_host_axes_shapes_strides_shp,
+                               packed_host_shapes_strides_shp]() {});
+            });
+        host_task_events.push_back(clean_up_host_task_ev);
 
         std::vector<sycl::event> v = {device_orthog_shapes_strides_copy_ev,
                                       device_axes_shapes_strides_copy_ev};
@@ -268,10 +270,13 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
                 packed_host_axes_shapes_strides_shp->data(),
                 device_axes_shapes_strides,
                 packed_host_axes_shapes_strides_shp->size());
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(device_axes_shapes_strides_copy_ev);
-            cgh.host_task([packed_host_axes_shapes_strides_shp]() {});
-        });
+
+        sycl::event clean_up_host_task_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(device_axes_shapes_strides_copy_ev);
+                cgh.host_task([packed_host_axes_shapes_strides_shp]() {});
+            });
+        host_task_events.push_back(clean_up_host_task_ev);
 
         std::vector<sycl::event> v = {device_orthog_shapes_strides_fill_ev,
                                       device_axes_shapes_strides_copy_ev};
@@ -590,28 +595,33 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
+    std::vector<sycl::event> host_task_events(5);
+
     sycl::event packed_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ind_ptrs_host_task = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(packed_ind_ptrs_copy_ev);
         cgh.host_task([host_ind_ptrs_shp]() {});
     });
+    host_task_events.push_back(ind_ptrs_host_task);
 
     sycl::event packed_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
         host_ind_shapes_strides_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ind_sh_st_host_task = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(packed_ind_shapes_strides_copy_ev);
         cgh.host_task([host_ind_shapes_strides_shp]() {});
     });
+    host_task_events.push_back(ind_sh_st_host_task);
 
     sycl::event packed_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), packed_ind_offsets,
         host_ind_offsets_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ind_offsets_host_task = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(packed_ind_offsets_copy_ev);
         cgh.host_task([host_ind_offsets_shp]() {});
     });
+    host_task_events.push_back(ind_offsets_host_task);
 
     std::vector<sycl::event> ind_pack_depends{packed_ind_ptrs_copy_ev,
                                               packed_ind_shapes_strides_copy_ev,
@@ -650,10 +660,10 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 
     std::vector<sycl::event> src_dst_pack_deps =
         _populate_packed_shapes_strides_for_indexing(
-            exec_q, packed_shapes_strides, packed_axes_shapes_strides,
-            src_shape, src_strides, is_src_c_contig, is_src_f_contig, dst_shape,
-            dst_strides, is_dst_c_contig, is_dst_f_contig, axis_start, k,
-            ind_nd, src_nd, dst_nd);
+            exec_q, host_task_events, packed_shapes_strides,
+            packed_axes_shapes_strides, src_shape, src_strides, is_src_c_contig,
+            is_src_f_contig, dst_shape, dst_strides, is_dst_c_contig,
+            is_dst_f_contig, axis_start, k, ind_nd, src_nd, dst_nd);
 
     std::vector<sycl::event> all_deps(depends.size() + ind_pack_depends.size() +
                                       src_dst_pack_deps.size());
@@ -690,9 +700,10 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             sycl::free(packed_ind_offsets, ctx);
         });
     });
+    host_task_events.push_back(take_generic_ev);
 
     sycl::event host_task_ev =
-        keep_args_alive(exec_q, {src, py_ind, dst}, {take_generic_ev});
+        keep_args_alive(exec_q, {src, py_ind, dst}, host_task_events);
 
     return std::make_pair(host_task_ev, take_generic_ev);
 }
@@ -977,28 +988,33 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
+    std::vector<sycl::event> host_task_events(5);
+
     sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ind_ptrs_host_task = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(device_ind_ptrs_copy_ev);
         cgh.host_task([host_ind_ptrs_shp]() {});
     });
+    host_task_events.push_back(ind_ptrs_host_task);
 
     sycl::event device_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
         host_ind_shapes_strides_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ind_sh_st_host_task = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(device_ind_shapes_strides_copy_ev);
         cgh.host_task([host_ind_shapes_strides_shp]() {});
     });
+    host_task_events.push_back(ind_sh_st_host_task);
 
     sycl::event device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), packed_ind_offsets,
         host_ind_offsets_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ind_offsets_host_task = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(device_ind_offsets_copy_ev);
         cgh.host_task([host_ind_offsets_shp]() {});
     });
+    host_task_events.push_back(ind_offsets_host_task);
 
     std::vector<sycl::event> ind_pack_depends{device_ind_ptrs_copy_ev,
                                               device_ind_shapes_strides_copy_ev,
@@ -1037,10 +1053,10 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
     std::vector<sycl::event> copy_shapes_strides_deps =
         _populate_packed_shapes_strides_for_indexing(
-            exec_q, packed_shapes_strides, packed_axes_shapes_strides,
-            dst_shape, dst_strides, is_dst_c_contig, is_dst_f_contig, val_shape,
-            val_strides, is_val_c_contig, is_val_f_contig, axis_start, k,
-            ind_nd, dst_nd, val_nd);
+            exec_q, host_task_events, packed_shapes_strides,
+            packed_axes_shapes_strides, dst_shape, dst_strides, is_dst_c_contig,
+            is_dst_f_contig, val_shape, val_strides, is_val_c_contig,
+            is_val_f_contig, axis_start, k, ind_nd, dst_nd, val_nd);
 
     std::vector<sycl::event> all_deps(depends.size() +
                                       copy_shapes_strides_deps.size() +
@@ -1078,9 +1094,10 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
             sycl::free(packed_ind_offsets, ctx);
         });
     });
+    host_task_events.push_back(put_generic_ev);
 
     return std::make_pair(
-        keep_args_alive(exec_q, {dst, py_ind, val}, {put_generic_ev}),
+        keep_args_alive(exec_q, {dst, py_ind, val}, host_task_events),
         put_generic_ev);
 }
 
