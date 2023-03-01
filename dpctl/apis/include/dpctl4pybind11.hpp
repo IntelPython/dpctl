@@ -1000,14 +1000,10 @@ sycl::event keep_args_alive(sycl::queue q,
             shp_arr[i]->inc_ref();
         }
         cgh.host_task([=]() {
-            bool guard = (Py_IsInitialized() && !_Py_IsFinalizing());
-            if (guard) {
-                PyGILState_STATE gstate;
-                gstate = PyGILState_Ensure();
-                for (std::size_t i = 0; i < num; ++i) {
-                    shp_arr[i]->dec_ref();
-                }
-                PyGILState_Release(gstate);
+            py::gil_scoped_acquire acquire;
+
+            for (std::size_t i = 0; i < num; ++i) {
+                shp_arr[i]->dec_ref();
             }
         });
     });
