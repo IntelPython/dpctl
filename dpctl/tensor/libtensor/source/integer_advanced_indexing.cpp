@@ -143,6 +143,8 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
                           packed_host_axes_shapes_strides_shp->begin() + k);
             }
             else {
+                // FIXME: this pointer was not allocated in this function
+                // the caller should be freeing it
                 sycl::free(device_orthog_shapes_strides, exec_q);
                 throw std::runtime_error("Invalid array encountered");
             }
@@ -190,6 +192,8 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
                           packed_host_axes_shapes_strides_shp->begin() + 2 * k);
             }
             else {
+                // FIXME: this pointer was not allocated in this function
+                // the caller should be freeing it
                 sycl::free(device_orthog_shapes_strides, exec_q);
                 throw std::runtime_error("Invalid array encountered");
             }
@@ -255,6 +259,8 @@ std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
                           packed_host_axes_shapes_strides_shp->begin() + 2);
             }
             else {
+                // FIXME: memory was not allocated in this function
+                // it should be freed by the caller
                 sycl::free(device_orthog_shapes_strides, exec_q);
                 throw std::runtime_error("Invalid array encountered");
             }
@@ -292,23 +298,24 @@ std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
     std::vector<dpctl::tensor::usm_ndarray> res;
     res.reserve(ind_count);
 
-    bool acquired = false;
+    bool nd_is_known = false;
     int nd = -1;
     for (size_t i = 0; i < ind_count; ++i) {
-        auto el_i = py_ind[py::cast(i)];
-        auto arr_i = py::cast<dpctl::tensor::usm_ndarray>(el_i);
+        py::object el_i = py_ind[py::cast(i)];
+        dpctl::tensor::usm_ndarray arr_i =
+            py::cast<dpctl::tensor::usm_ndarray>(el_i);
         if (!dpctl::utils::queues_are_compatible(q, {arr_i})) {
             throw py::value_error("Index allocation queue is not compatible "
                                   "with execution queue");
         }
-        if (acquired) {
+        if (nd_is_known) {
             if (nd != arr_i.get_ndim()) {
                 throw py::value_error(
                     "Indices must have the same number of dimensions.");
             }
         }
         else {
-            acquired = true;
+            nd_is_known = true;
             nd = arr_i.get_ndim();
         }
         res.push_back(arr_i);
@@ -558,6 +565,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
 
     if (packed_ind_shapes_strides == nullptr) {
+        sycl::free(packed_ind_ptrs, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_ind_shapes_strides device memory");
     }
@@ -566,6 +574,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         sycl::malloc_device<py::ssize_t>(k, exec_q);
 
     if (packed_ind_offsets == nullptr) {
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_ind_offsets device memory");
     }
@@ -595,33 +605,29 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
-    std::vector<sycl::event> host_task_events(5);
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(5);
 
     sycl::event packed_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
-    sycl::event ind_ptrs_host_task = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(packed_ind_ptrs_copy_ev);
-        cgh.host_task([host_ind_ptrs_shp]() {});
-    });
-    host_task_events.push_back(ind_ptrs_host_task);
 
     sycl::event packed_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
         host_ind_shapes_strides_shp->size());
-    sycl::event ind_sh_st_host_task = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(packed_ind_shapes_strides_copy_ev);
-        cgh.host_task([host_ind_shapes_strides_shp]() {});
-    });
-    host_task_events.push_back(ind_sh_st_host_task);
 
     sycl::event packed_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), packed_ind_offsets,
         host_ind_offsets_shp->size());
-    sycl::event ind_offsets_host_task = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(packed_ind_offsets_copy_ev);
-        cgh.host_task([host_ind_offsets_shp]() {});
-    });
-    host_task_events.push_back(ind_offsets_host_task);
+
+    sycl::event shared_ptr_cleanup_host_task =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on({packed_ind_offsets_copy_ev,
+                            packed_ind_shapes_strides_copy_ev,
+                            packed_ind_ptrs_copy_ev});
+            cgh.host_task([host_ind_offsets_shp, host_ind_shapes_strides_shp,
+                           host_ind_ptrs_shp]() {});
+        });
+    host_task_events.push_back(shared_ptr_cleanup_host_task);
 
     std::vector<sycl::event> ind_pack_depends{packed_ind_ptrs_copy_ev,
                                               packed_ind_shapes_strides_copy_ev,
@@ -643,6 +649,10 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         sycl::malloc_device<py::ssize_t>(3 * sh_elems, exec_q);
 
     if (packed_shapes_strides == nullptr) {
+        sycl::event::wait(host_task_events);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_shapes_strides device memory");
     }
@@ -654,6 +664,11 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
 
     if (packed_axes_shapes_strides == nullptr) {
+        sycl::event::wait(host_task_events);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
+        sycl::free(packed_shapes_strides, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_axes_shapes_strides device memory");
     }
@@ -665,8 +680,9 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             is_src_f_contig, dst_shape, dst_strides, is_dst_c_contig,
             is_dst_f_contig, axis_start, k, ind_nd, src_nd, dst_nd);
 
-    std::vector<sycl::event> all_deps(depends.size() + ind_pack_depends.size() +
-                                      src_dst_pack_deps.size());
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + ind_pack_depends.size() +
+                     src_dst_pack_deps.size());
     all_deps.insert(std::end(all_deps), std::begin(ind_pack_depends),
                     std::end(ind_pack_depends));
     all_deps.insert(std::end(all_deps), std::begin(src_dst_pack_deps),
@@ -676,6 +692,12 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     auto fn = take_dispatch_table[mode][src_type_id][ind_type_id];
 
     if (fn == nullptr) {
+        sycl::event::wait(host_task_events);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
+        sycl::free(packed_shapes_strides, exec_q);
+        sycl::free(packed_axes_shapes_strides, exec_q);
         throw std::runtime_error("Indices must be integer type, got " +
                                  std::to_string(ind_type_id));
     }
@@ -687,7 +709,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
 
     // free packed temporaries
-    exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(take_generic_ev);
         auto ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
@@ -700,12 +722,16 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             sycl::free(packed_ind_offsets, ctx);
         });
     });
-    host_task_events.push_back(take_generic_ev);
 
-    sycl::event host_task_ev =
-        keep_args_alive(exec_q, {src, py_ind, dst}, host_task_events);
+    sycl::event::wait(host_task_events);
+    sycl::event::wait({take_generic_ev, temporaries_cleanup_ev});
 
-    return std::make_pair(host_task_ev, take_generic_ev);
+    /*
+    sycl::event host_task_ev = keep_args_alive(exec_q, {src, py_ind, dst},
+                                               {temporaries_cleanup_ev});
+    */
+
+    return std::make_pair(sycl::event(), temporaries_cleanup_ev);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -951,6 +977,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
 
     if (packed_ind_shapes_strides == nullptr) {
+        sycl::free(packed_ind_ptrs, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_ind_shapes_strides device memory");
     }
@@ -959,6 +986,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         sycl::malloc_device<py::ssize_t>(k, exec_q);
 
     if (packed_ind_offsets == nullptr) {
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_ind_offsets device memory");
     }
@@ -988,7 +1017,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
-    std::vector<sycl::event> host_task_events(5);
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(7);
 
     sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
@@ -1036,6 +1066,10 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         sycl::malloc_device<py::ssize_t>(3 * sh_elems, exec_q);
 
     if (packed_shapes_strides == nullptr) {
+        sycl::event::wait(host_task_events);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_shapes_strides device memory");
     }
@@ -1047,6 +1081,11 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
 
     if (packed_axes_shapes_strides == nullptr) {
+        sycl::event::wait(host_task_events);
+        sycl::free(packed_shapes_strides, exec_q);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_axes_shapes_strides device memory");
     }
@@ -1070,6 +1109,13 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     auto fn = put_dispatch_table[mode][dst_type_id][ind_type_id];
 
     if (fn == nullptr) {
+        sycl::event::wait(host_task_events);
+        sycl::free(packed_shapes_strides, exec_q);
+        sycl::free(packed_axes_shapes_strides, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
+
         throw std::runtime_error("Indices must be integer type, got " +
                                  std::to_string(ind_type_id));
     }
@@ -1081,9 +1127,10 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
            dst_offset, val_offset, packed_ind_offsets, all_deps);
 
     // free packed temporaries
-    auto ctx = exec_q.get_context();
-    exec_q.submit([&](sycl::handler &cgh) {
+
+    sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(put_generic_ev);
+        auto ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
                        packed_ind_shapes_strides, packed_ind_ptrs,
                        packed_ind_offsets, ctx]() {
@@ -1094,11 +1141,17 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
             sycl::free(packed_ind_offsets, ctx);
         });
     });
-    host_task_events.push_back(put_generic_ev);
 
-    return std::make_pair(
-        keep_args_alive(exec_q, {dst, py_ind, val}, host_task_events),
-        put_generic_ev);
+    sycl::event::wait(host_task_events);
+    sycl::event::wait({put_generic_ev, temporaries_cleanup_ev});
+
+    /*
+    sycl::event py_obj_cleanup_ev =
+        keep_args_alive(exec_q, {dst, py_ind, val},
+                        {put_generic_ev, temporaries_cleanup_ev});
+    */
+
+    return std::make_pair(sycl::event(), temporaries_cleanup_ev);
 }
 
 void init_advanced_indexing_dispatch_tables(void)
