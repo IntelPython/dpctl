@@ -599,22 +599,21 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     std::shared_ptr<shT> host_ind_offsets_shp =
         std::make_shared<shT>(k, ind_allocator);
 
-    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
-              host_ind_shapes_strides_shp->begin());
-    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
-    std::copy(ind_offsets.begin(), ind_offsets.end(),
-              host_ind_offsets_shp->begin());
-
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(5);
 
+    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
+              host_ind_shapes_strides_shp->begin());
     sycl::event packed_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
 
+    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
     sycl::event packed_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
         host_ind_shapes_strides_shp->size());
 
+    std::copy(ind_offsets.begin(), ind_offsets.end(),
+              host_ind_offsets_shp->begin());
     sycl::event packed_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), packed_ind_offsets,
         host_ind_offsets_shp->size());
@@ -1011,40 +1010,34 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     std::shared_ptr<shT> host_ind_offsets_shp =
         std::make_shared<shT>(k, ind_allocator);
 
-    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
-              host_ind_shapes_strides_shp->begin());
-    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
-    std::copy(ind_offsets.begin(), ind_offsets.end(),
-              host_ind_offsets_shp->begin());
-
     std::vector<sycl::event> host_task_events;
-    host_task_events.reserve(7);
+    host_task_events.reserve(5);
 
+    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
     sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
-    sycl::event ind_ptrs_host_task = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(device_ind_ptrs_copy_ev);
-        cgh.host_task([host_ind_ptrs_shp]() {});
-    });
-    host_task_events.push_back(ind_ptrs_host_task);
 
+    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
+              host_ind_shapes_strides_shp->begin());
     sycl::event device_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
         host_ind_shapes_strides_shp->size());
-    sycl::event ind_sh_st_host_task = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(device_ind_shapes_strides_copy_ev);
-        cgh.host_task([host_ind_shapes_strides_shp]() {});
-    });
-    host_task_events.push_back(ind_sh_st_host_task);
 
+    std::copy(ind_offsets.begin(), ind_offsets.end(),
+              host_ind_offsets_shp->begin());
     sycl::event device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), packed_ind_offsets,
         host_ind_offsets_shp->size());
-    sycl::event ind_offsets_host_task = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(device_ind_offsets_copy_ev);
-        cgh.host_task([host_ind_offsets_shp]() {});
-    });
-    host_task_events.push_back(ind_offsets_host_task);
+
+    sycl::event shared_ptr_cleanup_host_task =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(device_ind_ptrs_copy_ev);
+            cgh.depends_on(device_ind_shapes_strides_copy_ev);
+            cgh.depends_on(device_ind_offsets_copy_ev);
+            cgh.host_task([host_ind_ptrs_shp, host_ind_shapes_strides_shp,
+                           host_ind_offsets_shp]() {});
+        });
+    host_task_events.push_back(shared_ptr_cleanup_host_task);
 
     std::vector<sycl::event> ind_pack_depends{device_ind_ptrs_copy_ev,
                                               device_ind_shapes_strides_copy_ev,
