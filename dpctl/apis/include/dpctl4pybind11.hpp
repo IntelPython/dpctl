@@ -856,7 +856,7 @@ public:
         return api.UsmNDArray_GetShape_(raw_ar);
     }
 
-    const std::vector<py::ssize_t> get_shape_vector() const
+    std::vector<py::ssize_t> get_shape_vector() const
     {
         auto raw_sh = get_shape_raw();
         auto nd = get_ndim();
@@ -879,7 +879,7 @@ public:
         return api.UsmNDArray_GetStrides_(raw_ar);
     }
 
-    const std::vector<py::ssize_t> get_strides_vector() const
+    std::vector<py::ssize_t> get_strides_vector() const
     {
         auto raw_st = get_strides_raw();
         auto nd = get_ndim();
