@@ -68,7 +68,7 @@ public:
     void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
         max_item = std::max<py::ssize_t>(max_item, 1);
-        ind = ind % max_item;
+        ind = (ind < 0) ? ind % max_item + max_item : ind % max_item;
         return;
     }
 };
