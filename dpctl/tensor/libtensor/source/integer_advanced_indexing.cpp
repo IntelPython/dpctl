@@ -68,228 +68,135 @@ using dpctl::tensor::f_contiguous_strides;
 
 using dpctl::utils::keep_args_alive;
 
-std::vector<sycl::event> _populate_packed_shapes_strides_for_indexing(
-    sycl::queue exec_q,
-    std::vector<sycl::event> &host_task_events,
-    py::ssize_t *device_orthog_shapes_strides,
-    py::ssize_t *device_axes_shapes_strides,
-    const py::ssize_t *inp_shape,
-    const py::ssize_t *inp_strides,
-    bool is_inp_c_contig,
-    bool is_inp_f_contig,
-    const py::ssize_t *arr_shape,
-    const py::ssize_t *arr_strides,
-    bool is_arr_c_contig,
-    bool is_arr_f_contig,
-    int axis_start,
-    int k,
-    int ind_nd,
-    int inp_nd,
-    int arr_nd)
+std::vector<sycl::event>
+_populate_kernel_params(sycl::queue exec_q,
+                        std::vector<sycl::event> &host_task_events,
+                        char **device_ind_ptrs,
+                        py::ssize_t *device_ind_sh_st,
+                        py::ssize_t *device_ind_offsets,
+                        py::ssize_t *device_orthog_sh_st,
+                        py::ssize_t *device_along_sh_st,
+                        const py::ssize_t *inp_shape,
+                        std::vector<py::ssize_t> &inp_strides,
+                        std::vector<py::ssize_t> &arr_strides,
+                        std::vector<py::ssize_t> &ind_sh_sts,
+                        std::vector<char *> &ind_ptrs,
+                        std::vector<py::ssize_t> &ind_offsets,
+                        int axis_start,
+                        int k,
+                        int ind_nd,
+                        int inp_nd,
+                        int orthog_sh_elems,
+                        int ind_sh_elems)
 {
 
-    int orthog_sh_elems = std::max<int>(inp_nd - k, 1);
-    int along_sh_elems = std::max<int>(ind_nd, 1);
+    using usm_host_allocator_T =
+        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
+    using ptrT = std::vector<char *, usm_host_allocator_T>;
+
+    usm_host_allocator_T ptr_allocator(exec_q);
+    std::shared_ptr<ptrT> host_ind_ptrs_shp =
+        std::make_shared<ptrT>(k, ptr_allocator);
 
     using usm_host_allocatorT =
         sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
     using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
 
-    usm_host_allocatorT allocator(exec_q);
-    std::shared_ptr<shT> packed_host_shapes_strides_shp =
-        std::make_shared<shT>(3 * orthog_sh_elems, 0, allocator);
+    usm_host_allocatorT sz_allocator(exec_q);
+    std::shared_ptr<shT> host_ind_sh_st_shp =
+        std::make_shared<shT>(ind_sh_elems * (k + 1), sz_allocator);
 
-    std::shared_ptr<shT> packed_host_axes_shapes_strides_shp =
-        std::make_shared<shT>(2 * k + along_sh_elems, 0, allocator);
+    std::shared_ptr<shT> host_ind_offsets_shp =
+        std::make_shared<shT>(k, sz_allocator);
+
+    std::shared_ptr<shT> host_orthog_sh_st_shp =
+        std::make_shared<shT>(3 * orthog_sh_elems, sz_allocator);
+
+    std::shared_ptr<shT> host_along_sh_st_shp =
+        std::make_shared<shT>(2 * k + ind_sh_elems, sz_allocator);
+
+    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
+              host_ind_sh_st_shp->begin());
+    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
+    std::copy(ind_offsets.begin(), ind_offsets.end(),
+              host_ind_offsets_shp->begin());
+
+    sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
+        host_ind_ptrs_shp->data(), device_ind_ptrs, host_ind_ptrs_shp->size());
+
+    sycl::event device_ind_sh_st_copy_ev =
+        exec_q.copy<py::ssize_t>(host_ind_sh_st_shp->data(), device_ind_sh_st,
+                                 host_ind_sh_st_shp->size());
+
+    sycl::event device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
+        host_ind_offsets_shp->data(), device_ind_offsets,
+        host_ind_offsets_shp->size());
+
+    int orthog_nd = inp_nd - k;
+
+    if (orthog_nd > 0) {
+        if (axis_start > 0) {
+            std::copy(inp_shape, inp_shape + axis_start,
+                      host_orthog_sh_st_shp->begin());
+            std::copy(inp_strides.begin(), inp_strides.begin() + axis_start,
+                      host_orthog_sh_st_shp->begin() + orthog_sh_elems);
+            std::copy(arr_strides.begin(), arr_strides.begin() + axis_start,
+                      host_orthog_sh_st_shp->begin() + 2 * orthog_sh_elems);
+        }
+        if (inp_nd > (axis_start + k)) {
+            std::copy(inp_shape + axis_start + k, inp_shape + inp_nd,
+                      host_orthog_sh_st_shp->begin() + axis_start);
+            std::copy(inp_strides.begin() + axis_start + k, inp_strides.end(),
+                      host_orthog_sh_st_shp->begin() + orthog_sh_elems +
+                          axis_start);
+
+            std::copy(arr_strides.begin() + axis_start + ind_nd,
+                      arr_strides.end(),
+                      host_orthog_sh_st_shp->begin() + 2 * orthog_sh_elems +
+                          axis_start);
+        }
+    }
 
     if (inp_nd > 0) {
-        std::copy(inp_shape, inp_shape + axis_start,
-                  packed_host_shapes_strides_shp->begin());
-        std::copy(inp_shape + axis_start + k, inp_shape + inp_nd,
-                  packed_host_shapes_strides_shp->begin() + axis_start);
         std::copy(inp_shape + axis_start, inp_shape + axis_start + k,
-                  packed_host_axes_shapes_strides_shp->begin());
+                  host_along_sh_st_shp->begin());
 
-        // contract axes by using two copies
-        if (inp_strides == nullptr) {
-            if (is_inp_c_contig) {
-                const auto &inp_contig_strides =
-                    c_contiguous_strides(inp_nd, inp_shape);
-                std::copy(inp_contig_strides.begin(),
-                          inp_contig_strides.begin() + axis_start,
-                          packed_host_shapes_strides_shp->begin() +
-                              orthog_sh_elems);
-                std::copy(inp_contig_strides.begin() + axis_start + k,
-                          inp_contig_strides.end(),
-                          packed_host_shapes_strides_shp->begin() +
-                              orthog_sh_elems + axis_start);
-                std::copy(inp_contig_strides.begin() + axis_start,
-                          inp_contig_strides.begin() + axis_start + k,
-                          packed_host_axes_shapes_strides_shp->begin() + k);
-            }
-            else if (is_inp_f_contig) {
-                const auto &inp_contig_strides =
-                    f_contiguous_strides(inp_nd, inp_shape);
-                std::copy(inp_contig_strides.begin(),
-                          inp_contig_strides.begin() + axis_start,
-                          packed_host_shapes_strides_shp->begin() +
-                              orthog_sh_elems);
-                std::copy(inp_contig_strides.begin() + axis_start + k,
-                          inp_contig_strides.end(),
-                          packed_host_shapes_strides_shp->begin() +
-                              orthog_sh_elems + axis_start);
-                std::copy(inp_contig_strides.begin() + axis_start,
-                          inp_contig_strides.begin() + axis_start + k,
-                          packed_host_axes_shapes_strides_shp->begin() + k);
-            }
-            else {
-                // FIXME: this pointer was not allocated in this function
-                // the caller should be freeing it
-                sycl::free(device_orthog_shapes_strides, exec_q);
-                throw std::runtime_error("Invalid array encountered");
-            }
-        }
-        else {
-            std::copy(inp_strides, inp_strides + axis_start,
-                      packed_host_shapes_strides_shp->begin() +
-                          orthog_sh_elems);
-            std::copy(inp_strides + axis_start + k, inp_strides + inp_nd,
-                      packed_host_shapes_strides_shp->begin() +
-                          orthog_sh_elems + axis_start);
-            std::copy(inp_strides + axis_start, inp_strides + axis_start + k,
-                      packed_host_axes_shapes_strides_shp->begin() + k);
-        }
-
-        if (arr_strides == nullptr) {
-            if (is_arr_c_contig) {
-                const auto &arr_contig_strides =
-                    c_contiguous_strides(arr_nd, arr_shape);
-                std::copy(arr_contig_strides.begin(),
-                          arr_contig_strides.begin() + axis_start,
-                          packed_host_shapes_strides_shp->begin() +
-                              2 * orthog_sh_elems);
-                std::copy(arr_contig_strides.begin() + axis_start + ind_nd,
-                          arr_contig_strides.end(),
-                          packed_host_shapes_strides_shp->begin() +
-                              2 * orthog_sh_elems + axis_start);
-                std::copy(arr_contig_strides.begin() + axis_start,
-                          arr_contig_strides.begin() + axis_start + ind_nd,
-                          packed_host_axes_shapes_strides_shp->begin() + 2 * k);
-            }
-            else if (is_arr_f_contig) {
-                const auto &arr_contig_strides =
-                    f_contiguous_strides(arr_nd, arr_shape);
-                std::copy(arr_contig_strides.begin(),
-                          arr_contig_strides.begin() + axis_start,
-                          packed_host_shapes_strides_shp->begin() +
-                              2 * orthog_sh_elems);
-                std::copy(arr_contig_strides.begin() + axis_start + ind_nd,
-                          arr_contig_strides.end(),
-                          packed_host_shapes_strides_shp->begin() +
-                              2 * orthog_sh_elems + axis_start);
-                std::copy(arr_contig_strides.begin() + axis_start,
-                          arr_contig_strides.begin() + axis_start + ind_nd,
-                          packed_host_axes_shapes_strides_shp->begin() + 2 * k);
-            }
-            else {
-                // FIXME: this pointer was not allocated in this function
-                // the caller should be freeing it
-                sycl::free(device_orthog_shapes_strides, exec_q);
-                throw std::runtime_error("Invalid array encountered");
-            }
-        }
-        else {
-            std::copy(arr_strides, arr_strides + axis_start,
-                      packed_host_shapes_strides_shp->begin() +
-                          2 * orthog_sh_elems);
-            std::copy(arr_strides + axis_start + ind_nd, arr_strides + arr_nd,
-                      packed_host_shapes_strides_shp->begin() +
-                          2 * orthog_sh_elems + axis_start);
-            std::copy(arr_strides + axis_start,
-                      arr_strides + axis_start + ind_nd,
-                      packed_host_axes_shapes_strides_shp->begin() + 2 * k);
-        }
-
-        // copy packed shapes and strides from host to devices
-        sycl::event device_orthog_shapes_strides_copy_ev =
-            exec_q.copy<py::ssize_t>(packed_host_shapes_strides_shp->data(),
-                                     device_orthog_shapes_strides,
-                                     packed_host_shapes_strides_shp->size());
-
-        sycl::event device_axes_shapes_strides_copy_ev =
-            exec_q.copy<py::ssize_t>(
-                packed_host_axes_shapes_strides_shp->data(),
-                device_axes_shapes_strides,
-                packed_host_axes_shapes_strides_shp->size());
-
-        sycl::event clean_up_host_task_ev =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(device_axes_shapes_strides_copy_ev);
-                cgh.depends_on(device_orthog_shapes_strides_copy_ev);
-                cgh.host_task([packed_host_axes_shapes_strides_shp,
-                               packed_host_shapes_strides_shp]() {});
-            });
-        clean_up_host_task_ev.wait();
-        host_task_events.push_back(clean_up_host_task_ev);
-
-        std::vector<sycl::event> v = {device_orthog_shapes_strides_copy_ev,
-                                      device_axes_shapes_strides_copy_ev};
-        return v;
+        std::copy(inp_strides.begin() + axis_start,
+                  inp_strides.begin() + axis_start + k,
+                  host_along_sh_st_shp->begin() + k);
     }
-    else {
-        // no orthogonal dimensions
-        sycl::event device_orthog_shapes_strides_fill_ev =
-            exec_q.fill<py::ssize_t>(device_orthog_shapes_strides,
-                                     py::ssize_t(0), 3);
 
-        packed_host_axes_shapes_strides_shp->insert(
-            packed_host_axes_shapes_strides_shp->end(), py::ssize_t(0), 2);
-        if (arr_strides == nullptr) {
-            if (is_arr_c_contig) {
-                const auto &arr_contig_strides =
-                    c_contiguous_strides(arr_nd, arr_shape);
-                std::copy(arr_contig_strides.begin() + axis_start,
-                          arr_contig_strides.begin() + axis_start + ind_nd,
-                          packed_host_axes_shapes_strides_shp->begin() + 2);
-            }
-            else if (is_arr_f_contig) {
-                const auto &arr_contig_strides =
-                    f_contiguous_strides(arr_nd, arr_shape);
-                std::copy(arr_contig_strides.begin() + axis_start,
-                          arr_contig_strides.begin() + axis_start + ind_nd,
-                          packed_host_axes_shapes_strides_shp->begin() + 2);
-            }
-            else {
-                // FIXME: memory was not allocated in this function
-                // it should be freed by the caller
-                sycl::free(device_orthog_shapes_strides, exec_q);
-                throw std::runtime_error("Invalid array encountered");
-            }
-        }
-        else {
-            std::copy(arr_strides + axis_start,
-                      arr_strides + axis_start + ind_nd,
-                      packed_host_axes_shapes_strides_shp->begin() + 2);
-        }
-
-        sycl::event device_axes_shapes_strides_copy_ev =
-            exec_q.copy<py::ssize_t>(
-                packed_host_axes_shapes_strides_shp->data(),
-                device_axes_shapes_strides,
-                packed_host_axes_shapes_strides_shp->size());
-
-        sycl::event clean_up_host_task_ev =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(device_axes_shapes_strides_copy_ev);
-                cgh.host_task([packed_host_axes_shapes_strides_shp]() {});
-            });
-        clean_up_host_task_ev.wait();
-        host_task_events.push_back(clean_up_host_task_ev);
-
-        std::vector<sycl::event> v = {device_orthog_shapes_strides_fill_ev,
-                                      device_axes_shapes_strides_copy_ev};
-        return v;
+    if (ind_nd > 0) {
+        std::copy(arr_strides.begin() + axis_start,
+                  arr_strides.begin() + axis_start + ind_nd,
+                  host_along_sh_st_shp->begin() + 2 * k);
     }
+
+    sycl::event device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
+        host_orthog_sh_st_shp->data(), device_orthog_sh_st,
+        host_orthog_sh_st_shp->size());
+
+    sycl::event device_along_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
+        host_along_sh_st_shp->data(), device_along_sh_st,
+        host_along_sh_st_shp->size());
+
+    sycl::event shared_ptr_cleanup_host_task =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on({device_along_sh_st_copy_ev,
+                            device_orthog_sh_st_copy_ev,
+                            device_ind_offsets_copy_ev,
+                            device_ind_sh_st_copy_ev, device_ind_ptrs_copy_ev});
+            cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
+                           host_ind_ptrs_shp, host_orthog_sh_st_shp,
+                           host_along_sh_st_shp]() {});
+        });
+    host_task_events.push_back(shared_ptr_cleanup_host_task);
+
+    std::vector<sycl::event> sh_st_pack_deps{
+        device_ind_ptrs_copy_ev, device_ind_sh_st_copy_ev,
+        device_ind_offsets_copy_ev, device_orthog_sh_st_copy_ev,
+        device_along_sh_st_copy_ev};
+    return sh_st_pack_deps;
 }
 
 /* Utility to parse python object py_ind into vector of `usm_ndarray`s */
@@ -357,7 +264,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     int dst_nd = dst.get_ndim();
     int ind_nd = ind_rep.get_ndim();
 
-    auto sh_elems = (src_nd > 0) ? src_nd : 1;
+    auto sh_elems = std::max<int>(src_nd, 1);
 
     if (axis_start + k > sh_elems) {
         throw py::value_error("Axes are out of range for array of dimension " +
@@ -378,8 +285,6 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
-
-    int orthog_nd = std::max<int>(src_nd - k, 1);
 
     bool orthog_shapes_equal(true);
     size_t orthog_nelems(1);
@@ -471,9 +376,9 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     std::vector<py::ssize_t> ind_offsets;
     ind_offsets.reserve(k);
 
-    std::vector<py::ssize_t> ind_sh_sts((k + 1) * ind_sh_elems, py::ssize_t(0));
+    std::vector<py::ssize_t> ind_sh_sts((k + 1) * ind_sh_elems, 0);
     if (ind_nd > 0) {
-        std::copy(ind_shape, ind_shape + ind_sh_elems, ind_sh_sts.begin());
+        std::copy(ind_shape, ind_shape + ind_nd, ind_sh_sts.begin());
     }
     for (int i = 0; i < k; ++i) {
         dpctl::tensor::usm_ndarray ind_ = ind[i];
@@ -520,31 +425,9 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 
         // strides are initialized to 0 for 0D indices, so skip here
         if (ind_nd > 0) {
-            const py::ssize_t *ind_strides = ind_.get_strides_raw();
-            if (ind_strides == nullptr) {
-                if (ind_.is_c_contiguous()) {
-                    const auto &ind_contig_strides_ =
-                        c_contiguous_strides(ind_nd, ind_shape);
-                    std::copy(ind_contig_strides_.begin(),
-                              ind_contig_strides_.end(),
-                              ind_sh_sts.begin() + (i + 1) * ind_nd);
-                }
-                else if (ind_.is_f_contiguous()) {
-                    const auto &ind_contig_strides_ =
-                        f_contiguous_strides(ind_nd, ind_shape);
-                    std::copy(ind_contig_strides_.begin(),
-                              ind_contig_strides_.end(),
-                              ind_sh_sts.begin() + (i + 1) * ind_nd);
-                }
-                else {
-                    throw std::runtime_error(
-                        "Invalid ind array encountered in: take function");
-                }
-            }
-            else {
-                std::copy(ind_strides, ind_strides + ind_nd,
-                          ind_sh_sts.begin() + (i + 1) * ind_nd);
-            }
+            auto ind_strides = ind_.get_strides_vector();
+            std::copy(ind_strides.begin(), ind_strides.end(),
+                      ind_sh_sts.begin() + (i + 1) * ind_nd);
         }
 
         ind_ptrs.push_back(ind_data);
@@ -582,77 +465,15 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             "Unable to allocate packed_ind_offsets device memory");
     }
 
-    using usm_host_allocator_T =
-        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
-    using ptrT = std::vector<char *, usm_host_allocator_T>;
-
-    usm_host_allocator_T ptr_allocator(exec_q);
-    std::shared_ptr<ptrT> host_ind_ptrs_shp =
-        std::make_shared<ptrT>(k, ptr_allocator);
-
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-
-    usm_host_allocatorT ind_allocator(exec_q);
-    std::shared_ptr<shT> host_ind_shapes_strides_shp =
-        std::make_shared<shT>(ind_sh_elems * (k + 1), ind_allocator);
-
-    std::shared_ptr<shT> host_ind_offsets_shp =
-        std::make_shared<shT>(k, ind_allocator);
-
-    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
-              host_ind_shapes_strides_shp->begin());
-    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
-    std::copy(ind_offsets.begin(), ind_offsets.end(),
-              host_ind_offsets_shp->begin());
-
-    std::vector<sycl::event> host_task_events;
-    host_task_events.reserve(5);
-
-    sycl::event packed_ind_ptrs_copy_ev = exec_q.copy<char *>(
-        host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
-
-    sycl::event packed_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
-        host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
-        host_ind_shapes_strides_shp->size());
-
-    sycl::event packed_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
-        host_ind_offsets_shp->data(), packed_ind_offsets,
-        host_ind_offsets_shp->size());
-
-    sycl::event shared_ptr_cleanup_host_task =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on({packed_ind_offsets_copy_ev,
-                            packed_ind_shapes_strides_copy_ev,
-                            packed_ind_ptrs_copy_ev});
-            cgh.host_task([host_ind_offsets_shp, host_ind_shapes_strides_shp,
-                           host_ind_ptrs_shp]() {});
-        });
-    shared_ptr_cleanup_host_task.wait();
-    host_task_events.push_back(shared_ptr_cleanup_host_task);
-
-    std::vector<sycl::event> ind_pack_depends{packed_ind_ptrs_copy_ev,
-                                              packed_ind_shapes_strides_copy_ev,
-                                              packed_ind_offsets_copy_ev};
-
-    bool is_src_c_contig = src.is_c_contiguous();
-    bool is_src_f_contig = src.is_f_contiguous();
-
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
-
-    const py::ssize_t *src_strides = src.get_strides_raw();
-    const py::ssize_t *dst_strides = dst.get_strides_raw();
+    int orthog_sh_elems = std::max<int>(src_nd - k, 1);
 
     // packed_shapes_strides = [src_shape[:axis] + src_shape[axis+k:],
     //                          src_strides[:axis] + src_strides[axis+k:],
     //                          dst_strides[:axis] + dst_strides[axis+k:]]
     py::ssize_t *packed_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(3 * sh_elems, exec_q);
+        sycl::malloc_device<py::ssize_t>(3 * orthog_sh_elems, exec_q);
 
     if (packed_shapes_strides == nullptr) {
-        sycl::event::wait(host_task_events);
         sycl::free(packed_ind_ptrs, exec_q);
         sycl::free(packed_ind_shapes_strides, exec_q);
         sycl::free(packed_ind_offsets, exec_q);
@@ -667,7 +488,6 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
 
     if (packed_axes_shapes_strides == nullptr) {
-        sycl::event::wait(host_task_events);
         sycl::free(packed_ind_ptrs, exec_q);
         sycl::free(packed_ind_shapes_strides, exec_q);
         sycl::free(packed_ind_offsets, exec_q);
@@ -676,20 +496,22 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             "Unable to allocate packed_axes_shapes_strides device memory");
     }
 
-    std::vector<sycl::event> src_dst_pack_deps =
-        _populate_packed_shapes_strides_for_indexing(
-            exec_q, host_task_events, packed_shapes_strides,
-            packed_axes_shapes_strides, src_shape, src_strides, is_src_c_contig,
-            is_src_f_contig, dst_shape, dst_strides, is_dst_c_contig,
-            is_dst_f_contig, axis_start, k, ind_nd, src_nd, dst_nd);
+    auto src_strides = src.get_strides_vector();
+    auto dst_strides = dst.get_strides_vector();
+
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(2);
+
+    std::vector<sycl::event> pack_deps = _populate_kernel_params(
+        exec_q, host_task_events, packed_ind_ptrs, packed_ind_shapes_strides,
+        packed_ind_offsets, packed_shapes_strides, packed_axes_shapes_strides,
+        src_shape, src_strides, dst_strides, ind_sh_sts, ind_ptrs, ind_offsets,
+        axis_start, k, ind_nd, src_nd, orthog_sh_elems, ind_sh_elems);
 
     std::vector<sycl::event> all_deps;
-    all_deps.reserve(depends.size() + ind_pack_depends.size() +
-                     src_dst_pack_deps.size());
-    all_deps.insert(std::end(all_deps), std::begin(ind_pack_depends),
-                    std::end(ind_pack_depends));
-    all_deps.insert(std::end(all_deps), std::begin(src_dst_pack_deps),
-                    std::end(src_dst_pack_deps));
+    all_deps.reserve(depends.size() + pack_deps.size());
+    all_deps.insert(std::end(all_deps), std::begin(pack_deps),
+                    std::end(pack_deps));
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     auto fn = take_dispatch_table[mode][src_type_id][ind_type_id];
@@ -706,7 +528,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     }
 
     sycl::event take_generic_ev =
-        fn(exec_q, orthog_nelems, ind_nelems, orthog_nd, ind_nd, k,
+        fn(exec_q, orthog_nelems, ind_nelems, orthog_sh_elems, ind_sh_elems, k,
            packed_shapes_strides, packed_axes_shapes_strides,
            packed_ind_shapes_strides, src_data, dst_data, packed_ind_ptrs,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
@@ -726,15 +548,10 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         });
     });
 
-    sycl::event::wait({take_generic_ev, temporaries_cleanup_ev});
-    sycl::event::wait(host_task_events);
+    sycl::event host_task_ev = keep_args_alive(
+        exec_q, {src, py_ind, dst}, {take_generic_ev, temporaries_cleanup_ev});
 
-    /*
-    sycl::event host_task_ev = keep_args_alive(exec_q, {src, py_ind, dst},
-                                               {temporaries_cleanup_ev});
-    */
-
-    return std::make_pair(sycl::event(), temporaries_cleanup_ev);
+    return std::make_pair(host_task_ev, take_generic_ev);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -772,7 +589,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     int val_nd = val.get_ndim();
     int ind_nd = ind_rep.get_ndim();
 
-    auto sh_elems = (dst_nd > 0) ? dst_nd : 1;
+    auto sh_elems = std::max<int>(dst_nd, 1);
 
     if (axis_start + k > sh_elems) {
         throw py::value_error("Axes are out of range for array of dimension " +
@@ -795,8 +612,6 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     const py::ssize_t *val_shape = val.get_shape_raw();
-
-    int orthog_nd = ((dst_nd - k) > 0) ? dst_nd - k : 1;
 
     bool orthog_shapes_equal(true);
     size_t orthog_nelems(1);
@@ -879,7 +694,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         }
     }
 
-    auto ind_sh_elems = (ind_nd > 0) ? ind_nd : 1;
+    auto ind_sh_elems = std::max<int>(ind_nd, 1);
 
     std::vector<char *> ind_ptrs;
     ind_ptrs.reserve(k);
@@ -934,31 +749,9 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
         // strides are initialized to 0 for 0D indices, so skip here
         if (ind_nd > 0) {
-            const py::ssize_t *ind_strides = ind_.get_strides_raw();
-            if (ind_strides == nullptr) {
-                if (ind_.is_c_contiguous()) {
-                    const auto &ind_contig_strides_ =
-                        c_contiguous_strides(ind_nd, ind_shape);
-                    std::copy(ind_contig_strides_.begin(),
-                              ind_contig_strides_.end(),
-                              ind_sh_sts.begin() + (i + 1) * ind_nd);
-                }
-                else if (ind_.is_f_contiguous()) {
-                    const auto &ind_contig_strides_ =
-                        f_contiguous_strides(ind_nd, ind_shape);
-                    std::copy(ind_contig_strides_.begin(),
-                              ind_contig_strides_.end(),
-                              ind_sh_sts.begin() + (i + 1) * ind_nd);
-                }
-                else {
-                    throw std::runtime_error(
-                        "Invalid ind array encountered in: take function");
-                }
-            }
-            else {
-                std::copy(ind_strides, ind_strides + ind_nd,
-                          ind_sh_sts.begin() + (i + 1) * ind_nd);
-            }
+            auto ind_strides = ind_.get_strides_vector();
+            std::copy(ind_strides.begin(), ind_strides.end(),
+                      ind_sh_sts.begin() + (i + 1) * ind_nd);
         }
 
         ind_ptrs.push_back(ind_data);
@@ -995,77 +788,15 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
             "Unable to allocate packed_ind_offsets device memory");
     }
 
-    using usm_host_allocator_T =
-        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
-    using ptrT = std::vector<char *, usm_host_allocator_T>;
-
-    usm_host_allocator_T ptr_allocator(exec_q);
-    std::shared_ptr<ptrT> host_ind_ptrs_shp =
-        std::make_shared<ptrT>(k, ptr_allocator);
-
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-
-    usm_host_allocatorT ind_allocator(exec_q);
-    std::shared_ptr<shT> host_ind_shapes_strides_shp =
-        std::make_shared<shT>(ind_sh_elems * (k + 1), ind_allocator);
-
-    std::shared_ptr<shT> host_ind_offsets_shp =
-        std::make_shared<shT>(k, ind_allocator);
-
-    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
-              host_ind_shapes_strides_shp->begin());
-    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
-    std::copy(ind_offsets.begin(), ind_offsets.end(),
-              host_ind_offsets_shp->begin());
-
-    std::vector<sycl::event> host_task_events;
-    host_task_events.reserve(5);
-
-    sycl::event packed_ind_ptrs_copy_ev = exec_q.copy<char *>(
-        host_ind_ptrs_shp->data(), packed_ind_ptrs, host_ind_ptrs_shp->size());
-
-    sycl::event packed_ind_shapes_strides_copy_ev = exec_q.copy<py::ssize_t>(
-        host_ind_shapes_strides_shp->data(), packed_ind_shapes_strides,
-        host_ind_shapes_strides_shp->size());
-
-    sycl::event packed_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
-        host_ind_offsets_shp->data(), packed_ind_offsets,
-        host_ind_offsets_shp->size());
-
-    sycl::event shared_ptr_cleanup_host_task =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on({packed_ind_offsets_copy_ev,
-                            packed_ind_shapes_strides_copy_ev,
-                            packed_ind_ptrs_copy_ev});
-            cgh.host_task([host_ind_offsets_shp, host_ind_shapes_strides_shp,
-                           host_ind_ptrs_shp]() {});
-        });
-    shared_ptr_cleanup_host_task.wait();
-    host_task_events.push_back(shared_ptr_cleanup_host_task);
-
-    std::vector<sycl::event> ind_pack_depends{packed_ind_ptrs_copy_ev,
-                                              packed_ind_shapes_strides_copy_ev,
-                                              packed_ind_offsets_copy_ev};
-
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
-
-    bool is_val_c_contig = val.is_c_contiguous();
-    bool is_val_f_contig = val.is_f_contiguous();
-
-    const py::ssize_t *dst_strides = dst.get_strides_raw();
-    const py::ssize_t *val_strides = val.get_strides_raw();
+    int orthog_sh_elems = std::max<int>(dst_nd - k, 1);
 
     // packed_shapes_strides = [dst_shape[:axis] + dst_shape[axis+k:],
     //                          dst_strides[:axis] + dst_strides[axis+k:],
     //                          val_strides[:axis] + val_strides[axis+k:]]
     py::ssize_t *packed_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(3 * sh_elems, exec_q);
+        sycl::malloc_device<py::ssize_t>(3 * orthog_sh_elems, exec_q);
 
     if (packed_shapes_strides == nullptr) {
-        sycl::event::wait(host_task_events);
         sycl::free(packed_ind_ptrs, exec_q);
         sycl::free(packed_ind_shapes_strides, exec_q);
         sycl::free(packed_ind_offsets, exec_q);
@@ -1073,54 +804,54 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
             "Unable to allocate packed_shapes_strides device memory");
     }
 
-    // packed_axes_shapes_strides = [dst_shape[axis:k],
-    //                               dst_strides[axis:k,
+    // packed_axes_shapes_strides = [dst_shape[axis:axis+k],
+    //                               dst_strides[axis:axis+k,
     //                               val_strides[axis:ind.ndim]]
     py::ssize_t *packed_axes_shapes_strides =
         sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
 
     if (packed_axes_shapes_strides == nullptr) {
-        sycl::event::wait(host_task_events);
-        sycl::free(packed_shapes_strides, exec_q);
         sycl::free(packed_ind_ptrs, exec_q);
         sycl::free(packed_ind_shapes_strides, exec_q);
         sycl::free(packed_ind_offsets, exec_q);
+        sycl::free(packed_shapes_strides, exec_q);
         throw std::runtime_error(
             "Unable to allocate packed_axes_shapes_strides device memory");
     }
 
-    std::vector<sycl::event> copy_shapes_strides_deps =
-        _populate_packed_shapes_strides_for_indexing(
-            exec_q, host_task_events, packed_shapes_strides,
-            packed_axes_shapes_strides, dst_shape, dst_strides, is_dst_c_contig,
-            is_dst_f_contig, val_shape, val_strides, is_val_c_contig,
-            is_val_f_contig, axis_start, k, ind_nd, dst_nd, val_nd);
+    auto dst_strides = dst.get_strides_vector();
+    auto val_strides = val.get_strides_vector();
 
-    std::vector<sycl::event> all_deps(depends.size() +
-                                      copy_shapes_strides_deps.size() +
-                                      ind_pack_depends.size());
-    all_deps.insert(std::end(all_deps), std::begin(copy_shapes_strides_deps),
-                    std::end(copy_shapes_strides_deps));
-    all_deps.insert(std::end(all_deps), std::begin(ind_pack_depends),
-                    std::end(ind_pack_depends));
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(2);
+
+    std::vector<sycl::event> pack_deps = _populate_kernel_params(
+        exec_q, host_task_events, packed_ind_ptrs, packed_ind_shapes_strides,
+        packed_ind_offsets, packed_shapes_strides, packed_axes_shapes_strides,
+        dst_shape, dst_strides, val_strides, ind_sh_sts, ind_ptrs, ind_offsets,
+        axis_start, k, ind_nd, dst_nd, orthog_sh_elems, ind_sh_elems);
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + pack_deps.size());
+    all_deps.insert(std::end(all_deps), std::begin(pack_deps),
+                    std::end(pack_deps));
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     auto fn = put_dispatch_table[mode][dst_type_id][ind_type_id];
 
     if (fn == nullptr) {
         sycl::event::wait(host_task_events);
+        sycl::free(packed_ind_ptrs, exec_q);
+        sycl::free(packed_ind_shapes_strides, exec_q);
+        sycl::free(packed_ind_offsets, exec_q);
         sycl::free(packed_shapes_strides, exec_q);
         sycl::free(packed_axes_shapes_strides, exec_q);
-        sycl::free(packed_ind_shapes_strides, exec_q);
-        sycl::free(packed_ind_ptrs, exec_q);
-        sycl::free(packed_ind_offsets, exec_q);
-
         throw std::runtime_error("Indices must be integer type, got " +
                                  std::to_string(ind_type_id));
     }
 
     sycl::event put_generic_ev =
-        fn(exec_q, orthog_nelems, ind_nelems, orthog_nd, ind_nd, k,
+        fn(exec_q, orthog_nelems, ind_nelems, orthog_sh_elems, ind_sh_elems, k,
            packed_shapes_strides, packed_axes_shapes_strides,
            packed_ind_shapes_strides, dst_data, val_data, packed_ind_ptrs,
            dst_offset, val_offset, packed_ind_offsets, all_deps);
@@ -1141,16 +872,10 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         });
     });
 
-    sycl::event::wait({put_generic_ev, temporaries_cleanup_ev});
-    sycl::event::wait(host_task_events);
+    sycl::event py_obj_cleanup_ev = keep_args_alive(
+        exec_q, {dst, py_ind, val}, {put_generic_ev, temporaries_cleanup_ev});
 
-    /*
-    sycl::event py_obj_cleanup_ev =
-        keep_args_alive(exec_q, {dst, py_ind, val},
-                        {put_generic_ev, temporaries_cleanup_ev});
-    */
-
-    return std::make_pair(sycl::event(), temporaries_cleanup_ev);
+    return std::make_pair(temporaries_cleanup_ev, put_generic_ev);
 }
 
 void init_advanced_indexing_dispatch_tables(void)
