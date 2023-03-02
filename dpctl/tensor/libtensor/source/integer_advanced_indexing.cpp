@@ -723,8 +723,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         });
     });
 
-    sycl::event::wait(host_task_events);
     sycl::event::wait({take_generic_ev, temporaries_cleanup_ev});
+    sycl::event::wait(host_task_events);
 
     /*
     sycl::event host_task_ev = keep_args_alive(exec_q, {src, py_ind, dst},
@@ -1137,8 +1137,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         });
     });
 
-    sycl::event::wait(host_task_events);
     sycl::event::wait({put_generic_ev, temporaries_cleanup_ev});
+    sycl::event::wait(host_task_events);
 
     /*
     sycl::event py_obj_cleanup_ev =
