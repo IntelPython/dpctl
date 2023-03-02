@@ -670,7 +670,7 @@ cdef class usm_ndarray:
         if adv_ind_start_p < 0:
             return res
 
-+       from ._copy_utils import _mock_extract, _mock_nonzero, _take_multi_index
+        from ._copy_utils import _mock_extract, _mock_nonzero, _take_multi_index
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
             return _mock_extract(res, adv_ind[0], adv_ind_start_p)
 
