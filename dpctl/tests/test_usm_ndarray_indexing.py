@@ -546,7 +546,8 @@ def test_put_0d_val(data_dt):
     assert_array_equal(np.asarray(2, dtype=data_dt), dpt.asnumpy(x[0]))
 
     x = dpt.asarray(5, dtype=data_dt, sycl_queue=q)
-    x[ind] = 2
+    val = 2
+    dpt.put(x, ind, val)
     assert_array_equal(np.asarray(2, dtype=data_dt), dpt.asnumpy(x))
 
 

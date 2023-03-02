@@ -82,8 +82,7 @@ def take(x, indices, /, *, axis=None, mode="clip"):
     if len(indices) > 1:
         indices = dpt.broadcast_arrays(*indices)
     if x_ndim > 0:
-        axis = operator.index(axis)
-        axis = normalize_axis_index(axis, x_ndim)
+        axis = normalize_axis_index(operator.index(axis), x_ndim)
         res_shape = (
             x.shape[:axis] + indices[0].shape + x.shape[axis + len(indices) :]
         )
@@ -154,13 +153,12 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
             x = dpt.reshape(x, (x.size,), copy=False)
             axis = 0
         except ValueError:
-            raise ValueError("Cannot create 1D view of array")
+            raise ValueError("Cannot create 1D view of input array")
     if len(indices) > 1:
         indices = dpt.broadcast_arrays(*indices)
     x_ndim = x.ndim
     if x_ndim > 0:
-        axis = operator.index(axis)
-        axis = normalize_axis_index(axis, x_ndim)
+        axis = normalize_axis_index(operator.index(axis), x_ndim)
 
         val_shape = (
             x.shape[:axis] + indices[0].shape + x.shape[axis + len(indices) :]

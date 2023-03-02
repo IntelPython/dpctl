@@ -454,16 +454,12 @@ def _take_multi_index(ary, inds, p):
         raise IndexError(
             "arrays used as indices must be of integer (or boolean) type"
         )
-    if (len(inds) > 1):
+    if len(inds) > 1:
         inds = dpt.broadcast_arrays(*inds)
     ary_ndim = ary.ndim
-    if ary_ndim > 0:
-        p = operator.index(p)
-        p = normalize_axis_index(p, ary_ndim)
+    p = normalize_axis_index(operator.index(p), ary_ndim)
 
-        res_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
-    else:
-        res_shape = inds[0].shape
+    res_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
     res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     res = dpt.empty(
         res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
@@ -541,15 +537,12 @@ def _put_multi_index(ary, inds, p, vals):
         raise IndexError(
             "arrays used as indices must be of integer (or boolean) type"
         )
-    if (len(inds) > 1):
+    if len(inds) > 1:
         inds = dpt.broadcast_arrays(*inds)
     ary_ndim = ary.ndim
-    if ary_ndim > 0:
-        p = operator.index(p)
-        p = normalize_axis_index(p, ary_ndim)
-        vals_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
-    else:
-        vals_shape = inds[0].shape
+
+    p = normalize_axis_index(operator.index(p), ary_ndim)
+    vals_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
 
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     if not isinstance(vals, dpt.usm_ndarray):
