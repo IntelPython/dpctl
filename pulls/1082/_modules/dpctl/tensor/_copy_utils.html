@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.1dev2+91.g958df9c92 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.1dev2+96.g0ddf9f5d7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -34,7 +34,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev2+91.g958df9c92
+                0.14.1dev2+96.g0ddf9f5d7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -512,7 +512,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">nz</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_mock_take_multi_index</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_take_multi_index</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
     <span class="n">queues_</span> <span class="o">=</span> <span class="p">[</span>
@@ -521,6 +521,8 @@
     <span class="n">usm_types_</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
     <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="p">(</span><span class="n">inds</span><span class="p">,)</span>
     <span class="n">all_integers</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">:</span>
         <span class="n">queues_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
@@ -534,15 +536,12 @@
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
             <span class="s2">&quot;arrays used as indices must be of integer (or boolean) type&quot;</span>
         <span class="p">)</span>
-    <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
     <span class="n">ary_ndim</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="k">if</span> <span class="n">ary_ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ary_ndim</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">ary_ndim</span><span class="p">)</span>
 
-        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="p">:]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="p">:]</span>
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types_</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
@@ -587,7 +586,7 @@
     <span class="k">return</span>
 
 
-<span class="k">def</span> <span class="nf">_mock_put_multi_index</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_put_multi_index</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="n">queues_</span> <span class="o">=</span> <span class="p">[</span><span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">]</span>
         <span class="n">usm_types_</span> <span class="o">=</span> <span class="p">[</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">usm_type</span><span class="p">]</span>
@@ -598,6 +597,8 @@
         <span class="n">usm_types_</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="p">(</span><span class="n">inds</span><span class="p">,)</span>
     <span class="n">all_integers</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
@@ -618,15 +619,12 @@
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
             <span class="s2">&quot;arrays used as indices must be of integer (or boolean) type&quot;</span>
         <span class="p">)</span>
-
-    <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
     <span class="n">ary_ndim</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="k">if</span> <span class="n">ary_ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ary_ndim</span><span class="p">)</span>
-        <span class="n">vals_shape</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="p">:]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">vals_shape</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">ary_ndim</span><span class="p">)</span>
+    <span class="n">vals_shape</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="p">:]</span>
 
     <span class="n">vals_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types_</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
