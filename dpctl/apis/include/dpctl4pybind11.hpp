@@ -943,8 +943,6 @@ public:
             }
         }
         else {
-            offset_min = api.UsmNDArray_GetOffset_(raw_ar);
-            offset_max = offset_min;
             for (int i = 0; i < nd; ++i) {
                 py::ssize_t delta = strides[i] * (shape[i] - 1);
                 if (strides[i] > 0) {
