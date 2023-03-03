@@ -1,4 +1,4 @@
-//=== boolean_advance_indexing.hpp -                       ---*-C++-*--/===//
+//=== boolean_advance_indexing.hpp -                      ------*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -16,11 +16,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//===----------------------------------------------------------------------===//
+//===---------------------------------------------------------------------===//
 ///
 /// \file
 /// This file defines kernels for advanced tensor index operations.
-//===----------------------------------------------------------------------===//
+//===---------------------------------------------------------------------===//
 
 #pragma once
 #include <CL/sycl.hpp>
@@ -106,6 +106,26 @@ struct Strided1DIndexer
     size_t operator()(size_t gid) const
     {
         return static_cast<size_t>(offset + std::min<size_t>(gid, size) * step);
+    }
+
+private:
+    py::ssize_t offset = 0;
+    size_t size = 1;
+    py::ssize_t step = 1;
+};
+
+struct Strided1DCyclicIndexer
+{
+    Strided1DCyclicIndexer(py::ssize_t _offset,
+                           py::ssize_t _size,
+                           py::ssize_t _step)
+        : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
+    {
+    }
+
+    size_t operator()(size_t gid) const
+    {
+        return static_cast<size_t>(offset + (gid % size) * step);
     }
 
 private:
@@ -762,27 +782,22 @@ sycl::event masked_place_all_slices_strided_impl(
     py::ssize_t rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    //  using MaskedPlaceStridedFunctor;
-    //  using Strided1DIndexer;
-    //  using StridedIndexer;
-    //  using TwoZeroOffsets_Indexer;
-
     TwoZeroOffsets_Indexer orthog_dst_rhs_indexer{};
 
     /* StridedIndexer(int _nd, py::ssize_t _offset, py::ssize_t const
      * *_packed_shape_strides) */
     StridedIndexer masked_dst_indexer(nd, 0, packed_dst_shape_strides);
-    Strided1DIndexer masked_rhs_indexer(0, rhs_size, rhs_stride);
+    Strided1DCyclicIndexer masked_rhs_indexer(0, rhs_size, rhs_stride);
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         cgh.parallel_for<class masked_place_all_slices_strided_impl_krn<
-            TwoZeroOffsets_Indexer, StridedIndexer, Strided1DIndexer, dataT,
-            indT>>(
+            TwoZeroOffsets_Indexer, StridedIndexer, Strided1DCyclicIndexer,
+            dataT, indT>>(
             sycl::range<1>(static_cast<size_t>(iteration_size)),
             MaskedPlaceStridedFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
-                                      Strided1DIndexer, dataT, indT>(
+                                      Strided1DCyclicIndexer, dataT, indT>(
                 dst_p, cumsum_p, rhs_p, 1, iteration_size,
                 orthog_dst_rhs_indexer, masked_dst_indexer,
                 masked_rhs_indexer));
@@ -838,11 +853,6 @@ sycl::event masked_place_some_slices_strided_impl(
     py::ssize_t masked_rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    //  using MaskedPlaceStridedFunctor;
-    //  using Strided1DIndexer;
-    //  using StridedIndexer;
-    //  using TwoOffsets_StridedIndexer;
-
     TwoOffsets_StridedIndexer orthog_dst_rhs_indexer{
         orthog_nd, ortho_dst_offset, ortho_rhs_offset,
         packed_ortho_dst_rhs_shape_strides};
@@ -851,17 +861,18 @@ sycl::event masked_place_some_slices_strided_impl(
      * *_packed_shape_strides) */
     StridedIndexer masked_dst_indexer{masked_nd, 0,
                                       packed_masked_dst_shape_strides};
-    Strided1DIndexer masked_rhs_indexer{0, masked_rhs_size, masked_rhs_stride};
+    Strided1DCyclicIndexer masked_rhs_indexer{0, masked_rhs_size,
+                                              masked_rhs_stride};
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         cgh.parallel_for<class masked_place_some_slices_strided_impl_krn<
-            TwoOffsets_StridedIndexer, StridedIndexer, Strided1DIndexer, dataT,
-            indT>>(
+            TwoOffsets_StridedIndexer, StridedIndexer, Strided1DCyclicIndexer,
+            dataT, indT>>(
             sycl::range<1>(static_cast<size_t>(orthog_nelems * masked_nelems)),
             MaskedPlaceStridedFunctor<TwoOffsets_StridedIndexer, StridedIndexer,
-                                      Strided1DIndexer, dataT, indT>(
+                                      Strided1DCyclicIndexer, dataT, indT>(
                 dst_p, cumsum_p, rhs_p, orthog_nelems, masked_nelems,
                 orthog_dst_rhs_indexer, masked_dst_indexer,
                 masked_rhs_indexer));
