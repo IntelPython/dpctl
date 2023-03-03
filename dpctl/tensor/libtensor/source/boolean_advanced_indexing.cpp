@@ -62,7 +62,7 @@ template <class V, class U> sink_t inserter(V &lhs, U &&rhs)
 }
 
 template <typename T, typename A, typename... Vs>
-std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&... vs)
+std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 {
     std::size_t s = lhs.size();
     {
@@ -83,7 +83,7 @@ template <typename indT, typename... Vs>
 std::tuple<indT *, size_t, sycl::event>
 device_allocate_and_pack(sycl::queue q,
                          std::vector<sycl::event> &host_task_events,
-                         Vs &&... vs)
+                         Vs &&...vs)
 {
 
     // memory transfer optimization, use USM-host for temporary speeds up
