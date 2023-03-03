@@ -36,6 +36,16 @@ namespace py_internal
 
 namespace py = pybind11;
 
+void simplify_iteration_space_1(int &,
+                                const py::ssize_t *&,
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                py::ssize_t &);
+
 void simplify_iteration_space(int &,
                               const py::ssize_t *&,
                               const py::ssize_t *&,
@@ -51,6 +61,32 @@ void simplify_iteration_space(int &,
                               std::vector<py::ssize_t> &,
                               py::ssize_t &,
                               py::ssize_t &);
+
+void simplify_iteration_space_3(int &,
+                                const py::ssize_t *&,
+                                // src1
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // src2
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // dst
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // output
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                py::ssize_t &,
+                                py::ssize_t &,
+                                py::ssize_t &);
 
 } // namespace py_internal
 } // namespace tensor
