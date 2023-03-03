@@ -670,15 +670,15 @@ cdef class usm_ndarray:
         if adv_ind_start_p < 0:
             return res
 
-        from ._copy_utils import _mock_extract, _mock_nonzero, _take_multi_index
+        from ._copy_utils import _extract_impl, _nonzero_impl, _take_multi_index
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
-            return _mock_extract(res, adv_ind[0], adv_ind_start_p)
+            return _extract_impl(res, adv_ind[0], axis=adv_ind_start_p)
 
         if any(ind.dtype == dpt_bool for ind in adv_ind):
             adv_ind_int = list()
             for ind in adv_ind:
                 if ind.dtype == dpt_bool:
-                    adv_ind_int.extend(_mock_nonzero(ind))
+                    adv_ind_int.extend(_nonzero_impl(ind))
                 else:
                     adv_ind_int.append(ind)
             return _take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
@@ -1015,8 +1015,8 @@ cdef class usm_ndarray:
         from ._copy_utils import (
             _copy_from_numpy_into,
             _copy_from_usm_ndarray_to_usm_ndarray,
-            _mock_nonzero,
-            _mock_place,
+            _nonzero_impl,
+            _place_impl,
             _put_multi_index,
         )
 
@@ -1050,14 +1050,14 @@ cdef class usm_ndarray:
             return
 
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
-            _mock_place(Xv, adv_ind[0], adv_ind_start_p, rhs)
+            _place_impl(Xv, adv_ind[0], rhs, axis=adv_ind_start_p)
             return
 
         if any(ind.dtype == dpt_bool for ind in adv_ind):
             adv_ind_int = list()
             for ind in adv_ind:
                 if ind.dtype == dpt_bool:
-                    adv_ind_int.extend(_mock_nonzero(ind))
+                    adv_ind_int.extend(_nonzero_impl(ind))
                 else:
                     adv_ind_int.append(ind)
             _put_multi_index(Xv, tuple(adv_ind_int), adv_ind_start_p, rhs)

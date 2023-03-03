@@ -58,7 +58,7 @@ from dpctl.tensor._data_types import (
 )
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
-from dpctl.tensor._indexing_functions import put, take
+from dpctl.tensor._indexing_functions import extract, nonzero, place, put, take
 from dpctl.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
@@ -115,6 +115,9 @@ __all__ = [
     "squeeze",
     "take",
     "put",
+    "extract",
+    "place",
+    "nonzero",
     "from_numpy",
     "to_numpy",
     "asnumpy",

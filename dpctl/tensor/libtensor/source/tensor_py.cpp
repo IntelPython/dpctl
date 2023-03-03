@@ -33,6 +33,7 @@
 
 #include "dpctl4pybind11.hpp"
 
+#include "boolean_advanced_indexing.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -75,6 +76,12 @@ using dpctl::tensor::py_internal::usm_ndarray_full;
 using dpctl::tensor::py_internal::usm_ndarray_put;
 using dpctl::tensor::py_internal::usm_ndarray_take;
 
+using dpctl::tensor::py_internal::overlap;
+using dpctl::tensor::py_internal::py_extract;
+using dpctl::tensor::py_internal::py_mask_positions;
+using dpctl::tensor::py_internal::py_nonzero;
+using dpctl::tensor::py_internal::py_place;
+
 /* ================ Eye ================== */
 
 using dpctl::tensor::py_internal::usm_ndarray_eye;
@@ -104,6 +111,10 @@ void init_dispatch_vectors(void)
     init_full_ctor_dispatch_vectors();
     init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
+
+    populate_mask_positions_dispatch_vectors();
+    populate_masked_extract_dispatch_vectors();
+    populate_masked_place_dispatch_vectors();
 
     return;
 }
@@ -251,5 +262,25 @@ PYBIND11_MODULE(_tensor_impl, m)
     };
     m.def("_triu", triu_fn, "Triu helper function.", py::arg("src"),
           py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
+          py::arg("cumsum"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_array_overlap", &overlap,
+          "Determines if the memory regions indexed by each array overlap",
+          py::arg("array1"), py::arg("array2"));
+
+    m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
+          py::arg("axis_start"), py::arg("axis_end"), py::arg("rhs"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_nonzero", &py_nonzero, "", py::arg("cumsum"), py::arg("indexes"),
+          py::arg("mask_shape"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 }
