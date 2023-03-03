@@ -23,6 +23,8 @@ import dpctl
 import dpctl.tensor as dpt
 from dpctl.tensor._tensor_impl import _put, _take
 
+from ._copy_utils import _extract_impl, _nonzero_impl, _place_impl
+
 
 def take(x, indices, /, *, axis=None, mode="clip"):
     if not isinstance(x, dpt.usm_ndarray):
@@ -175,3 +177,119 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
 
     hev, _ = _put(x, indices, vals, axis, mode, sycl_queue=exec_q)
     hev.wait()
+
+
+def extract(condition, arr):
+    """extract(condition, arr)
+
+    Returns the elements of an array that satisfies the condition.
+
+    If `condition` is boolean :func:``dpctl.tensor.extract`` is
+    equivalent to ``arr[condition]``.
+
+    Note that :func:``dpctl.tensor.place`` does the opposite of
+    :func:``dpctl.tensor.extract``.
+
+    Args:
+       conditions: usm_ndarray
+          An array whose non-zero or True entries indicate the element
+          of `arr` to extract.
+       arr: usm_ndarray
+          Input array of the same size as `condition`.
+
+    Returns:
+       extract: usm_ndarray
+          Rank 1 array of values from `arr` where `condition` is True.
+    """
+    if not isinstance(condition, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(condition)}"
+        )
+    if not isinstance(arr, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+        )
+    exec_q = dpctl.utils.get_execution_queue(
+        (
+            condition.sycl_queue,
+            arr.sycl_queue,
+        )
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError
+    if condition.shape != arr.shape:
+        raise ValueError("Arrays are not of the same size")
+    return _extract_impl(arr, condition)
+
+
+def place(arr, mask, vals):
+    """place(arr, mask, vals)
+
+    Change elements of an array based on conditional and input values.
+
+    If `mask` is boolean :func:``dpctl.tensor.place`` is
+    equivalent to ``arr[condition] = vals``.
+
+    Args:
+       arr: usm_ndarray
+          Array to put data into.
+       mask: usm_ndarray
+          Boolean mask array. Must have the same size as `arr`.
+       vals: usm_ndarray
+          Values to put into `arr`. Only the first N elements are
+          used, where N is the number of True values in `mask`. If
+          `vals` is smaller than N, it will be repeated, and if
+          elements of `arr` are to be masked, this sequence must be
+          non-empty. Array `vals` must be one dimensional.
+    """
+    if not isinstance(arr, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+        )
+    if not isinstance(mask, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(mask)}"
+        )
+    if not isinstance(vals, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(vals)}"
+        )
+    exec_q = dpctl.utils.get_execution_queue(
+        (
+            arr.sycl_queue,
+            mask.sycl_queue,
+            vals.sycl_queue,
+        )
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError
+    if arr.shape != mask.shape or vals.ndim != 1:
+        raise ValueError("Array sizes are not as required")
+    # FIXME
+    _place_impl(arr, mask, vals, axis=0)
+
+
+def nonzero(arr):
+    """nonzero(arr)
+
+    Return the indices of non-zero elements.
+
+    Returns the tuple of usm_narrays, one for each dimension
+    of `arr`, containing the indices of the non-zero elements
+    in that dimension. The values of `arr` are always tested in
+    row-major, C-style order.
+
+    Args:
+       arr: usm_ndarray
+          Input array, which has non-zero array rank.
+    Returns:
+       tuple_of_usm_ndarrays: tuple
+          Indices of non-zero array elements.
+    """
+    if not isinstance(arr, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+        )
+    if arr.ndim == 0:
+        raise ValueError("Array of positive rank is exepcted")
+    return _nonzero_impl(arr)
