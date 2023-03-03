@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._indexing_functions &mdash; Data-parallel Control (dpctl) 0.14.1dev2+116.gdcced38bb documentation</title>
+  <title>dpctl.tensor._indexing_functions &mdash; Data-parallel Control (dpctl) 0.14.1dev2+119.gb4d518a41 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev2+116.gdcced38bb
+                0.14.1dev2+119.gb4d518a41
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -112,9 +112,9 @@
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="n">_put</span><span class="p">,</span> <span class="n">_take</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 
-<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_extract_impl</span><span class="p">,</span> <span class="n">_nonzero_impl</span><span class="p">,</span> <span class="n">_place_impl</span>
+<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_extract_impl</span><span class="p">,</span> <span class="n">_nonzero_impl</span>
 
 
 <div class="viewcode-block" id="take"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.take">[docs]</a><span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">):</span>
@@ -186,7 +186,7 @@
         <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
     <span class="p">)</span>
 
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">res</span></div>
@@ -266,7 +266,7 @@
 
     <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">val_shape</span><span class="p">)</span>
 
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
 
 
@@ -356,8 +356,23 @@
         <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span>
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span> <span class="ow">or</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array sizes are not as required&quot;</span><span class="p">)</span>
-    <span class="c1"># FIXME</span>
-    <span class="n">_place_impl</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;i8&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">nz_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nz_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="n">vals</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_place</span><span class="p">(</span>
+        <span class="n">dst</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+        <span class="n">cumsum</span><span class="o">=</span><span class="n">cumsum</span><span class="p">,</span>
+        <span class="n">axis_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">axis_end</span><span class="o">=</span><span class="n">mask</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+        <span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="nonzero"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.nonzero">[docs]</a><span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
