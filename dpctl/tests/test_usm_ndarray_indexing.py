@@ -972,10 +972,8 @@ def test_advanced_indexing_compute_follows_data():
         x[ind0] = val1
 
 
-#######
-
-
 def test_extract_all_1d():
+    get_queue_or_skip()
     x = dpt.arange(30, dtype="i4")
     sel = dpt.ones(30, dtype="?")
     sel[::2] = False
@@ -989,6 +987,7 @@ def test_extract_all_1d():
 
 
 def test_extract_all_2d():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(30, dtype="i4"), (5, 6))
     sel = dpt.ones(30, dtype="?")
     sel[::2] = False
@@ -1003,6 +1002,7 @@ def test_extract_all_2d():
 
 
 def test_extract_2D_axis0():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(30, dtype="i4"), (5, 6))
     sel = dpt.ones(x.shape[0], dtype="?")
     sel[::2] = False
@@ -1013,6 +1013,7 @@ def test_extract_2D_axis0():
 
 
 def test_extract_2D_axis1():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(30, dtype="i4"), (5, 6))
     sel = dpt.ones(x.shape[1], dtype="?")
     sel[::2] = False
@@ -1023,6 +1024,7 @@ def test_extract_2D_axis1():
 
 
 def test_extract_begin():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((3, 3), dtype="?")
@@ -1034,6 +1036,7 @@ def test_extract_begin():
 
 
 def test_extract_end():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((4, 4), dtype="?")
@@ -1044,6 +1047,7 @@ def test_extract_end():
 
 
 def test_extract_middle():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((3, 4), dtype="?")
@@ -1054,6 +1058,7 @@ def test_extract_middle():
 
 
 def test_extract_empty_result():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((3, 4), dtype="?")
@@ -1066,17 +1071,19 @@ def test_extract_empty_result():
 
 
 def test_place_all_1d():
+    get_queue_or_skip()
     x = dpt.arange(10, dtype="i2")
     sel = dpt.zeros(10, dtype="?")
     sel[0::2] = True
     val = dpt.zeros(5, dtype=x.dtype)
     x[sel] = val
     assert (dpt.asnumpy(x) == np.array([0, 1, 0, 3, 0, 5, 0, 7, 0, 9])).all()
-    dpt.place(x, sel, dpt.asarray(2))
+    dpt.place(x, sel, dpt.asarray([2]))
     assert (dpt.asnumpy(x) == np.array([2, 1, 2, 3, 2, 5, 2, 7, 2, 9])).all()
 
 
 def test_place_2d_axis0():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
     sel = dpt.asarray([True, False, True])
     val = dpt.zeros((2, 4), dtype=x.dtype)
@@ -1092,6 +1099,7 @@ def test_place_2d_axis0():
 
 
 def test_place_2d_axis1():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
     sel = dpt.asarray([True, False, True, False])
     val = dpt.zeros((3, 2), dtype=x.dtype)
@@ -1103,6 +1111,7 @@ def test_place_2d_axis1():
 
 
 def test_place_2d_axis1_scalar():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
     sel = dpt.asarray([True, False, True, False])
     val = dpt.zeros(tuple(), dtype=x.dtype)
@@ -1114,6 +1123,7 @@ def test_place_2d_axis1_scalar():
 
 
 def test_place_all_slices():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
     sel = dpt.asarray(
         [
@@ -1128,6 +1138,7 @@ def test_place_all_slices():
 
 
 def test_place_some_slices_begin():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((3, 3), dtype="?")
@@ -1139,6 +1150,7 @@ def test_place_some_slices_begin():
 
 
 def test_place_some_slices_mid():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((3, 4), dtype="?")
@@ -1150,6 +1162,7 @@ def test_place_some_slices_mid():
 
 
 def test_place_some_slices_end():
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
     y = dpt.permute_dims(x, (2, 0, 3, 1))
     sel = dpt.zeros((4, 4), dtype="?")
@@ -1161,6 +1174,7 @@ def test_place_some_slices_end():
 
 
 def test_place_cycling():
+    get_queue_or_skip()
     x = dpt.zeros(10, dtype="f4")
     y = dpt.asarray([2, 3])
     sel = dpt.ones(x.size, dtype="?")
@@ -1177,16 +1191,18 @@ def test_place_cycling():
 
 
 def test_place_subset():
+    get_queue_or_skip()
     x = dpt.zeros(10, dtype="f4")
     y = dpt.ones_like(x)
     sel = dpt.ones(x.size, dtype="?")
     sel[::2] = False
     dpt.place(x, sel, y)
-    expected = np.array([1, 3, 5, 7, 9], dtype=x.dtype)
+    expected = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1], dtype=x.dtype)
     assert (dpt.asnumpy(x) == expected).all()
 
 
 def test_nonzero():
+    get_queue_or_skip()
     x = dpt.concat((dpt.zeros(3), dpt.ones(4), dpt.zeros(3)))
     (i,) = dpt.nonzero(x)
-    assert dpt.asnumpy(i) == np.array([3, 4, 5, 6]).all()
+    assert (dpt.asnumpy(i) == np.array([3, 4, 5, 6])).all()
