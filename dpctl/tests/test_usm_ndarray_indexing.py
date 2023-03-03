@@ -970,3 +970,223 @@ def test_advanced_indexing_compute_follows_data():
         dpt.put(x, ind0, val1, axis=0)
     with pytest.raises(ExecutionPlacementError):
         x[ind0] = val1
+
+
+#######
+
+
+def test_extract_all_1d():
+    x = dpt.arange(30, dtype="i4")
+    sel = dpt.ones(30, dtype="?")
+    sel[::2] = False
+
+    res = x[sel]
+    expected_res = dpt.asnumpy(x)[dpt.asnumpy(sel)]
+    assert (dpt.asnumpy(res) == expected_res).all()
+
+    res2 = dpt.extract(sel, x)
+    assert (dpt.asnumpy(res2) == expected_res).all()
+
+
+def test_extract_all_2d():
+    x = dpt.reshape(dpt.arange(30, dtype="i4"), (5, 6))
+    sel = dpt.ones(30, dtype="?")
+    sel[::2] = False
+    sel = dpt.reshape(sel, x.shape)
+
+    res = x[sel]
+    expected_res = dpt.asnumpy(x)[dpt.asnumpy(sel)]
+    assert (dpt.asnumpy(res) == expected_res).all()
+
+    res2 = dpt.extract(sel, x)
+    assert (dpt.asnumpy(res2) == expected_res).all()
+
+
+def test_extract_2D_axis0():
+    x = dpt.reshape(dpt.arange(30, dtype="i4"), (5, 6))
+    sel = dpt.ones(x.shape[0], dtype="?")
+    sel[::2] = False
+
+    res = x[sel]
+    expected_res = dpt.asnumpy(x)[dpt.asnumpy(sel)]
+    assert (dpt.asnumpy(res) == expected_res).all()
+
+
+def test_extract_2D_axis1():
+    x = dpt.reshape(dpt.arange(30, dtype="i4"), (5, 6))
+    sel = dpt.ones(x.shape[1], dtype="?")
+    sel[::2] = False
+
+    res = x[:, sel]
+    expected = dpt.asnumpy(x)[:, dpt.asnumpy(sel)]
+    assert (dpt.asnumpy(res) == expected).all()
+
+
+def test_extract_begin():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((3, 3), dtype="?")
+    sel[0, 0] = True
+    sel[1, 1] = True
+    z = y[sel]
+    expected = dpt.asnumpy(y)[[0, 1], [0, 1]]
+    assert (dpt.asnumpy(z) == expected).all()
+
+
+def test_extract_end():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((4, 4), dtype="?")
+    sel[0, 0] = True
+    z = y[..., sel]
+    expected = dpt.asnumpy(y)[..., [0], [0]]
+    assert (dpt.asnumpy(z) == expected).all()
+
+
+def test_extract_middle():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((3, 4), dtype="?")
+    sel[0, 0] = True
+    z = y[:, sel]
+    expected = dpt.asnumpy(y)[:, [0], [0], :]
+    assert (dpt.asnumpy(z) == expected).all()
+
+
+def test_extract_empty_result():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((3, 4), dtype="?")
+    z = y[:, sel]
+    assert z.shape == (
+        y.shape[0],
+        0,
+        y.shape[3],
+    )
+
+
+def test_place_all_1d():
+    x = dpt.arange(10, dtype="i2")
+    sel = dpt.zeros(10, dtype="?")
+    sel[0::2] = True
+    val = dpt.zeros(5, dtype=x.dtype)
+    x[sel] = val
+    assert (dpt.asnumpy(x) == np.array([0, 1, 0, 3, 0, 5, 0, 7, 0, 9])).all()
+    dpt.place(x, sel, dpt.asarray(2))
+    assert (dpt.asnumpy(x) == np.array([2, 1, 2, 3, 2, 5, 2, 7, 2, 9])).all()
+
+
+def test_place_2d_axis0():
+    x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
+    sel = dpt.asarray([True, False, True])
+    val = dpt.zeros((2, 4), dtype=x.dtype)
+    x[sel] = val
+    expected_x = np.stack(
+        (
+            np.zeros(4, dtype="i2"),
+            np.arange(4, 8, dtype="i2"),
+            np.zeros(4, dtype="i2"),
+        )
+    )
+    assert (dpt.asnumpy(x) == expected_x).all()
+
+
+def test_place_2d_axis1():
+    x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
+    sel = dpt.asarray([True, False, True, False])
+    val = dpt.zeros((3, 2), dtype=x.dtype)
+    x[:, sel] = val
+    expected_x = np.array(
+        [[0, 1, 0, 3], [0, 5, 0, 7], [0, 9, 0, 11]], dtype="i2"
+    )
+    assert (dpt.asnumpy(x) == expected_x).all()
+
+
+def test_place_2d_axis1_scalar():
+    x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
+    sel = dpt.asarray([True, False, True, False])
+    val = dpt.zeros(tuple(), dtype=x.dtype)
+    x[:, sel] = val
+    expected_x = np.array(
+        [[0, 1, 0, 3], [0, 5, 0, 7], [0, 9, 0, 11]], dtype="i2"
+    )
+    assert (dpt.asnumpy(x) == expected_x).all()
+
+
+def test_place_all_slices():
+    x = dpt.reshape(dpt.arange(12, dtype="i2"), (3, 4))
+    sel = dpt.asarray(
+        [
+            [False, True, True, False],
+            [True, True, False, False],
+            [False, False, True, True],
+        ],
+        dtype="?",
+    )
+    y = dpt.ones_like(x)
+    y[sel] = x[sel]
+
+
+def test_place_some_slices_begin():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((3, 3), dtype="?")
+    sel[0, 0] = True
+    sel[1, 1] = True
+    z = y[sel]
+    w = dpt.zeros_like(y)
+    w[sel] = z
+
+
+def test_place_some_slices_mid():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((3, 4), dtype="?")
+    sel[0, 0] = True
+    sel[1, 1] = True
+    z = y[:, sel]
+    w = dpt.zeros_like(y)
+    w[:, sel] = z
+
+
+def test_place_some_slices_end():
+    x = dpt.reshape(dpt.arange(3 * 3 * 4 * 4, dtype="i2"), (3, 4, 3, 4))
+    y = dpt.permute_dims(x, (2, 0, 3, 1))
+    sel = dpt.zeros((4, 4), dtype="?")
+    sel[0, 0] = True
+    sel[1, 1] = True
+    z = y[:, :, sel]
+    w = dpt.zeros_like(y)
+    w[:, :, sel] = z
+
+
+def test_place_cycling():
+    x = dpt.zeros(10, dtype="f4")
+    y = dpt.asarray([2, 3])
+    sel = dpt.ones(x.size, dtype="?")
+    dpt.place(x, sel, y)
+    expected = np.array(
+        [
+            2,
+            3,
+        ]
+        * 5,
+        dtype=x.dtype,
+    )
+    assert (dpt.asnumpy(x) == expected).all()
+
+
+def test_place_subset():
+    x = dpt.zeros(10, dtype="f4")
+    y = dpt.ones_like(x)
+    sel = dpt.ones(x.size, dtype="?")
+    sel[::2] = False
+    dpt.place(x, sel, y)
+    expected = np.array([1, 3, 5, 7, 9], dtype=x.dtype)
+    assert (dpt.asnumpy(x) == expected).all()
+
+
+def test_nonzero():
+    x = dpt.concat((dpt.zeros(3), dpt.ones(4), dpt.zeros(3)))
+    (i,) = dpt.nonzero(x)
+    assert dpt.asnumpy(i) == np.array([3, 4, 5, 6]).all()
