@@ -548,10 +548,12 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         });
     });
 
-    sycl::event host_task_ev = keep_args_alive(
-        exec_q, {src, py_ind, dst}, {take_generic_ev, temporaries_cleanup_ev});
+    host_task_events.push_back(temporaries_cleanup_ev);
 
-    return std::make_pair(host_task_ev, take_generic_ev);
+    sycl::event arg_cleanup_ev =
+        keep_args_alive(exec_q, {src, py_ind, dst}, host_task_events);
+
+    return std::make_pair(arg_cleanup_ev, temporaries_cleanup_ev);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -857,7 +859,6 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
            dst_offset, val_offset, packed_ind_offsets, all_deps);
 
     // free packed temporaries
-
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(put_generic_ev);
         auto ctx = exec_q.get_context();
@@ -872,10 +873,12 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         });
     });
 
-    sycl::event py_obj_cleanup_ev = keep_args_alive(
-        exec_q, {dst, py_ind, val}, {put_generic_ev, temporaries_cleanup_ev});
+    host_task_events.push_back(temporaries_cleanup_ev);
 
-    return std::make_pair(temporaries_cleanup_ev, put_generic_ev);
+    sycl::event arg_cleanup_ev =
+        keep_args_alive(exec_q, {dst, py_ind, val}, host_task_events);
+
+    return std::make_pair(arg_cleanup_ev, temporaries_cleanup_ev);
 }
 
 void init_advanced_indexing_dispatch_tables(void)
