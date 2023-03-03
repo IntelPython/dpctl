@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "utils/strided_iters.hpp"
+#include "utils/type_dispatch.hpp"
 
 namespace dpctl
 {
