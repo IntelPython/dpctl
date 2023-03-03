@@ -21,9 +21,9 @@ from numpy.core.numeric import normalize_axis_index
 
 import dpctl
 import dpctl.tensor as dpt
-from dpctl.tensor._tensor_impl import _put, _take
+import dpctl.tensor._tensor_impl as ti
 
-from ._copy_utils import _extract_impl, _nonzero_impl, _place_impl
+from ._copy_utils import _extract_impl, _nonzero_impl
 
 
 def take(x, indices, /, *, axis=None, mode="clip"):
@@ -95,7 +95,7 @@ def take(x, indices, /, *, axis=None, mode="clip"):
         res_shape, dtype=x.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    hev, _ = _take(x, indices, res, axis, mode, sycl_queue=exec_q)
+    hev, _ = ti._take(x, indices, res, axis, mode, sycl_queue=exec_q)
     hev.wait()
 
     return res
@@ -175,7 +175,7 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
 
     vals = dpt.broadcast_to(vals, val_shape)
 
-    hev, _ = _put(x, indices, vals, axis, mode, sycl_queue=exec_q)
+    hev, _ = ti._put(x, indices, vals, axis, mode, sycl_queue=exec_q)
     hev.wait()
 
 
@@ -265,8 +265,23 @@ def place(arr, mask, vals):
         raise dpctl.utils.ExecutionPlacementError
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
-    # FIXME
-    _place_impl(arr, mask, vals, axis=0)
+    cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
+    nz_count = ti.mask_positions(mask, cumsum, sycl_queue=exec_q)
+    if nz_count == 0:
+        return
+    if vals.dtype == arr.dtype:
+        rhs = vals
+    else:
+        rhs = dpt.astype(vals, arr.dtype)
+    hev, _ = ti._place(
+        dst=arr,
+        cumsum=cumsum,
+        axis_start=0,
+        axis_end=mask.ndim,
+        rhs=rhs,
+        sycl_queue=exec_q,
+    )
+    hev.wait()
 
 
 def nonzero(arr):
