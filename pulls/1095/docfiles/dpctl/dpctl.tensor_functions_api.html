@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev2+122.gea32cff90 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev2+123.gfd67603a4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev2+122.gea32cff90
+                0.14.1dev2+123.gfd67603a4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -789,9 +789,6 @@ Input array of the same size as <cite>condition</cite>.</p></li>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>extract</p>
-</dd>
 </dl>
 </dd></dl>
 
@@ -831,13 +828,10 @@ Input array, which has non-zero array rank.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>tuple</dt><dd><p>Indices of non-zero array elements.</p>
+<dt>Tuple[usm_ndarray]</dt><dd><p>Indices of non-zero array elements.</p>
 </dd>
 </dl>
 </p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple_of_usm_ndarrays</p>
 </dd>
 </dl>
 </dd></dl>
@@ -850,18 +844,19 @@ Input array, which has non-zero array rank.</p>
 equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span> <span class="pre">=</span> <span class="pre">vals</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> – usm_ndarray
-Array to put data into.</p></li>
-<li><p><strong>mask</strong> – usm_ndarray
-Boolean mask array. Must have the same size as <cite>arr</cite>.</p></li>
-<li><p><strong>vals</strong> – usm_ndarray
-Values to put into <cite>arr</cite>. Only the first N elements are
+<dd class="field-odd"><p><strong>arr</strong> – <dl class="simple">
+<dt>usm_ndarray</dt><dd><p>Array to put data into.</p>
+</dd>
+<dt>mask: usm_ndarray</dt><dd><p>Boolean mask array. Must have the same size as <cite>arr</cite>.</p>
+</dd>
+<dt>vals: usm_ndarray</dt><dd><p>Values to put into <cite>arr</cite>. Only the first N elements are
 used, where N is the number of True values in <cite>mask</cite>. If
 <cite>vals</cite> is smaller than N, it will be repeated, and if
 elements of <cite>arr</cite> are to be masked, this sequence must be
-non-empty. Array <cite>vals</cite> must be one dimensional.</p></li>
-</ul>
+non-empty. Array <cite>vals</cite> must be one dimensional.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
