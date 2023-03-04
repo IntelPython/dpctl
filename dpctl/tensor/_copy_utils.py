@@ -13,11 +13,16 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-import numpy as np
+import operator
 
+import numpy as np
+from numpy.core.numeric import normalize_axis_index
+
+import dpctl
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils
 from dpctl.tensor._device import normalize_queue_device
 
 __doc__ = (
@@ -382,3 +387,227 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         )
     _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
     return R
+
+
+def _extract_impl(ary, ary_mask, axis=0):
+    """Extract elements of ary by applying mask starting from slot
+    dimension axis"""
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    if not isinstance(ary_mask, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+        )
+    exec_q = dpctl.utils.get_execution_queue(
+        (ary.sycl_queue, ary_mask.sycl_queue)
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "arrays have different associated queues. "
+            "Use `Y.to_device(X.device)` to migrate."
+        )
+    ary_nd = ary.ndim
+    pp = normalize_axis_index(operator.index(axis), ary_nd)
+    mask_nd = ary_mask.ndim
+    if pp < 0 or pp + mask_nd > ary_nd:
+        raise ValueError(
+            "Parameter p is inconsistent with input array dimensions"
+        )
+    mask_nelems = ary_mask.size
+    cumsum = dpt.empty(mask_nelems, dtype=dpt.int64, device=ary_mask.device)
+    exec_q = cumsum.sycl_queue
+    mask_count = ti.mask_positions(ary_mask, cumsum, sycl_queue=exec_q)
+    dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
+    dst = dpt.empty(
+        dst_shape, dtype=ary.dtype, usm_type=ary.usm_type, device=ary.device
+    )
+    hev, _ = ti._extract(
+        src=ary,
+        cumsum=cumsum,
+        axis_start=pp,
+        axis_end=pp + mask_nd,
+        dst=dst,
+        sycl_queue=exec_q,
+    )
+    hev.wait()
+    return dst
+
+
+def _nonzero_impl(ary):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    exec_q = ary.sycl_queue
+    usm_type = ary.usm_type
+    mask_nelems = ary.size
+    cumsum = dpt.empty(
+        mask_nelems, dtype=dpt.int64, sycl_queue=exec_q, order="C"
+    )
+    mask_count = ti.mask_positions(ary, cumsum, sycl_queue=exec_q)
+    indexes = dpt.empty(
+        (ary.ndim, mask_count),
+        dtype=cumsum.dtype,
+        usm_type=usm_type,
+        sycl_queue=exec_q,
+        order="C",
+    )
+    hev, _ = ti._nonzero(cumsum, indexes, ary.shape, exec_q)
+    res = tuple(indexes[i, :] for i in range(ary.ndim))
+    hev.wait()
+    return res
+
+
+def _take_multi_index(ary, inds, p):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError
+    queues_ = [
+        ary.sycl_queue,
+    ]
+    usm_types_ = [
+        ary.usm_type,
+    ]
+    if not isinstance(inds, list) and not isinstance(inds, tuple):
+        inds = (inds,)
+    all_integers = True
+    for ind in inds:
+        queues_.append(ind.sycl_queue)
+        usm_types_.append(ind.usm_type)
+        if all_integers:
+            all_integers = ind.dtype.kind in "ui"
+    exec_q = dpctl.utils.get_execution_queue(queues_)
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError("")
+    if not all_integers:
+        raise IndexError(
+            "arrays used as indices must be of integer (or boolean) type"
+        )
+    if len(inds) > 1:
+        inds = dpt.broadcast_arrays(*inds)
+    ary_ndim = ary.ndim
+    p = normalize_axis_index(operator.index(p), ary_ndim)
+
+    res_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
+    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    res = dpt.empty(
+        res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    hev, _ = ti._take(
+        src=ary, ind=inds, dst=res, axis_start=p, mode=0, sycl_queue=exec_q
+    )
+    hev.wait()
+
+    return res
+
+
+def _place_impl(ary, ary_mask, vals, axis=0):
+    """Extract elements of ary by applying mask starting from slot
+    dimension axis"""
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    if not isinstance(ary_mask, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+        )
+    if not isinstance(vals, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+        )
+    exec_q = dpctl.utils.get_execution_queue(
+        (ary.sycl_queue, ary_mask.sycl_queue, vals.sycl_queue)
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "arrays have different associated queues. "
+            "Use `Y.to_device(X.device)` to migrate."
+        )
+    ary_nd = ary.ndim
+    pp = normalize_axis_index(operator.index(axis), ary_nd)
+    mask_nd = ary_mask.ndim
+    if pp < 0 or pp + mask_nd > ary_nd:
+        raise ValueError(
+            "Parameter p is inconsistent with input array dimensions"
+        )
+    mask_nelems = ary_mask.size
+    cumsum = dpt.empty(mask_nelems, dtype=dpt.int64, device=ary_mask.device)
+    exec_q = cumsum.sycl_queue
+    mask_count = ti.mask_positions(ary_mask, cumsum, sycl_queue=exec_q)
+    expected_vals_shape = (
+        ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
+    )
+    if vals.dtype == ary.dtype:
+        rhs = vals
+    else:
+        rhs = dpt.astype(vals, ary.dtype)
+    rhs = dpt.broadcast_to(rhs, expected_vals_shape)
+    hev, _ = ti._place(
+        dst=ary,
+        cumsum=cumsum,
+        axis_start=pp,
+        axis_end=pp + mask_nd,
+        rhs=rhs,
+        sycl_queue=exec_q,
+    )
+    hev.wait()
+    return
+
+
+def _put_multi_index(ary, inds, p, vals):
+    if isinstance(vals, dpt.usm_ndarray):
+        queues_ = [ary.sycl_queue, vals.sycl_queue]
+        usm_types_ = [ary.usm_type, vals.usm_type]
+    else:
+        queues_ = [
+            ary.sycl_queue,
+        ]
+        usm_types_ = [
+            ary.usm_type,
+        ]
+    if not isinstance(inds, list) and not isinstance(inds, tuple):
+        inds = (inds,)
+    all_integers = True
+    for ind in inds:
+        if not isinstance(ind, dpt.usm_ndarray):
+            raise TypeError
+        queues_.append(ind.sycl_queue)
+        usm_types_.append(ind.usm_type)
+        if all_integers:
+            all_integers = ind.dtype.kind in "ui"
+    exec_q = dpctl.utils.get_execution_queue(queues_)
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Can not automatically determine where to allocate the "
+            "result or performance execution. "
+            "Use `usm_ndarray.to_device` method to migrate data to "
+            "be associated with the same queue."
+        )
+    if not all_integers:
+        raise IndexError(
+            "arrays used as indices must be of integer (or boolean) type"
+        )
+    if len(inds) > 1:
+        inds = dpt.broadcast_arrays(*inds)
+    ary_ndim = ary.ndim
+
+    p = normalize_axis_index(operator.index(p), ary_ndim)
+    vals_shape = ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
+
+    vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    if not isinstance(vals, dpt.usm_ndarray):
+        vals = dpt.asarray(
+            vals, ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
+        )
+
+    vals = dpt.broadcast_to(vals, vals_shape)
+
+    hev, _ = ti._put(
+        dst=ary, ind=inds, val=vals, axis_start=p, mode=0, sycl_queue=exec_q
+    )
+    hev.wait()
+
+    return

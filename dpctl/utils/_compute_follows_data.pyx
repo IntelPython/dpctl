@@ -28,7 +28,18 @@ import dpctl
 
 from .._sycl_queue cimport SyclQueue
 
-__all__ = ["get_execution_queue", "get_coerced_usm_type"]
+__all__ = ["get_execution_queue", "get_coerced_usm_type", "ExecutionPlacementError"]
+
+
+class ExecutionPlacementError(Exception):
+    """Exception raised when execution placement target can be determined
+    from input arrays.
+
+    Make sure that input arrays are associated with the same SyclQueue,
+    or migrate data to the same SyclQueue using usm_ndarray.to_device
+    method.
+    """
+    pass
 
 
 cdef bint queue_equiv(SyclQueue q1, SyclQueue q2):

@@ -170,7 +170,7 @@ jobs:
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           export OCL_ICD_FILENAMES=libintelocl.so
           # clinfo -l
-          python -m pytest -p no:faulthandler --pyargs $MODULE_NAME
+          python -m pytest --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
@@ -296,8 +296,10 @@ jobs:
           conda activate dpctl_test && python -m dpctl -f
       - name: Run tests
         shell: cmd /C CALL {0}
+        env:
+          DPCTL_VERBOSITY: error
         run: >-
-          conda activate dpctl_test && python -m pytest -p no:faulthandler --pyargs ${{ env.MODULE_NAME }}
+          conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux

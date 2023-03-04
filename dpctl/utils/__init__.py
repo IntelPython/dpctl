@@ -19,6 +19,7 @@ A collection of utility functions.
 """
 
 from ._compute_follows_data import (
+    ExecutionPlacementError,
     get_coerced_usm_type,
     get_execution_queue,
     validate_usm_type,
@@ -30,4 +31,5 @@ __all__ = [
     "get_coerced_usm_type",
     "validate_usm_type",
     "onetrace_enabled",
+    "ExecutionPlacementError",
 ]
