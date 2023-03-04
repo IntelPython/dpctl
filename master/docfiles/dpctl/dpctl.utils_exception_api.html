@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils Exceptions &mdash; Data-parallel Control (dpctl) 0.14.1dev2+63.gbc7843193 documentation</title>
+  <title>dpctl.utils Exceptions &mdash; Data-parallel Control (dpctl) 0.14.1dev3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev2+63.gbc7843193
+                0.14.1dev3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -90,6 +90,16 @@
              
   <section id="dpctl-utils-exceptions">
 <span id="dpctl-utils-exception-api"></span><h1>dpctl.utils Exceptions<a class="headerlink" href="#dpctl-utils-exceptions" title="Permalink to this heading"></a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="dpctl.utils.ExecutionPlacementError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">ExecutionPlacementError</span></span><a class="headerlink" href="#dpctl.utils.ExecutionPlacementError" title="Permalink to this definition"></a></dt>
+<dd><p>Exception raised when execution placement target can be determined
+from input arrays.</p>
+<p>Make sure that input arrays are associated with the same SyclQueue,
+or migrate data to the same SyclQueue using usm_ndarray.to_device
+method.</p>
+</dd></dl>
+
 </section>
 
 

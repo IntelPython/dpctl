@@ -128,12 +128,22 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`extract()`
+      - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
       - -> dict Returns a copy of current options for printing ``dpctl.tensor.usm_ndarray`` class.
+    * - :func:`nonzero()`
+      - Return the indices of non-zero elements.
+    * - :func:`place()`
+      - Change elements of an array based on conditional and input values.
     * - :func:`print_options()`
       - Context manager for print options.
+    * - :func:`put()`
+      - Puts values of an array into another array along a given axis.
     * - :func:`set_print_options()`
       - Set options for printing ``dpctl.tensor.usm_ndarray`` class.
+    * - :func:`take()`
+      - Takes elements from array along a given axis.
     * - :func:`usm_ndarray_repr()`
       - -> str Returns a formatted string representing the elements of a ``dpctl.tensor.usm_ndarray`` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`

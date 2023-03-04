@@ -54,8 +54,13 @@ Array Manipulation
 Other Functions
 ---------------
 
+.. autofunction:: extract
 .. autofunction:: get_print_options
+.. autofunction:: nonzero
+.. autofunction:: place
 .. autofunction:: print_options
+.. autofunction:: put
 .. autofunction:: set_print_options
+.. autofunction:: take
 .. autofunction:: usm_ndarray_repr
 .. autofunction:: usm_ndarray_str

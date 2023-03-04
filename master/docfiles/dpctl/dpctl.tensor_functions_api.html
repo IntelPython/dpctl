@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev2+63.gbc7843193 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.1dev3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev2+63.gbc7843193
+                0.14.1dev3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -765,6 +765,34 @@ of length 1 removed.</p>
 <section id="other-functions">
 <h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.extract">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.extract" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the elements of an array that satisfies the condition.</p>
+<p>If <cite>condition</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code> is
+equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span></code>.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> does the opposite of
+<code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conditions</strong> – usm_ndarray
+An array whose non-zero or True entries indicate the element
+of <cite>arr</cite> to extract.</p></li>
+<li><p><strong>arr</strong> – usm_ndarray
+Input array of the same size as <cite>condition</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>usm_ndarray</dt><dd><p>Rank 1 array of values from <cite>arr</cite> where <cite>condition</cite> is True.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.get_print_options">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">get_print_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#get_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.get_print_options" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a copy of current options for printing
@@ -786,11 +814,84 @@ of length 1 removed.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.nonzero">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#nonzero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.nonzero" title="Permalink to this definition"></a></dt>
+<dd><p>Return the indices of non-zero elements.</p>
+<p>Returns the tuple of usm_narrays, one for each dimension
+of <cite>arr</cite>, containing the indices of the non-zero elements
+in that dimension. The values of <cite>arr</cite> are always tested in
+row-major, C-style order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arr</strong> – usm_ndarray
+Input array, which has non-zero array rank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Tuple[usm_ndarray]</dt><dd><p>Indices of non-zero array elements.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.place">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.place" title="Permalink to this definition"></a></dt>
+<dd><p>Change elements of an array based on conditional and input values.</p>
+<p>If <cite>mask</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> is
+equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span> <span class="pre">=</span> <span class="pre">vals</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arr</strong> – <dl class="simple">
+<dt>usm_ndarray</dt><dd><p>Array to put data into.</p>
+</dd>
+<dt>mask: usm_ndarray</dt><dd><p>Boolean mask array. Must have the same size as <cite>arr</cite>.</p>
+</dd>
+<dt>vals: usm_ndarray</dt><dd><p>Values to put into <cite>arr</cite>. Only the first N elements are
+used, where N is the number of True values in <cite>mask</cite>. If
+<cite>vals</cite> is smaller than N, it will be repeated, and if
+elements of <cite>arr</cite> are to be masked, this sequence must be
+non-empty. Array <cite>vals</cite> must be one dimensional.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.print_options">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">print_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.print_options" title="Permalink to this definition"></a></dt>
 <dd><p>Context manager for print options.</p>
 <p>Set print options for the scope of a <cite>with</cite> block.
 <cite>as</cite> yields dictionary of print options.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.put">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'clip'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put" title="Permalink to this definition"></a></dt>
+<dd><p>Puts values of an array into another array
+along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – usm_ndarray
+The array the values will be put into.</p></li>
+<li><p><strong>indices</strong> – usm_ndarray
+One-dimensional array of indices.</p></li>
+<li><p><strong>vals</strong> – Array of values to be put into <cite>x</cite>.
+Must be broadcastable to the shape of <cite>indices</cite>.</p></li>
+<li><p><strong>axis</strong> – The axis over which the values will be placed.
+If x is one-dimensional, this argument is optional.</p></li>
+<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
+“Clip” - clamps indices to (-axis_size &lt;= i &lt; axis_size),
+then wraps negative indices.
+“Wrap” - wraps both negative and positive indices.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -864,6 +965,39 @@ options are set, a dictionary of Numpy’s print options
 will be used to initialize dpctl’s print options.
 Default: “False”</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.take">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'clip'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.take" title="Permalink to this definition"></a></dt>
+<dd><p>Takes elements from array along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – usm_ndarray
+The array that elements will be taken from.</p></li>
+<li><p><strong>indices</strong> – usm_ndarray
+One-dimensional array of indices.</p></li>
+<li><p><strong>axis</strong> – The axis over which the values will be selected.
+If x is one-dimensional, this argument is optional.</p></li>
+<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
+“Clip” - clamps indices to (-n &lt;= i &lt; n), then wraps
+negative indices.
+“Wrap” - wraps both negative and positive indices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>usm_ndarray</dt><dd><p>Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
+filled with elements .</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>out</p>
 </dd>
 </dl>
 </dd></dl>

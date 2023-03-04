@@ -39,5 +39,13 @@ Other Functions
 
 
 
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`ExecutionPlacementError`
+      - Exception raised when execution placement target can be determined from input arrays.
 
 

@@ -7,3 +7,4 @@ dpctl.utils Exceptions
 
 .. currentmodule:: dpctl.utils
 
+.. autoexception:: ExecutionPlacementError
