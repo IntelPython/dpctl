@@ -61,7 +61,11 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinxcontrib.programoutput",
+    "sphinxcontrib.googleanalytics",
 ]
+
+googleanalytics_id = 'G-7TCKS5BHYE'
+googleanalytics_enabled = True
 
 todo_include_todos = True
 use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
