@@ -542,11 +542,11 @@ def test_put_0d_val(data_dt):
 
     x = dpt.arange(5, dtype=data_dt, sycl_queue=q)
     ind = dpt.asarray([0], dtype=np.intp, sycl_queue=q)
-    x[ind] = 2
+    val = dpt.asarray(2, dtype=x.dtype, sycl_queue=q)
+    x[ind] = val
     assert_array_equal(np.asarray(2, dtype=data_dt), dpt.asnumpy(x[0]))
 
     x = dpt.asarray(5, dtype=data_dt, sycl_queue=q)
-    val = 2
     dpt.put(x, ind, val)
     assert_array_equal(np.asarray(2, dtype=data_dt), dpt.asnumpy(x))
 
@@ -592,13 +592,13 @@ def test_put_0d_data(data_dt):
     "ind_dt",
     _all_int_dtypes,
 )
-def test_take_0d_ind(ind_dt):
+def test_indexing_0d_ind(ind_dt):
     q = get_queue_or_skip()
 
     x = dpt.arange(5, dtype="i4", sycl_queue=q)
     ind = dpt.asarray(3, dtype=ind_dt, sycl_queue=q)
 
-    y = dpt.take(x, ind)
+    y = x[ind]
     assert dpt.asnumpy(x[3]) == dpt.asnumpy(y)
 
 
@@ -613,7 +613,7 @@ def test_put_0d_ind(ind_dt):
     ind = dpt.asarray(3, dtype=ind_dt, sycl_queue=q)
     val = dpt.asarray(5, dtype=x.dtype, sycl_queue=q)
 
-    dpt.put(x, ind, val, axis=0)
+    x[ind] = val
     assert dpt.asnumpy(x[3]) == dpt.asnumpy(val)
 
 
@@ -684,10 +684,6 @@ def test_take_strided(data_dt, order):
                 np.take(xs_np, ind_np, axis=1),
                 dpt.asnumpy(dpt.take(xs, ind, axis=1)),
             )
-            assert_array_equal(
-                xs_np[ind_np, ind_np],
-                dpt.asnumpy(dpt.take(xs, [ind, ind], axis=0)),
-            )
 
 
 @pytest.mark.parametrize(
@@ -751,7 +747,7 @@ def test_take_strided_indices(ind_dt, order):
             inds_np = ind_np[s, ::sgn]
             assert_array_equal(
                 np.take(x_np, inds_np, axis=0),
-                dpt.asnumpy(dpt.take(x, inds, axis=0)),
+                dpt.asnumpy(x[inds]),
             )
 
 
@@ -828,7 +824,7 @@ def test_put_strided_destination(data_dt, order):
             x_np1[ind_np, ind_np] = val_np
 
             x1 = dpt.copy(xs)
-            dpt.put(x1, [ind, ind], val, axis=0)
+            x1[ind, ind] = val
             assert_array_equal(x_np1, dpt.asnumpy(x1))
 
 
@@ -887,7 +883,7 @@ def test_put_strided_indices(ind_dt, order):
             inds_np = ind_np[s, ::sgn]
 
             x_copy = dpt.copy(x)
-            dpt.put(x_copy, inds, val, axis=0)
+            x_copy[inds] = val
 
             x_np_copy = x_np.copy()
             x_np_copy[inds_np] = val_np
@@ -899,7 +895,7 @@ def test_take_arg_validation():
     q = get_queue_or_skip()
 
     x = dpt.arange(4, dtype="i4", sycl_queue=q)
-    ind0 = dpt.arange(2, dtype=np.intp, sycl_queue=q)
+    ind0 = dpt.arange(4, dtype=np.intp, sycl_queue=q)
     ind1 = dpt.arange(2.0, dtype="f", sycl_queue=q)
 
     with pytest.raises(TypeError):
@@ -919,13 +915,15 @@ def test_take_arg_validation():
         dpt.take(x, ind0, mode=0)
     with pytest.raises(ValueError):
         dpt.take(dpt.reshape(x, (2, 2)), ind0, axis=None)
+    with pytest.raises(ValueError):
+        dpt.take(x, dpt.reshape(ind0, (2, 2)))
 
 
 def test_put_arg_validation():
     q = get_queue_or_skip()
 
     x = dpt.arange(4, dtype="i4", sycl_queue=q)
-    ind0 = dpt.arange(2, dtype=np.intp, sycl_queue=q)
+    ind0 = dpt.arange(4, dtype=np.intp, sycl_queue=q)
     ind1 = dpt.arange(2.0, dtype="f", sycl_queue=q)
     val = dpt.asarray(2, x.dtype, sycl_queue=q)
 
@@ -946,6 +944,8 @@ def test_put_arg_validation():
 
     with pytest.raises(ValueError):
         dpt.put(x, ind0, val, mode=0)
+    with pytest.raises(ValueError):
+        dpt.put(x, dpt.reshape(ind0, (2, 2)), val)
 
 
 def test_advanced_indexing_compute_follows_data():

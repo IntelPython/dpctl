@@ -27,43 +27,56 @@ from ._copy_utils import _extract_impl, _nonzero_impl
 
 
 def take(x, indices, /, *, axis=None, mode="clip"):
+    """take(x, indices, axis=None, mode="clip")
+
+    Takes elements from array along a given axis.
+
+    Args:
+       x: usm_ndarray
+          The array that elements will be taken from.
+       indices: usm_ndarray
+          One-dimensional array of indices.
+       axis:
+          The axis over which the values will be selected.
+          If x is one-dimensional, this argument is optional.
+       mode:
+          How out-of-bounds indices will be handled.
+          "Clip" - clamps indices to (-n <= i < n), then wraps
+          negative indices.
+          "Wrap" - wraps both negative and positive indices.
+
+    Returns:
+       out: usm_ndarray
+          Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
+          filled with elements .
+    """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
             "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
         )
 
-    if not isinstance(indices, list) and not isinstance(indices, tuple):
-        indices = (indices,)
-
-    queues_ = [
-        x.sycl_queue,
-    ]
-    usm_types_ = [
-        x.usm_type,
-    ]
-
-    for i in indices:
-        if not isinstance(i, dpt.usm_ndarray):
-            raise TypeError(
-                "`indices` expected `dpt.usm_ndarray`, got `{}`.".format(
-                    type(i)
-                )
+    if not isinstance(indices, dpt.usm_ndarray):
+        raise TypeError(
+            "`indices` expected `dpt.usm_ndarray`, got `{}`.".format(
+                type(indices)
             )
-        if not np.issubdtype(i.dtype, np.integer):
-            raise IndexError(
-                "`indices` expected integer data type, got `{}`".format(i.dtype)
-            )
-        queues_.append(i.sycl_queue)
-        usm_types_.append(i.usm_type)
-    exec_q = dpctl.utils.get_execution_queue(queues_)
-    if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
-            "Can not automatically determine where to allocate the "
-            "result or performance execution. "
-            "Use `usm_ndarray.to_device` method to migrate data to "
-            "be associated with the same queue."
         )
-    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    if not np.issubdtype(indices.dtype, np.integer):
+        raise IndexError(
+            "`indices` expected integer data type, got `{}`".format(
+                indices.dtype
+            )
+        )
+    if indices.ndim != 1:
+        raise ValueError(
+            "`indices` expected a 1D array, got `{}`".format(indices.ndim)
+        )
+    exec_q = dpctl.utils.get_execution_queue([x.sycl_queue, indices.sycl_queue])
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError
+    res_usm_type = dpctl.utils.get_coerced_usm_type(
+        [x.usm_type, indices.usm_type]
+    )
 
     modes = {"clip": 0, "wrap": 1}
     try:
@@ -81,27 +94,47 @@ def take(x, indices, /, *, axis=None, mode="clip"):
             )
         axis = 0
 
-    if len(indices) > 1:
-        indices = dpt.broadcast_arrays(*indices)
     if x_ndim > 0:
         axis = normalize_axis_index(operator.index(axis), x_ndim)
-        res_shape = (
-            x.shape[:axis] + indices[0].shape + x.shape[axis + len(indices) :]
-        )
+        res_shape = x.shape[:axis] + indices.shape + x.shape[axis + 1 :]
     else:
-        res_shape = indices[0].shape
+        if axis != 0:
+            raise ValueError("`axis` must be 0 for an array of dimension 0.")
+        res_shape = indices.shape
 
     res = dpt.empty(
         res_shape, dtype=x.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    hev, _ = ti._take(x, indices, res, axis, mode, sycl_queue=exec_q)
+    hev, _ = ti._take(x, (indices,), res, axis, mode, sycl_queue=exec_q)
     hev.wait()
 
     return res
 
 
 def put(x, indices, vals, /, *, axis=None, mode="clip"):
+    """put(x, indices, vals, axis=None, mode="clip")
+
+    Puts values of an array into another array
+    along a given axis.
+
+    Args:
+       x: usm_ndarray
+          The array the values will be put into.
+       indices: usm_ndarray
+          One-dimensional array of indices.
+       vals:
+          Array of values to be put into `x`.
+          Must be broadcastable to the shape of `indices`.
+       axis:
+          The axis over which the values will be placed.
+          If x is one-dimensional, this argument is optional.
+       mode:
+          How out-of-bounds indices will be handled.
+          "Clip" - clamps indices to (-axis_size <= i < axis_size),
+          then wraps negative indices.
+          "Wrap" - wraps both negative and positive indices.
+    """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
             "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
@@ -116,66 +149,61 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
         usm_types_ = [
             x.usm_type,
         ]
-
-    if not isinstance(indices, list) and not isinstance(indices, tuple):
-        indices = (indices,)
-
-    for i in indices:
-        if not isinstance(i, dpt.usm_ndarray):
-            raise TypeError(
-                "`indices` expected `dpt.usm_ndarray`, got `{}`.".format(
-                    type(i)
-                )
+    if not isinstance(indices, dpt.usm_ndarray):
+        raise TypeError(
+            "`indices` expected `dpt.usm_ndarray`, got `{}`.".format(
+                type(indices)
             )
-        if not np.issubdtype(i.dtype, np.integer):
-            raise IndexError(
-                "`indices` expected integer data type, got `{}`".format(i.dtype)
+        )
+    if indices.ndim != 1:
+        raise ValueError(
+            "`indices` expected a 1D array, got `{}`".format(indices.ndim)
+        )
+    if not np.issubdtype(indices.dtype, np.integer):
+        raise IndexError(
+            "`indices` expected integer data type, got `{}`".format(
+                indices.dtype
             )
-        queues_.append(i.sycl_queue)
-        usm_types_.append(i.usm_type)
+        )
+    queues_.append(indices.sycl_queue)
+    usm_types_.append(indices.usm_type)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
-            "Can not automatically determine where to allocate the "
-            "result or performance execution. "
-            "Use `usm_ndarray.to_device` method to migrate data to "
-            "be associated with the same queue."
-        )
-    val_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
-
+        raise dpctl.utils.ExecutionPlacementError
+    vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     modes = {"clip": 0, "wrap": 1}
     try:
         mode = modes[mode]
     except KeyError:
-        raise ValueError("`mode` must be `wrap`, or `clip`.")
+        raise ValueError("`mode` must be `clip` or `wrap`.")
 
-    # when axis is none, array is treated as 1D
-    if axis is None:
-        try:
-            x = dpt.reshape(x, (x.size,), copy=False)
-            axis = 0
-        except ValueError:
-            raise ValueError("Cannot create 1D view of input array")
-    if len(indices) > 1:
-        indices = dpt.broadcast_arrays(*indices)
     x_ndim = x.ndim
+    if axis is None:
+        if x_ndim > 1:
+            raise ValueError(
+                "`axis` cannot be `None` for array of dimension `{}`".format(
+                    x_ndim
+                )
+            )
+        axis = 0
+
     if x_ndim > 0:
         axis = normalize_axis_index(operator.index(axis), x_ndim)
 
-        val_shape = (
-            x.shape[:axis] + indices[0].shape + x.shape[axis + len(indices) :]
-        )
+        val_shape = x.shape[:axis] + indices.shape + x.shape[axis + 1 :]
     else:
-        val_shape = indices[0].shape
+        if axis != 0:
+            raise ValueError("`axis` must be 0 for an array of dimension 0.")
+        val_shape = indices.shape
 
     if not isinstance(vals, dpt.usm_ndarray):
         vals = dpt.asarray(
-            vals, dtype=x.dtype, usm_type=val_usm_type, sycl_queue=exec_q
+            vals, dtype=x.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
 
     vals = dpt.broadcast_to(vals, val_shape)
 
-    hev, _ = ti._put(x, indices, vals, axis, mode, sycl_queue=exec_q)
+    hev, _ = ti._put(x, (indices,), vals, axis, mode, sycl_queue=exec_q)
     hev.wait()
 
 
