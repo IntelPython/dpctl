@@ -192,14 +192,14 @@ def extract(condition, arr):
 
     Args:
        conditions: usm_ndarray
-          An array whose non-zero or True entries indicate the element
-          of `arr` to extract.
+            An array whose non-zero or True entries indicate the element
+            of `arr` to extract.
        arr: usm_ndarray
-          Input array of the same size as `condition`.
+            Input array of the same size as `condition`.
 
     Returns:
-       extract: usm_ndarray
-          Rank 1 array of values from `arr` where `condition` is True.
+        usm_ndarray
+            Rank 1 array of values from `arr` where `condition` is True.
     """
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
@@ -231,16 +231,16 @@ def place(arr, mask, vals):
     equivalent to ``arr[condition] = vals``.
 
     Args:
-       arr: usm_ndarray
-          Array to put data into.
+        arr: usm_ndarray
+            Array to put data into.
        mask: usm_ndarray
-          Boolean mask array. Must have the same size as `arr`.
+            Boolean mask array. Must have the same size as `arr`.
        vals: usm_ndarray
-          Values to put into `arr`. Only the first N elements are
-          used, where N is the number of True values in `mask`. If
-          `vals` is smaller than N, it will be repeated, and if
-          elements of `arr` are to be masked, this sequence must be
-          non-empty. Array `vals` must be one dimensional.
+            Values to put into `arr`. Only the first N elements are
+            used, where N is the number of True values in `mask`. If
+            `vals` is smaller than N, it will be repeated, and if
+            elements of `arr` are to be masked, this sequence must be
+            non-empty. Array `vals` must be one dimensional.
     """
     if not isinstance(arr, dpt.usm_ndarray):
         raise TypeError(
@@ -295,11 +295,11 @@ def nonzero(arr):
     row-major, C-style order.
 
     Args:
-       arr: usm_ndarray
-          Input array, which has non-zero array rank.
+        arr: usm_ndarray
+            Input array, which has non-zero array rank.
     Returns:
-       tuple_of_usm_ndarrays: tuple
-          Indices of non-zero array elements.
+        Tuple[usm_ndarray]
+            Indices of non-zero array elements.
     """
     if not isinstance(arr, dpt.usm_ndarray):
         raise TypeError(
