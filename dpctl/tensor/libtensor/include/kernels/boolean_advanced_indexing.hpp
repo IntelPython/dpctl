@@ -105,7 +105,9 @@ struct Strided1DIndexer
 
     size_t operator()(size_t gid) const
     {
-        return static_cast<size_t>(offset + std::min<size_t>(gid, size) * step);
+        // ensure 0 <= gid < size
+        return static_cast<size_t>(offset +
+                                   std::min<size_t>(gid, size - 1) * step);
     }
 
 private:
