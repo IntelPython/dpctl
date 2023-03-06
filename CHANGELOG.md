@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The `dpctl.tensor.Device` class supports `print_device_info` method [#1029](https://github.com/IntelPython/dpctl/pull/1029), equality comparison, and hashing [#1048](https://github.com/IntelPython/dpctl/pull/1048)
 * Updated version of pybind11 used to 2.10.2 [#1031](https://github.com/IntelPython/dpctl/pull/1031)
 * Improved internal utility responsible for reduction of iteration space dimensionality [#1044](https://github.com/IntelPython/dpctl/pull/1044/), [#1054](https://github.com/IntelPython/dpctl/pull/1054)
-* Changed return type of `DCPCTLUSM_GetPointerType` function in SyclInterface library [#1061](https://github.com/IntelPython/dpctl/pull/1061), [#065](https://github.com/IntelPython/dpctl/pull/1065)
+* Changed return type of `DCPCTLUSM_GetPointerType` function in SyclInterface library [#1061](https://github.com/IntelPython/dpctl/pull/1061), [#1065](https://github.com/IntelPython/dpctl/pull/1065)
 * Updated supported version of DLPack to 0.8 [#1073](https://github.com/IntelPython/dpctl/pull/1073)
 * Implemented queue cache per context/device pair and deployed it in `dpctl.memory`, `dpctl.tensor.from_dlpack` and `dpctl.tensor` array creation functions [#1076](https://github.com/IntelPython/dpctl/pull/1076), [#1079](https://github.com/IntelPython/dpctl/pull/1079)
 
