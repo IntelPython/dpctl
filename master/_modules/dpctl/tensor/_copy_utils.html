@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.1dev3+2.gd259247f3 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.1dev3+5.g2f8156cb documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.1dev3+2.gd259247f3
+                0.14.1dev3+5.g2f8156cb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -605,13 +605,17 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Expecting type dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ary_mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Expecting type dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ary_mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">ary_mask</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+            <span class="n">ary_mask</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="p">)</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
             <span class="s2">&quot;arrays have different associated queues. &quot;</span>
