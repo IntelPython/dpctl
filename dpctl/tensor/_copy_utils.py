@@ -514,13 +514,17 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
         )
-    if not isinstance(vals, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
-        )
     exec_q = dpctl.utils.get_execution_queue(
-        (ary.sycl_queue, ary_mask.sycl_queue, vals.sycl_queue)
+        (
+            ary.sycl_queue,
+            ary_mask.sycl_queue,
+        )
     )
+    if exec_q is not None:
+        if not isinstance(vals, dpt.usm_ndarray):
+            vals = dpt.asarray(vals, dtype=ary.dtype, sycl_queue=exec_q)
+        else:
+            exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "arrays have different associated queues. "

@@ -8,14 +8,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added `dpctl.program.SyclKernel.max_sub_group_size` property [#1208](https://github.com/IntelPython/dpctl/pull/1028).
-
 ### Changed
-
-* Removed `dpctl.select_host_device`, `dpctl.has_host_device`, `dpctl.SyclDevice.is_host`, and `dpctl.SyclDevice.has_aspect_host` since support for host device has been removed in DPC++ 2023 and from SYCL 2020 spec [#1208](https://github.com/IntelPython/dpctl/pull/1028).
 
 ### Fixed
 
+## [0.14.1] - 03/06/2023
+
+### Added
+
+* Added `dpctl.SyclDevice.partition_max_sub_devices` property [#1005](https://github.com/IntelPython/dpctl/pull/1005)
+* Added `dpctl.program.SyclKernel.max_sub_group_size` property [#1028](https://github.com/IntelPython/dpctl/pull/1028)
+* Implemented printing of `usm_ndarray` [#1013](https://github.com/IntelPython/dpctl/pull/1013), [#1043](https://github.com/IntelPython/dpctl/pull/1043), [#1060](https://github.com/IntelPython/dpctl/pull/1060)
+* Implemented support for advanced indexing for `dpctl.tensor.usm_ndarray` [#1095](https://github.com/IntelPython/dpctl/pull/1095), [#1097](https://github.com/IntelPython/dpctl/pull/1097), [#1099](https://github.com/IntelPython/dpctl/pull/1099), [#1101](https://github.com/IntelPython/dpctl/pull/1101)
+* Implemented support for platform listing in `dpctl.__main__` script [#1014](https://github.com/IntelPython/dpctl/pull/1014)
+* Improved performance of `dpctl.tensor.asnumpy` [#1026](https://github.com/IntelPython/dpctl/pull/1026)
+* Added `UsmNDArray_Make*` C-API for constructing `dpctl.tensor.usm_ndarray` from native allocations [#1050](https://github.com/IntelPython/dpctl/pull/1050), [#1067](https://github.com/IntelPython/dpctl/pull/1067)
+* Added support for `dpctl.SyclDevice.native_vector_width_*` device descriptors [#1075](https://github.com/IntelPython/dpctl/pull/1075)
+* Added ``dpctl::tensor::usm_ndarray::get_shape_vector`` and ``dpctl::tensor::usm_ndarray::get_strides_vector`` methods [#1090](https://github.com/IntelPython/dpctl/pull/1090)
+
+
+### Changed
+
+* Removed `dpctl.select_host_device`, `dpctl.has_host_device`, `dpctl.SyclDevice.is_host`, and `dpctl.SyclDevice.has_aspect_host` since support for host device has been removed in DPC++ 2023 and from SYCL 2020 spec [#1028](https://github.com/IntelPython/dpctl/pull/1028)
+* `usm_ndarray`is made writable by default [#1012](https://github.com/IntelPython/dpctl/pull/1012), and writable flag is now checked by `__setitem__`.
+* Added convenience signature for C++ utility function in "dpctl4pybind11.hpp" [#1016](https://github.com/IntelPython/dpctl/pull/1016)
+* Improved error reported when attempting to submit kernel that uses a data-type unsupported by target device [#1018](https://github.com/IntelPython/dpctl/pull/1018), [#1040](https://github.com/IntelPython/dpctl/pull/1040)
+* Updated C++ code to require DPC++ 2023.0.0 or newer [#1028](https://github.com/IntelPython/dpctl/pull/1028), [#1066](https://github.com/IntelPython/dpctl/pull/1066)
+* The `dpctl.tensor.Device` class supports `print_device_info` method [#1029](https://github.com/IntelPython/dpctl/pull/1029), equality comparison, and hashing [#1048](https://github.com/IntelPython/dpctl/pull/1048)
+* Updated version of pybind11 used to 2.10.2 [#1031](https://github.com/IntelPython/dpctl/pull/1031)
+* Improved internal utility responsible for reduction of iteration space dimensionality [#1044](https://github.com/IntelPython/dpctl/pull/1044/), [#1054](https://github.com/IntelPython/dpctl/pull/1054)
+* Changed return type of `DCPCTLUSM_GetPointerType` function in SyclInterface library [#1061](https://github.com/IntelPython/dpctl/pull/1061), [#1065](https://github.com/IntelPython/dpctl/pull/1065)
+* Updated supported version of DLPack to 0.8 [#1073](https://github.com/IntelPython/dpctl/pull/1073)
+* Implemented queue cache per context/device pair and deployed it in `dpctl.memory`, `dpctl.tensor.from_dlpack` and `dpctl.tensor` array creation functions [#1076](https://github.com/IntelPython/dpctl/pull/1076), [#1079](https://github.com/IntelPython/dpctl/pull/1079)
+
+* Maintainance, CI work: [#1001](https://github.com/IntelPython/dpctl/pull/1001), [#1009](https://github.com/IntelPython/dpctl/pull/1009), [#1011](https://github.com/IntelPython/dpctl/pull/1011), [#1024](https://github.com/IntelPython/dpctl/pull/1024), [#1030](https://github.com/IntelPython/dpctl/pull/1030), [#1032](https://github.com/IntelPython/dpctl/pull/1032), [#1035](https://github.com/IntelPython/dpctl/pull/1035), [#1037](https://github.com/IntelPython/dpctl/pull/1037), [#1039](https://github.com/IntelPython/dpctl/pull/1039), [#1041](https://github.com/IntelPython/dpctl/pull/1041), [#1045](https://github.com/IntelPython/dpctl/pull/1045), [#1047](https://github.com/IntelPython/dpctl/pull/1047), [#1055](https://github.com/IntelPython/dpctl/pull/1055), [#1057](https://github.com/IntelPython/dpctl/pull/1057), [#1059](https://github.com/IntelPython/dpctl/pull/1059), [#1068](https://github.com/IntelPython/dpctl/pull/1068), [#1070](https://github.com/IntelPython/dpctl/pull/1070), [#1074](https://github.com/IntelPython/dpctl/pull/1074), [#1077](https://github.com/IntelPython/dpctl/pull/1077), [#1078](https://github.com/IntelPython/dpctl/pull/1078), [#1081](https://github.com/IntelPython/dpctl/pull/1081), [#1084](https://github.com/IntelPython/dpctl/pull/1084), [#1085](https://github.com/IntelPython/dpctl/pull/1085), [#1088](https://github.com/IntelPython/dpctl/pull/1088), [#1086](https://github.com/IntelPython/dpctl/pull/1086), [#1092](https://github.com/IntelPython/dpctl/pull/1092), [#1093](https://github.com/IntelPython/dpctl/pull/1093)
+
+
+### Fixed
+
+* Fixed error [gh-998](https://github.com/IntelPython/dpctl/issues/998) in forming Python exception, [#999](https://github.com/IntelPython/dpctl/pull/999).
+* A small memory leak fixed, [#1000](https://github.com/IntelPython/dpctl/pull/1000)
+* Improved dtype support in `dpctl.tensor.full`,  PR [#1002](https://github.com/IntelPython/dpctl/pull/1002)
+* Added missing header file [#1008](https://github.com/IntelPython/dpctl/pull/1008) fixing [gh-1007](https://github.com/IntelPython/dpctl/issues/1007)
+* Fixed a typo in device-specific dtype mapping [#1015](https://github.com/IntelPython/dpctl/pull/1015)
+* Fixed default device integer type to align with NumPy's behavior on Windows [#1017](https://github.com/IntelPython/dpctl/pull/1017)
+* Fixed unexpected overflow in `dpctl.tensor.linspace` when one of the parameters is the largest floating point value [#1034](https://github.com/IntelPython/dpctl/pull/1034)
+* Constructors `dpctl.tensor.empty`, `dpctl.tensor.zeros`, and `usm_ndarray` constructor itself no longer allow to create array with data-types not supported by targeted device [#1042](https://github.com/IntelPython/dpctl/pull/1042)
+* Fixed parameter validation in `dpctl.SyclQueue` constructor [#1052](https://github.com/IntelPython/dpctl/pull/1052)
+* Fixed `usm_type` of the resulting array in `dpctl.tensor.tril` and `dpctl.tensor.triu` functions [#1062](https://github.com/IntelPython/dpctl/pull/1062)
+* Used DPC++ configuration files to ensure correct use of conda compiler toolchain on Linux [#1072](https://github.com/IntelPython/dpctl/pull/1072)
+* Fixed issue with empty argument of `dpctl.tensor.meshgrid` function [#1080](https://github.com/IntelPython/dpctl/pull/1080/)
+* Fixed linking problem on Windows enabling `dpctl` to be functional on Windows for devices not supporting some data types [#1083](https://github.com/IntelPython/dpctl/pull/1083)
 
 ## [0.14.0] - 11/18/2022
 

@@ -1206,3 +1206,15 @@ def test_nonzero():
     x = dpt.concat((dpt.zeros(3), dpt.ones(4), dpt.zeros(3)))
     (i,) = dpt.nonzero(x)
     assert (dpt.asnumpy(i) == np.array([3, 4, 5, 6])).all()
+
+
+def test_assign_scalar():
+    get_queue_or_skip()
+    x = dpt.arange(-5, 5, dtype="i8")
+    cond = dpt.asarray(
+        [True, True, True, True, True, False, False, False, False, False]
+    )
+    x[cond] = 0  # no error expected
+    x[dpt.nonzero(cond)] = -1
+    expected = np.array([-1, -1, -1, -1, -1, 0, 1, 2, 3, 4], dtype=x.dtype)
+    assert (dpt.asnumpy(x) == expected).all()
