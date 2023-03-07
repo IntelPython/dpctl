@@ -54,10 +54,17 @@ template <typename T1, typename T2> T1 ceiling_quotient(T1 n, T2 m)
     return ceiling_quotient<T1>(n, static_cast<T1>(m));
 }
 
-template <typename inputT, typename outputT, typename IndexerT, size_t n_wi>
+template <typename inputT,
+          typename outputT,
+          size_t n_wi,
+          typename IndexerT,
+          typename TransformerT>
 class inclusive_scan_rec_local_scan_krn;
 
-template <typename inputT, typename outputT, typename IndexerT>
+template <typename inputT,
+          typename outputT,
+          typename IndexerT,
+          typename TransformerT>
 class inclusive_scan_rec_chunk_update_krn;
 
 struct NoOpIndexer
@@ -136,21 +143,28 @@ private:
     py::ssize_t step = 1;
 };
 
-template <typename _IndexerFn> struct ZeroChecker
+template <typename inputT, typename outputT> struct NonZeroIndicator
 {
+    NonZeroIndicator() {}
 
-    ZeroChecker(_IndexerFn _indexer) : indexer_fn(_indexer) {}
-
-    template <typename dataT>
-    bool operator()(dataT const *data, size_t gid) const
+    outputT operator()(const inputT &val) const
     {
-        constexpr dataT _zero(0);
+        constexpr outputT out_one(1);
+        constexpr outputT out_zero(0);
+        constexpr inputT val_zero(0);
 
-        return data[indexer_fn(gid)] == _zero;
+        return (val == val_zero) ? out_zero : out_one;
     }
+};
 
-private:
-    _IndexerFn indexer_fn;
+template <typename T> struct NoOpTransformer
+{
+    NoOpTransformer() {}
+
+    T operator()(const T &val) const
+    {
+        return val;
+    }
 };
 
 /*
@@ -158,7 +172,11 @@ private:
  *       output[j] = sum( input[s0 + i * s1], 0 <= i <= j)
  * for 0 <= j < n_elems
  */
-template <typename inputT, typename outputT, typename IndexerT, size_t n_wi>
+template <typename inputT,
+          typename outputT,
+          size_t n_wi,
+          typename IndexerT,
+          typename TransformerT>
 sycl::event inclusive_scan_rec(sycl::queue exec_q,
                                size_t n_elems,
                                size_t wg_size,
@@ -167,6 +185,7 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
                                size_t s0,
                                size_t s1,
                                IndexerT indexer,
+                               TransformerT transformer,
                                std::vector<sycl::event> const &depends = {})
 {
     size_t n_groups = ceiling_quotient(n_elems, n_wi * wg_size);
@@ -181,9 +200,7 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
 
         slmT slm_iscan_tmp(lws, cgh);
 
-        ZeroChecker<IndexerT> is_zero_fn(indexer);
-
-        cgh.parallel_for<class inclusive_scan_rec_local_scan_krn<inputT, outputT, ZeroChecker<IndexerT>, n_wi>>(
+        cgh.parallel_for<class inclusive_scan_rec_local_scan_krn<inputT, outputT, n_wi, IndexerT, decltype(transformer)>>(
             sycl::nd_range<1>(gws, lws),
             [=](sycl::nd_item<1> it)
         {
@@ -195,11 +212,10 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
             size_t i = chunk_gid * n_wi;
             for (size_t m_wi = 0; m_wi < n_wi; ++m_wi) {
                 constexpr outputT out_zero(0);
-                constexpr outputT out_one(1);
+
                 local_isum[m_wi] =
                     (i + m_wi < n_elems)
-                        ? (is_zero_fn(input, s0 + s1 * (i + m_wi)) ? out_zero
-                                                                   : out_one)
+                        ? transformer(input[indexer(s0 + s1 * (i + m_wi))])
                         : out_zero;
             }
 
@@ -240,14 +256,17 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
         auto chunk_size = wg_size * n_wi;
 
         NoOpIndexer _no_op_indexer{};
-        auto e2 = inclusive_scan_rec<outputT, outputT, NoOpIndexer, n_wi>(
+        NoOpTransformer<outputT> _no_op_transformer{};
+        auto e2 = inclusive_scan_rec<outputT, outputT, n_wi, NoOpIndexer,
+                                     decltype(_no_op_transformer)>(
             exec_q, n_groups - 1, wg_size, output, temp, chunk_size - 1,
-            chunk_size, _no_op_indexer, {inc_scan_phase1_ev});
+            chunk_size, _no_op_indexer, _no_op_transformer,
+            {inc_scan_phase1_ev});
 
         // output[ chunk_size * (i + 1) + j] += temp[i]
         auto e3 = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(e2);
-            cgh.parallel_for<class inclusive_scan_rec_chunk_update_krn<inputT, outputT, IndexerT>>(
+            cgh.parallel_for<class inclusive_scan_rec_chunk_update_krn<inputT, outputT, IndexerT, decltype(transformer)>>(
                 {n_elems},
                 [=](auto wiid)
             {
@@ -258,14 +277,13 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
             );
         });
 
-        // dangling task to free the temporary
-        exec_q.submit([&](sycl::handler &cgh) {
+        sycl::event e4 = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(e3);
             auto ctx = exec_q.get_context();
             cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
         });
 
-        out_event = e3;
+        out_event = e4;
     }
 
     return out_event;
@@ -502,10 +520,13 @@ size_t mask_positions_contig_impl(sycl::queue q,
     size_t wg_size = 128;
 
     NoOpIndexer flat_indexer{};
+    NonZeroIndicator<maskT, cumsumT> non_zero_indicator{};
 
-    sycl::event comp_ev = inclusive_scan_rec<maskT, cumsumT, NoOpIndexer, n_wi>(
-        q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1, flat_indexer,
-        depends);
+    sycl::event comp_ev =
+        inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(flat_indexer),
+                           decltype(non_zero_indicator)>(
+            q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1,
+            flat_indexer, non_zero_indicator, depends);
 
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
@@ -558,11 +579,13 @@ size_t mask_positions_strided_impl(sycl::queue q,
     size_t wg_size = 128;
 
     StridedIndexer strided_indexer{nd, input_offset, shape_strides};
+    NonZeroIndicator<maskT, cumsumT> non_zero_indicator{};
 
     sycl::event comp_ev =
-        inclusive_scan_rec<maskT, cumsumT, StridedIndexer, n_wi>(
+        inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(strided_indexer),
+                           decltype(non_zero_indicator)>(
             q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1,
-            strided_indexer, depends);
+            strided_indexer, non_zero_indicator, depends);
 
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
