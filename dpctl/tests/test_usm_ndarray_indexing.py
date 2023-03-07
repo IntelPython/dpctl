@@ -1218,3 +1218,12 @@ def test_assign_scalar():
     x[dpt.nonzero(cond)] = -1
     expected = np.array([-1, -1, -1, -1, -1, 0, 1, 2, 3, 4], dtype=x.dtype)
     assert (dpt.asnumpy(x) == expected).all()
+
+
+def test_nonzero_large():
+    get_queue_or_skip()
+    m = dpt.full((60, 80), True)
+    assert m[m].size == m.size
+
+    m = dpt.full((30, 60, 80), True)
+    assert m[m].size == m.size
