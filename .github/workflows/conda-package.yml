@@ -445,7 +445,7 @@ jobs:
                     -DMKL_INCLUDE_DIR=${MKLROOT}/include \
                     -DTBB_INCLUDE_DIR=${TBBROOT}/include || exit 1
             else
-               CC=icx CXX=icpx CFLAGS="-fsycl" LDSHARED="dpcpp -shared" \
+               CC=icx CXX="icpx -fsycl" LDSHARED="icpx -fsycl -shared" \
                     python setup.py build_ext --inplace || exit 1
             fi
             conda deactivate
@@ -462,7 +462,7 @@ jobs:
           do
             pushd $d
             conda activate --stack build_env
-            CC=dpcpp CXX=dpcpp LDSHARED="dpcpp -shared" \
+            CC=icpx CXX="icpx -fsycl" LDSHARED="icpx -fsycl -shared" \
                    python setup.py build_ext --inplace || exit 1
             conda deactivate
             if [ -e tests ]
