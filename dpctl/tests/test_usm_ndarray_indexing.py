@@ -1211,6 +1211,16 @@ def test_place_empty_vals_error():
         dpt.place(x, sel, y)
 
 
+def test_place_empty_vals_full_false_mask():
+    get_queue_or_skip()
+    x = dpt.ones(10, dtype="f4")
+    y = dpt.empty((0,), dtype=x.dtype)
+    sel = dpt.zeros(x.size, dtype="?")
+    expected = np.ones(10, dtype=x.dtype)
+    dpt.place(x, sel, y)
+    assert (dpt.asnumpy(x) == expected).all()
+
+
 def test_nonzero():
     get_queue_or_skip()
     x = dpt.concat((dpt.zeros(3), dpt.ones(4), dpt.zeros(3)))

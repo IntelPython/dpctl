@@ -293,7 +293,7 @@ def place(arr, mask, vals):
         raise dpctl.utils.ExecutionPlacementError
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
-    if vals.size == 0:
+    if vals.size == 0 and dpt.nonzero(mask)[0].size:
         raise ValueError("Cannot insert from an empty array!")
     cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
     nz_count = ti.mask_positions(mask, cumsum, sycl_queue=exec_q)
