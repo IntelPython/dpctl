@@ -30,7 +30,7 @@
 #pragma once
 
 #include <CL/sycl.hpp>
-#include <iostream>
+#include <algorithm>
 
 inline size_t upper_multiple(size_t n, size_t wg)
 {
@@ -54,7 +54,10 @@ void columnwise_total(sycl::queue q,
                        [=](sycl::id<1> i) { ct_acc[i] = dataT(0); });
     });
 
-    constexpr size_t wg = 256;
+    const sycl::device &d = q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    size_t wg =
+        2 * (*std::max_element(std::begin(sg_sizes), std::end(sg_sizes)));
 
     q.submit([&](sycl::handler &h) {
         sycl::accessor mat_acc{mat_buffer, h, sycl::read_only};
@@ -66,12 +69,12 @@ void columnwise_total(sycl::queue q,
         h.parallel_for(
             sycl::nd_range<2>(global, local), [=](sycl::nd_item<2> it) {
                 size_t i = it.get_global_id(0);
-                size_t j = it.get_global_id(1);
                 dataT group_sum = sycl::reduce_over_group(
                     it.get_group(),
                     (i < n) ? mat_acc[it.get_global_id()] : dataT(0),
                     std::plus<dataT>());
-                if (it.get_local_id(0) == 0) {
+                if (it.get_group().leader()) {
+                    size_t j = it.get_global_id(1);
                     sycl::atomic_ref<dataT, sycl::memory_order::relaxed,
                                      sycl::memory_scope::system,
                                      sycl::access::address_space::global_space>(
