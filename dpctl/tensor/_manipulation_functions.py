@@ -122,46 +122,46 @@ def permute_dims(X, axes):
     )
 
 
-def expand_dims(X, axes):
+def expand_dims(X, axis):
     """
-    expand_dims(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+    expand_dims(X: usm_ndarray, axis: int or tuple or list) -> usm_ndarray
 
     Expands the shape of an array by inserting a new axis (dimension)
-    of size one at the position specified by axes; returns a view, if possible,
+    of size one at the position specified by axis; returns a view, if possible,
     a copy otherwise with the number of dimensions increased.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    if not isinstance(axes, (tuple, list)):
-        axes = (axes,)
+    if not isinstance(axis, (tuple, list)):
+        axis = (axis,)
 
-    out_ndim = len(axes) + X.ndim
-    axes = normalize_axis_tuple(axes, out_ndim)
+    out_ndim = len(axis) + X.ndim
+    axis = normalize_axis_tuple(axis, out_ndim)
 
     shape_it = iter(X.shape)
-    shape = tuple(1 if ax in axes else next(shape_it) for ax in range(out_ndim))
+    shape = tuple(1 if ax in axis else next(shape_it) for ax in range(out_ndim))
 
     return dpt.reshape(X, shape)
 
 
-def squeeze(X, axes=None):
+def squeeze(X, axis=None):
     """
-    squeeze(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+    squeeze(X: usm_ndarray, axis: int or tuple or list) -> usm_ndarray
 
-    Removes singleton dimensions (axes) from X; returns a view, if possible,
+    Removes singleton dimensions (axis) from X; returns a view, if possible,
     a copy otherwise, but with all or a subset of the dimensions
     of length 1 removed.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_shape = X.shape
-    if axes is not None:
-        if not isinstance(axes, (tuple, list)):
-            axes = (axes,)
-        axes = normalize_axis_tuple(axes, X.ndim if X.ndim != 0 else X.ndim + 1)
+    if axis is not None:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, X.ndim if X.ndim != 0 else X.ndim + 1)
         new_shape = []
         for i, x in enumerate(X_shape):
-            if i not in axes:
+            if i not in axis:
                 new_shape.append(x)
             else:
                 if x != 1:
@@ -222,9 +222,9 @@ def broadcast_arrays(*args):
     return [broadcast_to(X, shape) for X in args]
 
 
-def flip(X, axes=None):
+def flip(X, axis=None):
     """
-    flip(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+    flip(X: usm_ndarray, axis: int or tuple or list) -> usm_ndarray
 
     Reverses the order of elements in an array along the given axis.
     The shape of the array is preserved, but the elements are reordered;
@@ -233,20 +233,20 @@ def flip(X, axes=None):
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_ndim = X.ndim
-    if axes is None:
+    if axis is None:
         indexer = (np.s_[::-1],) * X_ndim
     else:
-        axes = normalize_axis_tuple(axes, X_ndim)
+        axis = normalize_axis_tuple(axis, X_ndim)
         indexer = tuple(
-            np.s_[::-1] if i in axes else np.s_[:] for i in range(X.ndim)
+            np.s_[::-1] if i in axis else np.s_[:] for i in range(X.ndim)
         )
     return X[indexer]
 
 
-def roll(X, shift, axes=None):
+def roll(X, shift, axis=None):
     """
     roll(X: usm_ndarray, shift: int or tuple or list,\
-         axes: int or tuple or list) -> usm_ndarray
+         axis: int or tuple or list) -> usm_ndarray
 
     Rolls array elements along a specified axis.
     Array elements that roll beyond the last position are re-introduced
@@ -257,7 +257,7 @@ def roll(X, shift, axes=None):
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    if axes is None:
+    if axis is None:
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )
@@ -266,8 +266,8 @@ def roll(X, shift, axes=None):
         )
         hev.wait()
         return res
-    axes = normalize_axis_tuple(axes, X.ndim, allow_duplicate=True)
-    broadcasted = np.broadcast(shift, axes)
+    axis = normalize_axis_tuple(axis, X.ndim, allow_duplicate=True)
+    broadcasted = np.broadcast(shift, axis)
     if broadcasted.ndim > 1:
         raise ValueError("'shift' and 'axis' should be scalars or 1D sequences")
     shifts = {ax: 0 for ax in range(X.ndim)}
