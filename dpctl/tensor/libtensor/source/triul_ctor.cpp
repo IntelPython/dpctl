@@ -250,7 +250,7 @@ usm_ndarray_triul(sycl::queue exec_q,
                dev_shape_and_strides, k, depends, {copy_shape_and_strides});
     }
 
-    exec_q.submit([&](sycl::handler &cgh) {
+    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on({tri_ev});
         auto ctx = exec_q.get_context();
         cgh.host_task(
@@ -261,8 +261,9 @@ usm_ndarray_triul(sycl::queue exec_q,
             });
     });
 
-    return std::make_pair(keep_args_alive(exec_q, {src, dst}, {tri_ev}),
-                          tri_ev);
+    return std::make_pair(
+        keep_args_alive(exec_q, {src, dst}, {temporaries_cleanup_ev}),
+        temporaries_cleanup_ev);
 }
 
 void init_triul_ctor_dispatch_vectors(void)
