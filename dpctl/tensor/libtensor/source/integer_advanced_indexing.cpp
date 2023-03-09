@@ -180,17 +180,15 @@ _populate_kernel_params(sycl::queue exec_q,
         host_along_sh_st_shp->data(), device_along_sh_st,
         host_along_sh_st_shp->size());
 
-    sycl::event shared_ptr_cleanup_host_task =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on({device_along_sh_st_copy_ev,
-                            device_orthog_sh_st_copy_ev,
-                            device_ind_offsets_copy_ev,
-                            device_ind_sh_st_copy_ev, device_ind_ptrs_copy_ev});
-            cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
-                           host_ind_ptrs_shp, host_orthog_sh_st_shp,
-                           host_along_sh_st_shp]() {});
-        });
-    host_task_events.push_back(shared_ptr_cleanup_host_task);
+    sycl::event shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on({device_along_sh_st_copy_ev, device_orthog_sh_st_copy_ev,
+                        device_ind_offsets_copy_ev, device_ind_sh_st_copy_ev,
+                        device_ind_ptrs_copy_ev});
+        cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
+                       host_ind_ptrs_shp, host_orthog_sh_st_shp,
+                       host_along_sh_st_shp]() {});
+    });
+    host_task_events.push_back(shared_ptr_cleanup_ev);
 
     std::vector<sycl::event> sh_st_pack_deps{
         device_ind_ptrs_copy_ev, device_ind_sh_st_copy_ev,
