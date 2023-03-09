@@ -1201,6 +1201,16 @@ def test_place_subset():
     assert (dpt.asnumpy(x) == expected).all()
 
 
+def test_place_empty_vals_error():
+    get_queue_or_skip()
+    x = dpt.zeros(10, dtype="f4")
+    y = dpt.empty((0,), dtype=x.dtype)
+    sel = dpt.ones(x.size, dtype="?")
+    sel[::2] = False
+    with pytest.raises(ValueError):
+        dpt.place(x, sel, y)
+
+
 def test_nonzero():
     get_queue_or_skip()
     x = dpt.concat((dpt.zeros(3), dpt.ones(4), dpt.zeros(3)))
