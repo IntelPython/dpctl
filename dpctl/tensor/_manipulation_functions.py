@@ -31,6 +31,29 @@ __doc__ = (
 )
 
 
+class finfo_object(np.finfo):
+    """
+    numpy.finfo subclass which returns Python floating-point scalars for
+    eps, max, min, and smallest_normal.
+    """
+
+    def __init__(self, dtype):
+        _supported_dtype([dpt.dtype(dtype)])
+        super().__init__()
+
+        self.eps = float(self.eps)
+        self.max = float(self.max)
+        self.min = float(self.min)
+
+    @property
+    def smallest_normal(self):
+        return float(super().smallest_normal)
+
+    @property
+    def tiny(self):
+        return float(super().tiny)
+
+
 def _broadcast_strides(X_shape, X_strides, res_ndim):
     """
     Broadcasts strides to match the given dimensions;
@@ -495,8 +518,7 @@ def finfo(dtype):
     """
     if isinstance(dtype, dpt.usm_ndarray):
         raise TypeError("Expected dtype type, got {to}.")
-    _supported_dtype([dpt.dtype(dtype)])
-    return np.finfo(dtype)
+    return finfo_object(dtype)
 
 
 def _supported_dtype(dtypes):
