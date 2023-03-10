@@ -16,6 +16,13 @@
 
 import math
 
+import blackscholes
+import numpy as np
+import pytest
+
+import dpctl
+import dpctl.tensor as dpt
+
 
 def ref_python_black_scholes(price, strike, t, rate, vol):
     mr = -rate
@@ -53,3 +60,35 @@ def ref_python_black_scholes(price, strike, t, rate, vol):
     call = P * d1 - Se * d2
     put = Se * d2c - P * d1c
     return (call, put)
+
+
+@pytest.mark.parametrize("dtype", [dpt.float32, dpt.float64])
+def test_black_scholes_merton(dtype):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Unable to create queue")
+    if dtype == dpt.float64 and not q.sycl_device.has_aspect_fp64:
+        pytest.skip(f"Hardware {q.sycl_device.name} does not support {dtype}")
+    opts = dpt.empty((3, 5), dtype=dtype)
+    # copy from Host NumPy to USM buffer
+    opts[:, :] = dpt.asarray(
+        [
+            [81.2, 81.8, 29, 0.01, 0.02],
+            [24.24, 22.1, 10, 0.02, 0.08],
+            [100, 100, 30, 0.01, 0.12],
+        ],
+        dtype=dtype,
+    )
+    X = blackscholes.black_scholes_price(opts)
+
+    # compute prices in Python
+    X_ref = np.array(
+        [ref_python_black_scholes(*opt) for opt in dpt.asnumpy(opts)],
+        dtype=dtype,
+    )
+
+    tol = 64 * dpt.finfo(dtype).eps
+    assert np.allclose(dpt.asnumpy(X), X_ref, atol=tol, rtol=tol), np.abs(
+        dpt.asnumpy(X) - X_ref
+    ).max()

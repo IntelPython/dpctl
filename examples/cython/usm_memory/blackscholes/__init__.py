@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2022 Intel Corporation
+# Copyright 2020-2023 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-import syclbuffer_naive as sb
+from ._blackscholes_usm import black_scholes_price, populate_params
 
-X = np.random.randn(20, 10)
+__doc__ = """
+This is a toy example module illustrating use of SYCL-based code
+to operate on NumPy arrays addressing memory allocated by standard
+Python memory allocator.
+"""
+__license__ = "Apache 2.0"
 
-# compute column-wise total with NumPy's own host code
-print(X.sum(axis=0))
-
-# compute column-wise total with SYCL extension
-print(sb.columnwise_total(X))
+__all__ = [
+    "black_scholes_price",
+    "populate_params",
+]
