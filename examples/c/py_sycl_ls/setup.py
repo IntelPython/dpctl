@@ -15,7 +15,6 @@
 # limitations under the License.
 
 import os.path
-import sysconfig
 
 from setuptools import Extension, setup
 
@@ -41,7 +40,6 @@ setup(
             ],
             include_dirs=[
                 dpctl.get_include(),
-                os.path.join(sysconfig.get_paths()["include"], ".."),
             ],
             library_dirs=[
                 os.path.join(dpctl.get_include(), ".."),
