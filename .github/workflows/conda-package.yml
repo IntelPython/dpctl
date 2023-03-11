@@ -431,7 +431,7 @@ jobs:
           conda activate examples
           conda list
           cd examples/pybind11
-          for d in $(ls)
+          for d in $(find . -maxdepth 1 -type d)
           do
             pushd $d
             export MKLROOT=${CONDA_PREFIX}
@@ -458,7 +458,7 @@ jobs:
             popd
           done
           cd ../cython
-          for d in $(ls)
+          for d in $(find . -maxdepth 1 -type d)
           do
             pushd $d
             conda activate --stack build_env
@@ -469,7 +469,7 @@ jobs:
             popd
           done
           cd ../c
-          for d in $(ls)
+          for d in $(find . -maxdepth 1 -type d)
           do
             pushd $d
             conda activate --stack build_env
