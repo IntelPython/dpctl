@@ -21,7 +21,7 @@ cimport numpy as cnp
 from cython cimport floating
 
 cimport dpctl as c_dpctl
-cimport dpctl.tensor._usmarray as c_dpt
+cimport dpctl.tensor as c_dpt
 from dpctl.sycl cimport queue as dpcpp_queue
 from dpctl.sycl cimport unwrap_queue
 
