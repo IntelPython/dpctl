@@ -66,6 +66,7 @@ ext_modules = [
             "-Wall",
             "-Wextra",
             "-fsycl",
+            "-fno-fast-math",
         ],
         extra_link_args=["-fPIC"],
         language="c++",
