@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
+import sysconfig
+
 import numpy as np
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
@@ -45,6 +48,10 @@ ext_modules = [
             "./src",
             np.get_include(),
             dpctl.get_include(),
+            os.path.join(sysconfig.get_paths()["include"], ".."),
+        ],
+        library_dirs=[
+            os.path.join(sysconfig.get_paths()["stdlib"], ".."),
         ],
         libraries=["sycl"]
         + [
