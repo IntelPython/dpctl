@@ -19,7 +19,7 @@ The compute kernel can be a code:
 * that is part of a library, such as oneMKL
 
 The `dpctl` library is built upon the [SYCL
-standard](https://www.khronos.org/sycl/). It also implements Python
+standard](https://www.khronos.org/sycl/). It implements Python
 bindings for a subset of the standard [runtime
 classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes) that allow users to:
 * query platforms
@@ -57,7 +57,7 @@ To get the library from the latest oneAPI release, follow the
 instructions from Intel(R) [oneAPI installation
 guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html).
 
-> **NOTE:** You need to install the Intel(R) oneAPI Basekit to get
+> **NOTE:** You need to install the Intel(R) oneAPI AI Analytics Tookit to get
 >IDP and `dpctl`.
 
 
@@ -85,7 +85,7 @@ To try out the current master, install it from our
 development channel on Anaconda cloud:
 
 ```bash
-conda install dpctl -c dppy\label\dev
+conda install dpctl -c dppy/label/dev
 ```
 
 # Building
@@ -93,34 +93,30 @@ conda install dpctl -c dppy\label\dev
 Refer to our [Documentation](https://intelpython.github.io/dpctl) for more information on
 setting up a development environment and building `dpctl` from the source.
 
-# Running Examples
 
-Find our examples [here](examples).
+# Examples
 
-To run these examples, use:
+Our examples are located in the [examples/](examples) folder and are organized in sub-folders. Examples
+in the [Python/](examples/python) folder demonstrate how to inspect the heterogeneous platform,
+select a device, create an execution queue, and how to control device memory allocation and
+execution placement.
 
-```bash
-for script in `ls examples/python/`;
-    do echo "executing ${script}";
-    python examples/python/${script};
-done
-```
+Examples in [Cython/](examples/cython), [C/](examples/c), and [Pybind11](examples/pybind11) folders
+demonstrate creation of SYCL-powered native Python extensions. Please refer to each folder's README
+document for directions on how to build and use each example.
 
-##  Cython extensions
-See examples of building Cython extensions with DPC++ compiler that interoperates
-with `dpctl` in the [cython folder](examples\cython).
-
-To build these examples, run:
-```bash
-CC=icx CXX=dpcpp python setup.py build_ext --inplace
-```
-To execute extensions, refer to the `run.py` script in each folder.
 
 # Running Tests
 
-Tests are located [here](dpctl/tests).
+Tests are located in folder [dpctl/tests](dpctl/tests).
 
 To run the tests, use:
 ```bash
 pytest --pyargs dpctl
+```
+
+Running full test suite requires working C++ compiler. To run the test suite without one, use:
+
+```bash
+pytest --pyargs dpctl -k "not test_cython_api"
 ```
