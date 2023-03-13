@@ -96,7 +96,7 @@ setting up a development environment and building `dpctl` from the source.
 
 # Examples
 
-Our examples are located in the [examples/](examples) folder and are organized in folders. Examples
+Our examples are located in the [examples/](examples) folder and are organized in sub-folders. Examples
 in the [Python/](examples/python) folder demonstrate how to inspect the heterogeneous platform,
 select a device, create an execution queue, and how to control device memory allocation and
 execution placement.
