@@ -202,11 +202,14 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
                       dst_nd);
     }
 
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(2);
+
     // copy packed shapes and strides from host to devices
     sycl::event packed_shape_strides_copy_ev = exec_q.copy<py::ssize_t>(
         packed_host_shapes_strides_shp->data(), packed_shapes_strides,
         packed_host_shapes_strides_shp->size());
-    exec_q.submit([&](sycl::handler &cgh) {
+    auto shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(packed_shape_strides_copy_ev);
         cgh.host_task([packed_host_shapes_strides_shp] {
             // Capturing shared pointer ensures that the underlying vector is
@@ -214,6 +217,8 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
             // vector
         });
     });
+
+    host_task_events.push_back(shared_ptr_cleanup_ev);
 
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
@@ -226,7 +231,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         fn(exec_q, shift, src_nelems, src_nd, dst_nd, packed_shapes_strides,
            src_data, dst_data, all_deps);
 
-    exec_q.submit([&](sycl::handler &cgh) {
+    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_reshape_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, ctx]() {
@@ -234,9 +239,10 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
         });
     });
 
-    return std::make_pair(
-        keep_args_alive(exec_q, {src, dst}, {copy_for_reshape_event}),
-        copy_for_reshape_event);
+    host_task_events.push_back(temporaries_cleanup_ev);
+
+    return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
+                          temporaries_cleanup_ev);
 }
 
 void init_copy_for_reshape_dispatch_vectors(void)
