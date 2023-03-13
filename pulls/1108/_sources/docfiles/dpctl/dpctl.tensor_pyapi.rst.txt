@@ -100,7 +100,7 @@ Array Manipulation
     * - :func:`concat()`
       - -> usm_ndarray Joins a sequence of arrays along an existing axis.
     * - :func:`expand_dims()`
-      - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.
+      - -> usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axis; returns a view, if possible, a copy otherwise with the number of dimensions increased.
     * - :func:`finfo()`
       - -> finfo_object Returns machine limits for float data types.
     * - :func:`flip()`
@@ -116,7 +116,7 @@ Array Manipulation
     * - :func:`roll()`
       - -> usm_ndarray Rolls array elements along a specified axis.
     * - :func:`squeeze()`
-      - -> usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.
+      - -> usm_ndarray Removes singleton dimensions (axis) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.
     * - :func:`stack()`
       - -> usm_ndarray Joins a sequence of arrays along a new axis.
 
