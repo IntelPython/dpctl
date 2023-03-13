@@ -92,7 +92,22 @@ def _copy_from_numpy_into(dst, np_ary):
         raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray, got {type(dst)}")
-    src_ary = np.broadcast_to(np_ary, dst.shape)
+    if np_ary.flags["OWNDATA"]:
+        Xnp = np_ary
+    else:
+        # Determine base of input array
+        base = np_ary.base
+        while isinstance(base, np.ndarray):
+            base = base.base
+        if isinstance(base, dpm._memory._Memory):
+            # we must perform a copy, since subsequent
+            # _copy_numpy_ndarray_into_usm_ndarray is implemented using
+            # sycl::buffer, and using USM-pointers with sycl::buffer
+            # results is undefined behavior
+            Xnp = np_ary.copy()
+        else:
+            Xnp = np_ary
+    src_ary = np.broadcast_to(Xnp, dst.shape)
     copy_q = dst.sycl_queue
     if copy_q.sycl_device.has_aspect_fp64 is False:
         src_ary_dt_c = src_ary.dtype.char
