@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.2+5.g5bfc09715 documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.2+8.gcecfdaa82 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -46,7 +46,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+5.g5bfc09715
+                0.14.2+8.gcecfdaa82
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -234,7 +234,7 @@ implementations that implement Python data API
 <td><p>-&gt; usm_ndarray Joins a sequence of arrays along an existing axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
-<td><p>-&gt; usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axes; returns a view, if possible, a copy otherwise with the number of dimensions increased.</p></td>
+<td><p>-&gt; usm_ndarray Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axis; returns a view, if possible, a copy otherwise with the number of dimensions increased.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.finfo" title="dpctl.tensor.finfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">finfo()</span></code></a></p></td>
 <td><p>-&gt; finfo_object Returns machine limits for float data types.</p></td>
@@ -258,7 +258,7 @@ implementations that implement Python data API
 <td><p>-&gt; usm_ndarray Rolls array elements along a specified axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze()</span></code></a></p></td>
-<td><p>-&gt; usm_ndarray Removes singleton dimensions (axes) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.</p></td>
+<td><p>-&gt; usm_ndarray Removes singleton dimensions (axis) from X; returns a view, if possible, a copy otherwise, but with all or a subset of the dimensions of length 1 removed.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
 <td><p>-&gt; usm_ndarray Joins a sequence of arrays along a new axis.</p></td>
