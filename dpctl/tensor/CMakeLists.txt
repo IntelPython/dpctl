@@ -5,6 +5,13 @@ foreach(_cy_file ${_cython_sources})
     target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 endforeach()
 
+add_custom_target(_usmarray_deps SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/_slicing.pxi
+    ${CMAKE_CURRENT_SOURCE_DIR}/_types.pxi
+    ${CMAKE_CURRENT_SOURCE_DIR}/_stride_utils.pxi
+)
+add_dependencies(_usmarray _usmarray_deps)
+
 add_custom_target(_dpctl4pybind11_deps
     DEPENDS
     _usmarray_copy_capi_include
