@@ -483,7 +483,7 @@ def test_incompatible_shapes_raise_valueerror(shapes):
         assert_broadcast_arrays_raise(input_shapes[::-1])
 
 
-def test_flip_axes_incorrect():
+def test_flip_axis_incorrect():
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
@@ -492,10 +492,10 @@ def test_flip_axes_incorrect():
     X_np = np.ones((4, 4))
     X = dpt.asarray(X_np, sycl_queue=q)
 
-    pytest.raises(np.AxisError, dpt.flip, dpt.asarray(np.ones(4)), axes=1)
-    pytest.raises(np.AxisError, dpt.flip, X, axes=2)
-    pytest.raises(np.AxisError, dpt.flip, X, axes=-3)
-    pytest.raises(np.AxisError, dpt.flip, X, axes=(0, 3))
+    pytest.raises(np.AxisError, dpt.flip, dpt.asarray(np.ones(4)), axis=1)
+    pytest.raises(np.AxisError, dpt.flip, X, axis=2)
+    pytest.raises(np.AxisError, dpt.flip, X, axis=-3)
+    pytest.raises(np.AxisError, dpt.flip, X, axis=(0, 3))
 
 
 def test_flip_0d():

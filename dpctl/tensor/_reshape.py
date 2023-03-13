@@ -75,17 +75,17 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
     return new_sts if valid else None
 
 
-def reshape(X, newshape, order="C", copy=None):
+def reshape(X, shape, order="C", copy=None):
     """
-    reshape(X: usm_ndarray, newshape: tuple, order="C") -> usm_ndarray
+    reshape(X: usm_ndarray, shape: tuple, order="C") -> usm_ndarray
 
     Reshapes given usm_ndarray into new shape. Returns a view, if possible,
     a copy otherwise. Memory layout of the copy is controlled by order keyword.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError
-    if not isinstance(newshape, (list, tuple)):
-        newshape = (newshape,)
+    if not isinstance(shape, (list, tuple)):
+        shape = (shape,)
     if order in "cfCF":
         order = order.upper()
     else:
@@ -97,9 +97,9 @@ def reshape(X, newshape, order="C", copy=None):
             f"Keyword 'copy' not recognized. Expecting True, False, "
             f"or None, got {copy}"
         )
-    newshape = [operator.index(d) for d in newshape]
+    shape = [operator.index(d) for d in shape]
     negative_ones_count = 0
-    for nshi in newshape:
+    for nshi in shape:
         if nshi == -1:
             negative_ones_count = negative_ones_count + 1
         if (nshi < -1) or negative_ones_count > 1:
@@ -108,14 +108,14 @@ def reshape(X, newshape, order="C", copy=None):
                 "value which can only be -1"
             )
     if negative_ones_count:
-        v = X.size // (-np.prod(newshape))
-        newshape = [v if d == -1 else d for d in newshape]
-    if X.size != np.prod(newshape):
-        raise ValueError(f"Can not reshape into {newshape}")
+        v = X.size // (-np.prod(shape))
+        shape = [v if d == -1 else d for d in shape]
+    if X.size != np.prod(shape):
+        raise ValueError(f"Can not reshape into {shape}")
     if X.size:
-        newsts = reshaped_strides(X.shape, X.strides, newshape, order=order)
+        newsts = reshaped_strides(X.shape, X.strides, shape, order=order)
     else:
-        newsts = (1,) * len(newshape)
+        newsts = (1,) * len(shape)
     copy_required = newsts is None
     if copy_required and (copy is False):
         raise ValueError(
@@ -141,11 +141,11 @@ def reshape(X, newshape, order="C", copy=None):
                     flat_res[i], X[np.unravel_index(i, X.shape, order=order)]
                 )
         return dpt.usm_ndarray(
-            tuple(newshape), dtype=X.dtype, buffer=flat_res, order=order
+            tuple(shape), dtype=X.dtype, buffer=flat_res, order=order
         )
     # can form a view
     return dpt.usm_ndarray(
-        newshape,
+        shape,
         dtype=X.dtype,
         buffer=X,
         strides=tuple(newsts),

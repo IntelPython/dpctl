@@ -472,7 +472,12 @@ def asarray(
 
 
 def empty(
-    sh, dtype=None, order="C", device=None, usm_type="device", sycl_queue=None
+    shape,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
 ):
     """
     Creates `usm_ndarray` from uninitialized USM allocation.
@@ -509,7 +514,7 @@ def empty(
     dtype = _get_dtype(dtype, sycl_queue)
     _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
-        sh,
+        shape,
         dtype=dtype,
         buffer=usm_type,
         order=order,
@@ -650,7 +655,12 @@ def arange(
 
 
 def zeros(
-    sh, dtype=None, order="C", device=None, usm_type="device", sycl_queue=None
+    shape,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
 ):
     """
     Creates `usm_ndarray` with zero elements.
@@ -687,7 +697,7 @@ def zeros(
     dtype = _get_dtype(dtype, sycl_queue)
     _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
-        sh,
+        shape,
         dtype=dtype,
         buffer=usm_type,
         order=order,
@@ -698,7 +708,12 @@ def zeros(
 
 
 def ones(
-    sh, dtype=None, order="C", device=None, usm_type="device", sycl_queue=None
+    shape,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
 ):
     """
     Creates `usm_ndarray` with elements of one.
@@ -734,7 +749,7 @@ def ones(
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
     res = dpt.usm_ndarray(
-        sh,
+        shape,
         dtype=dtype,
         buffer=usm_type,
         order=order,
@@ -746,7 +761,7 @@ def ones(
 
 
 def full(
-    sh,
+    shape,
     fill_value,
     dtype=None,
     order="C",
@@ -805,14 +820,14 @@ def full(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-        return dpt.copy(dpt.broadcast_to(X, sh), order=order)
+        return dpt.copy(dpt.broadcast_to(X, shape), order=order)
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
     fill_value_type = type(fill_value)
     dtype = _get_dtype(dtype, sycl_queue, ref_type=fill_value_type)
     res = dpt.usm_ndarray(
-        sh,
+        shape,
         dtype=dtype,
         buffer=usm_type,
         order=order,
@@ -872,11 +887,11 @@ def empty_like(
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    sh = x.shape
+    shape = x.shape
     dtype = dpt.dtype(dtype)
     _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
     res = dpt.usm_ndarray(
-        sh,
+        shape,
         dtype=dtype,
         buffer=usm_type,
         order=order,
