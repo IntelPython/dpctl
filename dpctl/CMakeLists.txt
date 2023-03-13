@@ -15,13 +15,17 @@ if(WIN32)
         "-Wmissing-declarations "
         "-Wno-unused-parameter "
     )
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS}")
+    string(CONCAT SDL_FLAGS
+        "/GS "
+        "/DynamicBase "
+    )
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS} ${SDL_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS} ${SDL_FLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -g1 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O0 -g1 -DDEBUG"
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -g1 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O0 -g1 -DDEBUG"
     )
     set(DPCTL_LDFLAGS "/NXCompat;/DynamicBase")
 elseif(UNIX)
@@ -44,6 +48,7 @@ elseif(UNIX)
         "-Wformat-security "
         "-fno-strict-overflow "
         "-fno-delete-null-pointer-checks "
+        "-fwrapv "
     )
     string(CONCAT CFLAGS
         "${WARNING_FLAGS}"

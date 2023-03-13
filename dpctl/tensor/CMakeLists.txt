@@ -49,5 +49,7 @@ target_include_directories(${python_module_name}
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
 )
+set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
+target_link_options(${python_module_name} PRIVATE ${_linker_options})
 add_dependencies(${python_module_name} _dpctl4pybind11_deps)
 install(TARGETS ${python_module_name} DESTINATION "dpctl/tensor")
