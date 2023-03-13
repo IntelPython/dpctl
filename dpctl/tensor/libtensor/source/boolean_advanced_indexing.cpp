@@ -44,36 +44,44 @@ namespace tensor
 namespace py_internal
 {
 
+namespace concat_impl
+{
+
 struct sink_t
 {
     sink_t(){};
     template <class T> sink_t(T &&){};
 };
 
-template <class V> std::size_t accumulate_size(std::size_t &s, V &&v)
+template <class V> std::size_t __accumulate_size(std::size_t &s, V &&v)
 {
     return s += v.size();
 }
 
-template <class V, class U> sink_t inserter(V &lhs, U &&rhs)
+template <class V, class U> sink_t __appender(V &lhs, U &&rhs)
 {
     lhs.insert(lhs.end(), rhs.begin(), rhs.end());
     return {};
 }
 
+} // namespace concat_impl
+
 template <typename T, typename A, typename... Vs>
 std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 {
+    using concat_impl::__accumulate_size;
+    using concat_impl::__appender;
+    using concat_impl::sink_t;
     std::size_t s = lhs.size();
     {
         // limited scope ensures array is freed
-        [[maybe_unused]] sink_t tmp[] = {accumulate_size(s, vs)..., 0};
+        [[maybe_unused]] sink_t tmp[] = {__accumulate_size(s, vs)..., 0};
     }
     lhs.reserve(s);
     {
-        // array of no-data objects ensures ordering of calls to inserter
-        [[maybe_unused]] sink_t tmp[] = {inserter(lhs, std::forward<Vs>(vs))...,
-                                         0};
+        // array of no-data objects ensures ordering of calls to the appender
+        [[maybe_unused]] sink_t tmp[] = {
+            __appender(lhs, std::forward<Vs>(vs))..., 0};
     }
 
     return std::move(lhs); // prevent return-value optimization
