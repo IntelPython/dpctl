@@ -57,7 +57,7 @@ Array Construction
     * - :func:`eye()`
       - Creates `usm_ndarray` with ones on the `k`-th diagonal.
     * - :func:`from_dlpack()`
-      - dpctl.tensor.from_dlpack(obj) -> dpctl.tensor.usm_ndarray Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
+      - Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
       - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
     * - :func:`full()`
@@ -110,7 +110,7 @@ Array Manipulation
     * - :func:`permute_dims()`
       - Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
-      - -> usm_ndarray Reshapes given usm_ndarray into new shape. Returns a view, if possible, a copy otherwise. Memory layout of the copy is controlled by order keyword.
+      - Reshapes array `x` into new shape.
     * - :func:`result_type()`
       - Returns the dtype that results from applying the Type Promotion Rules to the arguments.
     * - :func:`roll()`
