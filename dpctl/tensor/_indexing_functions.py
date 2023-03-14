@@ -265,9 +265,9 @@ def place(arr, mask, vals):
     Args:
         arr (usm_ndarray):
             Array to put data into.
-       mask (usm_ndarray):
+        mask (usm_ndarray):
             Boolean mask array. Must have the same size as `arr`.
-       vals (usm_ndarray, sequence):
+        vals (usm_ndarray, sequence):
             Values to put into `arr`. Only the first N elements are
             used, where N is the number of True values in `mask`. If
             `vals` is smaller than N, it will be repeated, and if
