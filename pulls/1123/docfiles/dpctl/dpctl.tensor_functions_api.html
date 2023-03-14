@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.2+41.gc355fd74e documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.2+42.gf744aa8df documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+41.gc355fd74e
+                0.14.2+42.gf744aa8df
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1200,9 +1200,21 @@ of <cite>arr</cite> to extract.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.get_print_options">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">get_print_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#get_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.get_print_options" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">get_print_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#get_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.get_print_options" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a copy of current options for printing
 <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>dictionary with array</dt><dd><p>printing option settings.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>out (dict)</p>
+</dd>
+</dl>
 <dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
 <li><p>“linewidth” : int, default 75</p></li>
@@ -1401,15 +1413,13 @@ filled with elements .</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_repr">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usm_ndarray'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_repr" title="Permalink to this definition"></a></dt>
-<dd><dl>
-<dt>usm_ndarray_repr(x, line_width=None, precision=None,</dt><dd><blockquote>
-<div><p>suppress=None, prefix=””) -&gt; str</p>
-</div></blockquote>
+<dd><dl class="simple">
+<dt>usm_ndarray_repr(x, line_width=None, precision=None,</dt><dd><p>suppress=None, prefix=””)</p>
+</dd>
+</dl>
 <p>Returns a formatted string representing the elements
 of a <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> and its data type,
 if not a default type.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1429,6 +1439,12 @@ string.
 Default: “”</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>formatted string representing the input array</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>out (str)</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -1438,7 +1454,7 @@ Default: “”</p></li>
 <dd><dl class="simple">
 <dt>usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
 sign=None, numpy=False, separator=” “, prefix=””,
-suffix=””) -&gt; str</p>
+suffix=””)</p>
 </dd>
 </dl>
 <p>Returns a string representing the elements of a
@@ -1509,6 +1525,12 @@ Default: “”</p></li>
 of the array string.
 Default: “”</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string representation of intpu array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>out (str)</p>
 </dd>
 </dl>
 </dd></dl>

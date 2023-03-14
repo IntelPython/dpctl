@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.2+41.gc355fd74e documentation</title>
+  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.2+42.gf744aa8df documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+41.gc355fd74e
+                0.14.2+42.gf744aa8df
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -271,11 +271,14 @@
 
 
 <div class="viewcode-block" id="get_print_options"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.get_print_options">[docs]</a><span class="k">def</span> <span class="nf">get_print_options</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get_print_options() -&gt; dict</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_print_options()</span>
 
 <span class="sd">    Returns a copy of current options for printing</span>
 <span class="sd">    ``dpctl.tensor.usm_ndarray`` class.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        out (dict): dictionary with array</span>
+<span class="sd">           printing option settings.</span>
 
 <span class="sd">    Options:</span>
 <span class="sd">        - &quot;linewidth&quot; : int, default 75</span>
@@ -346,7 +349,7 @@
 <span class="sd">    usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,</span>
 <span class="sd">                    precision=None, floatmode=None, suppress=None,</span>
 <span class="sd">                    sign=None, numpy=False, separator=&quot; &quot;, prefix=&quot;&quot;,</span>
-<span class="sd">                    suffix=&quot;&quot;) -&gt; str</span>
+<span class="sd">                    suffix=&quot;&quot;)</span>
 
 <span class="sd">    Returns a string representing the elements of a</span>
 <span class="sd">    ``dpctl.tensor.usm_ndarray``.</span>
@@ -407,6 +410,9 @@
 <span class="sd">        suffix (str, optional): String that determines length of the last line</span>
 <span class="sd">            of the array string.</span>
 <span class="sd">            Default: &quot;&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        out (str): string representation of intpu array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -446,11 +452,11 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    usm_ndarray_repr(x, line_width=None, precision=None,</span>
-<span class="sd">                     suppress=None, prefix=&quot;&quot;) -&gt; str</span>
+<span class="sd">                     suppress=None, prefix=&quot;&quot;)</span>
 
-<span class="sd">        Returns a formatted string representing the elements</span>
-<span class="sd">        of a ``dpctl.tensor.usm_ndarray`` and its data type,</span>
-<span class="sd">        if not a default type.</span>
+<span class="sd">    Returns a formatted string representing the elements</span>
+<span class="sd">    of a ``dpctl.tensor.usm_ndarray`` and its data type,</span>
+<span class="sd">    if not a default type.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (usm_ndarray): Input array.</span>
@@ -467,6 +473,9 @@
 <span class="sd">        prefix (str, optional): String inserted at the start of the array</span>
 <span class="sd">            string.</span>
 <span class="sd">            Default: &quot;&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        out (str): formatted string representing the input array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
