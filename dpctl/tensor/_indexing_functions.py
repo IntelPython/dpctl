@@ -32,18 +32,20 @@ def take(x, indices, /, *, axis=None, mode="clip"):
     Takes elements from array along a given axis.
 
     Args:
-       x: usm_ndarray
+       x (usm_ndarray):
           The array that elements will be taken from.
-       indices: usm_ndarray
+       indices (usm_ndarray):
           One-dimensional array of indices.
        axis:
           The axis over which the values will be selected.
           If x is one-dimensional, this argument is optional.
+          Default: `None`.
        mode:
           How out-of-bounds indices will be handled.
-          "Clip" - clamps indices to (-n <= i < n), then wraps
+          "clip" - clamps indices to (-n <= i < n), then wraps
           negative indices.
-          "Wrap" - wraps both negative and positive indices.
+          "wrap" - wraps both negative and positive indices.
+          Default: `"clip"`.
 
     Returns:
        out: usm_ndarray
@@ -119,9 +121,9 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
     along a given axis.
 
     Args:
-       x: usm_ndarray
+       x (usm_ndarray):
           The array the values will be put into.
-       indices: usm_ndarray
+       indices (usm_ndarray)
           One-dimensional array of indices.
        vals:
           Array of values to be put into `x`.
@@ -129,11 +131,13 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
        axis:
           The axis over which the values will be placed.
           If x is one-dimensional, this argument is optional.
+          Default: `None`.
        mode:
           How out-of-bounds indices will be handled.
-          "Clip" - clamps indices to (-axis_size <= i < axis_size),
+          "clip" - clamps indices to (-axis_size <= i < axis_size),
           then wraps negative indices.
-          "Wrap" - wraps both negative and positive indices.
+          "wrap" - wraps both negative and positive indices.
+          Default: `"clip"`.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -219,14 +223,14 @@ def extract(condition, arr):
     ``dpctl.tensor.extract``.
 
     Args:
-       conditions: usm_ndarray
+       conditions (usm_ndarray):
             An array whose non-zero or True entries indicate the element
             of `arr` to extract.
-       arr: usm_ndarray
+       arr (usm_ndarray):
             Input array of the same size as `condition`.
 
     Returns:
-        usm_ndarray
+        out (usm_ndarray):
             Rank 1 array of values from `arr` where `condition` is True.
     """
     if not isinstance(condition, dpt.usm_ndarray):
@@ -259,11 +263,11 @@ def place(arr, mask, vals):
     equivalent to ``arr[condition] = vals``.
 
     Args:
-        arr: usm_ndarray
+        arr (usm_ndarray):
             Array to put data into.
-       mask: usm_ndarray
+       mask (usm_ndarray):
             Boolean mask array. Must have the same size as `arr`.
-       vals: usm_ndarray
+       vals (usm_ndarray, sequence):
             Values to put into `arr`. Only the first N elements are
             used, where N is the number of True values in `mask`. If
             `vals` is smaller than N, it will be repeated, and if
@@ -325,10 +329,10 @@ def nonzero(arr):
     row-major, C-style order.
 
     Args:
-        arr: usm_ndarray
+        arr (usm_ndarray):
             Input array, which has non-zero array rank.
     Returns:
-        Tuple[usm_ndarray]
+        out: Tuple[usm_ndarray, ...]
             Indices of non-zero array elements.
     """
     if not isinstance(arr, dpt.usm_ndarray):

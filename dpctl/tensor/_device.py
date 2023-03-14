@@ -39,14 +39,16 @@ class Device:
         raise TypeError("No public constructor")
 
     @classmethod
-    def create_device(cls, dev):
-        """
+    def create_device(cls, dev=None):
+        """Device.create_device(dev=None)
+
         Creates instance of Device from argument.
 
         Args:
-            dev: None, :class:`.Device`, :class:`dpctl.SyclQueue`, or
-                 a :class:`dpctl.SyclDevice` corresponding to a root SYCL
-                 device.
+            dev:
+                Device specification, i.e. `None`, :class:`.Device`,
+                :class:`dpctl.SyclQueue`, or a :class:`dpctl.SyclDevice`
+                corresponding to a root SYCL device.
         Raises:
             ValueError: if an instance of :class:`dpctl.SycDevice` corresponding
                         to a sub-device was specified as the argument
@@ -135,14 +137,13 @@ class Device:
 
 
 def normalize_queue_device(sycl_queue=None, device=None):
-    """
-    normalize_queue_device(sycl_queue=None, device=None)
+    """normalize_queue_device(sycl_queue=None, device=None)
 
     Utility to process exclusive keyword arguments 'device'
     and 'sycl_queue' in functions of `dpctl.tensor`.
 
     Args:
-        sycl_queue(:class:`dpctl.SyclQueue`, optional):
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
             explicitly indicates where USM allocation is done
             and the population code (if any) is executed.
             Value `None` is interpreted as get the SYCL queue
