@@ -839,6 +839,7 @@ def test_concat_1array(data):
         [(0, 2), (2, 2), 0],
         [(2, 1), (2, 2), -1],
         [(2, 2, 2), (2, 1, 2), 1],
+        [(3, 3, 3), (2, 2), None],
     ],
 )
 def test_concat_2arrays(data):
