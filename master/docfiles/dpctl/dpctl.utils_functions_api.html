@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils Functions &mdash; Data-parallel Control (dpctl) 0.14.2+39.g8f828f24a documentation</title>
+  <title>dpctl.utils Functions &mdash; Data-parallel Control (dpctl) 0.14.2+45.g742b60398 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,7 +22,6 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -44,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+39.g8f828f24a
+                0.14.2+45.g742b60398
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -111,8 +110,26 @@ or returns <cite>None</cite> if queues are not equal.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.validate_usm_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">validate_usm_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.validate_usm_type" title="Permalink to this definition"></a></dt>
-<dd><p>Validates usm_type argument</p>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">validate_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.validate_usm_type" title="Permalink to this definition"></a></dt>
+<dd><p>Raises an exception if <cite>usm_type</cite> is invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>usm_type</strong> – Specification for USM allocation type. Valid specifications
+are <cite>“device”</cite>, <cite>“shared”</cite>, or <cite>“host”</cite>. If <cite>allow_none</cite>
+keyword argument is set, a value of <cite>None</cite> is also permitted.</p></li>
+<li><p><strong>allow_none</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether <cite>usm_type</cite> value of <cite>None</cite> is considered valid.
+Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – if <cite>usm_type</cite> is an unrecognized string.</p></li>
+<li><p><strong>TypeError</strong> – if <cite>usm_type</cite> is not a string, and <cite>usm_type</cite> is not <cite>None</cite>
+    provided <cite>allow_none</cite> is <cite>True</cite>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._indexing_functions &mdash; Data-parallel Control (dpctl) 0.14.2+39.g8f828f24a documentation</title>
+  <title>dpctl.tensor._indexing_functions &mdash; Data-parallel Control (dpctl) 0.14.2+45.g742b60398 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,7 +21,6 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
@@ -43,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+39.g8f828f24a
+                0.14.2+45.g742b60398
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -123,18 +122,20 @@
 <span class="sd">    Takes elements from array along a given axis.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">       x: usm_ndarray</span>
+<span class="sd">       x (usm_ndarray):</span>
 <span class="sd">          The array that elements will be taken from.</span>
-<span class="sd">       indices: usm_ndarray</span>
+<span class="sd">       indices (usm_ndarray):</span>
 <span class="sd">          One-dimensional array of indices.</span>
 <span class="sd">       axis:</span>
 <span class="sd">          The axis over which the values will be selected.</span>
 <span class="sd">          If x is one-dimensional, this argument is optional.</span>
+<span class="sd">          Default: `None`.</span>
 <span class="sd">       mode:</span>
 <span class="sd">          How out-of-bounds indices will be handled.</span>
-<span class="sd">          &quot;Clip&quot; - clamps indices to (-n &lt;= i &lt; n), then wraps</span>
+<span class="sd">          &quot;clip&quot; - clamps indices to (-n &lt;= i &lt; n), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">          &quot;Wrap&quot; - wraps both negative and positive indices.</span>
+<span class="sd">          &quot;wrap&quot; - wraps both negative and positive indices.</span>
+<span class="sd">          Default: `&quot;clip&quot;`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">       out: usm_ndarray</span>
@@ -210,9 +211,9 @@
 <span class="sd">    along a given axis.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">       x: usm_ndarray</span>
+<span class="sd">       x (usm_ndarray):</span>
 <span class="sd">          The array the values will be put into.</span>
-<span class="sd">       indices: usm_ndarray</span>
+<span class="sd">       indices (usm_ndarray)</span>
 <span class="sd">          One-dimensional array of indices.</span>
 <span class="sd">       vals:</span>
 <span class="sd">          Array of values to be put into `x`.</span>
@@ -220,11 +221,13 @@
 <span class="sd">       axis:</span>
 <span class="sd">          The axis over which the values will be placed.</span>
 <span class="sd">          If x is one-dimensional, this argument is optional.</span>
+<span class="sd">          Default: `None`.</span>
 <span class="sd">       mode:</span>
 <span class="sd">          How out-of-bounds indices will be handled.</span>
-<span class="sd">          &quot;Clip&quot; - clamps indices to (-axis_size &lt;= i &lt; axis_size),</span>
+<span class="sd">          &quot;clip&quot; - clamps indices to (-axis_size &lt;= i &lt; axis_size),</span>
 <span class="sd">          then wraps negative indices.</span>
-<span class="sd">          &quot;Wrap&quot; - wraps both negative and positive indices.</span>
+<span class="sd">          &quot;wrap&quot; - wraps both negative and positive indices.</span>
+<span class="sd">          Default: `&quot;clip&quot;`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -310,14 +313,14 @@
 <span class="sd">    ``dpctl.tensor.extract``.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">       conditions: usm_ndarray</span>
+<span class="sd">       conditions (usm_ndarray):</span>
 <span class="sd">            An array whose non-zero or True entries indicate the element</span>
 <span class="sd">            of `arr` to extract.</span>
-<span class="sd">       arr: usm_ndarray</span>
+<span class="sd">       arr (usm_ndarray):</span>
 <span class="sd">            Input array of the same size as `condition`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        usm_ndarray</span>
+<span class="sd">        out (usm_ndarray):</span>
 <span class="sd">            Rank 1 array of values from `arr` where `condition` is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
@@ -350,11 +353,11 @@
 <span class="sd">    equivalent to ``arr[condition] = vals``.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        arr: usm_ndarray</span>
+<span class="sd">        arr (usm_ndarray):</span>
 <span class="sd">            Array to put data into.</span>
-<span class="sd">       mask: usm_ndarray</span>
+<span class="sd">        mask (usm_ndarray):</span>
 <span class="sd">            Boolean mask array. Must have the same size as `arr`.</span>
-<span class="sd">       vals: usm_ndarray</span>
+<span class="sd">        vals (usm_ndarray, sequence):</span>
 <span class="sd">            Values to put into `arr`. Only the first N elements are</span>
 <span class="sd">            used, where N is the number of True values in `mask`. If</span>
 <span class="sd">            `vals` is smaller than N, it will be repeated, and if</span>
@@ -416,10 +419,10 @@
 <span class="sd">    row-major, C-style order.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        arr: usm_ndarray</span>
+<span class="sd">        arr (usm_ndarray):</span>
 <span class="sd">            Input array, which has non-zero array rank.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        Tuple[usm_ndarray]</span>
+<span class="sd">        out: Tuple[usm_ndarray, ...]</span>
 <span class="sd">            Indices of non-zero array elements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>

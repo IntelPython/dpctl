@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.2+39.g8f828f24a documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.2+45.g742b60398 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,7 +21,6 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
@@ -43,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+39.g8f828f24a
+                0.14.2+45.g742b60398
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -219,11 +218,22 @@
 <span class="sd">    `numpy.ndarray`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        arg: An instance of `numpy.ndarray`</span>
+<span class="sd">        arg: An instance of input `numpy.ndarray`</span>
 <span class="sd">        device: array API specification of device where the output array</span>
-<span class="sd">            is created.</span>
-<span class="sd">        sycl_queue: a :class:`dpctl.SyclQueue` used to create the output</span>
-<span class="sd">            array is created</span>
+<span class="sd">            is created</span>
+<span class="sd">        usm_type: The requested USM allocation type for the output array</span>
+<span class="sd">        sycl_queue: a :class:`dpctl.SyclQueue` instance that determines</span>
+<span class="sd">            output array allocation device as well as placement of data</span>
+<span class="sd">            movement operation. The `device` and `sycl_queue` arguments</span>
+<span class="sd">            are equivalent. Only one of them should be specified. If both</span>
+<span class="sd">            are provided, they must be consistent and result in using the</span>
+<span class="sd">            same execution queue.</span>
+
+<span class="sd">    The returned array has the same shape, and the same data type kind.</span>
+<span class="sd">    If the device does not support the data type of input array, a</span>
+<span class="sd">    closest support data type of the same kind may be returned, e.g.</span>
+<span class="sd">    input array of type `float16` may be upcast to `float32` if the</span>
+<span class="sd">    target device does not support 16-bit floating point type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span></div>
