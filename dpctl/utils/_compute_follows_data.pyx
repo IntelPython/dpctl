@@ -123,7 +123,24 @@ def _validate_usm_type_disallow_none(usm_type):
 
 
 def validate_usm_type(usm_type, allow_none=True):
-    "Validates usm_type argument"
+    """ validate_usm_type(usm_type, allow_none=True)
+
+    Raises an exception if `usm_type` is invalid.
+
+    Args:
+        usm_type:
+            Specification for USM allocation type. Valid specifications
+            are `"device"`, `"shared"`, or `"host"`. If `allow_none`
+            keyword argument is set, a value of `None` is also permitted.
+        allow_none (bool, optional):
+            Whether `usm_type` value of `None` is considered valid.
+            Default: `True`.
+
+    Raises:
+        ValueError: if `usm_type` is an unrecognized string.
+        TypeError:  if `usm_type` is not a string, and `usm_type` is not `None`
+            provided `allow_none` is `True`.
+    """
     if allow_none:
         _validate_usm_type_allow_none(usm_type)
     else:

@@ -469,12 +469,24 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
 
 
 cpdef from_dlpack(array):
-    """
-    dpctl.tensor.from_dlpack(obj) -> dpctl.tensor.usm_ndarray
+    """ from_dlpack(obj)
 
     Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
     object `obj` that implements `__dlpack__` protocol. The output
     array is always a zero-copy view of the input.
+
+    Args:
+        obj: A Python object representing an array that supports `__dlpack__`
+            protocol.
+
+    Returns:
+        out (usm_ndarray):
+            An array with a view into the tensor underlying the input `obj`.
+
+    Raises:
+        TypeError: if `obj` does not implement `__dlpack__` method.
+        ValueError: if zero copy view can not be constructed because
+            the input array resides on an unsupported device.
 
     See https://dmlc.github.io/dlpack/latest/ for more details.
 
@@ -498,13 +510,6 @@ cpdef from_dlpack(array):
             C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
             X = dpt.from_dlpack(C)
 
-    Args:
-        obj: A Python object representing an array that supports `__dlpack__`
-            protocol.
-    Raises:
-        TypeError: if `obj` does not implement `__dlpack__` method.
-        ValueError: if zero copy view can not be constructed because
-            the input array resides on an unsupported device.
     """
     if not hasattr(array, "__dlpack__"):
         raise TypeError(

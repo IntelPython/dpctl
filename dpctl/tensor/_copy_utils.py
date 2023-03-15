@@ -128,11 +128,22 @@ def from_numpy(np_ary, device=None, usm_type="device", sycl_queue=None):
     `numpy.ndarray`.
 
     Args:
-        arg: An instance of `numpy.ndarray`
+        arg: An instance of input `numpy.ndarray`
         device: array API specification of device where the output array
-            is created.
-        sycl_queue: a :class:`dpctl.SyclQueue` used to create the output
-            array is created
+            is created
+        usm_type: The requested USM allocation type for the output array
+        sycl_queue: a :class:`dpctl.SyclQueue` instance that determines
+            output array allocation device as well as placement of data
+            movement operation. The `device` and `sycl_queue` arguments
+            are equivalent. Only one of them should be specified. If both
+            are provided, they must be consistent and result in using the
+            same execution queue.
+
+    The returned array has the same shape, and the same data type kind.
+    If the device does not support the data type of input array, a
+    closest support data type of the same kind may be returned, e.g.
+    input array of type `float16` may be upcast to `float32` if the
+    target device does not support 16-bit floating point type.
     """
     q = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return _copy_from_numpy(np_ary, usm_type=usm_type, sycl_queue=q)
