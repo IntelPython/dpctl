@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.2+41.gef16ddc85 documentation</title>
+  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.2+51.g5bead2331 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.2+41.gef16ddc85
+                0.14.2+51.g5bead2331
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -129,14 +129,16 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No public constructor&quot;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dev</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device.create_device(dev=None)</span>
+
 <span class="sd">        Creates instance of Device from argument.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            dev: None, :class:`.Device`, :class:`dpctl.SyclQueue`, or</span>
-<span class="sd">                 a :class:`dpctl.SyclDevice` corresponding to a root SYCL</span>
-<span class="sd">                 device.</span>
+<span class="sd">            dev:</span>
+<span class="sd">                Device specification, i.e. `None`, :class:`.Device`,</span>
+<span class="sd">                :class:`dpctl.SyclQueue`, or a :class:`dpctl.SyclDevice`</span>
+<span class="sd">                corresponding to a root SYCL device.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: if an instance of :class:`dpctl.SycDevice` corresponding</span>
 <span class="sd">                        to a sub-device was specified as the argument</span>
@@ -225,14 +227,13 @@
 
 
 <span class="k">def</span> <span class="nf">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    normalize_queue_device(sycl_queue=None, device=None)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;normalize_queue_device(sycl_queue=None, device=None)</span>
 
 <span class="sd">    Utility to process exclusive keyword arguments &#39;device&#39;</span>
 <span class="sd">    and &#39;sycl_queue&#39; in functions of `dpctl.tensor`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        sycl_queue(:class:`dpctl.SyclQueue`, optional):</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional):</span>
 <span class="sd">            explicitly indicates where USM allocation is done</span>
 <span class="sd">            and the population code (if any) is executed.</span>
 <span class="sd">            Value `None` is interpreted as get the SYCL queue</span>
