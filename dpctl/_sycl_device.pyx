@@ -199,7 +199,7 @@ cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
     device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes3d(DRef)
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def _cached_filter_string(d : SyclDevice):
     """
     Internal utility to compute filter_string of input SyclDevice
