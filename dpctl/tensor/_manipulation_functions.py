@@ -372,6 +372,42 @@ def _check_same_shapes(X0_shape, axis, n, arrays):
                 )
 
 
+def _concat_axis_None(arrays):
+    "Implementation of concat(arrays, axis=None)."
+    res_dtype, res_usm_type, exec_q = _arrays_validation(
+        arrays, check_ndim=False
+    )
+    res_shape = 0
+    for array in arrays:
+        res_shape += array.size
+    res = dpt.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    hev_list = []
+    fill_start = 0
+    for array in arrays:
+        fill_end = fill_start + array.size
+        if array.flags.c_contiguous:
+            hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpt.reshape(array, -1),
+                dst=res[fill_start:fill_end],
+                sycl_queue=exec_q,
+            )
+        else:
+            hev, _ = ti._copy_usm_ndarray_for_reshape(
+                src=array,
+                dst=res[fill_start:fill_end],
+                shift=0,
+                sycl_queue=exec_q,
+            )
+        fill_start = fill_end
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+    return res
+
+
 def concat(arrays, axis=0):
     """
     concat(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
@@ -379,65 +415,43 @@ def concat(arrays, axis=0):
     Joins a sequence of arrays along an existing axis.
     """
     if axis is None:
-        res_dtype, res_usm_type, exec_q = _arrays_validation(
-            arrays, check_ndim=False
+        return _concat_axis_None(arrays)
+
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
+    n = len(arrays)
+    X0 = arrays[0]
+
+    axis = normalize_axis_index(axis, X0.ndim)
+    X0_shape = X0.shape
+    _check_same_shapes(X0_shape, axis, n, arrays)
+
+    res_shape_axis = 0
+    for X in arrays:
+        res_shape_axis = res_shape_axis + X.shape[axis]
+
+    res_shape = tuple(
+        X0_shape[i] if i != axis else res_shape_axis for i in range(X0.ndim)
+    )
+
+    res = dpt.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    hev_list = []
+    fill_start = 0
+    for i in range(n):
+        fill_end = fill_start + arrays[i].shape[axis]
+        c_shapes_copy = tuple(
+            np.s_[fill_start:fill_end] if j == axis else np.s_[:]
+            for j in range(X0.ndim)
         )
-        res_shape = 0
-        for array in arrays:
-            res_shape += array.size
-        res = dpt.empty(
-            res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
         )
+        fill_start = fill_end
+        hev_list.append(hev)
 
-        hev_list = []
-        fill_start = 0
-        for array in arrays:
-            fill_end = fill_start + array.size
-            hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=dpt.reshape(array, -1),
-                dst=res[fill_start:fill_end],
-                sycl_queue=exec_q,
-            )
-            fill_start = fill_end
-            hev_list.append(hev)
-
-        dpctl.SyclEvent.wait_for(hev_list)
-    else:
-        res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
-        n = len(arrays)
-        X0 = arrays[0]
-
-        axis = normalize_axis_index(axis, X0.ndim)
-        X0_shape = X0.shape
-        _check_same_shapes(X0_shape, axis, n, arrays)
-
-        res_shape_axis = 0
-        for X in arrays:
-            res_shape_axis = res_shape_axis + X.shape[axis]
-
-        res_shape = tuple(
-            X0_shape[i] if i != axis else res_shape_axis for i in range(X0.ndim)
-        )
-
-        res = dpt.empty(
-            res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
-        )
-
-        hev_list = []
-        fill_start = 0
-        for i in range(n):
-            fill_end = fill_start + arrays[i].shape[axis]
-            c_shapes_copy = tuple(
-                np.s_[fill_start:fill_end] if j == axis else np.s_[:]
-                for j in range(X0.ndim)
-            )
-            hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
-            )
-            fill_start = fill_end
-            hev_list.append(hev)
-
-        dpctl.SyclEvent.wait_for(hev_list)
+    dpctl.SyclEvent.wait_for(hev_list)
 
     return res
 
