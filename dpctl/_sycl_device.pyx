@@ -110,6 +110,7 @@ from libc.stdlib cimport free, malloc
 from ._sycl_platform cimport SyclPlatform
 
 import collections
+import functools
 import warnings
 
 __all__ = [
@@ -196,6 +197,37 @@ cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
     device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
     device._vendor = DPCTLDevice_GetVendor(DRef)
     device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes3d(DRef)
+
+
+@functools.cache
+def _cached_filter_string(d : SyclDevice):
+    """
+    Internal utility to compute filter_string of input SyclDevice
+    and cached with `functools.cache`.
+
+    Args:
+        d (dpctl.SyclDevice):
+            A device for which to compute the filter string.
+    Returns:
+        out(str):
+            Filter string that can be used to create input device,
+            if the device is a root (unpartitioned) device.
+
+    Raises:
+        ValueError: if the input device is a sub-device.
+    """
+    cdef _backend_type BTy
+    cdef _device_type DTy
+    cdef int64_t relId = -1
+    cdef SyclDevice cd = <SyclDevice> d
+    relId = DPCTLDeviceMgr_GetRelativeId(cd._device_ref)
+    if (relId == -1):
+        raise ValueError("This SyclDevice is not a root device")
+    BTy = DPCTLDevice_GetBackend(cd._device_ref)
+    br_str = _backend_type_to_filter_string_part(BTy)
+    DTy = DPCTLDevice_GetDeviceType(cd._device_ref)
+    dt_str = _device_type_to_filter_string_part(DTy)
+    return ":".join((br_str, dt_str, str(relId)))
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -1360,14 +1392,14 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def filter_string(self):
-        """ For a parent device, returns a fully specified filter selector
-        string``backend:device_type:relative_id`` selecting the device.
+        """ For a root device, returns a fully specified filter selector
+        string ``"backend:device_type:relative_id"`` selecting the device.
 
         Returns:
             str: A Python string representing a filter selector string.
 
         Raises:
-            TypeError: If the device is a sub-devices.
+            TypeError: If the device is a sub-device.
 
         :Example:
             .. code-block:: python
@@ -1387,14 +1419,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int64_t relId = -1
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
         if (pDRef is NULL):
-            BTy = DPCTLDevice_GetBackend(self._device_ref)
-            DTy = DPCTLDevice_GetDeviceType(self._device_ref)
-            relId = DPCTLDeviceMgr_GetRelativeId(self._device_ref)
-            if (relId == -1):
-                raise TypeError("This SyclDevice is not a root device")
-            br_str = _backend_type_to_filter_string_part(BTy)
-            dt_str = _device_type_to_filter_string_part(DTy)
-            return ":".join((br_str, dt_str, str(relId)))
+            return _cached_filter_string(self)
         else:
             # this a sub-device, free it, and raise an exception
             DPCTLDevice_Delete(pDRef)
