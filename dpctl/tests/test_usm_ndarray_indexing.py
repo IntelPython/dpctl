@@ -891,6 +891,28 @@ def test_put_strided_indices(ind_dt, order):
             assert_array_equal(x_np_copy, dpt.asnumpy(x_copy))
 
 
+def test_integer_indexing_modes():
+    q = get_queue_or_skip()
+
+    x = dpt.arange(5, sycl_queue=q)
+
+    # wrapping
+    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
+    res = dpt.take(x, ind, mode="wrap")
+    expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="wrap")
+
+    assert (dpt.asnumpy(res) == expected_arr).all()
+
+    # clipping to -n<=i<n,
+    # where n is the axis length
+    ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
+
+    res = dpt.take(x, ind, mode="clip")
+    expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="raise")
+
+    assert (dpt.asnumpy(res) == expected_arr).all()
+
+
 def test_take_arg_validation():
     q = get_queue_or_skip()
 
@@ -1198,6 +1220,26 @@ def test_place_subset():
     sel[::2] = False
     dpt.place(x, sel, y)
     expected = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1], dtype=x.dtype)
+    assert (dpt.asnumpy(x) == expected).all()
+
+
+def test_place_empty_vals_error():
+    get_queue_or_skip()
+    x = dpt.zeros(10, dtype="f4")
+    y = dpt.empty((0,), dtype=x.dtype)
+    sel = dpt.ones(x.size, dtype="?")
+    sel[::2] = False
+    with pytest.raises(ValueError):
+        dpt.place(x, sel, y)
+
+
+def test_place_empty_vals_full_false_mask():
+    get_queue_or_skip()
+    x = dpt.ones(10, dtype="f4")
+    y = dpt.empty((0,), dtype=x.dtype)
+    sel = dpt.zeros(x.size, dtype="?")
+    expected = np.ones(10, dtype=x.dtype)
+    dpt.place(x, sel, y)
     assert (dpt.asnumpy(x) == expected).all()
 
 

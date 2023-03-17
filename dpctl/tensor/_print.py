@@ -181,11 +181,14 @@ def set_print_options(
 
 
 def get_print_options():
-    """
-    get_print_options() -> dict
+    """get_print_options()
 
     Returns a copy of current options for printing
     ``dpctl.tensor.usm_ndarray`` class.
+
+    Returns:
+        out (dict): dictionary with array
+           printing option settings.
 
     Options:
         - "linewidth" : int, default 75
@@ -256,7 +259,7 @@ def usm_ndarray_str(
     usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,
                     precision=None, floatmode=None, suppress=None,
                     sign=None, numpy=False, separator=" ", prefix="",
-                    suffix="") -> str
+                    suffix="")
 
     Returns a string representing the elements of a
     ``dpctl.tensor.usm_ndarray``.
@@ -317,6 +320,9 @@ def usm_ndarray_str(
         suffix (str, optional): String that determines length of the last line
             of the array string.
             Default: ""
+
+    Returns:
+        out (str): string representation of intpu array.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
@@ -356,11 +362,11 @@ def usm_ndarray_repr(
 ):
     """
     usm_ndarray_repr(x, line_width=None, precision=None,
-                     suppress=None, prefix="") -> str
+                     suppress=None, prefix="")
 
-        Returns a formatted string representing the elements
-        of a ``dpctl.tensor.usm_ndarray`` and its data type,
-        if not a default type.
+    Returns a formatted string representing the elements
+    of a ``dpctl.tensor.usm_ndarray`` and its data type,
+    if not a default type.
 
     Args:
         x (usm_ndarray): Input array.
@@ -377,6 +383,9 @@ def usm_ndarray_repr(
         prefix (str, optional): String inserted at the start of the array
             string.
             Default: ""
+
+    Returns:
+        out (str): formatted string representing the input array
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")

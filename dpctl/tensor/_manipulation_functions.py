@@ -31,6 +31,29 @@ __doc__ = (
 )
 
 
+class finfo_object(np.finfo):
+    """
+    numpy.finfo subclass which returns Python floating-point scalars for
+    `eps`, `max`, `min`, and `smallest_normal` attributes.
+    """
+
+    def __init__(self, dtype):
+        _supported_dtype([dpt.dtype(dtype)])
+        super().__init__()
+
+        self.eps = float(self.eps)
+        self.max = float(self.max)
+        self.min = float(self.min)
+
+    @property
+    def smallest_normal(self):
+        return float(super().smallest_normal)
+
+    @property
+    def tiny(self):
+        return float(super().tiny)
+
+
 def _broadcast_strides(X_shape, X_strides, res_ndim):
     """
     Broadcasts strides to match the given dimensions;
@@ -95,11 +118,21 @@ def _broadcast_shapes(*args):
 
 
 def permute_dims(X, axes):
-    """
-    permute_dims(X: usm_ndarray, axes: tuple or list) -> usm_ndarray
+    """permute_dims(x, axes)
 
     Permute the axes (dimensions) of an array; returns the permuted
     array as a view.
+
+    Args:
+        x (usm_ndarray): input array.
+        axes (Tuple[int, ...]): tuple containing permutation of
+           `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
+           of `x`.
+    Returns:
+        out (usm_narray): an array containing the axes permutation.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same USM allocation
+            type as `x`.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -122,46 +155,78 @@ def permute_dims(X, axes):
     )
 
 
-def expand_dims(X, axes):
-    """
-    expand_dims(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+def expand_dims(X, axis):
+    """expand_dims(x, axis)
 
     Expands the shape of an array by inserting a new axis (dimension)
-    of size one at the position specified by axes; returns a view, if possible,
-    a copy otherwise with the number of dimensions increased.
+    of size one at the position specified by axis.
+
+    Args:
+        x (usm_ndarray): input array
+        axis (int):  axis position (zero-based). If `x` has rank
+            (i.e, number of dimensions) `N`, a valid `axis` must reside
+            in the closed-interval `[-N-1, N]`. If provided a negative
+            `axis`, the `axis` position at which to insert a singleton
+            dimension is computed as `N + axis + 1`. Hence, if
+            provided `-1`, the resolved axis position is `N` (i.e.,
+            a singleton dimension must be appended to the input array `x`).
+            If provided `-N-1`, the resolved axis position is `0` (i.e., a
+            singleton dimension is prepended to the input array `x`).
+
+    Returns:
+        out (usm_ndarray): returns a view, if possible,
+            a copy otherwise with the number of dimensions increased.
+            The expanded array has the same data type as the input array `x`.
+            The expanded array is located on the same device as the input
+            array, and has the same USM allocation type.
+
+    Raises:
+        IndexError: if provided axis position is invalid.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    if not isinstance(axes, (tuple, list)):
-        axes = (axes,)
+    if not isinstance(axis, (tuple, list)):
+        axis = (axis,)
 
-    out_ndim = len(axes) + X.ndim
-    axes = normalize_axis_tuple(axes, out_ndim)
+    out_ndim = len(axis) + X.ndim
+    axis = normalize_axis_tuple(axis, out_ndim)
 
     shape_it = iter(X.shape)
-    shape = tuple(1 if ax in axes else next(shape_it) for ax in range(out_ndim))
+    shape = tuple(1 if ax in axis else next(shape_it) for ax in range(out_ndim))
 
     return dpt.reshape(X, shape)
 
 
-def squeeze(X, axes=None):
-    """
-    squeeze(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+def squeeze(X, axis=None):
+    """squeeze(x, axis)
 
-    Removes singleton dimensions (axes) from X; returns a view, if possible,
-    a copy otherwise, but with all or a subset of the dimensions
-    of length 1 removed.
+    Removes singleton dimensions (axes) from array `x`.
+
+    Args:
+        x (usm_ndarray): input array
+        axis (Union[int, Tuple[int,...]]): axis (or axes) to squeeze.
+
+    Returns:
+        out (usm_ndarray): output array is a view, if possible,
+            and a copy otherwise, but with all or a subset of the
+            dimensions of length 1 removed. Output has the same data
+            type as the input, is allocated on the same device as the
+            input and has the same USM allocation type as the input
+            array `x`.
+
+    Raises:
+        ValueError: if the specified axis has a size greater than one.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_shape = X.shape
-    if axes is not None:
-        if not isinstance(axes, (tuple, list)):
-            axes = (axes,)
-        axes = normalize_axis_tuple(axes, X.ndim if X.ndim != 0 else X.ndim + 1)
+    if axis is not None:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, X.ndim if X.ndim != 0 else X.ndim + 1)
         new_shape = []
         for i, x in enumerate(X_shape):
-            if i not in axes:
+            if i not in axis:
                 new_shape.append(x)
             else:
                 if x != 1:
@@ -179,11 +244,21 @@ def squeeze(X, axes=None):
 
 
 def broadcast_to(X, shape):
-    """
-    broadcast_to(X: usm_ndarray, shape: tuple or list) -> usm_ndarray
+    """broadcast_to(x, shape)
 
-    Broadcast an array to a new shape; returns the broadcasted
+    Broadcast an array to a new `shape`; returns the broadcasted
     array as a view.
+
+    Args:
+        x (usm_ndarray): input array
+        shape (Tuple[int,...]): array shape. The `shape` must be
+            compatible with `x` according to broadcasting rules.
+
+    Returns:
+        out (usm_ndarray): an array with the specified `shape`.
+            The output array is a view of the input array, and
+            hence has the same data type, USM allocation type and
+            device attributes.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -205,10 +280,19 @@ def broadcast_to(X, shape):
 
 
 def broadcast_arrays(*args):
-    """
-    broadcast_arrays(*args: usm_ndarrays) -> list of usm_ndarrays
+    """broadcast_arrays(*arrays)
 
     Broadcasts one or more usm_ndarrays against one another.
+
+    Args:
+        arrays (usm_ndarray): an arbitrary number of arrays to be
+            broadcasted.
+
+    Returns:
+        out (List[usm_ndarray]): a list of broadcasted arrays. Each array
+            must have the same shape. Each array must have the same `dtype`,
+            `device` and `usm_type` attributes as its corresponding input
+            array.
     """
     for X in args:
         if not isinstance(X, dpt.usm_ndarray):
@@ -222,42 +306,71 @@ def broadcast_arrays(*args):
     return [broadcast_to(X, shape) for X in args]
 
 
-def flip(X, axes=None):
-    """
-    flip(X: usm_ndarray, axes: int or tuple or list) -> usm_ndarray
+def flip(X, axis=None):
+    """flip(x, axis)
 
-    Reverses the order of elements in an array along the given axis.
-    The shape of the array is preserved, but the elements are reordered;
-    returns a view of X with the entries of axis reversed.
+    Reverses the order of elements in an array `x` along the given `axis`.
+    The shape of the array is preserved, but the elements are reordered.
+
+    Args:
+        x (usm_ndarray): input array.
+        axis (Optional[Union[int, Tuple[int,...]]]): axis (or axes) along
+            which to flip.
+            If `axis` is `None`, all input array axes are flipped.
+            If `axis` is negative, the flipped axis is counted from the
+            last dimension. If provided more than one axis, only the specified
+            axes are flipped. Default: `None`.
+
+    Returns:
+        out (usm_ndarray): a view of `x` with the entries of `axis` reversed.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_ndim = X.ndim
-    if axes is None:
+    if axis is None:
         indexer = (np.s_[::-1],) * X_ndim
     else:
-        axes = normalize_axis_tuple(axes, X_ndim)
+        axis = normalize_axis_tuple(axis, X_ndim)
         indexer = tuple(
-            np.s_[::-1] if i in axes else np.s_[:] for i in range(X.ndim)
+            np.s_[::-1] if i in axis else np.s_[:] for i in range(X.ndim)
         )
     return X[indexer]
 
 
-def roll(X, shift, axes=None):
+def roll(X, shift, axis=None):
     """
-    roll(X: usm_ndarray, shift: int or tuple or list,\
-         axes: int or tuple or list) -> usm_ndarray
+    roll(x, shift, axis)
 
     Rolls array elements along a specified axis.
     Array elements that roll beyond the last position are re-introduced
     at the first position. Array elements that roll beyond the first position
     are re-introduced at the last position.
-    returns an output array having the same data type as X and whose elements,
-    relative to X, are shifted.
+
+    Args:
+        x (usm_ndarray): input array
+        shift (Union[int, Tuple[int,...]]): number of places by which the
+            elements are shifted. If `shift` is a tuple, then `axis` must be a
+            tuple of the same size, and each of the given axes must be shifted
+            by the corresponding element in `shift`. If `shift` is an `int`
+            and `axis` a tuple, then the same `shift` must be used for all
+            specified axes. If a `shift` is positive, then array elements is
+            shifted positively (toward larger indices) along the dimension of
+            `axis`.
+            If a `shift` is negative, then array elements must be shifted
+            negatively (toward smaller indices) along the dimension of `axis`.
+        axis (Optional[Union[int, Tuple[int,...]]]): axis (or axes) along which
+            elements to shift. If `axis` is `None`, the array is
+            flattened, shifted, and then restored to its original shape.
+            Default: `None`.
+
+    Returns:
+        out (usm_ndarray): an array having the same `dtype`, `usm_type` and
+            `device` attributes as `x` and whose elements are shifted relative
+            to `x`.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    if axes is None:
+    if axis is None:
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )
@@ -266,8 +379,8 @@ def roll(X, shift, axes=None):
         )
         hev.wait()
         return res
-    axes = normalize_axis_tuple(axes, X.ndim, allow_duplicate=True)
-    broadcasted = np.broadcast(shift, axes)
+    axis = normalize_axis_tuple(axis, X.ndim, allow_duplicate=True)
+    broadcasted = np.broadcast(shift, axis)
     if broadcasted.ndim > 1:
         raise ValueError("'shift' and 'axis' should be scalars or 1D sequences")
     shifts = {ax: 0 for ax in range(X.ndim)}
@@ -298,10 +411,10 @@ def roll(X, shift, axes=None):
     return res
 
 
-def _arrays_validation(arrays):
+def _arrays_validation(arrays, check_ndim=True):
     n = len(arrays)
     if n == 0:
-        raise TypeError("Missing 1 required positional argument: 'arrays'")
+        raise TypeError("Missing 1 required positional argument: 'arrays'.")
 
     if not isinstance(arrays, (list, tuple)):
         raise TypeError(f"Expected tuple or list type, got {type(arrays)}.")
@@ -312,11 +425,11 @@ def _arrays_validation(arrays):
 
     exec_q = dputils.get_execution_queue([X.sycl_queue for X in arrays])
     if exec_q is None:
-        raise ValueError("All the input arrays must have same sycl queue")
+        raise ValueError("All the input arrays must have same sycl queue.")
 
     res_usm_type = dputils.get_coerced_usm_type([X.usm_type for X in arrays])
     if res_usm_type is None:
-        raise ValueError("All the input arrays must have usm_type")
+        raise ValueError("All the input arrays must have usm_type.")
 
     X0 = arrays[0]
     _supported_dtype(Xi.dtype for Xi in arrays)
@@ -325,13 +438,14 @@ def _arrays_validation(arrays):
     for i in range(1, n):
         res_dtype = np.promote_types(res_dtype, arrays[i])
 
-    for i in range(1, n):
-        if X0.ndim != arrays[i].ndim:
-            raise ValueError(
-                "All the input arrays must have same number of dimensions, "
-                f"but the array at index 0 has {X0.ndim} dimension(s) and the "
-                f"array at index {i} has {arrays[i].ndim} dimension(s)"
-            )
+    if check_ndim:
+        for i in range(1, n):
+            if X0.ndim != arrays[i].ndim:
+                raise ValueError(
+                    "All the input arrays must have same number of dimensions, "
+                    f"but the array at index 0 has {X0.ndim} dimension(s) and "
+                    f"the array at index {i} has {arrays[i].ndim} dimension(s)."
+                )
     return res_dtype, res_usm_type, exec_q
 
 
@@ -344,18 +458,75 @@ def _check_same_shapes(X0_shape, axis, n, arrays):
                     "All the input array dimensions for the concatenation "
                     f"axis must match exactly, but along dimension {j}, the "
                     f"array at index 0 has size {X0j} and the array "
-                    f"at index {i} has size {Xi_shape[j]}"
+                    f"at index {i} has size {Xi_shape[j]}."
                 )
 
 
+def _concat_axis_None(arrays):
+    "Implementation of concat(arrays, axis=None)."
+    res_dtype, res_usm_type, exec_q = _arrays_validation(
+        arrays, check_ndim=False
+    )
+    res_shape = 0
+    for array in arrays:
+        res_shape += array.size
+    res = dpt.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    hev_list = []
+    fill_start = 0
+    for array in arrays:
+        fill_end = fill_start + array.size
+        if array.flags.c_contiguous:
+            hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpt.reshape(array, -1),
+                dst=res[fill_start:fill_end],
+                sycl_queue=exec_q,
+            )
+        else:
+            hev, _ = ti._copy_usm_ndarray_for_reshape(
+                src=array,
+                dst=res[fill_start:fill_end],
+                shift=0,
+                sycl_queue=exec_q,
+            )
+        fill_start = fill_end
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+    return res
+
+
 def concat(arrays, axis=0):
-    """
-    concat(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
+    """concat(arrays, axis)
 
     Joins a sequence of arrays along an existing axis.
-    """
-    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
 
+    Args:
+        arrays (Union[List[usm_ndarray, Tuple[usm_ndarray,...]]]):
+            input arrays to join. The arrays must have the same shape,
+            except in the dimension specified by `axis`.
+        axis (Optional[int]): axis along which the arrays will be joined.
+            If `axis` is `None`, arrays must be flattened before
+            concatenation. If `axis` is negative, it is understood as
+            being counted from the last dimension. Default: `0`.
+
+    Returns:
+        out (usm_ndarray): an output array containing the concatenated
+            values. The output array data type is determined by Type
+            Promotion Rules of array API.
+
+    All input arrays must have the same device attribute. The output array
+    is allocated on that same device, and data movement operations are
+    scheduled on a queue underlying the device. The USM allocation type
+    of the output array is determined by USM allocation type promotion
+    rules.
+    """
+    if axis is None:
+        return _concat_axis_None(arrays)
+
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
     n = len(arrays)
     X0 = arrays[0]
 
@@ -396,9 +567,27 @@ def concat(arrays, axis=0):
 
 def stack(arrays, axis=0):
     """
-    stack(arrays: tuple or list of usm_ndarrays, axis: int) -> usm_ndarray
+    stack(arrays, axis)
 
     Joins a sequence of arrays along a new axis.
+
+    Args:
+        arrays (Union[List[usm_ndarray], Tuple[usm_ndarray,...]]):
+            input arrays to join. Each array must have the same shape.
+        axis (int): axis along which the arrays will be joined. Providing
+            an `axis` specified the index of the new axis in the dimensions
+            of the output array. A valid axis must be on the interval
+            `[-N, N)`, where `N` is the rank (number of dimensions) of `x`.
+            Default: `0`.
+
+    Returns:
+        out (usm_ndarray):  an output array having rank `N+1`, where `N` is
+            the rank (number of dimensions) of `x`. If the input arrays have
+            different data types, array API Type Promotion Rules apply.
+
+    Raises:
+        ValueError: if not all input arrays have the same shape
+        IndexError: if provided an `axis` outside of the required interval.
     """
     res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
 
@@ -437,11 +626,19 @@ def stack(arrays, axis=0):
 
 
 def can_cast(from_, to, casting="safe"):
-    """
-    can_cast(from: usm_ndarray or dtype, to: dtype) -> bool
+    """ can_cast(from, to, casting="safe")
 
     Determines if one data type can be cast to another data type according \
-        to Type Promotion Rules rules.
+        to Type Promotion Rules.
+
+    Args:
+       from (usm_ndarray, dtype): source data type
+       to (dtype): target data type
+       casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
+           controls what kind of data casting may occur.
+
+    Returns:
+        out (bool): True if cast can occur according to the casting rule.
     """
     if isinstance(to, dpt.usm_ndarray):
         raise TypeError("Expected dtype type.")
@@ -459,11 +656,17 @@ def can_cast(from_, to, casting="safe"):
 
 def result_type(*arrays_and_dtypes):
     """
-    result_type(arrays_and_dtypes: an arbitrary number usm_ndarrays or dtypes)\
-         -> dtype
+    result_type(arrays_and_dtypes)
 
     Returns the dtype that results from applying the Type Promotion Rules to \
         the arguments.
+
+    Args:
+         arrays_and_dtypes: An arbitrary length sequence of arrays or dtypes.
+
+    Returns:
+         out (dtype): the dtype resulting from an operation involving the
+             input arrays and dtypes.
     """
     dtypes = [
         X.dtype if isinstance(X, dpt.usm_ndarray) else dpt.dtype(X)
@@ -476,27 +679,66 @@ def result_type(*arrays_and_dtypes):
 
 
 def iinfo(dtype):
-    """
-    iinfo(dtype: integer data-type) -> iinfo_object
+    """iinfo(dtype)
 
     Returns machine limits for integer data types.
+
+    Args:
+        dtype (dtype, usm_ndarray): integer dtype or
+            an array with integer dtype.
+
+    Returns:
+        out (iinfo_object): an object with the followign attributes
+            * bits: int
+                number of bits occupied by the data type
+            * max: int
+                largest representable number.
+            * min: int
+                smallest representable number.
+            * dtype: dtype
+                integer data type.
     """
     if isinstance(dtype, dpt.usm_ndarray):
-        raise TypeError("Expected dtype type, got {to}.")
+        dtype = dtype.dtype
     _supported_dtype([dpt.dtype(dtype)])
     return np.iinfo(dtype)
 
 
 def finfo(dtype):
-    """
-    finfo(type: float data-type) -> finfo_object
+    """finfo(type)
 
-    Returns machine limits for float data types.
+    Returns machine limits for floating-point data types.
+
+    Args:
+        dtype (dtype, usm_ndarray): floating-point dtype or
+            an array with floating point data type.
+            If complex, the information is about its component
+            data type.
+
+    Returns:
+        out (finfo_object):
+            an object have the following attributes
+                * bits: int
+                    number of bits occupied by dtype.
+                * eps: float
+                    difference between 1.0 and the next smallest representable
+                    real-valued floating-point number larger than 1.0 according
+                    to the IEEE-754 standard.
+                * max: float
+                    largest representable real-valued number.
+                * min: float
+                    smallest representable real-valued number.
+                * smallest_normal: float
+                    smallest positive real-valued floating-point number with
+                    full precision.
+                * dtype: dtype
+                    real-valued floating-point data type.
+
     """
     if isinstance(dtype, dpt.usm_ndarray):
-        raise TypeError("Expected dtype type, got {to}.")
+        dtype = dtype.dtype
     _supported_dtype([dpt.dtype(dtype)])
-    return np.finfo(dtype)
+    return finfo_object(dtype)
 
 
 def _supported_dtype(dtypes):

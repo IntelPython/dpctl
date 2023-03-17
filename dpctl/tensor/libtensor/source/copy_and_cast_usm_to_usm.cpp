@@ -70,6 +70,7 @@ using dpctl::utils::keep_args_alive;
 
 sycl::event _populate_packed_shape_strides_for_copycast_kernel(
     sycl::queue exec_q,
+    std::vector<sycl::event> &host_task_events,
     py::ssize_t *device_shape_strides, // to be populated
     const std::vector<py::ssize_t> &common_shape,
     const std::vector<py::ssize_t> &src_strides,
@@ -102,13 +103,14 @@ sycl::event _populate_packed_shape_strides_for_copycast_kernel(
         shp_host_shape_strides->data(), device_shape_strides,
         shp_host_shape_strides->size());
 
-    exec_q.submit([&](sycl::handler &cgh) {
+    auto shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_shape_ev);
         cgh.host_task([shp_host_shape_strides]() {
             // increment shared pointer ref-count to keep it alive
             // till copy operation completes;
         });
     });
+    host_task_events.push_back(shared_ptr_cleanup_ev);
 
     return copy_shape_ev;
 }
@@ -306,10 +308,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         throw std::runtime_error("Unabled to allocate device memory");
     }
 
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(2);
+
     sycl::event copy_shape_ev =
         _populate_packed_shape_strides_for_copycast_kernel(
-            exec_q, shape_strides, simplified_shape, simplified_src_strides,
-            simplified_dst_strides);
+            exec_q, host_task_events, shape_strides, simplified_shape,
+            simplified_src_strides, simplified_dst_strides);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
@@ -317,15 +322,16 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
 
     // async free of shape_strides temporary
     auto ctx = exec_q.get_context();
-    exec_q.submit([&](sycl::handler &cgh) {
+    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_and_cast_generic_ev);
         cgh.host_task(
             [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
     });
 
-    return std::make_pair(
-        keep_args_alive(exec_q, {src, dst}, {copy_and_cast_generic_ev}),
-        copy_and_cast_generic_ev);
+    host_task_events.push_back(temporaries_cleanup_ev);
+
+    return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
+                          temporaries_cleanup_ev);
 }
 
 void init_copy_and_cast_usm_to_usm_dispatch_tables(void)

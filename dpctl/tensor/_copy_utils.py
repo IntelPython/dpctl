@@ -92,7 +92,22 @@ def _copy_from_numpy_into(dst, np_ary):
         raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray, got {type(dst)}")
-    src_ary = np.broadcast_to(np_ary, dst.shape)
+    if np_ary.flags["OWNDATA"]:
+        Xnp = np_ary
+    else:
+        # Determine base of input array
+        base = np_ary.base
+        while isinstance(base, np.ndarray):
+            base = base.base
+        if isinstance(base, dpm._memory._Memory):
+            # we must perform a copy, since subsequent
+            # _copy_numpy_ndarray_into_usm_ndarray is implemented using
+            # sycl::buffer, and using USM-pointers with sycl::buffer
+            # results is undefined behavior
+            Xnp = np_ary.copy()
+        else:
+            Xnp = np_ary
+    src_ary = np.broadcast_to(Xnp, dst.shape)
     copy_q = dst.sycl_queue
     if copy_q.sycl_device.has_aspect_fp64 is False:
         src_ary_dt_c = src_ary.dtype.char
@@ -113,11 +128,22 @@ def from_numpy(np_ary, device=None, usm_type="device", sycl_queue=None):
     `numpy.ndarray`.
 
     Args:
-        arg: An instance of `numpy.ndarray`
+        arg: An instance of input `numpy.ndarray`
         device: array API specification of device where the output array
-            is created.
-        sycl_queue: a :class:`dpctl.SyclQueue` used to create the output
-            array is created
+            is created
+        usm_type: The requested USM allocation type for the output array
+        sycl_queue: a :class:`dpctl.SyclQueue` instance that determines
+            output array allocation device as well as placement of data
+            movement operation. The `device` and `sycl_queue` arguments
+            are equivalent. Only one of them should be specified. If both
+            are provided, they must be consistent and result in using the
+            same execution queue.
+
+    The returned array has the same shape, and the same data type kind.
+    If the device does not support the data type of input array, a
+    closest support data type of the same kind may be returned, e.g.
+    input array of type `float16` may be upcast to `float32` if the
+    target device does not support 16-bit floating point type.
     """
     q = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return _copy_from_numpy(np_ary, usm_type=usm_type, sycl_queue=q)

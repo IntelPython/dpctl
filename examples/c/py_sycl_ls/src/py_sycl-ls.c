@@ -27,9 +27,7 @@
 // clang-format off
 #include "Python.h"
 #include "dpctl_capi.h"
-#include "syclinterface/dpctl_sycl_platform_interface.h"
-#include "syclinterface/dpctl_sycl_platform_manager.h"
-#include "syclinterface/dpctl_utils.h"
+#include "dpctl_sycl_interface.h"
 // clang-format on
 
 PyObject *sycl_ls(PyObject *self_unused, PyObject *args)

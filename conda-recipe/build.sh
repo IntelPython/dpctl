@@ -14,7 +14,7 @@ if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
 fi
 export CMAKE_GENERATOR="Ninja"
-SKBUILD_ARGS="-- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx"
+SKBUILD_ARGS="-- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
 echo "${PYTHON} setup.py install ${SKBUILD_ARGS}"
 
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
