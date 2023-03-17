@@ -839,6 +839,7 @@ def test_concat_1array(data):
         [(0, 2), (2, 2), 0],
         [(2, 1), (2, 2), -1],
         [(2, 2, 2), (2, 1, 2), 1],
+        [(3, 3, 3), (2, 2), None],
     ],
 )
 def test_concat_2arrays(data):
@@ -890,6 +891,23 @@ def test_concat_3arrays(data):
     R = dpt.concat([X, Y, Z], axis=axis)
 
     assert_array_equal(Rnp, dpt.asnumpy(R))
+
+
+def test_concat_axis_none_strides():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+    Xnp = np.arange(0, 18).reshape((6, 3))
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Ynp = np.arange(20, 36).reshape((4, 2, 2))
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+
+    Znp = np.concatenate([Xnp[::2], Ynp[::2]], axis=None)
+    Z = dpt.concat([X[::2], Y[::2]], axis=None)
+
+    assert_array_equal(Znp, dpt.asnumpy(Z))
 
 
 def test_stack_incorrect_shape():
