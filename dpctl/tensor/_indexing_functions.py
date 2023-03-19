@@ -26,8 +26,19 @@ import dpctl.tensor._tensor_impl as ti
 from ._copy_utils import _extract_impl, _nonzero_impl
 
 
-def take(x, indices, /, *, axis=None, mode="clip"):
-    """take(x, indices, axis=None, mode="clip")
+def _get_indexing_mode(name):
+    modes = {"fancy": 0, "clip": 1, "wrap": 2}
+    try:
+        return modes[name]
+    except KeyError:
+        raise ValueError(
+            "`mode` must be `fancy`, `clip`, or `wrap`."
+            "Got `{}`.".format(name)
+        )
+
+
+def take(x, indices, /, *, axis=None, mode="fancy"):
+    """take(x, indices, axis=None, mode="fancy")
 
     Takes elements from array along a given axis.
 
@@ -42,15 +53,16 @@ def take(x, indices, /, *, axis=None, mode="clip"):
           Default: `None`.
        mode:
           How out-of-bounds indices will be handled.
-          "clip" - clamps indices to (-n <= i < n), then wraps
+          "fancy" - clamps indices to (-n <= i < n), then wraps
           negative indices.
+          "clip" - clips indices to (0 <= i < n)
           "wrap" - wraps both negative and positive indices.
-          Default: `"clip"`.
+          Default: `"fancy"`.
 
     Returns:
        out: usm_ndarray
           Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-          filled with elements .
+          filled with elements from x.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -80,11 +92,7 @@ def take(x, indices, /, *, axis=None, mode="clip"):
         [x.usm_type, indices.usm_type]
     )
 
-    modes = {"clip": 0, "wrap": 1}
-    try:
-        mode = modes[mode]
-    except KeyError:
-        raise ValueError("`mode` must be `clip` or `wrap`.")
+    mode = _get_indexing_mode(mode)
 
     x_ndim = x.ndim
     if axis is None:
@@ -114,8 +122,8 @@ def take(x, indices, /, *, axis=None, mode="clip"):
     return res
 
 
-def put(x, indices, vals, /, *, axis=None, mode="clip"):
-    """put(x, indices, vals, axis=None, mode="clip")
+def put(x, indices, vals, /, *, axis=None, mode="fancy"):
+    """put(x, indices, vals, axis=None, mode="fancy")
 
     Puts values of an array into another array
     along a given axis.
@@ -134,10 +142,11 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
           Default: `None`.
        mode:
           How out-of-bounds indices will be handled.
-          "clip" - clamps indices to (-axis_size <= i < axis_size),
-          then wraps negative indices.
+          "fancy" - clamps indices to (-n <= i < n), then wraps
+          negative indices.
+          "clip" - clips indices to (0 <= i < n)
           "wrap" - wraps both negative and positive indices.
-          Default: `"clip"`.
+          Default: `"fancy"`.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -175,11 +184,8 @@ def put(x, indices, vals, /, *, axis=None, mode="clip"):
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
-    modes = {"clip": 0, "wrap": 1}
-    try:
-        mode = modes[mode]
-    except KeyError:
-        raise ValueError("`mode` must be `clip` or `wrap`.")
+
+    mode = _get_indexing_mode(mode)
 
     x_ndim = x.ndim
     if axis is None:

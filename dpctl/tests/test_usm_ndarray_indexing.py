@@ -895,11 +895,20 @@ def test_integer_indexing_modes():
     q = get_queue_or_skip()
 
     x = dpt.arange(5, sycl_queue=q)
+    x_np = dpt.asnumpy(x)
+
+    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
+    ind_np = dpt.asnumpy(ind)
 
     # wrapping
-    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
     res = dpt.take(x, ind, mode="wrap")
-    expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="wrap")
+    expected_arr = np.take(x_np, ind_np, mode="wrap")
+
+    assert (dpt.asnumpy(res) == expected_arr).all()
+
+    # clipping to 0 (disabling negative indices)
+    res = dpt.take(x, ind, mode="clip")
+    expected_arr = np.take(x_np, ind_np, mode="clip")
 
     assert (dpt.asnumpy(res) == expected_arr).all()
 
@@ -907,7 +916,7 @@ def test_integer_indexing_modes():
     # where n is the axis length
     ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
 
-    res = dpt.take(x, ind, mode="clip")
+    res = dpt.take(x, ind, mode="fancy")
     expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="raise")
 
     assert (dpt.asnumpy(res) == expected_arr).all()

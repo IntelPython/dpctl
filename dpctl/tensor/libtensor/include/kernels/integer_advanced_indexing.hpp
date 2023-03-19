@@ -46,6 +46,20 @@ namespace py = pybind11;
 template <typename ProjectorT, typename Ty, typename indT> class take_kernel;
 template <typename ProjectorT, typename Ty, typename indT> class put_kernel;
 
+class FancyIndex
+{
+public:
+    FancyIndex() = default;
+
+    void operator()(py::ssize_t max_item, py::ssize_t &ind) const
+    {
+        max_item = std::max<py::ssize_t>(max_item, 1);
+        ind = std::clamp<py::ssize_t>(ind, -max_item, max_item - 1);
+        ind = (ind < 0) ? ind + max_item : ind;
+        return;
+    }
+};
+
 class ClipIndex
 {
 public:
@@ -54,8 +68,7 @@ public:
     void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
         max_item = std::max<py::ssize_t>(max_item, 1);
-        ind = std::clamp<py::ssize_t>(ind, -max_item, max_item - 1);
-        ind = (ind < 0) ? ind + max_item : ind;
+        ind = std::clamp<py::ssize_t>(ind, 0, max_item - 1);
         return;
     }
 };
@@ -348,6 +361,22 @@ sycl::event put_impl(sycl::queue q,
     return put_ev;
 }
 
+template <typename fnT, typename T, typename indT> struct TakeFancyFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_integral<indT>::value &&
+                      !std::is_same<indT, bool>::value) {
+            fnT fn = take_impl<FancyIndex, T, indT>;
+            return fn;
+        }
+        else {
+            fnT fn = nullptr;
+            return fn;
+        }
+    }
+};
+
 template <typename fnT, typename T, typename indT> struct TakeWrapFactory
 {
     fnT get()
@@ -371,6 +400,22 @@ template <typename fnT, typename T, typename indT> struct TakeClipFactory
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
             fnT fn = take_impl<ClipIndex, T, indT>;
+            return fn;
+        }
+        else {
+            fnT fn = nullptr;
+            return fn;
+        }
+    }
+};
+
+template <typename fnT, typename T, typename indT> struct PutFancyFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_integral<indT>::value &&
+                      !std::is_same<indT, bool>::value) {
+            fnT fn = put_impl<FancyIndex, T, indT>;
             return fn;
         }
         else {
