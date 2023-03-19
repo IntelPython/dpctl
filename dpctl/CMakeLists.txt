@@ -13,6 +13,7 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wstrict-prototypes "
         "-Wno-unused-parameter "
     )
     string(CONCAT SDL_FLAGS
@@ -36,6 +37,8 @@ elseif(UNIX)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wstrict-prototypes "
+        "-Wno-unused-parameter "
         "-fdiagnostics-color=auto "
     )
     string(CONCAT SDL_FLAGS
@@ -46,7 +49,7 @@ elseif(UNIX)
         "-D_FORTIFY_SOURCE=2 "
         "-Wformat "
         "-Wformat-security "
-        "-fno-strict-overflow "
+#       "-fno-strict-overflow "    # no-strict-overflow is implied by -fwrapv
         "-fno-delete-null-pointer-checks "
         "-fwrapv "
     )
