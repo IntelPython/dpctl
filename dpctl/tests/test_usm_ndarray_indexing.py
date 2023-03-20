@@ -898,27 +898,19 @@ def test_integer_indexing_modes():
     x = dpt.arange(5, sycl_queue=q)
     x_np = dpt.asnumpy(x)
 
-    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
-    ind_np = dpt.asnumpy(ind)
+    # wrapping negative indices
+    ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
 
-    # wrapping
     res = dpt.take(x, ind, mode="wrap")
-    expected_arr = np.take(x_np, ind_np, mode="wrap")
+    expected_arr = np.take(x_np, dpt.asnumpy(ind), mode="raise")
 
     assert (dpt.asnumpy(res) == expected_arr).all()
 
     # clipping to 0 (disabling negative indices)
+    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
+
     res = dpt.take(x, ind, mode="clip")
-    expected_arr = np.take(x_np, ind_np, mode="clip")
-
-    assert (dpt.asnumpy(res) == expected_arr).all()
-
-    # clipping to -n<=i<n,
-    # where n is the axis length
-    ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
-
-    res = dpt.take(x, ind, mode="default")
-    expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="raise")
+    expected_arr = np.take(x_np, dpt.asnumpy(ind), mode="clip")
 
     assert (dpt.asnumpy(res) == expected_arr).all()
 

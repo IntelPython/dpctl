@@ -39,10 +39,9 @@
 
 #include "integer_advanced_indexing.hpp"
 
-#define INDEXING_MODES 3
-#define FANCY_MODE 0
+#define INDEXING_MODES 2
+#define WRAP_MODE 0
 #define CLIP_MODE 1
-#define WRAP_MODE 2
 
 namespace dpctl
 {
@@ -884,11 +883,6 @@ void init_advanced_indexing_dispatch_tables(void)
 {
     using namespace dpctl::tensor::detail;
 
-    using dpctl::tensor::kernels::indexing::TakeFancyFactory;
-    DispatchTableBuilder<take_fn_ptr_t, TakeFancyFactory, num_types>
-        dtb_takefancy;
-    dtb_takefancy.populate_dispatch_table(take_dispatch_table[FANCY_MODE]);
-
     using dpctl::tensor::kernels::indexing::TakeClipFactory;
     DispatchTableBuilder<take_fn_ptr_t, TakeClipFactory, num_types>
         dtb_takeclip;
@@ -898,10 +892,6 @@ void init_advanced_indexing_dispatch_tables(void)
     DispatchTableBuilder<take_fn_ptr_t, TakeWrapFactory, num_types>
         dtb_takewrap;
     dtb_takewrap.populate_dispatch_table(take_dispatch_table[WRAP_MODE]);
-
-    using dpctl::tensor::kernels::indexing::PutFancyFactory;
-    DispatchTableBuilder<put_fn_ptr_t, PutFancyFactory, num_types> dtb_putfancy;
-    dtb_putfancy.populate_dispatch_table(put_dispatch_table[FANCY_MODE]);
 
     using dpctl::tensor::kernels::indexing::PutClipFactory;
     DispatchTableBuilder<put_fn_ptr_t, PutClipFactory, num_types> dtb_putclip;
