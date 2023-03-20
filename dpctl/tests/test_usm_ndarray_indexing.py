@@ -917,7 +917,7 @@ def test_integer_indexing_modes():
     # where n is the axis length
     ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
 
-    res = dpt.take(x, ind, mode="fancy")
+    res = dpt.take(x, ind, mode="default")
     expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="raise")
 
     assert (dpt.asnumpy(res) == expected_arr).all()

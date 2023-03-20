@@ -27,18 +27,18 @@ from ._copy_utils import _extract_impl, _nonzero_impl
 
 
 def _get_indexing_mode(name):
-    modes = {"fancy": 0, "clip": 1, "wrap": 2}
+    modes = {"default": 0, "clip": 1, "wrap": 2}
     try:
         return modes[name]
     except KeyError:
         raise ValueError(
-            "`mode` must be `fancy`, `clip`, or `wrap`."
+            "`mode` must be `default`, `clip`, or `wrap`."
             "Got `{}`.".format(name)
         )
 
 
-def take(x, indices, /, *, axis=None, mode="fancy"):
-    """take(x, indices, axis=None, mode="fancy")
+def take(x, indices, /, *, axis=None, mode="default"):
+    """take(x, indices, axis=None, mode="default")
 
     Takes elements from array along a given axis.
 
@@ -53,11 +53,11 @@ def take(x, indices, /, *, axis=None, mode="fancy"):
           Default: `None`.
        mode:
           How out-of-bounds indices will be handled.
-          "fancy" - clamps indices to (-n <= i < n), then wraps
+          "default" - clamps indices to (-n <= i < n), then wraps
           negative indices.
           "clip" - clips indices to (0 <= i < n)
           "wrap" - wraps both negative and positive indices.
-          Default: `"fancy"`.
+          Default: `"default"`.
 
     Returns:
        out: usm_ndarray
@@ -122,8 +122,8 @@ def take(x, indices, /, *, axis=None, mode="fancy"):
     return res
 
 
-def put(x, indices, vals, /, *, axis=None, mode="fancy"):
-    """put(x, indices, vals, axis=None, mode="fancy")
+def put(x, indices, vals, /, *, axis=None, mode="default"):
+    """put(x, indices, vals, axis=None, mode="default")
 
     Puts values of an array into another array
     along a given axis.
@@ -142,11 +142,11 @@ def put(x, indices, vals, /, *, axis=None, mode="fancy"):
           Default: `None`.
        mode:
           How out-of-bounds indices will be handled.
-          "fancy" - clamps indices to (-n <= i < n), then wraps
+          "default" - clamps indices to (-n <= i < n), then wraps
           negative indices.
           "clip" - clips indices to (0 <= i < n)
           "wrap" - wraps both negative and positive indices.
-          Default: `"fancy"`.
+          Default: `"default"`.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
