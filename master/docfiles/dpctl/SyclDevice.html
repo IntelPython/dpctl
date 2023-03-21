@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.3dev0+5.ge4236a232 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data-parallel Control (dpctl) 0.14.3dev0+12.g1a6bba06e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+5.ge4236a232
+                0.14.3dev0+12.g1a6bba06e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -191,7 +191,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns a backend-defined driver version as a string.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.filter_string" title="dpctl.SyclDevice.filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_string</span></code></a></p></td>
-<td><p>For a parent device, returns a fully specified filter selector string``backend:device_type:relative_id`` selecting the device.</p></td>
+<td><p>For a root device, returns a fully specified filter selector string <code class="docutils literal notranslate"><span class="pre">&quot;backend:device_type:relative_id&quot;</span></code> selecting the device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.global_mem_cache_line_size" title="dpctl.SyclDevice.global_mem_cache_line_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_mem_cache_line_size</span></code></a></p></td>
 <td><p>Global device memory cache line size.</p></td>
@@ -464,8 +464,8 @@ and may not be properly programmed by the DPC++ runtime.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.filter_string">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">filter_string</span></span><a class="headerlink" href="#dpctl.SyclDevice.filter_string" title="Permalink to this definition"></a></dt>
-<dd><p>For a parent device, returns a fully specified filter selector
-string``backend:device_type:relative_id`` selecting the device.</p>
+<dd><p>For a root device, returns a fully specified filter selector
+string <code class="docutils literal notranslate"><span class="pre">&quot;backend:device_type:relative_id&quot;</span></code> selecting the device.</p>
 <dl class="field-list">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A Python string representing a filter selector string.</p>
@@ -474,7 +474,7 @@ string``backend:device_type:relative_id`` selecting the device.</p>
 <dd class="field-even"><p>str</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – If the device is a sub-devices.</p>
+<dd class="field-odd"><p><strong>TypeError</strong> – If the device is a sub-device.</p>
 </dd>
 <dt class="field-even">Example<span class="colon">:</span></dt>
 <dd class="field-even"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
