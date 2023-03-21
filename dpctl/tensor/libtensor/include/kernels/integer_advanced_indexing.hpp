@@ -46,10 +46,10 @@ namespace py = pybind11;
 template <typename ProjectorT, typename Ty, typename indT> class take_kernel;
 template <typename ProjectorT, typename Ty, typename indT> class put_kernel;
 
-class ClipIndex
+class WrapIndex
 {
 public:
-    ClipIndex() = default;
+    WrapIndex() = default;
 
     void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
@@ -60,16 +60,15 @@ public:
     }
 };
 
-class WrapIndex
+class ClipIndex
 {
 public:
-    WrapIndex() = default;
+    ClipIndex() = default;
 
     void operator()(py::ssize_t max_item, py::ssize_t &ind) const
     {
         max_item = std::max<py::ssize_t>(max_item, 1);
-        ind = (ind < 0) ? (ind + max_item * ((-ind / max_item) + 1)) % max_item
-                        : ind % max_item;
+        ind = std::clamp<py::ssize_t>(ind, 0, max_item - 1);
         return;
     }
 };
