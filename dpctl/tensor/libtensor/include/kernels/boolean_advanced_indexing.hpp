@@ -31,7 +31,7 @@
 #include <utility>
 #include <vector>
 
-#include "utils/strided_iters.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -44,6 +44,8 @@ namespace indexing
 {
 
 namespace py = pybind11;
+
+using namespace dpctl::tensor::offset_utils;
 
 template <typename T> T ceiling_quotient(T n, T m)
 {
@@ -66,82 +68,6 @@ template <typename inputT,
           typename IndexerT,
           typename TransformerT>
 class inclusive_scan_rec_chunk_update_krn;
-
-struct NoOpIndexer
-{
-    size_t operator()(size_t gid) const
-    {
-        return gid;
-    }
-};
-
-struct StridedIndexer
-{
-    StridedIndexer(int _nd,
-                   py::ssize_t _offset,
-                   py::ssize_t const *_packed_shape_strides)
-        : nd(_nd), starting_offset(_offset),
-          shape_strides(_packed_shape_strides)
-    {
-    }
-
-    size_t operator()(size_t gid) const
-    {
-        CIndexer_vector _ind(nd);
-        py::ssize_t relative_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            static_cast<py::ssize_t>(gid),
-            shape_strides,      // shape ptr
-            shape_strides + nd, // strides ptr
-            relative_offset);
-        return starting_offset + relative_offset;
-    }
-
-private:
-    int nd;
-    py::ssize_t starting_offset;
-    py::ssize_t const *shape_strides;
-};
-
-struct Strided1DIndexer
-{
-    Strided1DIndexer(py::ssize_t _offset, py::ssize_t _size, py::ssize_t _step)
-        : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
-    {
-    }
-
-    size_t operator()(size_t gid) const
-    {
-        // ensure 0 <= gid < size
-        return static_cast<size_t>(offset +
-                                   std::min<size_t>(gid, size - 1) * step);
-    }
-
-private:
-    py::ssize_t offset = 0;
-    size_t size = 1;
-    py::ssize_t step = 1;
-};
-
-struct Strided1DCyclicIndexer
-{
-    Strided1DCyclicIndexer(py::ssize_t _offset,
-                           py::ssize_t _size,
-                           py::ssize_t _step)
-        : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
-    {
-    }
-
-    size_t operator()(size_t gid) const
-    {
-        return static_cast<size_t>(offset + (gid % size) * step);
-    }
-
-private:
-    py::ssize_t offset = 0;
-    size_t size = 1;
-    py::ssize_t step = 1;
-};
 
 template <typename inputT, typename outputT> struct NonZeroIndicator
 {
@@ -288,73 +214,6 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
 
     return out_event;
 }
-
-template <typename displacementT> struct TwoOffsets
-{
-    TwoOffsets() : first_offset(0), second_offset(0) {}
-    TwoOffsets(displacementT first_offset_, displacementT second_offset_)
-        : first_offset(first_offset_), second_offset(second_offset_)
-    {
-    }
-
-    displacementT get_first_offset() const
-    {
-        return first_offset;
-    }
-    displacementT get_second_offset() const
-    {
-        return second_offset;
-    }
-
-private:
-    displacementT first_offset = 0;
-    displacementT second_offset = 0;
-};
-
-struct TwoOffsets_StridedIndexer
-{
-    TwoOffsets_StridedIndexer(int common_nd,
-                              py::ssize_t first_offset_,
-                              py::ssize_t second_offset_,
-                              py::ssize_t const *_packed_shape_strides)
-        : nd(common_nd), starting_first_offset(first_offset_),
-          starting_second_offset(second_offset_),
-          shape_strides(_packed_shape_strides)
-    {
-    }
-
-    TwoOffsets<py::ssize_t> operator()(py::ssize_t gid) const
-    {
-        CIndexer_vector _ind(nd);
-        py::ssize_t relative_first_offset(0);
-        py::ssize_t relative_second_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            gid,
-            shape_strides,          // shape ptr
-            shape_strides + nd,     // src strides ptr
-            shape_strides + 2 * nd, // src strides ptr
-            relative_first_offset, relative_second_offset);
-        return TwoOffsets<py::ssize_t>(
-            starting_first_offset + relative_first_offset,
-            starting_second_offset + relative_second_offset);
-    }
-
-private:
-    int nd;
-    py::ssize_t starting_first_offset;
-    py::ssize_t starting_second_offset;
-    py::ssize_t const *shape_strides;
-};
-
-struct TwoZeroOffsets_Indexer
-{
-    TwoZeroOffsets_Indexer() {}
-
-    TwoOffsets<py::ssize_t> operator()(py::ssize_t) const
-    {
-        return TwoOffsets<py::ssize_t>();
-    }
-};
 
 template <typename OrthogIndexerT,
           typename MaskedSrcIndexerT,
