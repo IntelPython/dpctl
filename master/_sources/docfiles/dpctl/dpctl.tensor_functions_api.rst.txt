@@ -56,6 +56,7 @@ Other Functions
 
 .. autofunction:: extract
 .. autofunction:: get_print_options
+.. autofunction:: isdtype
 .. autofunction:: nonzero
 .. autofunction:: place
 .. autofunction:: print_options

@@ -132,6 +132,8 @@ Other Functions
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
       - Returns a copy of current options for printing ``dpctl.tensor.usm_ndarray`` class.
+    * - :func:`isdtype()`
+      - Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`.
     * - :func:`nonzero()`
       - Return the indices of non-zero elements.
     * - :func:`place()`
