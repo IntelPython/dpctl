@@ -20,6 +20,7 @@ import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
 from numpy.testing import assert_array_equal
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError
 
@@ -895,20 +896,21 @@ def test_integer_indexing_modes():
     q = get_queue_or_skip()
 
     x = dpt.arange(5, sycl_queue=q)
+    x_np = dpt.asnumpy(x)
 
-    # wrapping
-    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
+    # wrapping negative indices
+    ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
+
     res = dpt.take(x, ind, mode="wrap")
-    expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="wrap")
+    expected_arr = np.take(x_np, dpt.asnumpy(ind), mode="raise")
 
     assert (dpt.asnumpy(res) == expected_arr).all()
 
-    # clipping to -n<=i<n,
-    # where n is the axis length
-    ind = dpt.asarray([-4, -3, 0, 2, 4], dtype=np.intp, sycl_queue=q)
+    # clipping to 0 (disabling negative indices)
+    ind = dpt.asarray([-6, -3, 0, 2, 6], dtype=np.intp, sycl_queue=q)
 
     res = dpt.take(x, ind, mode="clip")
-    expected_arr = np.take(dpt.asnumpy(x), dpt.asnumpy(ind), mode="raise")
+    expected_arr = np.take(x_np, dpt.asnumpy(ind), mode="clip")
 
     assert (dpt.asnumpy(res) == expected_arr).all()
 
@@ -939,6 +941,10 @@ def test_take_arg_validation():
         dpt.take(dpt.reshape(x, (2, 2)), ind0, axis=None)
     with pytest.raises(ValueError):
         dpt.take(x, dpt.reshape(ind0, (2, 2)))
+    with pytest.raises(ValueError):
+        dpt.take(x[0], ind0, axis=2)
+    with pytest.raises(ValueError):
+        dpt.take(x[:, dpt.newaxis, dpt.newaxis], ind0, axis=None)
 
 
 def test_put_arg_validation():
@@ -968,6 +974,10 @@ def test_put_arg_validation():
         dpt.put(x, ind0, val, mode=0)
     with pytest.raises(ValueError):
         dpt.put(x, dpt.reshape(ind0, (2, 2)), val)
+    with pytest.raises(ValueError):
+        dpt.put(x[0], ind0, val, axis=2)
+    with pytest.raises(ValueError):
+        dpt.put(x[:, dpt.newaxis, dpt.newaxis], ind0, val, axis=None)
 
 
 def test_advanced_indexing_compute_follows_data():
@@ -1269,3 +1279,43 @@ def test_nonzero_large():
 
     m = dpt.full((30, 60, 80), True)
     assert m[m].size == m.size
+
+
+def test_extract_arg_validation():
+    get_queue_or_skip()
+    with pytest.raises(TypeError):
+        dpt.extract(None, None)
+    cond = dpt.ones(10, dtype="?")
+    with pytest.raises(TypeError):
+        dpt.extract(cond, None)
+    q1 = dpctl.SyclQueue()
+    with pytest.raises(ExecutionPlacementError):
+        dpt.extract(cond.to_device(q1), dpt.zeros_like(cond, dtype="u1"))
+    with pytest.raises(ValueError):
+        dpt.extract(dpt.ones((2, 3), dtype="?"), dpt.ones((3, 2), dtype="i1"))
+
+
+def test_place_arg_validation():
+    get_queue_or_skip()
+    with pytest.raises(TypeError):
+        dpt.place(None, None, None)
+    arr = dpt.zeros(8, dtype="i1")
+    with pytest.raises(TypeError):
+        dpt.place(arr, None, None)
+    cond = dpt.ones(8, dtype="?")
+    with pytest.raises(TypeError):
+        dpt.place(arr, cond, None)
+    vals = dpt.ones_like(arr)
+    q1 = dpctl.SyclQueue()
+    with pytest.raises(ExecutionPlacementError):
+        dpt.place(arr.to_device(q1), cond, vals)
+    with pytest.raises(ValueError):
+        dpt.place(dpt.reshape(arr, (2, 2, 2)), cond, vals)
+
+
+def test_nonzero_arg_validation():
+    get_queue_or_skip()
+    with pytest.raises(TypeError):
+        dpt.nonzero(list())
+    with pytest.raises(ValueError):
+        dpt.nonzero(dpt.asarray(1))
