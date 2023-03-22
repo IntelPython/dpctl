@@ -60,84 +60,58 @@ dtype_categories = {
 @pytest.mark.parametrize("kind_str", dtype_categories.keys())
 @pytest.mark.parametrize("dtype_str", list_dtypes)
 def test_isdtype_kind_str(dtype_str, kind_str):
-    if dtype_str in dtype_categories[kind_str]:
-        assert dpt.isdtype(dpt.dtype(dtype_str), kind_str)
-    else:
-        assert not dpt.isdtype(dpt.dtype(dtype_str), kind_str)
+    dt = dpt.dtype(dtype_str)
+    is_in_kind = dpt.isdtype(dt, kind_str)
+    expected = dtype_str in dtype_categories[kind_str]
+    assert is_in_kind == expected
 
 
 @pytest.mark.parametrize("dtype_str", list_dtypes)
 def test_isdtype_kind_tuple(dtype_str):
+    dt = dpt.dtype(dtype_str)
     if dtype_str.startswith("bool"):
-        assert dpt.isdtype(dpt.dtype(dtype_str), ("real floating", "bool"))
+        assert dpt.isdtype(dt, ("real floating", "bool"))
         assert not dpt.isdtype(
-            dpt.dtype(dtype_str),
-            ("integral", "real floating", "complex floating"),
+            dt, ("integral", "real floating", "complex floating")
         )
     elif dtype_str.startswith("int"):
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str), ("real floating", "signed integer")
-        )
+        assert dpt.isdtype(dt, ("real floating", "signed integer"))
         assert not dpt.isdtype(
-            dpt.dtype(dtype_str), ("bool", "unsigned integer", "real floating")
+            dt, ("bool", "unsigned integer", "real floating")
         )
     elif dtype_str.startswith("uint"):
-        assert dpt.isdtype(dpt.dtype(dtype_str), ("bool", "unsigned integer"))
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), ("real floating", "complex floating")
-        )
+        assert dpt.isdtype(dt, ("bool", "unsigned integer"))
+        assert not dpt.isdtype(dt, ("real floating", "complex floating"))
     elif dtype_str.startswith("float"):
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str), ("complex floating", "real floating")
-        )
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), ("integral", "complex floating")
-        )
+        assert dpt.isdtype(dt, ("complex floating", "real floating"))
+        assert not dpt.isdtype(dt, ("integral", "complex floating", "bool"))
     else:
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str), ("integral", "complex floating")
-        )
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), ("bool", "integral", "real floating")
-        )
+        assert dpt.isdtype(dt, ("integral", "complex floating"))
+        assert not dpt.isdtype(dt, ("bool", "integral", "real floating"))
 
 
 @pytest.mark.parametrize("dtype_str", list_dtypes)
 def test_isdtype_kind_tuple_dtypes(dtype_str):
+    dt = dpt.dtype(dtype_str)
     if dtype_str.startswith("bool"):
-        assert dpt.isdtype(dpt.dtype(dtype_str), (dpt.int32, dpt.bool))
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.int16, dpt.uint32, dpt.float64)
-        )
+        assert dpt.isdtype(dt, (dpt.int32, dpt.bool))
+        assert not dpt.isdtype(dt, (dpt.int16, dpt.uint32, dpt.float64))
+
     elif dtype_str.startswith("int"):
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.int8, dpt.int16, dpt.int32, dpt.int64)
-        )
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.bool, dpt.float32, dpt.complex64)
-        )
+        assert dpt.isdtype(dt, (dpt.int8, dpt.int16, dpt.int32, dpt.int64))
+        assert not dpt.isdtype(dt, (dpt.bool, dpt.float32, dpt.complex64))
+
     elif dtype_str.startswith("uint"):
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str),
-            (dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64),
-        )
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.bool, dpt.int32, dpt.float32)
-        )
+        assert dpt.isdtype(dt, (dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64))
+        assert not dpt.isdtype(dt, (dpt.bool, dpt.int32, dpt.float32))
+
     elif dtype_str.startswith("float"):
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.float16, dpt.float32, dpt.float64)
-        )
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.bool, dpt.complex64, dpt.int8)
-        )
+        assert dpt.isdtype(dt, (dpt.float16, dpt.float32, dpt.float64))
+        assert not dpt.isdtype(dt, (dpt.bool, dpt.complex64, dpt.int8))
+
     else:
-        assert dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.complex64, dpt.complex128)
-        )
-        assert not dpt.isdtype(
-            dpt.dtype(dtype_str), (dpt.bool, dpt.uint64, dpt.int8)
-        )
+        assert dpt.isdtype(dt, (dpt.complex64, dpt.complex128))
+        assert not dpt.isdtype(dt, (dpt.bool, dpt.uint64, dpt.int8))
 
 
 @pytest.mark.parametrize(

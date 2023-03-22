@@ -57,15 +57,13 @@ def isdtype(dtype_, kind):
         elif kind == "unsigned integer":
             return dtype_.kind == "u"
         elif kind == "integral":
-            return dtype_.kind in ("u", "i")
+            return dtype_.kind in "iu"
         elif kind == "real floating":
             return dtype_.kind == "f"
         elif kind == "complex floating":
             return dtype_.kind == "c"
         elif kind == "numeric":
-            return isdtype(
-                dtype_, ("integral", "real floating", "complex floating")
-            )
+            return dtype_.kind in "iufc"
         else:
             raise ValueError(f"Unrecognized data type kind: {kind}")
 
