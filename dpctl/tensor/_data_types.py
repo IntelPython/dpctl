@@ -33,13 +33,14 @@ complex128 = dtype("complex128")
 
 
 def isdtype(dtype_, kind):
-    """
-    Returns a boolean indicating whether a provided dtype is
+    """isdtype(dtype, kind)
+
+    Returns a boolean indicating whether a provided `dtype` is
     of a specified data type `kind`.
 
-    See
-    https://data-apis.org/array-api/latest/API_specification/generated/array_api.isdtype.html
-    for more information
+    See [array API](array_api) for more information.
+
+    [array_api]: https://data-apis.org/array-api/latest/
     """
 
     if not isinstance(dtype_, dtype):
