@@ -40,8 +40,8 @@
 #include "integer_advanced_indexing.hpp"
 
 #define INDEXING_MODES 2
-#define CLIP_MODE 0
-#define WRAP_MODE 1
+#define WRAP_MODE 0
+#define CLIP_MODE 1
 
 namespace dpctl
 {
@@ -252,8 +252,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         throw py::value_error("Axis cannot be negative.");
     }
 
-    if (mode != 0 && mode != 1) {
-        throw py::value_error("Mode must be 0 or 1.");
+    if (mode != 0 && mode != 1 && mode != 2) {
+        throw py::value_error("Mode must be 0, 1, or 2.");
     }
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
@@ -575,8 +575,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         throw py::value_error("Axis cannot be negative.");
     }
 
-    if (mode != 0 && mode != 1) {
-        throw py::value_error("Mode must be 0 or 1.");
+    if (mode != 0 && mode != 1 && mode != 2) {
+        throw py::value_error("Mode must be 0, 1, or 2.");
     }
 
     if (!dst.is_writable()) {

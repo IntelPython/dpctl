@@ -13,6 +13,7 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wstrict-prototypes "
         "-Wno-unused-parameter "
     )
     string(CONCAT SDL_FLAGS
@@ -36,6 +37,8 @@ elseif(UNIX)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wstrict-prototypes "
+        "-Wno-unused-parameter "
         "-fdiagnostics-color=auto "
     )
     string(CONCAT SDL_FLAGS
@@ -46,7 +49,7 @@ elseif(UNIX)
         "-D_FORTIFY_SOURCE=2 "
         "-Wformat "
         "-Wformat-security "
-        "-fno-strict-overflow "
+#       "-fno-strict-overflow "    # no-strict-overflow is implied by -fwrapv
         "-fno-delete-null-pointer-checks "
         "-fwrapv "
     )
@@ -137,9 +140,11 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 function(build_dpctl_ext _trgt _src _dest)
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
+    set(_cythonize_trgt "${_trgt}_cythonize_pyx")
+    add_custom_target(${_cythonize_trgt} DEPENDS ${_src})
     add_library(${_trgt} MODULE ${_generated_src})
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
-    add_dependencies(${_trgt} _build_time_create_dpctl_include_copy)
+    add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})
     if (DPCTL_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
         target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)

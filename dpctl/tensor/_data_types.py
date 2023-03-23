@@ -31,8 +31,52 @@ float64 = dtype("float64")
 complex64 = dtype("complex64")
 complex128 = dtype("complex128")
 
+
+def isdtype(dtype_, kind):
+    """isdtype(dtype, kind)
+
+    Returns a boolean indicating whether a provided `dtype` is
+    of a specified data type `kind`.
+
+    See [array API](array_api) for more information.
+
+    [array_api]: https://data-apis.org/array-api/latest/
+    """
+
+    if not isinstance(dtype_, dtype):
+        raise TypeError("Expected instance of `dpt.dtype`, got {dtype_}")
+
+    if isinstance(kind, dtype):
+        return dtype_ == kind
+
+    elif isinstance(kind, str):
+        if kind == "bool":
+            return dtype_ == dtype("bool")
+        elif kind == "signed integer":
+            return dtype_.kind == "i"
+        elif kind == "unsigned integer":
+            return dtype_.kind == "u"
+        elif kind == "integral":
+            return dtype_.kind in "iu"
+        elif kind == "real floating":
+            return dtype_.kind == "f"
+        elif kind == "complex floating":
+            return dtype_.kind == "c"
+        elif kind == "numeric":
+            return dtype_.kind in "iufc"
+        else:
+            raise ValueError(f"Unrecognized data type kind: {kind}")
+
+    elif isinstance(kind, tuple):
+        return any(isdtype(dtype_, k) for k in kind)
+
+    else:
+        raise TypeError(f"Unsupported data type kind: {kind}")
+
+
 __all__ = [
     "dtype",
+    "isdtype",
     "bool",
     "int8",
     "uint8",
