@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+27.g720605a1a documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+28.g12010e617 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+27.g720605a1a
+                0.14.3dev0+28.g12010e617
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -215,11 +215,11 @@
 <span class="sd">    from_numpy(arg, device=None, usm_type=&quot;device&quot;, sycl_queue=None)</span>
 
 <span class="sd">    Creates :class:`dpctl.tensor.usm_ndarray` from instance of</span>
-<span class="sd">    class:`numpy.ndarray`.</span>
+<span class="sd">    :class:`numpy.ndarray`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        arg (array-like): An instance of input convertible to</span>
-<span class="sd">            class:`numpy.ndarray`</span>
+<span class="sd">            :class:`numpy.ndarray`</span>
 <span class="sd">        device (object): array API specification of device where the</span>
 <span class="sd">            output array is created. Device can be specified by a</span>
 <span class="sd">            a filter selector string, an instance of</span>
@@ -259,7 +259,7 @@
 <span class="sd">        usm_ary (usm_ndarray): An instance of :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.ndarray:</span>
-<span class="sd">            An instance of class:`numpy.ndarray` populated with content of</span>
+<span class="sd">            An instance of :class:`numpy.ndarray` populated with content of</span>
 <span class="sd">            `usm_ary`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
@@ -278,7 +278,7 @@
 <span class="sd">            :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.ndarray:</span>
-<span class="sd">            An instance of :class:``numpy.ndarray`` populated with content</span>
+<span class="sd">            An instance of :class:`numpy.ndarray` populated with content</span>
 <span class="sd">            of `usm_ary`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>

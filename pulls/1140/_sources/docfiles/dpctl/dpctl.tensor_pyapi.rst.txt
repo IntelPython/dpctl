@@ -59,7 +59,7 @@ Array Construction
     * - :func:`from_dlpack()`
       - Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
-      - Creates :class:`dpctl.tensor.usm_ndarray` from instance of class:`numpy.ndarray`.
+      - Creates :class:`dpctl.tensor.usm_ndarray` from instance of :class:`numpy.ndarray`.
     * - :func:`full()`
       - Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified shape and filled with `fill_value`.
     * - :func:`full_like()`
@@ -137,7 +137,7 @@ Other Functions
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
-      - Returns a copy of current options for printing :class:``dpctl.tensor.usm_ndarray`` class.
+      - Returns a copy of current options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`isdtype()`
       - Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`.
     * - :func:`nonzero()`
@@ -149,13 +149,13 @@ Other Functions
     * - :func:`put()`
       - Puts values of an array into another array along a given axis.
     * - :func:`set_print_options()`
-      - Set options for printing :class:``dpctl.tensor.usm_ndarray`` class.
+      - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`take()`
       - Takes elements from array along a given axis.
     * - :func:`usm_ndarray_repr()`
-      - Returns a formatted string representing the elements of a :class:``dpctl.tensor.usm_ndarray`` and its data type, if not a default type.
+      - Returns a formatted string representing the elements of a :class:`dpctl.tensor.usm_ndarray` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`
-      - Returns a string representing the elements of a :class:``dpctl.tensor.usm_ndarray``.
+      - Returns a string representing the elements of a :class:`dpctl.tensor.usm_ndarray`.
 
 
 
