@@ -126,9 +126,9 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
 
         slmT slm_iscan_tmp(lws, cgh);
 
-        cgh.parallel_for<class inclusive_scan_rec_local_scan_krn<inputT, outputT, n_wi, IndexerT, decltype(transformer)>>(
-            sycl::nd_range<1>(gws, lws),
-            [=](sycl::nd_item<1> it)
+        cgh.parallel_for<class inclusive_scan_rec_local_scan_krn<
+            inputT, outputT, n_wi, IndexerT, decltype(transformer)>>(
+            sycl::nd_range<1>(gws, lws), [=](sycl::nd_item<1> it)
         {
             auto chunk_gid = it.get_global_id(0);
             auto lid = it.get_local_id(0);
@@ -171,8 +171,7 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
             for (size_t m_wi = 0; m_wi < n_wi && i + m_wi < n_elems; ++m_wi) {
                 output[i + m_wi] = local_isum[m_wi];
             }
-            }
-        );
+        });
     });
 
     sycl::event out_event = inc_scan_phase1_ev;
@@ -192,15 +191,14 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
         // output[ chunk_size * (i + 1) + j] += temp[i]
         auto e3 = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(e2);
-            cgh.parallel_for<class inclusive_scan_rec_chunk_update_krn<inputT, outputT, IndexerT, decltype(transformer)>>(
-                {n_elems},
-                [=](auto wiid)
+            cgh.parallel_for<class inclusive_scan_rec_chunk_update_krn<
+                inputT, outputT, IndexerT, decltype(transformer)>>(
+                {n_elems}, [=](auto wiid)
             {
                 auto gid = wiid[0];
                 auto i = (gid / chunk_size);
                 output[gid] += (i > 0) ? temp[i - 1] : 0;
-                }
-            );
+            });
         });
 
         sycl::event e4 = exec_q.submit([&](sycl::handler &cgh) {
