@@ -110,7 +110,7 @@ def set_print_options(
                       precision=None, floatmode=None, suppress=None,
                       nanstr=None, infstr=None, sign=None, numpy=False)
 
-    Set options for printing ``dpctl.tensor.usm_ndarray`` class.
+    Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
 
     Args:
         linewidth (int, optional): Number of characters printed per line.
@@ -184,10 +184,10 @@ def get_print_options():
     """get_print_options()
 
     Returns a copy of current options for printing
-    ``dpctl.tensor.usm_ndarray`` class.
+    :class:`dpctl.tensor.usm_ndarray` class.
 
     Returns:
-        out (dict): dictionary with array
+        dict: dictionary with array
            printing option settings.
 
     Options:
@@ -262,7 +262,7 @@ def usm_ndarray_str(
                     suffix="")
 
     Returns a string representing the elements of a
-    ``dpctl.tensor.usm_ndarray``.
+    :class:`dpctl.tensor.usm_ndarray`.
 
     Args:
         x (usm_ndarray): Input array.
@@ -322,7 +322,7 @@ def usm_ndarray_str(
             Default: ""
 
     Returns:
-        out (str): string representation of intpu array.
+        str: string representation of input array.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
@@ -365,7 +365,7 @@ def usm_ndarray_repr(
                      suppress=None, prefix="")
 
     Returns a formatted string representing the elements
-    of a ``dpctl.tensor.usm_ndarray`` and its data type,
+    of a :class:`dpctl.tensor.usm_ndarray` and its data type,
     if not a default type.
 
     Args:
@@ -385,7 +385,7 @@ def usm_ndarray_repr(
             Default: ""
 
     Returns:
-        out (str): formatted string representing the input array
+        str: formatted string representing the input array
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")

@@ -97,7 +97,7 @@ cdef extern from 'dlpack/dlpack.h' nogil:
 def get_build_dlpack_version():
     """
     Returns the string value of DLPACK_VERSION from dlpack.h
-    `dpctl.tensor` was built with.
+    :module:`dpctl.tensor` was built with.
 
     Returns:
         A string value of the version of DLPack used to build
@@ -480,7 +480,7 @@ cpdef from_dlpack(array):
             protocol.
 
     Returns:
-        out (usm_ndarray):
+        usm_ndarray:
             An array with a view into the tensor underlying the input `obj`.
 
     Raises:

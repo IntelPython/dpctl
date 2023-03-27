@@ -33,7 +33,7 @@ __doc__ = (
 
 class finfo_object(np.finfo):
     """
-    numpy.finfo subclass which returns Python floating-point scalars for
+    `numpy.finfo` subclass which returns Python floating-point scalars for
     `eps`, `max`, `min`, and `smallest_normal` attributes.
     """
 
@@ -129,7 +129,8 @@ def permute_dims(X, axes):
            `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
            of `x`.
     Returns:
-        out (usm_narray): an array containing the axes permutation.
+        usm_narray:
+            An array with permuted axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same USM allocation
             type as `x`.
@@ -174,14 +175,15 @@ def expand_dims(X, axis):
             singleton dimension is prepended to the input array `x`).
 
     Returns:
-        out (usm_ndarray): returns a view, if possible,
-            a copy otherwise with the number of dimensions increased.
+        usm_ndarray:
+            Returns a view, if possible, and a copy otherwise with the number
+            of dimensions increased.
             The expanded array has the same data type as the input array `x`.
             The expanded array is located on the same device as the input
             array, and has the same USM allocation type.
 
     Raises:
-        IndexError: if provided axis position is invalid.
+        IndexError: if `axis` value is invalid.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -207,7 +209,8 @@ def squeeze(X, axis=None):
         axis (Union[int, Tuple[int,...]]): axis (or axes) to squeeze.
 
     Returns:
-        out (usm_ndarray): output array is a view, if possible,
+        usm_ndarray:
+            Output array is a view, if possible,
             and a copy otherwise, but with all or a subset of the
             dimensions of length 1 removed. Output has the same data
             type as the input, is allocated on the same device as the
@@ -247,7 +250,7 @@ def broadcast_to(X, shape):
     """broadcast_to(x, shape)
 
     Broadcast an array to a new `shape`; returns the broadcasted
-    array as a view.
+    :class:`dpctl.tensor.usm_ndarray` as a view.
 
     Args:
         x (usm_ndarray): input array
@@ -255,7 +258,8 @@ def broadcast_to(X, shape):
             compatible with `x` according to broadcasting rules.
 
     Returns:
-        out (usm_ndarray): an array with the specified `shape`.
+        usm_ndarray:
+            An array with the specified `shape`.
             The output array is a view of the input array, and
             hence has the same data type, USM allocation type and
             device attributes.
@@ -282,14 +286,16 @@ def broadcast_to(X, shape):
 def broadcast_arrays(*args):
     """broadcast_arrays(*arrays)
 
-    Broadcasts one or more usm_ndarrays against one another.
+    Broadcasts one or more :class:`dpctl.tensor.usm_ndarrays` against
+    one another.
 
     Args:
         arrays (usm_ndarray): an arbitrary number of arrays to be
             broadcasted.
 
     Returns:
-        out (List[usm_ndarray]): a list of broadcasted arrays. Each array
+        List[usm_ndarray]:
+            A list of broadcasted arrays. Each array
             must have the same shape. Each array must have the same `dtype`,
             `device` and `usm_type` attributes as its corresponding input
             array.
@@ -322,7 +328,8 @@ def flip(X, axis=None):
             axes are flipped. Default: `None`.
 
     Returns:
-        out (usm_ndarray): a view of `x` with the entries of `axis` reversed.
+        usm_ndarray:
+            A view of `x` with the entries of `axis` reversed.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -364,7 +371,8 @@ def roll(X, shift, axis=None):
             Default: `None`.
 
     Returns:
-        out (usm_ndarray): an array having the same `dtype`, `usm_type` and
+        usm_ndarray:
+            An array having the same `dtype`, `usm_type` and
             `device` attributes as `x` and whose elements are shifted relative
             to `x`.
     """
@@ -513,7 +521,8 @@ def concat(arrays, axis=0):
             being counted from the last dimension. Default: `0`.
 
     Returns:
-        out (usm_ndarray): an output array containing the concatenated
+        usm_ndarray:
+            An output array containing the concatenated
             values. The output array data type is determined by Type
             Promotion Rules of array API.
 
@@ -581,7 +590,8 @@ def stack(arrays, axis=0):
             Default: `0`.
 
     Returns:
-        out (usm_ndarray):  an output array having rank `N+1`, where `N` is
+        usm_ndarray:
+            An output array having rank `N+1`, where `N` is
             the rank (number of dimensions) of `x`. If the input arrays have
             different data types, array API Type Promotion Rules apply.
 
@@ -638,7 +648,8 @@ def can_cast(from_, to, casting="safe"):
            controls what kind of data casting may occur.
 
     Returns:
-        out (bool): True if cast can occur according to the casting rule.
+        bool:
+            Gives `True` if cast can occur according to the casting rule.
     """
     if isinstance(to, dpt.usm_ndarray):
         raise TypeError("Expected dtype type.")
@@ -662,10 +673,12 @@ def result_type(*arrays_and_dtypes):
         the arguments.
 
     Args:
-         arrays_and_dtypes: An arbitrary length sequence of arrays or dtypes.
+         arrays_and_dtypes (object):
+             An arbitrary length sequence of arrays or dtypes.
 
     Returns:
-         out (dtype): the dtype resulting from an operation involving the
+         dtype:
+             The dtype resulting from an operation involving the
              input arrays and dtypes.
     """
     dtypes = [
@@ -684,11 +697,13 @@ def iinfo(dtype):
     Returns machine limits for integer data types.
 
     Args:
-        dtype (dtype, usm_ndarray): integer dtype or
+        dtype (dtype, usm_ndarray):
+            integer dtype or
             an array with integer dtype.
 
     Returns:
-        out (iinfo_object): an object with the followign attributes
+        iinfo_object:
+            An object with the followign attributes
             * bits: int
                 number of bits occupied by the data type
             * max: int
@@ -716,7 +731,7 @@ def finfo(dtype):
             data type.
 
     Returns:
-        out (finfo_object):
+        finfo_object:
             an object have the following attributes
                 * bits: int
                     number of bits occupied by dtype.
@@ -755,7 +770,8 @@ def unstack(X, axis=0):
             Default: `0`.
 
     Returns:
-        Tuple[usm_ndarray,...]: A tuple of arrays.
+        Tuple[usm_ndarray,...]:
+            Output sequence of arrays which are views into the input array.
 
     Raises:
         AxisError: if the `axis` value is invalid.
@@ -790,7 +806,8 @@ def moveaxis(X, src, dst):
             in the half-open interval `[-N, N)`.
 
     Returns:
-        usm_narray: Array with moved axes.
+        usm_narray:
+            Array with moved axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same
             USM allocation type as `x`.
@@ -834,7 +851,8 @@ def swapaxes(X, axis1, axis2):
             a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Returns:
-        usm_narray: Array with swapped axes.
+        usm_narray:
+            Array with swapped axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same USM
             allocation type as `x`.

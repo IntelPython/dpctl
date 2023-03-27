@@ -58,7 +58,7 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
           Default: `"wrap"`.
 
     Returns:
-       out: usm_ndarray
+       usm_ndarray:
           Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
           filled with elements from x.
     """
@@ -233,7 +233,7 @@ def extract(condition, arr):
             Input array of the same size as `condition`.
 
     Returns:
-        out (usm_ndarray):
+        usm_ndarray:
             Rank 1 array of values from `arr` where `condition` is True.
     """
     if not isinstance(condition, dpt.usm_ndarray):
@@ -335,7 +335,7 @@ def nonzero(arr):
         arr (usm_ndarray):
             Input array, which has non-zero array rank.
     Returns:
-        out: Tuple[usm_ndarray, ...]
+        Tuple[usm_ndarray, ...]:
             Indices of non-zero array elements.
     """
     if not isinstance(arr, dpt.usm_ndarray):
