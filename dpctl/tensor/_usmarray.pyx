@@ -532,6 +532,12 @@ cdef class usm_ndarray:
         """
         return _flags.Flags(self, self.flags_)
 
+    cdef _set_writable_flag(self, int flag):
+        cdef int arr_fl = self.flags_
+        arr_fl ^= (arr_fl & USM_ARRAY_WRITABLE)  # unset WRITABLE flag
+        arr_fl |= (USM_ARRAY_WRITABLE if flag else 0)
+        self.flags_ = arr_fl
+
     @property
     def usm_type(self):
         """
@@ -1390,12 +1396,10 @@ cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     allocation"""
     return arr.get_offset()
 
+
 cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
     """Set/unset USM_ARRAY_WRITABLE in the given array `arr`."""
-    cdef int arr_fl = arr.flags_
-    arr_fl ^= (arr_fl & USM_ARRAY_WRITABLE)  # unset WRITABLE flag
-    arr_fl |= (USM_ARRAY_WRITABLE if flag else 0)
-    arr.flags_ = arr_fl
+    arr._set_writable_flag(flag)
 
 cdef api object UsmNDArray_MakeSimpleFromMemory(
     int nd, const Py_ssize_t *shape, int typenum,
