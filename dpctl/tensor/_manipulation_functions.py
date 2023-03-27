@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2022 Intel Corporation
+#  Copyright 2020-2023 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -742,20 +742,23 @@ def finfo(dtype):
 
 
 def unstack(X, axis=0):
-    """
+    """unstack(x, axis=0)
+
+    Splits an array in a sequence of arrays along the given axis.
+
     Args:
         x (usm_ndarray): input array
 
-        axis (int): axis along which X is unstacked.
-        If `X` has rank (i.e, number of dimensions) `N`,
-        a valid `axis` must reside in the half-open interval `[-N, N)`.
-        default value is axis=0.
+        axis (int, optional): axis along which `x` is unstacked.
+            If `x` has rank (i.e, number of dimensions) `N`,
+            a valid `axis` must reside in the half-open interval `[-N, N)`.
+            Default: `0`.
 
     Returns:
-        out (usm_narray): A tuple of arrays.
+        Tuple[usm_ndarray,...]: A tuple of arrays.
 
     Raises:
-        AxisError: if provided axis position is invalid.
+        AxisError: if the `axis` value is invalid.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -767,27 +770,33 @@ def unstack(X, axis=0):
 
 
 def moveaxis(X, src, dst):
-    """
+    """moveaxis(x, src, dst)
+
+    Moves axes of an array to new positions.
+
     Args:
         x (usm_ndarray): input array
 
-        src (int or a sequence of int): Original positions of the axes to move.
-        These must be unique. If `X` has rank (i.e., number of dimensions) `N`,
-        a valid `axis` must reside in the half-open interval `[-N, N)`.
+        src (int or a sequence of int):
+            Original positions of the axes to move.
+            These must be unique. If `x` has rank (i.e., number of
+            dimensions) `N`, a valid `axis` must be in the
+            half-open interval `[-N, N)`.
 
-        dst (int or a sequence of int): Destination positions for each of the
-        original axes. These must also be unique. If `X` has rank
-        (i.e., number of dimensions) `N`, a valid `axis` must reside
-        in the half-open interval `[-N, N)`.
+        dst (int or a sequence of int):
+            Destination positions for each of the original axes.
+            These must also be unique. If `x` has rank
+            (i.e., number of dimensions) `N`, a valid `axis` must be
+            in the half-open interval `[-N, N)`.
 
     Returns:
-        out (usm_narray): Array with moved axes.
-            The returned array must has the same data type as `X`,
-            is created on the same device as `X` and has the same USM allocation
-            type as `X`.
+        usm_narray: Array with moved axes.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same
+            USM allocation type as `x`.
 
     Raises:
-        AxisError: if provided axis position is invalid.
+        AxisError: if `axis` value is invalid.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -809,26 +818,29 @@ def moveaxis(X, src, dst):
 
 
 def swapaxes(X, axis1, axis2):
-    """
+    """swapaxes(x, axis1, axis2)
+
+    Interchanges two axes of an array.
+
     Args:
         x (usm_ndarray): input array
 
         axis1 (int): First axis.
-        If `X` has rank (i.e., number of dimensions) `N`,
-        a valid `axis` must reside in the half-open interval `[-N, N)`.
+            If `x` has rank (i.e., number of dimensions) `N`,
+            a valid `axis` must be in the half-open interval `[-N, N)`.
 
         axis2 (int): Second axis.
-        If `X` has rank (i.e., number of dimensions) `N`,
-        a valid `axis` must reside in the half-open interval `[-N, N)`.
+            If `x` has rank (i.e., number of dimensions) `N`,
+            a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Returns:
-        out (usm_narray): Swapped array.
-            The returned array must has the same data type as `X`,
-            is created on the same device as `X` and has the same USM allocation
-            type as `X`.
+        usm_narray: Array with swapped axes.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same USM
+            allocation type as `x`.
 
     Raises:
-        AxisError: if provided axis position is invalid.
+        AxisError: if `axis` value is invalid.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
