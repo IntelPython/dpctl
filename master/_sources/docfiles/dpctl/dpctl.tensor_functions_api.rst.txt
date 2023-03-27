@@ -44,12 +44,15 @@ Array Manipulation
 .. autofunction:: finfo
 .. autofunction:: flip
 .. autofunction:: iinfo
+.. autofunction:: moveaxis
 .. autofunction:: permute_dims
 .. autofunction:: reshape
 .. autofunction:: result_type
 .. autofunction:: roll
 .. autofunction:: squeeze
 .. autofunction:: stack
+.. autofunction:: swapaxes
+.. autofunction:: unstack
 
 Other Functions
 ---------------

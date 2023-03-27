@@ -107,6 +107,8 @@ Array Manipulation
       - Reverses the order of elements in an array `x` along the given `axis`.
     * - :func:`iinfo()`
       - Returns machine limits for integer data types.
+    * - :func:`moveaxis()`
+      - Moves axes of an array to new positions.
     * - :func:`permute_dims()`
       - Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
@@ -119,6 +121,10 @@ Array Manipulation
       - Removes singleton dimensions (axes) from array `x`.
     * - :func:`stack()`
       - Joins a sequence of arrays along a new axis.
+    * - :func:`swapaxes()`
+      - Interchanges two axes of an array.
+    * - :func:`unstack()`
+      - Splits an array in a sequence of arrays along the given axis.
 
 .. _dpctl.tensor_other_functions:
 
