@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+23.ge67d6c00c documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+24.gcd5cc7410 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+23.ge67d6c00c
+                0.14.3dev0+24.gcd5cc7410
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1016,38 +1016,36 @@ an array with integer dtype.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.moveaxis">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">moveaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#moveaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.moveaxis" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">moveaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#moveaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.moveaxis" title="Permalink to this definition"></a></dt>
+<dd><p>Moves axes of an array to new positions.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>src</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Original positions of the axes to move.</p></li>
-<li><p><strong>rank</strong> (<em>original axes. These must also be unique. If X has</em>) – </p></li>
-<li><p><strong>`</strong><strong>[</strong><strong>-N</strong> (<em>in the half-open interval</em>) – </p></li>
-<li><p><strong>N</strong><strong>)</strong><strong>`.</strong> – </p></li>
-<li><p><strong>dst</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Destination positions for each of the</p></li>
-<li><p><strong>rank</strong> – </p></li>
-<li><p><strong>(</strong><strong>i.e.</strong> – </p></li>
-<li><p><strong>N</strong> (<em>number</em><em> of </em><em>dimensions</em><em>)</em>) – </p></li>
-<li><p><strong>reside</strong> (<em>a valid axis must</em>) – </p></li>
-<li><p><strong>`</strong><strong>[</strong><strong>-N</strong> – </p></li>
-<li><p><strong>N</strong><strong>)</strong><strong>`.</strong> – </p></li>
+<li><p><strong>src</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Original positions of the axes to move.
+These must be unique. If <cite>x</cite> has rank (i.e., number of
+dimensions) <cite>N</cite>, a valid <cite>axis</cite> must be in the
+half-open interval <cite>[-N, N)</cite>.</p></li>
+<li><p><strong>dst</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Destination positions for each of the original axes.
+These must also be unique. If <cite>x</cite> has rank
+(i.e., number of dimensions) <cite>N</cite>, a valid <cite>axis</cite> must be
+in the half-open interval <cite>[-N, N)</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Array with moved axes.</dt><dd><p>The returned array must has the same data type as <cite>X</cite>,
-is created on the same device as <cite>X</cite> and has the same USM allocation
-type as <cite>X</cite>.</p>
+<dt>Array with moved axes.</dt><dd><p>The returned array must has the same data type as <cite>x</cite>,
+is created on the same device as <cite>x</cite> and has the same
+USM allocation type as <cite>x</cite>.</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>out (usm_narray)</p>
+<dd class="field-odd"><p>usm_narray</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AxisError</strong> – if provided axis position is invalid.</p>
+<dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1237,61 +1235,60 @@ different data types, array API Type Promotion Rules apply.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.swapaxes">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">swapaxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#swapaxes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.swapaxes" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">swapaxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#swapaxes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.swapaxes" title="Permalink to this definition"></a></dt>
+<dd><p>Interchanges two axes of an array.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>axis1</strong> (<em>int</em>) – First axis.</p></li>
-<li><p><strong>rank</strong> (<em>If X has</em>) – </p></li>
-<li><p><strong>`</strong><strong>[</strong><strong>-N</strong> (<em>a valid axis must reside in the half-open interval</em>) – </p></li>
-<li><p><strong>N</strong><strong>)</strong><strong>`.</strong> – </p></li>
-<li><p><strong>axis2</strong> (<em>int</em>) – Second axis.</p></li>
-<li><p><strong>rank</strong> – </p></li>
-<li><p><strong>`</strong><strong>[</strong><strong>-N</strong> – </p></li>
-<li><p><strong>N</strong><strong>)</strong><strong>`.</strong> – </p></li>
+<li><p><strong>axis1</strong> (<em>int</em>) – First axis.
+If <cite>x</cite> has rank (i.e., number of dimensions) <cite>N</cite>,
+a valid <cite>axis</cite> must be in the half-open interval <cite>[-N, N)</cite>.</p></li>
+<li><p><strong>axis2</strong> (<em>int</em>) – Second axis.
+If <cite>x</cite> has rank (i.e., number of dimensions) <cite>N</cite>,
+a valid <cite>axis</cite> must be in the half-open interval <cite>[-N, N)</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Swapped array.</dt><dd><p>The returned array must has the same data type as <cite>X</cite>,
-is created on the same device as <cite>X</cite> and has the same USM allocation
-type as <cite>X</cite>.</p>
+<dt>Array with swapped axes.</dt><dd><p>The returned array must has the same data type as <cite>x</cite>,
+is created on the same device as <cite>x</cite> and has the same USM
+allocation type as <cite>x</cite>.</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>out (usm_narray)</p>
+<dd class="field-odd"><p>usm_narray</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AxisError</strong> – if provided axis position is invalid.</p>
+<dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.unstack">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unstack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#unstack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unstack" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unstack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#unstack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unstack" title="Permalink to this definition"></a></dt>
+<dd><p>Splits an array in a sequence of arrays along the given axis.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>axis</strong> (<em>int</em>) – axis along which X is unstacked.</p></li>
-<li><p><strong>rank</strong> (<em>If X has</em>) – </p></li>
-<li><p><strong>`</strong><strong>[</strong><strong>-N</strong> (<em>a valid axis must reside in the half-open interval</em>) – </p></li>
-<li><p><strong>N</strong><strong>)</strong><strong>`.</strong> – </p></li>
-<li><p><strong>axis=0.</strong> (<em>default value is</em>) – </p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – axis along which <cite>x</cite> is unstacked.
+If <cite>x</cite> has rank (i.e, number of dimensions) <cite>N</cite>,
+a valid <cite>axis</cite> must reside in the half-open interval <cite>[-N, N)</cite>.
+Default: <cite>0</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A tuple of arrays.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>out (usm_narray)</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>,…]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AxisError</strong> – if provided axis position is invalid.</p>
+<dd class="field-even"><p><strong>AxisError</strong> – if the <cite>axis</cite> value is invalid.</p>
 </dd>
 </dl>
 </dd></dl>

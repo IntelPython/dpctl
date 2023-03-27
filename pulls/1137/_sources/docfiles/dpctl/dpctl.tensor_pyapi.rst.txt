@@ -108,7 +108,7 @@ Array Manipulation
     * - :func:`iinfo()`
       - Returns machine limits for integer data types.
     * - :func:`moveaxis()`
-      - Args: x (usm_ndarray): input array src (int or a sequence of int): Original positions of the axes to move.
+      - Moves axes of an array to new positions.
     * - :func:`permute_dims()`
       - Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`reshape()`
@@ -122,9 +122,9 @@ Array Manipulation
     * - :func:`stack()`
       - Joins a sequence of arrays along a new axis.
     * - :func:`swapaxes()`
-      - Args: x (usm_ndarray): input array axis1 (int): First axis.
+      - Interchanges two axes of an array.
     * - :func:`unstack()`
-      - Args: x (usm_ndarray): input array axis (int): axis along which X is unstacked.
+      - Splits an array in a sequence of arrays along the given axis.
 
 .. _dpctl.tensor_other_functions:
 
