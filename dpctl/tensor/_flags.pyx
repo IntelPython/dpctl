@@ -75,6 +75,12 @@ cdef class Flags:
         """
         return _check_bit(self.flags_, USM_ARRAY_WRITABLE)
 
+    @writable.setter
+    def writable(self, new_val):
+        if not isinstance(new_val, bool):
+            raise TypeError("Expecting a boolean value")
+        self.arr_._set_writable_flag(new_val)
+
     @property
     def fc(self):
         """
@@ -128,6 +134,14 @@ cdef class Flags:
             return self.fc
         elif name == "CONTIGUOUS":
             return self.forc
+
+    def __setitem__(self, name, val):
+        if name in ["WRITABLE", "W"]:
+            self.writable = val
+        else:
+            raise ValueError(
+                "Only writable ('W' or 'WRITABLE') flag can be set"
+            )
 
     def __repr__(self):
         out = []
