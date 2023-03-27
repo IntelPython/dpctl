@@ -234,3 +234,40 @@ def test_asarray_cross_device():
     x = dpt.empty(10, dtype="i8", sycl_queue=q)
     y = dpt.asarray(x, sycl_queue=qprof)
     assert y.sycl_queue == qprof
+
+
+def test_asarray_seq_of_arrays_simple():
+    get_queue_or_skip()
+    r = dpt.arange(10)
+    m = dpt.asarray(
+        [
+            r,
+        ]
+        * 4
+    )
+    assert m.shape == (4,) + r.shape
+    assert m.dtype == r.dtype
+    assert m.device == r.device
+
+
+def test_asarray_seq_of_arrays():
+    get_queue_or_skip()
+    m = dpt.ones((2, 4), dtype="i4")
+    w = dpt.zeros(4)
+    v = dpt.full(4, -1)
+    ar = dpt.asarray([m, [w, v]])
+    assert ar.shape == (2, 2, 4)
+    assert ar.device == m.device
+    assert ar.device == w.device
+    assert ar.device == v.device
+
+
+def test_asarray_seq_of_array_different_queue():
+    get_queue_or_skip()
+    m = dpt.ones((2, 4), dtype="i4")
+    w = dpt.zeros(4)
+    v = dpt.full(4, -1)
+    qprof = dpctl.SyclQueue(property="enable_profiling")
+    ar = dpt.asarray([m, [w, v]], sycl_queue=qprof)
+    assert ar.shape == (2, 2, 4)
+    assert ar.sycl_queue == qprof
