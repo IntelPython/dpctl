@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+26.g2755b18a9 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+27.g720605a1a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+26.g2755b18a9
+                0.14.3dev0+27.g720605a1a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -178,13 +178,19 @@ copying. Default: <cite>None</cite>.</p></li>
 <dt class="sig sig-object py" id="dpctl.tensor.asnumpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">asnumpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_ary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#asnumpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.asnumpy" title="Permalink to this definition"></a></dt>
 <dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite>
-into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p>
+into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data
+type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>usm_ary</strong> – An instance of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a></p>
+<dd class="field-odd"><p><strong>usm_ary</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An instance of
+<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <cite>numpy.ndarray</cite> populated with content of <cite>usm_ary</cite>.</p>
+<dd class="field-even"><p>An instance of :class:<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> populated with content
+of <cite>usm_ary</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -220,9 +226,23 @@ may be returned when possible.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.copy">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_ary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.copy" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.copy" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a copy of given instance of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
-<p>Memory layour of the copy is controlled by <cite>order</cite> keyword,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ary</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Controls the memory layout of the output array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A copy of the input array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+<p>Memory layout of the copy is controlled by <cite>order</cite> keyword,
 following NumPy’s conventions. The <cite>order</cite> keywords can be
 one of the following:</p>
 <blockquote>
@@ -417,14 +437,23 @@ protocol.</p>
 <dt class="sig sig-object py" id="dpctl.tensor.from_numpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">from_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#from_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.from_numpy" title="Permalink to this definition"></a></dt>
 <dd><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of
-<cite>numpy.ndarray</cite>.</p>
+class:<cite>numpy.ndarray</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arg</strong> – An instance of input <cite>numpy.ndarray</cite></p></li>
-<li><p><strong>device</strong> – array API specification of device where the output array
-is created</p></li>
-<li><p><strong>usm_type</strong> – The requested USM allocation type for the output array</p></li>
+<li><p><strong>arg</strong> (<em>array-like</em>) – An instance of input convertible to
+class:<cite>numpy.ndarray</cite></p></li>
+<li><p><strong>device</strong> (<em>object</em>) – array API specification of device where the
+output array is created. Device can be specified by a
+a filter selector string, an instance of
+<a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, an instance of
+<a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>. If the value if <cite>None</cite>,
+returned array is created on the default-selected device.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>usm_type</strong> (<em>str</em>) – The requested USM allocation type for the
+output array. Recognized values are <cite>“device”</cite>, <cite>“shared”</cite>,
+or <cite>“host”</cite>.</p></li>
 <li><p><strong>sycl_queue</strong> – a <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instance that determines
 output array allocation device as well as placement of data
 movement operation. The <cite>device</cite> and <cite>sycl_queue</cite> arguments
@@ -705,13 +734,17 @@ and copying. Default: <cite>None</cite>.</p></li>
 <dt class="sig sig-object py" id="dpctl.tensor.to_numpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_ary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#to_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.to_numpy" title="Permalink to this definition"></a></dt>
 <dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite>
-into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p>
+into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>usm_ary</strong> – An instance of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a></p>
+<dd class="field-odd"><p><strong>usm_ary</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An instance of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <cite>numpy.ndarray</cite> populated with content of <cite>usm_ary</cite>.</p>
+<dd class="field-even"><p>An instance of class:<cite>numpy.ndarray</cite> populated with content of
+<cite>usm_ary</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -861,13 +894,10 @@ one another.</p>
 broadcasted.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>a list of broadcasted arrays. Each array</dt><dd><p>must have the same shape. Each array must have the same <cite>dtype</cite>,
+<dd class="field-even"><p>A list of broadcasted arrays. Each array
+must have the same shape. Each array must have the same <cite>dtype</cite>,
 <cite>device</cite> and <cite>usm_type</cite> attributes as its corresponding input
 array.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>]</p>
@@ -889,13 +919,10 @@ compatible with <cite>x</cite> according to broadcasting rules.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an array with the specified <cite>shape</cite>.</dt><dd><p>The output array is a view of the input array, and
+<dd class="field-even"><p>An array with the specified <cite>shape</cite>.
+The output array is a view of the input array, and
 hence has the same data type, USM allocation type and
 device attributes.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -916,7 +943,7 @@ device attributes.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if cast can occur according to the casting rule.</p>
+<dd class="field-even"><p>Gives <cite>True</cite> if cast can occur according to the casting rule.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -940,12 +967,9 @@ being counted from the last dimension. Default: <cite>0</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an output array containing the concatenated</dt><dd><p>values. The output array data type is determined by Type
+<dd class="field-even"><p>An output array containing the concatenated
+values. The output array data type is determined by Type
 Promotion Rules of array API.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -979,14 +1003,11 @@ singleton dimension is prepended to the input array <cite>x</cite>).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>returns a view, if possible,</dt><dd><p>and a copy otherwise with the number of dimensions increased.
+<dd class="field-even"><p>Returns a view, if possible, and a copy otherwise with the number
+of dimensions increased.
 The expanded array has the same data type as the input array <cite>x</cite>.
 The expanded array is located on the same device as the input
 array, and has the same USM allocation type.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -1073,7 +1094,7 @@ axes are flipped. Default: <cite>None</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a view of <cite>x</cite> with the entries of <cite>axis</cite> reversed.</p>
+<dd class="field-even"><p>A view of <cite>x</cite> with the entries of <cite>axis</cite> reversed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -1091,13 +1112,12 @@ axes are flipped. Default: <cite>None</cite>.</p></li>
 an array with integer dtype.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an object with the followign attributes</dt><dd><ul class="simple">
-<li><dl class="simple">
-<dt>bits: int</dt><dd><p>number of bits occupied by the data type</p>
-</dd>
-</dl>
-</li>
+<dd class="field-even"><p><p>An object with the followign attributes
+* bits: int</p>
+<blockquote>
+<div><p>number of bits occupied by the data type</p>
+</div></blockquote>
+<ul class="simple">
 <li><dl class="simple">
 <dt>max: int</dt><dd><p>largest representable number.</p>
 </dd>
@@ -1114,8 +1134,6 @@ an array with integer dtype.</p>
 </dl>
 </li>
 </ul>
-</dd>
-</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1143,13 +1161,10 @@ in the half-open interval <cite>[-N, N)</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Array with moved axes.</dt><dd><p>The returned array must has the same data type as <cite>x</cite>,
+<dd class="field-even"><p>Array with moved axes.
+The returned array must has the same data type as <cite>x</cite>,
 is created on the same device as <cite>x</cite> and has the same
 USM allocation type as <cite>x</cite>.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>usm_narray</p>
@@ -1175,13 +1190,10 @@ of <cite>x</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an array with permuted axes.</dt><dd><p>The returned array must has the same data type as <cite>x</cite>,
+<dd class="field-even"><p>An array with permuted axes.
+The returned array must has the same data type as <cite>x</cite>,
 is created on the same device as <cite>x</cite> and has the same USM allocation
 type as <cite>x</cite>.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>usm_narray</p>
@@ -1221,14 +1233,11 @@ by <cite>order</cite> keyword.</p>
 <dd><p>Returns the dtype that results from applying the Type Promotion Rules to         the arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arrays_and_dtypes</strong> – An arbitrary length sequence of arrays or dtypes.</p>
+<dd class="field-odd"><p><strong>arrays_and_dtypes</strong> (<em>object</em>) – An arbitrary length sequence of arrays or dtypes.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>the dtype resulting from an operation involving the</dt><dd><p>input arrays and dtypes.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>The dtype resulting from an operation involving the
+input arrays and dtypes.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype">dtype</a></p>
@@ -1264,12 +1273,9 @@ Default: <cite>None</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an array having the same <cite>dtype</cite>, <cite>usm_type</cite> and</dt><dd><p><cite>device</cite> attributes as <cite>x</cite> and whose elements are shifted relative
+<dd class="field-even"><p>An array having the same <cite>dtype</cite>, <cite>usm_type</cite> and
+<cite>device</cite> attributes as <cite>x</cite> and whose elements are shifted relative
 to <cite>x</cite>.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -1289,15 +1295,12 @@ to <cite>x</cite>.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>output array is a view, if possible,</dt><dd><p>and a copy otherwise, but with all or a subset of the
+<dd class="field-even"><p>Output array is a view, if possible,
+and a copy otherwise, but with all or a subset of the
 dimensions of length 1 removed. Output has the same data
 type as the input, is allocated on the same device as the
 input and has the same USM allocation type as the input
 array <cite>x</cite>.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -1324,12 +1327,9 @@ Default: <cite>0</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an output array having rank <cite>N+1</cite>, where <cite>N</cite> is</dt><dd><p>the rank (number of dimensions) of <cite>x</cite>. If the input arrays have
+<dd class="field-even"><p>An output array having rank <cite>N+1</cite>, where <cite>N</cite> is
+the rank (number of dimensions) of <cite>x</cite>. If the input arrays have
 different data types, array API Type Promotion Rules apply.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -1360,13 +1360,10 @@ a valid <cite>axis</cite> must be in the half-open interval <cite>[-N, N)</cite>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Array with swapped axes.</dt><dd><p>The returned array must has the same data type as <cite>x</cite>,
+<dd class="field-even"><p>Array with swapped axes.
+The returned array must has the same data type as <cite>x</cite>,
 is created on the same device as <cite>x</cite> and has the same USM
 allocation type as <cite>x</cite>.</p>
-</dd>
-</dl>
-</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>usm_narray</p>
@@ -1392,7 +1389,7 @@ Default: <cite>0</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple of arrays.</p>
+<dd class="field-even"><p>Output sequence of arrays which are views into the input array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>,…]</p>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.3dev0+26.g2755b18a9 documentation</title>
+  <title>dpctl.tensor &mdash; Data-parallel Control (dpctl) 0.14.3dev0+27.g720605a1a documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+26.g2755b18a9
+                0.14.3dev0+27.g720605a1a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -153,7 +153,7 @@ implementations that implement Python data API
 <td><p>Converts <cite>obj</cite> to <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.asnumpy" title="dpctl.tensor.asnumpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">asnumpy()</span></code></a></p></td>
-<td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p></td>
+<td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data type.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.astype" title="dpctl.tensor.astype"><code class="xref py py-func docutils literal notranslate"><span class="pre">astype()</span></code></a></p></td>
 <td><p>Returns a copy of the <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>, cast to a specified type.</p></td>
@@ -174,7 +174,7 @@ implementations that implement Python data API
 <td><p>Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output array is always a zero-copy view of the input.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
-<td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of <cite>numpy.ndarray</cite>.</p></td>
+<td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of class:<cite>numpy.ndarray</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a></p></td>
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> having a specified shape and filled with <cite>fill_value</cite>.</p></td>
@@ -195,7 +195,7 @@ implementations that implement Python data API
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> filled with ones and having the same <cite>shape</cite> as the input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
-<td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <cite>numpy.ndarray</cite> instance of the same shape and same data type.</p></td>
+<td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data type.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tril" title="dpctl.tensor.tril"><code class="xref py py-func docutils literal notranslate"><span class="pre">tril()</span></code></a></p></td>
 <td><p>Returns the lower triangular part of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>

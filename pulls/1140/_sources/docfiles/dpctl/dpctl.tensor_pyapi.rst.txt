@@ -45,7 +45,7 @@ Array Construction
     * - :func:`asarray()`
       - Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
     * - :func:`asnumpy()`
-      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
+      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into :class:`numpy.ndarray` instance of the same shape and same data type.
     * - :func:`astype()`
       - Returns a copy of the :class:`dpctl.tensor.usm_ndarray`, cast to a specified type.
     * - :func:`copy()`
@@ -59,7 +59,7 @@ Array Construction
     * - :func:`from_dlpack()`
       - Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
-      - Creates :class:`dpctl.tensor.usm_ndarray` from instance of `numpy.ndarray`.
+      - Creates :class:`dpctl.tensor.usm_ndarray` from instance of class:`numpy.ndarray`.
     * - :func:`full()`
       - Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified shape and filled with `fill_value`.
     * - :func:`full_like()`
@@ -73,7 +73,7 @@ Array Construction
     * - :func:`ones_like()`
       - Returns a new :class:`dpctl.tensor.usm_ndarray` filled with ones and having the same `shape` as the input array `x`.
     * - :func:`to_numpy()`
-      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into `numpy.ndarray` instance of the same shape and same data type.
+      - Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary` into :class:`numpy.ndarray` instance of the same shape and same data type.
     * - :func:`tril()`
       - Returns the lower triangular part of a matrix (or a stack of matrices) `x`.
     * - :func:`triu()`
