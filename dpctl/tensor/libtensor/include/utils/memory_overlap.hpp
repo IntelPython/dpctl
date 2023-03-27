@@ -23,7 +23,7 @@ struct MemoryOverlap
     MemoryOverlap() {}
 
     bool operator()(dpctl::tensor::usm_ndarray ar1,
-                    dpctl::tensor::usm_ndarray ar2)
+                    dpctl::tensor::usm_ndarray ar2) const
     {
         const char *ar1_data = ar1.get_data();
 

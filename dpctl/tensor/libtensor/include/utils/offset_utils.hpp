@@ -255,7 +255,8 @@ struct NthStrideOffset
     {
         py::ssize_t relative_offset(0);
         _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            gid, shape_strides, shape_strides + ((n + 1) * nd), relative_offset);
+            gid, shape_strides, shape_strides + ((n + 1) * nd),
+            relative_offset);
 
         return relative_offset + offsets[n];
     }

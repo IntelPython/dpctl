@@ -135,12 +135,11 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    // packed_shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
-    using dpctl::tensor::offset_utils::
-        device_allocate_and_pack;
+    // shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
-        exec_q, host_task_events, src_shape, src_strides,
-        dst_shape, dst_strides);
+        exec_q, host_task_events, src_shape, src_strides, dst_shape,
+        dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
@@ -152,15 +151,14 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     sycl::event copy_for_reshape_event =
-        fn(exec_q, shift, src_nelems, src_nd, dst_nd, shape_strides,
-           src_data, dst_data, all_deps);
+        fn(exec_q, shift, src_nelems, src_nd, dst_nd, shape_strides, src_data,
+           dst_data, all_deps);
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_reshape_event);
         auto ctx = exec_q.get_context();
-        cgh.host_task([packed_shapes_strides, ctx]() {
-            sycl::free(packed_shapes_strides, ctx);
-        });
+        cgh.host_task(
+            [shape_strides, ctx]() { sycl::free(shape_strides, ctx); });
     });
 
     host_task_events.push_back(temporaries_cleanup_ev);

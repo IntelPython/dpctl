@@ -34,6 +34,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include "kernels/integer_advanced_indexing.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 

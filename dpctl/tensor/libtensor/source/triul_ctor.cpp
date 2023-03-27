@@ -31,6 +31,7 @@
 
 #include "kernels/constructors.hpp"
 #include "simplify_iteration_space.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;

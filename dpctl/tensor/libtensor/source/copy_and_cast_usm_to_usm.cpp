@@ -36,6 +36,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -246,11 +247,10 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::
-        device_allocate_and_pack;
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
-        exec_q, host_task_events, simplified_shape,
-        simplified_src_strides, simplified_dst_strides);
+        exec_q, host_task_events, simplified_shape, simplified_src_strides,
+        simplified_dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 

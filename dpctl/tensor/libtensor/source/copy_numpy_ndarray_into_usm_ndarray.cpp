@@ -215,13 +215,12 @@ void copy_numpy_ndarray_into_usm_ndarray(
     host_task_events.reserve(1);
 
     // Copy shape strides into device memory
-    using dpctl::tensor::offset_utils::
-        device_allocate_and_pack;
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
-        exec_q, host_task_events, simplified_shape,
-        simplified_src_strides, simplified_dst_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple1);
-    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple1);
+        exec_q, host_task_events, simplified_shape, simplified_src_strides,
+        simplified_dst_strides);
+    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     // Get implementation function pointer
     auto copy_and_cast_from_host_blocking_fn =

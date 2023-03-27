@@ -32,10 +32,10 @@
 #include <utility>
 #include <vector>
 
-#include "utils/memory_overlap.hpp"
 #include "boolean_advanced_indexing.hpp"
 #include "kernels/boolean_advanced_indexing.hpp"
 #include "simplify_iteration_space.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -206,8 +206,7 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     auto strided_fn = mask_positions_strided_dispatch_vector[mask_typeid];
     std::vector<sycl::event> host_task_events;
 
-    using dpctl::tensor::offset_utils::
-        device_allocate_and_pack;
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
@@ -390,8 +389,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
         auto fn =
             masked_extract_all_slices_strided_impl_dispatch_vector[src_typeid];
 
-        using dpctl::tensor::offset_utils::
-            device_allocate_and_pack;
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, src_shape_vec, src_strides_vec);
         py::ssize_t *packed_src_shape_strides =
@@ -477,8 +475,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
             simplified_ortho_shape, simplified_ortho_src_strides,
             simplified_ortho_dst_strides, ortho_src_offset, ortho_dst_offset);
 
-        using dpctl::tensor::offset_utils::
-            device_allocate_and_pack;
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_ortho_shape,
             simplified_ortho_src_strides, simplified_ortho_dst_strides);
@@ -693,8 +690,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
         auto fn =
             masked_place_all_slices_strided_impl_dispatch_vector[dst_typeid];
 
-        using dpctl::tensor::offset_utils::
-            device_allocate_and_pack;
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, dst_shape_vec, dst_strides_vec);
         py::ssize_t *packed_dst_shape_strides =
@@ -780,8 +776,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
             simplified_ortho_shape, simplified_ortho_dst_strides,
             simplified_ortho_rhs_strides, ortho_dst_offset, ortho_rhs_offset);
 
-        using dpctl::tensor::offset_utils::
-            device_allocate_and_pack;
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_ortho_shape,
             simplified_ortho_dst_strides, simplified_ortho_rhs_strides);
@@ -926,8 +921,7 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::
-        device_allocate_and_pack;
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto mask_shape_copying_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, mask_shape);
     py::ssize_t *src_shape_device_ptr = std::get<0>(mask_shape_copying_tuple);

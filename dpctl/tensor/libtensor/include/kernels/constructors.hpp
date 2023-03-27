@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include "utils/offset_utils.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 #include <CL/sycl.hpp>
@@ -48,6 +49,7 @@ template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
 template <typename Ty> class eye_kernel;
 
 namespace py = pybind11;
+using namespace dpctl::tensor::offset_utils;
 
 /* =========== Unboxing Python scalar =============== */
 
@@ -602,14 +604,6 @@ sycl::event tri_impl(sycl::queue exec_q,
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
 
-        TwoOffsets_StridedIndexerArray inner{
-            {shape_and_strides[nd_2], shape_and_strides[nd_1]}, // shape
-            shape_and_strides + (src_s + nd_2),                 // src strides
-            shape_and_strides + (dst_s + nd_2),                 // dst strides
-            0,
-            0};
-        TwoOffsets_StridedIndexer outer{nd - d2, 0, 0, shape_and_strides};
-
         cgh.parallel_for<tri_kernel<Ty, upper>>(
             sycl::range<1>(inner_range * outer_range), [=](sycl::id<1> idx) {
                 py::ssize_t outer_gid = idx[0] / inner_range;
@@ -637,9 +631,15 @@ sycl::event tri_impl(sycl::queue exec_q,
                         to_copy = (inner[0] + k <= inner[1]);
                 }
 
-                auto offsets = outer(outer_gid);
-                py::ssize_t src_offset = offsets.get_first_offset();
-                py::ssize_t dst_offset = offsets.get_second_offset();
+                py::ssize_t src_offset = 0;
+                py::ssize_t dst_offset = 0;
+                {
+                    // py::ssize_t outer_gid = idx.get_id(1);
+                    CIndexer_vector<py::ssize_t> outer(nd - d2);
+                    outer.get_displacement(
+                        outer_gid, shape_and_strides, shape_and_strides + src_s,
+                        shape_and_strides + dst_s, src_offset, dst_offset);
+                }
 
                 src_offset += src_inner_offset;
                 dst_offset += dst_inner_offset;
