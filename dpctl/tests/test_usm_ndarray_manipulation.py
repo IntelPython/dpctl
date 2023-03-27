@@ -1046,3 +1046,79 @@ def test_result_type():
     X_np = [np.ones((2), dtype=np.int64), np.int32, "float16"]
 
     assert dpt.result_type(*X) == np.result_type(*X_np)
+
+
+def test_swapaxes_1d():
+    x = np.array([[1, 2, 3]])
+    exp = np.swapaxes(x, 0, 1)
+
+    y = dpt.asarray([[1, 2, 3]])
+    res = dpt.swapaxes(y, 0, 1)
+
+    assert_array_equal(exp, dpt.asnumpy(res))
+
+
+def test_swapaxes_2d():
+    x = np.array([[[0, 1], [2, 3]], [[4, 5], [6, 7]]])
+    exp = np.swapaxes(x, 0, 2)
+
+    y = dpt.asarray([[[0, 1], [2, 3]], [[4, 5], [6, 7]]])
+    res = dpt.swapaxes(y, 0, 2)
+
+    assert_array_equal(exp, dpt.asnumpy(res))
+
+
+def test_moveaxis_1axis():
+    x = np.arange(60).reshape((3, 4, 5))
+    exp = np.moveaxis(x, 0, -1)
+
+    y = dpt.reshape(dpt.arange(60), (3, 4, 5))
+    res = dpt.moveaxis(y, 0, -1)
+
+    assert_array_equal(exp, dpt.asnumpy(res))
+
+
+def test_moveaxis_2axes():
+    x = np.arange(60).reshape((3, 4, 5))
+    exp = np.moveaxis(x, [0, 1], [-1, -2])
+
+    y = dpt.reshape(dpt.arange(60), (3, 4, 5))
+    res = dpt.moveaxis(y, [0, 1], [-1, -2])
+
+    assert_array_equal(exp, dpt.asnumpy(res))
+
+
+def test_moveaxis_3axes():
+    x = np.arange(60).reshape((3, 4, 5))
+    exp = np.moveaxis(x, [0, 1, 2], [-1, -2, -3])
+
+    y = dpt.reshape(dpt.arange(60), (3, 4, 5))
+    res = dpt.moveaxis(y, [0, 1, 2], [-1, -2, -3])
+
+    assert_array_equal(exp, dpt.asnumpy(res))
+
+
+def test_unstack_axis0():
+    y = dpt.reshape(dpt.arange(6), (2, 3))
+    res = dpt.unstack(y)
+
+    assert_array_equal(dpt.asnumpy(y[0, ...]), dpt.asnumpy(res[0]))
+    assert_array_equal(dpt.asnumpy(y[1, ...]), dpt.asnumpy(res[1]))
+
+
+def test_unstack_axis1():
+    y = dpt.reshape(dpt.arange(6), (2, 3))
+    res = dpt.unstack(y, 1)
+
+    assert_array_equal(dpt.asnumpy(y[:, 0, ...]), dpt.asnumpy(res[0]))
+    assert_array_equal(dpt.asnumpy(y[:, 1, ...]), dpt.asnumpy(res[1]))
+    assert_array_equal(dpt.asnumpy(y[:, 2, ...]), dpt.asnumpy(res[2]))
+
+
+def test_unstack_axis2():
+    y = dpt.reshape(dpt.arange(60), (4, 5, 3))
+    res = dpt.unstack(y, 2)
+
+    assert_array_equal(dpt.asnumpy(y[:, :, 0, ...]), dpt.asnumpy(res[0]))
+    assert_array_equal(dpt.asnumpy(y[:, :, 1, ...]), dpt.asnumpy(res[1]))
+    assert_array_equal(dpt.asnumpy(y[:, :, 2, ...]), dpt.asnumpy(res[2]))
