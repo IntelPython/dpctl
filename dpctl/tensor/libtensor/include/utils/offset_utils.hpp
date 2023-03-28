@@ -1,3 +1,29 @@
+//===-- offset_utils.hpp - Indexer classes for strided iteration  ---*-C++-*-//
+//                                                                        ===//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2022 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines Indexer callable operator to compute element offset in
+/// an array addressed by gloabl_id.
+//===----------------------------------------------------------------------===//
+
 #pragma once
 
 #include <CL/sycl.hpp>
@@ -10,7 +36,14 @@
 
 namespace py = pybind11;
 
-namespace concat_impl
+namespace dpctl
+{
+namespace tensor
+{
+namespace offset_utils
+{
+
+namespace detail
 {
 
 struct sink_t
@@ -30,14 +63,9 @@ template <class V, class U> sink_t __appender(V &lhs, U &&rhs)
     return {};
 }
 
-} // namespace concat_impl
-
 template <typename T, typename A, typename... Vs>
 std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 {
-    using concat_impl::__accumulate_size;
-    using concat_impl::__appender;
-    using concat_impl::sink_t;
     std::size_t s = lhs.size();
     {
         // limited scope ensures array is freed
@@ -53,12 +81,7 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
     return std::move(lhs); // prevent return-value optimization
 }
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace offset_utils
-{
+} // namespace detail
 
 template <typename indT, typename... Vs>
 std::tuple<indT *, size_t, sycl::event>
@@ -75,7 +98,7 @@ device_allocate_and_pack(sycl::queue q,
 
     usm_host_allocatorT usm_host_allocator(q);
     shT empty{0, usm_host_allocator};
-    shT packed_shape_strides = concat(empty, vs...);
+    shT packed_shape_strides = detail::concat(empty, vs...);
 
     auto packed_shape_strides_owner =
         std::make_shared<shT>(std::move(packed_shape_strides));
@@ -269,11 +292,11 @@ private:
     py::ssize_t const *shape_strides;
 };
 
-template <int nd> struct StridedIndexerArray
+template <int nd> struct FixedDimStridedIndexer
 {
-    StridedIndexerArray(const std::array<py::ssize_t, nd> _shape,
-                        const std::array<py::ssize_t, nd> _strides,
-                        py::ssize_t _offset)
+    FixedDimStridedIndexer(const std::array<py::ssize_t, nd> _shape,
+                           const std::array<py::ssize_t, nd> _strides,
+                           py::ssize_t _offset)
         : _ind(_shape), strides(_strides), starting_offset(_offset)
     {
     }
@@ -298,13 +321,14 @@ private:
     py::ssize_t starting_offset;
 };
 
-template <int nd> struct TwoOffsets_StridedIndexerArray
+template <int nd> struct TwoOffsets_FixedDimStridedIndexer
 {
-    TwoOffsets_StridedIndexerArray(const std::array<py::ssize_t, nd> _shape,
-                                   const std::array<py::ssize_t, nd> _strides1,
-                                   const std::array<py::ssize_t, nd> _strides2,
-                                   py::ssize_t _offset1,
-                                   py::ssize_t _offset2)
+    TwoOffsets_FixedDimStridedIndexer(
+        const std::array<py::ssize_t, nd> _shape,
+        const std::array<py::ssize_t, nd> _strides1,
+        const std::array<py::ssize_t, nd> _strides2,
+        py::ssize_t _offset1,
+        py::ssize_t _offset2)
         : _ind(_shape), strides1(_strides1), strides2(_strides2),
           starting_offset1(_offset1), starting_offset2(_offset2)
     {

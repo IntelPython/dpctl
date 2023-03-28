@@ -273,16 +273,16 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
     dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
 
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
-        TwoOffsets_StridedIndexerArray<nd> indexer{
-            shape, src_strides, dst_strides, src_offset, dst_offset};
+        using IndexerT = TwoOffsets_FixedDimStridedIndexer<nd>;
+        IndexerT indexer{shape, src_strides, dst_strides, src_offset,
+                         dst_offset};
 
         cgh.depends_on(depends);
-        cgh.parallel_for<class copy_cast_generic_kernel<
-            srcTy, dstTy, TwoOffsets_StridedIndexerArray<nd>>>(
+        cgh.parallel_for<
+            class copy_cast_generic_kernel<srcTy, dstTy, IndexerT>>(
             sycl::range<1>(nelems),
-            GenericCopyFunctor<Caster<srcTy, dstTy>,
-                               TwoOffsets_StridedIndexerArray<nd>>(src_p, dst_p,
-                                                                   indexer));
+            GenericCopyFunctor<Caster<srcTy, dstTy>, IndexerT>(src_p, dst_p,
+                                                               indexer));
     });
 
     return copy_and_cast_ev;
