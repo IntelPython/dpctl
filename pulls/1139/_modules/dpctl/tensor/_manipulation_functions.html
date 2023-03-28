@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+24.g8a9411fc documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+33.gb6cd3238f documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+24.g8a9411fc
+                0.14.3dev0+33.gb6cd3238f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -90,7 +90,7 @@
   <h1>Source code for dpctl.tensor._manipulation_functions</h1><div class="highlight"><pre>
 <span></span><span class="c1">#                       Data Parallel Control (dpctl)</span>
 <span class="c1">#</span>
-<span class="c1">#  Copyright 2020-2022 Intel Corporation</span>
+<span class="c1">#  Copyright 2020-2023 Intel Corporation</span>
 <span class="c1">#</span>
 <span class="c1">#  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1">#  you may not use this file except in compliance with the License.</span>
@@ -829,6 +829,119 @@
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)])</span>
     <span class="k">return</span> <span class="n">finfo_object</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="unstack"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.unstack">[docs]</a><span class="k">def</span> <span class="nf">unstack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;unstack(x, axis=0)</span>
+
+<span class="sd">    Splits an array in a sequence of arrays along the given axis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): input array</span>
+
+<span class="sd">        axis (int, optional): axis along which `x` is unstacked.</span>
+<span class="sd">            If `x` has rank (i.e, number of dimensions) `N`,</span>
+<span class="sd">            a valid `axis` must reside in the half-open interval `[-N, N)`.</span>
+<span class="sd">            Default: `0`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[usm_ndarray,...]: A tuple of arrays.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AxisError: if the `axis` value is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;moveaxis(x, src, dst)</span>
+
+<span class="sd">    Moves axes of an array to new positions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): input array</span>
+
+<span class="sd">        src (int or a sequence of int):</span>
+<span class="sd">            Original positions of the axes to move.</span>
+<span class="sd">            These must be unique. If `x` has rank (i.e., number of</span>
+<span class="sd">            dimensions) `N`, a valid `axis` must be in the</span>
+<span class="sd">            half-open interval `[-N, N)`.</span>
+
+<span class="sd">        dst (int or a sequence of int):</span>
+<span class="sd">            Destination positions for each of the original axes.</span>
+<span class="sd">            These must also be unique. If `x` has rank</span>
+<span class="sd">            (i.e., number of dimensions) `N`, a valid `axis` must be</span>
+<span class="sd">            in the half-open interval `[-N, N)`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_narray: Array with moved axes.</span>
+<span class="sd">            The returned array must has the same data type as `x`,</span>
+<span class="sd">            is created on the same device as `x` and has the same</span>
+<span class="sd">            USM allocation type as `x`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AxisError: if `axis` value is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">dst</span> <span class="o">=</span> <span class="p">(</span><span class="n">dst</span><span class="p">,)</span>
+
+    <span class="n">src</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;dst&quot;</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)):</span>
+        <span class="n">ind</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># using the value here which is the same as index</span>
+        <span class="n">ind</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dst</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">src</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="swapaxes"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.swapaxes">[docs]</a><span class="k">def</span> <span class="nf">swapaxes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;swapaxes(x, axis1, axis2)</span>
+
+<span class="sd">    Interchanges two axes of an array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): input array</span>
+
+<span class="sd">        axis1 (int): First axis.</span>
+<span class="sd">            If `x` has rank (i.e., number of dimensions) `N`,</span>
+<span class="sd">            a valid `axis` must be in the half-open interval `[-N, N)`.</span>
+
+<span class="sd">        axis2 (int): Second axis.</span>
+<span class="sd">            If `x` has rank (i.e., number of dimensions) `N`,</span>
+<span class="sd">            a valid `axis` must be in the half-open interval `[-N, N)`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_narray: Array with swapped axes.</span>
+<span class="sd">            The returned array must has the same data type as `x`,</span>
+<span class="sd">            is created on the same device as `x` and has the same USM</span>
+<span class="sd">            allocation type as `x`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AxisError: if `axis` value is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">axis1</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis1&quot;</span><span class="p">)</span>
+    <span class="n">axis2</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis2</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis2&quot;</span><span class="p">)</span>
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+    <span class="n">ind</span><span class="p">[</span><span class="n">axis1</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis2</span>
+    <span class="n">ind</span><span class="p">[</span><span class="n">axis2</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis1</span>
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span></div>
 
 
 <span class="k">def</span> <span class="nf">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>

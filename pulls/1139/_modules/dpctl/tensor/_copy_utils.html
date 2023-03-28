@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+24.g8a9411fc documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+33.gb6cd3238f documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+24.g8a9411fc
+                0.14.3dev0+33.gb6cd3238f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -119,23 +119,6 @@
     <span class="s2">&quot;Implementation module for copy- and cast- operations on &quot;</span>
     <span class="s2">&quot;:class:`dpctl.tensor.usm_ndarray`.&quot;</span>
 <span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_has_memory_overlap</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="ow">and</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="n">m1</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-        <span class="n">m2</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-        <span class="c1"># can only overlap if bound to the same context</span>
-        <span class="k">if</span> <span class="n">m1</span><span class="o">.</span><span class="n">sycl_context</span> <span class="o">==</span> <span class="n">m2</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">:</span>
-            <span class="n">p1_beg</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">_pointer</span>
-            <span class="n">p1_end</span> <span class="o">=</span> <span class="n">p1_beg</span> <span class="o">+</span> <span class="n">m1</span><span class="o">.</span><span class="n">nbytes</span>
-            <span class="n">p2_beg</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">_pointer</span>
-            <span class="n">p2_end</span> <span class="o">=</span> <span class="n">p2_beg</span> <span class="o">+</span> <span class="n">m2</span><span class="o">.</span><span class="n">nbytes</span>
-            <span class="c1"># may intersect if not ((p1_beg &gt;= p2_end) or (p2_beg &gt;= p2_end))</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">p1_beg</span> <span class="o">&lt;</span> <span class="n">p2_end</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p2_beg</span> <span class="o">&lt;</span> <span class="n">p1_end</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="c1"># zero element array do not overlap anything</span>
-    <span class="k">return</span> <span class="kc">False</span>
 
 
 <span class="k">def</span> <span class="nf">_copy_to_numpy</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
@@ -299,7 +282,7 @@
 <span class="k">def</span> <span class="nf">_copy_same_shape</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assumes src and dst have the same shape.&quot;&quot;&quot;</span>
     <span class="c1"># check that memory regions do not overlap</span>
-    <span class="k">if</span> <span class="n">_has_memory_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
         <span class="n">_copy_overlapping</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span>
         <span class="k">return</span>
 

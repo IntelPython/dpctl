@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+24.g8a9411fc documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+33.gb6cd3238f documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+24.g8a9411fc
+                0.14.3dev0+33.gb6cd3238f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -157,11 +157,12 @@
         <span class="k">return</span> <span class="n">_empty_tuple</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="n">_host_set</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="n">_empty_tuple</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_host_set</span>
+    <span class="k">if</span> <span class="n">_is_object_with_buffer_protocol</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">np_obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np_obj</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np_obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_host_set</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">usm_ar</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">usm_ar</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
 
 
@@ -310,6 +311,18 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized data type &#39;</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&#39; encountered.&quot;</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="n">sua_iface</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">)</span>
+    <span class="n">membuf</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="n">ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+        <span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;typestr&quot;</span><span class="p">],</span>
+        <span class="n">buffer</span><span class="o">=</span><span class="n">membuf</span><span class="p">,</span>
+        <span class="n">strides</span><span class="o">=</span><span class="n">sua_iface</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strides&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ary</span>
+
+
 <span class="k">def</span> <span class="nf">_asarray_from_numpy_ndarray</span><span class="p">(</span>
     <span class="n">ary</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span>
 <span class="p">):</span>
@@ -400,6 +413,10 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="n">usm_types_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
         <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="n">usm_types_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">usm_ar</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">return</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">o</span><span class="p">:</span>
             <span class="n">_usm_types_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">usm_types_list</span><span class="p">)</span>
@@ -412,6 +429,14 @@
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">usm_ar</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
         <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
         <span class="k">return</span>
@@ -585,14 +610,7 @@
             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
-        <span class="n">sua_iface</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">)</span>
-        <span class="n">membuf</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="n">ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-            <span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">],</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;typestr&quot;</span><span class="p">],</span>
-            <span class="n">buffer</span><span class="o">=</span><span class="n">membuf</span><span class="p">,</span>
-            <span class="n">strides</span><span class="o">=</span><span class="n">sua_iface</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strides&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="n">ary</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_asarray_from_usm_ndarray</span><span class="p">(</span>
             <span class="n">ary</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
