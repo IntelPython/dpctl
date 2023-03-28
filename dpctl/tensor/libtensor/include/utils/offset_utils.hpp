@@ -141,6 +141,8 @@ struct StridedIndexer
 
     size_t operator()(size_t gid) const
     {
+        using dpctl::tensor::strides::CIndexer_vector;
+
         CIndexer_vector _ind(nd);
         py::ssize_t relative_offset(0);
         _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
@@ -233,6 +235,8 @@ struct TwoOffsets_StridedIndexer
 
     TwoOffsets<py::ssize_t> operator()(py::ssize_t gid) const
     {
+        using dpctl::tensor::strides::CIndexer_vector;
+
         CIndexer_vector _ind(nd);
         py::ssize_t relative_first_offset(0);
         py::ssize_t relative_second_offset(0);
@@ -285,7 +289,7 @@ struct NthStrideOffset
     }
 
 private:
-    CIndexer_vector<py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_vector<py::ssize_t> _ind;
 
     int nd;
     py::ssize_t const *offsets;
@@ -302,11 +306,13 @@ template <int nd> struct FixedDimStridedIndexer
     }
     size_t operator()(size_t gid) const
     {
-        py::ssize_t relative_offset = 0;
-        CIndexer_array<nd, py::ssize_t> local_indxr(std::move(_ind));
+        dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> local_indexer(
+            std::move(_ind));
+        local_indexer.set(gid);
+        auto mi = local_indexer.get();
 
-        local_indxr.set(gid);
-        auto mi = local_indxr.get();
+        py::ssize_t relative_offset = 0;
+
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset += mi[i] * strides[i];
@@ -315,7 +321,7 @@ template <int nd> struct FixedDimStridedIndexer
     }
 
 private:
-    CIndexer_array<nd, py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> _ind;
 
     const std::array<py::ssize_t, nd> strides;
     py::ssize_t starting_offset;
@@ -336,26 +342,29 @@ template <int nd> struct TwoOffsets_FixedDimStridedIndexer
 
     TwoOffsets<py::ssize_t> operator()(size_t gid) const
     {
-        py::ssize_t relative_offset1 = 0;
-        py::ssize_t relative_offset2 = 0;
+        dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> local_indexer(
+            std::move(_ind));
+        local_indexer.set(gid);
+        auto mi = local_indexer.get();
 
-        CIndexer_array<nd, py::ssize_t> local_indxr(std::move(_ind));
-        local_indxr.set(gid);
-        auto mi = local_indxr.get();
+        py::ssize_t relative_offset1 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset1 += mi[i] * strides1[i];
         }
+
+        py::ssize_t relative_offset2 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset2 += mi[i] * strides2[i];
         }
+
         return TwoOffsets<py::ssize_t>(starting_offset1 + relative_offset1,
                                        starting_offset2 + relative_offset2);
     }
 
 private:
-    CIndexer_array<nd, py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> _ind;
 
     const std::array<py::ssize_t, nd> strides1;
     const std::array<py::ssize_t, nd> strides2;

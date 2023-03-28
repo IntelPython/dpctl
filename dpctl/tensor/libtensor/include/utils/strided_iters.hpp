@@ -32,6 +32,13 @@
 #include <tuple>
 #include <vector>
 
+namespace dpctl
+{
+namespace tensor
+{
+namespace strides
+{
+
 /* An N-dimensional array can be stored in a single
  * contiguous chunk of memory by contiguously laying
  * array elements in lexicographinc order of their
@@ -708,3 +715,7 @@ contract_iter3(vecT shape, vecT strides1, vecT strides2, vecT strides3)
     return std::make_tuple(out_shape, out_strides1, disp1, out_strides2, disp2,
                            out_strides3, disp3);
 }
+
+} // namespace strides
+} // namespace tensor
+} // namespace dpctl

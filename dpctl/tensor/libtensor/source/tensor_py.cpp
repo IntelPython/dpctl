@@ -128,6 +128,7 @@ PYBIND11_MODULE(_tensor_impl, m)
     init_dispatch_tables();
     init_dispatch_vectors();
 
+    using dpctl::tensor::strides::contract_iter;
     m.def(
         "_contract_iter", &contract_iter<py::ssize_t, py::value_error>,
         "Simplifies iteration of array of given shape & stride. Returns "
@@ -143,6 +144,7 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
+    using dpctl::tensor::strides::contract_iter2;
     m.def(
         "_contract_iter2", &contract_iter2<py::ssize_t, py::value_error>,
         "Simplifies iteration over elements of pair of arrays of given shape "
@@ -152,6 +154,7 @@ PYBIND11_MODULE(_tensor_impl, m)
         "as the original "
         "iterator, possibly in a different order.");
 
+    using dpctl::tensor::strides::contract_iter3;
     m.def(
         "_contract_iter3", &contract_iter3<py::ssize_t, py::value_error>,
         "Simplifies iteration over elements of 3-tuple of arrays of given "
