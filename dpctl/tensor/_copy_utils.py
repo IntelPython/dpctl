@@ -31,23 +31,6 @@ __doc__ = (
 )
 
 
-def _has_memory_overlap(x1, x2):
-    if x1.size and x2.size:
-        m1 = dpm.as_usm_memory(x1)
-        m2 = dpm.as_usm_memory(x2)
-        # can only overlap if bound to the same context
-        if m1.sycl_context == m2.sycl_context:
-            p1_beg = m1._pointer
-            p1_end = p1_beg + m1.nbytes
-            p2_beg = m2._pointer
-            p2_end = p2_beg + m2.nbytes
-            # may intersect if not ((p1_beg >= p2_end) or (p2_beg >= p2_end))
-            return (p1_beg < p2_end) and (p2_beg < p1_end)
-        return False
-    # zero element array do not overlap anything
-    return False
-
-
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError
@@ -209,7 +192,7 @@ def _copy_overlapping(dst, src):
 def _copy_same_shape(dst, src):
     """Assumes src and dst have the same shape."""
     # check that memory regions do not overlap
-    if _has_memory_overlap(dst, src):
+    if ti._array_overlap(dst, src):
         _copy_overlapping(src=src, dst=dst)
         return
 
