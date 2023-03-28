@@ -1,9 +1,0 @@
-.. _dpctl.memory_enum_api:
-
-##################
-dpctl.memory Enums
-##################
-
-
-.. currentmodule:: dpctl.memory
-
