@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+32.gee20be947 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+33.gb5c8e874c documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+32.gee20be947
+                0.14.3dev0+33.gb5c8e874c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -256,11 +256,12 @@
 <span class="sd">    into :class:`numpy.ndarray` instance of the same shape and same data type.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        usm_ary (usm_ndarray): An instance of :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">        usm_ary (usm_ndarray):</span>
+<span class="sd">            Input array</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray:</span>
+<span class="sd">        :class:`numpy.ndarray`:</span>
 <span class="sd">            An instance of :class:`numpy.ndarray` populated with content of</span>
-<span class="sd">            `usm_ary`.</span>
+<span class="sd">            `usm_ary`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
@@ -274,18 +275,20 @@
 <span class="sd">    type.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        usm_ary (usm_ndarray): An instance of</span>
-<span class="sd">            :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">        usm_ary (usm_ndarray):</span>
+<span class="sd">            Input array</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray:</span>
+<span class="sd">        :class:`numpy.ndarray`:</span>
 <span class="sd">            An instance of :class:`numpy.ndarray` populated with content</span>
-<span class="sd">            of `usm_ary`.</span>
+<span class="sd">            of `usm_ary`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">Dummy</span><span class="p">:</span>
-    <span class="s2">&quot;Helper class with specified __sycl_usm_array_interface__ attribute&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class with specified ``__sycl_usm_array_interface__`` attribute</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iface</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span> <span class="o">=</span> <span class="n">iface</span>
