@@ -67,11 +67,12 @@ def _array_info_dispatch(obj):
         return _empty_tuple, complex, _host_set
     if isinstance(obj, (list, tuple, range)):
         return _array_info_sequence(obj)
-    if any(
-        isinstance(obj, s)
-        for s in [np.integer, np.floating, np.complexfloating, np.bool_]
-    ):
-        return _empty_tuple, obj.dtype, _host_set
+    if _is_object_with_buffer_protocol(obj):
+        np_obj = np.array(obj)
+        return np_obj.shape, np_obj.dtype, _host_set
+    if hasattr(obj, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(obj)
+        return usm_ar.shape, usm_ar.dtype, frozenset([obj.sycl_queue])
     raise ValueError(type(obj))
 
 
@@ -220,6 +221,18 @@ def _map_to_device_dtype(dt, q):
     raise RuntimeError(f"Unrecognized data type '{dt}' encountered.")
 
 
+def _usm_ndarray_from_suai(obj):
+    sua_iface = getattr(obj, "__sycl_usm_array_interface__")
+    membuf = dpm.as_usm_memory(obj)
+    ary = dpt.usm_ndarray(
+        sua_iface["shape"],
+        dtype=sua_iface["typestr"],
+        buffer=membuf,
+        strides=sua_iface.get("strides", None),
+    )
+    return ary
+
+
 def _asarray_from_numpy_ndarray(
     ary, dtype=None, usm_type=None, sycl_queue=None, order="K"
 ):
@@ -312,6 +325,10 @@ def _usm_types_walker(o, usm_types_list):
     if isinstance(o, dpt.usm_ndarray):
         usm_types_list.append(o.usm_type)
         return
+    if hasattr(o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(o)
+        usm_types_list.append(usm_ar.usm_type)
+        return
     if isinstance(o, (list, tuple)):
         for el in o:
             _usm_types_walker(el, usm_types_list)
@@ -324,6 +341,14 @@ def _device_copy_walker(seq_o, res, events):
         exec_q = res.sycl_queue
         ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
             src=seq_o, dst=res, sycl_queue=exec_q
+        )
+        events.append(ht_ev)
+        return
+    if hasattr(seq_o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(seq_o)
+        exec_q = res.sycl_queue
+        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ar, dst=res, sycl_queue=exec_q
         )
         events.append(ht_ev)
         return
@@ -499,14 +524,7 @@ def asarray(
             order=order,
         )
     if hasattr(obj, "__sycl_usm_array_interface__"):
-        sua_iface = getattr(obj, "__sycl_usm_array_interface__")
-        membuf = dpm.as_usm_memory(obj)
-        ary = dpt.usm_ndarray(
-            sua_iface["shape"],
-            dtype=sua_iface["typestr"],
-            buffer=membuf,
-            strides=sua_iface.get("strides", None),
-        )
+        ary = _usm_ndarray_from_suai(obj)
         return _asarray_from_usm_ndarray(
             ary,
             dtype=dtype,
