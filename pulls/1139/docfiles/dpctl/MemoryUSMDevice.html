@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory.MemoryUSMDevice &mdash; Data-parallel Control (dpctl) 0.14.3dev0+33.gb6cd3238f documentation</title>
+  <title>dpctl.memory.MemoryUSMDevice &mdash; Data-parallel Control (dpctl) 0.14.3dev0+37.g5b599812c documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+33.gb6cd3238f
+                0.14.3dev0+37.g5b599812c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -115,15 +115,11 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMDevice">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryUSMDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMDevice" title="Permalink to this definition"></a></dt>
-<dd><p>allocates nbytes of USM device memory.</p>
-<p>Non-positive alignments are not used (malloc_device is used instead).
-For the queue=None case the <code class="docutils literal notranslate"><span class="pre">dpctl.SyclQueue()</span></code> is used to allocate
-memory.</p>
-<p>MemoryUSMDevice(usm_obj) constructor create instance from <cite>usm_obj</cite>
-expected to implement <cite>__sycl_usm_array_interface__</cite> protocol and exposing
-a contiguous block of USM device allocation. Use <cite>copy=True</cite> to
-perform a copy if USM type of the allocation represented by the argument
-is other than ‘device’.</p>
+<dd><p>An object representing allocation of SYCL USM-device memory.</p>
+<p>Non-positive <code class="docutils literal notranslate"><span class="pre">alignment</span></code> values are not ignored and
+the allocator <code class="docutils literal notranslate"><span class="pre">malloc_device</span></code> is used for allocation instead.
+If <code class="docutils literal notranslate"><span class="pre">queue</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> a cached default-constructed
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> is used to allocate memory.</p>
 <p class="rubric">Attributes:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
