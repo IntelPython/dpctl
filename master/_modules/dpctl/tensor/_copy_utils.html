@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+29.gede58f6ae documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.3dev0+31.g068f65c63 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+29.gede58f6ae
+                0.14.3dev0+31.g068f65c63
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -198,19 +198,29 @@
 <span class="sd">    from_numpy(arg, device=None, usm_type=&quot;device&quot;, sycl_queue=None)</span>
 
 <span class="sd">    Creates :class:`dpctl.tensor.usm_ndarray` from instance of</span>
-<span class="sd">    `numpy.ndarray`.</span>
+<span class="sd">    :class:`numpy.ndarray`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        arg: An instance of input `numpy.ndarray`</span>
-<span class="sd">        device: array API specification of device where the output array</span>
-<span class="sd">            is created</span>
-<span class="sd">        usm_type: The requested USM allocation type for the output array</span>
-<span class="sd">        sycl_queue: a :class:`dpctl.SyclQueue` instance that determines</span>
-<span class="sd">            output array allocation device as well as placement of data</span>
-<span class="sd">            movement operation. The `device` and `sycl_queue` arguments</span>
+<span class="sd">        arg (array-like): An instance of input convertible to</span>
+<span class="sd">            :class:`numpy.ndarray`</span>
+<span class="sd">        device (object): array API specification of device where the</span>
+<span class="sd">            output array is created. Device can be specified by a</span>
+<span class="sd">            a filter selector string, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclDevice`, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, an instance of</span>
+<span class="sd">            :class:`dpctl.tensor.Device`. If the value is `None`,</span>
+<span class="sd">            returned array is created on the default-selected device.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        usm_type (str): The requested USM allocation type for the</span>
+<span class="sd">            output array. Recognized values are `&quot;device&quot;`, `&quot;shared&quot;`,</span>
+<span class="sd">            or `&quot;host&quot;`.</span>
+<span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional):</span>
+<span class="sd">            A SYCL queue that determines output array allocation device</span>
+<span class="sd">            as well as execution placement of data movement operations.</span>
+<span class="sd">            The `device` and `sycl_queue` arguments</span>
 <span class="sd">            are equivalent. Only one of them should be specified. If both</span>
 <span class="sd">            are provided, they must be consistent and result in using the</span>
-<span class="sd">            same execution queue.</span>
+<span class="sd">            same execution queue. Default: `None`.</span>
 
 <span class="sd">    The returned array has the same shape, and the same data type kind.</span>
 <span class="sd">    If the device does not support the data type of input array, a</span>
@@ -227,12 +237,15 @@
 <span class="sd">    to_numpy(usm_ary)</span>
 
 <span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`</span>
-<span class="sd">    into `numpy.ndarray` instance of the same shape and same data type.</span>
+<span class="sd">    into :class:`numpy.ndarray` instance of the same shape and same data type.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">        usm_ary (usm_ndarray):</span>
+<span class="sd">            Input array</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        An instance of `numpy.ndarray` populated with content of `usm_ary`.</span>
+<span class="sd">        :class:`numpy.ndarray`:</span>
+<span class="sd">            An instance of :class:`numpy.ndarray` populated with content of</span>
+<span class="sd">            `usm_ary`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
@@ -242,18 +255,24 @@
 <span class="sd">    asnumpy(usm_ary)</span>
 
 <span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`</span>
-<span class="sd">    into `numpy.ndarray` instance of the same shape and same data type.</span>
+<span class="sd">    into :class:`numpy.ndarray` instance of the same shape and same data</span>
+<span class="sd">    type.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">        usm_ary (usm_ndarray):</span>
+<span class="sd">            Input array</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        An instance of `numpy.ndarray` populated with content of `usm_ary`.</span>
+<span class="sd">        :class:`numpy.ndarray`:</span>
+<span class="sd">            An instance of :class:`numpy.ndarray` populated with content</span>
+<span class="sd">            of `usm_ary`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">Dummy</span><span class="p">:</span>
-    <span class="s2">&quot;Helper class with specified __sycl_usm_array_interface__ attribute&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class with specified ``__sycl_usm_array_interface__`` attribute</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iface</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span> <span class="o">=</span> <span class="n">iface</span>
@@ -353,10 +372,20 @@
 
 
 <div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a copy of given instance of `usm_ndarray`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;copy(ary, order=&quot;K&quot;)</span>
 
-<span class="sd">    Memory layour of the copy is controlled by `order` keyword,</span>
+<span class="sd">    Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ary (usm_ndarray):</span>
+<span class="sd">            Input array.</span>
+<span class="sd">        order ({&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional):</span>
+<span class="sd">            Controls the memory layout of the output array.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            A copy of the input array.</span>
+
+<span class="sd">    Memory layout of the copy is controlled by `order` keyword,</span>
 <span class="sd">    following NumPy&#39;s conventions. The `order` keywords can be</span>
 <span class="sd">    one of the following:</span>
 
@@ -415,10 +444,31 @@
 
 
 <div class="viewcode-block" id="astype"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.astype">[docs]</a><span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="n">newdtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    astype(usm_array, new_dtype, order=&quot;K&quot;, casting=&quot;unsafe&quot;, copy=True)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; astype(array, new_dtype, order=&quot;K&quot;, casting=&quot;unsafe&quot;, \</span>
+<span class="sd">            copy=True)</span>
 
-<span class="sd">    Returns a copy of the array, cast to a specified type.</span>
+<span class="sd">    Returns a copy of the :class:`dpctl.tensor.usm_ndarray`, cast to a</span>
+<span class="sd">    specified type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        array (usm_ndarray):</span>
+<span class="sd">            An input array.</span>
+<span class="sd">        new_dtype (dtype):</span>
+<span class="sd">            The data type of the resulting array.</span>
+<span class="sd">        order ({&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional):</span>
+<span class="sd">            Controls memory layout of the resulting array if a copy</span>
+<span class="sd">            is returned.</span>
+<span class="sd">        casting ({&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional):</span>
+<span class="sd">            Controls what kind of data casting may occur. Please see</span>
+<span class="sd">            :meth:`numpy.ndarray.astype` for description of casting modes.</span>
+<span class="sd">        copy (bool, optional):</span>
+<span class="sd">            By default, `astype` always returns a newly allocated array.</span>
+<span class="sd">            If this keyword is set to `False`, a view of the input array</span>
+<span class="sd">            may be returned when possible.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            An array with requested data type.</span>
 
 <span class="sd">    A view can be returned, if possible, when `copy=False` is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
