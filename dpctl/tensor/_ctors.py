@@ -363,6 +363,10 @@ def _copy_through_host_walker(seq_o, usm_res):
     if isinstance(seq_o, dpt.usm_ndarray):
         usm_res[...] = dpt.asnumpy(seq_o).copy()
         return
+    if hasattr(seq_o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(seq_o)
+        usm_res[...] = dpt.asnumpy(usm_ar).copy()
+        return
     if isinstance(seq_o, (list, tuple)):
         for i, el in enumerate(seq_o):
             _copy_through_host_walker(el, usm_res[i])
