@@ -271,3 +271,25 @@ def test_asarray_seq_of_array_different_queue():
     ar = dpt.asarray([m, [w, v]], sycl_queue=qprof)
     assert ar.shape == (2, 2, 4)
     assert ar.sycl_queue == qprof
+
+
+def test_asarray_seq_of_suai():
+    get_queue_or_skip()
+
+    class Dummy:
+        def __init__(self, obj, iface):
+            self.obj = obj
+            self.__sycl_usm_array_interface__ = iface
+
+    o = dpt.empty(0, usm_type="shared")
+    d = Dummy(o, o.__sycl_usm_array_interface__)
+    x = dpt.asarray(d)
+    assert x.shape == (0,)
+    assert x.usm_type == o.usm_type
+    assert x._pointer == o._pointer
+    assert x.sycl_queue == o.sycl_queue
+
+    x = dpt.asarray([d, d])
+    assert x.shape == (2, 0)
+    assert x.usm_type == o.usm_type
+    assert x.sycl_queue == o.sycl_queue
