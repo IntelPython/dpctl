@@ -150,7 +150,6 @@ jobs:
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
           export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
           python -m dpctl -f || exit 1
-          python -m pytest -v dpctl/tests
 
       - name: Run dpctl/tests
         shell: bash -l {0}
