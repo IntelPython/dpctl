@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+36.gdf25aa0ec documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+54.geec1594b7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+36.gdf25aa0ec
+                0.14.3dev0+54.geec1594b7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -114,6 +114,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._usmarray</span> <span class="kn">import</span> <span class="n">_is_object_with_buffer_protocol</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Implementation of creation functions in :module:`dpctl.tensor`&quot;</span>
 
@@ -156,11 +157,12 @@
         <span class="k">return</span> <span class="n">_empty_tuple</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="n">_host_set</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="n">_empty_tuple</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_host_set</span>
+    <span class="k">if</span> <span class="n">_is_object_with_buffer_protocol</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">np_obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np_obj</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np_obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_host_set</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">usm_ar</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">usm_ar</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">usm_ar</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
 
 
@@ -309,6 +311,18 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized data type &#39;</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&#39; encountered.&quot;</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="n">sua_iface</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">)</span>
+    <span class="n">membuf</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="n">ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+        <span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;typestr&quot;</span><span class="p">],</span>
+        <span class="n">buffer</span><span class="o">=</span><span class="n">membuf</span><span class="p">,</span>
+        <span class="n">strides</span><span class="o">=</span><span class="n">sua_iface</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strides&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ary</span>
+
+
 <span class="k">def</span> <span class="nf">_asarray_from_numpy_ndarray</span><span class="p">(</span>
     <span class="n">ary</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span>
 <span class="p">):</span>
@@ -366,17 +380,6 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
-<span class="k">def</span> <span class="nf">_is_object_with_buffer_protocol</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="s2">&quot;Returns `True` if object support Python buffer protocol&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># use context manager to ensure</span>
-        <span class="c1"># buffer is instantly released</span>
-        <span class="k">with</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-
 <span class="k">def</span> <span class="nf">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that dtype is natively supported by device.</span>
 
@@ -408,6 +411,122 @@
         <span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_usm_types_walker</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">usm_types_list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">usm_types_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="n">usm_types_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">usm_ar</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">o</span><span class="p">:</span>
+            <span class="n">_usm_types_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">usm_types_list</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span>
+
+
+<span class="k">def</span> <span class="nf">_device_copy_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">usm_ar</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">seq_o</span><span class="p">):</span>
+            <span class="n">_device_copy_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">events</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span>
+
+
+<span class="k">def</span> <span class="nf">_copy_through_host_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">usm_res</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">usm_res</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
+        <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span>
+        <span class="n">usm_res</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">usm_ar</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">seq_o</span><span class="p">):</span>
+            <span class="n">_copy_through_host_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">usm_res</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span>
+    <span class="n">usm_res</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_asarray_from_seq</span><span class="p">(</span>
+    <span class="n">seq_obj</span><span class="p">,</span>
+    <span class="n">seq_shape</span><span class="p">,</span>
+    <span class="n">seq_dt</span><span class="p">,</span>
+    <span class="n">seq_dev</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="s2">&quot;`obj` is a sequence&quot;</span>
+    <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_types_in_seq</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_usm_types_walker</span><span class="p">(</span><span class="n">seq_obj</span><span class="p">,</span> <span class="n">usm_types_in_seq</span><span class="p">)</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types_in_seq</span><span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">seq_dev</span>
+        <span class="n">alloc_q</span> <span class="o">=</span> <span class="n">seq_dev</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">sycl_queue</span><span class="p">,</span>
+                <span class="n">seq_dev</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">alloc_q</span> <span class="o">=</span> <span class="n">sycl_queue</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">_map_to_device_dtype</span><span class="p">(</span><span class="n">seq_dt</span><span class="p">,</span> <span class="n">alloc_q</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_mapped_dt</span> <span class="o">=</span> <span class="n">_map_to_device_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">alloc_q</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_mapped_dt</span> <span class="o">!=</span> <span class="n">dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Device </span><span class="si">{</span><span class="n">sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;does not support </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> natively.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">_mapped_dt</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">in</span> <span class="s2">&quot;KA&quot;</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">seq_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_q</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ht_events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_device_copy_walker</span><span class="p">(</span><span class="n">seq_obj</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">ht_events</span><span class="p">)</span>
+        <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">ht_events</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">seq_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_q</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_copy_through_host_walker</span><span class="p">(</span><span class="n">seq_obj</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+
 <div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -417,7 +536,9 @@
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; asarray(obj, dtype=None, copy=None, device=None, \</span>
+<span class="sd">           usm_type=None, sycl_queue=None, order=&quot;K&quot;)</span>
+
 <span class="sd">    Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.</span>
 
 <span class="sd">    Args:</span>
@@ -437,7 +558,7 @@
 <span class="sd">            allocations if possible, but allowed to perform a copy otherwise.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">        order (&quot;C&quot;,&quot;F&quot;,&quot;A&quot;,&quot;K&quot;, optional): memory layout of the output array.</span>
-<span class="sd">            Default: &quot;C&quot;</span>
+<span class="sd">            Default: &quot;K&quot;</span>
 <span class="sd">        device (optional): array API concept of device where the output array</span>
 <span class="sd">            is created. `device` can be `None`, a oneAPI filter selector string,</span>
 <span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to a</span>
@@ -497,14 +618,7 @@
             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
-        <span class="n">sua_iface</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">)</span>
-        <span class="n">membuf</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="n">ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-            <span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">],</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">sua_iface</span><span class="p">[</span><span class="s2">&quot;typestr&quot;</span><span class="p">],</span>
-            <span class="n">buffer</span><span class="o">=</span><span class="n">membuf</span><span class="p">,</span>
-            <span class="n">strides</span><span class="o">=</span><span class="n">sua_iface</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strides&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="n">ary</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_asarray_from_usm_ndarray</span><span class="p">(</span>
             <span class="n">ary</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
@@ -542,7 +656,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Converting Python sequence to usm_ndarray requires a copy&quot;</span>
             <span class="p">)</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">devs</span> <span class="o">=</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">seq_shape</span><span class="p">,</span> <span class="n">seq_dt</span><span class="p">,</span> <span class="n">devs</span> <span class="o">=</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">devs</span> <span class="o">==</span> <span class="n">_host_set</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_asarray_from_numpy_ndarray</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">),</span>
@@ -551,7 +665,17 @@
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
                 <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="c1"># for sequences</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">devs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_asarray_from_seq</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="n">seq_shape</span><span class="p">,</span>
+                <span class="n">seq_dt</span><span class="p">,</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">devs</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+                <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Converting Python sequences is not implemented&quot;</span>
         <span class="p">)</span>
