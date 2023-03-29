@@ -72,7 +72,7 @@ def _array_info_dispatch(obj):
         return np_obj.shape, np_obj.dtype, _host_set
     if hasattr(obj, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(obj)
-        return usm_ar.shape, usm_ar.dtype, frozenset([obj.sycl_queue])
+        return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
     raise ValueError(type(obj))
 
 
