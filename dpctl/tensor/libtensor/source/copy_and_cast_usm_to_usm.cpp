@@ -36,6 +36,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -63,57 +64,7 @@ static copy_and_cast_2d_fn_ptr_t
 
 namespace py = pybind11;
 
-using dpctl::tensor::c_contiguous_strides;
-using dpctl::tensor::f_contiguous_strides;
-
 using dpctl::utils::keep_args_alive;
-
-sycl::event _populate_packed_shape_strides_for_copycast_kernel(
-    sycl::queue exec_q,
-    std::vector<sycl::event> &host_task_events,
-    py::ssize_t *device_shape_strides, // to be populated
-    const std::vector<py::ssize_t> &common_shape,
-    const std::vector<py::ssize_t> &src_strides,
-    const std::vector<py::ssize_t> &dst_strides)
-{
-    // memory transfer optimization, use USM-host for temporary speeds up
-    // tranfer to device, especially on dGPUs
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-    size_t nd = common_shape.size();
-
-    usm_host_allocatorT allocator(exec_q);
-
-    // create host temporary for packed shape and strides managed by shared
-    // pointer. Packed vector is concatenation of common_shape, src_stride and
-    // std_strides
-    std::shared_ptr<shT> shp_host_shape_strides =
-        std::make_shared<shT>(3 * nd, allocator);
-    std::copy(common_shape.begin(), common_shape.end(),
-              shp_host_shape_strides->begin());
-
-    std::copy(src_strides.begin(), src_strides.end(),
-              shp_host_shape_strides->begin() + nd);
-
-    std::copy(dst_strides.begin(), dst_strides.end(),
-              shp_host_shape_strides->begin() + 2 * nd);
-
-    sycl::event copy_shape_ev = exec_q.copy<py::ssize_t>(
-        shp_host_shape_strides->data(), device_shape_strides,
-        shp_host_shape_strides->size());
-
-    auto shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_shape_ev);
-        cgh.host_task([shp_host_shape_strides]() {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
-    host_task_events.push_back(shared_ptr_cleanup_ev);
-
-    return copy_shape_ev;
-}
 
 std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
@@ -149,9 +100,9 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto dst_offsets = dst.get_minmax_offsets();
     // destination must be ample enough to accomodate all elements
     {
+        auto dst_offsets = dst.get_minmax_offsets();
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
@@ -178,16 +129,8 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     char *dst_data = dst.get_data();
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto src_offsets = src.get_minmax_offsets();
-    int src_elem_size = src.get_elemsize();
-    int dst_elem_size = dst.get_elemsize();
-
-    bool memory_overlap =
-        ((dst_data - src_data > src_offsets.second * src_elem_size -
-                                    dst_offsets.first * dst_elem_size) &&
-         (src_data - dst_data > dst_offsets.second * dst_elem_size -
-                                    src_offsets.first * src_elem_size));
-    if (memory_overlap) {
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
         // TODO: could use a temporary, but this is done by the caller
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -204,6 +147,8 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
     if (both_c_contig || both_f_contig) {
         if (src_type_id == dst_type_id) {
+
+            int src_elem_size = src.get_elemsize();
 
             sycl::event copy_ev =
                 exec_q.memcpy(static_cast<void *>(dst_data),
@@ -299,22 +244,15 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     auto copy_and_cast_fn =
         copy_and_cast_generic_dispatch_table[dst_type_id][src_type_id];
 
-    //   If shape/strides are accessed with accessors, buffer destructor
-    //   will force syncronization.
-    py::ssize_t *shape_strides =
-        sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
-
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unabled to allocate device memory");
-    }
-
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    sycl::event copy_shape_ev =
-        _populate_packed_shape_strides_for_copycast_kernel(
-            exec_q, host_task_events, shape_strides, simplified_shape,
-            simplified_src_strides, simplified_dst_strides);
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, simplified_shape, simplified_src_strides,
+        simplified_dst_strides);
+    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,

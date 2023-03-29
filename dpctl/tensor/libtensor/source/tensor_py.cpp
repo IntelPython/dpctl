@@ -43,6 +43,7 @@
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
 #include "triul_ctor.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
 
 namespace py = pybind11;
@@ -52,6 +53,8 @@ namespace
 
 using dpctl::tensor::c_contiguous_strides;
 using dpctl::tensor::f_contiguous_strides;
+
+using dpctl::tensor::overlap::MemoryOverlap;
 
 using dpctl::tensor::py_internal::copy_usm_ndarray_into_usm_ndarray;
 
@@ -76,7 +79,6 @@ using dpctl::tensor::py_internal::usm_ndarray_full;
 using dpctl::tensor::py_internal::usm_ndarray_put;
 using dpctl::tensor::py_internal::usm_ndarray_take;
 
-using dpctl::tensor::py_internal::overlap;
 using dpctl::tensor::py_internal::py_extract;
 using dpctl::tensor::py_internal::py_mask_positions;
 using dpctl::tensor::py_internal::py_nonzero;
@@ -126,6 +128,7 @@ PYBIND11_MODULE(_tensor_impl, m)
     init_dispatch_tables();
     init_dispatch_vectors();
 
+    using dpctl::tensor::strides::contract_iter;
     m.def(
         "_contract_iter", &contract_iter<py::ssize_t, py::value_error>,
         "Simplifies iteration of array of given shape & stride. Returns "
@@ -141,6 +144,7 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
+    using dpctl::tensor::strides::contract_iter2;
     m.def(
         "_contract_iter2", &contract_iter2<py::ssize_t, py::value_error>,
         "Simplifies iteration over elements of pair of arrays of given shape "
@@ -150,6 +154,7 @@ PYBIND11_MODULE(_tensor_impl, m)
         "as the original "
         "iterator, possibly in a different order.");
 
+    using dpctl::tensor::strides::contract_iter3;
     m.def(
         "_contract_iter3", &contract_iter3<py::ssize_t, py::value_error>,
         "Simplifies iteration over elements of 3-tuple of arrays of given "
@@ -272,7 +277,12 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    m.def("_array_overlap", &overlap,
+    auto overlap = [](dpctl::tensor::usm_ndarray x1,
+                      dpctl::tensor::usm_ndarray x2) -> bool {
+        auto const &overlap = MemoryOverlap();
+        return overlap(x1, x2);
+    };
+    m.def("_array_overlap", overlap,
           "Determines if the memory regions indexed by each array overlap",
           py::arg("array1"), py::arg("array2"));
 

@@ -121,122 +121,44 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     int src_nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
 
-    const py::ssize_t *src_shape = src.get_shape_raw();
-    const py::ssize_t *dst_shape = dst.get_shape_raw();
-
     auto array_types = dpctl::tensor::detail::usm_ndarray_types();
     int type_id = array_types.typenum_to_lookup_id(src_typenum);
 
     auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
 
-    // packed_shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
-    py::ssize_t *packed_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(2 * (src_nd + dst_nd), exec_q);
+    auto src_shape = src.get_shape_vector();
+    auto src_strides = src.get_strides_vector();
 
-    if (packed_shapes_strides == nullptr) {
-        throw std::runtime_error("Unabled to allocate device memory");
-    }
-
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-    usm_host_allocatorT allocator(exec_q);
-    std::shared_ptr<shT> packed_host_shapes_strides_shp =
-        std::make_shared<shT>(2 * (src_nd + dst_nd), allocator);
-
-    std::copy(src_shape, src_shape + src_nd,
-              packed_host_shapes_strides_shp->begin());
-    std::copy(dst_shape, dst_shape + dst_nd,
-              packed_host_shapes_strides_shp->begin() + 2 * src_nd);
-
-    const py::ssize_t *src_strides = src.get_strides_raw();
-    if (src_strides == nullptr) {
-        if (src.is_c_contiguous()) {
-            const auto &src_contig_strides =
-                c_contiguous_strides(src_nd, src_shape);
-            std::copy(src_contig_strides.begin(), src_contig_strides.end(),
-                      packed_host_shapes_strides_shp->begin() + src_nd);
-        }
-        else if (src.is_f_contiguous()) {
-            const auto &src_contig_strides =
-                f_contiguous_strides(src_nd, src_shape);
-            std::copy(src_contig_strides.begin(), src_contig_strides.end(),
-                      packed_host_shapes_strides_shp->begin() + src_nd);
-        }
-        else {
-            sycl::free(packed_shapes_strides, exec_q);
-            throw std::runtime_error(
-                "Invalid src array encountered: in copy_for_reshape function");
-        }
-    }
-    else {
-        std::copy(src_strides, src_strides + src_nd,
-                  packed_host_shapes_strides_shp->begin() + src_nd);
-    }
-
-    const py::ssize_t *dst_strides = dst.get_strides_raw();
-    if (dst_strides == nullptr) {
-        if (dst.is_c_contiguous()) {
-            const auto &dst_contig_strides =
-                c_contiguous_strides(dst_nd, dst_shape);
-            std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
-                      packed_host_shapes_strides_shp->begin() + 2 * src_nd +
-                          dst_nd);
-        }
-        else if (dst.is_f_contiguous()) {
-            const auto &dst_contig_strides =
-                f_contiguous_strides(dst_nd, dst_shape);
-            std::copy(dst_contig_strides.begin(), dst_contig_strides.end(),
-                      packed_host_shapes_strides_shp->begin() + 2 * src_nd +
-                          dst_nd);
-        }
-        else {
-            sycl::free(packed_shapes_strides, exec_q);
-            throw std::runtime_error(
-                "Invalid dst array encountered: in copy_for_reshape function");
-        }
-    }
-    else {
-        std::copy(dst_strides, dst_strides + dst_nd,
-                  packed_host_shapes_strides_shp->begin() + 2 * src_nd +
-                      dst_nd);
-    }
+    auto dst_shape = dst.get_shape_vector();
+    auto dst_strides = dst.get_strides_vector();
 
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    // copy packed shapes and strides from host to devices
-    sycl::event packed_shape_strides_copy_ev = exec_q.copy<py::ssize_t>(
-        packed_host_shapes_strides_shp->data(), packed_shapes_strides,
-        packed_host_shapes_strides_shp->size());
-    auto shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(packed_shape_strides_copy_ev);
-        cgh.host_task([packed_host_shapes_strides_shp] {
-            // Capturing shared pointer ensures that the underlying vector is
-            // not destroyed until after its data are copied into packed USM
-            // vector
-        });
-    });
-
-    host_task_events.push_back(shared_ptr_cleanup_ev);
+    // shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, src_shape, src_strides, dst_shape,
+        dst_strides);
+    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
     std::vector<sycl::event> all_deps(depends.size() + 1);
-    all_deps.push_back(packed_shape_strides_copy_ev);
+    all_deps.push_back(copy_shape_ev);
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     sycl::event copy_for_reshape_event =
-        fn(exec_q, shift, src_nelems, src_nd, dst_nd, packed_shapes_strides,
-           src_data, dst_data, all_deps);
+        fn(exec_q, shift, src_nelems, src_nd, dst_nd, shape_strides, src_data,
+           dst_data, all_deps);
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_reshape_event);
         auto ctx = exec_q.get_context();
-        cgh.host_task([packed_shapes_strides, ctx]() {
-            sycl::free(packed_shapes_strides, ctx);
-        });
+        cgh.host_task(
+            [shape_strides, ctx]() { sycl::free(shape_strides, ctx); });
     });
 
     host_task_events.push_back(temporaries_cleanup_ev);

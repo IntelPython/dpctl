@@ -35,6 +35,8 @@
 #include "boolean_advanced_indexing.hpp"
 #include "kernels/boolean_advanced_indexing.hpp"
 #include "simplify_iteration_space.hpp"
+#include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -43,144 +45,6 @@ namespace tensor
 {
 namespace py_internal
 {
-
-namespace concat_impl
-{
-
-struct sink_t
-{
-    sink_t(){};
-    template <class T> sink_t(T &&){};
-};
-
-template <class V> std::size_t __accumulate_size(std::size_t &s, V &&v)
-{
-    return s += v.size();
-}
-
-template <class V, class U> sink_t __appender(V &lhs, U &&rhs)
-{
-    lhs.insert(lhs.end(), rhs.begin(), rhs.end());
-    return {};
-}
-
-} // namespace concat_impl
-
-template <typename T, typename A, typename... Vs>
-std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
-{
-    using concat_impl::__accumulate_size;
-    using concat_impl::__appender;
-    using concat_impl::sink_t;
-    std::size_t s = lhs.size();
-    {
-        // limited scope ensures array is freed
-        [[maybe_unused]] sink_t tmp[] = {__accumulate_size(s, vs)..., 0};
-    }
-    lhs.reserve(s);
-    {
-        // array of no-data objects ensures ordering of calls to the appender
-        [[maybe_unused]] sink_t tmp[] = {
-            __appender(lhs, std::forward<Vs>(vs))..., 0};
-    }
-
-    return std::move(lhs); // prevent return-value optimization
-}
-
-template <typename indT, typename... Vs>
-std::tuple<indT *, size_t, sycl::event>
-device_allocate_and_pack(sycl::queue q,
-                         std::vector<sycl::event> &host_task_events,
-                         Vs &&...vs)
-{
-
-    // memory transfer optimization, use USM-host for temporary speeds up
-    // tranfer to device, especially on dGPUs
-    using usm_host_allocatorT =
-        sycl::usm_allocator<indT, sycl::usm::alloc::host>;
-    using shT = std::vector<indT, usm_host_allocatorT>;
-
-    usm_host_allocatorT usm_host_allocator(q);
-    shT empty{0, usm_host_allocator};
-    shT packed_shape_strides = concat(empty, vs...);
-
-    auto packed_shape_strides_owner =
-        std::make_shared<shT>(std::move(packed_shape_strides));
-
-    auto sz = packed_shape_strides_owner->size();
-    indT *shape_strides = sycl::malloc_device<indT>(sz, q);
-
-    sycl::event copy_ev =
-        q.copy<indT>(packed_shape_strides_owner->data(), shape_strides, sz);
-
-    sycl::event cleanup_host_task_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_ev);
-        cgh.host_task([packed_shape_strides_owner] {
-            // increment shared pointer ref-count to keep it alive
-            // till copy operation completes;
-        });
-    });
-    host_task_events.push_back(cleanup_host_task_ev);
-
-    return std::make_tuple(shape_strides, sz, copy_ev);
-}
-
-/* @brief check for overlap of memory regions behind arrays.
-
-Presenty assume that array occupies all bytes between smallest and largest
-displaced elements.
-
-TODO: Write proper Frobenius solver to account for holes, e.g.
-   overlap( x_contig[::2], x_contig[1::2]) should give False,
-   while this implementation gives True.
-*/
-bool overlap(dpctl::tensor::usm_ndarray ar1, dpctl::tensor::usm_ndarray ar2)
-{
-    const char *ar1_data = ar1.get_data();
-
-    const auto &ar1_offsets = ar1.get_minmax_offsets();
-    py::ssize_t ar1_elem_size = static_cast<py::ssize_t>(ar1.get_elemsize());
-
-    const char *ar2_data = ar2.get_data();
-    const auto &ar2_offsets = ar2.get_minmax_offsets();
-    py::ssize_t ar2_elem_size = static_cast<py::ssize_t>(ar2.get_elemsize());
-
-    /* Memory of array1 extends from  */
-    /*    [ar1_data + ar1_offsets.first * ar1_elem_size, ar1_data +
-     * ar1_offsets.second * ar1_elem_size + ar1_elem_size] */
-    /* Memory of array2 extends from */
-    /*    [ar2_data + ar2_offsets.first * ar2_elem_size, ar2_data +
-     * ar2_offsets.second * ar2_elem_size + ar2_elem_size] */
-
-    /* Intervals [x0, x1] and [y0, y1] do not overlap if (x0 <= x1) && (y0 <=
-     * y1)
-     * && (x1 <=y0 || y1 <= x0 ) */
-    /* Given that x0 <= x1 and y0 <= y1 are true by construction, the condition
-     * for overlap us (x1 > y0) && (y1 > x0) */
-
-    /*  Applying:
-         (ar1_data + ar1_offsets.second * ar1_elem_size + ar1_elem_size >
-       ar2_data
-       + ar2_offsets.first * ar2_elem_size) && (ar2_data + ar2_offsets.second *
-       ar2_elem_size + ar2_elem_size > ar1_data + ar1_offsets.first *
-       ar1_elem_size)
-    */
-
-    auto byte_distance = static_cast<py::ssize_t>(ar2_data - ar1_data);
-
-    py::ssize_t x1_minus_y0 =
-        (-byte_distance +
-         (ar1_elem_size + (ar1_offsets.second * ar1_elem_size) -
-          (ar2_offsets.first * ar2_elem_size)));
-
-    py::ssize_t y1_minus_x0 =
-        (byte_distance + (ar2_elem_size + (ar2_offsets.second * ar2_elem_size) -
-                          (ar1_offsets.first * ar1_elem_size)));
-
-    bool memory_overlap = (x1_minus_y0 > 0) && (y1_minus_x0 > 0);
-
-    return memory_overlap;
-}
 
 /* @brief Split shape/strides into dir1 (complementary to axis_start <= i <
  * axis_end) and dir2 (along given set of axes)
@@ -342,6 +206,7 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     auto strided_fn = mask_positions_strided_dispatch_vector[mask_typeid];
     std::vector<sycl::event> host_task_events;
 
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
@@ -480,6 +345,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
         }
     }
 
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, not with cumsum.
     if (overlap(dst, cumsum) || overlap(dst, src)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -523,6 +389,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
         auto fn =
             masked_extract_all_slices_strided_impl_dispatch_vector[src_typeid];
 
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, src_shape_vec, src_strides_vec);
         py::ssize_t *packed_src_shape_strides =
@@ -608,6 +475,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
             simplified_ortho_shape, simplified_ortho_src_strides,
             simplified_ortho_dst_strides, ortho_src_offset, ortho_dst_offset);
 
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_ortho_shape,
             simplified_ortho_src_strides, simplified_ortho_dst_strides);
@@ -777,6 +645,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
         }
     }
 
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, not with cumsum.
     if (overlap(dst, rhs) || overlap(dst, cumsum)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -821,6 +690,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
         auto fn =
             masked_place_all_slices_strided_impl_dispatch_vector[dst_typeid];
 
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, dst_shape_vec, dst_strides_vec);
         py::ssize_t *packed_dst_shape_strides =
@@ -906,6 +776,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
             simplified_ortho_shape, simplified_ortho_dst_strides,
             simplified_ortho_rhs_strides, ortho_dst_offset, ortho_rhs_offset);
 
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_ortho_shape,
             simplified_ortho_dst_strides, simplified_ortho_rhs_strides);
@@ -1029,6 +900,7 @@ std::pair<sycl::event, sycl::event> py_nonzero(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(cumsum, indexes)) {
         throw py::value_error("Arrays are expected to ave no memory overlap");
     }
@@ -1049,6 +921,7 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
     auto mask_shape_copying_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, mask_shape);
     py::ssize_t *src_shape_device_ptr = std::get<0>(mask_shape_copying_tuple);

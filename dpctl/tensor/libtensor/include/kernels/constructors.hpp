@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include "utils/offset_utils.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 #include <CL/sycl.hpp>
@@ -48,6 +49,7 @@ template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
 template <typename Ty> class eye_kernel;
 
 namespace py = pybind11;
+using namespace dpctl::tensor::offset_utils;
 
 /* =========== Unboxing Python scalar =============== */
 
@@ -601,16 +603,17 @@ sycl::event tri_impl(sycl::queue exec_q,
     sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
+
         cgh.parallel_for<tri_kernel<Ty, upper>>(
             sycl::range<1>(inner_range * outer_range), [=](sycl::id<1> idx) {
                 py::ssize_t outer_gid = idx[0] / inner_range;
                 py::ssize_t inner_gid = idx[0] - inner_range * outer_gid;
 
-                py::ssize_t src_inner_offset, dst_inner_offset;
-                bool to_copy;
+                py::ssize_t src_inner_offset = 0, dst_inner_offset = 0;
+                bool to_copy(true);
 
                 {
-                    // py::ssize_t inner_gid = idx.get_id(0);
+                    using dpctl::tensor::strides::CIndexer_array;
                     CIndexer_array<d2, py::ssize_t> indexer_i(
                         {shape_and_strides[nd_2], shape_and_strides[nd_1]});
                     indexer_i.set(inner_gid);
@@ -631,7 +634,7 @@ sycl::event tri_impl(sycl::queue exec_q,
                 py::ssize_t src_offset = 0;
                 py::ssize_t dst_offset = 0;
                 {
-                    // py::ssize_t outer_gid = idx.get_id(1);
+                    using dpctl::tensor::strides::CIndexer_vector;
                     CIndexer_vector<py::ssize_t> outer(nd - d2);
                     outer.get_displacement(
                         outer_gid, shape_and_strides, shape_and_strides + src_s,

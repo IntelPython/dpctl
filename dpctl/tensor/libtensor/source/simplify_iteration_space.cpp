@@ -24,6 +24,7 @@
 
 #include "simplify_iteration_space.hpp"
 #include "dpctl4pybind11.hpp"
+#include "utils/strided_iters.hpp"
 #include <pybind11/pybind11.h>
 #include <vector>
 
@@ -49,6 +50,7 @@ void simplify_iteration_space_1(int &nd,
                                 std::vector<py::ssize_t> &simplified_strides,
                                 py::ssize_t &offset)
 {
+    using dpctl::tensor::strides::simplify_iteration_stride;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
@@ -135,6 +137,7 @@ void simplify_iteration_space(int &nd,
                               py::ssize_t &src_offset,
                               py::ssize_t &dst_offset)
 {
+    using dpctl::tensor::strides::simplify_iteration_two_strides;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
@@ -280,6 +283,7 @@ void simplify_iteration_space_3(
     py::ssize_t &src2_offset,
     py::ssize_t &dst_offset)
 {
+    using dpctl::tensor::strides::simplify_iteration_three_strides;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
