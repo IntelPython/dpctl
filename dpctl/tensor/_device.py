@@ -21,12 +21,12 @@ __doc__ = "Implementation of array API mandated Device class"
 
 class Device:
     """
-    Class representing Data-API concept of device.
+    An object representing Data-API concept of device.
 
     This is a wrapper around :class:`dpctl.SyclQueue` with custom
     formatting. The class does not have public constructor,
-    but a class method `create_device` to construct it from device= keyword
-    argument in Array-API functions.
+    but a class method :meth:`dpctl.tensor.Device.create_device` to construct
+    it from `device` keyword argument in Array-API functions.
 
     Instance can be queried for ``sycl_queue``, ``sycl_context``,
     or ``sycl_device``.
@@ -39,13 +39,13 @@ class Device:
         raise TypeError("No public constructor")
 
     @classmethod
-    def create_device(cls, dev=None):
-        """Device.create_device(dev=None)
+    def create_device(cls, device=None):
+        """Device.create_device(device=None)
 
         Creates instance of Device from argument.
 
         Args:
-            dev:
+            device:
                 Device specification, i.e. `None`, :class:`.Device`,
                 :class:`dpctl.SyclQueue`, or a :class:`dpctl.SyclDevice`
                 corresponding to a root SYCL device.
@@ -55,6 +55,7 @@ class Device:
             SyclQueueCreationError: if :class:`dpctl.SyclQueue` could not be
                                     created from the argument
         """
+        dev = device
         obj = super().__new__(cls)
         if isinstance(dev, Device):
             obj.sycl_queue_ = dev.sycl_queue
@@ -153,11 +154,13 @@ def normalize_queue_device(sycl_queue=None, device=None):
             :class:`dpctl.tensor.Device`, optional):
             array-API keyword indicating non-partitioned SYCL device
             where array is allocated.
+
     Returns
         :class:`dpctl.SyclQueue` object implied by either of provided
         keywords. If both are None, `dpctl.SyclQueue()` is returned.
         If both are specified and imply the same queue, `sycl_queue`
         is returned.
+
     Raises:
         TypeError: if argument is not of the expected type, or keywords
             imply incompatible queues.
