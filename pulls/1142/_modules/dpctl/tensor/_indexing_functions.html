@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._indexing_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+36.gd6fd625f8 documentation</title>
+  <title>dpctl.tensor._indexing_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+39.g1635e4b11 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+36.gd6fd625f8
+                0.14.3dev0+39.g1635e4b11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -148,7 +148,7 @@
 <span class="sd">          Default: `&quot;wrap&quot;`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">       out: usm_ndarray</span>
+<span class="sd">       usm_ndarray:</span>
 <span class="sd">          Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]</span>
 <span class="sd">          filled with elements from x.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -323,7 +323,7 @@
 <span class="sd">            Input array of the same size as `condition`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        out (usm_ndarray):</span>
+<span class="sd">        usm_ndarray:</span>
 <span class="sd">            Rank 1 array of values from `arr` where `condition` is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
@@ -425,7 +425,7 @@
 <span class="sd">        arr (usm_ndarray):</span>
 <span class="sd">            Input array, which has non-zero array rank.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        out: Tuple[usm_ndarray, ...]</span>
+<span class="sd">        Tuple[usm_ndarray, ...]:</span>
 <span class="sd">            Indices of non-zero array elements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>

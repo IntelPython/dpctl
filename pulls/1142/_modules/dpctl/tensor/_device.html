@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.3dev0+36.gd6fd625f8 documentation</title>
+  <title>dpctl.tensor._device &mdash; Data-parallel Control (dpctl) 0.14.3dev0+39.g1635e4b11 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+36.gd6fd625f8
+                0.14.3dev0+39.g1635e4b11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -111,12 +111,12 @@
 
 <div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../../docfiles/dpctl/Device.html#dpctl.tensor.Device">[docs]</a><span class="k">class</span> <span class="nc">Device</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class representing Data-API concept of device.</span>
+<span class="sd">    An object representing Data-API concept of device.</span>
 
 <span class="sd">    This is a wrapper around :class:`dpctl.SyclQueue` with custom</span>
 <span class="sd">    formatting. The class does not have public constructor,</span>
-<span class="sd">    but a class method `create_device` to construct it from device= keyword</span>
-<span class="sd">    argument in Array-API functions.</span>
+<span class="sd">    but a class method :meth:`dpctl.tensor.Device.create_device` to construct</span>
+<span class="sd">    it from `device` keyword argument in Array-API functions.</span>
 
 <span class="sd">    Instance can be queried for ``sycl_queue``, ``sycl_context``,</span>
 <span class="sd">    or ``sycl_device``.</span>
@@ -129,13 +129,13 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No public constructor&quot;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dev</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device.create_device(dev=None)</span>
+    <span class="k">def</span> <span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device.create_device(device=None)</span>
 
 <span class="sd">        Creates instance of Device from argument.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            dev:</span>
+<span class="sd">            device:</span>
 <span class="sd">                Device specification, i.e. `None`, :class:`.Device`,</span>
 <span class="sd">                :class:`dpctl.SyclQueue`, or a :class:`dpctl.SyclDevice`</span>
 <span class="sd">                corresponding to a root SYCL device.</span>
@@ -145,6 +145,7 @@
 <span class="sd">            SyclQueueCreationError: if :class:`dpctl.SyclQueue` could not be</span>
 <span class="sd">                                    created from the argument</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dev</span> <span class="o">=</span> <span class="n">device</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue_</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">sycl_queue</span>
@@ -243,11 +244,13 @@
 <span class="sd">            :class:`dpctl.tensor.Device`, optional):</span>
 <span class="sd">            array-API keyword indicating non-partitioned SYCL device</span>
 <span class="sd">            where array is allocated.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">        :class:`dpctl.SyclQueue` object implied by either of provided</span>
 <span class="sd">        keywords. If both are None, `dpctl.SyclQueue()` is returned.</span>
 <span class="sd">        If both are specified and imply the same queue, `sycl_queue`</span>
 <span class="sd">        is returned.</span>
+
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: if argument is not of the expected type, or keywords</span>
 <span class="sd">            imply incompatible queues.</span>

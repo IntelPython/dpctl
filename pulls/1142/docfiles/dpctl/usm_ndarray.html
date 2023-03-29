@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.3dev0+36.gd6fd625f8 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.3dev0+39.g1635e4b11 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+36.gd6fd625f8
+                0.14.3dev0+39.g1635e4b11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -117,16 +117,98 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_ctor_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
-<dd><p>See <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for allowed
-keyword arguments.</p>
-<p><cite>buffer</cite> can be ‘shared’, ‘host’, ‘device’ to allocate
+<dd><p>An array object represents a multidimensional tensor of numeric
+elements stored in a USM allocation on a SYCL device.</p>
+<dl>
+<dt>Arg:</dt><dd><dl>
+<dt>shape (int, tuple):</dt><dd><p>Shape of the array to be created.</p>
+</dd>
+<dt>dtype (str, dtype):</dt><dd><p>Array data type, i.e. the type of array elements.
+The supported types are</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">bool</span></code></dt><dd><p>boolean type</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">int8</span></code>, <code class="docutils literal notranslate"><span class="pre">int16</span></code>, <code class="docutils literal notranslate"><span class="pre">int32</span></code>, <code class="docutils literal notranslate"><span class="pre">int64</span></code>,</dt><dd><p>signed integer types</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="docutils literal notranslate"><span class="pre">uint64</span></code>,</dt><dd><p>unsigned integer types</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float16</span></code></dt><dd><p>half-precision floating type,
+supported if target device’s property
+<code class="docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float32</span></code>, <code class="docutils literal notranslate"><span class="pre">complex64</span></code></dt><dd><p>single-precision real and complex floating
+types</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float64</span></code>, <code class="docutils literal notranslate"><span class="pre">complex128</span></code></dt><dd><p>double-precision real and complex floating
+types, supported if target device’s property
+<code class="docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;|f8&quot;</span></code>.</p>
+</dd>
+<dt>strides (tuple, optional):</dt><dd><p>Strides of the array to be created in elements.
+If <code class="docutils literal notranslate"><span class="pre">strides</span></code> has the value <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined by the
+<code class="docutils literal notranslate"><span class="pre">shape</span></code> of the array and the requested <code class="docutils literal notranslate"><span class="pre">order</span></code>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt>buffer (str, object, optional):</dt><dd><p>A string corresponding to the type of USM allocation to make,
+or a Python object representing a USM memory allocation, i.e.
+<a class="reference internal" href="MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>,
+<a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>, or
+<a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>. Recognized strings are
+<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>. Additional arguments to
+the USM memory alloctors can be passed in a dictionary specified
+via <code class="docutils literal notranslate"><span class="pre">buffer_ctor_kwrds</span></code> keyword parameter.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>.</p>
+</dd>
+<dt>offset (int, optional):</dt><dd><p>Offset of the array element with all zero indexes relative to the
+start of the provided <cite>buffer</cite> in elements. The argument is ignored
+if the <code class="docutils literal notranslate"><span class="pre">buffer</span></code> value is a string and the memory is allocated by
+the constructor. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt>order ({“C”, “F”}, optional):</dt><dd><p>The memory layout of the array when constructing using a new
+allocation. Value <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> corresponds to C-contiguous, or row-major
+memory layout, while value <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> corresponds to F-contiguous, or
+column-major layout. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
+</dd>
+<dt>buffer_ctor_kwargs (dict, optional):</dt><dd><p>Dictionary with keyword parameters to use when creating a new USM
+memory allocation. See <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for
+supported keyword arguments.</p>
+</dd>
+<dt>array_namespace (module, optional):</dt><dd><p>Array namespace module associated with this array.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">buffer</span></code> can be <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> to allocate
 new device memory by calling respective constructor with
-the specified <cite>buffer_ctor_kwrds</cite>; <cite>buffer</cite> can be an
+the specified <code class="docutils literal notranslate"><span class="pre">buffer_ctor_kwrds</span></code>; <code class="docutils literal notranslate"><span class="pre">buffer</span></code> can be an
 instance of <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>,
 <a class="reference internal" href="MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>, or
-<a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>; <cite>buffer</cite> can also be
-another usm_ndarray instance, in which case its underlying
-MemoryUSM* buffer is used for buffer.</p>
+<a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>; <code class="docutils literal notranslate"><span class="pre">buffer</span></code> can also be
+another <a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance, in which case its
+underlying <code class="docutils literal notranslate"><span class="pre">MemoryUSM*</span></code> buffer is used.</p>
 <p class="rubric">Attributes:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -140,7 +222,7 @@ MemoryUSM* buffer is used for buffer.</p>
 <td><p>Returns NumPy's dtype corresponding to the type of the array elements.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.flags" title="dpctl.tensor.usm_ndarray.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></a></p></td>
-<td><p>Returns dpctl.tensor._flags object.</p></td>
+<td><p>Returns <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor._flags</span></code> object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.imag" title="dpctl.tensor.usm_ndarray.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></a></p></td>
 <td><p>Returns imaginary component for arrays with complex data-types and returns zero array for all other data-types.</p></td>
@@ -170,13 +252,13 @@ MemoryUSM* buffer is used for buffer.</p>
 <td><p>Returns memory displacement in array elements, upon unit change of respective index.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_context" title="dpctl.tensor.usm_ndarray.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
-<td><p>Returns <cite>dpctl.SyclContext</cite> object to which USM data is bound.</p></td>
+<td><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_device" title="dpctl.tensor.usm_ndarray.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
-<td><p>Returns <cite>dpctl.SyclDevice</cite> object on which USM data was allocated.</p></td>
+<td><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_queue" title="dpctl.tensor.usm_ndarray.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_queue</span></code></a></p></td>
-<td><p>Returns <cite>dpctl.SyclQueue</cite> object associated with USM data.</p></td>
+<td><p>Returns <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_data" title="dpctl.tensor.usm_ndarray.usm_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_data</span></code></a></p></td>
 <td><p>Gives USM memory object underlying usm_array instance.</p></td>
@@ -189,7 +271,7 @@ MemoryUSM* buffer is used for buffer.</p>
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.to_device" title="dpctl.tensor.usm_ndarray.to_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.to_device" title="dpctl.tensor.usm_ndarray.to_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_device</span></code></a>(target_device)</p></td>
 <td><p>Transfers this array to specified target device.</p></td>
 </tr>
 </tbody>
@@ -234,7 +316,7 @@ otherwise.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.flags">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.flags" title="Permalink to this definition"></a></dt>
-<dd><p>Returns dpctl.tensor._flags object.</p>
+<dd><p>Returns <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor._flags</span></code> object.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -302,19 +384,19 @@ change of respective index.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.sycl_context">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">sycl_context</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.sycl_context" title="Permalink to this definition"></a></dt>
-<dd><p>Returns <cite>dpctl.SyclContext</cite> object to which USM data is bound.</p>
+<dd><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.sycl_device">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">sycl_device</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.sycl_device" title="Permalink to this definition"></a></dt>
-<dd><p>Returns <cite>dpctl.SyclDevice</cite> object on which USM data was allocated.</p>
+<dd><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.sycl_queue">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">sycl_queue</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.sycl_queue" title="Permalink to this definition"></a></dt>
-<dd><p>Returns <cite>dpctl.SyclQueue</cite> object associated with USM data.</p>
+<dd><p>Returns <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -326,7 +408,8 @@ change of respective index.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.usm_type">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">usm_type</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.usm_type" title="Permalink to this definition"></a></dt>
-<dd><p>USM type of underlying memory. Can be ‘device’, ‘shared’, or ‘host’.</p>
+<dd><p>USM type of underlying memory. Can be <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>.</p>
 <p>See: <a class="reference external" href="https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html">https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html</a></p>
 </dd></dl>
 
@@ -335,7 +418,7 @@ change of respective index.</p>
 <h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.to_device">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.to_device" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.to_device" title="Permalink to this definition"></a></dt>
 <dd><p>Transfers this array to specified target device.</p>
 <dl class="field-list">
 <dt class="field-odd">Example<span class="colon">:</span></dt>
@@ -355,7 +438,7 @@ change of respective index.</p>
 </div>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>target</strong> – array API concept of target device.
+<dd class="field-even"><p><strong>target_device</strong> (<em>object</em>) – Array API concept of target device.
 It can be a oneAPI filter selector string,
 an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
 non-partitioned SYCL device, an instance of
@@ -367,6 +450,9 @@ object returned by <code class="xref py py-attr docutils literal notranslate"><s
 If copying is required, it is done by copying from the original
 allocation device to the host, followed by copying from host
 to the target device.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
