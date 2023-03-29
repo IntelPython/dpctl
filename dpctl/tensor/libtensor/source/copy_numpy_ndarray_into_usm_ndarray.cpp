@@ -30,7 +30,6 @@
 #include <pybind11/pybind11.h>
 
 #include "kernels/copy_and_cast.hpp"
-#include "utils/strided_iters.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
