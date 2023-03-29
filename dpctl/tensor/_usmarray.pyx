@@ -1629,3 +1629,8 @@ cdef api object UsmNDArray_MakeFromPtr(
         offset=offset
     )
     return arr
+
+
+def _is_object_with_buffer_protocol(o):
+   "Returns True if object support Python buffer protocol"
+   return _is_buffer(o)

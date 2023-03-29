@@ -679,17 +679,13 @@ cdef class _Memory:
 cdef class MemoryUSMShared(_Memory):
     """
     MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False)
-    allocates nbytes of USM shared memory.
 
-    Non-positive alignments are not used (malloc_shared is used instead).
-    For the queue=None case the ``dpctl.SyclQueue()`` is used to allocate
-    memory.
+    An object representing allocation of SYCL USM-shared memory.
 
-    MemoryUSMShared(usm_obj) constructor creates instance from `usm_obj`
-    expected to implement `__sycl_usm_array_interface__` protocol and to expose
-    a contiguous block of USM shared allocation. Use `copy=True` to
-    perform a copy if USM type of the allocation represented by the argument
-    is other than 'shared'.
+    Non-positive ``alignment`` values are not ignored and
+    the allocator ``malloc_shared`` is used for allocation instead.
+    If ``queue`` is ``None`` a cached default-constructed
+    :class:`dpctl.SyclQueue` is used to allocate memory.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -720,17 +716,13 @@ cdef class MemoryUSMShared(_Memory):
 cdef class MemoryUSMHost(_Memory):
     """
     MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False)
-    allocates nbytes of USM host memory.
 
-    Non-positive alignments are not used (malloc_host is used instead).
-    For the queue=None case the ``dpctl.SyclQueue()`` is used to allocate
-    memory.
+    An object representing allocation of SYCL USM-host memory.
 
-    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj`
-    expected to implement `__sycl_usm_array_interface__` protocol and to expose
-    a contiguous block of USM host allocation. Use `copy=True` to
-    perform a copy if USM type of the allocation represented by the argument
-    is other than 'host'.
+    Non-positive ``alignment`` values are not ignored and
+    the allocator ``malloc_host`` is used for allocation instead.
+    If ``queue`` is ``None`` a cached default-constructed
+    :class:`dpctl.SyclQueue` is used to allocate memory.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -762,17 +754,13 @@ cdef class MemoryUSMHost(_Memory):
 cdef class MemoryUSMDevice(_Memory):
     """
     MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False)
-    allocates nbytes of USM device memory.
 
-    Non-positive alignments are not used (malloc_device is used instead).
-    For the queue=None case the ``dpctl.SyclQueue()`` is used to allocate
-    memory.
+    An object representing allocation of SYCL USM-device memory.
 
-    MemoryUSMDevice(usm_obj) constructor create instance from `usm_obj`
-    expected to implement `__sycl_usm_array_interface__` protocol and exposing
-    a contiguous block of USM device allocation. Use `copy=True` to
-    perform a copy if USM type of the allocation represented by the argument
-    is other than 'device'.
+    Non-positive ``alignment`` values are not ignored and
+    the allocator ``malloc_device`` is used for allocation instead.
+    If ``queue`` is ``None`` a cached default-constructed
+    :class:`dpctl.SyclQueue` is used to allocate memory.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):

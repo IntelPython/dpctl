@@ -24,6 +24,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 from dpctl.tensor._device import normalize_queue_device
+from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 
 __doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
 
@@ -66,11 +67,12 @@ def _array_info_dispatch(obj):
         return _empty_tuple, complex, _host_set
     if isinstance(obj, (list, tuple, range)):
         return _array_info_sequence(obj)
-    if any(
-        isinstance(obj, s)
-        for s in [np.integer, np.floating, np.complexfloating, np.bool_]
-    ):
-        return _empty_tuple, obj.dtype, _host_set
+    if _is_object_with_buffer_protocol(obj):
+        np_obj = np.array(obj)
+        return np_obj.shape, np_obj.dtype, _host_set
+    if hasattr(obj, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(obj)
+        return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
     raise ValueError(type(obj))
 
 
@@ -219,6 +221,18 @@ def _map_to_device_dtype(dt, q):
     raise RuntimeError(f"Unrecognized data type '{dt}' encountered.")
 
 
+def _usm_ndarray_from_suai(obj):
+    sua_iface = getattr(obj, "__sycl_usm_array_interface__")
+    membuf = dpm.as_usm_memory(obj)
+    ary = dpt.usm_ndarray(
+        sua_iface["shape"],
+        dtype=sua_iface["typestr"],
+        buffer=membuf,
+        strides=sua_iface.get("strides", None),
+    )
+    return ary
+
+
 def _asarray_from_numpy_ndarray(
     ary, dtype=None, usm_type=None, sycl_queue=None, order="K"
 ):
@@ -276,17 +290,6 @@ def _asarray_from_numpy_ndarray(
     return res
 
 
-def _is_object_with_buffer_protocol(obj):
-    "Returns `True` if object support Python buffer protocol"
-    try:
-        # use context manager to ensure
-        # buffer is instantly released
-        with memoryview(obj):
-            return True
-    except TypeError:
-        return False
-
-
 def _ensure_native_dtype_device_support(dtype, dev) -> None:
     """Check that dtype is natively supported by device.
 
@@ -318,6 +321,122 @@ def _ensure_native_dtype_device_support(dtype, dev) -> None:
         )
 
 
+def _usm_types_walker(o, usm_types_list):
+    if isinstance(o, dpt.usm_ndarray):
+        usm_types_list.append(o.usm_type)
+        return
+    if hasattr(o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(o)
+        usm_types_list.append(usm_ar.usm_type)
+        return
+    if isinstance(o, (list, tuple)):
+        for el in o:
+            _usm_types_walker(el, usm_types_list)
+        return
+    raise TypeError
+
+
+def _device_copy_walker(seq_o, res, events):
+    if isinstance(seq_o, dpt.usm_ndarray):
+        exec_q = res.sycl_queue
+        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=seq_o, dst=res, sycl_queue=exec_q
+        )
+        events.append(ht_ev)
+        return
+    if hasattr(seq_o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(seq_o)
+        exec_q = res.sycl_queue
+        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ar, dst=res, sycl_queue=exec_q
+        )
+        events.append(ht_ev)
+        return
+    if isinstance(seq_o, (list, tuple)):
+        for i, el in enumerate(seq_o):
+            _device_copy_walker(el, res[i], events)
+        return
+    raise TypeError
+
+
+def _copy_through_host_walker(seq_o, usm_res):
+    if isinstance(seq_o, dpt.usm_ndarray):
+        usm_res[...] = dpt.asnumpy(seq_o).copy()
+        return
+    if hasattr(seq_o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(seq_o)
+        usm_res[...] = dpt.asnumpy(usm_ar).copy()
+        return
+    if isinstance(seq_o, (list, tuple)):
+        for i, el in enumerate(seq_o):
+            _copy_through_host_walker(el, usm_res[i])
+        return
+    usm_res[...] = np.asarray(seq_o)
+
+
+def _asarray_from_seq(
+    seq_obj,
+    seq_shape,
+    seq_dt,
+    seq_dev,
+    dtype=None,
+    usm_type=None,
+    sycl_queue=None,
+    order="C",
+):
+    "`obj` is a sequence"
+    if usm_type is None:
+        usm_types_in_seq = []
+        _usm_types_walker(seq_obj, usm_types_in_seq)
+        usm_type = dpctl.utils.get_coerced_usm_type(usm_types_in_seq)
+    dpctl.utils.validate_usm_type(usm_type)
+    if sycl_queue is None:
+        exec_q = seq_dev
+        alloc_q = seq_dev
+    else:
+        exec_q = dpctl.utils.get_execution_queue(
+            (
+                sycl_queue,
+                seq_dev,
+            )
+        )
+        alloc_q = sycl_queue
+    if dtype is None:
+        dtype = _map_to_device_dtype(seq_dt, alloc_q)
+    else:
+        _mapped_dt = _map_to_device_dtype(dtype, alloc_q)
+        if _mapped_dt != dtype:
+            raise ValueError(
+                f"Device {sycl_queue.sycl_device} "
+                f"does not support {dtype} natively."
+            )
+        dtype = _mapped_dt
+    if order in "KA":
+        order = "C"
+    if isinstance(exec_q, dpctl.SyclQueue):
+        res = dpt.empty(
+            seq_shape,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=alloc_q,
+            order=order,
+        )
+        ht_events = []
+        _device_copy_walker(seq_obj, res, ht_events)
+        dpctl.SyclEvent.wait_for(ht_events)
+        return res
+    else:
+        res = dpt.empty(
+            seq_shape,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=alloc_q,
+            order=order,
+        )
+        _copy_through_host_walker(seq_obj, res)
+        return res
+
+
 def asarray(
     obj,
     dtype=None,
@@ -327,7 +446,9 @@ def asarray(
     sycl_queue=None,
     order="K",
 ):
-    """
+    """ asarray(obj, dtype=None, copy=None, device=None, \
+           usm_type=None, sycl_queue=None, order="K")
+
     Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
 
     Args:
@@ -347,7 +468,7 @@ def asarray(
             allocations if possible, but allowed to perform a copy otherwise.
             Default: `None`.
         order ("C","F","A","K", optional): memory layout of the output array.
-            Default: "C"
+            Default: "K"
         device (optional): array API concept of device where the output array
             is created. `device` can be `None`, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to a
@@ -407,14 +528,7 @@ def asarray(
             order=order,
         )
     if hasattr(obj, "__sycl_usm_array_interface__"):
-        sua_iface = getattr(obj, "__sycl_usm_array_interface__")
-        membuf = dpm.as_usm_memory(obj)
-        ary = dpt.usm_ndarray(
-            sua_iface["shape"],
-            dtype=sua_iface["typestr"],
-            buffer=membuf,
-            strides=sua_iface.get("strides", None),
-        )
+        ary = _usm_ndarray_from_suai(obj)
         return _asarray_from_usm_ndarray(
             ary,
             dtype=dtype,
@@ -452,7 +566,7 @@ def asarray(
             raise ValueError(
                 "Converting Python sequence to usm_ndarray requires a copy"
             )
-        _, _, devs = _array_info_sequence(obj)
+        seq_shape, seq_dt, devs = _array_info_sequence(obj)
         if devs == _host_set:
             return _asarray_from_numpy_ndarray(
                 np.asarray(obj, dtype=dtype, order=order),
@@ -461,7 +575,17 @@ def asarray(
                 sycl_queue=sycl_queue,
                 order=order,
             )
-        # for sequences
+        elif len(devs) == 1:
+            return _asarray_from_seq(
+                obj,
+                seq_shape,
+                seq_dt,
+                list(devs)[0],
+                dtype=dtype,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+                order=order,
+            )
         raise NotImplementedError(
             "Converting Python sequences is not implemented"
         )

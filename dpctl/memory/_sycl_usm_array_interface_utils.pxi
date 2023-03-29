@@ -88,27 +88,38 @@ cdef object _pointers_from_shape_and_stride(
 
     Returns: tuple(min_disp, nbytes)
     """
+    cdef Py_ssize_t nelems = 1
+    cdef Py_ssize_t min_disp = 0
+    cdef Py_ssize_t max_disp = 0
+    cdef int i
+    cdef Py_ssize_t sh_i = 0
+    cdef Py_ssize_t str_i = 0
     if (nd > 0):
         if (ary_strides is None):
             nelems = 1
             for si in ary_shape:
                 sh_i = int(si)
-                if (sh_i <= 0):
+                if (sh_i < 0):
                     raise ValueError("Array shape elements need to be positive")
                 nelems = nelems * sh_i
-            return (ary_offset, nelems * itemsize)
+            return (ary_offset, max(nelems, 1) * itemsize)
         else:
             min_disp = ary_offset
             max_disp = ary_offset
             for i in range(nd):
                 str_i = int(ary_strides[i])
                 sh_i = int(ary_shape[i])
-                if (sh_i <= 0):
+                if (sh_i < 0):
                     raise ValueError("Array shape elements need to be positive")
-                if (str_i > 0):
-                    max_disp += str_i * (sh_i - 1)
+                if (sh_i > 0):
+                    if (str_i > 0):
+                        max_disp += str_i * (sh_i - 1)
+                    else:
+                        min_disp += str_i * (sh_i - 1)
                 else:
-                    min_disp += str_i * (sh_i - 1);
+                    nelems = 0
+            if nelems == 0:
+                return (ary_offset, itemsize)
             return (min_disp, (max_disp - min_disp + 1) * itemsize)
     elif (nd == 0):
         return (ary_offset, itemsize)
