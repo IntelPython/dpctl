@@ -293,3 +293,31 @@ def test_asarray_seq_of_suai():
     assert x.shape == (2, 0)
     assert x.usm_type == o.usm_type
     assert x.sycl_queue == o.sycl_queue
+
+
+def test_asarray_seq_of_suai_different_queue():
+    q = get_queue_or_skip()
+
+    class Dummy:
+        def __init__(self, obj, iface):
+            self.obj = obj
+            self.__sycl_usm_array_interface__ = iface
+
+        @property
+        def shape(self):
+            return self.__sycl_usm_array_interface__["shape"]
+
+    q2 = dpctl.SyclQueue()
+    assert q != q2
+    o = dpt.empty((2, 2), usm_type="shared", sycl_queue=q2)
+    d = Dummy(o, o.__sycl_usm_array_interface__)
+
+    x = dpt.asarray(d, sycl_queue=q)
+    assert x.sycl_queue == q
+    assert x.shape == d.shape
+    x = dpt.asarray([d], sycl_queue=q)
+    assert x.sycl_queue == q
+    assert x.shape == (1,) + d.shape
+    x = dpt.asarray([d, d], sycl_queue=q)
+    assert x.sycl_queue == q
+    assert x.shape == (2,) + d.shape
