@@ -1110,13 +1110,19 @@ cdef class usm_ndarray:
                             "converted to usm_ndarray"
                         )
                 else:
+                    rhs_np = np.asarray(rhs)
+                    if type_bytesize(rhs_np.dtype.num) < 0:
+                        raise ValueError(
+                            f"Input of type {type(rhs)} can not be "
+                            "assigned to usm_ndarray because of "
+                            f"unsupported data type '{rhs_np.dtype}'"
+                        )
                     try:
-                        rhs_np = np.asarray(rhs)
                         _copy_from_numpy_into(Xv, rhs_np)
                     except Exception:
                         raise ValueError(
                             f"Input of type {type(rhs)} could not be "
-                            "converted to usm_ndarray"
+                            "copied into dpctl.tensor.usm_ndarray"
                         )
             return
 
