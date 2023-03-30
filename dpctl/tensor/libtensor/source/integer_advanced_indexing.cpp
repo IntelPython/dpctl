@@ -253,8 +253,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         throw py::value_error("Axis cannot be negative.");
     }
 
-    if (mode != 0 && mode != 1 && mode != 2) {
-        throw py::value_error("Mode must be 0, 1, or 2.");
+    if (mode != 0 && mode != 1) {
+        throw py::value_error("Mode must be 0 or 1.");
     }
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
@@ -564,8 +564,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         throw py::value_error("Axis cannot be negative.");
     }
 
-    if (mode != 0 && mode != 1 && mode != 2) {
-        throw py::value_error("Mode must be 0, 1, or 2.");
+    if (mode != 0 && mode != 1) {
+        throw py::value_error("Mode must be 0 or 1.");
     }
 
     if (!dst.is_writable()) {
