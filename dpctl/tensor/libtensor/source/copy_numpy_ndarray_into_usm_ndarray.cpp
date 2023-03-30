@@ -30,7 +30,6 @@
 #include <pybind11/pybind11.h>
 
 #include "kernels/copy_and_cast.hpp"
-#include "utils/strided_iters.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -211,45 +210,26 @@ void copy_numpy_ndarray_into_usm_ndarray(
         }
     }
 
-    // Create shared pointers with shape and src/dst strides, copy into device
-    // memory
-    using shT = std::vector<py::ssize_t>;
+    std::vector<sycl::event> host_task_events;
+    host_task_events.reserve(1);
+
+    // Copy shape strides into device memory
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, simplified_shape, simplified_src_strides,
+        simplified_dst_strides);
+    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     // Get implementation function pointer
     auto copy_and_cast_from_host_blocking_fn =
         copy_and_cast_from_host_blocking_dispatch_table[dst_type_id]
                                                        [src_type_id];
 
-    //   If shape/strides are accessed with accessors, buffer destructor
-    //   will force syncronization.
-    py::ssize_t *shape_strides =
-        sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
-
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unabled to allocate device memory");
-    }
-
-    using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
-    using usmshT = std::vector<py::ssize_t, usm_host_allocatorT>;
-    usm_host_allocatorT alloc(exec_q);
-
-    auto host_shape_strides_shp = std::make_shared<usmshT>(3 * nd, alloc);
-    std::copy(simplified_shape.begin(), simplified_shape.end(),
-              host_shape_strides_shp->begin());
-    std::copy(simplified_src_strides.begin(), simplified_src_strides.end(),
-              host_shape_strides_shp->begin() + nd);
-    std::copy(simplified_dst_strides.begin(), simplified_dst_strides.end(),
-              host_shape_strides_shp->begin() + 2 * nd);
-
-    sycl::event copy_packed_ev =
-        exec_q.copy<py::ssize_t>(host_shape_strides_shp->data(), shape_strides,
-                                 host_shape_strides_shp->size());
-
     copy_and_cast_from_host_blocking_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
         npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
-        dst_offset, depends, {copy_packed_ev});
+        dst_offset, depends, {copy_shape_ev});
 
     sycl::free(shape_strides, exec_q);
 

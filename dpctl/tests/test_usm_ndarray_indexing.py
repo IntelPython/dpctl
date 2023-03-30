@@ -455,6 +455,32 @@ def test_integer_strided_indexing():
     assert (dpt.asnumpy(y) == dpt.asnumpy(yc)).all()
 
 
+def test_TrueFalse_indexing():
+    get_queue_or_skip()
+    n0, n1 = 2, 3
+    x = dpt.ones((n0, n1))
+    for ind in [True, dpt.asarray(True)]:
+        y1 = x[ind]
+        assert y1.shape == (1, n0, n1)
+        assert y1._pointer == x._pointer
+        y2 = x[:, ind]
+        assert y2.shape == (n0, 1, n1)
+        assert y2._pointer == x._pointer
+        y3 = x[..., ind]
+        assert y3.shape == (n0, n1, 1)
+        assert y3._pointer == x._pointer
+    for ind in [False, dpt.asarray(False)]:
+        y1 = x[ind]
+        assert y1.shape == (0, n0, n1)
+        assert y1._pointer == x._pointer
+        y2 = x[:, ind]
+        assert y2.shape == (n0, 0, n1)
+        assert y2._pointer == x._pointer
+        y3 = x[..., ind]
+        assert y3.shape == (n0, n1, 0)
+        assert y3._pointer == x._pointer
+
+
 @pytest.mark.parametrize(
     "data_dt",
     _all_dtypes,

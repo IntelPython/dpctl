@@ -34,6 +34,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include "kernels/integer_advanced_indexing.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -63,9 +64,6 @@ static put_fn_ptr_t put_dispatch_table[INDEXING_MODES][_ns::num_types]
 
 namespace py = pybind11;
 
-using dpctl::tensor::c_contiguous_strides;
-using dpctl::tensor::f_contiguous_strides;
-
 using dpctl::utils::keep_args_alive;
 
 std::vector<sycl::event>
@@ -77,6 +75,7 @@ _populate_kernel_params(sycl::queue exec_q,
                         py::ssize_t *device_orthog_sh_st,
                         py::ssize_t *device_along_sh_st,
                         const py::ssize_t *inp_shape,
+                        const py::ssize_t *arr_shape,
                         std::vector<py::ssize_t> &inp_strides,
                         std::vector<py::ssize_t> &arr_strides,
                         std::vector<py::ssize_t> &ind_sh_sts,
@@ -113,7 +112,7 @@ _populate_kernel_params(sycl::queue exec_q,
         std::make_shared<shT>(3 * orthog_sh_elems, sz_allocator);
 
     std::shared_ptr<shT> host_along_sh_st_shp =
-        std::make_shared<shT>(2 * k + ind_sh_elems, sz_allocator);
+        std::make_shared<shT>(2 * (k + ind_sh_elems), sz_allocator);
 
     std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
               host_ind_sh_st_shp->begin());
@@ -167,9 +166,11 @@ _populate_kernel_params(sycl::queue exec_q,
     }
 
     if (ind_nd > 0) {
+        std::copy(arr_shape + axis_start, arr_shape + axis_start + ind_nd,
+                  host_along_sh_st_shp->begin() + 2 * k);
         std::copy(arr_strides.begin() + axis_start,
                   arr_strides.begin() + axis_start + ind_nd,
-                  host_along_sh_st_shp->begin() + 2 * k);
+                  host_along_sh_st_shp->begin() + 2 * k + ind_nd);
     }
 
     sycl::event device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
@@ -252,8 +253,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         throw py::value_error("Axis cannot be negative.");
     }
 
-    if (mode != 0 && mode != 1 && mode != 2) {
-        throw py::value_error("Mode must be 0, 1, or 2.");
+    if (mode != 0 && mode != 1) {
+        throw py::value_error("Mode must be 0 or 1.");
     }
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
@@ -312,22 +313,13 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
             "Execution queue is not compatible with allocation queues");
     }
 
-    auto src_offsets = src.get_minmax_offsets();
-    auto dst_offsets = dst.get_minmax_offsets();
-    int src_elem_size = src.get_elemsize();
-    int dst_elem_size = dst.get_elemsize();
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Array memory overlap.");
+    }
 
     py::ssize_t src_offset = py::ssize_t(0);
     py::ssize_t dst_offset = py::ssize_t(0);
-
-    bool memory_overlap =
-        ((dst_data - src_data > src_offsets.second * src_elem_size -
-                                    dst_offsets.first * dst_elem_size) &&
-         (src_data - dst_data > dst_offsets.second * dst_elem_size -
-                                    src_offsets.first * src_elem_size));
-    if (memory_overlap) {
-        throw py::value_error("Array memory overlap.");
-    }
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -357,6 +349,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 
     // destination must be ample enough to accommodate all elements
     {
+        auto dst_offsets = dst.get_minmax_offsets();
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if ((range + 1) < (orthog_nelems * ind_nelems)) {
@@ -407,19 +400,12 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
         }
 
         // check for overlap with destination
-        int ind_elem_size = ind_.get_elemsize();
-        auto ind_mem_offsets = ind_.get_minmax_offsets();
-        char *ind_data = ind_.get_data();
-        bool ind_memory_overlap =
-            ((dst_data - ind_data > ind_mem_offsets.second * ind_elem_size -
-                                        dst_offsets.first * dst_elem_size) &&
-             (ind_data - dst_data > dst_offsets.second * dst_elem_size -
-                                        ind_mem_offsets.first * ind_elem_size));
-
-        if (ind_memory_overlap) {
+        if (overlap(dst, ind_)) {
             throw py::value_error(
                 "Arrays index overlapping segments of memory");
         }
+
+        char *ind_data = ind_.get_data();
 
         // strides are initialized to 0 for 0D indices, so skip here
         if (ind_nd > 0) {
@@ -467,7 +453,8 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 
     // packed_shapes_strides = [src_shape[:axis] + src_shape[axis+k:],
     //                          src_strides[:axis] + src_strides[axis+k:],
-    //                          dst_strides[:axis] + dst_strides[axis+k:]]
+    //                          dst_strides[:axis] +
+    //                          dst_strides[axis+ind.ndim:]]
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(3 * orthog_sh_elems, exec_q);
 
@@ -480,10 +467,11 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     }
 
     // packed_axes_shapes_strides = [src_shape[axis:axis+k],
-    //                               src_strides[axis:axis+k,
-    //                               dst_strides[axis:ind.ndim]]
+    //                               src_strides[axis:axis+k],
+    //                               dst_shape[axis:axis+ind.ndim],
+    //                               dst_strides[axis:axis+ind.ndim]]
     py::ssize_t *packed_axes_shapes_strides =
-        sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
+        sycl::malloc_device<py::ssize_t>(2 * (k + ind_sh_elems), exec_q);
 
     if (packed_axes_shapes_strides == nullptr) {
         sycl::free(packed_ind_ptrs, exec_q);
@@ -503,8 +491,9 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     std::vector<sycl::event> pack_deps = _populate_kernel_params(
         exec_q, host_task_events, packed_ind_ptrs, packed_ind_shapes_strides,
         packed_ind_offsets, packed_shapes_strides, packed_axes_shapes_strides,
-        src_shape, src_strides, dst_strides, ind_sh_sts, ind_ptrs, ind_offsets,
-        axis_start, k, ind_nd, src_nd, orthog_sh_elems, ind_sh_elems);
+        src_shape, dst_shape, src_strides, dst_strides, ind_sh_sts, ind_ptrs,
+        ind_offsets, axis_start, k, ind_nd, src_nd, orthog_sh_elems,
+        ind_sh_elems);
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + pack_deps.size());
@@ -575,8 +564,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         throw py::value_error("Axis cannot be negative.");
     }
 
-    if (mode != 0 && mode != 1 && mode != 2) {
-        throw py::value_error("Mode must be 0, 1, or 2.");
+    if (mode != 0 && mode != 1) {
+        throw py::value_error("Mode must be 0 or 1.");
     }
 
     if (!dst.is_writable()) {
@@ -636,29 +625,22 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     char *dst_data = dst.get_data();
     char *val_data = val.get_data();
 
-    auto dst_offsets = dst.get_minmax_offsets();
-    auto val_offsets = val.get_minmax_offsets();
-    int dst_elem_size = dst.get_elemsize();
-    int val_elem_size = val.get_elemsize();
-
     if (!dpctl::utils::queues_are_compatible(exec_q, {dst, val})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
-    py::ssize_t dst_offset = py::ssize_t(0);
-    py::ssize_t val_offset = py::ssize_t(0);
 
-    bool memory_overlap =
-        ((val_data - dst_data > dst_offsets.second * dst_elem_size -
-                                    val_offsets.first * val_elem_size) &&
-         (dst_data - val_data > val_offsets.second * val_elem_size -
-                                    dst_offsets.first * dst_elem_size));
-    if (memory_overlap) {
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(val, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
+    py::ssize_t dst_offset = py::ssize_t(0);
+    py::ssize_t val_offset = py::ssize_t(0);
+
     // destination must be ample enough to accommodate all possible elements
     {
+        auto dst_offsets = dst.get_minmax_offsets();
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if ((range + 1) < dst_nelems) {
@@ -733,19 +715,12 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
         }
 
         // check for overlap with destination
-        int ind_elem_size = ind_.get_elemsize();
-        auto ind_mem_offsets = ind_.get_minmax_offsets();
-        char *ind_data = ind_.get_data();
-        bool ind_memory_overlap =
-            ((val_data - ind_data > ind_mem_offsets.second * ind_elem_size -
-                                        val_offsets.first * val_elem_size) &&
-             (ind_data - val_data > val_offsets.second * val_elem_size -
-                                        ind_mem_offsets.first * ind_elem_size));
-
-        if (ind_memory_overlap) {
+        if (overlap(ind_, dst)) {
             throw py::value_error(
                 "Arrays index overlapping segments of memory");
         }
+
+        char *ind_data = ind_.get_data();
 
         // strides are initialized to 0 for 0D indices, so skip here
         if (ind_nd > 0) {
@@ -792,7 +767,8 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
     // packed_shapes_strides = [dst_shape[:axis] + dst_shape[axis+k:],
     //                          dst_strides[:axis] + dst_strides[axis+k:],
-    //                          val_strides[:axis] + val_strides[axis+k:]]
+    //                          val_strides[:axis] +
+    //                          val_strides[axis+ind.ndim:]]
     py::ssize_t *packed_shapes_strides =
         sycl::malloc_device<py::ssize_t>(3 * orthog_sh_elems, exec_q);
 
@@ -805,10 +781,11 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     }
 
     // packed_axes_shapes_strides = [dst_shape[axis:axis+k],
-    //                               dst_strides[axis:axis+k,
-    //                               val_strides[axis:ind.ndim]]
+    //                               dst_strides[axis:axis+k],
+    //                               val_shape[axis:axis+ind.ndim],
+    //                               val_strides[axis:axis+ind.ndim]]
     py::ssize_t *packed_axes_shapes_strides =
-        sycl::malloc_device<py::ssize_t>((2 * k) + ind_sh_elems, exec_q);
+        sycl::malloc_device<py::ssize_t>(2 * (k + ind_sh_elems), exec_q);
 
     if (packed_axes_shapes_strides == nullptr) {
         sycl::free(packed_ind_ptrs, exec_q);
@@ -828,8 +805,9 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     std::vector<sycl::event> pack_deps = _populate_kernel_params(
         exec_q, host_task_events, packed_ind_ptrs, packed_ind_shapes_strides,
         packed_ind_offsets, packed_shapes_strides, packed_axes_shapes_strides,
-        dst_shape, dst_strides, val_strides, ind_sh_sts, ind_ptrs, ind_offsets,
-        axis_start, k, ind_nd, dst_nd, orthog_sh_elems, ind_sh_elems);
+        dst_shape, val_shape, dst_strides, val_strides, ind_sh_sts, ind_ptrs,
+        ind_offsets, axis_start, k, ind_nd, dst_nd, orthog_sh_elems,
+        ind_sh_elems);
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + pack_deps.size());

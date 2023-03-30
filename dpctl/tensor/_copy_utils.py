@@ -31,23 +31,6 @@ __doc__ = (
 )
 
 
-def _has_memory_overlap(x1, x2):
-    if x1.size and x2.size:
-        m1 = dpm.as_usm_memory(x1)
-        m2 = dpm.as_usm_memory(x2)
-        # can only overlap if bound to the same context
-        if m1.sycl_context == m2.sycl_context:
-            p1_beg = m1._pointer
-            p1_end = p1_beg + m1.nbytes
-            p2_beg = m2._pointer
-            p2_end = p2_beg + m2.nbytes
-            # may intersect if not ((p1_beg >= p2_end) or (p2_beg >= p2_end))
-            return (p1_beg < p2_end) and (p2_beg < p1_end)
-        return False
-    # zero element array do not overlap anything
-    return False
-
-
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError
@@ -125,19 +108,29 @@ def from_numpy(np_ary, device=None, usm_type="device", sycl_queue=None):
     from_numpy(arg, device=None, usm_type="device", sycl_queue=None)
 
     Creates :class:`dpctl.tensor.usm_ndarray` from instance of
-    `numpy.ndarray`.
+    :class:`numpy.ndarray`.
 
     Args:
-        arg: An instance of input `numpy.ndarray`
-        device: array API specification of device where the output array
-            is created
-        usm_type: The requested USM allocation type for the output array
-        sycl_queue: a :class:`dpctl.SyclQueue` instance that determines
-            output array allocation device as well as placement of data
-            movement operation. The `device` and `sycl_queue` arguments
+        arg (array-like): An instance of input convertible to
+            :class:`numpy.ndarray`
+        device (object): array API specification of device where the
+            output array is created. Device can be specified by a
+            a filter selector string, an instance of
+            :class:`dpctl.SyclDevice`, an instance of
+            :class:`dpctl.SyclQueue`, an instance of
+            :class:`dpctl.tensor.Device`. If the value is `None`,
+            returned array is created on the default-selected device.
+            Default: `None`.
+        usm_type (str): The requested USM allocation type for the
+            output array. Recognized values are `"device"`, `"shared"`,
+            or `"host"`.
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            A SYCL queue that determines output array allocation device
+            as well as execution placement of data movement operations.
+            The `device` and `sycl_queue` arguments
             are equivalent. Only one of them should be specified. If both
             are provided, they must be consistent and result in using the
-            same execution queue.
+            same execution queue. Default: `None`.
 
     The returned array has the same shape, and the same data type kind.
     If the device does not support the data type of input array, a
@@ -154,12 +147,15 @@ def to_numpy(usm_ary):
     to_numpy(usm_ary)
 
     Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`
-    into `numpy.ndarray` instance of the same shape and same data type.
+    into :class:`numpy.ndarray` instance of the same shape and same data type.
 
     Args:
-        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+        usm_ary (usm_ndarray):
+            Input array
     Returns:
-        An instance of `numpy.ndarray` populated with content of `usm_ary`.
+        :class:`numpy.ndarray`:
+            An instance of :class:`numpy.ndarray` populated with content of
+            `usm_ary`
     """
     return _copy_to_numpy(usm_ary)
 
@@ -169,18 +165,24 @@ def asnumpy(usm_ary):
     asnumpy(usm_ary)
 
     Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`
-    into `numpy.ndarray` instance of the same shape and same data type.
+    into :class:`numpy.ndarray` instance of the same shape and same data
+    type.
 
     Args:
-        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
+        usm_ary (usm_ndarray):
+            Input array
     Returns:
-        An instance of `numpy.ndarray` populated with content of `usm_ary`.
+        :class:`numpy.ndarray`:
+            An instance of :class:`numpy.ndarray` populated with content
+            of `usm_ary`
     """
     return _copy_to_numpy(usm_ary)
 
 
 class Dummy:
-    "Helper class with specified __sycl_usm_array_interface__ attribute"
+    """
+    Helper class with specified ``__sycl_usm_array_interface__`` attribute
+    """
 
     def __init__(self, iface):
         self.__sycl_usm_array_interface__ = iface
@@ -209,7 +211,7 @@ def _copy_overlapping(dst, src):
 def _copy_same_shape(dst, src):
     """Assumes src and dst have the same shape."""
     # check that memory regions do not overlap
-    if _has_memory_overlap(dst, src):
+    if ti._array_overlap(dst, src):
         _copy_overlapping(src=src, dst=dst)
         return
 
@@ -280,10 +282,20 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
 
 
 def copy(usm_ary, order="K"):
-    """
-    Creates a copy of given instance of `usm_ndarray`.
+    """copy(ary, order="K")
 
-    Memory layour of the copy is controlled by `order` keyword,
+    Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.
+
+    Args:
+        ary (usm_ndarray):
+            Input array.
+        order ({"C", "F", "A", "K"}, optional):
+            Controls the memory layout of the output array.
+    Returns:
+        usm_ndarray:
+            A copy of the input array.
+
+    Memory layout of the copy is controlled by `order` keyword,
     following NumPy's conventions. The `order` keywords can be
     one of the following:
 
@@ -342,10 +354,31 @@ def copy(usm_ary, order="K"):
 
 
 def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
-    """
-    astype(usm_array, new_dtype, order="K", casting="unsafe", copy=True)
+    """ astype(array, new_dtype, order="K", casting="unsafe", \
+            copy=True)
 
-    Returns a copy of the array, cast to a specified type.
+    Returns a copy of the :class:`dpctl.tensor.usm_ndarray`, cast to a
+    specified type.
+
+    Args:
+        array (usm_ndarray):
+            An input array.
+        new_dtype (dtype):
+            The data type of the resulting array.
+        order ({"C", "F", "A", "K"}, optional):
+            Controls memory layout of the resulting array if a copy
+            is returned.
+        casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
+            Controls what kind of data casting may occur. Please see
+            :meth:`numpy.ndarray.astype` for description of casting modes.
+        copy (bool, optional):
+            By default, `astype` always returns a newly allocated array.
+            If this keyword is set to `False`, a view of the input array
+            may be returned when possible.
+
+    Returns:
+        usm_ndarray:
+            An array with requested data type.
 
     A view can be returned, if possible, when `copy=False` is used.
     """

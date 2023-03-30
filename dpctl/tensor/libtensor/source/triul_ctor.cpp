@@ -31,6 +31,7 @@
 
 #include "kernels/constructors.hpp"
 #include "simplify_iteration_space.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
@@ -43,8 +44,6 @@ namespace tensor
 namespace py_internal
 {
 
-using dpctl::tensor::c_contiguous_strides;
-using dpctl::tensor::f_contiguous_strides;
 using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::tri_fn_ptr_t;
@@ -95,17 +94,8 @@ usm_ndarray_triul(sycl::queue exec_q,
     char *dst_data = dst.get_data();
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto src_offsets = src.get_minmax_offsets();
-    auto dst_offsets = dst.get_minmax_offsets();
-    int src_elem_size = src.get_elemsize();
-    int dst_elem_size = dst.get_elemsize();
-
-    bool memory_overlap =
-        ((dst_data - src_data > src_offsets.second * src_elem_size -
-                                    dst_offsets.first * dst_elem_size) &&
-         (src_data - dst_data > dst_offsets.second * dst_elem_size -
-                                    src_offsets.first * src_elem_size));
-    if (memory_overlap) {
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
         // TODO: could use a temporary, but this is done by the caller
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -127,55 +117,16 @@ usm_ndarray_triul(sycl::queue exec_q,
             "Execution queue context is not the same as allocation contexts");
     }
 
-    using shT = std::vector<py::ssize_t>;
-    shT src_strides(src_nd);
-
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_src_f_contig = src.is_f_contiguous();
-
-    const py::ssize_t *src_strides_raw = src.get_strides_raw();
-    if (src_strides_raw == nullptr) {
-        if (is_src_c_contig) {
-            src_strides = c_contiguous_strides(src_nd, src_shape);
-        }
-        else if (is_src_f_contig) {
-            src_strides = f_contiguous_strides(src_nd, src_shape);
-        }
-        else {
-            throw std::runtime_error("Source array has null strides but has "
-                                     "neither C- nor F- contiguous flag set");
-        }
-    }
-    else {
-        std::copy(src_strides_raw, src_strides_raw + src_nd,
-                  src_strides.begin());
-    }
-
-    shT dst_strides(src_nd);
 
     bool is_dst_c_contig = dst.is_c_contiguous();
     bool is_dst_f_contig = dst.is_f_contiguous();
 
-    const py::ssize_t *dst_strides_raw = dst.get_strides_raw();
-    if (dst_strides_raw == nullptr) {
-        if (is_dst_c_contig) {
-            dst_strides =
-                dpctl::tensor::c_contiguous_strides(src_nd, src_shape);
-        }
-        else if (is_dst_f_contig) {
-            dst_strides =
-                dpctl::tensor::f_contiguous_strides(src_nd, src_shape);
-        }
-        else {
-            throw std::runtime_error("Source array has null strides but has "
-                                     "neither C- nor F- contiguous flag set");
-        }
-    }
-    else {
-        std::copy(dst_strides_raw, dst_strides_raw + dst_nd,
-                  dst_strides.begin());
-    }
+    auto src_strides = src.get_strides_vector();
+    auto dst_strides = dst.get_strides_vector();
 
+    using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
     shT simplified_src_strides;
     shT simplified_dst_strides;

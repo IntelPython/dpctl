@@ -24,6 +24,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 from dpctl.tensor._device import normalize_queue_device
+from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 
 __doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
 
@@ -66,11 +67,12 @@ def _array_info_dispatch(obj):
         return _empty_tuple, complex, _host_set
     if isinstance(obj, (list, tuple, range)):
         return _array_info_sequence(obj)
-    if any(
-        isinstance(obj, s)
-        for s in [np.integer, np.floating, np.complexfloating, np.bool_]
-    ):
-        return _empty_tuple, obj.dtype, _host_set
+    if _is_object_with_buffer_protocol(obj):
+        np_obj = np.array(obj)
+        return np_obj.shape, np_obj.dtype, _host_set
+    if hasattr(obj, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(obj)
+        return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
     raise ValueError(type(obj))
 
 
@@ -219,6 +221,18 @@ def _map_to_device_dtype(dt, q):
     raise RuntimeError(f"Unrecognized data type '{dt}' encountered.")
 
 
+def _usm_ndarray_from_suai(obj):
+    sua_iface = getattr(obj, "__sycl_usm_array_interface__")
+    membuf = dpm.as_usm_memory(obj)
+    ary = dpt.usm_ndarray(
+        sua_iface["shape"],
+        dtype=sua_iface["typestr"],
+        buffer=membuf,
+        strides=sua_iface.get("strides", None),
+    )
+    return ary
+
+
 def _asarray_from_numpy_ndarray(
     ary, dtype=None, usm_type=None, sycl_queue=None, order="K"
 ):
@@ -276,27 +290,18 @@ def _asarray_from_numpy_ndarray(
     return res
 
 
-def _is_object_with_buffer_protocol(obj):
-    "Returns True if object support Python buffer protocol"
-    try:
-        # use context manager to ensure
-        # buffer is instantly released
-        with memoryview(obj):
-            return True
-    except TypeError:
-        return False
-
-
 def _ensure_native_dtype_device_support(dtype, dev) -> None:
     """Check that dtype is natively supported by device.
 
     Arg:
-       dtype: elemental data-type
-       dev: :class:`dpctl.SyclDevice`
-    Return:
+       dtype:
+           Elemental data-type
+       dev (:class:`dpctl.SyclDevice`):
+           The device about which the query is being made.
+    Returns:
        None
     Raise:
-       ValueError if device does not natively support this dtype.
+       ValueError - if device does not natively support this dtype.
     """
     if dtype in [dpt.float64, dpt.complex128] and not dev.has_aspect_fp64:
         raise ValueError(
@@ -316,6 +321,122 @@ def _ensure_native_dtype_device_support(dtype, dev) -> None:
         )
 
 
+def _usm_types_walker(o, usm_types_list):
+    if isinstance(o, dpt.usm_ndarray):
+        usm_types_list.append(o.usm_type)
+        return
+    if hasattr(o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(o)
+        usm_types_list.append(usm_ar.usm_type)
+        return
+    if isinstance(o, (list, tuple)):
+        for el in o:
+            _usm_types_walker(el, usm_types_list)
+        return
+    raise TypeError
+
+
+def _device_copy_walker(seq_o, res, events):
+    if isinstance(seq_o, dpt.usm_ndarray):
+        exec_q = res.sycl_queue
+        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=seq_o, dst=res, sycl_queue=exec_q
+        )
+        events.append(ht_ev)
+        return
+    if hasattr(seq_o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(seq_o)
+        exec_q = res.sycl_queue
+        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ar, dst=res, sycl_queue=exec_q
+        )
+        events.append(ht_ev)
+        return
+    if isinstance(seq_o, (list, tuple)):
+        for i, el in enumerate(seq_o):
+            _device_copy_walker(el, res[i], events)
+        return
+    raise TypeError
+
+
+def _copy_through_host_walker(seq_o, usm_res):
+    if isinstance(seq_o, dpt.usm_ndarray):
+        usm_res[...] = dpt.asnumpy(seq_o).copy()
+        return
+    if hasattr(seq_o, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(seq_o)
+        usm_res[...] = dpt.asnumpy(usm_ar).copy()
+        return
+    if isinstance(seq_o, (list, tuple)):
+        for i, el in enumerate(seq_o):
+            _copy_through_host_walker(el, usm_res[i])
+        return
+    usm_res[...] = np.asarray(seq_o)
+
+
+def _asarray_from_seq(
+    seq_obj,
+    seq_shape,
+    seq_dt,
+    seq_dev,
+    dtype=None,
+    usm_type=None,
+    sycl_queue=None,
+    order="C",
+):
+    "`obj` is a sequence"
+    if usm_type is None:
+        usm_types_in_seq = []
+        _usm_types_walker(seq_obj, usm_types_in_seq)
+        usm_type = dpctl.utils.get_coerced_usm_type(usm_types_in_seq)
+    dpctl.utils.validate_usm_type(usm_type)
+    if sycl_queue is None:
+        exec_q = seq_dev
+        alloc_q = seq_dev
+    else:
+        exec_q = dpctl.utils.get_execution_queue(
+            (
+                sycl_queue,
+                seq_dev,
+            )
+        )
+        alloc_q = sycl_queue
+    if dtype is None:
+        dtype = _map_to_device_dtype(seq_dt, alloc_q)
+    else:
+        _mapped_dt = _map_to_device_dtype(dtype, alloc_q)
+        if _mapped_dt != dtype:
+            raise ValueError(
+                f"Device {sycl_queue.sycl_device} "
+                f"does not support {dtype} natively."
+            )
+        dtype = _mapped_dt
+    if order in "KA":
+        order = "C"
+    if isinstance(exec_q, dpctl.SyclQueue):
+        res = dpt.empty(
+            seq_shape,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=alloc_q,
+            order=order,
+        )
+        ht_events = []
+        _device_copy_walker(seq_obj, res, ht_events)
+        dpctl.SyclEvent.wait_for(ht_events)
+        return res
+    else:
+        res = dpt.empty(
+            seq_shape,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=alloc_q,
+            order=order,
+        )
+        _copy_through_host_walker(seq_obj, res)
+        return res
+
+
 def asarray(
     obj,
     dtype=None,
@@ -325,15 +446,19 @@ def asarray(
     sycl_queue=None,
     order="K",
 ):
-    """
+    """ asarray(obj, dtype=None, copy=None, device=None, \
+           usm_type=None, sycl_queue=None, order="K")
+
     Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
 
     Args:
-        obj: Python object to convert. Can be an instance of `usm_ndarray`,
+        obj: Python object to convert. Can be an instance of
+            :class:`dpctl.tensor.usm_ndarray`,
             an object representing SYCL USM allocation and implementing
             `__sycl_usm_array_interface__` protocol, an instance
-            of `numpy.ndarray`, an object supporting Python buffer protocol,
-            a Python scalar, or a (possibly nested) sequence of Python scalars.
+            of :class:`numpy.ndarray`, an object supporting Python buffer
+            protocol, a Python scalar, or a (possibly nested) sequence of
+            Python scalars.
         dtype (data type, optional): output array data type. If `dtype` is
             `None`, the output array data type is inferred from data types in
             `obj`. Default: `None`.
@@ -343,13 +468,13 @@ def asarray(
             allocations if possible, but allowed to perform a copy otherwise.
             Default: `None`.
         order ("C","F","A","K", optional): memory layout of the output array.
-            Default: "C"
+            Default: "K"
         device (optional): array API concept of device where the output array
             is created. `device` can be `None`, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to a
             non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. For `usm_type=None` the allocation
             type is inferred from the input if `obj` has USM allocation, or
@@ -361,6 +486,10 @@ def asarray(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation and
             copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            Array created from input object.
     """
     # 1. Check that copy is a valid keyword
     if copy not in [None, True, False]:
@@ -399,14 +528,7 @@ def asarray(
             order=order,
         )
     if hasattr(obj, "__sycl_usm_array_interface__"):
-        sua_iface = getattr(obj, "__sycl_usm_array_interface__")
-        membuf = dpm.as_usm_memory(obj)
-        ary = dpt.usm_ndarray(
-            sua_iface["shape"],
-            dtype=sua_iface["typestr"],
-            buffer=membuf,
-            strides=sua_iface.get("strides", None),
-        )
+        ary = _usm_ndarray_from_suai(obj)
         return _asarray_from_usm_ndarray(
             ary,
             dtype=dtype,
@@ -444,7 +566,7 @@ def asarray(
             raise ValueError(
                 "Converting Python sequence to usm_ndarray requires a copy"
             )
-        _, _, devs = _array_info_sequence(obj)
+        seq_shape, seq_dt, devs = _array_info_sequence(obj)
         if devs == _host_set:
             return _asarray_from_numpy_ndarray(
                 np.asarray(obj, dtype=dtype, order=order),
@@ -453,7 +575,17 @@ def asarray(
                 sycl_queue=sycl_queue,
                 order=order,
             )
-        # for sequences
+        elif len(devs) == 1:
+            return _asarray_from_seq(
+                obj,
+                seq_shape,
+                seq_dt,
+                list(devs)[0],
+                dtype=dtype,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+                order=order,
+            )
         raise NotImplementedError(
             "Converting Python sequences is not implemented"
         )
@@ -479,8 +611,11 @@ def empty(
     usm_type="device",
     sycl_queue=None,
 ):
-    """
-    Creates `usm_ndarray` from uninitialized USM allocation.
+    """ empty(shape, dtype=None, order="C", device=None, \
+            usm_type="device", sycl_queue=None)
+
+    Creates :class:`dpctl.tensor.usm_ndarray` from uninitialized
+    USM allocation.
 
     Args:
         shape (tuple): Dimensions of the array to be created.
@@ -493,8 +628,8 @@ def empty(
             is created. `device` can be `None`, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to a
             non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -504,6 +639,10 @@ def empty(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            Created empty array.
     """
     if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
@@ -589,7 +728,7 @@ def arange(
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `'device'`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -599,6 +738,10 @@ def arange(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            Array populated with evenly spaced values.
     """
     if stop is None:
         stop = start
@@ -672,7 +815,8 @@ def zeros(
     """ zeros(shape, dtype=None, order="C", device=None, \
               usm_type="device", sycl_queue=None)
 
-    Returns a new `usm_ndarray` having a specified shape and filled with zeros.
+    Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified
+    shape and filled with zeros.
 
     Args:
         shape (tuple): Dimensions of the array to be created.
@@ -684,8 +828,8 @@ def zeros(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -695,6 +839,10 @@ def zeros(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            Constructed array initialized with zeros.
     """
     if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
@@ -727,8 +875,8 @@ def ones(
     """ ones(shape, dtype=None, order="C", \
              device=None, usm_type="device", sycl_queue=None)
 
-    Returns a new `usm_ndarray` having a specified `shape` and filled with
-    ones.
+    Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified
+    shape and filled with ones.
 
     Args:
         shape (tuple): Dimensions of the array to be created.
@@ -740,8 +888,8 @@ def ones(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -751,6 +899,10 @@ def ones(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            Created array initialized with ones.
     """
     if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
@@ -784,8 +936,8 @@ def full(
     """ full(shape, fill_value, dtype=None, order="C", \
              device=None, usm_type=None, sycl_queue=None)
 
-    Returns a new `usm_ndarray` having a specified shape and filled with
-    `fill_value`.
+    Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified
+    shape and filled with `fill_value`.
 
     Args:
         shape (tuple): Dimensions of the array to be created.
@@ -798,8 +950,8 @@ def full(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
             USM allocation for the output array. If `usm_type` is `None`, it is
             inferred from `fill_value` input if it is an instance of
@@ -812,6 +964,10 @@ def full(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            New array initialized with given value.
     """
     if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
@@ -867,8 +1023,8 @@ def empty_like(
     """ empty_like(x, dtype=None, order="C", \
                    device=None, usm_type=None, sycl_queue=None)
 
-    Returns an uninitialized `usm_ndarray` with the same `shape` as
-    the input array `x`.
+    Returns an uninitialized :class:`dpctl.tensor.usm_ndarray` with the
+    same `shape` as the input array `x`.
 
     Args:
         x (usm_ndarray): Input array from which to derive the output array
@@ -881,8 +1037,8 @@ def empty_like(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
             USM allocation for the output array. If `usm_type` is `None`, the
             the `usm_type` is inferred from the input array. Default: `None`.
@@ -893,6 +1049,10 @@ def empty_like(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            Created empty array with uninitialized memory.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
@@ -928,7 +1088,8 @@ def zeros_like(
     """ zeros_like(x, dtype=None, order="C", \
                    device=None, usm_type=None, sycl_queue=None)
 
-    Creates `usm_ndarray` from USM allocation initialized with zeros.
+    Creates :class:`dpctl.tensor.usm_ndarray` from USM allocation
+    initialized with zeros.
 
     Args:
         x (usm_ndarray): Input array from which to derive the shape of the
@@ -942,8 +1103,8 @@ def zeros_like(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding
             to a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
             USM allocation for the output array. If `None`, output array has
             the same USM allocation type as the input array. Default: `None`.
@@ -954,6 +1115,10 @@ def zeros_like(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            New array initialized with zeros.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
@@ -988,8 +1153,8 @@ def ones_like(
     """ ones_like(x, dtype=None, order="C", \
                   device=None, usm_type=None, sycl_queue=None)
 
-    Returns a new `usm_ndarray` filled with ones and having the same `shape`
-    as the input array `x`.
+    Returns a new :class:`dpctl.tensor.usm_ndarray` filled with ones and
+    having the same `shape` as the input array `x`.
 
     Args:
         x (usm_ndarray): Input array from which to derive the output array
@@ -1002,8 +1167,8 @@ def ones_like(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding
             to a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
             USM allocation for the output array. If `None`, output array has
             the same USM allocation type as the input array. Default: `None`.
@@ -1014,6 +1179,10 @@ def ones_like(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            New array initialized with ones.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
@@ -1054,8 +1223,8 @@ def full_like(
     """ full_like(x, fill_value, dtype=None, order="C", \
                   device=None, usm_type=None, sycl_queue=None)
 
-    Returns a new `usm_ndarray` filled with `fill_value` and having the
-    same `shape` as the input array `x`.
+    Returns a new :class:`dpctl.tensor.usm_ndarray` filled with `fill_value`
+    and having the same `shape` as the input array `x`.
 
     Args:
         x (usm_ndarray): Input array from which to derive the output array
@@ -1070,8 +1239,8 @@ def full_like(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
             USM allocation for the output array. If `None`, output array has
             the same USM allocation type as the input array `x`.
@@ -1083,6 +1252,10 @@ def full_like(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            New array initialized with given value.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
@@ -1128,7 +1301,8 @@ def linspace(
     linspace(start, stop, num, dtype=None, device=None, endpoint=True, \
         sycl_queue=None, usm_type="device")
 
-    Returns evenly spaced numbers of specified interval.
+    Returns :class:`dpctl.tensor.usm_ndarray` array populated with
+    evenly spaced numbers of specified interval.
 
     Args:
         start: the start of the interval.
@@ -1149,8 +1323,8 @@ def linspace(
             is created. `device` can be `None`, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to a
             non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -1162,6 +1336,11 @@ def linspace(
             and copying. Default: `None`.
         endpoint: boolean indicating whether to include `stop` in the
             interval. Default: `True`.
+
+    Returns:
+        usm_ndarray:
+            Array populated with evenly spaced numbers in the requested
+            interval.
     """
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dpctl.utils.validate_usm_type(usm_type, allow_none=False)
@@ -1210,7 +1389,8 @@ def eye(
     eye(n_rows, n_cols=None, /, *, k=0, dtype=None, \
         device=None, usm_type="device", sycl_queue=None)
 
-    Creates `usm_ndarray` with ones on the `k`-th diagonal.
+    Creates :class:`dpctl.tensor.usm_ndarray` with ones on the `k`-th
+    diagonal.
 
     Args:
         n_rows: number of rows in the output array.
@@ -1229,8 +1409,8 @@ def eye(
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returnedby
-            `dpctl.tensor.usm_array.device`. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
         usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -1240,6 +1420,10 @@ def eye(
             underlying SYCL queue to be used. If both are `None`, a cached
             queue targeting default-selected device is used for allocation
             and copying. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            A diagonal matrix.
     """
     if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
         raise ValueError(
@@ -1290,6 +1474,10 @@ def tril(x, k=0):
             elements to zero. If `k = 0`, the diagonal is the main diagonal.
             If `k < 0`, the diagonal is below the main diagonal.
             If `k > 0`, the diagonal is above the main diagonal. Default: `0`.
+
+    Returns:
+        usm_ndarray:
+            A lower-triangular array or a stack of lower-triangular arrays.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -1356,6 +1544,10 @@ def triu(x, k=0):
             elements to zero. If `k = 0`, the diagonal is the main diagonal.
             If `k < 0`, the diagonal is below the main diagonal.
             If `k > 0`, the diagonal is above the main diagonal. Default: `0`.
+
+    Returns:
+        usm_ndarray:
+            An upper-triangular array or a stack of upper-triangular arrays.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -1410,7 +1602,8 @@ def triu(x, k=0):
 def meshgrid(*arrays, indexing="xy"):
     """meshgrid(*arrays, indexing="xy")
 
-    Creates list of `usm_ndarray` coordinate matrices from vectors.
+    Creates list of :class:`dpctl.tensor.usm_ndarray` coordinate matrices
+    from vectors.
 
     Args:
         arrays (usm_ndarray): an arbitrary number of one-dimensional arrays
@@ -1422,7 +1615,7 @@ def meshgrid(*arrays, indexing="xy"):
             keyword has no effect and should be ignored. Default: `xy`.
 
     Returns:
-        out (List[array]): list of `N` arrays, where `N` is the number of
+        List[array]: list of `N` arrays, where `N` is the number of
             provided one-dimensional input arrays. Each returned array must
             have rank `N`.
             For a set of `n` vectors with lengths `N0`, `N1`, `N2`, ...

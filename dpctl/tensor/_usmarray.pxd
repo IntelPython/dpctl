@@ -72,4 +72,6 @@ cdef api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
     cdef dpctl.DPCTLSyclQueueRef get_queue_ref(self) except *
     cdef dpctl.SyclQueue get_sycl_queue(self)
 
+    cdef _set_writable_flag(self, int)
+
     cdef __cythonbufferdefaults__ = {"mode": "strided"}

@@ -23,7 +23,6 @@
 //===--------------------------------------------------------------------===//
 
 #pragma once
-#include "utils/strided_iters.hpp"
 #include <pybind11/pybind11.h>
 #include <vector>
 

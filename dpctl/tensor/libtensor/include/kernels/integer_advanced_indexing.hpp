@@ -23,14 +23,15 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include "utils/strided_iters.hpp"
-#include "utils/type_utils.hpp"
 #include <CL/sycl.hpp>
 #include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <pybind11/pybind11.h>
 #include <type_traits>
+
+#include "utils/offset_utils.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpctl
 {
@@ -42,9 +43,22 @@ namespace indexing
 {
 
 namespace py = pybind11;
+using namespace dpctl::tensor::offset_utils;
 
-template <typename ProjectorT, typename Ty, typename indT> class take_kernel;
-template <typename ProjectorT, typename Ty, typename indT> class put_kernel;
+template <typename ProjectorT,
+          typename OrthogStrider,
+          typename IndicesStrider,
+          typename AxesStrider,
+          typename T,
+          typename indT>
+class take_kernel;
+template <typename ProjectorT,
+          typename OrthogStrider,
+          typename IndicesStrider,
+          typename AxesStrider,
+          typename T,
+          typename indT>
+class put_kernel;
 
 class WrapIndex
 {
@@ -73,44 +87,40 @@ public:
     }
 };
 
-template <typename ProjectorT, typename T, typename indT> class TakeFunctor
+template <typename ProjectorT,
+          typename OrthogStrider,
+          typename IndicesStrider,
+          typename AxesStrider,
+          typename T,
+          typename indT>
+class TakeFunctor
 {
 private:
     const char *src_ = nullptr;
     char *dst_ = nullptr;
     char **ind_ = nullptr;
-    int nd_ = 0;
-    int ind_nd_ = 0;
     int k_ = 0;
     size_t ind_nelems_ = 0;
-    const py::ssize_t *orthog_shape_and_strides_ = nullptr;
     const py::ssize_t *axes_shape_and_strides_ = nullptr;
-    const py::ssize_t *ind_shape_and_strides_ = nullptr;
-    py::ssize_t src_offset_ = 0;
-    py::ssize_t dst_offset_ = 0;
-    const py::ssize_t *ind_offsets_ = nullptr;
+    OrthogStrider orthog_strider;
+    IndicesStrider ind_strider;
+    AxesStrider axes_strider;
 
 public:
     TakeFunctor(const char *src_cp,
                 char *dst_cp,
                 char **ind_cp,
-                int nd,
-                int ind_nd,
                 int k,
                 size_t ind_nelems,
-                const py::ssize_t *orthog_shape_and_strides,
                 const py::ssize_t *axes_shape_and_strides,
-                const py::ssize_t *ind_shape_and_strides,
-                py::ssize_t src_offset,
-                py::ssize_t dst_offset,
-                const py::ssize_t *ind_offsets)
-        : src_(src_cp), dst_(dst_cp), ind_(ind_cp), nd_(nd), ind_nd_(ind_nd),
-          k_(k), ind_nelems_(ind_nelems),
-          orthog_shape_and_strides_(orthog_shape_and_strides),
+                OrthogStrider orthog_strider_,
+                IndicesStrider ind_strider_,
+                AxesStrider axes_strider_)
+        : src_(src_cp), dst_(dst_cp), ind_(ind_cp), k_(k),
+          ind_nelems_(ind_nelems),
           axes_shape_and_strides_(axes_shape_and_strides),
-          ind_shape_and_strides_(ind_shape_and_strides),
-          src_offset_(src_offset), dst_offset_(dst_offset),
-          ind_offsets_(ind_offsets)
+          orthog_strider(orthog_strider_), ind_strider(ind_strider_),
+          axes_strider(axes_strider_)
     {
     }
 
@@ -122,38 +132,26 @@ public:
         py::ssize_t i_orthog = id / ind_nelems_;
         py::ssize_t i_along = id - (i_orthog * ind_nelems_);
 
-        py::ssize_t src_orthog_idx(0);
-        py::ssize_t dst_orthog_idx(0);
-        CIndexer_vector<py::ssize_t> indxr(nd_);
-        indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            static_cast<py::ssize_t>(i_orthog),
-            orthog_shape_and_strides_,           // common shape
-            orthog_shape_and_strides_ + nd_,     // src strides
-            orthog_shape_and_strides_ + 2 * nd_, // dst strides
-            src_orthog_idx,                      // modified by reference
-            dst_orthog_idx);
+        auto orthog_offsets = orthog_strider(i_orthog);
+
+        py::ssize_t src_offset = orthog_offsets.get_first_offset();
+        py::ssize_t dst_offset = orthog_offsets.get_second_offset();
 
         ProjectorT proj{};
-        CIndexer_vector<py::ssize_t> ind_indxr(ind_nd_);
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
-            py::ssize_t ind_arr_idx(0);
-            ind_indxr.get_displacement<const py::ssize_t *>(
-                static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
-                ind_shape_and_strides_ + ((axis_idx + 1) * ind_nd_),
-                ind_arr_idx);
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
-            py::ssize_t i = static_cast<py::ssize_t>(
-                ind_data[ind_arr_idx + ind_offsets_[axis_idx]]);
-            proj(axes_shape_and_strides_[axis_idx], i);
-            src_orthog_idx += i * axes_shape_and_strides_[k_ + axis_idx];
-        }
-        py::ssize_t ind_dst_idx(0);
-        ind_indxr.get_displacement<const py::ssize_t *>(
-            static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
-            axes_shape_and_strides_ + (2 * k_), ind_dst_idx);
 
-        dst[dst_orthog_idx + ind_dst_idx + dst_offset_] =
-            src[src_orthog_idx + src_offset_];
+            py::ssize_t ind_offset = ind_strider(i_along, axis_idx);
+            py::ssize_t i = static_cast<py::ssize_t>(ind_data[ind_offset]);
+
+            proj(axes_shape_and_strides_[axis_idx], i);
+
+            src_offset += i * axes_shape_and_strides_[k_ + axis_idx];
+        }
+
+        dst_offset += axes_strider(i_along);
+
+        dst[dst_offset] = src[src_offset];
     }
 };
 
@@ -197,57 +195,62 @@ sycl::event take_impl(sycl::queue q,
     sycl::event take_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
+        TwoOffsets_StridedIndexer orthog_indexer{nd, src_offset, dst_offset,
+                                                 orthog_shape_and_strides};
+        NthStrideOffset indices_indexer{ind_nd, ind_offsets,
+                                        ind_shape_and_strides};
+        StridedIndexer axes_indexer{ind_nd, 0,
+                                    axes_shape_and_strides + (2 * k)};
+
         const size_t gws = orthog_nelems * ind_nelems;
 
-        cgh.parallel_for<take_kernel<ProjectorT, Ty, indT>>(
+        cgh.parallel_for<
+            take_kernel<ProjectorT, TwoOffsets_StridedIndexer, NthStrideOffset,
+                        StridedIndexer, Ty, indT>>(
             sycl::range<1>(gws),
-            TakeFunctor<ProjectorT, Ty, indT>(
-                src_p, dst_p, ind_p, nd, ind_nd, k, ind_nelems,
-                orthog_shape_and_strides, axes_shape_and_strides,
-                ind_shape_and_strides, src_offset, dst_offset, ind_offsets));
+            TakeFunctor<ProjectorT, TwoOffsets_StridedIndexer, NthStrideOffset,
+                        StridedIndexer, Ty, indT>(
+                src_p, dst_p, ind_p, k, ind_nelems, axes_shape_and_strides,
+                orthog_indexer, indices_indexer, axes_indexer));
     });
 
     return take_ev;
 }
 
-template <typename ProjectorT, typename T, typename indT> class PutFunctor
+template <typename ProjectorT,
+          typename OrthogStrider,
+          typename IndicesStrider,
+          typename AxesStrider,
+          typename T,
+          typename indT>
+class PutFunctor
 {
 private:
     char *dst_ = nullptr;
     const char *val_ = nullptr;
     char **ind_ = nullptr;
-    int nd_ = 0;
-    int ind_nd_ = 0;
     int k_ = 0;
     size_t ind_nelems_ = 0;
-    const py::ssize_t *orthog_shape_and_strides_ = nullptr;
     const py::ssize_t *axes_shape_and_strides_ = nullptr;
-    const py::ssize_t *ind_shape_and_strides_ = nullptr;
-    py::ssize_t dst_offset_ = 0;
-    py::ssize_t val_offset_ = 0;
-    const py::ssize_t *ind_offsets_ = nullptr;
+    OrthogStrider orthog_strider;
+    IndicesStrider ind_strider;
+    AxesStrider axes_strider;
 
 public:
     PutFunctor(char *dst_cp,
                const char *val_cp,
                char **ind_cp,
-               int nd,
-               int ind_nd,
                int k,
                size_t ind_nelems,
-               const py::ssize_t *orthog_shape_and_strides,
                const py::ssize_t *axes_shape_and_strides,
-               const py::ssize_t *ind_shape_and_strides,
-               py::ssize_t dst_offset,
-               py::ssize_t val_offset,
-               const py::ssize_t *ind_offsets)
-        : dst_(dst_cp), val_(val_cp), ind_(ind_cp), nd_(nd), ind_nd_(ind_nd),
-          k_(k), ind_nelems_(ind_nelems),
-          orthog_shape_and_strides_(orthog_shape_and_strides),
+               OrthogStrider orthog_strider_,
+               IndicesStrider ind_strider_,
+               AxesStrider axes_strider_)
+        : dst_(dst_cp), val_(val_cp), ind_(ind_cp), k_(k),
+          ind_nelems_(ind_nelems),
           axes_shape_and_strides_(axes_shape_and_strides),
-          ind_shape_and_strides_(ind_shape_and_strides),
-          dst_offset_(dst_offset), val_offset_(val_offset),
-          ind_offsets_(ind_offsets)
+          orthog_strider(orthog_strider_), ind_strider(ind_strider_),
+          axes_strider(axes_strider_)
     {
     }
 
@@ -259,38 +262,26 @@ public:
         py::ssize_t i_orthog = id / ind_nelems_;
         py::ssize_t i_along = id - (i_orthog * ind_nelems_);
 
-        py::ssize_t dst_orthog_idx(0);
-        py::ssize_t val_orthog_idx(0);
-        CIndexer_vector<py::ssize_t> indxr(nd_);
-        indxr.get_displacement<const py::ssize_t *, const py::ssize_t *>(
-            static_cast<py::ssize_t>(i_orthog),
-            orthog_shape_and_strides_,           // common shape
-            orthog_shape_and_strides_ + nd_,     // dst strides
-            orthog_shape_and_strides_ + 2 * nd_, // val strides
-            dst_orthog_idx,                      // modified by reference
-            val_orthog_idx);
+        auto orthog_offsets = orthog_strider(i_orthog);
+
+        py::ssize_t dst_offset = orthog_offsets.get_first_offset();
+        py::ssize_t val_offset = orthog_offsets.get_second_offset();
 
         ProjectorT proj{};
-        py::ssize_t ind_arr_idx(0);
-        CIndexer_vector<py::ssize_t> ind_indxr(ind_nd_);
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
-            ind_indxr.get_displacement<const py::ssize_t *>(
-                static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
-                ind_shape_and_strides_ + ((axis_idx + 1) * ind_nd_),
-                ind_arr_idx);
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
-            py::ssize_t i = static_cast<py::ssize_t>(
-                ind_data[ind_arr_idx + ind_offsets_[axis_idx]]);
-            proj(axes_shape_and_strides_[axis_idx], i);
-            dst_orthog_idx += i * axes_shape_and_strides_[k_ + axis_idx];
-        }
-        py::ssize_t ind_val_idx(0);
-        ind_indxr.get_displacement<const py::ssize_t *>(
-            static_cast<py::ssize_t>(i_along), ind_shape_and_strides_,
-            axes_shape_and_strides_ + (2 * k_), ind_val_idx);
 
-        dst[dst_orthog_idx + dst_offset_] =
-            val[val_orthog_idx + ind_val_idx + val_offset_];
+            py::ssize_t ind_offset = ind_strider(i_along, axis_idx);
+            py::ssize_t i = static_cast<py::ssize_t>(ind_data[ind_offset]);
+
+            proj(axes_shape_and_strides_[axis_idx], i);
+
+            dst_offset += i * axes_shape_and_strides_[k_ + axis_idx];
+        }
+
+        val_offset += axes_strider(i_along);
+
+        dst[dst_offset] = val[val_offset];
     }
 };
 
@@ -334,14 +325,22 @@ sycl::event put_impl(sycl::queue q,
     sycl::event put_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
+        TwoOffsets_StridedIndexer orthog_indexer{nd, dst_offset, val_offset,
+                                                 orthog_shape_and_strides};
+        NthStrideOffset indices_indexer{ind_nd, ind_offsets,
+                                        ind_shape_and_strides};
+        StridedIndexer axes_indexer{ind_nd, 0,
+                                    axes_shape_and_strides + (2 * k)};
+
         const size_t gws = orthog_nelems * ind_nelems;
 
-        cgh.parallel_for<put_kernel<ProjectorT, Ty, indT>>(
+        cgh.parallel_for<put_kernel<ProjectorT, TwoOffsets_StridedIndexer,
+                                    NthStrideOffset, StridedIndexer, Ty, indT>>(
             sycl::range<1>(gws),
-            PutFunctor<ProjectorT, Ty, indT>(
-                dst_p, val_p, ind_p, nd, ind_nd, k, ind_nelems,
-                orthog_shape_and_strides, axes_shape_and_strides,
-                ind_shape_and_strides, dst_offset, val_offset, ind_offsets));
+            PutFunctor<ProjectorT, TwoOffsets_StridedIndexer, NthStrideOffset,
+                       StridedIndexer, Ty, indT>(
+                dst_p, val_p, ind_p, k, ind_nelems, axes_shape_and_strides,
+                orthog_indexer, indices_indexer, axes_indexer));
     });
 
     return put_ev;

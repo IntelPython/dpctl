@@ -92,7 +92,7 @@ def reshape(X, shape, order="C", copy=None):
             and `"F"` for F-contiguous, or column-major layout.
 
     Returns:
-        out (usm_ndarray):
+        usm_ndarray:
             Reshaped array is a view, if possible,
             and a copy otherwise with memory layout as indicated
             by `order` keyword.

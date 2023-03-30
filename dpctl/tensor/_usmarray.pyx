@@ -108,17 +108,74 @@ cdef class usm_ndarray:
            offset=0, order="C", buffer_ctor_kwargs=dict(), \
            array_namespace=None)
 
-    See :class:`dpctl.memory.MemoryUSMShared` for allowed
-    keyword arguments.
+    An array object represents a multidimensional tensor of numeric
+    elements stored in a USM allocation on a SYCL device.
 
-    `buffer` can be 'shared', 'host', 'device' to allocate
+    Arg:
+        shape (int, tuple):
+            Shape of the array to be created.
+        dtype (str, dtype):
+            Array data type, i.e. the type of array elements.
+            The supported types are
+               * ``bool``
+                     boolean type
+               * ``int8``, ``int16``, ``int32``, ``int64``,
+                     signed integer types
+               * ``uint8``, ``uint16``, ``uint32``, ``uint64``,
+                     unsigned integer types
+               * ``float16``
+                     half-precision floating type,
+                     supported if target device's property
+                     ``has_aspect_fp16`` is ``True``
+               * ``float32``, ``complex64``
+                     single-precision real and complex floating
+                     types
+               * ``float64``, ``complex128``
+                     double-precision real and complex floating
+                     types, supported if target device's property
+                     ``has_aspect_fp64`` is ``True``.
+            Default: ``"|f8"``.
+        strides (tuple, optional):
+            Strides of the array to be created in elements.
+            If ``strides`` has the value ``None``, it is determined by the
+            ``shape`` of the array and the requested ``order``.
+            Default: ``None``.
+        buffer (str, object, optional):
+            A string corresponding to the type of USM allocation to make,
+            or a Python object representing a USM memory allocation, i.e.
+            :class:`dpctl.memory.MemoryUSMDevice`,
+            :class:`dpctl.memory.MemoryUSMShared`, or
+            :class:`dpctl.memory.MemoryUSMHost`. Recognized strings are
+            ``"device"``, ``"shared"``, or ``"host"``. Additional arguments to
+            the USM memory alloctors can be passed in a dictionary specified
+            via ``buffer_ctor_kwrds`` keyword parameter.
+            Default: ``"device"``.
+        offset (int, optional):
+            Offset of the array element with all zero indexes relative to the
+            start of the provided `buffer` in elements. The argument is ignored
+            if the ``buffer`` value is a string and the memory is allocated by
+            the constructor. Default: ``0``.
+        order ({"C", "F"}, optional):
+            The memory layout of the array when constructing using a new
+            allocation. Value ``"C"`` corresponds to C-contiguous, or row-major
+            memory layout, while value ``"F"`` corresponds to F-contiguous, or
+            column-major layout. Default: ``"C"``.
+        buffer_ctor_kwargs (dict, optional):
+            Dictionary with keyword parameters to use when creating a new USM
+            memory allocation. See :class:`dpctl.memory.MemoryUSMShared` for
+            supported keyword arguments.
+        array_namespace (module, optional):
+            Array namespace module associated with this array.
+            Default: ``None``.
+
+    ``buffer`` can be ``"shared"``, ``"host"``, ``"device"`` to allocate
     new device memory by calling respective constructor with
-    the specified `buffer_ctor_kwrds`; `buffer` can be an
+    the specified ``buffer_ctor_kwrds``; ``buffer`` can be an
     instance of :class:`dpctl.memory.MemoryUSMShared`,
     :class:`dpctl.memory.MemoryUSMDevice`, or
-    :class:`dpctl.memory.MemoryUSMHost`; `buffer` can also be
-    another usm_ndarray instance, in which case its underlying
-    MemoryUSM* buffer is used for buffer.
+    :class:`dpctl.memory.MemoryUSMHost`; ``buffer`` can also be
+    another :class:`dpctl.tensor.usm_ndarray` instance, in which case its
+    underlying ``MemoryUSM*`` buffer is used.
     """
 
     cdef void _reset(usm_ndarray self):
@@ -313,7 +370,7 @@ cdef class usm_ndarray:
         """
         Returns pointer to shape C-array for this array.
 
-        C-array has at least `ndim` non-negative elements,
+        C-array has at least ``ndim`` non-negative elements,
         which determine the range of permissible indices
         addressing individual elements of this array.
         """
@@ -324,7 +381,7 @@ cdef class usm_ndarray:
         Returns pointer to strides C-array for this array.
 
         The pointer can be NULL (contiguous array), or the
-        array size is at least `ndim` elements
+        array size is at least ``ndim`` elements
         """
         return self.strides_
 
@@ -373,7 +430,8 @@ cdef class usm_ndarray:
     @property
     def __sycl_usm_array_interface__(self):
         """
-        Gives __sycl_usm_array_interface__ dictionary describing the array
+        Gives ``__sycl_usm_array_interface__`` dictionary describing
+        the array.
         """
         cdef Py_ssize_t byte_offset = -1
         cdef int item_size = -1
@@ -443,7 +501,7 @@ cdef class usm_ndarray:
     def shape(self, new_shape):
         """
         Setting shape is only allowed when reshaping to the requested
-        dimensions can be returned as view. Use `dpctl.tensor.reshape`
+        dimensions can be returned as view. Use :func:`dpctl.tensor.reshape`
         to reshape the array in all other cases.
         """
         cdef int new_nd = -1
@@ -528,14 +586,21 @@ cdef class usm_ndarray:
     @property
     def flags(self):
         """
-        Returns dpctl.tensor._flags object.
+        Returns :class:`dpctl.tensor._flags` object.
         """
         return _flags.Flags(self, self.flags_)
+
+    cdef _set_writable_flag(self, int flag):
+        cdef int arr_fl = self.flags_
+        arr_fl ^= (arr_fl & USM_ARRAY_WRITABLE)  # unset WRITABLE flag
+        arr_fl |= (USM_ARRAY_WRITABLE if flag else 0)
+        self.flags_ = arr_fl
 
     @property
     def usm_type(self):
         """
-        USM type of underlying memory. Can be 'device', 'shared', or 'host'.
+        USM type of underlying memory. Can be ``"device"``, ``"shared"``,
+        or ``"host"``.
 
         See: https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html
         """
@@ -574,14 +639,14 @@ cdef class usm_ndarray:
     @property
     def sycl_queue(self):
         """
-        Returns `dpctl.SyclQueue` object associated with USM data.
+        Returns :class:`dpctl.SyclQueue` object associated with USM data.
         """
         return self.get_sycl_queue()
 
     @property
     def sycl_device(self):
         """
-        Returns `dpctl.SyclDevice` object on which USM data was allocated.
+        Returns :class:`dpctl.SyclDevice` object on which USM data was allocated.
         """
         q = self.sycl_queue
         return q.sycl_device
@@ -596,7 +661,7 @@ cdef class usm_ndarray:
     @property
     def sycl_context(self):
         """
-        Returns `dpctl.SyclContext` object to which USM data is bound.
+        Returns :class:`dpctl.SyclContext` object to which USM data is bound.
         """
         q = self.sycl_queue
         return q.sycl_context
@@ -690,7 +755,8 @@ cdef class usm_ndarray:
 
 
     def to_device(self, target):
-        """
+        """ to_device(target_device)
+
         Transfers this array to specified target device.
 
         :Example:
@@ -710,7 +776,8 @@ cdef class usm_ndarray:
                 print(timer.dt)
 
         Args:
-            target: array API concept of target device.
+            target_device (object):
+                Array API concept of target device.
                 It can be a oneAPI filter selector string,
                 an instance of :class:`dpctl.SyclDevice` corresponding to a
                 non-partitioned SYCL device, an instance of
@@ -718,10 +785,11 @@ cdef class usm_ndarray:
                 object returned by :attr:`dpctl.tensor.usm_array.device`.
 
         Returns:
-            A view if data copy is not required, and a copy otherwise.
-            If copying is required, it is done by copying from the original
-            allocation device to the host, followed by copying from host
-            to the target device.
+            usm_ndarray:
+                A view if data copy is not required, and a copy otherwise.
+                If copying is required, it is done by copying from the original
+                allocation device to the host, followed by copying from host
+                to the target device.
         """
         cdef c_dpctl.DPCTLSyclQueueRef QRef = NULL
         cdef c_dpmem._Memory arr_buf
@@ -869,8 +937,8 @@ cdef class usm_ndarray:
 
     def __dlpack_device__(self):
         """
-        Gives a tuple (`device_type`, `device_id`) corresponding to `DLDevice`
-        entry in `DLTensor` in DLPack protocol.
+        Gives a tuple (`device_type`, `device_id`) corresponding to ``DLDevice``
+        entry in ``DLTensor`` in DLPack protocol.
 
         The tuple describes the non-partitioned device where the array
         has been allocated.
@@ -1042,13 +1110,19 @@ cdef class usm_ndarray:
                             "converted to usm_ndarray"
                         )
                 else:
+                    rhs_np = np.asarray(rhs)
+                    if type_bytesize(rhs_np.dtype.num) < 0:
+                        raise ValueError(
+                            f"Input of type {type(rhs)} can not be "
+                            "assigned to usm_ndarray because of "
+                            f"unsupported data type '{rhs_np.dtype}'"
+                        )
                     try:
-                        rhs_np = np.asarray(rhs)
                         _copy_from_numpy_into(Xv, rhs_np)
                     except Exception:
                         raise ValueError(
                             f"Input of type {type(rhs)} could not be "
-                            "converted to usm_ndarray"
+                            "copied into dpctl.tensor.usm_ndarray"
                         )
             return
 
@@ -1390,12 +1464,10 @@ cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     allocation"""
     return arr.get_offset()
 
+
 cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
     """Set/unset USM_ARRAY_WRITABLE in the given array `arr`."""
-    cdef int arr_fl = arr.flags_
-    arr_fl ^= (arr_fl & USM_ARRAY_WRITABLE)  # unset WRITABLE flag
-    arr_fl |= (USM_ARRAY_WRITABLE if flag else 0)
-    arr.flags_ = arr_fl
+    arr._set_writable_flag(flag)
 
 cdef api object UsmNDArray_MakeSimpleFromMemory(
     int nd, const Py_ssize_t *shape, int typenum,
@@ -1563,3 +1635,8 @@ cdef api object UsmNDArray_MakeFromPtr(
         offset=offset
     )
     return arr
+
+
+def _is_object_with_buffer_protocol(o):
+   "Returns True if object support Python buffer protocol"
+   return _is_buffer(o)

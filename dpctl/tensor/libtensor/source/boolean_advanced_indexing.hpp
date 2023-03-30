@@ -75,10 +75,6 @@ extern std::pair<sycl::event, sycl::event> py_nonzero(
     sycl::queue exec_q,
     std::vector<sycl::event> const &depends = {});
 
-/* @brief Check if memory regions underlying two arrays have an overlap */
-extern bool overlap(dpctl::tensor::usm_ndarray ar1,
-                    dpctl::tensor::usm_ndarray ar2);
-
 } // namespace py_internal
 } // namespace tensor
 } // namespace dpctl
