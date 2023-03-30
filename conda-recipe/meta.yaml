@@ -33,6 +33,7 @@ requirements:
 test:
     requires:
         - cython
+        - setuptools
         - pytest
         - pytest-cov
 
