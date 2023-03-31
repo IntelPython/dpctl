@@ -321,3 +321,21 @@ def test_asarray_seq_of_suai_different_queue():
     x = dpt.asarray([d, d], sycl_queue=q)
     assert x.sycl_queue == q
     assert x.shape == (2,) + d.shape
+
+
+def test_asarray_seq_of_arrays_on_different_queues():
+    q = get_queue_or_skip()
+
+    m = dpt.empty((2, 4), dtype="i2", sycl_queue=q)
+    q2 = dpctl.SyclQueue()
+    w = dpt.empty(4, dtype="i1", sycl_queue=q2)
+    q3 = dpctl.SyclQueue()
+    py_seq = [
+        0,
+    ] * w.shape[0]
+    res = dpt.asarray([m, [w, py_seq]], sycl_queue=q3)
+    assert res.sycl_queue == q3
+    assert dpt.isdtype(res.dtype, "integral")
+
+    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+        dpt.asarray([m, [w, py_seq]])
