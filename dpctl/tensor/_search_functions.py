@@ -19,6 +19,25 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._manipulation_functions import _broadcast_shapes
 
+from ._type_utils import _all_data_types, _can_cast
+
+
+def _where_result_type(dt1, dt2, dev):
+    res_dtype = dpt.result_type(dt1, dt2)
+    fp16 = dev.has_aspect_fp16
+    fp64 = dev.has_aspect_fp64
+
+    all_dts = _all_data_types(fp16, fp64)
+    if res_dtype in all_dts:
+        return res_dtype
+    else:
+        for res_dtype_ in all_dts:
+            if _can_cast(dt1, res_dtype_, fp16, fp64) and _can_cast(
+                dt2, res_dtype_, fp16, fp64
+            ):
+                return res_dtype_
+        return None
+
 
 def where(condition, x1, x2):
     if not isinstance(condition, dpt.usm_ndarray):
@@ -52,7 +71,7 @@ def where(condition, x1, x2):
 
     x1_dtype = x1.dtype
     x2_dtype = x2.dtype
-    dst_dtype = dpt.result_type(x1.dtype, x2.dtype)
+    dst_dtype = _where_result_type(x1_dtype, x2_dtype, exec_q.sycl_device)
 
     if condition.size == 0:
         return dpt.asarray(
