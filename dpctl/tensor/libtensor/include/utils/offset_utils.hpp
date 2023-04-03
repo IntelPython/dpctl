@@ -106,6 +106,10 @@ device_allocate_and_pack(sycl::queue q,
     auto sz = packed_shape_strides_owner->size();
     indT *shape_strides = sycl::malloc_device<indT>(sz, q);
 
+    if (shape_strides == nullptr) {
+        return std::make_tuple(shape_strides, 0, sycl::event());
+    }
+
     sycl::event copy_ev =
         q.copy<indT>(packed_shape_strides_owner->data(), shape_strides, sz);
 
