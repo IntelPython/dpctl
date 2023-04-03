@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+67.ga3aa818a0 documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+69.g49d27b9a6 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+67.ga3aa818a0
+                0.14.3dev0+69.g49d27b9a6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -109,6 +109,25 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._manipulation_functions</span> <span class="kn">import</span> <span class="n">_broadcast_shapes</span>
 
+<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_all_data_types</span><span class="p">,</span> <span class="n">_can_cast</span>
+
+
+<span class="k">def</span> <span class="nf">_where_result_type</span><span class="p">(</span><span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span><span class="p">)</span>
+    <span class="n">fp16</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
+    <span class="n">fp64</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
+
+    <span class="n">all_dts</span> <span class="o">=</span> <span class="n">_all_data_types</span><span class="p">(</span><span class="n">fp16</span><span class="p">,</span> <span class="n">fp64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="n">all_dts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res_dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">res_dtype_</span> <span class="ow">in</span> <span class="n">all_dts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">dt1</span><span class="p">,</span> <span class="n">res_dtype_</span><span class="p">,</span> <span class="n">fp16</span><span class="p">,</span> <span class="n">fp64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_can_cast</span><span class="p">(</span>
+                <span class="n">dt2</span><span class="p">,</span> <span class="n">res_dtype_</span><span class="p">,</span> <span class="n">fp16</span><span class="p">,</span> <span class="n">fp64</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">res_dtype_</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
 
 <div class="viewcode-block" id="where"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.where">[docs]</a><span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
@@ -142,7 +161,7 @@
 
     <span class="n">x1_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">x2_dtype</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">dst_dtype</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">dst_dtype</span> <span class="o">=</span> <span class="n">_where_result_type</span><span class="p">(</span><span class="n">x1_dtype</span><span class="p">,</span> <span class="n">x2_dtype</span><span class="p">,</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
