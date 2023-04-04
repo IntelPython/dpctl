@@ -58,23 +58,35 @@ def test_allocate_usm_ndarray(shape, usm_type):
 
 def test_usm_ndarray_flags():
     get_queue_or_skip()
-    assert dpt.usm_ndarray((5,), dtype="i4").flags.fc
-    assert dpt.usm_ndarray((5, 2), dtype="i4").flags.c_contiguous
-    assert not dpt.usm_ndarray((5, 2), dtype="i4").flags.fnc
-    assert dpt.usm_ndarray((5, 2), dtype="i4", order="F").flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", order="F").flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", order="F").flags.fnc
-    assert dpt.usm_ndarray(
-        (5, 1, 2), dtype="i4", strides=(2, 0, 1)
-    ).flags.c_contiguous
+    f = dpt.usm_ndarray((5,), dtype="i4").flags
+    assert f.fc
+    assert f.forc
+
+    f = dpt.usm_ndarray((5, 2), dtype="i4").flags
+    assert f.c_contiguous
+    assert f.forc
+
+    f = dpt.usm_ndarray((5, 2), dtype="i4", order="F").flags
+    assert f.f_contiguous
+    assert f.forc
+    assert f.fnc
+
+    f = dpt.usm_ndarray((5, 1, 2), dtype="i4", strides=(2, 0, 1)).flags
+    assert f.c_contiguous
+    assert f.forc
+
+    f = dpt.usm_ndarray((5, 1, 2), dtype="i4", strides=(1, 0, 5)).flags
+    assert f.f_contiguous
+    assert f.forc
+    assert f.fnc
+
+    f = dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags
+    assert f.fc
+    assert f.forc
     assert not dpt.usm_ndarray(
-        (5, 1, 2), dtype="i4", strides=(2, 0, 1)
-    ).flags.fnc
-    assert dpt.usm_ndarray(
-        (5, 1, 2), dtype="i4", strides=(1, 0, 5)
-    ).flags.f_contiguous
-    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", strides=(1, 0, 5)).flags.fnc
-    assert dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags.fc
+        (5, 1, 1), dtype="i4", strides=(2, 0, 1)
+    ).flags.forc
+
     x = dpt.empty(5, dtype="u2")
     assert x.flags.writable is True
     x.flags.writable = False
@@ -86,6 +98,11 @@ def test_usm_ndarray_flags():
     x.flags["WRITABLE"] = True
     assert x.flags.writable is True
     x[:] = 0
+
+    with pytest.raises(TypeError):
+        x.flags.writable = dict()
+    with pytest.raises(ValueError):
+        x.flags["C"] = False
 
 
 @pytest.mark.parametrize(
@@ -1834,13 +1851,13 @@ def test_flags():
     x = dpt.empty(tuple(), "i4")
     f = x.flags
     f.__repr__()
-    f.c_contiguous
-    f.f_contiguous
-    f.contiguous
-    f.fc
-    f.fnc
-    f.forc
-    f.writable
+    assert f.c_contiguous == f["C"]
+    assert f.f_contiguous == f["F"]
+    assert f.contiguous == f["CONTIGUOUS"]
+    assert f.fc == f["FC"]
+    assert f.forc == f["FORC"]
+    assert f.fnc == f["FNC"]
+    assert f.writable == f["W"]
     # check comparison with generic types
     f == Ellipsis
 
