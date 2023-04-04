@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+69.g49d27b9a6 documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+73.gb5ac056b documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+69.g49d27b9a6
+                0.14.3dev0+73.gb5ac056b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -162,13 +162,20 @@
     <span class="n">x1_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">x2_dtype</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">dst_dtype</span> <span class="o">=</span> <span class="n">_where_result_type</span><span class="p">(</span><span class="n">x1_dtype</span><span class="p">,</span> <span class="n">x2_dtype</span><span class="p">,</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+    <span class="k">if</span> <span class="n">dst_dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;function &#39;where&#39; does not support input &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;types (</span><span class="si">{</span><span class="n">x1_dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">x2_dtype</span><span class="si">}</span><span class="s2">), &quot;</span>
+            <span class="s2">&quot;and the inputs could not be safely coerced &quot;</span>
+            <span class="s2">&quot;to any supported types according to the casting rule &#39;&#39;safe&#39;&#39;.&quot;</span>
         <span class="p">)</span>
 
     <span class="n">res_shape</span> <span class="o">=</span> <span class="n">_broadcast_shapes</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
 
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">wait_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -194,8 +201,25 @@
     <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
     <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
 
+    <span class="c1"># dst is F-contiguous when all inputs are F contiguous</span>
+    <span class="c1"># otherwise, defaults to C-contiguous</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">condition</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">,</span>
+            <span class="n">x1</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">,</span>
+            <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
     <span class="n">dst</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="n">res_shape</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_where</span><span class="p">(</span>
