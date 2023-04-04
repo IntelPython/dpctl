@@ -337,12 +337,20 @@ def test_asarray_seq_of_arrays_on_different_queues():
     assert res.sycl_queue == q3
     assert dpt.isdtype(res.dtype, "integral")
 
+    res = dpt.asarray([m, [w, range(w.shape[0])]], sycl_queue=q3)
+    assert res.sycl_queue == q3
+    assert dpt.isdtype(res.dtype, "integral")
+
     res = dpt.asarray([m, [w, w]], sycl_queue=q)
     assert res.sycl_queue == q
     assert dpt.isdtype(res.dtype, "integral")
 
     res = dpt.asarray([m, [w, dpt.asnumpy(w)]], sycl_queue=q2)
     assert res.sycl_queue == q2
+    assert dpt.isdtype(res.dtype, "integral")
+
+    res = dpt.asarray([w, dpt.asnumpy(w)])
+    assert res.sycl_queue == w.sycl_queue
     assert dpt.isdtype(res.dtype, "integral")
 
     with pytest.raises(dpctl.utils.ExecutionPlacementError):
