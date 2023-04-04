@@ -60,14 +60,20 @@ def test_usm_ndarray_flags():
     get_queue_or_skip()
     assert dpt.usm_ndarray((5,), dtype="i4").flags.fc
     assert dpt.usm_ndarray((5, 2), dtype="i4").flags.c_contiguous
+    assert not dpt.usm_ndarray((5, 2), dtype="i4").flags.fnc
     assert dpt.usm_ndarray((5, 2), dtype="i4", order="F").flags.f_contiguous
     assert dpt.usm_ndarray((5, 1, 2), dtype="i4", order="F").flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", order="F").flags.fnc
     assert dpt.usm_ndarray(
         (5, 1, 2), dtype="i4", strides=(2, 0, 1)
     ).flags.c_contiguous
+    assert not dpt.usm_ndarray(
+        (5, 1, 2), dtype="i4", strides=(2, 0, 1)
+    ).flags.fnc
     assert dpt.usm_ndarray(
         (5, 1, 2), dtype="i4", strides=(1, 0, 5)
     ).flags.f_contiguous
+    assert dpt.usm_ndarray((5, 1, 2), dtype="i4", strides=(1, 0, 5)).flags.fnc
     assert dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags.fc
     x = dpt.empty(5, dtype="u2")
     assert x.flags.writable is True
