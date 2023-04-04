@@ -248,10 +248,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     host_task_events.reserve(2);
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unable to allocate device memory");
+    }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
