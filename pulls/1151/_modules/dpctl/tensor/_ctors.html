@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+66.g751693a12 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+72.gffda658ba documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+66.g751693a12
+                0.14.3dev0+72.gffda658ba
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -155,7 +155,13 @@
         <span class="k">return</span> <span class="n">_empty_tuple</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">_host_set</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">complex</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_empty_tuple</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="n">_host_set</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">obj</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="nb">list</span><span class="p">,</span>
+            <span class="nb">tuple</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">_is_object_with_buffer_protocol</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="n">np_obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -423,7 +429,7 @@
         <span class="k">return</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)):</span>
         <span class="k">return</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">o</span><span class="p">:</span>
             <span class="n">_usm_types_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">usm_types_list</span><span class="p">)</span>
         <span class="k">return</span>
@@ -731,37 +737,28 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">devs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">devs</span> <span class="o">=</span> <span class="p">[</span><span class="n">dev</span> <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="n">devs</span> <span class="k">if</span> <span class="n">dev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">devs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">seq_dev</span> <span class="o">=</span> <span class="n">devs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">return</span> <span class="n">_asarray_from_seq_single_device</span><span class="p">(</span>
-                    <span class="n">obj</span><span class="p">,</span>
-                    <span class="n">seq_shape</span><span class="p">,</span>
-                    <span class="n">seq_dt</span><span class="p">,</span>
-                    <span class="n">seq_dev</span><span class="p">,</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
-                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">devs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">alloc_q</span> <span class="o">=</span> <span class="n">devs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
                         <span class="s2">&quot;Please specify `device` or `sycl_queue` keyword &quot;</span>
-                        <span class="s2">&quot;argument to determine where to allocated the &quot;</span>
+                        <span class="s2">&quot;argument to determine where to allocate the &quot;</span>
                         <span class="s2">&quot;resulting array.&quot;</span>
                     <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="n">alloc_q</span> <span class="o">=</span> <span class="n">sycl_queue</span>
-                <span class="n">exec_q</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># force copying via host</span>
-                <span class="k">return</span> <span class="n">_asarray_from_seq</span><span class="p">(</span>
-                    <span class="n">obj</span><span class="p">,</span>
-                    <span class="n">seq_shape</span><span class="p">,</span>
-                    <span class="n">seq_dt</span><span class="p">,</span>
-                    <span class="n">alloc_q</span><span class="p">,</span>
-                    <span class="n">exec_q</span><span class="p">,</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_asarray_from_seq</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="n">seq_shape</span><span class="p">,</span>
+                <span class="n">seq_dt</span><span class="p">,</span>
+                <span class="n">alloc_q</span><span class="p">,</span>
+                <span class="c1">#  force copying via host</span>
+                <span class="kc">None</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Converting Python sequences is not implemented&quot;</span>
