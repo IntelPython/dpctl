@@ -65,7 +65,13 @@ def _array_info_dispatch(obj):
         return _empty_tuple, int, _host_set
     if isinstance(obj, complex):
         return _empty_tuple, complex, _host_set
-    if isinstance(obj, (list, tuple, range)):
+    if isinstance(
+        obj,
+        (
+            list,
+            tuple,
+        ),
+    ):
         return _array_info_sequence(obj)
     if _is_object_with_buffer_protocol(obj):
         np_obj = np.array(obj)
@@ -333,7 +339,7 @@ def _usm_types_walker(o, usm_types_list):
         return
     if isinstance(o, (int, bool, float, complex)):
         return
-    if isinstance(o, (list, tuple)):
+    if isinstance(o, (list, tuple, range)):
         for el in o:
             _usm_types_walker(el, usm_types_list)
         return
@@ -641,37 +647,28 @@ def asarray(
             )
         elif len(devs) > 1:
             devs = [dev for dev in devs if dev is not None]
-            if len(devs) == 1:
-                seq_dev = devs[0]
-                return _asarray_from_seq_single_device(
-                    obj,
-                    seq_shape,
-                    seq_dt,
-                    seq_dev,
-                    dtype=dtype,
-                    usm_type=usm_type,
-                    sycl_queue=sycl_queue,
-                    order=order,
-                )
-            else:
-                if sycl_queue is None:
+            if sycl_queue is None:
+                if len(devs) == 1:
+                    alloc_q = devs[0]
+                else:
                     raise dpctl.utils.ExecutionPlacementError(
                         "Please specify `device` or `sycl_queue` keyword "
-                        "argument to determine where to allocated the "
+                        "argument to determine where to allocate the "
                         "resulting array."
                     )
+            else:
                 alloc_q = sycl_queue
-                exec_q = None  # force copying via host
-                return _asarray_from_seq(
-                    obj,
-                    seq_shape,
-                    seq_dt,
-                    alloc_q,
-                    exec_q,
-                    dtype=dtype,
-                    usm_type=usm_type,
-                    order=order,
-                )
+            return _asarray_from_seq(
+                obj,
+                seq_shape,
+                seq_dt,
+                alloc_q,
+                #  force copying via host
+                None,
+                dtype=dtype,
+                usm_type=usm_type,
+                order=order,
+            )
 
         raise NotImplementedError(
             "Converting Python sequences is not implemented"
