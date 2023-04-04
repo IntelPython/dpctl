@@ -72,13 +72,20 @@ def where(condition, x1, x2):
     x1_dtype = x1.dtype
     x2_dtype = x2.dtype
     dst_dtype = _where_result_type(x1_dtype, x2_dtype, exec_q.sycl_device)
-
-    if condition.size == 0:
-        return dpt.asarray(
-            (), dtype=dst_dtype, usm_type=dst_usm_type, sycl_queue=exec_q
+    if dst_dtype is None:
+        raise TypeError(
+            "function 'where' does not support input "
+            f"types ({x1_dtype}, {x2_dtype}), "
+            "and the inputs could not be safely coerced "
+            "to any supported types according to the casting rule ''safe''."
         )
 
     res_shape = _broadcast_shapes(condition, x1, x2)
+
+    if condition.size == 0:
+        return dpt.empty(
+            res_shape, dtype=dst_dtype, usm_type=dst_usm_type, sycl_queue=exec_q
+        )
 
     deps = []
     wait_list = []
@@ -104,8 +111,25 @@ def where(condition, x1, x2):
     x1 = dpt.broadcast_to(x1, res_shape)
     x2 = dpt.broadcast_to(x2, res_shape)
 
+    # dst is F-contiguous when all inputs are F contiguous
+    # otherwise, defaults to C-contiguous
+    if all(
+        (
+            condition.flags.fnc,
+            x1.flags.fnc,
+            x2.flags.fnc,
+        )
+    ):
+        order = "F"
+    else:
+        order = "C"
+
     dst = dpt.empty(
-        res_shape, dtype=dst_dtype, usm_type=dst_usm_type, sycl_queue=exec_q
+        res_shape,
+        dtype=dst_dtype,
+        order=order,
+        usm_type=dst_usm_type,
+        sycl_queue=exec_q,
     )
 
     hev, _ = ti._where(
