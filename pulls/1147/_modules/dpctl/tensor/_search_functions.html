@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+74.gd3df0b862 documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+79.g13ac34a53 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+74.gd3df0b862
+                0.14.3dev0+79.g13ac34a53
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -179,7 +179,7 @@
 
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">wait_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">x1_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dst_dtype</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x1_dtype</span> <span class="o">!=</span> <span class="n">dst_dtype</span><span class="p">:</span>
         <span class="n">_x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">)</span>
         <span class="n">ht_copy1_ev</span><span class="p">,</span> <span class="n">copy1_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">_x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
@@ -188,7 +188,7 @@
         <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy1_ev</span><span class="p">)</span>
         <span class="n">wait_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_copy1_ev</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">x2_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dst_dtype</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x2_dtype</span> <span class="o">!=</span> <span class="n">dst_dtype</span><span class="p">:</span>
         <span class="n">_x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">)</span>
         <span class="n">ht_copy2_ev</span><span class="p">,</span> <span class="n">copy2_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">_x2</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
