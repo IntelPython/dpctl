@@ -157,7 +157,7 @@ Other Functions
     * - :func:`usm_ndarray_str()`
       - Returns a string representing the elements of a :class:`dpctl.tensor.usm_ndarray`.
     * - :func:`where()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen from `x1` or `x2` depending on `condition`.
 
 
 

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+83.g38df16653 documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+84.g26fc317e4 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+83.g38df16653
+                0.14.3dev0+84.g26fc317e4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -90,7 +90,7 @@
   <h1>Source code for dpctl.tensor._search_functions</h1><div class="highlight"><pre>
 <span></span><span class="c1">#                       Data Parallel Control (dpctl)</span>
 <span class="c1">#</span>
-<span class="c1">#  Copyright 2020-2022 Intel Corporation</span>
+<span class="c1">#  Copyright 2020-2023 Intel Corporation</span>
 <span class="c1">#</span>
 <span class="c1">#  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
 <span class="c1">#  you may not use this file except in compliance with the License.</span>
@@ -130,6 +130,37 @@
 
 
 <div class="viewcode-block" id="where"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.where">[docs]</a><span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;where(condition, x1, x2)</span>
+
+<span class="sd">    Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen</span>
+<span class="sd">    from `x1` or `x2` depending on `condition`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        condition (usm_ndarray): When True yields from `x1`,</span>
+<span class="sd">            and otherwise yields from `x2`.</span>
+<span class="sd">            Must be compatible with `x1` and `x2` according</span>
+<span class="sd">            to broadcasting rules.</span>
+<span class="sd">        x1 (usm_ndarray): Array from which values are chosen when</span>
+<span class="sd">            `condition` is True.</span>
+<span class="sd">            Must be compatible with `condition` and `x2` according</span>
+<span class="sd">            to broadcasting rules.</span>
+<span class="sd">        x2 (usm_ndarray): Array from which values are chosen when</span>
+<span class="sd">            `condition` is not True.</span>
+<span class="sd">            Must be compatible with `condition` and `x2` according</span>
+<span class="sd">            to broadcasting rules.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            An array with elements from `x1` where `condition` is True,</span>
+<span class="sd">            and elements from `x2` elsewhere.</span>
+
+<span class="sd">    The data type of the returned array is determined by applying</span>
+<span class="sd">    the Type Promotion Rules to `x1` and `x2`.</span>
+
+<span class="sd">    The memory layout of the returned array is</span>
+<span class="sd">    F-contiguous (column-major) when all inputs are F-contiguous,</span>
+<span class="sd">    and C-contiguous (row-major) otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;Expecting dpctl.tensor.usm_ndarray type, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>

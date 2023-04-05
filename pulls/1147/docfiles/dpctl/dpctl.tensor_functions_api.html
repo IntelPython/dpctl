@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+83.g38df16653 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+84.g26fc317e4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+83.g38df16653
+                0.14.3dev0+84.g26fc317e4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1782,7 +1782,39 @@ Default: “”</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.where">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_search_functions.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.where" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with elements chosen
+from <cite>x1</cite> or <cite>x2</cite> depending on <cite>condition</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – When True yields from <cite>x1</cite>,
+and otherwise yields from <cite>x2</cite>.
+Must be compatible with <cite>x1</cite> and <cite>x2</cite> according
+to broadcasting rules.</p></li>
+<li><p><strong>x1</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array from which values are chosen when
+<cite>condition</cite> is True.
+Must be compatible with <cite>condition</cite> and <cite>x2</cite> according
+to broadcasting rules.</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array from which values are chosen when
+<cite>condition</cite> is not True.
+Must be compatible with <cite>condition</cite> and <cite>x2</cite> according
+to broadcasting rules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array with elements from <cite>x1</cite> where <cite>condition</cite> is True,
+and elements from <cite>x2</cite> elsewhere.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+<p>The data type of the returned array is determined by applying
+the Type Promotion Rules to <cite>x1</cite> and <cite>x2</cite>.</p>
+<p>The memory layout of the returned array is
+F-contiguous (column-major) when all inputs are F-contiguous,
+and C-contiguous (row-major) otherwise.</p>
+</dd></dl>
 
 </section>
 </section>
