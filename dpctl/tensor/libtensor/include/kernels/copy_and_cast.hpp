@@ -46,51 +46,46 @@ using namespace dpctl::tensor::offset_utils;
 
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_generic_kernel;
+
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_from_host_kernel;
-// template <typename srcT, typename dstT, typename IndexerT>
-// class copy_cast_spec_kernel;
+
 template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
 class copy_for_reshape_generic_kernel;
 
-template <typename srcT, typename dstT> class Caster
+template <typename srcTy, typename dstTy> class Caster
 {
 public:
     Caster() = default;
-    void operator()(const char *src,
-                    std::ptrdiff_t src_offset,
-                    char *dst,
-                    std::ptrdiff_t dst_offset) const
+    dstTy operator()(const srcTy &src) const
     {
         using dpctl::tensor::type_utils::convert_impl;
-
-        const srcT *src_ = reinterpret_cast<const srcT *>(src) + src_offset;
-        dstT *dst_ = reinterpret_cast<dstT *>(dst) + dst_offset;
-        *dst_ = convert_impl<dstT, srcT>(*src_);
+        return convert_impl<dstTy, srcTy>(src);
     }
 };
 
-template <typename CastFnT, typename IndexerT> class GenericCopyFunctor
+template <typename srcT, typename dstT, typename CastFnT, typename IndexerT>
+class GenericCopyFunctor
 {
 private:
-    const char *src_ = nullptr;
-    char *dst_ = nullptr;
+    const srcT *src_ = nullptr;
+    dstT *dst_ = nullptr;
     IndexerT indexer_;
 
 public:
-    GenericCopyFunctor(const char *src_cp, char *dst_cp, IndexerT indexer)
-        : src_(src_cp), dst_(dst_cp), indexer_(indexer)
+    GenericCopyFunctor(const srcT *src_p, dstT *dst_p, IndexerT indexer)
+        : src_(src_p), dst_(dst_p), indexer_(indexer)
     {
     }
 
     void operator()(sycl::id<1> wiid) const
     {
-        auto offsets = indexer_(static_cast<py::ssize_t>(wiid.get(0)));
-        py::ssize_t src_offset = offsets.get_first_offset();
-        py::ssize_t dst_offset = offsets.get_second_offset();
+        const auto &offsets = indexer_(static_cast<py::ssize_t>(wiid.get(0)));
+        const py::ssize_t &src_offset = offsets.get_first_offset();
+        const py::ssize_t &dst_offset = offsets.get_second_offset();
 
         CastFnT fn{};
-        fn(src_, src_offset, dst_, dst_offset);
+        dst_[dst_offset] = fn(src_[src_offset]);
     }
 };
 
@@ -168,12 +163,15 @@ copy_and_cast_generic_impl(sycl::queue q,
 
         TwoOffsets_StridedIndexer indexer{nd, src_offset, dst_offset,
                                           shape_and_strides};
+        const srcTy *src_tp = reinterpret_cast<const srcTy *>(src_p);
+        dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
 
         cgh.parallel_for<class copy_cast_generic_kernel<
             srcTy, dstTy, TwoOffsets_StridedIndexer>>(
             sycl::range<1>(nelems),
-            GenericCopyFunctor<Caster<srcTy, dstTy>, TwoOffsets_StridedIndexer>(
-                src_p, dst_p, indexer));
+            GenericCopyFunctor<srcTy, dstTy, Caster<srcTy, dstTy>,
+                               TwoOffsets_StridedIndexer>(src_tp, dst_tp,
+                                                          indexer));
     });
 
     return copy_and_cast_ev;
@@ -276,13 +274,15 @@ copy_and_cast_nd_specialized_impl(sycl::queue q,
         using IndexerT = TwoOffsets_FixedDimStridedIndexer<nd>;
         IndexerT indexer{shape, src_strides, dst_strides, src_offset,
                          dst_offset};
+        const srcTy *src_tp = reinterpret_cast<const srcTy *>(src_p);
+        dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
 
         cgh.depends_on(depends);
         cgh.parallel_for<
             class copy_cast_generic_kernel<srcTy, dstTy, IndexerT>>(
             sycl::range<1>(nelems),
-            GenericCopyFunctor<Caster<srcTy, dstTy>, IndexerT>(src_p, dst_p,
-                                                               indexer));
+            GenericCopyFunctor<srcTy, dstTy, Caster<srcTy, dstTy>, IndexerT>(
+                src_tp, dst_tp, indexer));
     });
 
     return copy_and_cast_ev;
@@ -318,46 +318,33 @@ template <typename fnT, typename D, typename S> struct CopyAndCast2DFactory
 
 // ====================== Copying from host to USM
 
-template <typename srcT, typename dstT, typename AccessorT>
-class CasterForAccessor
-{
-public:
-    CasterForAccessor() = default;
-    void operator()(AccessorT src,
-                    std::ptrdiff_t src_offset,
-                    char *dst,
-                    std::ptrdiff_t dst_offset) const
-    {
-        using dpctl::tensor::type_utils::convert_impl;
-
-        dstT *dst_ = reinterpret_cast<dstT *>(dst) + dst_offset;
-        *dst_ = convert_impl<dstT, srcT>(src[src_offset]);
-    }
-};
-
-template <typename CastFnT, typename AccessorT, typename IndexerT>
+template <typename AccessorT,
+          typename dstTy,
+          typename CastFnT,
+          typename IndexerT>
 class GenericCopyFromHostFunctor
 {
 private:
     AccessorT src_acc_;
-    char *dst_ = nullptr;
+    dstTy *dst_ = nullptr;
     IndexerT indexer_;
 
 public:
     GenericCopyFromHostFunctor(AccessorT src_acc,
-                               char *dst_cp,
+                               dstTy *dst_p,
                                IndexerT indexer)
-        : src_acc_(src_acc), dst_(dst_cp), indexer_(indexer)
+        : src_acc_(src_acc), dst_(dst_p), indexer_(indexer)
     {
     }
 
     void operator()(sycl::id<1> wiid) const
     {
-        auto offsets = indexer_(static_cast<py::ssize_t>(wiid.get(0)));
-        py::ssize_t src_offset = offsets.get_first_offset();
-        py::ssize_t dst_offset = offsets.get_second_offset();
+        const auto &offsets = indexer_(static_cast<py::ssize_t>(wiid.get(0)));
+        const py::ssize_t &src_offset = offsets.get_first_offset();
+        const py::ssize_t &dst_offset = offsets.get_second_offset();
+
         CastFnT fn{};
-        fn(src_acc_, src_offset, dst_, dst_offset);
+        dst_[dst_offset] = fn(src_acc_[src_offset]);
     }
 };
 
@@ -447,13 +434,15 @@ void copy_and_cast_from_host_impl(
             nd, src_offset - src_min_nelem_offset, dst_offset,
             const_cast<const py::ssize_t *>(shape_and_strides)};
 
+        dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
+
         cgh.parallel_for<copy_cast_from_host_kernel<srcTy, dstTy,
                                                     TwoOffsets_StridedIndexer>>(
             sycl::range<1>(nelems),
-            GenericCopyFromHostFunctor<
-                CasterForAccessor<srcTy, dstTy, decltype(npy_acc)>,
-                decltype(npy_acc), TwoOffsets_StridedIndexer>(npy_acc, dst_p,
-                                                              indexer));
+            GenericCopyFromHostFunctor<decltype(npy_acc), dstTy,
+                                       Caster<srcTy, dstTy>,
+                                       TwoOffsets_StridedIndexer>(
+                npy_acc, dst_tp, indexer));
     });
 
     // perform explicit synchronization. Implicit synchronization would be
