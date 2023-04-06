@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+86.g82a3de480 documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+89.gff77a5651 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+86.g82a3de480
+                0.14.3dev0+89.gff77a5651
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -261,8 +261,8 @@
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
         <span class="n">depends</span><span class="o">=</span><span class="n">deps</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">wait_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hev</span><span class="p">)</span>
     <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">wait_list</span><span class="p">)</span>
+    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">dst</span></div>
 </pre></div>
