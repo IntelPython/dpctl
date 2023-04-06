@@ -52,15 +52,12 @@ namespace py_internal
 namespace _ns = dpctl::tensor::detail;
 
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
-using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_2d_fn_ptr_t;
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
 
 static copy_and_cast_generic_fn_ptr_t
     copy_and_cast_generic_dispatch_table[_ns::num_types][_ns::num_types];
 static copy_and_cast_1d_fn_ptr_t
     copy_and_cast_1d_dispatch_table[_ns::num_types][_ns::num_types];
-static copy_and_cast_2d_fn_ptr_t
-    copy_and_cast_2d_dispatch_table[_ns::num_types][_ns::num_types];
 
 namespace py = pybind11;
 
@@ -187,7 +184,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         simplified_shape, simplified_src_strides, simplified_dst_strides,
         src_offset, dst_offset);
 
-    if (nd < 3) {
+    if (nd < 2) {
         if (nd == 1) {
             std::array<py::ssize_t, 1> shape_arr = {shape[0]};
             // strides may be null
@@ -204,23 +201,6 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
             return std::make_pair(
                 keep_args_alive(exec_q, {src, dst}, {copy_and_cast_1d_event}),
                 copy_and_cast_1d_event);
-        }
-        else if (nd == 2) {
-            std::array<py::ssize_t, 2> shape_arr = {shape[0], shape[1]};
-            std::array<py::ssize_t, 2> src_strides_arr = {src_strides[0],
-                                                          src_strides[1]};
-            std::array<py::ssize_t, 2> dst_strides_arr = {dst_strides[0],
-                                                          dst_strides[1]};
-
-            auto fn = copy_and_cast_2d_dispatch_table[dst_type_id][src_type_id];
-
-            sycl::event copy_and_cast_2d_event = fn(
-                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
-                src_data, src_offset, dst_data, dst_offset, depends);
-
-            return std::make_pair(
-                keep_args_alive(exec_q, {src, dst}, {copy_and_cast_2d_event}),
-                copy_and_cast_2d_event);
         }
         else if (nd == 0) { // case of a scalar
             assert(src_nelems == 1);
@@ -290,12 +270,6 @@ void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
                          num_types>
         dtb_1d;
     dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
-
-    using dpctl::tensor::kernels::copy_and_cast::CopyAndCast2DFactory;
-    DispatchTableBuilder<copy_and_cast_2d_fn_ptr_t, CopyAndCast2DFactory,
-                         num_types>
-        dtb_2d;
-    dtb_2d.populate_dispatch_table(copy_and_cast_2d_dispatch_table);
 }
 
 } // namespace py_internal

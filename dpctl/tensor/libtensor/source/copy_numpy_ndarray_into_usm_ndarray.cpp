@@ -141,8 +141,6 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
             return;
         }
-        // With contract_iter2 in place, there is no need to write
-        // dedicated kernels for casting between contiguous arrays
     }
 
     const py::ssize_t *src_strides =
