@@ -52,12 +52,15 @@ namespace py_internal
 namespace _ns = dpctl::tensor::detail;
 
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
+using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_contig_fn_ptr_t;
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
 
 static copy_and_cast_generic_fn_ptr_t
     copy_and_cast_generic_dispatch_table[_ns::num_types][_ns::num_types];
 static copy_and_cast_1d_fn_ptr_t
     copy_and_cast_1d_dispatch_table[_ns::num_types][_ns::num_types];
+static copy_and_cast_contig_fn_ptr_t
+    copy_and_cast_contig_dispatch_table[_ns::num_types][_ns::num_types];
 
 namespace py = pybind11;
 
@@ -139,26 +142,32 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     bool is_dst_f_contig = dst.is_f_contiguous();
 
     // check for applicability of special cases:
-    //      (same type && (both C-contiguous || both F-contiguous)
+    //      (both C-contiguous || both F-contiguous)
     bool both_c_contig = (is_src_c_contig && is_dst_c_contig);
     bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
     if (both_c_contig || both_f_contig) {
+
+        sycl::event copy_ev;
         if (src_type_id == dst_type_id) {
 
             int src_elem_size = src.get_elemsize();
 
-            sycl::event copy_ev =
-                exec_q.memcpy(static_cast<void *>(dst_data),
-                              static_cast<const void *>(src_data),
-                              src_nelems * src_elem_size, depends);
-
-            // make sure src and dst are not GC-ed before copy_ev is complete
-            return std::make_pair(
-                keep_args_alive(exec_q, {src, dst}, {copy_ev}), copy_ev);
+            copy_ev = exec_q.memcpy(static_cast<void *>(dst_data),
+                                    static_cast<const void *>(src_data),
+                                    src_nelems * src_elem_size, depends);
         }
-        // With contract_iter2 in place, there is no need to write
-        // dedicated kernels for casting between contiguous arrays
+        else {
+            auto fn =
+                copy_and_cast_contig_dispatch_table[dst_type_id][src_type_id];
+            copy_ev =
+                contig_fn(exec_q, src_nelems, src_data, dst_data, depends);
+        }
+        // make sure src and dst are not GC-ed before copy_ev is complete
+        return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
+                              copy_ev);
     }
+    // With contract_iter2 in place, there is no need to write
+    // dedicated kernels for casting between contiguous arrays
 
     const py::ssize_t *src_strides = src.get_strides_raw();
     const py::ssize_t *dst_strides = dst.get_strides_raw();
@@ -258,6 +267,12 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
 void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
 {
     using namespace dpctl::tensor::detail;
+
+    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastContigFactory;
+    DispatchTableBuilder<copy_and_cast_contig_fn_ptr_t,
+                         CopyAndCastContigFactory, num_types>
+        dtb_contig;
+    dtb_contig.populate_dispatch_table(copy_and_cast_contig_dispatch_table);
 
     using dpctl::tensor::kernels::copy_and_cast::CopyAndCastGenericFactory;
     DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,

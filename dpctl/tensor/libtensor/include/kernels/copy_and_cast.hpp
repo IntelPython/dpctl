@@ -47,6 +47,12 @@ using namespace dpctl::tensor::offset_utils;
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_generic_kernel;
 
+template <typename srcT,
+          typename dstT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class copy_cast_contig_kernel;
+
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_from_host_kernel;
 
@@ -188,6 +194,166 @@ template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
     {
         fnT f = copy_and_cast_generic_impl<D, S>;
         return f;
+    }
+};
+
+// Specialization of copy_and_cast for contiguous arrays of different data types
+
+template <typename srcT,
+          typename dstT,
+          typename CastFnT,
+          int vec_sz = 4,
+          int n_vecs = 2>
+class ContigCopyFunctor
+{
+private:
+    const size_t nelems;
+    const srcT *src_p = nullptr;
+    dstT *dst_p = nullptr;
+
+public:
+    ContigCopyFunctor(const size_t nelems_, const srcT *src_p_, dstT *dst_p_)
+        : nelems(nelems_), src_p(src_p_), dst_p(dst_p_)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        CastFnT fn{};
+
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (is_complex<srcT>::value || is_complex<dstT>::value) {
+            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            size_t base = ndit.get_global_linear_id();
+
+            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
+            for (size_t offset = base;
+                 offset < std::min(nelems, base + sgSize * (n_vecs * vec_sz));
+                 offset += sgSize)
+            {
+                dst_p[offset] = fn(src_p[offset]);
+            }
+        }
+        else {
+            auto sg = ndit.get_sub_group();
+            std::uint8_t sgSize = sg.get_local_range()[0];
+            std::uint8_t max_sgSize = sg.get_max_local_range()[0];
+            size_t base = n_vecs * vec_sz *
+                          (ndit.get_group(0) * ndit.get_local_range(0) +
+                           sg.get_group_id()[0] * max_sgSize);
+
+            if (base + n_vecs * vec_sz * sgSize < nelems &&
+                sgSize == max_sgSize) {
+                using src_ptrT =
+                    sycl::multi_ptr<const srcT,
+                                    sycl::access::address_space::global_space>;
+                using dst_ptrT =
+                    sycl::multi_ptr<dstT,
+                                    sycl::access::address_space::global_space>;
+                sycl::vec<srcT, vec_sz> src_vec;
+                sycl::vec<dstT, vec_sz> dst_vec;
+
+#pragma unroll
+                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    src_vec =
+                        sg.load<vec_sz>(src_ptrT(&src_p[base + it * sgSize]));
+#pragma unroll
+                    for (std::uint8_t k = 0; k < vec_sz; k++) {
+                        dst_vec[k] = fn(src_vec[k]);
+                    }
+                    sg.store<vec_sz>(dst_ptrT(&dst_p[base + it * sgSize]),
+                                     dst_vec);
+                }
+            }
+            else {
+                for (size_t k = base + sg.get_local_id()[0]; k < nelems;
+                     k += sgSize) {
+                    dst_p[k] = fn(src_p[k]);
+                }
+            }
+        }
+    }
+};
+
+/*!
+ * @brief Function pointer type for contiguous array cast and copy function.
+ */
+typedef sycl::event (*copy_and_cast_contig_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    const char *,
+    char *,
+    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to copy `nelems` elements from contiguous `src` usm_ndarray
+ to contiguous `dst` usm_ndarray while casting from `srcTy` to `dstTy`.
+
+   Both arrays have the same number of elements `nelems`.
+ `src_cp` and `dst_cp` represent char pointers to the start of respective
+ arrays. Kernel is submitted to sycl queue `q` with events `depends` as
+ dependencies.
+
+   @param  q       Sycl queue to which the kernel is submitted.
+   @param  nelems  Number of elements to cast and copy.
+   @param  src_p   Kernel accessible USM pointer for the source array
+   @param  dst_p   Kernel accessible USM pointer for the destination array
+   @param  depends  List of events to wait for before starting computations, if
+ any.
+
+   @return  Event to wait on to ensure that computation completes.
+   @ingroup CopyAndCastKernels
+ */
+template <typename dstTy, typename srcTy>
+sycl::event copy_and_cast_contig_impl(sycl::queue q,
+                                      size_t nelems,
+                                      const char *src_cp,
+                                      char *dst_cp,
+                                      const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+
+    sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        const srcTy *src_tp = reinterpret_cast<const srcTy *>(src_cp);
+        dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_cp);
+
+        size_t lws = 64;
+        constexpr unsigned int vec_sz = 4;
+        constexpr unsigned int n_vecs = 2;
+        const size_t n_groups =
+            ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
+        const auto gws_range = sycl::range<1>(n_groups * lws);
+        const auto lws_range = sycl::range<1>(lws);
+
+        cgh.parallel_for<copy_cast_contig_kernel<srcTy, dstTy, n_vecs, vec_sz>>(
+            sycl::nd_range<1>(gws_range, lws_range),
+            ContigCopyFunctor<srcTy, dstTy, Caster<srcTy, dstTy>, vec_sz,
+                              n_vecs>(nelems, src_tp, dst_tp));
+    });
+
+    return copy_and_cast_ev;
+}
+
+/*!
+ * @brief Factory to get specialized function pointer for casting and copying
+ * contiguous arrays of different types.
+ * @ingroup CopyAndCastKernels
+ */
+template <typename fnT, typename D, typename S> struct CopyAndCastContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<D, S>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT f = copy_and_cast_contig_impl<D, S>;
+            return f;
+        }
     }
 };
 
