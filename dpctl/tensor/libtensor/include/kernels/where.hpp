@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2022 Intel Corporation
+// Copyright 2020-2023 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,31 +57,24 @@ class WhereContigFunctor
 {
 private:
     size_t nelems = 0;
-    const char *x1_cp = nullptr;
-    const char *x2_cp = nullptr;
-    char *dst_cp = nullptr;
-    const char *cond_cp = nullptr;
+    const condT *cond_p = nullptr;
+    const T *x1_p = nullptr;
+    const T *x2_p = nullptr;
+    T *dst_p = nullptr;
 
 public:
     WhereContigFunctor(size_t nelems_,
-                       const char *cond_data_p,
-                       const char *x1_data_p,
-                       const char *x2_data_p,
-                       char *dst_data_p)
-        : nelems(nelems_), x1_cp(x1_data_p), x2_cp(x2_data_p),
-          dst_cp(dst_data_p), cond_cp(cond_data_p)
+                       const condT *cond_p_,
+                       const T *x1_p_,
+                       const T *x2_p_,
+                       T *dst_p_)
+        : nelems(nelems_), cond_p(cond_p_), x1_p(x1_p_), x2_p(x2_p_),
+          dst_p(dst_p_)
     {
     }
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        const T *x1_data = reinterpret_cast<const T *>(x1_cp);
-        const T *x2_data = reinterpret_cast<const T *>(x2_cp);
-        T *dst_data = reinterpret_cast<T *>(dst_cp);
-        const condT *cond_data = reinterpret_cast<const condT *>(cond_cp);
-
-        using dpctl::tensor::type_utils::convert_impl;
-
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (is_complex<condT>::value || is_complex<T>::value) {
             std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
@@ -92,8 +85,9 @@ public:
                  offset < std::min(nelems, base + sgSize * (n_vecs * vec_sz));
                  offset += sgSize)
             {
-                bool check = convert_impl<bool, condT>(cond_data[offset]);
-                dst_data[offset] = check ? x1_data[offset] : x2_data[offset];
+                using dpctl::tensor::type_utils::convert_impl;
+                bool check = convert_impl<bool, condT>(cond_p[offset]);
+                dst_p[offset] = check ? x1_p[offset] : x2_p[offset];
             }
         }
         else {
@@ -115,7 +109,6 @@ public:
                 using cond_ptrT =
                     sycl::multi_ptr<const condT,
                                     sycl::access::address_space::global_space>;
-
                 sycl::vec<T, vec_sz> dst_vec;
                 sycl::vec<T, vec_sz> x1_vec;
                 sycl::vec<T, vec_sz> x2_vec;
@@ -124,23 +117,20 @@ public:
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
                     auto idx = base + it * sgSize;
-                    x1_vec = sg.load<vec_sz>(x_ptrT(&x1_data[idx]));
-                    x2_vec = sg.load<vec_sz>(x_ptrT(&x2_data[idx]));
-                    cond_vec = sg.load<vec_sz>(cond_ptrT(&cond_data[idx]));
-
+                    x1_vec = sg.load<vec_sz>(x_ptrT(&x1_p[idx]));
+                    x2_vec = sg.load<vec_sz>(x_ptrT(&x2_p[idx]));
+                    cond_vec = sg.load<vec_sz>(cond_ptrT(&cond_p[idx]));
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; ++k) {
-                        bool check = convert_impl<bool, condT>(cond_vec[k]);
-                        dst_vec[k] = check ? x1_vec[k] : x2_vec[k];
+                        dst_vec[k] = cond_vec[k] ? x1_vec[k] : x2_vec[k];
                     }
-                    sg.store<vec_sz>(dst_ptrT(&dst_data[idx]), dst_vec);
+                    sg.store<vec_sz>(dst_ptrT(&dst_p[idx]), dst_vec);
                 }
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems;
                      k += sgSize) {
-                    bool check = convert_impl<bool, condT>(cond_data[k]);
-                    dst_data[k] = check ? x1_data[k] : x2_data[k];
+                    dst_p[k] = cond_p[k] ? x1_p[k] : x2_p[k];
                 }
             }
         }
@@ -159,12 +149,17 @@ typedef sycl::event (*where_contig_impl_fn_ptr_t)(
 template <typename T, typename condT>
 sycl::event where_contig_impl(sycl::queue q,
                               size_t nelems,
-                              const char *cond_p,
-                              const char *x1_p,
-                              const char *x2_p,
-                              char *dst_p,
+                              const char *cond_cp,
+                              const char *x1_cp,
+                              const char *x2_cp,
+                              char *dst_cp,
                               const std::vector<sycl::event> &depends)
 {
+    const condT *cond_tp = reinterpret_cast<const condT *>(cond_cp);
+    const T *x1_tp = reinterpret_cast<const T *>(x1_cp);
+    const T *x2_tp = reinterpret_cast<const T *>(x2_cp);
+    T *dst_tp = reinterpret_cast<T *>(dst_cp);
+
     sycl::event where_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
@@ -178,8 +173,8 @@ sycl::event where_contig_impl(sycl::queue q,
 
         cgh.parallel_for<where_contig_kernel<T, condT, vec_sz, n_vecs>>(
             sycl::nd_range<1>(gws_range, lws_range),
-            WhereContigFunctor<T, condT, vec_sz, n_vecs>(nelems, cond_p, x1_p,
-                                                         x2_p, dst_p));
+            WhereContigFunctor<T, condT, vec_sz, n_vecs>(nelems, cond_tp, x1_tp,
+                                                         x2_tp, dst_tp));
     });
 
     return where_ev;
@@ -189,39 +184,34 @@ template <typename T, typename condT, typename IndexerT>
 class WhereStridedFunctor
 {
 private:
-    const char *x1_cp = nullptr;
-    const char *x2_cp = nullptr;
-    char *dst_cp = nullptr;
-    const char *cond_cp = nullptr;
+    const T *x1_p = nullptr;
+    const T *x2_p = nullptr;
+    T *dst_p = nullptr;
+    const condT *cond_p = nullptr;
     IndexerT indexer;
 
 public:
-    WhereStridedFunctor(const char *cond_data_p,
-                        const char *x1_data_p,
-                        const char *x2_data_p,
-                        char *dst_data_p,
+    WhereStridedFunctor(const condT *cond_p_,
+                        const T *x1_p_,
+                        const T *x2_p_,
+                        T *dst_p_,
                         IndexerT indexer_)
-        : x1_cp(x1_data_p), x2_cp(x2_data_p), dst_cp(dst_data_p),
-          cond_cp(cond_data_p), indexer(indexer_)
+        : x1_p(x1_p_), x2_p(x2_p_), dst_p(dst_p_), cond_p(cond_p_),
+          indexer(indexer_)
     {
     }
 
     void operator()(sycl::id<1> id) const
     {
-        const T *x1_data = reinterpret_cast<const T *>(x1_cp);
-        const T *x2_data = reinterpret_cast<const T *>(x2_cp);
-        T *dst_data = reinterpret_cast<T *>(dst_cp);
-        const condT *cond_data = reinterpret_cast<const condT *>(cond_cp);
-
         size_t gid = id[0];
         auto offsets = indexer(static_cast<py::ssize_t>(gid));
 
         using dpctl::tensor::type_utils::convert_impl;
         bool check =
-            convert_impl<bool, condT>(cond_data[offsets.get_first_offset()]);
+            convert_impl<bool, condT>(cond_p[offsets.get_first_offset()]);
 
-        dst_data[gid] = check ? x1_data[offsets.get_second_offset()]
-                              : x2_data[offsets.get_third_offset()];
+        dst_p[gid] = check ? x1_p[offsets.get_second_offset()]
+                           : x2_p[offsets.get_third_offset()];
     }
 };
 
@@ -243,16 +233,21 @@ template <typename T, typename condT>
 sycl::event where_strided_impl(sycl::queue q,
                                size_t nelems,
                                int nd,
-                               const char *cond_p,
-                               const char *x1_p,
-                               const char *x2_p,
-                               char *dst_p,
+                               const char *cond_cp,
+                               const char *x1_cp,
+                               const char *x2_cp,
+                               char *dst_cp,
                                const py::ssize_t *shape_strides,
                                py::ssize_t x1_offset,
                                py::ssize_t x2_offset,
                                py::ssize_t cond_offset,
                                const std::vector<sycl::event> &depends)
 {
+    const condT *cond_tp = reinterpret_cast<const condT *>(cond_cp);
+    const T *x1_tp = reinterpret_cast<const T *>(x1_cp);
+    const T *x2_tp = reinterpret_cast<const T *>(x2_cp);
+    T *dst_tp = reinterpret_cast<T *>(dst_cp);
+
     sycl::event where_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
@@ -263,7 +258,7 @@ sycl::event where_strided_impl(sycl::queue q,
             where_strided_kernel<T, condT, ThreeOffsets_StridedIndexer>>(
             sycl::range<1>(nelems),
             WhereStridedFunctor<T, condT, ThreeOffsets_StridedIndexer>(
-                cond_p, x1_p, x2_p, dst_p, indexer));
+                cond_tp, x1_tp, x2_tp, dst_tp, indexer));
     });
 
     return where_ev;

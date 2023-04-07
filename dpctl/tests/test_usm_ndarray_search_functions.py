@@ -121,8 +121,8 @@ def test_where_all_dtypes(dt):
 
     # mask dtype changes
     cond = dpt.asarray([0, 1, 3, 0, 10], dtype=dt, sycl_queue=q)
-    x1 = dpt.asarray(0, dtype="f", sycl_queue=q)
-    x2 = dpt.asarray(1, dtype="f", sycl_queue=q)
+    x1 = dpt.asarray(0, dtype="f4", sycl_queue=q)
+    x2 = dpt.asarray(1, dtype="f4", sycl_queue=q)
     res = dpt.where(cond, x1, x2)
 
     res_check = np.asarray([1, 0, 0, 1, 0], dtype=res.dtype)

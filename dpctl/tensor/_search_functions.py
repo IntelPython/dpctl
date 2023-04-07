@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2022 Intel Corporation
+#  Copyright 2020-2023 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -40,6 +40,37 @@ def _where_result_type(dt1, dt2, dev):
 
 
 def where(condition, x1, x2):
+    """where(condition, x1, x2)
+
+    Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen
+    from `x1` or `x2` depending on `condition`.
+
+    Args:
+        condition (usm_ndarray): When True yields from `x1`,
+            and otherwise yields from `x2`.
+            Must be compatible with `x1` and `x2` according
+            to broadcasting rules.
+        x1 (usm_ndarray): Array from which values are chosen when
+            `condition` is True.
+            Must be compatible with `condition` and `x2` according
+            to broadcasting rules.
+        x2 (usm_ndarray): Array from which values are chosen when
+            `condition` is not True.
+            Must be compatible with `condition` and `x2` according
+            to broadcasting rules.
+
+    Returns:
+        usm_ndarray:
+            An array with elements from `x1` where `condition` is True,
+            and elements from `x2` elsewhere.
+
+    The data type of the returned array is determined by applying
+    the Type Promotion Rules to `x1` and `x2`.
+
+    The memory layout of the returned array is
+    F-contiguous (column-major) when all inputs are F-contiguous,
+    and C-contiguous (row-major) otherwise.
+    """
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
             "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(condition)}"
@@ -89,7 +120,7 @@ def where(condition, x1, x2):
 
     deps = []
     wait_list = []
-    if x1_dtype is not dst_dtype:
+    if x1_dtype != dst_dtype:
         _x1 = dpt.empty_like(x1, dtype=dst_dtype)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x1, dst=_x1, sycl_queue=exec_q
@@ -98,7 +129,7 @@ def where(condition, x1, x2):
         deps.append(copy1_ev)
         wait_list.append(ht_copy1_ev)
 
-    if x2_dtype is not dst_dtype:
+    if x2_dtype != dst_dtype:
         _x2 = dpt.empty_like(x2, dtype=dst_dtype)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=_x2, sycl_queue=exec_q
@@ -140,7 +171,7 @@ def where(condition, x1, x2):
         sycl_queue=exec_q,
         depends=deps,
     )
-    wait_list.append(hev)
     dpctl.SyclEvent.wait_for(wait_list)
+    hev.wait()
 
     return dst

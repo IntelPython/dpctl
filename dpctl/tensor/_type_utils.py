@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2022 Intel Corporation
+# Copyright 2020-2023 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ def _all_data_types(_fp16, _fp64):
             ]
 
 
-def is_maximal_inexact_type(dt: dpt.dtype, _fp16: bool, _fp64: bool):
+def _is_maximal_inexact_type(dt: dpt.dtype, _fp16: bool, _fp64: bool):
     """
     Return True if data type `dt` is the
     maximal size inexact data type
@@ -106,7 +106,7 @@ def _can_cast(from_: dpt.dtype, to_: dpt.dtype, _fp16: bool, _fp64: bool):
         if (
             from_.kind in "biu"
             and to_.kind in "fc"
-            and is_maximal_inexact_type(to_, _fp16, _fp64)
+            and _is_maximal_inexact_type(to_, _fp16, _fp64)
         ):
             return True
 

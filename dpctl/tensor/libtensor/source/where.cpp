@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2022 Intel Corporation
+// Copyright 2020-2023 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,10 +96,10 @@ py_where(dpctl::tensor::usm_ndarray condition,
     bool shapes_equal(true);
     size_t nelems(1);
     for (int i = 0; i < nd; ++i) {
-        nelems *= static_cast<size_t>(dst_shape[i]);
-        shapes_equal = shapes_equal && (x1_shape[i] == dst_shape[i]) &&
-                       (x2_shape[i] == dst_shape[i]) &&
-                       (cond_shape[i] == dst_shape[i]);
+        const auto &sh_i = dst_shape[i];
+        nelems *= static_cast<size_t>(sh_i);
+        shapes_equal = shapes_equal && (x1_shape[i] == sh_i) &&
+                       (x2_shape[i] == sh_i) && (cond_shape[i] == sh_i);
     }
 
     if (!shapes_equal) {
@@ -127,7 +127,7 @@ py_where(dpctl::tensor::usm_ndarray condition,
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     if (x1_typeid != x2_typeid || x1_typeid != dst_typeid) {
-        throw py::value_error("Non-condition are not of same type.");
+        throw py::value_error("Value arrays must have the same data type");
     }
 
     // ensure that dst is sufficiently ample
@@ -166,8 +166,8 @@ py_where(dpctl::tensor::usm_ndarray condition,
 
         auto where_ev = contig_fn(exec_q, nelems, cond_data, x1_data, x2_data,
                                   dst_data, depends);
-        sycl::event ht_ev = dpctl::utils::keep_args_alive(
-            exec_q, {x1, x2, dst, condition}, {where_ev});
+        sycl::event ht_ev =
+            keep_args_alive(exec_q, {x1, x2, dst, condition}, {where_ev});
 
         return std::make_pair(ht_ev, where_ev);
     }
