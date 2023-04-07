@@ -150,6 +150,24 @@ def test_where_all_dtypes(dt):
     assert _dtype_all_close(dpt.asnumpy(res), res_check)
 
 
+def test_where_asymmetric_dtypes():
+    q = get_queue_or_skip()
+
+    cond = dpt.asarray([0, 1, 3, 0, 10], dtype="?", sycl_queue=q)
+    x1 = dpt.asarray(2, dtype="i4", sycl_queue=q)
+    x2 = dpt.asarray(3, dtype="i8", sycl_queue=q)
+
+    res = dpt.where(cond, x1, x2)
+    res_check = np.asarray([3, 2, 2, 3, 2], dtype=res.dtype)
+    assert _dtype_all_close(dpt.asnumpy(res), res_check)
+
+    # flip order
+
+    res = dpt.where(cond, x2, x1)
+    res_check = np.asarray([2, 3, 3, 2, 3], dtype=res.dtype)
+    assert _dtype_all_close(dpt.asnumpy(res), res_check)
+
+
 def test_where_nan_inf():
     get_queue_or_skip()
 
