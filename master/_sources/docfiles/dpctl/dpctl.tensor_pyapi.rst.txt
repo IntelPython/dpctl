@@ -156,6 +156,8 @@ Other Functions
       - Returns a formatted string representing the elements of a :class:`dpctl.tensor.usm_ndarray` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`
       - Returns a string representing the elements of a :class:`dpctl.tensor.usm_ndarray`.
+    * - :func:`where()`
+      - Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen from `x1` or `x2` depending on `condition`.
 
 
 

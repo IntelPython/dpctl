@@ -68,3 +68,4 @@ Other Functions
 .. autofunction:: take
 .. autofunction:: usm_ndarray_repr
 .. autofunction:: usm_ndarray_str
+.. autofunction:: where
