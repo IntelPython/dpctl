@@ -7,3 +7,4 @@ dpctl.memory Exceptions
 
 .. currentmodule:: dpctl.memory
 
+.. autoexception:: USMAllocationError

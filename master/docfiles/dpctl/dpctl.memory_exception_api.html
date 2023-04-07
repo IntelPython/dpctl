@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory Exceptions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+87.ga504e96bf documentation</title>
+  <title>dpctl.memory Exceptions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+89.g2320c921 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+87.ga504e96bf
+                0.14.3dev0+89.g2320c921
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -89,6 +89,20 @@
              
   <section id="dpctl-memory-exceptions">
 <span id="dpctl-memory-exception-api"></span><h1>dpctl.memory Exceptions<a class="headerlink" href="#dpctl-memory-exceptions" title="Permalink to this heading"></a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="dpctl.memory.USMAllocationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">USMAllocationError</span></span><a class="headerlink" href="#dpctl.memory.USMAllocationError" title="Permalink to this definition"></a></dt>
+<dd><p>An exception raised when Universal Shared Memory (USM) allocation
+call returns a null pointer, signaling a failure to perform the allocation.
+Some common reasons for allocation failure are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>insufficient free memory to perform the allocation request</p></li>
+<li><p>allocation size exceeds the maximum supported by targeted backend</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </section>
 
 

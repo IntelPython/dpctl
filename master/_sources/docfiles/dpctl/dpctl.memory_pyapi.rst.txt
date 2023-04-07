@@ -46,5 +46,13 @@ Functions
 
 
 
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`USMAllocationError`
+      - An exception raised when Universal Shared Memory (USM) allocation call returns a null pointer, signaling a failure to perform the allocation.
 
 

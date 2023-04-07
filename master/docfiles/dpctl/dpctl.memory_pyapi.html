@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory &mdash; Data-parallel Control (dpctl) 0.14.3dev0+87.ga504e96bf documentation</title>
+  <title>dpctl.memory &mdash; Data-parallel Control (dpctl) 0.14.3dev0+89.g2320c921 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+87.ga504e96bf
+                0.14.3dev0+89.g2320c921
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -66,6 +66,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl.memory</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a></li>
@@ -152,6 +153,20 @@ objects to maniputalate USM memory using NumPy or <cite>bytearray</cite>,
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.memory_functions_api.html#dpctl.memory.as_usm_memory" title="dpctl.memory.as_usm_memory"><code class="xref py py-func docutils literal notranslate"><span class="pre">as_usm_memory()</span></code></a></p></td>
 <td><p>Converts Python object with <cite>__sycl_usm_array_interface__</cite> property to one of <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMShared</span></code></a>, <a class="reference internal" href="MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMDevice</span></code></a>, or <a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMHost</span></code></a> instances depending on the type of USM allocation they represent.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.memory_exception_api.html#dpctl.memory.USMAllocationError" title="dpctl.memory.USMAllocationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">USMAllocationError</span></code></a></p></td>
+<td><p>An exception raised when Universal Shared Memory (USM) allocation call returns a null pointer, signaling a failure to perform the allocation.</p></td>
 </tr>
 </tbody>
 </table>
