@@ -32,6 +32,7 @@ from ._memory import (
     MemoryUSMDevice,
     MemoryUSMHost,
     MemoryUSMShared,
+    USMAllocationError,
     as_usm_memory,
 )
 
@@ -39,5 +40,6 @@ __all__ = [
     "MemoryUSMDevice",
     "MemoryUSMHost",
     "MemoryUSMShared",
+    "USMAllocationError",
     "as_usm_memory",
 ]
