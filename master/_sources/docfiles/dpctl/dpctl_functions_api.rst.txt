@@ -15,6 +15,7 @@ Queue Management Functions
 .. autofunction:: get_current_backend
 .. autofunction:: get_current_device_type
 .. autofunction:: get_current_queue
+.. autofunction:: get_device_cached_queue
 
 Other Functions
 ---------------

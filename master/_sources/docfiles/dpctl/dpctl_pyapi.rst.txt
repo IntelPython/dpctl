@@ -81,6 +81,8 @@ Queue Management Functions
       - Returns current device type as a `device_type` enum.
     * - :func:`get_current_queue()`
       - Returns the currently activate SYCL queue as a new SyclQueue object.
+    * - :func:`get_device_cached_queue()`
+      - Returns a cached queue associated with given device.
 
 .. _dpctl_device_selection_functions:
 
