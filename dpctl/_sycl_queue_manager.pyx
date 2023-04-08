@@ -39,14 +39,15 @@ from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
 
 __all__ = [
+    "_global_device_queue_cache",
     "device_context",
     "get_current_backend",
     "get_current_device_type",
     "get_current_queue",
+    "get_device_cached_queue",
     "get_num_activated_queues",
     "is_in_device_context",
     "set_global_queue",
-    "_global_device_queue_cache",
 ]
 
 _logger = logging.getLogger(__name__)
@@ -344,7 +345,21 @@ _global_device_queue_cache = ContextVar(
 
 
 cpdef object get_device_cached_queue(object key):
-    """Get cached queue associated with given device"""
+    """Returns a cached queue associated with given device.
+
+    Args:
+        key : Either a 2-tuple consisting of a :class:`dpctl.SyclContext` and
+            a :class:`dpctl.SyclDevice`, or a :class:`dpctl.SyclDevice`
+            instance, or a filter string identifying a device.
+
+    Returns:
+        :class:`dpctl.SyclQueue`: A cached SYCL queue associated with the
+        input device.
+
+    Raises:
+        TypeError: If the input key is not one of the accepted types.
+
+    """
     _cache = _global_device_queue_cache.get()
     q_, changed_ = _cache.get_or_create(key)
     if changed_: _global_device_queue_cache.set(_cache)
