@@ -157,7 +157,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                                     src_nelems * src_elem_size, depends);
         }
         else {
-            auto fn =
+            auto contig_fn =
                 copy_and_cast_contig_dispatch_table[dst_type_id][src_type_id];
             copy_ev =
                 contig_fn(exec_q, src_nelems, src_data, dst_data, depends);
@@ -166,8 +166,6 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
                               copy_ev);
     }
-    // With contract_iter2 in place, there is no need to write
-    // dedicated kernels for casting between contiguous arrays
 
     const py::ssize_t *src_strides = src.get_strides_raw();
     const py::ssize_t *dst_strides = dst.get_strides_raw();
@@ -202,11 +200,24 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
             std::array<py::ssize_t, 1> dst_strides_arr = {
                 (dst_strides ? dst_strides[0] : 1)};
 
-            auto fn = copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
-            sycl::event copy_and_cast_1d_event = fn(
-                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
-                src_data, src_offset, dst_data, dst_offset, depends);
-
+            sycl::event copy_and_cast_1d_event;
+            if ((src_strides_arr[0] == 1) && (dst_strides_arr[0] == 1) &&
+                (src_offset == 0) && (dst_offset == 0))
+            {
+                auto contig_fn =
+                    copy_and_cast_contig_dispatch_table[dst_type_id]
+                                                       [src_type_id];
+                sycl::event copy_and_cast_1d_event =
+                    contig_fn(exec_q, src_nelems, src_data, dst_data, depends);
+            }
+            else {
+                auto fn =
+                    copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
+                copy_and_cast_1d_event =
+                    fn(exec_q, src_nelems, shape_arr, src_strides_arr,
+                       dst_strides_arr, src_data, src_offset, dst_data,
+                       dst_offset, depends);
+            }
             return std::make_pair(
                 keep_args_alive(exec_q, {src, dst}, {copy_and_cast_1d_event}),
                 copy_and_cast_1d_event);
