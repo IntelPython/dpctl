@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
 import pytest
 
 import dpctl.tensor as dpt
@@ -109,7 +108,7 @@ def test_int_ops(namespace):
 
 @pytest.mark.parametrize("namespace", [None, Dummy()])
 def test_mat_ops(namespace):
-    M = dpt.from_numpy(np.eye(3, 3, dtype="d"))
+    M = dpt.eye(3, 3)
     M._set_namespace(namespace)
     assert M.__array_namespace__() is namespace
     M.__matmul__(M)
