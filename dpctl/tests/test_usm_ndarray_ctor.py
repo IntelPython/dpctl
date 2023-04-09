@@ -275,8 +275,7 @@ def test_empty_slice():
 
 def test_slice_constructor_1d():
     Xh = np.arange(37, dtype="i4")
-    default_device = dpctl.select_default_device()
-    Xusm = dpt.from_numpy(Xh, device=default_device, usm_type="device")
+    Xusm = dpt.arange(Xh.size, dtype="i4")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -293,9 +292,8 @@ def test_slice_constructor_1d():
 
 
 def test_slice_constructor_3d():
-    Xh = np.empty((37, 24, 35), dtype="i4")
-    default_device = dpctl.select_default_device()
-    Xusm = dpt.from_numpy(Xh, device=default_device, usm_type="device")
+    Xh = np.ones((37, 24, 35), dtype="i4")
+    Xusm = dpt.ones(Xh.shape, dtype=Xh.dtype)
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -315,8 +313,7 @@ def test_slice_constructor_3d():
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_slice_suai(usm_type):
     Xh = np.arange(0, 10, dtype="u1")
-    default_device = dpctl.select_default_device()
-    Xusm = dpt.from_numpy(Xh, device=default_device, usm_type=usm_type)
+    Xusm = dpt.arange(0, 10, dtype="u1", usm_type=usm_type)
     for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
         assert np.array_equal(
             dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
@@ -866,8 +863,7 @@ _all_dtypes = [
 def test_tofrom_numpy(shape, dtype, usm_type):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
-    Xnp = np.zeros(shape, dtype=dtype)
-    Xusm = dpt.from_numpy(Xnp, usm_type=usm_type, sycl_queue=q)
+    Xusm = dpt.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
     ind = (slice(None, None, None),) * Ynp.ndim
     Xusm[ind] = Ynp
@@ -883,35 +879,30 @@ def test_tofrom_numpy(shape, dtype, usm_type):
 def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+    shape = (2, 4, 3)
     Xnp = (
-        np.random.randint(-10, 10, size=2 * 3 * 4)
+        np.random.randint(-10, 10, size=np.prod(shape))
         .astype(dtype)
-        .reshape((2, 4, 3))
+        .reshape(shape)
     )
-    Znp = np.zeros(
-        (
-            2,
-            4,
-            3,
-        ),
-        dtype=dtype,
-    )
-    Zusm_0d = dpt.from_numpy(Znp[0, 0, 0], usm_type=dst_usm_type)
+    X = dpt.from_numpy(Xnp, usm_type=src_usm_type)
+    Z = dpt.zeros(shape, dtype=dtype, usm_type=dst_usm_type)
+    Zusm_0d = dpt.copy(Z[0, 0, 0])
     ind = (-1, -1, -1)
-    Xusm_0d = dpt.from_numpy(Xnp[ind], usm_type=src_usm_type)
+    Xusm_0d = X[ind]
     Zusm_0d[Ellipsis] = Xusm_0d
     assert np.array_equal(dpt.to_numpy(Zusm_0d), Xnp[ind])
-    Zusm_1d = dpt.from_numpy(Znp[0, 1:3, 0], usm_type=dst_usm_type)
+    Zusm_1d = dpt.copy(Z[0, 1:3, 0])
     ind = (-1, slice(0, 2, None), -1)
-    Xusm_1d = dpt.from_numpy(Xnp[ind], usm_type=src_usm_type)
+    Xusm_1d = X[ind]
     Zusm_1d[Ellipsis] = Xusm_1d
     assert np.array_equal(dpt.to_numpy(Zusm_1d), Xnp[ind])
-    Zusm_2d = dpt.from_numpy(Znp[:, 1:3, 0], usm_type=dst_usm_type)[::-1]
-    Xusm_2d = dpt.from_numpy(Xnp[:, 1:4, -1], usm_type=src_usm_type)
+    Zusm_2d = dpt.copy(Z[:, 1:3, 0])[::-1]
+    Xusm_2d = X[:, 1:4, -1]
     Zusm_2d[:] = Xusm_2d[:, 0:2]
     assert np.array_equal(dpt.to_numpy(Zusm_2d), Xnp[:, 1:3, -1])
-    Zusm_3d = dpt.from_numpy(Znp, usm_type=dst_usm_type)
-    Xusm_3d = dpt.from_numpy(Xnp, usm_type=src_usm_type)
+    Zusm_3d = dpt.copy(Z)
+    Xusm_3d = X
     Zusm_3d[:] = Xusm_3d
     assert np.array_equal(dpt.to_numpy(Zusm_3d), Xnp)
     Zusm_3d[::-1] = Xusm_3d[::-1]
@@ -962,8 +953,8 @@ def test_setitem_errors():
 def test_setitem_different_dtypes(src_dt, dst_dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dst_dt, q)
-    X = dpt.from_numpy(np.ones(10, src_dt), sycl_queue=q)
-    Y = dpt.from_numpy(np.zeros(10, src_dt), sycl_queue=q)
+    X = dpt.ones(10, src_dt, sycl_queue=q)
+    Y = dpt.zeros(10, src_dt, sycl_queue=q)
     Z = dpt.empty((20,), dtype=dst_dt, sycl_queue=q)
     Z[::2] = X
     Z[1::2] = Y
