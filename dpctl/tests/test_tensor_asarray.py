@@ -355,3 +355,11 @@ def test_asarray_seq_of_arrays_on_different_queues():
 
     with pytest.raises(dpctl.utils.ExecutionPlacementError):
         dpt.asarray([m, [w, py_seq]])
+
+
+def test_ulonglong_gh_1167():
+    get_queue_or_skip()
+    x = dpt.asarray(9223372036854775807, dtype="u8")
+    assert x.dtype == dpt.uint64
+    x = dpt.asarray(9223372036854775808, dtype="u8")
+    assert x.dtype == dpt.uint64
