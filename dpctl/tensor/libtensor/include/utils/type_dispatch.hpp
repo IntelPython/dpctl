@@ -223,6 +223,17 @@ struct usm_ndarray_types
                 throw_unrecognized_typenum_error(typenum);
             }
         }
+        else if (typenum == api.UAR_LONGLONG_ || typenum == api.UAR_ULONGLONG_)
+        {
+            switch (sizeof(long long)) {
+            case sizeof(std::int64_t):
+                return ((typenum == api.UAR_LONGLONG_)
+                            ? static_cast<int>(typenum_t::INT64)
+                            : static_cast<int>(typenum_t::UINT64));
+            default:
+                throw_unrecognized_typenum_error(typenum);
+            }
+        }
         else {
             throw_unrecognized_typenum_error(typenum);
         }
@@ -234,7 +245,7 @@ struct usm_ndarray_types
 private:
     void throw_unrecognized_typenum_error(int typenum) const
     {
-        throw std::runtime_error("Unrecogized typenum " +
+        throw std::runtime_error("Unrecognized typenum " +
                                  std::to_string(typenum) + " encountered.");
     }
 };
