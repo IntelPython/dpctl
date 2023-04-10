@@ -197,7 +197,7 @@ template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
     }
 };
 
-// Specialization of copy_and_cast for contiguous arrays of different data types
+// Specialization of copy_and_cast for contiguous arrays
 
 template <typename srcT,
           typename dstT,
@@ -339,21 +339,15 @@ sycl::event copy_and_cast_contig_impl(sycl::queue q,
 
 /*!
  * @brief Factory to get specialized function pointer for casting and copying
- * contiguous arrays of different types.
+ * contiguous arrays.
  * @ingroup CopyAndCastKernels
  */
 template <typename fnT, typename D, typename S> struct CopyAndCastContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<D, S>) {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            fnT f = copy_and_cast_contig_impl<D, S>;
-            return f;
-        }
+        fnT f = copy_and_cast_contig_impl<D, S>;
+        return f;
     }
 };
 
