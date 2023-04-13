@@ -260,6 +260,19 @@ def test_where_contiguous1D():
     assert _dtype_all_close(dpt.asnumpy(res), expected)
 
 
+def test_where_gh_1170():
+    get_queue_or_skip()
+
+    cond = dpt.asarray([False, True, True, False], dtype="?")
+    x1 = dpt.ones((3, 4), dtype="i4")
+    x2 = dpt.zeros((3, 4), dtype="i4")
+
+    res = dpt.where(cond, x1, x2)
+    expected = np.broadcast_to(dpt.asnumpy(cond).astype(x1.dtype), x1.shape)
+
+    assert_array_equal(dpt.asnumpy(res), expected)
+
+
 def test_where_strided():
     get_queue_or_skip()
 
