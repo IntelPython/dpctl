@@ -872,6 +872,42 @@ int simplify_iteration_four_strides(const int nd,
     return nd_;
 }
 
+template <typename T, class Error, typename vecT = std::vector<T>>
+std::tuple<vecT, vecT, T, vecT, T, vecT, T, vecT, T>
+contract_iter4(vecT shape,
+               vecT strides1,
+               vecT strides2,
+               vecT strides3,
+               vecT strides4)
+{
+    const size_t dim = shape.size();
+    if (dim != strides1.size() || dim != strides2.size() ||
+        dim != strides3.size() || dim != strides4.size())
+    {
+        throw Error("Shape and strides must be of equal size.");
+    }
+    vecT out_shape = shape;
+    vecT out_strides1 = strides1;
+    vecT out_strides2 = strides2;
+    vecT out_strides3 = strides3;
+    vecT out_strides4 = strides4;
+    T disp1(0);
+    T disp2(0);
+    T disp3(0);
+    T disp4(0);
+
+    int nd = simplify_iteration_four_strides(
+        dim, out_shape.data(), out_strides1.data(), out_strides2.data(),
+        out_strides3.data(), out_strides4.data(), disp1, disp2, disp3, disp4);
+    out_shape.resize(nd);
+    out_strides1.resize(nd);
+    out_strides2.resize(nd);
+    out_strides3.resize(nd);
+    out_strides4.resize(nd);
+    return std::make_tuple(out_shape, out_strides1, disp1, out_strides2, disp2,
+                           out_strides3, disp3, out_strides4, disp4);
+}
+
 } // namespace strides
 } // namespace tensor
 } // namespace dpctl

@@ -674,7 +674,7 @@ void simplify_iteration_space_4(
         assert(simplified_shape.size() == static_cast<size_t>(nd));
         assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
         assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_src3_strides.size() == static_cast < size_t(nd));
+        assert(simplified_src3_strides.size() == static_cast<size_t>(nd));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
     shape = const_cast<const py::ssize_t *>(simplified_shape.data());

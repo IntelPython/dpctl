@@ -171,6 +171,17 @@ PYBIND11_MODULE(_tensor_impl, m)
         "as the original "
         "iterator, possibly in a different order.");
 
+    using dpctl::tensor::strides::contract_iter4;
+    m.def(
+        "_contract_iter4", &contract_iter4<py::ssize_t, py::value_error>,
+        "Simplifies iteration over elements of 4-tuple of arrays of given "
+        "shape "
+        "with strides stride1, stride2, stride3, and stride4. Returns "
+        "a 9-tuple: shape, stride and offset for the new iterator of possible "
+        "smaller dimension for each array, which traverses the same elements "
+        "as the original "
+        "iterator, possibly in a different order.");
+
     m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
           "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "
           "number of elements using underlying 'C'-contiguous order for flat "
