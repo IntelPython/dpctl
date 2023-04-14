@@ -115,7 +115,7 @@ def test_where_result_types(dt1, dt2, fp16, fp64):
 
 
 @pytest.mark.parametrize("dt", _all_dtypes)
-def test_where_all_dtypes(dt):
+def test_where_mask_dtypes(dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt, q)
 
@@ -309,6 +309,36 @@ def test_where_strided():
         np.flip(dpt.asnumpy(cond)), dpt.asnumpy(x1), dpt.asnumpy(x2)
     )
     assert_array_equal(dpt.asnumpy(res), expected)
+
+
+def test_where_invariants():
+    get_queue_or_skip()
+
+    test_sh = (
+        6,
+        8,
+    )
+    mask = dpt.asarray(np.random.choice([True, False], size=test_sh))
+    p = dpt.ones(test_sh, dtype=dpt.int16)
+    m = dpt.full(test_sh, -1, dtype=dpt.int16)
+    inds_list = [
+        (
+            np.s_[:3],
+            np.s_[::2],
+        ),
+        (
+            np.s_[::2],
+            np.s_[::2],
+        ),
+        (
+            np.s_[::-1],
+            np.s_[:],
+        ),
+    ]
+    for ind in inds_list:
+        r1 = dpt.where(mask, p, m)[ind]
+        r2 = dpt.where(mask[ind], p[ind], m[ind])
+        assert (dpt.asnumpy(r1) == dpt.asnumpy(r2)).all()
 
 
 def test_where_arg_validation():
