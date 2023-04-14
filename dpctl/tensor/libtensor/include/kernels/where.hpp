@@ -210,8 +210,9 @@ public:
         bool check =
             convert_impl<bool, condT>(cond_p[offsets.get_first_offset()]);
 
-        dst_p[gid] = check ? x1_p[offsets.get_second_offset()]
-                           : x2_p[offsets.get_third_offset()];
+        dst_p[offsets.get_fourth_offset()] =
+            check ? x1_p[offsets.get_second_offset()]
+                  : x2_p[offsets.get_third_offset()];
     }
 };
 
@@ -224,6 +225,7 @@ typedef sycl::event (*where_strided_impl_fn_ptr_t)(
     const char *,
     char *,
     const py::ssize_t *,
+    py::ssize_t,
     py::ssize_t,
     py::ssize_t,
     py::ssize_t,
@@ -241,6 +243,7 @@ sycl::event where_strided_impl(sycl::queue q,
                                py::ssize_t x1_offset,
                                py::ssize_t x2_offset,
                                py::ssize_t cond_offset,
+                               py::ssize_t dst_offset,
                                const std::vector<sycl::event> &depends)
 {
     const condT *cond_tp = reinterpret_cast<const condT *>(cond_cp);
@@ -251,13 +254,13 @@ sycl::event where_strided_impl(sycl::queue q,
     sycl::event where_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        ThreeOffsets_StridedIndexer indexer{nd, cond_offset, x1_offset,
-                                            x2_offset, shape_strides};
+        FourOffsets_StridedIndexer indexer{
+            nd, cond_offset, x1_offset, x2_offset, dst_offset, shape_strides};
 
         cgh.parallel_for<
-            where_strided_kernel<T, condT, ThreeOffsets_StridedIndexer>>(
+            where_strided_kernel<T, condT, FourOffsets_StridedIndexer>>(
             sycl::range<1>(nelems),
-            WhereStridedFunctor<T, condT, ThreeOffsets_StridedIndexer>(
+            WhereStridedFunctor<T, condT, FourOffsets_StridedIndexer>(
                 cond_tp, x1_tp, x2_tp, dst_tp, indexer));
     });
 

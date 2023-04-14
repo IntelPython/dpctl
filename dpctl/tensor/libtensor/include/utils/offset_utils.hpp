@@ -451,6 +451,115 @@ struct ThreeZeroOffsets_Indexer
     }
 };
 
+template <typename displacementT> struct FourOffsets
+{
+    FourOffsets()
+        : first_offset(0), second_offset(0), third_offset(0), fourth_offset(0)
+    {
+    }
+    FourOffsets(const displacementT &first_offset_,
+                const displacementT &second_offset_,
+                const displacementT &third_offset_,
+                const displacementT &fourth_offset_)
+        : first_offset(first_offset_), second_offset(second_offset_),
+          third_offset(third_offset_), fourth_offset(fourth_offset_)
+    {
+    }
+
+    displacementT get_first_offset() const
+    {
+        return first_offset;
+    }
+    displacementT get_second_offset() const
+    {
+        return second_offset;
+    }
+    displacementT get_third_offset() const
+    {
+        return third_offset;
+    }
+    displacementT get_fourth_offset() const
+    {
+        return fourth_offset;
+    }
+
+private:
+    displacementT first_offset = 0;
+    displacementT second_offset = 0;
+    displacementT third_offset = 0;
+    displacementT fourth_offset = 0;
+};
+
+struct FourOffsets_StridedIndexer
+{
+    FourOffsets_StridedIndexer(int common_nd,
+                               py::ssize_t first_offset_,
+                               py::ssize_t second_offset_,
+                               py::ssize_t third_offset_,
+                               py::ssize_t fourth_offset_,
+                               py::ssize_t const *_packed_shape_strides)
+        : nd(common_nd), starting_first_offset(first_offset_),
+          starting_second_offset(second_offset_),
+          starting_third_offset(third_offset_),
+          starting_fourth_offset(fourth_offset_),
+          shape_strides(_packed_shape_strides)
+    {
+    }
+
+    FourOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    {
+        return compute_offsets(gid);
+    }
+
+    FourOffsets<py::ssize_t> operator()(size_t gid) const
+    {
+        return compute_offsets(static_cast<py::ssize_t>(gid));
+    }
+
+private:
+    int nd;
+    py::ssize_t starting_first_offset;
+    py::ssize_t starting_second_offset;
+    py::ssize_t starting_third_offset;
+    py::ssize_t starting_fourth_offset;
+    py::ssize_t const *shape_strides;
+
+    FourOffsets<py::ssize_t> compute_offsets(py::ssize_t gid) const
+    {
+        using dpctl::tensor::strides::CIndexer_vector;
+
+        CIndexer_vector _ind(nd);
+        py::ssize_t relative_first_offset(0);
+        py::ssize_t relative_second_offset(0);
+        py::ssize_t relative_third_offset(0);
+        py::ssize_t relative_fourth_offset(0);
+        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+            gid,
+            shape_strides,          // shape ptr
+            shape_strides + nd,     // strides ptr
+            shape_strides + 2 * nd, // strides ptr
+            shape_strides + 3 * nd, // strides ptr
+            shape_strides + 4 * nd, // strides ptr
+            relative_first_offset, relative_second_offset,
+            relative_third_offset, relative_fourth_offset);
+        return FourOffsets<py::ssize_t>(
+            starting_first_offset + relative_first_offset,
+            starting_second_offset + relative_second_offset,
+            starting_third_offset + relative_third_offset,
+            starting_fourth_offset + relative_fourth_offset);
+    }
+};
+
+struct FourZeroOffsets_Indexer
+{
+    FourZeroOffsets_Indexer() {}
+
+    FourOffsets<py::ssize_t> operator()(py::ssize_t) const
+    {
+        return FourOffsets<py::ssize_t>();
+    }
+};
+
 struct NthStrideOffset
 {
     NthStrideOffset(int common_nd,

@@ -87,6 +87,39 @@ void simplify_iteration_space_3(int &,
                                 py::ssize_t &,
                                 py::ssize_t &);
 
+void simplify_iteration_space_4(int &,
+                                const py::ssize_t *&,
+                                // src1
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // src2
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // src3
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // dst
+                                const py::ssize_t *&,
+                                py::ssize_t,
+                                bool,
+                                bool,
+                                // output
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                py::ssize_t &,
+                                py::ssize_t &,
+                                py::ssize_t &,
+                                py::ssize_t &);
+
 } // namespace py_internal
 } // namespace tensor
 } // namespace dpctl
