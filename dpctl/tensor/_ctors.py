@@ -785,6 +785,12 @@ def _get_arange_length(start, stop, step):
     return _round_for_arange(tmp)
 
 
+def _to_scalar(obj, sc_ty):
+    "A way to convert object to NumPy scalar type"
+    zd_arr = np.asarray(obj).astype(sc_ty, casting="unsafe")
+    return zd_arr[tuple()]
+
+
 def arange(
     start,
     /,
@@ -861,9 +867,9 @@ def arange(
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
     sc_ty = dt.type
-    _first = sc_ty(start)
+    _first = _to_scalar(start, sc_ty)
     if sh > 1:
-        _second = sc_ty(start + step)
+        _second = _to_scalar(start + step, sc_ty)
         if dt in [dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64]:
             int64_ty = dpt.int64.type
             _step = int64_ty(_second) - int64_ty(_first)
