@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+109.g456f46ff3 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.3dev0+113.gb050e8c3a documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+109.g456f46ff3
+                0.14.3dev0+113.gb050e8c3a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -875,6 +875,12 @@
     <span class="k">return</span> <span class="n">_round_for_arange</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sc_ty</span><span class="p">):</span>
+    <span class="s2">&quot;A way to convert object to NumPy scalar type&quot;</span>
+    <span class="n">zd_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">sc_ty</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">zd_arr</span><span class="p">[</span><span class="nb">tuple</span><span class="p">()]</span>
+
+
 <div class="viewcode-block" id="arange"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.arange">[docs]</a><span class="k">def</span> <span class="nf">arange</span><span class="p">(</span>
     <span class="n">start</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -951,9 +957,9 @@
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="n">sc_ty</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">type</span>
-    <span class="n">_first</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">_first</span> <span class="o">=</span> <span class="n">_to_scalar</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">sc_ty</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sh</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">_second</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">)</span>
+        <span class="n">_second</span> <span class="o">=</span> <span class="n">_to_scalar</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">sc_ty</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span><span class="p">]:</span>
             <span class="n">int64_ty</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="o">.</span><span class="n">type</span>
             <span class="n">_step</span> <span class="o">=</span> <span class="n">int64_ty</span><span class="p">(</span><span class="n">_second</span><span class="p">)</span> <span class="o">-</span> <span class="n">int64_ty</span><span class="p">(</span><span class="n">_first</span><span class="p">)</span>
