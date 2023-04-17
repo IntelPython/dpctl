@@ -11,7 +11,7 @@ jobs:
 
     env:
       ONEAPI_ROOT: /opt/intel/oneapi
-      GTEST_ROOT: /home/runner/work/googletest-release-1.11.0/install
+      GTEST_ROOT: /home/runner/work/googletest-1.13.0/install
 
     steps:
       - name: Cancel Previous Runs
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
           architecture: x64
 
       - name: Cache Gtest
@@ -47,8 +47,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            /home/runner/work/googletest-release-1.11.0/install
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/googletest-release-1.11.0/install/include/gtest/*') }}
+            /home/runner/work/googletest-1.13.0/install
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/googletest-1.13.0/install/include/gtest/*') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -59,12 +59,12 @@ jobs:
         shell: bash -l {0}
         run: |
           cd /home/runner/work
-          wget https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-          tar xf release-1.11.0.tar.gz
-          cd googletest-release-1.11.0
+          wget https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+          tar xf v1.13.0.tar.gz
+          cd googletest-1.13.0
           mkdir build
           cd build
-          cmake .. -DCMAKE_INSTALL_PREFIX=/home/runner/work/googletest-release-1.11.0/install
+          cmake .. -DCMAKE_INSTALL_PREFIX=/home/runner/work/googletest-1.13.0/install
           make && make install
 
       - name: Checkout repo
