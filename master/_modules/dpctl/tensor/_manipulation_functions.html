@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+113.gb050e8c3a documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+115.g193a8b1ea documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+113.gb050e8c3a
+                0.14.3dev0+115.g193a8b1ea
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -875,21 +875,21 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;moveaxis(x, src, dst)</span>
+<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;moveaxis(x, source, destination)</span>
 
 <span class="sd">    Moves axes of an array to new positions.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (usm_ndarray): input array</span>
 
-<span class="sd">        src (int or a sequence of int):</span>
+<span class="sd">        source (int or a sequence of int):</span>
 <span class="sd">            Original positions of the axes to move.</span>
 <span class="sd">            These must be unique. If `x` has rank (i.e., number of</span>
 <span class="sd">            dimensions) `N`, a valid `axis` must be in the</span>
 <span class="sd">            half-open interval `[-N, N)`.</span>
 
-<span class="sd">        dst (int or a sequence of int):</span>
+<span class="sd">        destination (int or a sequence of int):</span>
 <span class="sd">            Destination positions for each of the original axes.</span>
 <span class="sd">            These must also be unique. If `x` has rank</span>
 <span class="sd">            (i.e., number of dimensions) `N`, a valid `axis` must be</span>
@@ -904,22 +904,30 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        AxisError: if `axis` value is invalid.</span>
+<span class="sd">        ValueError: if `src` and `dst` have not equal number of elements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-        <span class="n">src</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="p">(</span><span class="n">source</span><span class="p">,)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-        <span class="n">dst</span> <span class="o">=</span> <span class="p">(</span><span class="n">dst</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="p">(</span><span class="n">destination</span><span class="p">,)</span>
 
-    <span class="n">src</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">)</span>
-    <span class="n">dst</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;dst&quot;</span><span class="p">)</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)):</span>
-        <span class="n">ind</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># using the value here which is the same as index</span>
-        <span class="n">ind</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dst</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">src</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">)</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;`source` and `destination` arguments must have &quot;</span>
+            <span class="s2">&quot;the same number of elements&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">source</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">source</span><span class="p">)):</span>
+        <span class="n">ind</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span></div>
 

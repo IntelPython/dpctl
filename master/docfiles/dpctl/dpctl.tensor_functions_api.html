@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+113.gb050e8c3a documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+115.g193a8b1ea documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+113.gb050e8c3a
+                0.14.3dev0+115.g193a8b1ea
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1149,17 +1149,17 @@ an array with integer dtype.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.moveaxis">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">moveaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#moveaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.moveaxis" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">moveaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#moveaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.moveaxis" title="Permalink to this definition"></a></dt>
 <dd><p>Moves axes of an array to new positions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>src</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Original positions of the axes to move.
+<li><p><strong>source</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Original positions of the axes to move.
 These must be unique. If <cite>x</cite> has rank (i.e., number of
 dimensions) <cite>N</cite>, a valid <cite>axis</cite> must be in the
 half-open interval <cite>[-N, N)</cite>.</p></li>
-<li><p><strong>dst</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Destination positions for each of the original axes.
+<li><p><strong>destination</strong> (<em>int</em><em> or </em><em>a sequence</em><em> of </em><em>int</em>) – Destination positions for each of the original axes.
 These must also be unique. If <cite>x</cite> has rank
 (i.e., number of dimensions) <cite>N</cite>, a valid <cite>axis</cite> must be
 in the half-open interval <cite>[-N, N)</cite>.</p></li>
@@ -1175,7 +1175,10 @@ USM allocation type as <cite>x</cite>.</p>
 <dd class="field-odd"><p>usm_narray</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p></li>
+<li><p><strong>ValueError</strong> – if <cite>src</cite> and <cite>dst</cite> have not equal number of elements.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
