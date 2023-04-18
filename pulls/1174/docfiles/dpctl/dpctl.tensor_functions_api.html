@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+115.g075334d02 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev0+115.g1cc7a568e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev0+115.g075334d02
+                0.14.3dev0+115.g1cc7a568e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1175,7 +1175,10 @@ USM allocation type as <cite>x</cite>.</p>
 <dd class="field-odd"><p>usm_narray</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p></li>
+<li><p><strong>ValueError</strong> – if <cite>src</cite> and <cite>dst</cite> have not equal number of elements.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
