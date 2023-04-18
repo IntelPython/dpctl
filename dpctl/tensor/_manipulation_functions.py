@@ -814,6 +814,7 @@ def moveaxis(X, src, dst):
 
     Raises:
         AxisError: if `axis` value is invalid.
+        ValueError: if `src` and `dst` have not equal number of elements.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -824,12 +825,18 @@ def moveaxis(X, src, dst):
     if not isinstance(dst, (tuple, list)):
         dst = (dst,)
 
+    if len(src) != len(dst):
+        raise ValueError(
+            "`srs` and `dst` arguments must have the same number "
+            f"of elements, got `src`: {len(src)}, `dst`: {len(dst)}"
+        )
+
     src = normalize_axis_tuple(src, X.ndim, "src")
     dst = normalize_axis_tuple(dst, X.ndim, "dst")
-    ind = list(range(0, X.ndim))
-    for i in range(len(src)):
-        ind.remove(src[i])  # using the value here which is the same as index
-        ind.insert(dst[i], src[i])
+
+    ind = [i for i in range(X.ndim) if i not in src]
+    for d, s in sorted(zip(dst, src)):
+        ind.insert(d, s)
 
     return dpt.permute_dims(X, tuple(ind))
 

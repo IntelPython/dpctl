@@ -1078,12 +1078,17 @@ def test_moveaxis_1axis():
     assert_array_equal(exp, dpt.asnumpy(res))
 
 
-def test_moveaxis_2axes():
+@pytest.mark.parametrize(
+    "axes",
+    [[[0, 1], [-1, -2]], [[0, 1], [1, 2]]],
+    ids=["[[0, 1], [-1, -2]", "[[0, 1], [1, 2]]"],
+)
+def test_moveaxis_2axes(axes):
     x = np.arange(60).reshape((3, 4, 5))
-    exp = np.moveaxis(x, [0, 1], [-1, -2])
+    exp = np.moveaxis(x, *axes)
 
     y = dpt.reshape(dpt.arange(60), (3, 4, 5))
-    res = dpt.moveaxis(y, [0, 1], [-1, -2])
+    res = dpt.moveaxis(y, *axes)
 
     assert_array_equal(exp, dpt.asnumpy(res))
 
@@ -1096,6 +1101,19 @@ def test_moveaxis_3axes():
     res = dpt.moveaxis(y, [0, 1, 2], [-1, -2, -3])
 
     assert_array_equal(exp, dpt.asnumpy(res))
+
+
+def test_moveaxis_invalid():
+    x = np.zeros((3, 4, 5))
+    with pytest.raises(TypeError):
+        dpt.moveaxis(x, 0, 1)
+
+    y = dpt.asarray(x)
+    with pytest.raises(np.AxisError):
+        dpt.moveaxis(y, 0, 3)
+
+    with pytest.raises(ValueError):
+        dpt.moveaxis(y, [0, 1], [1, 2, 3])
 
 
 def test_unstack_axis0():
