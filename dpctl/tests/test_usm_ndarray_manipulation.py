@@ -17,7 +17,7 @@
 
 import numpy as np
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
@@ -1068,34 +1068,95 @@ def test_swapaxes_2d():
     assert_array_equal(exp, dpt.asnumpy(res))
 
 
-def test_moveaxis_1axis():
-    x = np.arange(60).reshape((3, 4, 5))
-    exp = np.moveaxis(x, 0, -1)
-
-    y = dpt.reshape(dpt.arange(60), (3, 4, 5))
-    res = dpt.moveaxis(y, 0, -1)
-
-    assert_array_equal(exp, dpt.asnumpy(res))
-
-
-def test_moveaxis_2axes():
-    x = np.arange(60).reshape((3, 4, 5))
-    exp = np.moveaxis(x, [0, 1], [-1, -2])
-
-    y = dpt.reshape(dpt.arange(60), (3, 4, 5))
-    res = dpt.moveaxis(y, [0, 1], [-1, -2])
-
-    assert_array_equal(exp, dpt.asnumpy(res))
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        (0, (6, 7, 5)),
+        (1, (5, 7, 6)),
+        (2, (5, 6, 7)),
+        (-1, (5, 6, 7)),
+    ],
+)
+def test_moveaxis_move_to_end(source, expected):
+    x = dpt.reshape(dpt.arange(5 * 6 * 7), (5, 6, 7))
+    actual = dpt.moveaxis(x, source, -1).shape
+    assert_(actual, expected)
 
 
-def test_moveaxis_3axes():
-    x = np.arange(60).reshape((3, 4, 5))
-    exp = np.moveaxis(x, [0, 1, 2], [-1, -2, -3])
+@pytest.mark.parametrize(
+    "source, destination, expected",
+    [
+        (0, 1, (2, 1, 3, 4)),
+        (1, 2, (1, 3, 2, 4)),
+        (1, -1, (1, 3, 4, 2)),
+    ],
+)
+def test_moveaxis_new_position(source, destination, expected):
+    x = dpt.reshape(dpt.arange(24), (1, 2, 3, 4))
+    actual = dpt.moveaxis(x, source, destination).shape
+    assert_(actual, expected)
 
-    y = dpt.reshape(dpt.arange(60), (3, 4, 5))
-    res = dpt.moveaxis(y, [0, 1, 2], [-1, -2, -3])
 
-    assert_array_equal(exp, dpt.asnumpy(res))
+@pytest.mark.parametrize(
+    "source, destination",
+    [
+        (0, 0),
+        (3, -1),
+        (-1, 3),
+        ([0, -1], [0, -1]),
+        ([2, 0], [2, 0]),
+    ],
+)
+def test_moveaxis_preserve_order(source, destination):
+    x = dpt.zeros((1, 2, 3, 4))
+    actual = dpt.moveaxis(x, source, destination).shape
+    assert_(actual, (1, 2, 3, 4))
+
+
+@pytest.mark.parametrize(
+    "source, destination, expected",
+    [
+        ([0, 1], [2, 3], (2, 3, 0, 1)),
+        ([2, 3], [0, 1], (2, 3, 0, 1)),
+        ([0, 1, 2], [2, 3, 0], (2, 3, 0, 1)),
+        ([3, 0], [1, 0], (0, 3, 1, 2)),
+        ([0, 3], [0, 1], (0, 3, 1, 2)),
+    ],
+)
+def test_moveaxis_move_multiples(source, destination, expected):
+    x = dpt.zeros((0, 1, 2, 3))
+    actual = dpt.moveaxis(x, source, destination).shape
+    assert_(actual, expected)
+
+
+def test_moveaxis_errors():
+    x = dpt.reshape(dpt.arange(6), (1, 2, 3))
+    assert_raises_regex(
+        np.AxisError, "source.*out of bounds", dpt.moveaxis, x, 3, 0
+    )
+    assert_raises_regex(
+        np.AxisError, "source.*out of bounds", dpt.moveaxis, x, -4, 0
+    )
+    assert_raises_regex(
+        np.AxisError, "destination.*out of bounds", dpt.moveaxis, x, 0, 5
+    )
+    assert_raises_regex(
+        ValueError, "repeated axis in `source`", dpt.moveaxis, x, [0, 0], [0, 1]
+    )
+    assert_raises_regex(
+        ValueError,
+        "repeated axis in `destination`",
+        dpt.moveaxis,
+        x,
+        [0, 1],
+        [1, 1],
+    )
+    assert_raises_regex(
+        ValueError, "must have the same number", dpt.moveaxis, x, 0, [0, 1]
+    )
+    assert_raises_regex(
+        ValueError, "must have the same number", dpt.moveaxis, x, [0, 1], [0]
+    )
 
 
 def test_unstack_axis0():

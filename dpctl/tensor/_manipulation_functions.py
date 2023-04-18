@@ -785,21 +785,21 @@ def unstack(X, axis=0):
     return tuple(Y[i] for i in range(Y.shape[0]))
 
 
-def moveaxis(X, src, dst):
-    """moveaxis(x, src, dst)
+def moveaxis(X, source, destination):
+    """moveaxis(x, source, destination)
 
     Moves axes of an array to new positions.
 
     Args:
         x (usm_ndarray): input array
 
-        src (int or a sequence of int):
+        source (int or a sequence of int):
             Original positions of the axes to move.
             These must be unique. If `x` has rank (i.e., number of
             dimensions) `N`, a valid `axis` must be in the
             half-open interval `[-N, N)`.
 
-        dst (int or a sequence of int):
+        destination (int or a sequence of int):
             Destination positions for each of the original axes.
             These must also be unique. If `x` has rank
             (i.e., number of dimensions) `N`, a valid `axis` must be
@@ -814,22 +814,30 @@ def moveaxis(X, src, dst):
 
     Raises:
         AxisError: if `axis` value is invalid.
+        ValueError: if `src` and `dst` have not equal number of elements.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
-    if not isinstance(src, (tuple, list)):
-        src = (src,)
+    if not isinstance(source, (tuple, list)):
+        source = (source,)
 
-    if not isinstance(dst, (tuple, list)):
-        dst = (dst,)
+    if not isinstance(destination, (tuple, list)):
+        destination = (destination,)
 
-    src = normalize_axis_tuple(src, X.ndim, "src")
-    dst = normalize_axis_tuple(dst, X.ndim, "dst")
-    ind = list(range(0, X.ndim))
-    for i in range(len(src)):
-        ind.remove(src[i])  # using the value here which is the same as index
-        ind.insert(dst[i], src[i])
+    source = normalize_axis_tuple(source, X.ndim, "source")
+    destination = normalize_axis_tuple(destination, X.ndim, "destination")
+
+    if len(source) != len(destination):
+        raise ValueError(
+            "`source` and `destination` arguments must have "
+            "the same number of elements"
+        )
+
+    ind = [n for n in range(X.ndim) if n not in source]
+
+    for src, dst in sorted(zip(destination, source)):
+        ind.insert(src, dst)
 
     return dpt.permute_dims(X, tuple(ind))
 
