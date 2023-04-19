@@ -272,7 +272,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
-                          temporaries_cleanup_ev);
+                          copy_and_cast_generic_ev);
 }
 
 void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
