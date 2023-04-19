@@ -110,8 +110,8 @@ cdef class Flags:
         instance is F-contiguous and not C-contiguous.
         """
         return (
-           _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
-           and not _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
+           _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
+           and not _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
         )
 
     @property
@@ -132,7 +132,9 @@ cdef class Flags:
             return self.writable
         elif name == "FC":
             return self.fc
-        elif name == "CONTIGUOUS":
+        elif name == "FNC":
+            return self.fnc
+        elif name in ["FORC", "CONTIGUOUS"]:
             return self.forc
 
     def __setitem__(self, name, val):

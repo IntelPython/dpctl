@@ -71,10 +71,21 @@ import numpy as np
 __all__ = [
     "MemoryUSMShared",
     "MemoryUSMHost",
-    "MemoryUSMDevice"
+    "MemoryUSMDevice",
+    "USMAllocationError",
 ]
 
 include "_sycl_usm_array_interface_utils.pxi"
+
+class USMAllocationError(Exception):
+    """
+    An exception raised when Universal Shared Memory (USM) allocation
+    call returns a null pointer, signaling a failure to perform the allocation.
+    Some common reasons for allocation failure are:
+        * insufficient free memory to perform the allocation request
+        * allocation size exceeds the maximum supported by targeted backend
+    """
+    pass
 
 
 cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
@@ -177,7 +188,7 @@ cdef class _Memory:
                     with nogil: p = DPCTLmalloc_device(nbytes, QRef)
             else:
                 raise RuntimeError(
-                    "Pointer type is unknown: {}".format(
+                    "Pointer type '{}' is not recognized".format(
                         ptr_type.decode("UTF-8")
                     )
                 )
@@ -187,9 +198,13 @@ cdef class _Memory:
                 self.nbytes = nbytes
                 self.queue = queue
             else:
-                raise RuntimeError("Null memory pointer returned")
+                raise USMAllocationError(
+                    "USM allocation failed"
+                )
         else:
-            raise ValueError("Non-positive number of bytes found.")
+            raise ValueError(
+                "Number of bytes of request allocation must be positive."
+            )
 
     cdef _cinit_other(self, object other):
         cdef _Memory other_mem

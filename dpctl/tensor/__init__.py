@@ -86,6 +86,7 @@ from dpctl.tensor._print import (
     usm_ndarray_str,
 )
 from dpctl.tensor._reshape import reshape
+from dpctl.tensor._search_functions import where
 from dpctl.tensor._usmarray import usm_ndarray
 
 from ._constants import e, inf, nan, newaxis, pi
@@ -128,6 +129,7 @@ __all__ = [
     "from_dlpack",
     "tril",
     "triu",
+    "where",
     "dtype",
     "isdtype",
     "bool",

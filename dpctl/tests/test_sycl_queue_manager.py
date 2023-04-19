@@ -18,6 +18,7 @@
 """
 
 import contextlib
+import sys
 
 import pytest
 from helper import has_cpu, has_gpu, has_sycl_platforms
@@ -216,7 +217,13 @@ def test_device_context_activates_nested_context():
     "factory, exception, match",
     [
         (True, TypeError, "object is not callable"),
-        (lambda x: None, AttributeError, "no attribute '__exit__'"),
+        (lambda x: None, AttributeError, "no attribute '__exit__'")
+        if sys.version_info < (3, 11)
+        else (
+            lambda x: None,
+            TypeError,
+            r".* object does not support the context manager protocol",
+        ),
     ],
 )
 def test_nested_context_factory_exception_if_wrong_factory(

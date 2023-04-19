@@ -321,3 +321,45 @@ def test_asarray_seq_of_suai_different_queue():
     x = dpt.asarray([d, d], sycl_queue=q)
     assert x.sycl_queue == q
     assert x.shape == (2,) + d.shape
+
+
+def test_asarray_seq_of_arrays_on_different_queues():
+    q = get_queue_or_skip()
+
+    m = dpt.empty((2, 4), dtype="i2", sycl_queue=q)
+    q2 = dpctl.SyclQueue()
+    w = dpt.empty(4, dtype="i1", sycl_queue=q2)
+    q3 = dpctl.SyclQueue()
+    py_seq = [
+        0,
+    ] * w.shape[0]
+    res = dpt.asarray([m, [w, py_seq]], sycl_queue=q3)
+    assert res.sycl_queue == q3
+    assert dpt.isdtype(res.dtype, "integral")
+
+    res = dpt.asarray([m, [w, range(w.shape[0])]], sycl_queue=q3)
+    assert res.sycl_queue == q3
+    assert dpt.isdtype(res.dtype, "integral")
+
+    res = dpt.asarray([m, [w, w]], sycl_queue=q)
+    assert res.sycl_queue == q
+    assert dpt.isdtype(res.dtype, "integral")
+
+    res = dpt.asarray([m, [w, dpt.asnumpy(w)]], sycl_queue=q2)
+    assert res.sycl_queue == q2
+    assert dpt.isdtype(res.dtype, "integral")
+
+    res = dpt.asarray([w, dpt.asnumpy(w)])
+    assert res.sycl_queue == w.sycl_queue
+    assert dpt.isdtype(res.dtype, "integral")
+
+    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+        dpt.asarray([m, [w, py_seq]])
+
+
+def test_ulonglong_gh_1167():
+    get_queue_or_skip()
+    x = dpt.asarray(9223372036854775807, dtype="u8")
+    assert x.dtype == dpt.uint64
+    x = dpt.asarray(9223372036854775808, dtype="u8")
+    assert x.dtype == dpt.uint64

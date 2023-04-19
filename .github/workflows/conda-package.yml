@@ -161,14 +161,11 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          export OCL_ICD_FILENAMES=libintelocl.so
           python -c "import dpctl; dpctl.lsplatform()"
       - name: Run tests
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
-          export OCL_ICD_FILENAMES=libintelocl.so
           # clinfo -l
           python -m pytest --pyargs $MODULE_NAME
 
@@ -269,22 +266,10 @@ jobs:
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
-          if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos)) {
-              New-Item -Path HKLM:\SOFTWARE\Khronos
-          }
-          if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL)) {
-              New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL
-          }
-          if (-not (Test-Path -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)) {
-              New-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors
-          }
-          $conda_env_library = "$env:CONDA_PREFIX\Library"
-          New-ItemProperty -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors -Name $conda_env_library\lib\intelocl64.dll -Value 0
-          Write-Host $(Get-Item -Path HKLM:\SOFTWARE\Khronos\OpenCL\Vendors)
-          # Variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
-          $cl_cfg="$conda_env_library\lib\cl.cfg"
-          Write-Output $cl_cfg
-          (Get-Content $cl_cfg) -replace '^CL_CONFIG_TBB_DLL_PATH =', "CL_CONFIG_TBB_DLL_PATH = $conda_env_library\bin" | Set-Content $cl_cfg
+          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
+          &$script_path
+          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+          $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
           Get-Content -Tail 5 -Path $cl_cfg
       - name: Smoke test, step 1
         shell: cmd /C CALL {0}
@@ -425,7 +410,6 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          export OCL_ICD_FILENAMES=libintelocl.so
           conda activate examples
           conda list
           cd examples/pybind11
@@ -453,7 +437,6 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          export OCL_ICD_FILENAMES=libintelocl.so
           conda activate examples
           conda list
           cd examples/cython
@@ -470,7 +453,6 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          export OCL_ICD_FILENAMES=libintelocl.so
           conda activate examples
           conda list
           cd examples/c
@@ -488,7 +470,6 @@ jobs:
         run: |
           cd examples/python
           source $CONDA/etc/profile.d/conda.sh
-          export OCL_ICD_FILENAMES=libintelocl.so
           conda activate examples
           for script in $(find . \( -not -name "_*" -and -name "*.py" \))
           do
@@ -593,7 +574,6 @@ jobs:
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
-          export OCL_ICD_FILENAMES=libintelocl.so
           python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests

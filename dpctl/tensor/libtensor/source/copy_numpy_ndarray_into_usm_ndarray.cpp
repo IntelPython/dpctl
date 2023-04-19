@@ -141,8 +141,6 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
             return;
         }
-        // With contract_iter2 in place, there is no need to write
-        // dedicated kernels for casting between contiguous arrays
     }
 
     const py::ssize_t *src_strides =
@@ -215,10 +213,13 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
     // Copy shape strides into device memory
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unable to allocate device memory");
+    }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     // Get implementation function pointer

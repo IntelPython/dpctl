@@ -207,16 +207,20 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     std::vector<sycl::event> host_task_events;
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (shape_strides == nullptr) {
+        sycl::event::wait(host_task_events);
+        throw std::runtime_error("Unexpected error");
+    }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
         copy_shape_ev.wait();
         sycl::event::wait(host_task_events);
         sycl::free(shape_strides, exec_q);
-        throw std::runtime_error("Unexacted error");
+        throw std::runtime_error("Unexpected error");
     }
 
     std::vector<sycl::event> dependent_events;
@@ -390,10 +394,14 @@ py_extract(dpctl::tensor::usm_ndarray src,
             masked_extract_all_slices_strided_impl_dispatch_vector[src_typeid];
 
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, src_shape_vec, src_strides_vec);
+        const auto &ptr_size_event_tuple1 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, src_shape_vec, src_strides_vec);
         py::ssize_t *packed_src_shape_strides =
             std::get<0>(ptr_size_event_tuple1);
+        if (packed_src_shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocated device memory");
+        }
         sycl::event copy_src_shape_strides_ev =
             std::get<2>(ptr_size_event_tuple1);
 
@@ -476,17 +484,27 @@ py_extract(dpctl::tensor::usm_ndarray src,
             simplified_ortho_dst_strides, ortho_src_offset, ortho_dst_offset);
 
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, simplified_ortho_shape,
-            simplified_ortho_src_strides, simplified_ortho_dst_strides);
+        const auto &ptr_size_event_tuple1 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, simplified_ortho_shape,
+                simplified_ortho_src_strides, simplified_ortho_dst_strides);
         py::ssize_t *packed_ortho_src_dst_shape_strides =
             std::get<0>(ptr_size_event_tuple1);
+        if (packed_ortho_src_dst_shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocate device memory");
+        }
         sycl::event copy_shape_strides_ev1 = std::get<2>(ptr_size_event_tuple1);
 
-        auto ptr_size_event_tuple2 = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, masked_src_shape, masked_src_strides);
+        const auto &ptr_size_event_tuple2 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, masked_src_shape, masked_src_strides);
         py::ssize_t *packed_masked_src_shape_strides =
             std::get<0>(ptr_size_event_tuple2);
+        if (packed_masked_src_shape_strides == nullptr) {
+            copy_shape_strides_ev1.wait();
+            sycl::free(packed_ortho_src_dst_shape_strides, exec_q);
+            throw std::runtime_error("Unable to allocate device memory");
+        }
         sycl::event copy_shape_strides_ev2 = std::get<2>(ptr_size_event_tuple2);
 
         assert(masked_dst_shape.size() == 1);
@@ -691,10 +709,14 @@ py_place(dpctl::tensor::usm_ndarray dst,
             masked_place_all_slices_strided_impl_dispatch_vector[dst_typeid];
 
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, dst_shape_vec, dst_strides_vec);
+        const auto &ptr_size_event_tuple1 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, dst_shape_vec, dst_strides_vec);
         py::ssize_t *packed_dst_shape_strides =
             std::get<0>(ptr_size_event_tuple1);
+        if (packed_dst_shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocate device memory");
+        }
         sycl::event copy_dst_shape_strides_ev =
             std::get<2>(ptr_size_event_tuple1);
 
@@ -777,17 +799,26 @@ py_place(dpctl::tensor::usm_ndarray dst,
             simplified_ortho_rhs_strides, ortho_dst_offset, ortho_rhs_offset);
 
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, simplified_ortho_shape,
-            simplified_ortho_dst_strides, simplified_ortho_rhs_strides);
+        const auto &ptr_size_event_tuple1 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, simplified_ortho_shape,
+                simplified_ortho_dst_strides, simplified_ortho_rhs_strides);
         py::ssize_t *packed_ortho_dst_rhs_shape_strides =
             std::get<0>(ptr_size_event_tuple1);
+        if (packed_ortho_dst_rhs_shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocate device memory");
+        }
         sycl::event copy_shape_strides_ev1 = std::get<2>(ptr_size_event_tuple1);
 
         auto ptr_size_event_tuple2 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, masked_dst_shape, masked_dst_strides);
         py::ssize_t *packed_masked_dst_shape_strides =
             std::get<0>(ptr_size_event_tuple2);
+        if (packed_masked_dst_shape_strides == nullptr) {
+            copy_shape_strides_ev1.wait();
+            sycl::free(packed_ortho_dst_rhs_shape_strides, exec_q);
+            throw std::runtime_error("Unable to allocate device memory");
+        }
         sycl::event copy_shape_strides_ev2 = std::get<2>(ptr_size_event_tuple2);
 
         assert(masked_rhs_shape.size() == 1);
@@ -922,15 +953,15 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     host_task_events.reserve(2);
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    auto mask_shape_copying_tuple = device_allocate_and_pack<py::ssize_t>(
-        exec_q, host_task_events, mask_shape);
+    const auto &mask_shape_copying_tuple =
+        device_allocate_and_pack<py::ssize_t>(exec_q, host_task_events,
+                                              mask_shape);
     py::ssize_t *src_shape_device_ptr = std::get<0>(mask_shape_copying_tuple);
-    sycl::event copy_ev = std::get<2>(mask_shape_copying_tuple);
-
     if (src_shape_device_ptr == nullptr) {
         sycl::event::wait(host_task_events);
         throw std::runtime_error("Device allocation failed");
     }
+    sycl::event copy_ev = std::get<2>(mask_shape_copying_tuple);
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + 1);
@@ -957,8 +988,7 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
         exec_q, {cumsum, indexes}, host_task_events);
 
-    return std::make_pair(py_obj_management_host_task_ev,
-                          temporaries_cleanup_ev);
+    return std::make_pair(py_obj_management_host_task_ev, non_zero_indexes_ev);
 }
 
 } // namespace py_internal

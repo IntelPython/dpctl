@@ -540,7 +540,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     sycl::event arg_cleanup_ev =
         keep_args_alive(exec_q, {src, py_ind, dst}, host_task_events);
 
-    return std::make_pair(arg_cleanup_ev, temporaries_cleanup_ev);
+    return std::make_pair(arg_cleanup_ev, take_generic_ev);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -854,7 +854,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     sycl::event arg_cleanup_ev =
         keep_args_alive(exec_q, {dst, py_ind, val}, host_task_events);
 
-    return std::make_pair(arg_cleanup_ev, temporaries_cleanup_ev);
+    return std::make_pair(arg_cleanup_ev, put_generic_ev);
 }
 
 void init_advanced_indexing_dispatch_tables(void)

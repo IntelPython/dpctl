@@ -137,10 +137,13 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
     // shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, src_shape, src_strides, dst_shape,
         dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unable to allocate device memory");
+    }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     char *src_data = src.get_data();
@@ -164,7 +167,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
-                          temporaries_cleanup_ev);
+                          copy_for_reshape_event);
 }
 
 void init_copy_for_reshape_dispatch_vectors(void)

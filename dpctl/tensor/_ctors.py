@@ -65,7 +65,13 @@ def _array_info_dispatch(obj):
         return _empty_tuple, int, _host_set
     if isinstance(obj, complex):
         return _empty_tuple, complex, _host_set
-    if isinstance(obj, (list, tuple, range)):
+    if isinstance(
+        obj,
+        (
+            list,
+            tuple,
+        ),
+    ):
         return _array_info_sequence(obj)
     if _is_object_with_buffer_protocol(obj):
         np_obj = np.array(obj)
@@ -329,7 +335,11 @@ def _usm_types_walker(o, usm_types_list):
         usm_ar = _usm_ndarray_from_suai(o)
         usm_types_list.append(usm_ar.usm_type)
         return
-    if isinstance(o, (list, tuple)):
+    if _is_object_with_buffer_protocol(o):
+        return
+    if isinstance(o, (int, bool, float, complex)):
+        return
+    if isinstance(o, (list, tuple, range)):
         for el in o:
             _usm_types_walker(el, usm_types_list)
         return
@@ -361,11 +371,37 @@ def _device_copy_walker(seq_o, res, events):
 
 def _copy_through_host_walker(seq_o, usm_res):
     if isinstance(seq_o, dpt.usm_ndarray):
-        usm_res[...] = dpt.asnumpy(seq_o).copy()
-        return
+        if (
+            dpctl.utils.get_execution_queue(
+                (
+                    usm_res.sycl_queue,
+                    seq_o.sycl_queue,
+                )
+            )
+            is None
+        ):
+            usm_res[...] = dpt.asnumpy(seq_o).copy()
+            return
+        else:
+            usm_res[...] = seq_o
     if hasattr(seq_o, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(seq_o)
-        usm_res[...] = dpt.asnumpy(usm_ar).copy()
+        if (
+            dpctl.utils.get_execution_queue(
+                (
+                    usm_res.sycl_queue,
+                    usm_ar.sycl_queue,
+                )
+            )
+            is None
+        ):
+            usm_res[...] = dpt.asnumpy(usm_ar).copy()
+        else:
+            usm_res[...] = usm_ar
+        return
+    if _is_object_with_buffer_protocol(seq_o):
+        np_ar = np.asarray(seq_o)
+        usm_res[...] = np_ar
         return
     if isinstance(seq_o, (list, tuple)):
         for i, el in enumerate(seq_o):
@@ -378,10 +414,10 @@ def _asarray_from_seq(
     seq_obj,
     seq_shape,
     seq_dt,
-    seq_dev,
+    alloc_q,
+    exec_q,
     dtype=None,
     usm_type=None,
-    sycl_queue=None,
     order="C",
 ):
     "`obj` is a sequence"
@@ -390,24 +426,13 @@ def _asarray_from_seq(
         _usm_types_walker(seq_obj, usm_types_in_seq)
         usm_type = dpctl.utils.get_coerced_usm_type(usm_types_in_seq)
     dpctl.utils.validate_usm_type(usm_type)
-    if sycl_queue is None:
-        exec_q = seq_dev
-        alloc_q = seq_dev
-    else:
-        exec_q = dpctl.utils.get_execution_queue(
-            (
-                sycl_queue,
-                seq_dev,
-            )
-        )
-        alloc_q = sycl_queue
     if dtype is None:
         dtype = _map_to_device_dtype(seq_dt, alloc_q)
     else:
         _mapped_dt = _map_to_device_dtype(dtype, alloc_q)
         if _mapped_dt != dtype:
             raise ValueError(
-                f"Device {sycl_queue.sycl_device} "
+                f"Device {alloc_q.sycl_device} "
                 f"does not support {dtype} natively."
             )
         dtype = _mapped_dt
@@ -435,6 +460,39 @@ def _asarray_from_seq(
         )
         _copy_through_host_walker(seq_obj, res)
         return res
+
+
+def _asarray_from_seq_single_device(
+    obj,
+    seq_shape,
+    seq_dt,
+    seq_dev,
+    dtype=None,
+    usm_type=None,
+    sycl_queue=None,
+    order="C",
+):
+    if sycl_queue is None:
+        exec_q = seq_dev
+        alloc_q = seq_dev
+    else:
+        exec_q = dpctl.utils.get_execution_queue(
+            (
+                sycl_queue,
+                seq_dev,
+            )
+        )
+        alloc_q = sycl_queue
+    return _asarray_from_seq(
+        obj,
+        seq_shape,
+        seq_dt,
+        alloc_q,
+        exec_q,
+        dtype=dtype,
+        usm_type=usm_type,
+        order=order,
+    )
 
 
 def asarray(
@@ -576,16 +634,42 @@ def asarray(
                 order=order,
             )
         elif len(devs) == 1:
-            return _asarray_from_seq(
+            seq_dev = list(devs)[0]
+            return _asarray_from_seq_single_device(
                 obj,
                 seq_shape,
                 seq_dt,
-                list(devs)[0],
+                seq_dev,
                 dtype=dtype,
                 usm_type=usm_type,
                 sycl_queue=sycl_queue,
                 order=order,
             )
+        elif len(devs) > 1:
+            devs = [dev for dev in devs if dev is not None]
+            if sycl_queue is None:
+                if len(devs) == 1:
+                    alloc_q = devs[0]
+                else:
+                    raise dpctl.utils.ExecutionPlacementError(
+                        "Please specify `device` or `sycl_queue` keyword "
+                        "argument to determine where to allocate the "
+                        "resulting array."
+                    )
+            else:
+                alloc_q = sycl_queue
+            return _asarray_from_seq(
+                obj,
+                seq_shape,
+                seq_dt,
+                alloc_q,
+                #  force copying via host
+                None,
+                dtype=dtype,
+                usm_type=usm_type,
+                order=order,
+            )
+
         raise NotImplementedError(
             "Converting Python sequences is not implemented"
         )
@@ -701,6 +785,12 @@ def _get_arange_length(start, stop, step):
     return _round_for_arange(tmp)
 
 
+def _to_scalar(obj, sc_ty):
+    "A way to convert object to NumPy scalar type"
+    zd_arr = np.asarray(obj).astype(sc_ty, casting="unsafe")
+    return zd_arr[tuple()]
+
+
 def arange(
     start,
     /,
@@ -777,9 +867,9 @@ def arange(
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
     sc_ty = dt.type
-    _first = sc_ty(start)
+    _first = _to_scalar(start, sc_ty)
     if sh > 1:
-        _second = sc_ty(start + step)
+        _second = _to_scalar(start + step, sc_ty)
         if dt in [dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64]:
             int64_ty = dpt.int64.type
             _step = int64_ty(_second) - int64_ty(_first)

@@ -45,6 +45,7 @@
 #include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
+#include "where.hpp"
 
 namespace py = pybind11;
 
@@ -92,6 +93,10 @@ using dpctl::tensor::py_internal::usm_ndarray_eye;
 
 using dpctl::tensor::py_internal::usm_ndarray_triul;
 
+/* =========================== Where ============================== */
+
+using dpctl::tensor::py_internal::py_where;
+
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
@@ -100,6 +105,7 @@ void init_dispatch_tables(void)
     init_copy_and_cast_usm_to_usm_dispatch_tables();
     init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
     init_advanced_indexing_dispatch_tables();
+    init_where_dispatch_tables();
     return;
 }
 
@@ -161,6 +167,17 @@ PYBIND11_MODULE(_tensor_impl, m)
         "shape "
         "with strides stride1, stride2, and stride3. Returns "
         "a 7-tuple: shape, stride and offset for the new iterator of possible "
+        "smaller dimension for each array, which traverses the same elements "
+        "as the original "
+        "iterator, possibly in a different order.");
+
+    using dpctl::tensor::strides::contract_iter4;
+    m.def(
+        "_contract_iter4", &contract_iter4<py::ssize_t, py::value_error>,
+        "Simplifies iteration over elements of 4-tuple of arrays of given "
+        "shape "
+        "with strides stride1, stride2, stride3, and stride4. Returns "
+        "a 9-tuple: shape, stride and offset for the new iterator of possible "
         "smaller dimension for each array, which traverses the same elements "
         "as the original "
         "iterator, possibly in a different order.");
@@ -292,5 +309,9 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     m.def("_nonzero", &py_nonzero, "", py::arg("cumsum"), py::arg("indexes"),
           py::arg("mask_shape"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
+          py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 }

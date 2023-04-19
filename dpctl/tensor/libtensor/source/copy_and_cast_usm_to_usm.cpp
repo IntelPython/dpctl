@@ -52,15 +52,15 @@ namespace py_internal
 namespace _ns = dpctl::tensor::detail;
 
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
-using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_2d_fn_ptr_t;
+using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_contig_fn_ptr_t;
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
 
 static copy_and_cast_generic_fn_ptr_t
     copy_and_cast_generic_dispatch_table[_ns::num_types][_ns::num_types];
 static copy_and_cast_1d_fn_ptr_t
     copy_and_cast_1d_dispatch_table[_ns::num_types][_ns::num_types];
-static copy_and_cast_2d_fn_ptr_t
-    copy_and_cast_2d_dispatch_table[_ns::num_types][_ns::num_types];
+static copy_and_cast_contig_fn_ptr_t
+    copy_and_cast_contig_dispatch_table[_ns::num_types][_ns::num_types];
 
 namespace py = pybind11;
 
@@ -142,25 +142,29 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     bool is_dst_f_contig = dst.is_f_contiguous();
 
     // check for applicability of special cases:
-    //      (same type && (both C-contiguous || both F-contiguous)
+    //      (both C-contiguous || both F-contiguous)
     bool both_c_contig = (is_src_c_contig && is_dst_c_contig);
     bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
     if (both_c_contig || both_f_contig) {
+
+        sycl::event copy_ev;
         if (src_type_id == dst_type_id) {
 
             int src_elem_size = src.get_elemsize();
 
-            sycl::event copy_ev =
-                exec_q.memcpy(static_cast<void *>(dst_data),
-                              static_cast<const void *>(src_data),
-                              src_nelems * src_elem_size, depends);
-
-            // make sure src and dst are not GC-ed before copy_ev is complete
-            return std::make_pair(
-                keep_args_alive(exec_q, {src, dst}, {copy_ev}), copy_ev);
+            copy_ev = exec_q.memcpy(static_cast<void *>(dst_data),
+                                    static_cast<const void *>(src_data),
+                                    src_nelems * src_elem_size, depends);
         }
-        // With contract_iter2 in place, there is no need to write
-        // dedicated kernels for casting between contiguous arrays
+        else {
+            auto contig_fn =
+                copy_and_cast_contig_dispatch_table[dst_type_id][src_type_id];
+            copy_ev =
+                contig_fn(exec_q, src_nelems, src_data, dst_data, depends);
+        }
+        // make sure src and dst are not GC-ed before copy_ev is complete
+        return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
+                              copy_ev);
     }
 
     const py::ssize_t *src_strides = src.get_strides_raw();
@@ -187,7 +191,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
         simplified_shape, simplified_src_strides, simplified_dst_strides,
         src_offset, dst_offset);
 
-    if (nd < 3) {
+    if (nd < 2) {
         if (nd == 1) {
             std::array<py::ssize_t, 1> shape_arr = {shape[0]};
             // strides may be null
@@ -196,31 +200,27 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
             std::array<py::ssize_t, 1> dst_strides_arr = {
                 (dst_strides ? dst_strides[0] : 1)};
 
-            auto fn = copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
-            sycl::event copy_and_cast_1d_event = fn(
-                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
-                src_data, src_offset, dst_data, dst_offset, depends);
-
+            sycl::event copy_and_cast_1d_event;
+            if ((src_strides_arr[0] == 1) && (dst_strides_arr[0] == 1) &&
+                (src_offset == 0) && (dst_offset == 0))
+            {
+                auto contig_fn =
+                    copy_and_cast_contig_dispatch_table[dst_type_id]
+                                                       [src_type_id];
+                sycl::event copy_and_cast_1d_event =
+                    contig_fn(exec_q, src_nelems, src_data, dst_data, depends);
+            }
+            else {
+                auto fn =
+                    copy_and_cast_1d_dispatch_table[dst_type_id][src_type_id];
+                copy_and_cast_1d_event =
+                    fn(exec_q, src_nelems, shape_arr, src_strides_arr,
+                       dst_strides_arr, src_data, src_offset, dst_data,
+                       dst_offset, depends);
+            }
             return std::make_pair(
                 keep_args_alive(exec_q, {src, dst}, {copy_and_cast_1d_event}),
                 copy_and_cast_1d_event);
-        }
-        else if (nd == 2) {
-            std::array<py::ssize_t, 2> shape_arr = {shape[0], shape[1]};
-            std::array<py::ssize_t, 2> src_strides_arr = {src_strides[0],
-                                                          src_strides[1]};
-            std::array<py::ssize_t, 2> dst_strides_arr = {dst_strides[0],
-                                                          dst_strides[1]};
-
-            auto fn = copy_and_cast_2d_dispatch_table[dst_type_id][src_type_id];
-
-            sycl::event copy_and_cast_2d_event = fn(
-                exec_q, src_nelems, shape_arr, src_strides_arr, dst_strides_arr,
-                src_data, src_offset, dst_data, dst_offset, depends);
-
-            return std::make_pair(
-                keep_args_alive(exec_q, {src, dst}, {copy_and_cast_2d_event}),
-                copy_and_cast_2d_event);
         }
         else if (nd == 0) { // case of a scalar
             assert(src_nelems == 1);
@@ -248,10 +248,13 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     host_task_events.reserve(2);
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unable to allocate device memory");
+    }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
@@ -269,12 +272,18 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
-                          temporaries_cleanup_ev);
+                          copy_and_cast_generic_ev);
 }
 
 void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
 {
     using namespace dpctl::tensor::detail;
+
+    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastContigFactory;
+    DispatchTableBuilder<copy_and_cast_contig_fn_ptr_t,
+                         CopyAndCastContigFactory, num_types>
+        dtb_contig;
+    dtb_contig.populate_dispatch_table(copy_and_cast_contig_dispatch_table);
 
     using dpctl::tensor::kernels::copy_and_cast::CopyAndCastGenericFactory;
     DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
@@ -287,12 +296,6 @@ void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
                          num_types>
         dtb_1d;
     dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
-
-    using dpctl::tensor::kernels::copy_and_cast::CopyAndCast2DFactory;
-    DispatchTableBuilder<copy_and_cast_2d_fn_ptr_t, CopyAndCast2DFactory,
-                         num_types>
-        dtb_2d;
-    dtb_2d.populate_dispatch_table(copy_and_cast_2d_dispatch_table);
 }
 
 } // namespace py_internal
