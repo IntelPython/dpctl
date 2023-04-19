@@ -988,8 +988,7 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
         exec_q, {cumsum, indexes}, host_task_events);
 
-    return std::make_pair(py_obj_management_host_task_ev,
-                          temporaries_cleanup_ev);
+    return std::make_pair(py_obj_management_host_task_ev, non_zero_indexes_ev);
 }
 
 } // namespace py_internal

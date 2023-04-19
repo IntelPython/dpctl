@@ -244,7 +244,7 @@ py_where(dpctl::tensor::usm_ndarray condition,
     sycl::event arg_cleanup_ev =
         keep_args_alive(exec_q, {x1, x2, condition, dst}, host_task_events);
 
-    return std::make_pair(arg_cleanup_ev, temporaries_cleanup_ev);
+    return std::make_pair(arg_cleanup_ev, where_ev);
 }
 
 void init_where_dispatch_tables(void)

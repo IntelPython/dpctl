@@ -167,7 +167,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
-                          temporaries_cleanup_ev);
+                          copy_for_reshape_event);
 }
 
 void init_copy_for_reshape_dispatch_vectors(void)
