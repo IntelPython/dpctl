@@ -37,7 +37,7 @@
 #include "linear_sequences.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -50,12 +50,12 @@ using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::lin_space_step_fn_ptr_t;
 
-static lin_space_step_fn_ptr_t lin_space_step_dispatch_vector[_ns::num_types];
+static lin_space_step_fn_ptr_t lin_space_step_dispatch_vector[td_ns::num_types];
 
 using dpctl::tensor::kernels::constructors::lin_space_affine_fn_ptr_t;
 
 static lin_space_affine_fn_ptr_t
-    lin_space_affine_dispatch_vector[_ns::num_types];
+    lin_space_affine_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_linear_sequence_step(py::object start,
@@ -82,7 +82,7 @@ usm_ndarray_linear_sequence_step(py::object start,
             "Execution queue is not compatible with the allocation queue");
     }
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -130,7 +130,7 @@ usm_ndarray_linear_sequence_affine(py::object start,
             "Execution queue context is not the same as allocation context");
     }
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -155,7 +155,7 @@ usm_ndarray_linear_sequence_affine(py::object start,
 
 void init_linear_sequences_dispatch_vectors(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::constructors::LinSpaceAffineFactory;
     using dpctl::tensor::kernels::constructors::LinSpaceStepFactory;
 

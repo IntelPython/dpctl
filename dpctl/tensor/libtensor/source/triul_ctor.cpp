@@ -35,7 +35,7 @@
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -48,8 +48,8 @@ using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::tri_fn_ptr_t;
 
-static tri_fn_ptr_t tril_generic_dispatch_vector[_ns::num_types];
-static tri_fn_ptr_t triu_generic_dispatch_vector[_ns::num_types];
+static tri_fn_ptr_t tril_generic_dispatch_vector[td_ns::num_types];
+static tri_fn_ptr_t triu_generic_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_triul(sycl::queue exec_q,
@@ -100,7 +100,7 @@ usm_ndarray_triul(sycl::queue exec_q,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -219,7 +219,7 @@ usm_ndarray_triul(sycl::queue exec_q,
 void init_triul_ctor_dispatch_vectors(void)
 {
 
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::constructors::TrilGenericFactory;
     using dpctl::tensor::kernels::constructors::TriuGenericFactory;
 

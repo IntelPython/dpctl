@@ -93,27 +93,27 @@ void _split_iteration_space(const shT &shape_vec,
 
 // Computation of positions of masked elements
 
+namespace td_ns = dpctl::tensor::type_dispatch;
+
 using dpctl::tensor::kernels::indexing::mask_positions_contig_impl_fn_ptr_t;
 static mask_positions_contig_impl_fn_ptr_t
-    mask_positions_contig_dispatch_vector[dpctl::tensor::detail::num_types];
+    mask_positions_contig_dispatch_vector[td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::mask_positions_strided_impl_fn_ptr_t;
 static mask_positions_strided_impl_fn_ptr_t
-    mask_positions_strided_dispatch_vector[dpctl::tensor::detail::num_types];
+    mask_positions_strided_dispatch_vector[td_ns::num_types];
 
 void populate_mask_positions_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::indexing::MaskPositionsContigFactory;
-    dpctl::tensor::detail::DispatchVectorBuilder<
-        mask_positions_contig_impl_fn_ptr_t, MaskPositionsContigFactory,
-        dpctl::tensor::detail::num_types>
+    td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
+                                 MaskPositionsContigFactory, td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(mask_positions_contig_dispatch_vector);
 
     using dpctl::tensor::kernels::indexing::MaskPositionsStridedFactory;
-    dpctl::tensor::detail::DispatchVectorBuilder<
-        mask_positions_strided_impl_fn_ptr_t, MaskPositionsStridedFactory,
-        dpctl::tensor::detail::num_types>
+    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
+                                 MaskPositionsStridedFactory, td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(mask_positions_strided_dispatch_vector);
 
@@ -158,14 +158,13 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     const char *mask_data = mask.get_data();
     char *cumsum_data = cumsum.get_data();
 
-    auto const &array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto const &array_types = td_ns::usm_ndarray_types();
 
     int mask_typeid = array_types.typenum_to_lookup_id(mask_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
     // cumsum must be int64_t only
-    constexpr int int64_typeid =
-        static_cast<int>(dpctl::tensor::detail::typenum_t::INT64);
+    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Cumulative sum array must have int64 data-type.");
@@ -244,30 +243,28 @@ using dpctl::tensor::kernels::indexing::
     masked_extract_all_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_all_slices_strided_impl_fn_ptr_t
-    masked_extract_all_slices_strided_impl_dispatch_vector
-        [dpctl::tensor::detail::num_types];
+    masked_extract_all_slices_strided_impl_dispatch_vector[td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::
     masked_extract_some_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_some_slices_strided_impl_fn_ptr_t
-    masked_extract_some_slices_strided_impl_dispatch_vector
-        [dpctl::tensor::detail::num_types];
+    masked_extract_some_slices_strided_impl_dispatch_vector[td_ns::num_types];
 
 void populate_masked_extract_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::indexing::MaskExtractAllSlicesStridedFactory;
-    dpctl::tensor::detail::DispatchVectorBuilder<
+    td_ns::DispatchVectorBuilder<
         masked_extract_all_slices_strided_impl_fn_ptr_t,
-        MaskExtractAllSlicesStridedFactory, dpctl::tensor::detail::num_types>
+        MaskExtractAllSlicesStridedFactory, td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(
         masked_extract_all_slices_strided_impl_dispatch_vector);
 
     using dpctl::tensor::kernels::indexing::MaskExtractSomeSlicesStridedFactory;
-    dpctl::tensor::detail::DispatchVectorBuilder<
+    td_ns::DispatchVectorBuilder<
         masked_extract_some_slices_strided_impl_fn_ptr_t,
-        MaskExtractSomeSlicesStridedFactory, dpctl::tensor::detail::num_types>
+        MaskExtractSomeSlicesStridedFactory, td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(
         masked_extract_some_slices_strided_impl_dispatch_vector);
@@ -359,13 +356,12 @@ py_extract(dpctl::tensor::usm_ndarray src,
     int dst_typenum = dst.get_typenum();
     int cumsum_typenum = cumsum.get_typenum();
 
-    auto const &array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto const &array_types = td_ns::usm_ndarray_types();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
-    constexpr int int64_typeid =
-        static_cast<int>(dpctl::tensor::detail::typenum_t::INT64);
+    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Unexact data type of cumsum array, expecting 'int64'");
@@ -557,30 +553,28 @@ using dpctl::tensor::kernels::indexing::
     masked_place_all_slices_strided_impl_fn_ptr_t;
 
 static masked_place_all_slices_strided_impl_fn_ptr_t
-    masked_place_all_slices_strided_impl_dispatch_vector
-        [dpctl::tensor::detail::num_types];
+    masked_place_all_slices_strided_impl_dispatch_vector[td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::
     masked_place_some_slices_strided_impl_fn_ptr_t;
 
 static masked_place_some_slices_strided_impl_fn_ptr_t
-    masked_place_some_slices_strided_impl_dispatch_vector
-        [dpctl::tensor::detail::num_types];
+    masked_place_some_slices_strided_impl_dispatch_vector[td_ns::num_types];
 
 void populate_masked_place_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::indexing::MaskPlaceAllSlicesStridedFactory;
-    dpctl::tensor::detail::DispatchVectorBuilder<
-        masked_place_all_slices_strided_impl_fn_ptr_t,
-        MaskPlaceAllSlicesStridedFactory, dpctl::tensor::detail::num_types>
+    td_ns::DispatchVectorBuilder<masked_place_all_slices_strided_impl_fn_ptr_t,
+                                 MaskPlaceAllSlicesStridedFactory,
+                                 td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(
         masked_place_all_slices_strided_impl_dispatch_vector);
 
     using dpctl::tensor::kernels::indexing::MaskPlaceSomeSlicesStridedFactory;
-    dpctl::tensor::detail::DispatchVectorBuilder<
-        masked_place_some_slices_strided_impl_fn_ptr_t,
-        MaskPlaceSomeSlicesStridedFactory, dpctl::tensor::detail::num_types>
+    td_ns::DispatchVectorBuilder<masked_place_some_slices_strided_impl_fn_ptr_t,
+                                 MaskPlaceSomeSlicesStridedFactory,
+                                 td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(
         masked_place_some_slices_strided_impl_dispatch_vector);
@@ -673,13 +667,12 @@ py_place(dpctl::tensor::usm_ndarray dst,
     int rhs_typenum = rhs.get_typenum();
     int cumsum_typenum = cumsum.get_typenum();
 
-    auto const &array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto const &array_types = td_ns::usm_ndarray_types();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
     int rhs_typeid = array_types.typenum_to_lookup_id(rhs_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
-    constexpr int int64_typeid =
-        static_cast<int>(dpctl::tensor::detail::typenum_t::INT64);
+    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Unexact data type of cumsum array, expecting 'int64'");
@@ -913,15 +906,14 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     py::ssize_t nz_elems = indexes_shape[1];
 
     int indexes_typenum = indexes.get_typenum();
-    auto const &array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto const &array_types = td_ns::usm_ndarray_types();
     int indexes_typeid = array_types.typenum_to_lookup_id(indexes_typenum);
 
     int cumsum_typenum = cumsum.get_typenum();
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
     // cumsum must be int64_t only
-    constexpr int int64_typeid =
-        static_cast<int>(dpctl::tensor::detail::typenum_t::INT64);
+    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid || indexes_typeid != int64_typeid) {
         throw py::value_error(
             "Cumulative sum array and index array must have int64 data-type");

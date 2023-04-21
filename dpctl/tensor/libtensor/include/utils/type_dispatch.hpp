@@ -33,7 +33,7 @@ namespace dpctl
 namespace tensor
 {
 
-namespace detail
+namespace type_dispatch
 {
 
 enum class typenum_t : int
@@ -164,7 +164,7 @@ struct usm_ndarray_types
 
     int typenum_to_lookup_id(int typenum) const
     {
-        using typenum_t = dpctl::tensor::detail::typenum_t;
+        using typenum_t = ::dpctl::tensor::type_dispatch::typenum_t;
         auto const &api = ::dpctl::detail::dpctl_capi::get();
 
         if (typenum == api.UAR_DOUBLE_) {
@@ -250,7 +250,7 @@ private:
     }
 };
 
-} // namespace detail
+} // namespace type_dispatch
 
 } // namespace tensor
 } // namespace dpctl

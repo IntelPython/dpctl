@@ -34,7 +34,7 @@
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -46,7 +46,7 @@ namespace py_internal
 using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::eye_fn_ptr_t;
-static eye_fn_ptr_t eye_dispatch_vector[_ns::num_types];
+static eye_fn_ptr_t eye_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_eye(py::ssize_t k,
@@ -66,7 +66,7 @@ usm_ndarray_eye(py::ssize_t k,
                               "allocation queue");
     }
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -118,7 +118,7 @@ usm_ndarray_eye(py::ssize_t k,
 
 void init_eye_ctor_dispatch_vectors(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::constructors::EyeFactory;
 
     DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types> dvb;
