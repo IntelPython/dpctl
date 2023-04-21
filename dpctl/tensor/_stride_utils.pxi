@@ -62,8 +62,8 @@ cdef int _from_input_shape_strides(
     """
     cdef int i
     cdef int j
-    cdef int all_incr = 1
-    cdef int all_decr = 1
+    cdef bint all_incr = 1
+    cdef bint all_decr = 1
     cdef Py_ssize_t elem_count = 1
     cdef Py_ssize_t min_shift = 0
     cdef Py_ssize_t max_shift = 0
@@ -152,7 +152,7 @@ cdef int _from_input_shape_strides(
                 return 0
             if nd == 1:
                 if strides_arr[0] == 1:
-                    contig[0] = USM_ARRAY_C_CONTIGUOUS
+                    contig[0] = USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS
                 else:
                     contig[0] = 0
                 return 0

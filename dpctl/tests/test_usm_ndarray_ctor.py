@@ -71,6 +71,10 @@ def test_usm_ndarray_flags():
     assert f.forc
     assert f.fnc
 
+    f = dpt.usm_ndarray((5,), dtype="i4", strides=(1,)).flags
+    assert f.fc
+    assert f.forc
+
     f = dpt.usm_ndarray((5, 1, 2), dtype="i4", strides=(2, 0, 1)).flags
     assert f.c_contiguous
     assert f.forc
