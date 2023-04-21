@@ -46,15 +46,15 @@ namespace tensor
 namespace py_internal
 {
 
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::search::where_contig_impl_fn_ptr_t;
 using dpctl::tensor::kernels::search::where_strided_impl_fn_ptr_t;
 
-static where_contig_impl_fn_ptr_t where_contig_dispatch_table[_ns::num_types]
-                                                             [_ns::num_types];
-static where_strided_impl_fn_ptr_t where_strided_dispatch_table[_ns::num_types]
-                                                               [_ns::num_types];
+static where_contig_impl_fn_ptr_t where_contig_dispatch_table[td_ns::num_types]
+                                                             [td_ns::num_types];
+static where_strided_impl_fn_ptr_t
+    where_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 using dpctl::utils::keep_args_alive;
 
@@ -120,7 +120,7 @@ py_where(dpctl::tensor::usm_ndarray condition,
     int cond_typenum = condition.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    auto const &array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto const &array_types = td_ns::usm_ndarray_types();
     int cond_typeid = array_types.typenum_to_lookup_id(cond_typenum);
     int x1_typeid = array_types.typenum_to_lookup_id(x1_typenum);
     int x2_typeid = array_types.typenum_to_lookup_id(x2_typenum);
@@ -249,17 +249,16 @@ py_where(dpctl::tensor::usm_ndarray condition,
 
 void init_where_dispatch_tables(void)
 {
+    using namespace td_ns;
     using dpctl::tensor::kernels::search::WhereContigFactory;
-    dpctl::tensor::detail::DispatchTableBuilder<
-        where_contig_impl_fn_ptr_t, WhereContigFactory,
-        dpctl::tensor::detail::num_types>
+    DispatchTableBuilder<where_contig_impl_fn_ptr_t, WhereContigFactory,
+                         num_types>
         dtb1;
     dtb1.populate_dispatch_table(where_contig_dispatch_table);
 
     using dpctl::tensor::kernels::search::WhereStridedFactory;
-    dpctl::tensor::detail::DispatchTableBuilder<
-        where_strided_impl_fn_ptr_t, WhereStridedFactory,
-        dpctl::tensor::detail::num_types>
+    DispatchTableBuilder<where_strided_impl_fn_ptr_t, WhereStridedFactory,
+                         num_types>
         dtb2;
     dtb2.populate_dispatch_table(where_strided_dispatch_table);
 }

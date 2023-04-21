@@ -49,18 +49,18 @@ namespace tensor
 namespace py_internal
 {
 
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_contig_fn_ptr_t;
 using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
 
 static copy_and_cast_generic_fn_ptr_t
-    copy_and_cast_generic_dispatch_table[_ns::num_types][_ns::num_types];
+    copy_and_cast_generic_dispatch_table[td_ns::num_types][td_ns::num_types];
 static copy_and_cast_1d_fn_ptr_t
-    copy_and_cast_1d_dispatch_table[_ns::num_types][_ns::num_types];
+    copy_and_cast_1d_dispatch_table[td_ns::num_types][td_ns::num_types];
 static copy_and_cast_contig_fn_ptr_t
-    copy_and_cast_contig_dispatch_table[_ns::num_types][_ns::num_types];
+    copy_and_cast_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 namespace py = pybind11;
 
@@ -121,7 +121,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -277,7 +277,7 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
 
 void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
 
     using dpctl::tensor::kernels::copy_and_cast::CopyAndCastContigFactory;
     DispatchTableBuilder<copy_and_cast_contig_fn_ptr_t,

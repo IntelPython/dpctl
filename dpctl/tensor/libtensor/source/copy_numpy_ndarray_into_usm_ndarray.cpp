@@ -36,7 +36,7 @@
 #include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -49,8 +49,8 @@ using dpctl::tensor::kernels::copy_and_cast::
     copy_and_cast_from_host_blocking_fn_ptr_t;
 
 static copy_and_cast_from_host_blocking_fn_ptr_t
-    copy_and_cast_from_host_blocking_dispatch_table[_ns::num_types]
-                                                   [_ns::num_types];
+    copy_and_cast_from_host_blocking_dispatch_table[td_ns::num_types]
+                                                   [td_ns::num_types];
 
 void copy_numpy_ndarray_into_usm_ndarray(
     py::array npy_src,
@@ -111,7 +111,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         py::detail::array_descriptor_proxy(npy_src.dtype().ptr())->type_num;
     int dst_typenum = dst.get_typenum();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -239,11 +239,11 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
 void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::copy_and_cast::CopyAndCastFromHostFactory;
 
     DispatchTableBuilder<copy_and_cast_from_host_blocking_fn_ptr_t,
-                         CopyAndCastFromHostFactory, _ns::num_types>
+                         CopyAndCastFromHostFactory, num_types>
         dtb_copy_from_numpy;
 
     dtb_copy_from_numpy.populate_dispatch_table(
