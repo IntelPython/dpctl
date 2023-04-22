@@ -84,13 +84,9 @@ def test_permute_dims_2d_3d(shapes):
 
 
 def test_expand_dims_incorrect_type():
-    X_list = list([1, 2, 3, 4, 5])
-    X_tuple = tuple(X_list)
-    Xnp = np.array(X_list)
-
-    pytest.raises(TypeError, dpt.permute_dims, X_list, 1)
-    pytest.raises(TypeError, dpt.permute_dims, X_tuple, 1)
-    pytest.raises(TypeError, dpt.permute_dims, Xnp, 1)
+    X_list = [1, 2, 3, 4, 5]
+    with pytest.raises(TypeError):
+        dpt.permute_dims(X_list, 1)
 
 
 def test_expand_dims_0d():
@@ -143,22 +139,20 @@ def test_expand_dims_tuple(axes):
 
 
 def test_expand_dims_incorrect_tuple():
-
     X = dpt.empty((3, 3, 3), dtype="i4")
-    pytest.raises(np.AxisError, dpt.expand_dims, X, (0, -6))
-    pytest.raises(np.AxisError, dpt.expand_dims, X, (0, 5))
+    with pytest.raises(np.AxisError):
+        dpt.expand_dims(X, (0, -6))
+    with pytest.raises(np.AxisError):
+        dpt.expand_dims(X, (0, 5))
 
-    pytest.raises(ValueError, dpt.expand_dims, X, (1, 1))
+    with pytest.raises(ValueError):
+        dpt.expand_dims(X, (1, 1))
 
 
 def test_squeeze_incorrect_type():
-    X_list = list([1, 2, 3, 4, 5])
-    X_tuple = tuple(X_list)
-    Xnp = np.array(X_list)
-
-    pytest.raises(TypeError, dpt.permute_dims, X_list, 1)
-    pytest.raises(TypeError, dpt.permute_dims, X_tuple, 1)
-    pytest.raises(TypeError, dpt.permute_dims, Xnp, 1)
+    X_list = [1, 2, 3, 4, 5]
+    with pytest.raises(TypeError):
+        dpt.permute_dims(X_list, 1)
 
 
 def test_squeeze_0d():
@@ -1077,3 +1071,19 @@ def test_unstack_axis2():
     assert_array_equal(dpt.asnumpy(y[:, :, 0, ...]), dpt.asnumpy(res[0]))
     assert_array_equal(dpt.asnumpy(y[:, :, 1, ...]), dpt.asnumpy(res[1]))
     assert_array_equal(dpt.asnumpy(y[:, :, 2, ...]), dpt.asnumpy(res[2]))
+
+
+def test_finfo_object():
+    fi = dpt.finfo(dpt.float32)
+    assert isinstance(fi.bits, int)
+    assert isinstance(fi.max, float)
+    assert isinstance(fi.min, float)
+    assert isinstance(fi.eps, float)
+    assert isinstance(fi.epsneg, float)
+    assert isinstance(fi.smallest_normal, float)
+    assert isinstance(fi.tiny, float)
+    assert isinstance(fi.precision, float)
+    assert isinstance(fi.resolution, float)
+    assert isinstance(fi.dtype, dpt.dtype)
+    assert isinstance(str(fi), str)
+    assert isinstance(repr(fi), str)

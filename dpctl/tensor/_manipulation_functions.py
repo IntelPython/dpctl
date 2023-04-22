@@ -31,7 +31,7 @@ __doc__ = (
 )
 
 
-class finfo_object(np.finfo):
+class finfo_object:
     """
     `numpy.finfo` subclass which returns Python floating-point scalars for
     `eps`, `max`, `min`, and `smallest_normal` attributes.
@@ -39,19 +39,83 @@ class finfo_object(np.finfo):
 
     def __init__(self, dtype):
         _supported_dtype([dpt.dtype(dtype)])
-        super().__init__()
+        self._finfo = np.finfo(dtype)
 
-        self.eps = float(self.eps)
-        self.max = float(self.max)
-        self.min = float(self.min)
+    @property
+    def bits(self):
+        """
+        number of bits occupied by the real-valued floating-point data type.
+        """
+        return int(self._finfo.bits)
 
     @property
     def smallest_normal(self):
-        return float(super().smallest_normal)
+        """
+        smallest positive real-valued floating-point number with full
+        precision.
+        """
+        return float(self._finfo.smallest_normal)
 
     @property
     def tiny(self):
-        return float(super().tiny)
+        """an alias for `smallest_normal`"""
+        return float(self._finfo.tiny)
+
+    @property
+    def eps(self):
+        """
+        difference between 1.0 and the next smallest representable real-valued
+        floating-point number larger than 1.0 according to the IEEE-754
+        standard.
+        """
+        return float(self._finfo.eps)
+
+    @property
+    def epsneg(self):
+        """
+        difference between 1.0 and the next smallest representable real-valued
+        floating-point number smaller than 1.0 according to the IEEE-754
+        standard.
+        """
+        return float(self._finfo.epsneg)
+
+    @property
+    def min(self):
+        """smallest representable real-valued number."""
+        return float(self._finfo.min)
+
+    @property
+    def max(self):
+        "largest representable real-valued number."
+        return float(self._finfo.max)
+
+    @property
+    def resolution(self):
+        "the approximate decimal resolution of this type."
+        return float(self._finfo.resolution)
+
+    @property
+    def precision(self):
+        """
+        the approximate number of decimal digits to which this kind of
+        floating point type is precise.
+        """
+        return float(self._finfo.precision)
+
+    @property
+    def dtype(self):
+        """
+        the dtype for which finfo returns information. For complex input, the
+        returned dtype is the associated floating point dtype for its real and
+        complex components.
+        """
+        return self._finfo.dtype
+
+    def __str__(self):
+        return self._finfo.__str__()
+
+    def __repr__(self):
+        return self._finfo.__repr__()
 
 
 def _broadcast_strides(X_shape, X_strides, res_ndim):
