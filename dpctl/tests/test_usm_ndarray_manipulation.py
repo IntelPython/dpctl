@@ -17,9 +17,9 @@
 
 import numpy as np
 import pytest
+from helper import get_queue_or_skip
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
-import dpctl
 import dpctl.tensor as dpt
 
 
@@ -34,10 +34,7 @@ def test_permute_dims_incorrect_type():
 
 
 def test_permute_dims_empty_array():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.empty((10, 0))
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -47,10 +44,7 @@ def test_permute_dims_empty_array():
 
 
 def test_permute_dims_0d_1d():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp_0d = np.array(1, dtype="int64")
     X_0d = dpt.asarray(Xnp_0d, sycl_queue=q)
@@ -72,10 +66,7 @@ def test_permute_dims_0d_1d():
 
 @pytest.mark.parametrize("shapes", [(2, 2), (1, 4), (3, 3, 3), (4, 1, 3)])
 def test_permute_dims_2d_3d(shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp_size = np.prod(shapes)
 
@@ -103,13 +94,11 @@ def test_expand_dims_incorrect_type():
 
 
 def test_expand_dims_0d():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.array(1, dtype="int64")
     X = dpt.asarray(Xnp, sycl_queue=q)
+
     Y = dpt.expand_dims(X, 0)
     Ynp = np.expand_dims(Xnp, 0)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
@@ -124,10 +113,7 @@ def test_expand_dims_0d():
 
 @pytest.mark.parametrize("shapes", [(3,), (3, 3), (3, 3, 3)])
 def test_expand_dims_1d_3d(shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp_size = np.prod(shapes)
 
@@ -147,10 +133,7 @@ def test_expand_dims_1d_3d(shapes):
     "axes", [(0, 1, 2), (0, -1, -2), (0, 3, 5), (0, -3, -5)]
 )
 def test_expand_dims_tuple(axes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.empty((3, 3, 3), dtype="u1")
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -179,10 +162,7 @@ def test_squeeze_incorrect_type():
 
 
 def test_squeeze_0d():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.array(1)
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -229,10 +209,7 @@ def test_squeeze_0d():
     ],
 )
 def test_squeeze_without_axes(shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.empty(shapes, dtype="u1")
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -243,10 +220,7 @@ def test_squeeze_without_axes(shapes):
 
 @pytest.mark.parametrize("axes", [0, 2, (0), (2), (0, 2)])
 def test_squeeze_axes_arg(axes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.array([[[1], [2], [3]]], dtype="u1")
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -257,10 +231,7 @@ def test_squeeze_axes_arg(axes):
 
 @pytest.mark.parametrize("axes", [1, -2, (1), (-2), (0, 0), (1, 1)])
 def test_squeeze_axes_arg_error(axes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.array([[[1], [2], [3]]], dtype="u1")
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -288,10 +259,7 @@ def test_squeeze_axes_arg_error(axes):
     ],
 )
 def test_broadcast_to_succeeds(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp, target_shape = data
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -317,10 +285,7 @@ def test_broadcast_to_succeeds(data):
     ],
 )
 def test_broadcast_to_raises(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     orig_shape, target_shape = data
     Xnp = np.zeros(orig_shape, dtype="i1")
@@ -329,10 +294,7 @@ def test_broadcast_to_raises(data):
 
 
 def assert_broadcast_correct(input_shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
     np_arrays = [np.zeros(s, dtype="i1") for s in input_shapes]
     out_np_arrays = np.broadcast_arrays(*np_arrays)
     usm_arrays = [dpt.asarray(Xnp, sycl_queue=q) for Xnp in np_arrays]
@@ -344,19 +306,13 @@ def assert_broadcast_correct(input_shapes):
 
 
 def assert_broadcast_arrays_raise(input_shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
     usm_arrays = [dpt.asarray(np.zeros(s), sycl_queue=q) for s in input_shapes]
     pytest.raises(ValueError, dpt.broadcast_arrays, *usm_arrays)
 
 
 def test_broadcast_arrays_same():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
     Xnp = np.arange(10)
     Ynp = np.arange(10)
     res_Xnp, res_Ynp = np.broadcast_arrays(Xnp, Ynp)
@@ -368,10 +324,7 @@ def test_broadcast_arrays_same():
 
 
 def test_broadcast_arrays_one_off():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
     Xnp = np.array([[1, 2, 3]])
     Ynp = np.array([[1], [2], [3]])
     res_Xnp, res_Ynp = np.broadcast_arrays(Xnp, Ynp)
@@ -484,10 +437,7 @@ def test_incompatible_shapes_raise_valueerror(shapes):
 
 
 def test_flip_axis_incorrect():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X_np = np.ones((4, 4))
     X = dpt.asarray(X_np, sycl_queue=q)
@@ -499,10 +449,7 @@ def test_flip_axis_incorrect():
 
 
 def test_flip_0d():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.array(1, dtype="int64")
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -516,10 +463,7 @@ def test_flip_0d():
 
 
 def test_flip_1d():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.arange(6)
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -548,10 +492,7 @@ def test_flip_1d():
     ],
 )
 def test_flip_2d_3d(shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp_size = np.prod(shapes)
     Xnp = np.arange(Xnp_size).reshape(shapes)
@@ -578,10 +519,7 @@ def test_flip_2d_3d(shapes):
     ],
 )
 def test_flip_default_axes(shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp_size = np.prod(shapes)
     Xnp = np.arange(Xnp_size).reshape(shapes)
@@ -605,10 +543,7 @@ def test_flip_default_axes(shapes):
     ],
 )
 def test_flip_empty_0_size_dim(shapes):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = dpt.empty(shapes, sycl_queue=q)
     dpt.flip(X)
@@ -629,10 +564,7 @@ def test_flip_empty_0_size_dim(shapes):
     ],
 )
 def test_flip_multiple_axes(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     shape, axes = data
     Xnp_size = np.prod(shape)
@@ -644,10 +576,7 @@ def test_flip_multiple_axes(data):
 
 
 def test_roll_empty():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.empty([])
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -671,10 +600,7 @@ def test_roll_empty():
     ],
 )
 def test_roll_1d(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.arange(10)
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -713,10 +639,7 @@ def test_roll_1d(data):
     ],
 )
 def test_roll_2d(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xnp = np.arange(10).reshape(2, 5)
     X = dpt.asarray(Xnp, sycl_queue=q)
@@ -736,11 +659,8 @@ def test_concat_incorrect_type():
 
 
 def test_concat_incorrect_queue():
-    try:
-        q1 = dpctl.SyclQueue()
-        q2 = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
 
     X = dpt.ones((2, 2), sycl_queue=q1)
     Y = dpt.ones((2, 2), sycl_queue=q2)
@@ -749,10 +669,7 @@ def test_concat_incorrect_queue():
 
 
 def test_concat_different_dtype():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = dpt.ones((2, 2), dtype=np.int64, sycl_queue=q)
     Y = dpt.ones((3, 2), dtype=np.uint32, sycl_queue=q)
@@ -765,10 +682,7 @@ def test_concat_different_dtype():
 
 
 def test_concat_incorrect_ndim():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = dpt.ones((2, 2), sycl_queue=q)
     Y = dpt.ones((2, 2, 2), sycl_queue=q)
@@ -786,10 +700,7 @@ def test_concat_incorrect_ndim():
     ],
 )
 def test_concat_incorrect_shape(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xshape, Yshape, axis = data
 
@@ -810,10 +721,7 @@ def test_concat_incorrect_shape(data):
     ],
 )
 def test_concat_1array(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xshape, axis = data
 
@@ -843,10 +751,7 @@ def test_concat_1array(data):
     ],
 )
 def test_concat_2arrays(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xshape, Yshape, axis = data
 
@@ -871,10 +776,7 @@ def test_concat_2arrays(data):
     ],
 )
 def test_concat_3arrays(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     Xshape, Yshape, Zshape, axis = data
 
@@ -894,10 +796,7 @@ def test_concat_3arrays(data):
 
 
 def test_concat_axis_none_strides():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
     Xnp = np.arange(0, 18).reshape((6, 3))
     X = dpt.asarray(Xnp, sycl_queue=q)
 
@@ -911,10 +810,7 @@ def test_concat_axis_none_strides():
 
 
 def test_stack_incorrect_shape():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = dpt.ones((1,), sycl_queue=q)
     Y = dpt.ones((2,), sycl_queue=q)
@@ -933,10 +829,7 @@ def test_stack_incorrect_shape():
     ],
 )
 def test_stack_1array(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     shape, axis = data
 
@@ -969,10 +862,7 @@ def test_stack_1array(data):
     ],
 )
 def test_stack_2arrays(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     shape, axis = data
 
@@ -997,10 +887,7 @@ def test_stack_2arrays(data):
     ],
 )
 def test_stack_3arrays(data):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     shape, axis = data
 
@@ -1020,10 +907,7 @@ def test_stack_3arrays(data):
 
 
 def test_can_cast():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     # incorrect input
     X = dpt.ones((2, 2), dtype=dpt.int64, sycl_queue=q)
@@ -1037,10 +921,7 @@ def test_can_cast():
 
 
 def test_result_type():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created")
+    q = get_queue_or_skip()
 
     X = [dpt.ones((2), dtype=dpt.int64, sycl_queue=q), dpt.int32, "float16"]
     X_np = [np.ones((2), dtype=np.int64), np.int32, "float16"]
@@ -1049,6 +930,7 @@ def test_result_type():
 
 
 def test_swapaxes_1d():
+    get_queue_or_skip()
     x = np.array([[1, 2, 3]])
     exp = np.swapaxes(x, 0, 1)
 
@@ -1059,6 +941,7 @@ def test_swapaxes_1d():
 
 
 def test_swapaxes_2d():
+    get_queue_or_skip()
     x = np.array([[[0, 1], [2, 3]], [[4, 5], [6, 7]]])
     exp = np.swapaxes(x, 0, 2)
 
@@ -1078,6 +961,7 @@ def test_swapaxes_2d():
     ],
 )
 def test_moveaxis_move_to_end(source, expected):
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(5 * 6 * 7), (5, 6, 7))
     actual = dpt.moveaxis(x, source, -1).shape
     assert_(actual, expected)
@@ -1092,6 +976,7 @@ def test_moveaxis_move_to_end(source, expected):
     ],
 )
 def test_moveaxis_new_position(source, destination, expected):
+    get_queue_or_skip()
     x = dpt.reshape(dpt.arange(24), (1, 2, 3, 4))
     actual = dpt.moveaxis(x, source, destination).shape
     assert_(actual, expected)
@@ -1108,6 +993,7 @@ def test_moveaxis_new_position(source, destination, expected):
     ],
 )
 def test_moveaxis_preserve_order(source, destination):
+    get_queue_or_skip()
     x = dpt.zeros((1, 2, 3, 4))
     actual = dpt.moveaxis(x, source, destination).shape
     assert_(actual, (1, 2, 3, 4))
@@ -1124,9 +1010,17 @@ def test_moveaxis_preserve_order(source, destination):
     ],
 )
 def test_moveaxis_move_multiples(source, destination, expected):
+    get_queue_or_skip()
     x = dpt.zeros((0, 1, 2, 3))
     actual = dpt.moveaxis(x, source, destination).shape
     assert_(actual, expected)
+
+
+def test_moveaxis_gh_1178():
+    get_queue_or_skip()
+    x = dpt.zeros((1, 2, 3, 4))
+    y = dpt.moveaxis(x, range(4), range(4))
+    assert y.shape == x.shape
 
 
 def test_moveaxis_errors():

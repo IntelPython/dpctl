@@ -137,14 +137,12 @@ def permute_dims(X, axes):
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    if not isinstance(axes, (tuple, list)):
-        axes = (axes,)
+    axes = normalize_axis_tuple(axes, X.ndim, "axes")
     if not X.ndim == len(axes):
         raise ValueError(
             "The length of the passed axes does not match "
             "to the number of usm_ndarray dimensions."
         )
-    axes = normalize_axis_tuple(axes, X.ndim, "axes")
     newstrides = tuple(X.strides[i] for i in axes)
     newshape = tuple(X.shape[i] for i in axes)
     return dpt.usm_ndarray(
@@ -187,7 +185,8 @@ def expand_dims(X, axis):
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    if not isinstance(axis, (tuple, list)):
+
+    if type(axis) not in (tuple, list):
         axis = (axis,)
 
     out_ndim = len(axis) + X.ndim
@@ -224,8 +223,6 @@ def squeeze(X, axis=None):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_shape = X.shape
     if axis is not None:
-        if not isinstance(axis, (tuple, list)):
-            axis = (axis,)
         axis = normalize_axis_tuple(axis, X.ndim if X.ndim != 0 else X.ndim + 1)
         new_shape = []
         for i, x in enumerate(X_shape):
@@ -818,12 +815,6 @@ def moveaxis(X, source, destination):
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-
-    if not isinstance(source, (tuple, list)):
-        source = (source,)
-
-    if not isinstance(destination, (tuple, list)):
-        destination = (destination,)
 
     source = normalize_axis_tuple(source, X.ndim, "source")
     destination = normalize_axis_tuple(destination, X.ndim, "destination")
