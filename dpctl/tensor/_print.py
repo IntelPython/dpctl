@@ -19,7 +19,9 @@ import operator
 
 import numpy as np
 
+import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 
 __doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
 
@@ -220,25 +222,43 @@ def print_options(*args, **kwargs):
         dpt.set_print_options(**options)
 
 
-def _nd_corners(x, edge_items, slices=()):
-    axes_reduced = len(slices)
-    if axes_reduced == x.ndim:
-        return x[slices]
+def _nd_corners(arr_in, edge_items):
+    arr_ndim = arr_in.ndim
+    res_shape = tuple(
+        2 * edge_items if arr_in.shape[i] > 2 * edge_items else arr_in.shape[i]
+        for i in range(arr_ndim)
+    )
 
-    if x.shape[axes_reduced] > 2 * edge_items:
-        return dpt.concat(
-            (
-                _nd_corners(
-                    x, edge_items, slices + (slice(None, edge_items, None),)
-                ),
-                _nd_corners(
-                    x, edge_items, slices + (slice(-edge_items, None, None),)
-                ),
-            ),
-            axis=axes_reduced,
+    arr_out = dpt.empty(
+        res_shape,
+        dtype=arr_in.dtype,
+        usm_type=arr_in.usm_type,
+        sycl_queue=arr_in.sycl_queue,
+    )
+
+    hev_list = []
+    for corner in range(arr_ndim**2):
+        slices = ()
+        tmp = bin(corner).replace("0b", "").zfill(arr_ndim)
+
+        for dim in reversed(range(arr_ndim)):
+            if arr_in.shape[dim] < 2 * edge_items:
+                slices = (np.s_[:],) + slices
+            else:
+                ind = (-1) ** int(tmp[dim]) * edge_items
+                if ind < 0:
+                    slices = (np.s_[-edge_items::],) + slices
+                else:
+                    slices = (np.s_[:edge_items:],) + slices
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arr_in[slices],
+            dst=arr_out[slices],
+            sycl_queue=arr_in.sycl_queue,
         )
-    else:
-        return _nd_corners(x, edge_items, slices + (slice(None, None, None),))
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+    return arr_out
 
 
 def usm_ndarray_str(
