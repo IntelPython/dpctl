@@ -177,7 +177,7 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     }
 
     const py::ssize_t *shape = mask.get_shape_raw();
-    const py::ssize_t *strides = mask.get_strides_raw();
+    auto const &strides_vector = mask.get_strides_vector();
 
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
@@ -187,13 +187,9 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     int mask_nd = mask.get_ndim();
     int nd = mask_nd;
 
-    constexpr py::ssize_t itemsize = 1; // in elements
-    bool is_c_contig = mask.is_c_contiguous();
-    bool is_f_contig = mask.is_f_contiguous();
-
     dpctl::tensor::py_internal::simplify_iteration_space_1(
-        nd, shape, strides, itemsize, is_c_contig, is_f_contig,
-        simplified_shape, simplified_strides, offset);
+        nd, shape, strides_vector, simplified_shape, simplified_strides,
+        offset);
 
     if (nd == 1 && simplified_strides[0] == 1) {
         auto fn = mask_positions_contig_dispatch_vector[mask_typeid];
@@ -463,19 +459,13 @@ py_extract(dpctl::tensor::usm_ndarray src,
         std::vector<py::ssize_t> simplified_ortho_dst_strides;
 
         const py::ssize_t *_shape = ortho_src_shape.data();
-        const py::ssize_t *_src_strides = ortho_src_strides.data();
-        const py::ssize_t *_dst_strides = ortho_dst_strides.data();
-        constexpr py::ssize_t _itemsize = 1; // in elements
-
-        constexpr bool is_c_contig = false;
-        constexpr bool is_f_contig = false;
 
         py::ssize_t ortho_src_offset(0);
         py::ssize_t ortho_dst_offset(0);
 
         dpctl::tensor::py_internal::simplify_iteration_space(
-            ortho_nd, _shape, _src_strides, _itemsize, is_c_contig, is_f_contig,
-            _dst_strides, _itemsize, is_c_contig, is_f_contig,
+            ortho_nd, _shape, ortho_src_strides, ortho_dst_strides,
+            // output
             simplified_ortho_shape, simplified_ortho_src_strides,
             simplified_ortho_dst_strides, ortho_src_offset, ortho_dst_offset);
 
@@ -775,19 +765,12 @@ py_place(dpctl::tensor::usm_ndarray dst,
         std::vector<py::ssize_t> simplified_ortho_rhs_strides;
 
         const py::ssize_t *_shape = ortho_dst_shape.data();
-        const py::ssize_t *_dst_strides = ortho_dst_strides.data();
-        const py::ssize_t *_rhs_strides = ortho_rhs_strides.data();
-        constexpr py::ssize_t _itemsize = 1; // in elements
-
-        constexpr bool is_c_contig = false;
-        constexpr bool is_f_contig = false;
 
         py::ssize_t ortho_dst_offset(0);
         py::ssize_t ortho_rhs_offset(0);
 
         dpctl::tensor::py_internal::simplify_iteration_space(
-            ortho_nd, _shape, _dst_strides, _itemsize, is_c_contig, is_f_contig,
-            _rhs_strides, _itemsize, is_c_contig, is_f_contig,
+            ortho_nd, _shape, ortho_dst_strides, ortho_rhs_strides,
             simplified_ortho_shape, simplified_ortho_dst_strides,
             simplified_ortho_rhs_strides, ortho_dst_offset, ortho_rhs_offset);
 
