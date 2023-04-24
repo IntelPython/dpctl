@@ -994,27 +994,23 @@ def test_moveaxis_preserve_order(source, destination):
 
 
 @pytest.mark.parametrize(
-    "source, destination, expected",
+    "shape, source, destination, expected",
     [
-        ([0, 1], [2, 3], (2, 3, 0, 1)),
-        ([2, 3], [0, 1], (2, 3, 0, 1)),
-        ([0, 1, 2], [2, 3, 0], (2, 3, 0, 1)),
-        ([3, 0], [1, 0], (0, 3, 1, 2)),
-        ([0, 3], [0, 1], (0, 3, 1, 2)),
+        ((0, 1, 2, 3), [0, 1], [2, 3], (2, 3, 0, 1)),
+        ((0, 1, 2, 3), [2, 3], [0, 1], (2, 3, 0, 1)),
+        ((0, 1, 2, 3), [0, 1, 2], [2, 3, 0], (2, 3, 0, 1)),
+        ((0, 1, 2, 3), [3, 0], [1, 0], (0, 3, 1, 2)),
+        ((0, 1, 2, 3), [0, 3], [0, 1], (0, 3, 1, 2)),
+        ((1, 2, 3, 4), range(4), range(4), (1, 2, 3, 4)),
     ],
 )
-def test_moveaxis_move_multiples(source, destination, expected):
+def test_moveaxis_move_multiples(shape, source, destination, expected):
     get_queue_or_skip()
-    x = dpt.zeros((0, 1, 2, 3))
-    actual = dpt.moveaxis(x, source, destination).shape
+    x = dpt.zeros(shape)
+    y = dpt.moveaxis(x, source, destination)
+    actual = y.shape
     assert_(actual, expected)
-
-
-def test_moveaxis_gh_1178():
-    get_queue_or_skip()
-    x = dpt.zeros((1, 2, 3, 4))
-    y = dpt.moveaxis(x, range(4), range(4))
-    assert y.shape == x.shape
+    assert y._pointer == x._pointer
 
 
 def test_moveaxis_errors():
