@@ -222,28 +222,7 @@ def print_options(*args, **kwargs):
         dpt.set_print_options(**options)
 
 
-def _nd_corners(x, edge_items, slices=()):
-    axes_reduced = len(slices)
-    if axes_reduced == x.ndim:
-        return x[slices]
-
-    if x.shape[axes_reduced] > 2 * edge_items:
-        return dpt.concat(
-            (
-                _nd_corners(
-                    x, edge_items, slices + (slice(None, edge_items, None),)
-                ),
-                _nd_corners(
-                    x, edge_items, slices + (slice(-edge_items, None, None),)
-                ),
-            ),
-            axis=axes_reduced,
-        )
-    else:
-        return _nd_corners(x, edge_items, slices + (slice(None, None, None),))
-
-
-def _it_corners(arr_in, edge_items):
+def _nd_corners(arr_in, edge_items):
     arr_ndim = arr_in.ndim
     res_shape = tuple(
         2 * edge_items if arr_in.shape[i] > 2 * edge_items else arr_in.shape[i]
