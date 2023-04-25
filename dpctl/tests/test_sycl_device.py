@@ -18,6 +18,7 @@
 """
 
 import pytest
+from helper import get_queue_or_skip
 
 import dpctl
 from dpctl import SyclDeviceCreationError
@@ -29,18 +30,18 @@ def test_standard_selectors(device_selector, check):
     """
     try:
         device = device_selector()
-        check(device)
     except dpctl.SyclDeviceCreationError:
-        pytest.skip()
+        pytest.skip("Could not create default-selected device")
+    check(device)
 
 
 def test_current_device(check):
     """Test is the device for the current queue is valid."""
+    q = get_queue_or_skip()
     try:
-        q = dpctl.get_current_queue()
-    except Exception:
-        pytest.fail("Encountered an exception inside get_current_queue().")
-    device = q.get_sycl_device()
+        device = q.get_sycl_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default-selected device")
     check(device)
 
 
@@ -125,13 +126,20 @@ def test_hashing_of_device():
     a dictionary key.
 
     """
-    device_dict = {dpctl.SyclDevice(): "default_device"}
+    try:
+        device = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default-constructed device")
+    device_dict = {device: "default_device"}
     assert device_dict
 
 
 def test_equal():
-    d1 = dpctl.SyclDevice()
-    d2 = dpctl.SyclDevice()
+    try:
+        d1 = dpctl.SyclDevice()
+        d2 = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default-selected device")
     assert d1 != Ellipsis
     assert d1 == d2
 
@@ -178,7 +186,7 @@ def test_supported_aspect(supported_aspect):
     try:
         d = dpctl.SyclDevice()
         has_it = getattr(d, "has_aspect_" + supported_aspect)
-    except dpctl.SyclDevieCreationError:
+    except dpctl.SyclDeviceCreationError:
         has_it = False
     try:
         d_wa = dpctl.select_device_with_aspects(supported_aspect)
@@ -212,7 +220,10 @@ def test_cpython_api_SyclDevice_GetDeviceRef():
     import ctypes
     import sys
 
-    d = dpctl.SyclDevice()
+    try:
+        d = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default-constructed device")
     mod = sys.modules[d.__class__.__module__]
     # get capsule storing SyclDevice_GetDeviceRef function ptr
     d_ref_fn_cap = mod.__pyx_capi__["SyclDevice_GetDeviceRef"]
@@ -235,7 +246,10 @@ def test_cpython_api_SyclDevice_Make():
     import ctypes
     import sys
 
-    d = dpctl.SyclDevice()
+    try:
+        d = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Could not create default-constructed device")
     mod = sys.modules[d.__class__.__module__]
     # get capsule storign SyclContext_Make function ptr
     make_d_fn_cap = mod.__pyx_capi__["SyclDevice_Make"]
