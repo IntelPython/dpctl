@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.3dev1+11.g8388ce3ec documentation</title>
+  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.3dev1+14.g2b6d8b0e8 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev1+11.g8388ce3ec
+                0.14.3dev1+14.g2b6d8b0e8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -105,6 +105,7 @@
 <span class="c1">#  limitations under the License.</span>
 
 <span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -326,20 +327,28 @@
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">arr_in</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">hev_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">corner</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr_ndim</span><span class="o">**</span><span class="mi">2</span><span class="p">):</span>
-        <span class="n">slices</span> <span class="o">=</span> <span class="p">()</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">corner</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;0b&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="n">arr_ndim</span><span class="p">)</span>
+    <span class="n">split_dim</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="n">arr_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">edge_items</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr_ndim</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="n">split_dim</span><span class="p">))</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr_ndim</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">arr_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">edge_items</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">blk</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+                <span class="n">blk</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
+    <span class="n">hev_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">blk</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">()</span>
         <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">arr_ndim</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">arr_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">edge_items</span><span class="p">:</span>
-                <span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:],)</span> <span class="o">+</span> <span class="n">slices</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span> <span class="o">*</span> <span class="n">edge_items</span>
-                <span class="k">if</span> <span class="n">ind</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arr_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">edge_items</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">blk</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="o">-</span><span class="n">edge_items</span><span class="p">::],)</span> <span class="o">+</span> <span class="n">slices</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:</span><span class="n">edge_items</span><span class="p">:],)</span> <span class="o">+</span> <span class="n">slices</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">slices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:],)</span> <span class="o">+</span> <span class="n">slices</span>
         <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">arr_in</span><span class="p">[</span><span class="n">slices</span><span class="p">],</span>
             <span class="n">dst</span><span class="o">=</span><span class="n">arr_out</span><span class="p">[</span><span class="n">slices</span><span class="p">],</span>
