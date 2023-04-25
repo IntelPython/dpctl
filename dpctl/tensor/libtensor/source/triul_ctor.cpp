@@ -117,12 +117,6 @@ usm_ndarray_triul(sycl::queue exec_q,
             "Execution queue context is not the same as allocation contexts");
     }
 
-    bool is_src_c_contig = src.is_c_contiguous();
-    bool is_src_f_contig = src.is_f_contiguous();
-
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
-
     auto src_strides = src.get_strides_vector();
     auto dst_strides = dst.get_strides_vector();
 
@@ -133,17 +127,16 @@ usm_ndarray_triul(sycl::queue exec_q,
     py::ssize_t src_offset(0);
     py::ssize_t dst_offset(0);
 
-    constexpr py::ssize_t src_itemsize = 1; // item size in elements
-    constexpr py::ssize_t dst_itemsize = 1; // item size in elements
-
     int nd = src_nd - 2;
     const py::ssize_t *shape = src_shape;
-    const py::ssize_t *p_src_strides = src_strides.data();
-    const py::ssize_t *p_dst_strides = dst_strides.data();
 
-    simplify_iteration_space(nd, shape, p_src_strides, src_itemsize,
-                             is_src_c_contig, is_src_f_contig, p_dst_strides,
-                             dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+    const shT iter_src_strides(std::begin(src_strides),
+                               std::begin(src_strides) + nd);
+    const shT iter_dst_strides(std::begin(dst_strides),
+                               std::begin(dst_strides) + nd);
+
+    simplify_iteration_space(nd, shape, iter_src_strides, iter_dst_strides,
+                             // output
                              simplified_shape, simplified_src_strides,
                              simplified_dst_strides, src_offset, dst_offset);
 

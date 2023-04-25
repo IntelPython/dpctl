@@ -167,8 +167,8 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
                               copy_ev);
     }
 
-    const py::ssize_t *src_strides = src.get_strides_raw();
-    const py::ssize_t *dst_strides = dst.get_strides_raw();
+    auto const &src_strides = src.get_strides_vector();
+    auto const &dst_strides = dst.get_strides_vector();
 
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
@@ -180,25 +180,20 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     int nd = src_nd;
     const py::ssize_t *shape = src_shape;
 
-    constexpr py::ssize_t src_itemsize = 1; // in elements
-    constexpr py::ssize_t dst_itemsize = 1; // in elements
-
-    // all args except itemsizes and is_?_contig bools can be modified by
-    // reference
+    // nd, simplified_* and *_offset are modified by reference
     dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, src_strides, src_itemsize, is_src_c_contig, is_src_f_contig,
-        dst_strides, dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+        nd, shape, src_strides, dst_strides,
+        // output
         simplified_shape, simplified_src_strides, simplified_dst_strides,
         src_offset, dst_offset);
 
     if (nd < 2) {
         if (nd == 1) {
-            std::array<py::ssize_t, 1> shape_arr = {shape[0]};
-            // strides may be null
+            std::array<py::ssize_t, 1> shape_arr = {simplified_shape[0]};
             std::array<py::ssize_t, 1> src_strides_arr = {
-                (src_strides ? src_strides[0] : 1)};
+                simplified_src_strides[0]};
             std::array<py::ssize_t, 1> dst_strides_arr = {
-                (dst_strides ? dst_strides[0] : 1)};
+                simplified_dst_strides[0]};
 
             sycl::event copy_and_cast_1d_event;
             if ((src_strides_arr[0] == 1) && (dst_strides_arr[0] == 1) &&

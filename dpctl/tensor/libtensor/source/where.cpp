@@ -177,10 +177,10 @@ py_where(dpctl::tensor::usm_ndarray condition,
         return std::make_pair(ht_ev, where_ev);
     }
 
-    const py::ssize_t *cond_strides = condition.get_strides_raw();
-    const py::ssize_t *x1_strides = x1.get_strides_raw();
-    const py::ssize_t *x2_strides = x2.get_strides_raw();
-    const py::ssize_t *dst_strides = dst.get_strides_raw();
+    auto const &cond_strides = condition.get_strides_vector();
+    auto const &x1_strides = x1.get_strides_vector();
+    auto const &x2_strides = x2.get_strides_vector();
+    auto const &dst_strides = dst.get_strides_vector();
 
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
@@ -193,17 +193,12 @@ py_where(dpctl::tensor::usm_ndarray condition,
     py::ssize_t x2_offset(0);
     py::ssize_t dst_offset(0);
 
-    const py::ssize_t *_shape = x1_shape;
-
-    constexpr py::ssize_t _itemsize = 1;
-
     dpctl::tensor::py_internal::simplify_iteration_space_4(
-        nd, _shape, cond_strides, _itemsize, is_cond_c_contig, is_cond_f_contig,
-        x1_strides, _itemsize, is_x1_c_contig, is_x1_f_contig, x2_strides,
-        _itemsize, is_x2_c_contig, is_x2_f_contig, dst_strides, _itemsize,
-        is_dst_c_contig, is_dst_f_contig, simplified_shape,
-        simplified_cond_strides, simplified_x1_strides, simplified_x2_strides,
-        simplified_dst_strides, cond_offset, x1_offset, x2_offset, dst_offset);
+        nd, x1_shape, cond_strides, x1_strides, x2_strides, dst_strides,
+        // outputs
+        simplified_shape, simplified_cond_strides, simplified_x1_strides,
+        simplified_x2_strides, simplified_dst_strides, cond_offset, x1_offset,
+        x2_offset, dst_offset);
 
     auto fn = where_strided_dispatch_table[x1_typeid][cond_typeid];
 
