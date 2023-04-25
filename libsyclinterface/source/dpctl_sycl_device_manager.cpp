@@ -208,7 +208,14 @@ DPCTLDeviceMgr_GetDevices(int device_identifier)
     if (!device_identifier)
         return wrap<vecTy>(Devices);
 
-    const auto &root_devices = device::get_devices();
+    std::vector<device> root_devices;
+    try {
+        root_devices = device::get_devices();
+    } catch (std::exception const &e) {
+        delete Devices;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
     dpctl_default_selector mRanker;
 
     for (const auto &root_device : root_devices) {
