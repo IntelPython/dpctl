@@ -113,12 +113,18 @@ struct DeviceCacheBuilder
      * post-creation we do not need any further protection to ensure
      * thread-safety.
      */
-    static const DeviceCache &getDeviceCache()
+    static const DeviceCache &getDeviceCache() noexcept
     {
         static DeviceCache *cache = new DeviceCache([] {
-            DeviceCache cache_l;
+            DeviceCache cache_l{};
             dpctl_default_selector mRanker;
-            auto Platforms = platform::get_platforms();
+            std::vector<platform> Platforms{};
+            try {
+                Platforms = platform::get_platforms();
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+                return cache_l;
+            }
             for (const auto &P : Platforms) {
                 auto Devices = P.get_devices();
                 for (const auto &D : Devices) {
@@ -169,7 +175,15 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
                       __FILE__, __func__, __LINE__);
         return CRef;
     }
-    auto &cache = DeviceCacheBuilder::getDeviceCache();
+
+    using CacheT = typename DeviceCacheBuilder::DeviceCache;
+    CacheT const &cache = DeviceCacheBuilder::getDeviceCache();
+
+    if (cache.empty()) {
+        // an exception was caught and logged by getDeviceCache
+        return nullptr;
+    }
+
     auto entry = cache.find(*Device);
     if (entry != cache.end()) {
         context *ContextPtr = nullptr;
@@ -289,7 +303,13 @@ int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
 size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
 {
     size_t nDevices = 0;
-    auto &cache = DeviceCacheBuilder::getDeviceCache();
+    using CacheT = typename DeviceCacheBuilder::DeviceCache;
+    CacheT const &cache = DeviceCacheBuilder::getDeviceCache();
+
+    if (cache.empty()) {
+        // an exception was caught and logged by getDeviceCache
+        return 0;
+    }
 
     device_identifier = to_canonical_device_id(device_identifier);
     if (!device_identifier)
