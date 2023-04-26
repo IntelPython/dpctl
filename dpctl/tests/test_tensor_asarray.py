@@ -34,7 +34,10 @@ import dpctl.tensor as dpt
     ],
 )
 def test_asarray_change_usm_type(src_usm_type, dst_usm_type):
-    d = dpctl.SyclDevice()
+    try:
+        d = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X = dpt.empty(10, dtype="u1", usm_type=src_usm_type)
     Y = dpt.asarray(X, usm_type=dst_usm_type)
     assert X.shape == Y.shape
@@ -61,7 +64,10 @@ def test_asarray_change_usm_type(src_usm_type, dst_usm_type):
 
 def test_asarray_from_numpy():
     Xnp = np.arange(10)
-    Y = dpt.asarray(Xnp, usm_type="device")
+    try:
+        Y = dpt.asarray(Xnp, usm_type="device")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert type(Y) is dpt.usm_ndarray
     assert Y.shape == Xnp.shape
     assert Y.dtype == Xnp.dtype
@@ -81,7 +87,10 @@ def test_asarray_from_numpy():
 
 def test_asarray_from_sequence():
     X = [1, 2, 3]
-    Y = dpt.asarray(X, usm_type="device")
+    try:
+        Y = dpt.asarray(X, usm_type="device")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert type(Y) is dpt.usm_ndarray
 
     X = [(1, 1), (2.0, 2.0 + 1.0j), range(4, 6), np.array([3, 4], dtype="c16")]
@@ -114,7 +123,10 @@ def test_asarray_from_object_with_suai():
             self.obj = obj
             self.__sycl_usm_array_interface__ = iface
 
-    X = dpt.empty((2, 3, 4), dtype="f4")
+    try:
+        X = dpt.empty((2, 3, 4), dtype="f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Y = dpt.asarray(Dummy(X, X.__sycl_usm_array_interface__))
     assert Y.shape == X.shape
     assert X.usm_type == Y.usm_type
@@ -141,9 +153,14 @@ def test_asarray_input_validation():
     with pytest.raises(ValueError):
         # usm_type has wrong value
         dpt.asarray([1], usm_type="mistake")
+    try:
+        wrong_queue_type = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        # use any other type
+        wrong_queue_type = Ellipsis
     with pytest.raises(TypeError):
         # sycl_queue type is not right
-        dpt.asarray([1], sycl_queue=dpctl.SyclContext())
+        dpt.asarray([1], sycl_queue=wrong_queue_type)
     with pytest.raises(ValueError):
         # sequence is not rectangular
         dpt.asarray([[1], 2])
@@ -170,7 +187,10 @@ def test_asarray_input_validation2():
 def test_asarray_scalars():
     import ctypes
 
-    Y = dpt.asarray(5)
+    try:
+        Y = dpt.asarray(5)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert Y.dtype == dpt.dtype(int)
     Y = dpt.asarray(5.2)
     if Y.sycl_device.has_aspect_fp64:
