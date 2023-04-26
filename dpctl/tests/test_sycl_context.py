@@ -58,7 +58,10 @@ def test_address_of():
     """
     Test if the address_of method returns an int value.
     """
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     assert ctx.addressof_ref() is not None
     assert isinstance(ctx.addressof_ref(), int)
 
@@ -85,7 +88,10 @@ def test_context_not_equals2():
     Test if comparing a SyclContext object to some random Python object is
     correctly handled and returns False.
     """
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     assert ctx != "some context"
 
 
@@ -103,7 +109,10 @@ def test_name():
     """
     Test if a __name__ method is defined for SyclContext.
     """
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     assert ctx.__name__ == "SyclContext"
 
 
@@ -111,7 +120,10 @@ def test_repr():
     """
     Test if a __repr__ method is defined for SyclContext.
     """
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     assert ctx.__repr__ is not None
 
 
@@ -181,12 +193,19 @@ def test_hashing_of_context():
     as a dictionary key.
 
     """
-    ctx_dict = {dpctl.SyclContext(): "default_context"}
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
+    ctx_dict = {ctx: "default_context"}
     assert ctx_dict
 
 
 def test_context_repr():
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     assert type(ctx.__repr__()) is str
 
 
@@ -194,7 +213,10 @@ def test_cpython_api_SyclContext_GetContextRef():
     import ctypes
     import sys
 
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     mod = sys.modules[ctx.__class__.__module__]
     # get capsule storign SyclContext_GetContextRef function ptr
     ctx_ref_fn_cap = mod.__pyx_capi__["SyclContext_GetContextRef"]
@@ -217,7 +239,10 @@ def test_cpython_api_SyclContext_Make():
     import ctypes
     import sys
 
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Failed to create context using default constructor")
     mod = sys.modules[ctx.__class__.__module__]
     # get capsule storign SyclContext_Make function ptr
     make_ctx_fn_cap = mod.__pyx_capi__["SyclContext_Make"]
@@ -243,6 +268,8 @@ def test_invalid_capsule():
 
 def test_multi_device_different_platforms():
     devs = dpctl.get_devices()  # all devices
-    if len(devs) > 1:
+    if len(devs) > 1 and len(set(d.sycl_platform for d in devs)) > 1:
         with pytest.raises(dpctl.SyclContextCreationError):
             dpctl.SyclContext(devs)
+    else:
+        pytest.skip("Insufficient amount of available devices for this test")
