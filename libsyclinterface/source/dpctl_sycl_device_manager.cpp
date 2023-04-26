@@ -113,7 +113,7 @@ struct DeviceCacheBuilder
      * post-creation we do not need any further protection to ensure
      * thread-safety.
      */
-    static const DeviceCache &getDeviceCache() noexcept
+    static const DeviceCache &getDeviceCache()
     {
         static DeviceCache *cache = new DeviceCache([] {
             DeviceCache cache_l{};
