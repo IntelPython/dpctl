@@ -14,9 +14,9 @@ jobs:
       DRIVER_PATH: 2023-WW13
       OCLCPUEXP_FN: oclcpuexp-2023.15.3.0.20_rel.tar.gz
       FPGAEMU_FN: fpgaemu-2023.15.3.0.20_rel.tar.gz
-      TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2021.8.0/
-      TBB_INSTALL_DIR: oneapi-tbb-2021.8.0
-      TBB_FN: oneapi-tbb-2021.8.0-lin.tgz
+      TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2021.9.0/
+      TBB_INSTALL_DIR: oneapi-tbb-2021.9.0
+      TBB_FN: oneapi-tbb-2021.9.0-lin.tgz
 
     steps:
       - name: Cancel Previous Runs
