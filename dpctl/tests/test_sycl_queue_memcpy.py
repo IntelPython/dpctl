@@ -18,7 +18,6 @@
 """
 
 import pytest
-from helper import has_sycl_platforms
 
 import dpctl
 import dpctl.memory
@@ -30,12 +29,11 @@ def _create_memory(q):
     return mobj
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_memcpy_copy_usm_to_usm():
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
     mobj1 = _create_memory(q)
     mobj2 = _create_memory(q)
 
@@ -49,12 +47,11 @@ def test_memcpy_copy_usm_to_usm():
     assert mv2[:3], b"123"
 
 
-# @pytest.mark.skipif(
-#    not has_sycl_platforms(),
-#    reason="No SYCL devices except the default host device."
-# )
 def test_memcpy_type_error():
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
     mobj = _create_memory(q)
 
     with pytest.raises(TypeError) as cm:
