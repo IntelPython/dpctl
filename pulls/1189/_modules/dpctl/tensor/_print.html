@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.3dev1+28.g7db6213da documentation</title>
+  <title>dpctl.tensor._print &mdash; Data-parallel Control (dpctl) 0.14.3dev1+32.g5a4173e63 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev1+28.g7db6213da
+                0.14.3dev1+32.g5a4173e63
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -105,11 +105,14 @@
 <span class="c1">#  limitations under the License.</span>
 
 <span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Print functions for :class:`dpctl.tensor.usm_ndarray`.&quot;</span>
 
@@ -310,25 +313,44 @@
         <span class="n">dpt</span><span class="o">.</span><span class="n">set_print_options</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_nd_corners</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">,</span> <span class="n">slices</span><span class="o">=</span><span class="p">()):</span>
-    <span class="n">axes_reduced</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">axes_reduced</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">_nd_corners</span><span class="p">(</span><span class="n">arr_in</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">):</span>
+    <span class="n">_shape</span> <span class="o">=</span> <span class="n">arr_in</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">max_shape</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">edge_items</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">_shape</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_shape</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">arr_in</span><span class="p">)</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">max_shape</span> <span class="k">if</span> <span class="n">_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_shape</span> <span class="k">else</span> <span class="n">_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr_in</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axes_reduced</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">edge_items</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">_nd_corners</span><span class="p">(</span>
-                    <span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">,</span> <span class="n">slices</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">,</span> <span class="kc">None</span><span class="p">),)</span>
-                <span class="p">),</span>
-                <span class="n">_nd_corners</span><span class="p">(</span>
-                    <span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">,</span> <span class="n">slices</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="o">-</span><span class="n">edge_items</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),)</span>
-                <span class="p">),</span>
-            <span class="p">),</span>
-            <span class="n">axis</span><span class="o">=</span><span class="n">axes_reduced</span><span class="p">,</span>
+    <span class="n">arr_out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_shape</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">arr_in</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">arr_in</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">arr_in</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_shape</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_shape</span><span class="p">:</span>
+            <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:</span><span class="n">edge_items</span><span class="p">],</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="o">-</span><span class="n">edge_items</span><span class="p">:],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:],))</span>
+
+    <span class="n">hev_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">slc</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">blocks</span><span class="p">):</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr_in</span><span class="p">[</span><span class="n">slc</span><span class="p">],</span> <span class="n">dst</span><span class="o">=</span><span class="n">arr_out</span><span class="p">[</span><span class="n">slc</span><span class="p">],</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">arr_in</span><span class="o">.</span><span class="n">sycl_queue</span>
         <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_nd_corners</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">,</span> <span class="n">slices</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),))</span>
+        <span class="n">hev_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hev</span><span class="p">)</span>
+
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">hev_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">arr_out</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="usm_ndarray_str"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_str">[docs]</a><span class="k">def</span> <span class="nf">usm_ndarray_str</span><span class="p">(</span>
@@ -435,8 +457,7 @@
     <span class="n">edge_items</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;edgeitems&quot;</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
-        <span class="c1"># need edge_items + 1 elements for np.array2string to abbreviate</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">_nd_corners</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">_nd_corners</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_items</span><span class="p">)</span>
         <span class="n">options</span><span class="p">[</span><span class="s2">&quot;threshold&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
