@@ -107,57 +107,49 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Report compiler version
+      - name: Create set_allvars.sh
         shell: bash -l {0}
         run: |
+          cat << 'EOF' > set_allvars.sh
+          #!/usr/bin/bash
           export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
           source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_VENDORS=
           export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          EOF
+          chmod +x set_allvars.sh
+          cat set_allvars.sh
+
+      - name: Report compiler version
+        shell: bash -l {0}
+        run: |
+          source set_allvars.sh
           clang++ --version
 
       - name: Run sycl-ls
         shell: bash -l {0}
         run: |
-          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
-          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
-          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          source set_allvars.sh
           sycl-ls
 
       - name: build dpctl
         shell: bash -l {0}
         run: |
-          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
-          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
-          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          source set_allvars.sh
           CC=clang CXX=clang++ python setup.py develop -G Ninja
 
       - name: Run lsplatforms
         shell: bash -l {0}
         run: |
-          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
-          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
-          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          source set_allvars.sh
           python -m dpctl -f || exit 1
 
       - name: Run dpctl/tests
         shell: bash -l {0}
         run: |
-          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
-          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
-          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
-          python -m pytest -v dpctl/tests
+          source set_allvars.sh
+          # skip test due to https://github.com/intel/llvm/issues/9264
+          python -m pytest -v dpctl/tests -k "not test_event_backend"
