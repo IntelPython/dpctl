@@ -22,12 +22,14 @@ source = [
 omit = [
     "dpctl/tests/*",
     "dpctl/_version.py",
+    "*/_cython_api*/stringsource",
 ]
 
 [tool.coverage.report]
 omit = [
     "dpctl/tests/*",
     "dpctl/_version.py",
+    "*/_cython_api*/stringsource",
 ]
 
 [tool.pytest.ini.options]
