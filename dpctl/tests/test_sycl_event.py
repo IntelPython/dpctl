@@ -121,7 +121,9 @@ def test_execution_status_nondefault_event():
     assert type(wl) is list
 
 
-def test_backend():
+def test_event_backend():
+    if dpctl.get_num_devices() == 0:
+        pytest.skip("No backends are available")
     try:
         dpctl.SyclEvent().backend
     except ValueError:

@@ -47,7 +47,7 @@ def test_current_device(check):
     try:
         q = dpctl.get_current_queue()
     except Exception:
-        pytest.fail("Encountered an exception inside get_current_queue().")
+        pytest.skip("Encountered an exception inside get_current_queue().")
     device = q.get_sycl_device()
     check(device)
 
@@ -125,7 +125,7 @@ def test_has_enable_profiling():
     try:
         q = dpctl.SyclQueue(property="enable_profiling")
     except dpctl.SyclQueueCreationError:
-        pytest.skip()
+        pytest.skip("Could not create queue with profiling property enabled")
     assert q.has_enable_profiling
 
 
@@ -135,7 +135,11 @@ def test_hashing_of_queue():
     a dictionary key.
 
     """
-    queue_dict = {dpctl.SyclQueue(): "default_queue"}
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default-constructed queue could not be created")
+    queue_dict = {q: "default_queue"}
     assert queue_dict
 
 
@@ -144,7 +148,7 @@ def test_channeling_device_properties(capsys):
         q = dpctl.SyclQueue()
         dev = q.sycl_device
     except dpctl.SyclQueueCreationError:
-        pytest.fail("Failed to create device from default selector")
+        pytest.skip("Failed to create device from default selector")
 
     q.print_device_info()  # should execute without raising
     q_captured = capsys.readouterr()
@@ -177,20 +181,39 @@ def test_queue_submit_barrier(valid_filter):
 
 
 def test_queue__repr__():
-    q1 = dpctl.SyclQueue(property=0)
+    try:
+        q1 = dpctl.SyclQueue(property=0)
+    except dpctl.SyclQueueCreationError:
+        pytest.skip()
     r1 = q1.__repr__()
-    q2 = dpctl.SyclQueue(property="in_order")
-    r2 = q2.__repr__()
-    q3 = dpctl.SyclQueue(property="enable_profiling")
-    r3 = q3.__repr__()
-    q4 = dpctl.SyclQueue(property="default")
-    r4 = q4.__repr__()
-    q5 = dpctl.SyclQueue(property=["in_order", "enable_profiling", 0])
-    r5 = q5.__repr__()
     assert type(r1) is str
+
+    try:
+        q2 = dpctl.SyclQueue(property="in_order")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip()
+    r2 = q2.__repr__()
     assert type(r2) is str
+
+    try:
+        q3 = dpctl.SyclQueue(property="enable_profiling")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip()
+    r3 = q3.__repr__()
     assert type(r3) is str
+
+    try:
+        q4 = dpctl.SyclQueue(property="default")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip()
+    r4 = q4.__repr__()
     assert type(r4) is str
+
+    try:
+        q5 = dpctl.SyclQueue(property=["in_order", "enable_profiling", 0])
+    except dpctl.SyclQueueCreationError:
+        pytest.skip()
+    r5 = q5.__repr__()
     assert type(r5) is str
 
 
@@ -202,7 +225,10 @@ def test_queue_invalid_property():
 
 
 def test_queue_capsule():
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Can not defaul-construct SyclQueue")
     cap = q._get_capsule()
     cap2 = q._get_capsule()
     q2 = dpctl.SyclQueue(cap)
@@ -227,7 +253,10 @@ def test_queue_ctor():
 
 
 def test_cpython_api_SyclQueue_GetQueueRef():
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Can not defaul-construct SyclQueue")
     mod = sys.modules[q.__class__.__module__]
     # get capsule storign SyclQueue_GetQueueRef function ptr
     q_ref_fn_cap = mod.__pyx_capi__["SyclQueue_GetQueueRef"]
@@ -247,7 +276,10 @@ def test_cpython_api_SyclQueue_GetQueueRef():
 
 
 def test_cpython_api_SyclQueue_Make():
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Can not defaul-construct SyclQueue")
     mod = sys.modules[q.__class__.__module__]
     # get capsule storing SyclQueue_Make function ptr
     make_SyclQueue_fn_cap = mod.__pyx_capi__["SyclQueue_Make"]
@@ -271,7 +303,10 @@ def test_constructor_many_arg():
         dpctl.SyclQueue(None, None, None, None)
     with pytest.raises(TypeError):
         dpctl.SyclQueue(None, None)
-    ctx = dpctl.SyclContext()
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip()
     with pytest.raises(TypeError):
         dpctl.SyclQueue(ctx, None)
     with pytest.raises(TypeError):
@@ -370,6 +405,12 @@ def dpctl_cython_extension(tmp_path_factory):
 
 
 def test_cython_api(dpctl_cython_extension):
-    q = dpctl_cython_extension.call_create_from_context_and_devices()
-    d = dpctl.SyclDevice()
+    try:
+        q = dpctl_cython_extension.call_create_from_context_and_devices()
+    except (dpctl.SyclDeviceCreationError, dpctl.SyclQueueCreationError):
+        pytest.skip()
+    try:
+        d = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Default-construction of SyclDevice failed")
     assert q.sycl_device == d

@@ -161,7 +161,10 @@ def test_properties(dt):
     """
     Test that properties execute
     """
-    X = dpt.usm_ndarray((3, 4, 5), dtype=dt)
+    try:
+        X = dpt.usm_ndarray((3, 4, 5), dtype=dt)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert isinstance(X.sycl_queue, dpctl.SyclQueue)
     assert isinstance(X.sycl_device, dpctl.SyclDevice)
     assert isinstance(X.sycl_context, dpctl.SyclContext)
@@ -193,7 +196,10 @@ def test_properties(dt):
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 def test_copy_scalar_with_func(func, shape, dtype):
-    X = dpt.usm_ndarray(shape, dtype=dtype)
+    try:
+        X = dpt.usm_ndarray(shape, dtype=dtype)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
     X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
     assert func(X) == func(Y)
@@ -205,7 +211,10 @@ def test_copy_scalar_with_func(func, shape, dtype):
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 def test_copy_scalar_with_method(method, shape, dtype):
-    X = dpt.usm_ndarray(shape, dtype=dtype)
+    try:
+        X = dpt.usm_ndarray(shape, dtype=dtype)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
     X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
     assert getattr(X, method)() == getattr(Y, method)()
@@ -214,7 +223,10 @@ def test_copy_scalar_with_method(method, shape, dtype):
 @pytest.mark.parametrize("func", [bool, float, int, complex])
 @pytest.mark.parametrize("shape", [(2,), (1, 2), (3, 4, 5), (0,)])
 def test_copy_scalar_invalid_shape(func, shape):
-    X = dpt.usm_ndarray(shape, dtype="i8")
+    try:
+        X = dpt.usm_ndarray(shape, dtype="i8")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(ValueError):
         func(X)
 
@@ -222,7 +234,10 @@ def test_copy_scalar_invalid_shape(func, shape):
 def test_index_noninteger():
     import operator
 
-    X = dpt.usm_ndarray(1, "f4")
+    try:
+        X = dpt.usm_ndarray(1, "f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(IndexError):
         operator.index(X)
 
@@ -251,7 +266,10 @@ def test_index_noninteger():
     ],
 )
 def test_basic_slice(ind):
-    X = dpt.usm_ndarray((2 * 3, 2 * 4, 3 * 5, 2 * 7), dtype="u1")
+    try:
+        X = dpt.usm_ndarray((2 * 3, 2 * 4, 3 * 5, 2 * 7), dtype="u1")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Xnp = np.empty(X.shape, dtype=X.dtype)
     S = X[ind]
     Snp = Xnp[ind]
@@ -262,7 +280,10 @@ def test_basic_slice(ind):
 
 def test_empty_slice():
     # see gh801
-    X = dpt.empty((1, 0, 1), dtype="u1")
+    try:
+        X = dpt.empty((1, 0, 1), dtype="u1")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Y = X[:, ::-1, :]
     assert Y.shape == X.shape
     Z = X[:, ::2, :]
@@ -279,7 +300,10 @@ def test_empty_slice():
 
 def test_slice_constructor_1d():
     Xh = np.arange(37, dtype="i4")
-    Xusm = dpt.arange(Xh.size, dtype="i4")
+    try:
+        Xusm = dpt.arange(Xh.size, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -297,7 +321,10 @@ def test_slice_constructor_1d():
 
 def test_slice_constructor_3d():
     Xh = np.ones((37, 24, 35), dtype="i4")
-    Xusm = dpt.ones(Xh.shape, dtype=Xh.dtype)
+    try:
+        Xusm = dpt.ones(Xh.shape, dtype=Xh.dtype)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     for ind in [
         slice(1, None, 2),
         slice(0, None, 3),
@@ -317,7 +344,10 @@ def test_slice_constructor_3d():
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
 def test_slice_suai(usm_type):
     Xh = np.arange(0, 10, dtype="u1")
-    Xusm = dpt.arange(0, 10, dtype="u1", usm_type=usm_type)
+    try:
+        Xusm = dpt.arange(0, 10, dtype="u1", usm_type=usm_type)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     for ind in [slice(2, 3, None), slice(5, 7, None), slice(3, 9, None)]:
         assert np.array_equal(
             dpm.as_usm_memory(Xusm[ind]).copy_to_host(), Xh[ind]
@@ -325,7 +355,10 @@ def test_slice_suai(usm_type):
 
 
 def test_slicing_basic():
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
+    try:
+        Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Xusm[None]
     Xusm[...]
     Xusm[8]
@@ -360,7 +393,10 @@ def test_ctor_invalid_order():
 
 
 def test_ctor_buffer_kwarg():
-    dpt.usm_ndarray(10, dtype="i8", buffer=b"device")
+    try:
+        dpt.usm_ndarray(10, dtype="i8", buffer=b"device")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(ValueError):
         dpt.usm_ndarray(10, buffer="invalid_param")
     Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
@@ -373,7 +409,10 @@ def test_ctor_buffer_kwarg():
 
 
 def test_usm_ndarray_props():
-    Xusm = dpt.usm_ndarray((10, 5), dtype="c8", order="F")
+    try:
+        Xusm = dpt.usm_ndarray((10, 5), dtype="c8", order="F")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Xusm.ndim
     repr(Xusm)
     Xusm.flags
@@ -390,7 +429,10 @@ def test_usm_ndarray_props():
 
 
 def test_datapi_device():
-    X = dpt.usm_ndarray(1, dtype="i4")
+    try:
+        X = dpt.usm_ndarray(1, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     dev_t = type(X.device)
     with pytest.raises(TypeError):
         dev_t()
@@ -433,7 +475,10 @@ def _pyx_capi_fnptr_to_callable(
 
 
 def test_pyx_capi_get_data():
-    X = dpt.usm_ndarray(17, dtype="i8")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="i8")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_data_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetData",
@@ -447,7 +492,10 @@ def test_pyx_capi_get_data():
 
 
 def test_pyx_capi_get_shape():
-    X = dpt.usm_ndarray(17, dtype="u4")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="u4")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_shape_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetShape",
@@ -461,7 +509,10 @@ def test_pyx_capi_get_shape():
 
 
 def test_pyx_capi_get_strides():
-    X = dpt.usm_ndarray(17, dtype="f4")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="f4")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_strides_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetStrides",
@@ -478,7 +529,10 @@ def test_pyx_capi_get_strides():
 
 
 def test_pyx_capi_get_ndim():
-    X = dpt.usm_ndarray(17, dtype="?")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="?")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_ndim_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetNDim",
@@ -490,7 +544,10 @@ def test_pyx_capi_get_ndim():
 
 
 def test_pyx_capi_get_typenum():
-    X = dpt.usm_ndarray(17, dtype="c8")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="c8")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_typenum_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetTypenum",
@@ -504,7 +561,10 @@ def test_pyx_capi_get_typenum():
 
 
 def test_pyx_capi_get_elemsize():
-    X = dpt.usm_ndarray(17, dtype="u8")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="u8")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_elemsize_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetElementSize",
@@ -518,7 +578,10 @@ def test_pyx_capi_get_elemsize():
 
 
 def test_pyx_capi_get_flags():
-    X = dpt.usm_ndarray(17, dtype="i8")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="i8")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_flags_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetFlags",
@@ -531,7 +594,10 @@ def test_pyx_capi_get_flags():
 
 
 def test_pyx_capi_get_offset():
-    X = dpt.usm_ndarray(17, dtype="u2")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="u2")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_offset_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetOffset",
@@ -545,7 +611,10 @@ def test_pyx_capi_get_offset():
 
 
 def test_pyx_capi_get_queue_ref():
-    X = dpt.usm_ndarray(17, dtype="i2")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="i2")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     get_queue_ref_fn = _pyx_capi_fnptr_to_callable(
         X,
         "UsmNDArray_GetQueueRef",
@@ -789,7 +858,10 @@ def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
 
 
 def test_pyx_capi_check_constants():
-    X = dpt.usm_ndarray(17, dtype="i1")[1::2]
+    try:
+        X = dpt.usm_ndarray(17, dtype="i1")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     cc_flag = _pyx_capi_int(X, "USM_ARRAY_C_CONTIGUOUS")
     assert cc_flag > 0 and 0 == (cc_flag & (cc_flag - 1))
     fc_flag = _pyx_capi_int(X, "USM_ARRAY_F_CONTIGUOUS")
@@ -996,7 +1068,10 @@ def test_shape_setter():
         4,
         5,
     )
-    X = dpt.usm_ndarray(sh_s, dtype="i8")
+    try:
+        X = dpt.usm_ndarray(sh_s, dtype="i8")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X.shape = sh_f
     assert X.shape == sh_f
     assert relaxed_strides_equal(X.strides, cc_strides(sh_f), sh_f)
@@ -1054,7 +1129,10 @@ def test_shape_setter():
 
 
 def test_len():
-    X = dpt.usm_ndarray(1, "i4")
+    try:
+        X = dpt.usm_ndarray(1, "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert len(X) == 1
     X = dpt.usm_ndarray((2, 1), "i4")
     assert len(X) == 2
@@ -1064,20 +1142,29 @@ def test_len():
 
 
 def test_array_namespace():
-    X = dpt.usm_ndarray(1, "i4")
+    try:
+        X = dpt.usm_ndarray(1, "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X.__array_namespace__()
     X._set_namespace(dpt)
     assert X.__array_namespace__() is dpt
 
 
 def test_dlpack():
-    X = dpt.usm_ndarray(1, "i4")
+    try:
+        X = dpt.usm_ndarray(1, "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X.__dlpack_device__()
     X.__dlpack__(stream=None)
 
 
 def test_to_device():
-    X = dpt.usm_ndarray(1, "f4")
+    try:
+        X = dpt.usm_ndarray(1, "f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     for dev in dpctl.get_devices():
         if dev.default_selector_score > 0:
             Y = X.to_device(dev)
@@ -1095,7 +1182,10 @@ def test_to_device_migration():
 
 
 def test_astype():
-    X = dpt.empty((5, 5), dtype="i4")
+    try:
+        X = dpt.empty((5, 5), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X[:] = np.full((5, 5), 7, dtype="i4")
     Y = dpt.astype(X, "c8", order="C")
     assert np.allclose(dpt.to_numpy(Y), np.full((5, 5), 7, dtype="c8"))
@@ -1109,13 +1199,19 @@ def test_astype():
 
 
 def test_astype_invalid_order():
-    X = dpt.usm_ndarray(5, "i4")
+    try:
+        X = dpt.usm_ndarray(5, "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(ValueError):
         dpt.astype(X, "i4", order="WRONG")
 
 
 def test_copy():
-    X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
+    try:
+        X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X[:] = 42
     Yc = dpt.copy(X, order="C")
     Yf = dpt.copy(X, order="F")
@@ -1137,7 +1233,10 @@ def test_copy():
 
 
 def test_ctor_invalid():
-    m = dpm.MemoryUSMShared(12)
+    try:
+        m = dpm.MemoryUSMShared(12)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(ValueError):
         dpt.usm_ndarray((4,), dtype="i4", buffer=m)
     m = dpm.MemoryUSMShared(64)
@@ -1146,7 +1245,10 @@ def test_ctor_invalid():
 
 
 def test_reshape():
-    X = dpt.usm_ndarray((5, 5), "i4")
+    try:
+        X = dpt.usm_ndarray((5, 5), "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     # can be done as views
     Y = dpt.reshape(X, (25,))
     assert Y.shape == (25,)
@@ -1192,7 +1294,10 @@ def test_reshape():
 
 
 def test_reshape_copy_kwrd():
-    X = dpt.usm_ndarray((2, 3), "i4")
+    try:
+        X = dpt.usm_ndarray((2, 3), "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     new_shape = (6,)
     Z = dpt.reshape(X, new_shape, copy=True)
     assert Z.shape == new_shape
@@ -1208,7 +1313,10 @@ def test_reshape_copy_kwrd():
 
 def test_transpose():
     n, m = 2, 3
-    X = dpt.usm_ndarray((n, m), "f4")
+    try:
+        X = dpt.usm_ndarray((n, m), "f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Xnp = np.arange(n * m, dtype="f4").reshape((n, m))
     X[:] = Xnp
     assert np.array_equal(dpt.to_numpy(X.T), Xnp.T)
@@ -1217,7 +1325,10 @@ def test_transpose():
 
 def test_real_imag_views():
     n, m = 2, 3
-    X = dpt.usm_ndarray((n, m), "c8")
+    try:
+        X = dpt.usm_ndarray((n, m), "c8")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     Xnp_r = np.arange(n * m, dtype="f4").reshape((n, m))
     Xnp_i = np.arange(n * m, 2 * n * m, dtype="f4").reshape((n, m))
     Xnp = Xnp_r + 1j * Xnp_i
@@ -1262,10 +1373,22 @@ def test_full(dtype):
 
 
 def test_full_dtype_inference():
-    assert np.issubdtype(dpt.full(10, 4).dtype, np.integer)
-    assert dpt.full(10, True).dtype is dpt.dtype(np.bool_)
+    try:
+        X = dpt.full(10, 4)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert np.issubdtype(X.dtype, np.integer)
+    try:
+        X = dpt.full(10, True)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert X.dtype is dpt.dtype(np.bool_)
     assert np.issubdtype(dpt.full(10, 12.3).dtype, np.floating)
-    cdt = dpt.full(10, 0.3 - 2j).dtype
+    try:
+        X = dpt.full(10, 0.3 - 2j)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    cdt = X.dtype
     assert np.issubdtype(cdt, np.complexfloating)
 
     assert np.issubdtype(dpt.full(10, 12.3, dtype=int).dtype, np.integer)
@@ -1488,7 +1611,10 @@ def test_empty_like(dt, usm_kind):
 
 def test_empty_unexpected_data_type():
     with pytest.raises(TypeError):
-        dpt.empty(1, dtype=np.object_)
+        try:
+            dpt.empty(1, dtype=np.object_)
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
 
 
 @pytest.mark.parametrize(
@@ -1815,7 +1941,10 @@ def test_common_arg_validation():
         dpt.full(10, 1, order=order)
     with pytest.raises(ValueError):
         dpt.eye(10, order=order)
-    X = dpt.empty(10)
+    try:
+        X = dpt.empty(10)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(ValueError):
         dpt.empty_like(X, order=order)
     with pytest.raises(ValueError):
@@ -1843,7 +1972,10 @@ def test_common_arg_validation():
 
 
 def test_flags():
-    x = dpt.empty(tuple(), "i4")
+    try:
+        x = dpt.empty(tuple(), "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     f = x.flags
     f.__repr__()
     assert f.c_contiguous == f["C"]
@@ -1859,7 +1991,10 @@ def test_flags():
 
 def test_asarray_uint64():
     Xnp = np.ndarray(1, dtype=np.uint64)
-    X = dpt.asarray(Xnp)
+    try:
+        X = dpt.asarray(Xnp)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert X.dtype == Xnp.dtype
 
 

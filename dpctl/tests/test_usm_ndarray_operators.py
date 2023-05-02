@@ -16,6 +16,7 @@
 
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 
 
@@ -48,7 +49,10 @@ class Dummy:
 
 @pytest.mark.parametrize("namespace", [None, Dummy()])
 def test_fp_ops(namespace):
-    X = dpt.ones(1)
+    try:
+        X = dpt.ones(1)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X._set_namespace(namespace)
     assert X.__array_namespace__() is namespace
     X[0] = -2.5
@@ -79,7 +83,10 @@ def test_fp_ops(namespace):
 
 @pytest.mark.parametrize("namespace", [None, Dummy()])
 def test_int_ops(namespace):
-    X = dpt.usm_ndarray(1, "i4")
+    try:
+        X = dpt.usm_ndarray(1, "i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     X._set_namespace(namespace)
     assert X.__array_namespace__() is namespace
     X.__lshift__(2)
@@ -108,7 +115,10 @@ def test_int_ops(namespace):
 
 @pytest.mark.parametrize("namespace", [None, Dummy()])
 def test_mat_ops(namespace):
-    M = dpt.eye(3, 3)
+    try:
+        M = dpt.eye(3, 3)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     M._set_namespace(namespace)
     assert M.__array_namespace__() is namespace
     M.__matmul__(M)

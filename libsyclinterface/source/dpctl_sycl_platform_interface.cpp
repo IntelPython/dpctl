@@ -194,7 +194,13 @@ __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
     using vecTy = std::vector<DPCTLSyclPlatformRef>;
     vecTy *Platforms = nullptr;
 
-    auto platforms = platform::get_platforms();
+    std::vector<platform> platforms;
+    try {
+        platforms = platform::get_platforms();
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
 
     try {
         Platforms = new vecTy();

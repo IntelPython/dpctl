@@ -20,6 +20,7 @@ import pytest
 from helper import get_queue_or_skip
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
+import dpctl
 import dpctl.tensor as dpt
 
 
@@ -139,7 +140,10 @@ def test_expand_dims_tuple(axes):
 
 
 def test_expand_dims_incorrect_tuple():
-    X = dpt.empty((3, 3, 3), dtype="i4")
+    try:
+        X = dpt.empty((3, 3, 3), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     with pytest.raises(np.AxisError):
         dpt.expand_dims(X, (0, -6))
     with pytest.raises(np.AxisError):
@@ -1014,7 +1018,11 @@ def test_moveaxis_move_multiples(shape, source, destination, expected):
 
 
 def test_moveaxis_errors():
-    x = dpt.reshape(dpt.arange(6), (1, 2, 3))
+    try:
+        x_flat = dpt.arange(6)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    x = dpt.reshape(x_flat, (1, 2, 3))
     assert_raises_regex(
         np.AxisError, "source.*out of bounds", dpt.moveaxis, x, 3, 0
     )
@@ -1044,7 +1052,11 @@ def test_moveaxis_errors():
 
 
 def test_unstack_axis0():
-    y = dpt.reshape(dpt.arange(6), (2, 3))
+    try:
+        x_flat = dpt.arange(6)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    y = dpt.reshape(x_flat, (2, 3))
     res = dpt.unstack(y)
 
     assert_array_equal(dpt.asnumpy(y[0, ...]), dpt.asnumpy(res[0]))
@@ -1052,7 +1064,11 @@ def test_unstack_axis0():
 
 
 def test_unstack_axis1():
-    y = dpt.reshape(dpt.arange(6), (2, 3))
+    try:
+        x_flat = dpt.arange(6)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    y = dpt.reshape(x_flat, (2, 3))
     res = dpt.unstack(y, 1)
 
     assert_array_equal(dpt.asnumpy(y[:, 0, ...]), dpt.asnumpy(res[0]))
@@ -1061,7 +1077,11 @@ def test_unstack_axis1():
 
 
 def test_unstack_axis2():
-    y = dpt.reshape(dpt.arange(60), (4, 5, 3))
+    try:
+        x_flat = dpt.arange(60)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    y = dpt.reshape(x_flat, (4, 5, 3))
     res = dpt.unstack(y, 2)
 
     assert_array_equal(dpt.asnumpy(y[:, :, 0, ...]), dpt.asnumpy(res[0]))
