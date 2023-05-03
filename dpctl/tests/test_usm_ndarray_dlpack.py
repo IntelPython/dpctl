@@ -85,7 +85,10 @@ def test_dlpack_exporter_empty(typestr, usm_type):
     caps_fn = ctypes.pythonapi.PyCapsule_IsValid
     caps_fn.restype = bool
     caps_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
-    sycl_dev = dpctl.select_default_device()
+    try:
+        sycl_dev = dpctl.select_default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     skip_if_dtype_not_supported(typestr, sycl_dev)
     X = dpt.empty((0,), dtype=typestr, usm_type=usm_type, device=sycl_dev)
     caps = X.__dlpack__()

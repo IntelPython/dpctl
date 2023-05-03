@@ -763,10 +763,6 @@ sycl::event masked_place_some_slices_strided_impl(
     return comp_ev;
 }
 
-static masked_place_all_slices_strided_impl_fn_ptr_t
-    masked_place_all_slices_strided_impl_dispatch_vector
-        [dpctl::tensor::detail::num_types];
-
 template <typename fnT, typename T> struct MaskPlaceAllSlicesStridedFactory
 {
     fnT get()
@@ -775,10 +771,6 @@ template <typename fnT, typename T> struct MaskPlaceAllSlicesStridedFactory
         return fn;
     }
 };
-
-static masked_place_some_slices_strided_impl_fn_ptr_t
-    masked_place_some_slices_strided_impl_dispatch_vector
-        [dpctl::tensor::detail::num_types];
 
 template <typename fnT, typename T> struct MaskPlaceSomeSlicesStridedFactory
 {

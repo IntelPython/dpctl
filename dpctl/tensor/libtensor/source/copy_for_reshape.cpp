@@ -39,14 +39,14 @@ namespace tensor
 namespace py_internal
 {
 
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::copy_and_cast::copy_for_reshape_fn_ptr_t;
 using dpctl::utils::keep_args_alive;
 
 // define static vector
 static copy_for_reshape_fn_ptr_t
-    copy_for_reshape_generic_dispatch_vector[_ns::num_types];
+    copy_for_reshape_generic_dispatch_vector[td_ns::num_types];
 
 /*
  * Copies src into dst (same data type) of different shapes by using flat
@@ -121,7 +121,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     int src_nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int type_id = array_types.typenum_to_lookup_id(src_typenum);
 
     auto fn = copy_for_reshape_generic_dispatch_vector[type_id];
@@ -172,7 +172,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
 
 void init_copy_for_reshape_dispatch_vectors(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::copy_and_cast::CopyForReshapeGenericFactory;
 
     DispatchVectorBuilder<copy_for_reshape_fn_ptr_t,

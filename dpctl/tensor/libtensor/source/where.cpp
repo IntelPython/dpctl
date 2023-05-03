@@ -46,15 +46,15 @@ namespace tensor
 namespace py_internal
 {
 
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::search::where_contig_impl_fn_ptr_t;
 using dpctl::tensor::kernels::search::where_strided_impl_fn_ptr_t;
 
-static where_contig_impl_fn_ptr_t where_contig_dispatch_table[_ns::num_types]
-                                                             [_ns::num_types];
-static where_strided_impl_fn_ptr_t where_strided_dispatch_table[_ns::num_types]
-                                                               [_ns::num_types];
+static where_contig_impl_fn_ptr_t where_contig_dispatch_table[td_ns::num_types]
+                                                             [td_ns::num_types];
+static where_strided_impl_fn_ptr_t
+    where_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 using dpctl::utils::keep_args_alive;
 
@@ -120,7 +120,7 @@ py_where(dpctl::tensor::usm_ndarray condition,
     int cond_typenum = condition.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    auto const &array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto const &array_types = td_ns::usm_ndarray_types();
     int cond_typeid = array_types.typenum_to_lookup_id(cond_typenum);
     int x1_typeid = array_types.typenum_to_lookup_id(x1_typenum);
     int x2_typeid = array_types.typenum_to_lookup_id(x2_typenum);
@@ -177,10 +177,10 @@ py_where(dpctl::tensor::usm_ndarray condition,
         return std::make_pair(ht_ev, where_ev);
     }
 
-    const py::ssize_t *cond_strides = condition.get_strides_raw();
-    const py::ssize_t *x1_strides = x1.get_strides_raw();
-    const py::ssize_t *x2_strides = x2.get_strides_raw();
-    const py::ssize_t *dst_strides = dst.get_strides_raw();
+    auto const &cond_strides = condition.get_strides_vector();
+    auto const &x1_strides = x1.get_strides_vector();
+    auto const &x2_strides = x2.get_strides_vector();
+    auto const &dst_strides = dst.get_strides_vector();
 
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
@@ -193,17 +193,12 @@ py_where(dpctl::tensor::usm_ndarray condition,
     py::ssize_t x2_offset(0);
     py::ssize_t dst_offset(0);
 
-    const py::ssize_t *_shape = x1_shape;
-
-    constexpr py::ssize_t _itemsize = 1;
-
     dpctl::tensor::py_internal::simplify_iteration_space_4(
-        nd, _shape, cond_strides, _itemsize, is_cond_c_contig, is_cond_f_contig,
-        x1_strides, _itemsize, is_x1_c_contig, is_x1_f_contig, x2_strides,
-        _itemsize, is_x2_c_contig, is_x2_f_contig, dst_strides, _itemsize,
-        is_dst_c_contig, is_dst_f_contig, simplified_shape,
-        simplified_cond_strides, simplified_x1_strides, simplified_x2_strides,
-        simplified_dst_strides, cond_offset, x1_offset, x2_offset, dst_offset);
+        nd, x1_shape, cond_strides, x1_strides, x2_strides, dst_strides,
+        // outputs
+        simplified_shape, simplified_cond_strides, simplified_x1_strides,
+        simplified_x2_strides, simplified_dst_strides, cond_offset, x1_offset,
+        x2_offset, dst_offset);
 
     auto fn = where_strided_dispatch_table[x1_typeid][cond_typeid];
 
@@ -249,17 +244,16 @@ py_where(dpctl::tensor::usm_ndarray condition,
 
 void init_where_dispatch_tables(void)
 {
+    using namespace td_ns;
     using dpctl::tensor::kernels::search::WhereContigFactory;
-    dpctl::tensor::detail::DispatchTableBuilder<
-        where_contig_impl_fn_ptr_t, WhereContigFactory,
-        dpctl::tensor::detail::num_types>
+    DispatchTableBuilder<where_contig_impl_fn_ptr_t, WhereContigFactory,
+                         num_types>
         dtb1;
     dtb1.populate_dispatch_table(where_contig_dispatch_table);
 
     using dpctl::tensor::kernels::search::WhereStridedFactory;
-    dpctl::tensor::detail::DispatchTableBuilder<
-        where_strided_impl_fn_ptr_t, WhereStridedFactory,
-        dpctl::tensor::detail::num_types>
+    DispatchTableBuilder<where_strided_impl_fn_ptr_t, WhereStridedFactory,
+                         num_types>
         dtb2;
     dtb2.populate_dispatch_table(where_strided_dispatch_table);
 }

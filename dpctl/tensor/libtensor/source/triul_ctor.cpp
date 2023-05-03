@@ -35,7 +35,7 @@
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -48,8 +48,8 @@ using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::tri_fn_ptr_t;
 
-static tri_fn_ptr_t tril_generic_dispatch_vector[_ns::num_types];
-static tri_fn_ptr_t triu_generic_dispatch_vector[_ns::num_types];
+static tri_fn_ptr_t tril_generic_dispatch_vector[td_ns::num_types];
+static tri_fn_ptr_t triu_generic_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_triul(sycl::queue exec_q,
@@ -100,7 +100,7 @@ usm_ndarray_triul(sycl::queue exec_q,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -117,12 +117,6 @@ usm_ndarray_triul(sycl::queue exec_q,
             "Execution queue context is not the same as allocation contexts");
     }
 
-    bool is_src_c_contig = src.is_c_contiguous();
-    bool is_src_f_contig = src.is_f_contiguous();
-
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
-
     auto src_strides = src.get_strides_vector();
     auto dst_strides = dst.get_strides_vector();
 
@@ -133,17 +127,16 @@ usm_ndarray_triul(sycl::queue exec_q,
     py::ssize_t src_offset(0);
     py::ssize_t dst_offset(0);
 
-    constexpr py::ssize_t src_itemsize = 1; // item size in elements
-    constexpr py::ssize_t dst_itemsize = 1; // item size in elements
-
     int nd = src_nd - 2;
     const py::ssize_t *shape = src_shape;
-    const py::ssize_t *p_src_strides = src_strides.data();
-    const py::ssize_t *p_dst_strides = dst_strides.data();
 
-    simplify_iteration_space(nd, shape, p_src_strides, src_itemsize,
-                             is_src_c_contig, is_src_f_contig, p_dst_strides,
-                             dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+    const shT iter_src_strides(std::begin(src_strides),
+                               std::begin(src_strides) + nd);
+    const shT iter_dst_strides(std::begin(dst_strides),
+                               std::begin(dst_strides) + nd);
+
+    simplify_iteration_space(nd, shape, iter_src_strides, iter_dst_strides,
+                             // output
                              simplified_shape, simplified_src_strides,
                              simplified_dst_strides, src_offset, dst_offset);
 
@@ -219,7 +212,7 @@ usm_ndarray_triul(sycl::queue exec_q,
 void init_triul_ctor_dispatch_vectors(void)
 {
 
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::constructors::TrilGenericFactory;
     using dpctl::tensor::kernels::constructors::TriuGenericFactory;
 

@@ -23,6 +23,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <CL/sycl.hpp>
+#include <algorithm>
 #include <vector>
 
 #include "dpctl4pybind11.hpp"
@@ -36,7 +37,7 @@
 #include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -49,8 +50,8 @@ using dpctl::tensor::kernels::copy_and_cast::
     copy_and_cast_from_host_blocking_fn_ptr_t;
 
 static copy_and_cast_from_host_blocking_fn_ptr_t
-    copy_and_cast_from_host_blocking_dispatch_table[_ns::num_types]
-                                                   [_ns::num_types];
+    copy_and_cast_from_host_blocking_dispatch_table[td_ns::num_types]
+                                                   [td_ns::num_types];
 
 void copy_numpy_ndarray_into_usm_ndarray(
     py::array npy_src,
@@ -111,7 +112,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         py::detail::array_descriptor_proxy(npy_src.dtype().ptr())->type_num;
     int dst_typenum = dst.get_typenum();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -143,10 +144,8 @@ void copy_numpy_ndarray_into_usm_ndarray(
         }
     }
 
-    const py::ssize_t *src_strides =
-        npy_src.strides(); // N.B.: strides in bytes
-    const py::ssize_t *dst_strides =
-        dst.get_strides_raw(); // N.B.: strides in elements
+    auto const &dst_strides =
+        dst.get_strides_vector(); // N.B.: strides in elements
 
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
@@ -155,23 +154,42 @@ void copy_numpy_ndarray_into_usm_ndarray(
     py::ssize_t src_offset(0);
     py::ssize_t dst_offset(0);
 
-    py::ssize_t src_itemsize = npy_src.itemsize(); // item size in bytes
-    constexpr py::ssize_t dst_itemsize = 1;        // item size in elements
-
     int nd = src_ndim;
     const py::ssize_t *shape = src_shape;
+
+    const py::ssize_t *src_strides_p =
+        npy_src.strides();                         // N.B.: strides in bytes
+    py::ssize_t src_itemsize = npy_src.itemsize(); // item size in bytes
 
     bool is_src_c_contig = ((src_flags & py::array::c_style) != 0);
     bool is_src_f_contig = ((src_flags & py::array::f_style) != 0);
 
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
+    shT src_strides_in_elems;
+    if (src_strides_p) {
+        src_strides_in_elems.resize(nd);
+        // copy and convert strides from bytes to elements
+        std::transform(
+            src_strides_p, src_strides_p + nd, std::begin(src_strides_in_elems),
+            [src_itemsize](py::ssize_t el) { return el / src_itemsize; });
+    }
+    else {
+        if (is_src_c_contig) {
+            src_strides_in_elems =
+                dpctl::tensor::c_contiguous_strides(nd, src_shape);
+        }
+        else if (is_src_f_contig) {
+            src_strides_in_elems =
+                dpctl::tensor::f_contiguous_strides(nd, src_shape);
+        }
+        else {
+            throw py::value_error("NumPy source array has null strides but is "
+                                  "neither C- nor F-contiguous.");
+        }
+    }
 
-    // all args except itemsizes and is_?_contig bools can be modified by
-    // reference
-    simplify_iteration_space(nd, shape, src_strides, src_itemsize,
-                             is_src_c_contig, is_src_f_contig, dst_strides,
-                             dst_itemsize, is_dst_c_contig, is_dst_f_contig,
+    // nd, simplified_* vectors and offsets are modified by reference
+    simplify_iteration_space(nd, shape, src_strides_in_elems, dst_strides,
+                             // outputs
                              simplified_shape, simplified_src_strides,
                              simplified_dst_strides, src_offset, dst_offset);
 
@@ -186,18 +204,16 @@ void copy_numpy_ndarray_into_usm_ndarray(
         simplified_shape.push_back(1);
 
         simplified_src_strides.reserve(nd);
-        simplified_src_strides.push_back(src_itemsize);
+        simplified_src_strides.push_back(1);
 
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(dst_itemsize);
+        simplified_dst_strides.push_back(1);
     }
 
     // Minumum and maximum element offsets for source np.ndarray
     py::ssize_t npy_src_min_nelem_offset(0);
     py::ssize_t npy_src_max_nelem_offset(0);
     for (int i = 0; i < nd; ++i) {
-        // convert source strides from bytes to elements
-        simplified_src_strides[i] = simplified_src_strides[i] / src_itemsize;
         if (simplified_src_strides[i] < 0) {
             npy_src_min_nelem_offset +=
                 simplified_src_strides[i] * (simplified_shape[i] - 1);
@@ -239,11 +255,11 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
 void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::copy_and_cast::CopyAndCastFromHostFactory;
 
     DispatchTableBuilder<copy_and_cast_from_host_blocking_fn_ptr_t,
-                         CopyAndCastFromHostFactory, _ns::num_types>
+                         CopyAndCastFromHostFactory, num_types>
         dtb_copy_from_numpy;
 
     dtb_copy_from_numpy.populate_dispatch_table(

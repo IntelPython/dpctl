@@ -18,6 +18,7 @@ import numpy as np
 import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
+import dpctl
 import dpctl.tensor as dpt
 
 
@@ -53,7 +54,10 @@ class TestArgValidation(TestPrint):
         with pytest.raises(TypeError):
             dpt.usm_ndarray_repr(X)
 
-        X = dpt.arange(4)
+        try:
+            X = dpt.arange(4)
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
         with pytest.raises(TypeError):
             dpt.usm_ndarray_repr(X, line_width="I")
 
@@ -68,7 +72,11 @@ class TestArgValidation(TestPrint):
         with pytest.raises(TypeError):
             dpt.usm_ndarray_str(X)
 
-        X = dpt.arange(4)
+        try:
+            X = dpt.arange(4)
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
+
         with pytest.raises(TypeError):
             dpt.usm_ndarray_str(X, line_width="I")
 
@@ -363,8 +371,12 @@ class TestPrintFns(TestPrint):
 class TestContextManager:
     def test_context_manager_basic(self):
         options = dpt.get_print_options()
+        try:
+            X = dpt.asarray(1.234567)
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
         with dpt.print_options(precision=4):
-            s = str(dpt.asarray(1.234567))
+            s = str(X)
         assert s == "1.2346"
         assert options == dpt.get_print_options()
 

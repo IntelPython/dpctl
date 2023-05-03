@@ -15,11 +15,14 @@
 #  limitations under the License.
 
 import contextlib
+import itertools
 import operator
 
 import numpy as np
 
+import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 
 __doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
 
@@ -220,25 +223,44 @@ def print_options(*args, **kwargs):
         dpt.set_print_options(**options)
 
 
-def _nd_corners(x, edge_items, slices=()):
-    axes_reduced = len(slices)
-    if axes_reduced == x.ndim:
-        return x[slices]
+def _nd_corners(arr_in, edge_items):
+    _shape = arr_in.shape
+    max_shape = 2 * edge_items + 1
+    if max(_shape) <= max_shape:
+        return dpt.asnumpy(arr_in)
+    res_shape = tuple(
+        max_shape if _shape[i] > max_shape else _shape[i]
+        for i in range(arr_in.ndim)
+    )
 
-    if x.shape[axes_reduced] > 2 * edge_items:
-        return dpt.concat(
-            (
-                _nd_corners(
-                    x, edge_items, slices + (slice(None, edge_items, None),)
-                ),
-                _nd_corners(
-                    x, edge_items, slices + (slice(-edge_items, None, None),)
-                ),
-            ),
-            axis=axes_reduced,
+    arr_out = dpt.empty(
+        res_shape,
+        dtype=arr_in.dtype,
+        usm_type=arr_in.usm_type,
+        sycl_queue=arr_in.sycl_queue,
+    )
+
+    blocks = []
+    for i in range(len(_shape)):
+        if _shape[i] > max_shape:
+            blocks.append(
+                (
+                    np.s_[:edge_items],
+                    np.s_[-edge_items:],
+                )
+            )
+        else:
+            blocks.append((np.s_[:],))
+
+    hev_list = []
+    for slc in itertools.product(*blocks):
+        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arr_in[slc], dst=arr_out[slc], sycl_queue=arr_in.sycl_queue
         )
-    else:
-        return _nd_corners(x, edge_items, slices + (slice(None, None, None),))
+        hev_list.append(hev)
+
+    dpctl.SyclEvent.wait_for(hev_list)
+    return dpt.asnumpy(arr_out)
 
 
 def usm_ndarray_str(
@@ -345,8 +367,7 @@ def usm_ndarray_str(
     edge_items = options["edgeitems"]
 
     if x.size > threshold:
-        # need edge_items + 1 elements for np.array2string to abbreviate
-        data = dpt.asnumpy(_nd_corners(x, edge_items + 1))
+        data = _nd_corners(x, edge_items)
         options["threshold"] = 0
     else:
         data = dpt.asnumpy(x)

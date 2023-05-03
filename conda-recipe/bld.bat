@@ -38,6 +38,8 @@ if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     if errorlevel 1 exit 1
 )
 
-rem copy back
-copy /Y "%FN%" "%PLATFORM_DIR%"
-if errorlevel 1 exit 1
+if EXIST "%PLATFORM_DIR%" (
+  rem copy back
+  copy /Y "%FN%" "%PLATFORM_DIR%"
+  if errorlevel 1 exit 1
+)

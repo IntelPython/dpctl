@@ -51,16 +51,16 @@ namespace tensor
 namespace py_internal
 {
 
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::indexing::put_fn_ptr_t;
 using dpctl::tensor::kernels::indexing::take_fn_ptr_t;
 
-static take_fn_ptr_t take_dispatch_table[INDEXING_MODES][_ns::num_types]
-                                        [_ns::num_types];
+static take_fn_ptr_t take_dispatch_table[INDEXING_MODES][td_ns::num_types]
+                                        [td_ns::num_types];
 
-static put_fn_ptr_t put_dispatch_table[INDEXING_MODES][_ns::num_types]
-                                      [_ns::num_types];
+static put_fn_ptr_t put_dispatch_table[INDEXING_MODES][td_ns::num_types]
+                                      [td_ns::num_types];
 
 namespace py = pybind11;
 
@@ -324,7 +324,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -653,7 +653,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     int dst_typenum = dst.get_typenum();
     int val_typenum = val.get_typenum();
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
     int val_type_id = array_types.typenum_to_lookup_id(val_typenum);
 
@@ -859,7 +859,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
 
 void init_advanced_indexing_dispatch_tables(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
 
     using dpctl::tensor::kernels::indexing::TakeClipFactory;
     DispatchTableBuilder<take_fn_ptr_t, TakeClipFactory, num_types>

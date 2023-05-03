@@ -19,7 +19,6 @@
 
 import numpy as np
 import pytest
-from helper import has_cpu, has_gpu, has_sycl_platforms
 
 import dpctl
 from dpctl.memory import (
@@ -43,15 +42,14 @@ class Dummy(MemoryUSMShared):
         return iface
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_memory_create(memory_ctor):
     import sys
 
     nbytes = 1024
-    queue = dpctl.SyclQueue()
+    try:
+        queue = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue() failed, skip further testing...")
     mobj = memory_ctor(nbytes, alignment=64, queue=queue)
     assert mobj.nbytes == nbytes
     assert hasattr(mobj, "__sycl_usm_array_interface__")
@@ -65,12 +63,12 @@ def test_memory_create(memory_ctor):
     assert sys.getsizeof(mobj) > nbytes
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_memory_create_with_np():
     nbytes = 16384
+    try:
+        dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue() failed, skip further testing...")
     mobj = dpctl.memory.MemoryUSMShared(np.int64(nbytes))
     assert mobj.nbytes == nbytes
     assert hasattr(mobj, "__sycl_usm_array_interface__")
@@ -78,7 +76,10 @@ def test_memory_create_with_np():
 
 def _create_memory():
     nbytes = 1024
-    queue = dpctl.SyclQueue()
+    try:
+        queue = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue() failed, skip further testing...")
     mobj = MemoryUSMShared(nbytes, alignment=64, queue=queue)
     return mobj
 
@@ -90,10 +91,6 @@ def _create_host_buf(nbytes):
     return ba
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_memory_without_context():
     mobj = _create_memory()
 
@@ -102,7 +99,6 @@ def test_memory_without_context():
     assert mobj.get_usm_type(syclobj=dpctl.SyclContext()) == "shared"
 
 
-@pytest.mark.skipif(not has_cpu(), reason="No SYCL CPU device available.")
 def test_memory_cpu_context():
     mobj = _create_memory()
 
@@ -111,7 +107,10 @@ def test_memory_cpu_context():
     usm_type = mobj.get_usm_type()
     assert usm_type == "shared"
 
-    cpu_queue = dpctl.SyclQueue("cpu")
+    try:
+        cpu_queue = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('cpu') failed, skip further testing")
     # type as view from CPU queue
     usm_type = mobj.get_usm_type(cpu_queue)
     # type can be unknown if current queue is
@@ -119,22 +118,20 @@ def test_memory_cpu_context():
     assert usm_type in ["unknown", "shared"]
 
 
-@pytest.mark.skipif(not has_gpu(), reason="No OpenCL GPU queues available")
 def test_memory_gpu_context():
     mobj = _create_memory()
 
     # GPU context
     usm_type = mobj.get_usm_type()
     assert usm_type == "shared"
-    gpu_queue = dpctl.SyclQueue("opencl:gpu")
+    try:
+        gpu_queue = dpctl.SyclQueue("opencl:gpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('opencl:gpu') failed, skipping")
     usm_type = mobj.get_usm_type(gpu_queue)
     assert usm_type in ["unknown", "shared"]
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_buffer_protocol():
     mobj = _create_memory()
     mv1 = memoryview(mobj)
@@ -142,10 +139,6 @@ def test_buffer_protocol():
     assert mv1 == mv2
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_copy_host_roundtrip():
     mobj = _create_memory()
     host_src_obj = _create_host_buf(mobj.nbytes)
@@ -155,10 +148,6 @@ def test_copy_host_roundtrip():
     assert host_src_obj == host_dest_obj
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_zero_copy():
     mobj = _create_memory()
     mobj2 = type(mobj)(mobj)
@@ -169,14 +158,13 @@ def test_zero_copy():
     assert mobj_data == mobj2_data
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_pickling(memory_ctor):
     import pickle
 
-    mobj = memory_ctor(1024, alignment=64)
+    try:
+        mobj = memory_ctor(1024, alignment=64)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     host_src_obj = _create_host_buf(mobj.nbytes)
     mobj.copy_from_host(host_src_obj)
 
@@ -192,14 +180,13 @@ def test_pickling(memory_ctor):
     ), "Pickling/unpickling should be changing pointer"
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_pickling_reconstructor_invalid_type(memory_ctor):
     import pickle
 
-    mobj = memory_ctor(1024, alignment=64)
+    try:
+        mobj = memory_ctor(1024, alignment=64)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     good_pickle_bytes = pickle.dumps(mobj)
     usm_types = expected_usm_type_str(memory_ctor).encode("utf-8")
     i = good_pickle_bytes.rfind(usm_types)
@@ -231,48 +218,44 @@ def expected_usm_type_enum(ctor):
     return mapping.get(ctor, 0)
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_create_with_size_and_alignment_and_queue(memory_ctor):
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue() failed, skip further testing")
     m = memory_ctor(1024, alignment=64, queue=q)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
     assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_create_with_size_and_queue(memory_ctor):
-    q = dpctl.SyclQueue()
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue() failed, skip further testing")
     m = memory_ctor(1024, queue=q)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
     assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_create_with_size_and_alignment(memory_ctor):
-    m = memory_ctor(1024, alignment=64)
+    try:
+        m = memory_ctor(1024, alignment=64)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
     assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
-def test_usm_type_execeptions():
+def test_usm_type_exceptions():
     ctor = MemoryUSMDevice
-    m = ctor(1024)
+    try:
+        m = ctor(1024)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     assert m.nbytes == 1024
     q = m.sycl_queue
     assert m.get_usm_type(syclobj=q) == expected_usm_type_str(ctor)
@@ -286,12 +269,11 @@ def test_usm_type_execeptions():
         m.get_usm_type_enum(syclobj=list())
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_sycl_usm_array_interface(memory_ctor):
-    m = memory_ctor(256)
+    try:
+        m = memory_ctor(256)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     m2 = Dummy(m.nbytes)
     hb = np.random.randint(0, 256, size=256, dtype="|u1")
     m2.copy_from_host(hb)
@@ -552,15 +534,14 @@ def test_with_constructor(memory_ctor):
     check_view(v)
 
 
-@pytest.mark.skipif(
-    not has_sycl_platforms(),
-    reason="No SYCL devices except the default host device.",
-)
 def test_cpython_api(memory_ctor):
     import ctypes
     import sys
 
-    mobj = memory_ctor(1024)
+    try:
+        mobj = memory_ctor(1024)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
     mod = sys.modules[mobj.__class__.__module__]
     # get capsules storing function pointers
     mem_ptr_fn_cap = mod.__pyx_capi__["Memory_GetUsmPointer"]

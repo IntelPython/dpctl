@@ -119,19 +119,24 @@ def test_dev_utils():
 
     ctx_mngr = dd.syclinterface_diagnostics
 
+    try:
+        device = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Default-constructed device could not be created")
+
     with ctx_mngr():
-        dpctl.SyclDevice().parent_device
+        device.parent_device
     with ctx_mngr(verbosity="error"):
-        dpctl.SyclDevice().parent_device
+        device.parent_device
     with pytest.raises(ValueError):
         with ctx_mngr(verbosity="blah"):
-            dpctl.SyclDevice().parent_device
+            device.parent_device
     with tempfile.TemporaryDirectory() as temp_dir:
         with ctx_mngr(log_dir=temp_dir):
-            dpctl.SyclDevice().parent_device
+            device.parent_device
     with pytest.raises(ValueError):
         with ctx_mngr(log_dir="/not_a_dir"):
-            dpctl.SyclDevice().parent_device
+            device.parent_device
 
 
 def test_syclinterface():
@@ -189,8 +194,9 @@ def test_main_full_list():
         [sys.executable, "-m", "dpctl", "-f"], capture_output=True
     )
     assert res.returncode == 0
-    assert res.stdout
-    assert res.stdout.decode("utf-8")
+    if dpctl.get_num_devices() > 0:
+        assert res.stdout
+        assert res.stdout.decode("utf-8")
 
 
 def test_main_long_list():
@@ -198,8 +204,9 @@ def test_main_long_list():
         [sys.executable, "-m", "dpctl", "-l"], capture_output=True
     )
     assert res.returncode == 0
-    assert res.stdout
-    assert res.stdout.decode("utf-8")
+    if dpctl.get_num_devices() > 0:
+        assert res.stdout
+        assert res.stdout.decode("utf-8")
 
 
 def test_main_summary():
@@ -207,8 +214,9 @@ def test_main_summary():
         [sys.executable, "-m", "dpctl", "-s"], capture_output=True
     )
     assert res.returncode == 0
-    assert res.stdout
-    assert res.stdout.decode("utf-8")
+    if dpctl.get_num_devices() > 0:
+        assert res.stdout
+        assert res.stdout.decode("utf-8")
 
 
 def test_main_warnings():
@@ -216,7 +224,7 @@ def test_main_warnings():
         [sys.executable, "-m", "dpctl", "-s", "--includes"], capture_output=True
     )
     assert res.returncode == 0
-    assert res.stdout
+    assert res.stdout or dpctl.get_num_devices() == 0
     assert "UserWarning" in res.stderr.decode("utf-8")
     assert "is being ignored." in res.stderr.decode("utf-8")
 
@@ -225,6 +233,6 @@ def test_main_warnings():
         capture_output=True,
     )
     assert res.returncode == 0
-    assert res.stdout
+    assert res.stdout or dpctl.get_num_devices() == 0
     assert "UserWarning" in res.stderr.decode("utf-8")
     assert "are being ignored." in res.stderr.decode("utf-8")

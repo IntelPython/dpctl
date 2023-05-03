@@ -37,7 +37,7 @@
 #include "full_ctor.hpp"
 
 namespace py = pybind11;
-namespace _ns = dpctl::tensor::detail;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -51,7 +51,7 @@ using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::full_contig_fn_ptr_t;
 
-static full_contig_fn_ptr_t full_contig_dispatch_vector[_ns::num_types];
+static full_contig_fn_ptr_t full_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_full(py::object py_value,
@@ -73,7 +73,7 @@ usm_ndarray_full(py::object py_value,
             "Execution queue is not compatible with the allocation queue");
     }
 
-    auto array_types = dpctl::tensor::detail::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
@@ -99,7 +99,7 @@ usm_ndarray_full(py::object py_value,
 
 void init_full_ctor_dispatch_vectors(void)
 {
-    using namespace dpctl::tensor::detail;
+    using namespace td_ns;
     using dpctl::tensor::kernels::constructors::FullContigFactory;
 
     DispatchVectorBuilder<full_contig_fn_ptr_t, FullContigFactory, num_types>
