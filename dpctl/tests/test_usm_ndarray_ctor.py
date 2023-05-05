@@ -2032,3 +2032,30 @@ def test_Device():
     assert dict[d2] == 1
     assert d1 == d2.sycl_queue
     assert not d1 == Ellipsis
+
+
+def test_element_offset():
+    n0, n1 = 3, 8
+    try:
+        x = dpt.empty((n0, n1), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert isinstance(x._element_offset, int)
+    assert x._element_offset == 0
+    y = x[::-1, ::2]
+    assert y._element_offset == (n0 - 1) * n1
+
+
+def test_byte_bounds():
+    n0, n1 = 3, 8
+    try:
+        x = dpt.empty((n0, n1), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert isinstance(x._byte_bounds, tuple)
+    assert len(x._byte_bounds) == 2
+    lo, hi = x._byte_bounds
+    assert hi - lo == n0 * n1 * x.itemsize
+    y = x[::-1, ::2]
+    lo, hi = y._byte_bounds
+    assert hi - lo == (n0 * n1 - 1) * x.itemsize

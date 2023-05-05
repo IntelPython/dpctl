@@ -355,6 +355,43 @@ cdef class usm_ndarray:
                 "byte_offset is not a multiple of item_size.")
         return byte_offset // item_size
 
+    @property
+    def _element_offset(self):
+        """Returns the offset of the zero-index element of the array, in elements,
+        relative to the start of memory allocation"""
+        return self.get_offset()
+
+    @property
+    def _byte_bounds(self):
+        """Returns a 2-tuple with pointers to the end-points of the array"""
+        cdef Py_ssize_t min_disp = 0
+        cdef Py_ssize_t max_disp = 0
+        cdef Py_ssize_t step_ = 0
+        cdef Py_ssize_t dim_ = 0
+        cdef int it = 0
+        cdef Py_ssize_t _itemsize = self.get_itemsize()
+
+        if ((self.flags_ & USM_ARRAY_C_CONTIGUOUS) or (self.flags_ & USM_ARRAY_F_CONTIGUOUS)):
+            return (
+                self._pointer,
+                self._pointer + shape_to_elem_count(self.nd_, self.shape_) * _itemsize
+            )
+
+        for it in range(self.nd_):
+           dim_ = self.shape[it]
+           if dim_ > 0:
+               step_ = self.strides[it]
+               if step_ > 0:
+                   max_disp += step_ * (dim_ - 1)
+               else:
+                   min_disp += step_ * (dim_ - 1)
+
+        return (
+            self._pointer + min_disp * _itemsize,
+            self._pointer + (max_disp + 1) * _itemsize
+        )
+
+
     cdef char* get_data(self):
         """Returns the USM pointer for this array."""
         return self.data_
