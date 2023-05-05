@@ -1293,6 +1293,26 @@ def test_reshape():
     assert A4.shape == requested_shape
 
 
+def test_reshape_zero_size():
+    try:
+        a = dpt.empty((0,))
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    with pytest.raises(ValueError):
+        dpt.reshape(a, (-1, 0))
+
+
+def test_reshape_large_ndim():
+    ndim = 32
+    idx = tuple(1 if i + 1 < ndim else ndim for i in range(ndim))
+    try:
+        d = dpt.ones(ndim, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    d = dpt.reshape(d, idx)
+    assert d.shape == idx
+
+
 def test_reshape_copy_kwrd():
     try:
         X = dpt.usm_ndarray((2, 3), "i4")

@@ -19,7 +19,11 @@ import numpy as np
 
 import dpctl.tensor as dpt
 from dpctl.tensor._copy_utils import _copy_from_usm_ndarray_to_usm_ndarray
-from dpctl.tensor._tensor_impl import _copy_usm_ndarray_for_reshape
+from dpctl.tensor._tensor_impl import (
+    _copy_usm_ndarray_for_reshape,
+    _ravel_multi_index,
+    _unravel_index,
+)
 
 __doc__ = "Implementation module for :func:`dpctl.tensor.reshape`."
 
@@ -36,6 +40,14 @@ def _make_unit_indexes(shape):
     return mi
 
 
+def ti_unravel_index(flat_index, shape, order="C"):
+    return _unravel_index(flat_index, shape, order)
+
+
+def ti_ravel_multi_index(multi_index, shape, order="C"):
+    return _ravel_multi_index(multi_index, shape, order)
+
+
 def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
     """
     When reshaping array with `old_sh` shape and `old_sts` strides
@@ -47,11 +59,11 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
         sum(
             st_i * ind_i
             for st_i, ind_i in zip(
-                old_sts, np.unravel_index(flat_index, old_sh, order=order)
+                old_sts, ti_unravel_index(flat_index, old_sh, order=order)
             )
         )
         for flat_index in [
-            np.ravel_multi_index(unitvec, new_sh, order=order)
+            ti_ravel_multi_index(unitvec, new_sh, order=order)
             for unitvec in eye_new_mi
         ]
     ]
@@ -60,11 +72,11 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
         sum(
             st_i * ind_i
             for st_i, ind_i in zip(
-                new_sts, np.unravel_index(flat_index, new_sh, order=order)
+                new_sts, ti_unravel_index(flat_index, new_sh, order=order)
             )
         )
         for flat_index in [
-            np.ravel_multi_index(unitvec, old_sh, order=order)
+            ti_ravel_multi_index(unitvec, old_sh, order=order)
             for unitvec in eye_old_mi
         ]
     ]
@@ -123,7 +135,13 @@ def reshape(X, shape, order="C", copy=None):
                 "value which can only be -1"
             )
     if negative_ones_count:
-        v = X.size // (-np.prod(shape))
+        sz = -np.prod(shape)
+        if sz == 0:
+            raise ValueError(
+                f"Can not reshape array of size {X.size} into "
+                f"shape {tuple(i for i in shape if i >= 0)}"
+            )
+        v = X.size // sz
         shape = [v if d == -1 else d for d in shape]
     if X.size != np.prod(shape):
         raise ValueError(f"Can not reshape into {shape}")

@@ -42,6 +42,7 @@
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
+#include "simplify_iteration_space.hpp"
 #include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
@@ -181,6 +182,37 @@ PYBIND11_MODULE(_tensor_impl, m)
         "smaller dimension for each array, which traverses the same elements "
         "as the original "
         "iterator, possibly in a different order.");
+
+    static constexpr char orderC = 'C';
+    m.def(
+        "_ravel_multi_index",
+        [](const std::vector<py::ssize_t> &mi,
+           const std::vector<py::ssize_t> &shape, char order = 'C') {
+            if (order == orderC) {
+                return dpctl::tensor::py_internal::_ravel_multi_index_c(mi,
+                                                                        shape);
+            }
+            else {
+                return dpctl::tensor::py_internal::_ravel_multi_index_f(mi,
+                                                                        shape);
+            }
+        },
+        "");
+
+    m.def(
+        "_unravel_index",
+        [](py::ssize_t flat_index, const std::vector<py::ssize_t> &shape,
+           char order = 'C') {
+            if (order == orderC) {
+                return dpctl::tensor::py_internal::_unravel_index_c(flat_index,
+                                                                    shape);
+            }
+            else {
+                return dpctl::tensor::py_internal::_unravel_index_f(flat_index,
+                                                                    shape);
+            }
+        },
+        "");
 
     m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
           "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "

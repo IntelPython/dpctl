@@ -71,12 +71,17 @@ void simplify_iteration_space_1(int &nd,
         nd = contracted_nd;
     }
     else if (nd == 1) {
+        offset = 0;
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
 
         simplified_strides.reserve(nd);
-        simplified_strides.push_back(strides[0]);
+        simplified_strides.push_back((strides[0] >= 0) ? strides[0]
+                                                       : -strides[0]);
+        if ((strides[0] < 0) && (shape[0] > 1)) {
+            offset += (shape[0] - 1) * strides[0];
+        }
 
         assert(simplified_shape.size() == static_cast<size_t>(nd));
         assert(simplified_strides.size() == static_cast<size_t>(nd));
@@ -128,17 +133,27 @@ void simplify_iteration_space(int &nd,
         nd = contracted_nd;
     }
     else if (nd == 1) {
+        src_offset = 0;
+        dst_offset = 0;
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
         assert(simplified_shape.size() == static_cast<size_t>(nd));
 
         simplified_src_strides.reserve(nd);
-        simplified_src_strides.push_back(src_strides[0]);
+        simplified_src_strides.push_back(
+            (src_strides[0] >= 0) ? src_strides[0] : -src_strides[0]);
+        if ((src_strides[0] < 0) && (shape[0] > 1)) {
+            src_offset += (shape[0] - 1) * src_strides[0];
+        }
         assert(simplified_src_strides.size() == static_cast<size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(dst_strides[0]);
+        simplified_dst_strides.push_back(
+            (dst_strides[0] >= 0) ? dst_strides[0] : -dst_strides[0]);
+        if ((dst_strides[0] < 0) && (shape[0] > 1)) {
+            dst_offset += (shape[0] - 1) * dst_strides[0];
+        }
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
@@ -202,21 +217,36 @@ void simplify_iteration_space_3(
         nd = contracted_nd;
     }
     else if (nd == 1) {
+        src1_offset = 0;
+        src2_offset = 0;
+        dst_offset = 0;
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
         assert(simplified_shape.size() == static_cast<size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
-        simplified_src1_strides.push_back(src1_strides[0]);
+        simplified_src1_strides.push_back(
+            (src1_strides[0] >= 0) ? src1_strides[0] : -src1_strides[0]);
+        if ((src1_strides[0] < 0) && (shape[0] > 1)) {
+            src1_offset += src1_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
 
         simplified_src2_strides.reserve(nd);
-        simplified_src2_strides.push_back(src2_strides[0]);
+        simplified_src2_strides.push_back(
+            (src2_strides[0] >= 0) ? src2_strides[0] : -src2_strides[0]);
+        if ((src2_strides[0] < 0) && (shape[0] > 1)) {
+            src2_offset += src2_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(dst_strides[0]);
+        simplified_dst_strides.push_back(
+            (dst_strides[0] >= 0) ? dst_strides[0] : -dst_strides[0]);
+        if ((dst_strides[0] < 0) && (shape[0] > 1)) {
+            dst_offset += dst_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
@@ -293,27 +323,127 @@ void simplify_iteration_space_4(
         nd = contracted_nd;
     }
     else if (nd == 1) {
+        src1_offset = 0;
+        src2_offset = 0;
+        src3_offset = 0;
+        dst_offset = 0;
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
         assert(simplified_shape.size() == static_cast<size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
-        simplified_src1_strides.push_back(src1_strides[0]);
+        simplified_src1_strides.push_back(
+            (src1_strides[0] >= 0) ? src1_strides[0] : -src1_strides[0]);
+        if ((src1_strides[0] < 0) && (shape[0] > 1)) {
+            src1_offset += src1_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
 
         simplified_src2_strides.reserve(nd);
-        simplified_src2_strides.push_back(src2_strides[0]);
+        simplified_src2_strides.push_back(
+            (src2_strides[0] >= 0) ? src2_strides[0] : -src2_strides[0]);
+        if ((src2_strides[0] < 0) && (shape[0] > 1)) {
+            src2_offset += src2_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
 
         simplified_src3_strides.reserve(nd);
-        simplified_src3_strides.push_back(src3_strides[0]);
+        simplified_src3_strides.push_back(
+            (src3_strides[0] >= 0) ? src3_strides[0] : -src3_strides[0]);
+        if ((src3_strides[0] < 0) && (shape[0] > 1)) {
+            src3_offset += src3_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_src3_strides.size() == static_cast<size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(dst_strides[0]);
+        simplified_dst_strides.push_back(
+            (dst_strides[0] >= 0) ? dst_strides[0] : -dst_strides[0]);
+        if ((dst_strides[0] < 0) && (shape[0] > 1)) {
+            dst_offset += dst_strides[0] * (shape[0] - 1);
+        }
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
+}
+
+py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &mi,
+                                 std::vector<py::ssize_t> const &shape)
+{
+    size_t nd = shape.size();
+    if (nd != mi.size()) {
+        throw py::value_error(
+            "Multi-index and shape vectors must have the same length.");
+    }
+
+    py::ssize_t flat_index = 0;
+    py::ssize_t s = 1;
+    for (size_t i = 0; i < nd; ++i) {
+        flat_index += mi.at(nd - 1 - i) * s;
+        s *= shape.at(nd - 1 - i);
+    }
+
+    return flat_index;
+}
+
+py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &mi,
+                                 std::vector<py::ssize_t> const &shape)
+{
+    size_t nd = shape.size();
+    if (nd != mi.size()) {
+        throw py::value_error(
+            "Multi-index and shape vectors must have the same length.");
+    }
+
+    py::ssize_t flat_index = 0;
+    py::ssize_t s = 1;
+    for (size_t i = 0; i < nd; ++i) {
+        flat_index += mi.at(i) * s;
+        s *= shape.at(i);
+    }
+
+    return flat_index;
+}
+
+std::vector<py::ssize_t> _unravel_index_c(py::ssize_t flat_index,
+                                          std::vector<py::ssize_t> const &shape)
+{
+    size_t nd = shape.size();
+    std::vector<py::ssize_t> mi;
+    mi.resize(nd);
+
+    py::ssize_t i_ = flat_index;
+    for (size_t dim = 0; dim + 1 < nd; ++dim) {
+        const py::ssize_t si = shape[nd - 1 - dim];
+        const py::ssize_t q = i_ / si;
+        const py::ssize_t r = (i_ - q * si);
+        mi[nd - 1 - dim] = r;
+        i_ = q;
+    }
+    if (nd) {
+        mi[0] = i_;
+    }
+    return mi;
+}
+
+std::vector<py::ssize_t> _unravel_index_f(py::ssize_t flat_index,
+                                          std::vector<py::ssize_t> const &shape)
+{
+    size_t nd = shape.size();
+    std::vector<py::ssize_t> mi;
+    mi.resize(nd);
+
+    py::ssize_t i_ = flat_index;
+    for (size_t dim = 0; dim + 1 < nd; ++dim) {
+        const py::ssize_t si = shape[dim];
+        const py::ssize_t q = i_ / si;
+        const py::ssize_t r = (i_ - q * si);
+        mi[dim] = r;
+        i_ = q;
+    }
+    if (nd) {
+        mi[nd - 1] = i_;
+    }
+    return mi;
 }
 
 } // namespace py_internal
