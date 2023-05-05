@@ -46,6 +46,7 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
 )
+target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 if(UNIX)
     # this option is support on Linux only
