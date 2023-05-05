@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.3dev1+42.g25a7f4259 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.3dev1+44.g004e3d914 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev1+42.g25a7f4259
+                0.14.3dev1+44.g004e3d914
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -293,6 +293,19 @@ underlying <code class="docutils literal notranslate"><span class="pre">MemoryUS
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">T</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.T" title="Permalink to this definition"></a></dt>
 <dd><p>Returns tranposed array for 2D array, raises <cite>ValueError</cite>
 otherwise.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._byte_bounds">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_byte_bounds</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._byte_bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a 2-tuple with pointers to the end-points of the array</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._element_offset">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_element_offset</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._element_offset" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the offset of the zero-index element of the array, in elements,
+relative to the start of memory allocation</p>
 </dd></dl>
 
 <dl class="py attribute">
