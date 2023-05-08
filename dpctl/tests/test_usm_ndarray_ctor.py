@@ -2059,3 +2059,16 @@ def test_byte_bounds():
     y = x[::-1, ::2]
     lo, hi = y._byte_bounds
     assert hi - lo == (n0 * n1 - 1) * x.itemsize
+
+
+def test_gh_1201():
+    n = 100
+    a = np.flipud(np.arange(n, dtype="i4"))
+    try:
+        b = dpt.asarray(a)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert (dpt.asnumpy(b) == a).all()
+    c = dpt.flip(dpt.empty(a.shape, dtype=a.dtype))
+    c[:] = a
+    assert (dpt.asnumpy(c) == a).all()
