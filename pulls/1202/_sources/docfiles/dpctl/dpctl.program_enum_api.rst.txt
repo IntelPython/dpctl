@@ -1,9 +1,0 @@
-.. _dpctl.program_enum_api:
-
-###################
-dpctl.program Enums
-###################
-
-
-.. currentmodule:: dpctl.program
-
