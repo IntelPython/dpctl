@@ -141,19 +141,22 @@ void simplify_iteration_space(int &nd,
         assert(simplified_shape.size() == static_cast<size_t>(nd));
 
         simplified_src_strides.reserve(nd);
-        simplified_src_strides.push_back(
-            (src_strides[0] >= 0) ? src_strides[0] : -src_strides[0]);
-        if ((src_strides[0] < 0) && (shape[0] > 1)) {
-            src_offset += (shape[0] - 1) * src_strides[0];
-        }
-        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
-
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(
-            (dst_strides[0] >= 0) ? dst_strides[0] : -dst_strides[0]);
-        if ((dst_strides[0] < 0) && (shape[0] > 1)) {
-            dst_offset += (shape[0] - 1) * dst_strides[0];
+
+        if (src_strides[0] < 0 && dst_strides[0] < 0) {
+            simplified_src_strides.push_back(-src_strides[0]);
+            simplified_dst_strides.push_back(-dst_strides[0]);
+            if (shape[0] > 1) {
+                src_offset += (shape[0] - 1) * src_strides[0];
+                dst_offset += (shape[0] - 1) * dst_strides[0];
+            }
         }
+        else {
+            simplified_src_strides.push_back(src_strides[0]);
+            simplified_dst_strides.push_back(dst_strides[0]);
+        }
+
+        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
@@ -226,27 +229,28 @@ void simplify_iteration_space_3(
         assert(simplified_shape.size() == static_cast<size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
-        simplified_src1_strides.push_back(
-            (src1_strides[0] >= 0) ? src1_strides[0] : -src1_strides[0]);
-        if ((src1_strides[0] < 0) && (shape[0] > 1)) {
-            src1_offset += src1_strides[0] * (shape[0] - 1);
-        }
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
-
         simplified_src2_strides.reserve(nd);
-        simplified_src2_strides.push_back(
-            (src2_strides[0] >= 0) ? src2_strides[0] : -src2_strides[0]);
-        if ((src2_strides[0] < 0) && (shape[0] > 1)) {
-            src2_offset += src2_strides[0] * (shape[0] - 1);
-        }
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
-
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(
-            (dst_strides[0] >= 0) ? dst_strides[0] : -dst_strides[0]);
-        if ((dst_strides[0] < 0) && (shape[0] > 1)) {
-            dst_offset += dst_strides[0] * (shape[0] - 1);
+
+        if ((src1_strides[0] < 0) && (src2_strides[0] < 0) &&
+            (dst_strides[0] < 0)) {
+            simplified_src1_strides.push_back(-src1_strides[0]);
+            simplified_src2_strides.push_back(-src2_strides[0]);
+            simplified_dst_strides.push_back(-dst_strides[0]);
+            if (shape[0] > 1) {
+                src1_offset += src1_strides[0] * (shape[0] - 1);
+                src2_offset += src2_strides[0] * (shape[0] - 1);
+                dst_offset += dst_strides[0] * (shape[0] - 1);
+            }
         }
+        else {
+            simplified_src1_strides.push_back(src1_strides[0]);
+            simplified_src2_strides.push_back(src2_strides[0]);
+            simplified_dst_strides.push_back(dst_strides[0]);
+        }
+
+        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
@@ -333,35 +337,34 @@ void simplify_iteration_space_4(
         assert(simplified_shape.size() == static_cast<size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
-        simplified_src1_strides.push_back(
-            (src1_strides[0] >= 0) ? src1_strides[0] : -src1_strides[0]);
-        if ((src1_strides[0] < 0) && (shape[0] > 1)) {
-            src1_offset += src1_strides[0] * (shape[0] - 1);
-        }
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
-
         simplified_src2_strides.reserve(nd);
-        simplified_src2_strides.push_back(
-            (src2_strides[0] >= 0) ? src2_strides[0] : -src2_strides[0]);
-        if ((src2_strides[0] < 0) && (shape[0] > 1)) {
-            src2_offset += src2_strides[0] * (shape[0] - 1);
-        }
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
-
         simplified_src3_strides.reserve(nd);
-        simplified_src3_strides.push_back(
-            (src3_strides[0] >= 0) ? src3_strides[0] : -src3_strides[0]);
-        if ((src3_strides[0] < 0) && (shape[0] > 1)) {
-            src3_offset += src3_strides[0] * (shape[0] - 1);
-        }
-        assert(simplified_src3_strides.size() == static_cast<size_t>(nd));
-
         simplified_dst_strides.reserve(nd);
-        simplified_dst_strides.push_back(
-            (dst_strides[0] >= 0) ? dst_strides[0] : -dst_strides[0]);
-        if ((dst_strides[0] < 0) && (shape[0] > 1)) {
-            dst_offset += dst_strides[0] * (shape[0] - 1);
+
+        if ((src1_strides[0] < 0) && (src2_strides[0] < 0) &&
+            (src3_strides[0] < 0) && (dst_strides[0] < 0))
+        {
+            simplified_src1_strides.push_back(-src1_strides[0]);
+            simplified_src2_strides.push_back(-src2_strides[0]);
+            simplified_src3_strides.push_back(-src3_strides[0]);
+            simplified_dst_strides.push_back(-dst_strides[0]);
+            if (shape[0] > 1) {
+                src1_offset += src1_strides[0] * (shape[0] - 1);
+                src2_offset += src2_strides[0] * (shape[0] - 1);
+                src3_offset += src3_strides[0] * (shape[0] - 1);
+                dst_offset += dst_strides[0] * (shape[0] - 1);
+            }
         }
+        else {
+            simplified_src1_strides.push_back(src1_strides[0]);
+            simplified_src2_strides.push_back(src2_strides[0]);
+            simplified_src3_strides.push_back(src3_strides[0]);
+            simplified_dst_strides.push_back(dst_strides[0]);
+        }
+
+        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src3_strides.size() == static_cast<size_t>(nd));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
