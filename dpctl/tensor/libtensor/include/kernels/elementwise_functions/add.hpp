@@ -66,7 +66,8 @@ public:
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * maxsgSize);
 
-            if (base + n_vecs * vec_sz < nelems_) {
+            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
+                (sgSize == maxsgSize)) {
                 using in_ptrT1 =
                     sycl::multi_ptr<const argT1,
                                     sycl::access::address_space::global_space>;
@@ -428,7 +429,8 @@ sycl::event add_contig_matrix_contig_row_broadcast_impl(
         cgh.depends_on(make_padded_vec_ev);
 
         auto lwsRange = sycl::range<1>(lws);
-        size_t n_groups = (n0 * n1 + lws - 1) / lws;
+        size_t n_elems = n0 * n1;
+        size_t n_groups = (n_elems + lws - 1) / lws;
         auto gwsRange = sycl::range<1>(n_groups * lws);
 
             cgh.parallel_for<class add_matrix_vector_broadcast_sg_krn<argT1, argT2, resT>>(
@@ -438,24 +440,31 @@ sycl::event add_contig_matrix_contig_row_broadcast_impl(
                 auto sg = ndit.get_sub_group();
                 size_t gid = ndit.get_global_linear_id();
 
+                std::uint8_t sgSize = sg.get_local_range()[0];
                 size_t base = gid - sg.get_local_id()[0];
 
-                using in_ptrT1 =
-                    sycl::multi_ptr<const argT1,
-                                    sycl::access::address_space::global_space>;
-                using in_ptrT2 =
-                    sycl::multi_ptr<const argT2,
-                                    sycl::access::address_space::global_space>;
-                using res_ptrT =
-                    sycl::multi_ptr<resT,
-                                    sycl::access::address_space::global_space>;
+                if (base + sgSize < n_elems) {
+                    using in_ptrT1 = sycl::multi_ptr<
+                        const argT1, sycl::access::address_space::global_space>;
+                    using in_ptrT2 = sycl::multi_ptr<
+                        const argT2, sycl::access::address_space::global_space>;
+                    using res_ptrT = sycl::multi_ptr<
+                        resT, sycl::access::address_space::global_space>;
 
-                const argT1 mat_el = sg.load(in_ptrT1(&mat[base]));
-                const argT2 vec_el = sg.load(in_ptrT2(&padded_vec[base % n1]));
+                    const argT1 mat_el = sg.load(in_ptrT1(&mat[base]));
+                    const argT2 vec_el =
+                        sg.load(in_ptrT2(&padded_vec[base % n1]));
 
-                resT res_el = mat_el + vec_el;
+                    resT res_el = mat_el + vec_el;
 
-                sg.store(res_ptrT(&res[base]), res_el);
+                    sg.store(res_ptrT(&res[base]), res_el);
+                }
+                else {
+                    for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
+                         k += sgSize) {
+                        res[k] = mat[k] + padded_vec[k % n1];
+                    }
+                }
                 }
             );
     });

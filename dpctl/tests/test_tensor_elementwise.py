@@ -290,7 +290,9 @@ def test_cos_usm_type(usm_type):
     expected_Y = np.empty(input_shape, dtype=arg_dt)
     expected_Y[..., 0::2] = np.cos(np.float32(np.pi / 6))
     expected_Y[..., 1::2] = np.cos(np.float32(np.pi / 3))
-    assert np.allclose(dpt.asnumpy(Y), expected_Y)
+    tol = 8 * dpt.finfo(Y.dtype).resolution
+
+    np.testing.assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -309,7 +311,13 @@ def test_cos_order(dtype):
             U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
             Y = dpt.cos(U, order=ord)
             expected_Y = np.cos(dpt.asnumpy(U))
-            assert np.allclose(dpt.asnumpy(Y), expected_Y)
+            tol = 8 * max(
+                dpt.finfo(Y.dtype).resolution,
+                np.finfo(expected_Y.dtype).resolution,
+            )
+            np.testing.assert_allclose(
+                dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
+            )
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
