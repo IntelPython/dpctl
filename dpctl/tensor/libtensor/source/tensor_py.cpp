@@ -34,6 +34,7 @@
 #include "dpctl4pybind11.hpp"
 
 #include "boolean_advanced_indexing.hpp"
+#include "boolean_reductions.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -76,6 +77,10 @@ using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
 /* ================ Full ================== */
 
 using dpctl::tensor::py_internal::usm_ndarray_full;
+
+/* ========== Any and All ========= */
+using dpctl::tensor::py_internal::py_all;
+using dpctl::tensor::py_internal::py_any;
 
 /* ============== Advanced Indexing ============= */
 using dpctl::tensor::py_internal::usm_ndarray_put;
@@ -121,6 +126,7 @@ void init_dispatch_vectors(void)
     init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
+    populate_boolean_reduction_dispatch_vectors();
     populate_mask_positions_dispatch_vectors();
     populate_masked_extract_dispatch_vectors();
     populate_masked_place_dispatch_vectors();
@@ -346,4 +352,12 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
           py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
+
+    m.def("_all", py_all, "", py::arg("src"),
+          py::arg("trailing_dims_to_reduce"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_any", py_any, "", py::arg("src"),
+          py::arg("trailing_dims_to_reduce"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 }
