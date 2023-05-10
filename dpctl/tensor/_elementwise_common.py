@@ -191,17 +191,21 @@ def _weak_type_num_kind(o):
         return _map["i"]
     if isinstance(o, WeakInexactType):
         return _map["f"]
-    raise TypeError
+    raise TypeError(
+        f"Unexpected type {o} while expecting "
+        "`WeakBooleanType`, `WeakIntegralType`, or "
+        "`WeakInexactType`."
+    )
 
 
 def _strong_dtype_num_kind(o):
-    _map = {"?": 0, "i": 1, "u": 1, "f": 2, "c": 2}
+    _map = {"b": 0, "i": 1, "u": 1, "f": 2, "c": 2}
     if not isinstance(o, dpt.dtype):
         raise TypeError
     k = o.kind
     if k in _map:
         return _map[k]
-    raise ValueError
+    raise ValueError(f"Unrecognized kind {k} for dtype {o}")
 
 
 def _resolve_weak_types(o1_dtype, o2_dtype, dev):
