@@ -1,3 +1,5 @@
+from random import randrange
+
 import numpy as np
 import pytest
 from numpy import AxisError
@@ -24,141 +26,102 @@ _all_dtypes = [
 ]
 
 
+@pytest.mark.parametrize("func,identity", [(dpt.all, True), (dpt.any, False)])
 @pytest.mark.parametrize("dtype", _all_dtypes)
-def test_all_dtypes_contig(dtype):
+def test_boolean_reduction_dtypes_contig(func, identity, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    x = dpt.ones(10, dtype=dtype, sycl_queue=q)
-    res = dpt.all(x)
+    x = dpt.full(10, identity, dtype=dtype, sycl_queue=q)
+    res = func(x)
 
-    assert_equal(dpt.asnumpy(res), True)
+    assert_equal(dpt.asnumpy(res), identity)
 
-    x[x.size // 2] = 0
-    res = dpt.all(x)
-    assert_equal(dpt.asnumpy(res), False)
+    x[randrange(x.size)] = not identity
+    res = func(x)
+    assert_equal(dpt.asnumpy(res), not identity)
+
+    # test branch in kernel for large arrays
+    wg_size = 4 * 32
+    x = dpt.full((wg_size + 1), identity, dtype=dtype, sycl_queue=q)
+    res = func(x)
+    assert_equal(dpt.asnumpy(res), identity)
+
+    x[randrange(x.size)] = not identity
+    res = func(x)
+    assert_equal(dpt.asnumpy(res), not identity)
 
 
+@pytest.mark.parametrize("func,identity", [(dpt.all, True), (dpt.any, False)])
 @pytest.mark.parametrize("dtype", _all_dtypes)
-def test_all_dtypes_strided(dtype):
+def test_boolean_reduction_dtypes_strided(func, identity, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    x = dpt.ones(20, dtype=dtype, sycl_queue=q)[::-2]
-    res = dpt.all(x)
-    assert_equal(dpt.asnumpy(res), True)
+    x = dpt.full(20, identity, dtype=dtype, sycl_queue=q)[::-2]
+    res = func(x)
+    assert_equal(dpt.asnumpy(res), identity)
 
-    x[x.size // 2] = 0
-    res = dpt.all(x)
-    assert_equal(dpt.asnumpy(res), False)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_any_dtypes_contig(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = dpt.zeros(10, dtype=dtype, sycl_queue=q)
-    res = dpt.any(x)
-
-    assert_equal(dpt.asnumpy(res), False)
-
-    x[x.size // 2] = 1
-    res = dpt.any(x)
-    assert_equal(dpt.asnumpy(res), True)
+    x[randrange(x.size)] = not identity
+    res = func(x)
+    assert_equal(dpt.asnumpy(res), not identity)
 
 
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_any_dtypes_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = dpt.zeros(20, dtype=dtype, sycl_queue=q)[::-2]
-    res = dpt.any(x)
-    assert_equal(dpt.asnumpy(res), False)
-
-    x[x.size // 2] = 1
-    res = dpt.any(x)
-    assert_equal(dpt.asnumpy(res), True)
-
-
-def test_all_axis():
+@pytest.mark.parametrize("func,identity", [(dpt.all, True), (dpt.any, False)])
+def test_boolean_reduction_axis(func, identity):
     get_queue_or_skip()
 
-    x = dpt.ones((2, 3, 4, 5, 6), dtype="i4")
-    res = dpt.all(x, axis=(1, 2, -1))
+    x = dpt.full((2, 3, 4, 5, 6), identity, dtype="i4")
+    res = func(x, axis=(1, 2, -1))
 
     assert res.shape == (2, 5)
-    assert_array_equal(dpt.asnumpy(res), np.full(res.shape, True))
+    assert_array_equal(dpt.asnumpy(res), np.full(res.shape, identity))
 
-    # make first row of output false
-    x[0, 0, 0, ...] = 0
-    res = dpt.all(x, axis=(1, 2, -1))
-    assert_array_equal(dpt.asnumpy(res[0]), np.full(res.shape[1], False))
-
-
-def test_any_axis():
-    get_queue_or_skip()
-
-    x = dpt.zeros((2, 3, 4, 5, 6), dtype="i4")
-    res = dpt.any(x, axis=(1, 2, -1))
-
-    assert res.shape == (2, 5)
-    assert_array_equal(dpt.asnumpy(res), np.full(res.shape, False))
-
-    # make first row of output true
-    x[0, 0, 0, ...] = 1
-    res = dpt.any(x, axis=(1, 2, -1))
-    assert_array_equal(dpt.asnumpy(res[0]), np.full(res.shape[1], True))
+    # make first row of output negation of identity
+    x[0, 0, 0, ...] = not identity
+    res = func(x, axis=(1, 2, -1))
+    assert_array_equal(dpt.asnumpy(res[0]), np.full(res.shape[1], not identity))
 
 
-def test_all_any_keepdims():
+@pytest.mark.parametrize("func", [dpt.all, dpt.any])
+def test_all_any_keepdims(func):
     get_queue_or_skip()
 
     x = dpt.ones((2, 3, 4, 5, 6), dtype="i4")
 
-    res = dpt.all(x, axis=(1, 2, -1), keepdims=True)
-    assert res.shape == (2, 1, 1, 5, 1)
-    assert_array_equal(dpt.asnumpy(res), np.full(res.shape, True))
-
-    res = dpt.any(x, axis=(1, 2, -1), keepdims=True)
+    res = func(x, axis=(1, 2, -1), keepdims=True)
     assert res.shape == (2, 1, 1, 5, 1)
     assert_array_equal(dpt.asnumpy(res), np.full(res.shape, True))
 
 
 # nan, inf, and -inf should evaluate to true
-def test_all_any_nan_inf():
+@pytest.mark.parametrize("func", [dpt.all, dpt.any])
+def test_boolean_reductions_nan_inf(func):
     q = get_queue_or_skip()
 
-    x = dpt.asarray([dpt.nan, dpt.inf, -dpt.inf], dtype="f4", sycl_queue=q)
-    res = dpt.all(x)
+    x = dpt.asarray([dpt.nan, dpt.inf, -dpt.inf], dtype="f4", sycl_queue=q)[
+        :, dpt.newaxis
+    ]
+    res = func(x, axis=1)
     assert_equal(dpt.asnumpy(res), True)
 
-    x = x[:, dpt.newaxis]
-    res = dpt.any(x, axis=1)
-    assert_array_equal(dpt.asnumpy(res), np.full(res.shape, True))
 
-
-def test_all_any_scalar():
+@pytest.mark.parametrize("func", [dpt.all, dpt.any])
+def test_boolean_reduction_scalars(func):
     get_queue_or_skip()
 
     x = dpt.ones((), dtype="i4")
-    dpt.all(x)
-    dpt.any(x)
+    func(x)
 
 
-def test_arg_validation_all_any():
+@pytest.mark.parametrize("func", [dpt.all, dpt.any])
+def test_arg_validation_boolean_reductions(func):
     get_queue_or_skip()
 
     x = dpt.ones((4, 5), dtype="i4")
     d = dict()
 
     with pytest.raises(TypeError):
-        dpt.all(d)
+        func(d)
     with pytest.raises(AxisError):
-        dpt.all(x, axis=-3)
-
-    with pytest.raises(TypeError):
-        dpt.any(d)
-    with pytest.raises(AxisError):
-        dpt.any(x, axis=-3)
+        func(x, axis=-3)
