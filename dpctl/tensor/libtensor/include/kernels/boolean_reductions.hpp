@@ -58,47 +58,97 @@ template <typename T> struct boolean_predicate
     }
 };
 
-template <typename inpT, typename outT, typename PredicateT, size_t wg_dim>
+template <typename inpT,
+          typename outT,
+          typename PredicateT,
+          std::uint8_t wg_dim = 2>
 struct all_reduce_wg_contig
 {
-    outT operator()(sycl::group<wg_dim> &wg,
+    void operator()(sycl::nd_item<wg_dim> &ndit,
+                    outT *out,
+                    size_t &out_idx,
                     const inpT *start,
                     const inpT *end) const
     {
         PredicateT pred{};
-        return static_cast<outT>(sycl::joint_all_of(wg, start, end, pred));
+        auto wg = ndit.get_group();
+        outT red_val_over_wg =
+            static_cast<outT>(sycl::joint_all_of(wg, start, end, pred));
+
+        if (wg.leader()) {
+            sycl::atomic_ref<outT, sycl::memory_order::relaxed,
+                             sycl::memory_scope::device,
+                             sycl::access::address_space::global_space>
+                res_ref(out[out_idx]);
+            res_ref.fetch_and(red_val_over_wg);
+        }
     }
 };
 
-template <typename inpT, typename outT, typename PredicateT, size_t wg_dim>
+template <typename inpT,
+          typename outT,
+          typename PredicateT,
+          std::uint8_t wg_dim = 2>
 struct any_reduce_wg_contig
 {
-    outT operator()(sycl::group<wg_dim> &wg,
+    void operator()(sycl::nd_item<wg_dim> &ndit,
+                    outT *out,
+                    size_t &out_idx,
                     const inpT *start,
                     const inpT *end) const
     {
         PredicateT pred{};
-        return static_cast<outT>(sycl::joint_any_of(wg, start, end, pred));
+        auto wg = ndit.get_group();
+        outT red_val_over_wg =
+            static_cast<outT>(sycl::joint_any_of(wg, start, end, pred));
+
+        if (wg.leader()) {
+            sycl::atomic_ref<outT, sycl::memory_order::relaxed,
+                             sycl::memory_scope::device,
+                             sycl::access::address_space::global_space>
+                res_ref(out[out_idx]);
+            res_ref.fetch_or(red_val_over_wg);
+        }
     }
 };
 
-template <typename T, typename PredicateT, size_t wg_dim>
-struct all_reduce_wg_strided
+template <typename T, std::uint8_t wg_dim = 2> struct all_reduce_wg_strided
 {
-    T operator()(sycl::group<wg_dim> &wg, const T &local_val) const
+    void operator()(sycl::nd_item<wg_dim> &ndit,
+                    T *out,
+                    const size_t &out_idx,
+                    const T &local_val) const
     {
-        PredicateT pred{};
-        return static_cast<T>(sycl::all_of_group(wg, local_val, pred));
+        auto wg = ndit.get_group();
+        T red_val_over_wg = static_cast<T>(sycl::all_of_group(wg, local_val));
+
+        if (wg.leader()) {
+            sycl::atomic_ref<T, sycl::memory_order::relaxed,
+                             sycl::memory_scope::device,
+                             sycl::access::address_space::global_space>
+                res_ref(out[out_idx]);
+            res_ref.fetch_and(red_val_over_wg);
+        }
     }
 };
 
-template <typename T, typename PredicateT, size_t wg_dim>
-struct any_reduce_wg_strided
+template <typename T, std::uint8_t wg_dim = 2> struct any_reduce_wg_strided
 {
-    T operator()(sycl::group<wg_dim> &wg, const T &local_val) const
+    void operator()(sycl::nd_item<wg_dim> &ndit,
+                    T *out,
+                    const size_t &out_idx,
+                    const T &local_val) const
     {
-        PredicateT pred{};
-        return static_cast<T>(sycl::any_of_group(wg, local_val, pred));
+        auto wg = ndit.get_group();
+        T red_val_over_wg = static_cast<T>(sycl::any_of_group(wg, local_val));
+
+        if (wg.leader()) {
+            sycl::atomic_ref<T, sycl::memory_order::relaxed,
+                             sycl::memory_scope::device,
+                             sycl::access::address_space::global_space>
+                res_ref(out[out_idx]);
+            res_ref.fetch_or(red_val_over_wg);
+        }
     }
 };
 
@@ -137,8 +187,10 @@ public:
     {
 
         auto inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
-        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
-        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
+        const size_t &inp_iter_offset =
+            inp_out_iter_offsets_.get_first_offset();
+        const size_t &out_iter_offset =
+            inp_out_iter_offsets_.get_second_offset();
 
         outT red_val(identity_);
         for (size_t m = 0; m < reduction_max_gid_; ++m) {
@@ -156,13 +208,12 @@ public:
     }
 };
 
-template <typename argT, typename outT, typename ReductionOp, typename GroupOp>
+template <typename argT, typename outT, typename GroupOp>
 struct ContigBooleanReduction
 {
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
     GroupOp group_op_;
     size_t reduction_max_gid_ = 0;
     size_t reductions_per_wi = 16;
@@ -170,12 +221,11 @@ private:
 public:
     ContigBooleanReduction(const argT *inp,
                            outT *res,
-                           ReductionOp reduction_op,
                            GroupOp group_op,
                            size_t reduction_size,
                            size_t reduction_size_per_wi)
-        : inp_(inp), out_(res), reduction_op_(reduction_op),
-          group_op_(group_op), reduction_max_gid_(reduction_size),
+        : inp_(inp), out_(res), group_op_(group_op),
+          reduction_max_gid_(reduction_size),
           reductions_per_wi(reduction_size_per_wi)
     {
     }
@@ -185,30 +235,15 @@ public:
 
         size_t reduction_id = it.get_group(0);
         size_t reduction_batch_id = it.get_group(1);
-
-        auto work_group = it.get_group();
         size_t wg_size = it.get_local_range(1);
 
         size_t base = reduction_id * reduction_max_gid_;
         size_t start = base + reduction_batch_id * wg_size * reductions_per_wi;
         size_t end = std::min((start + (reductions_per_wi * wg_size)),
                               base + reduction_max_gid_);
-
-        // reduction to the work group level is performed
-        // inside group_op
-        outT red_val_over_wg = group_op_(work_group, inp_ + start, inp_ + end);
-
-        if (work_group.leader()) {
-            sycl::atomic_ref<outT, sycl::memory_order::relaxed,
-                             sycl::memory_scope::device,
-                             sycl::access::address_space::global_space>
-                res_ref(out_[reduction_id]);
-            outT read_val = res_ref.load();
-            outT new_val{};
-            do {
-                new_val = reduction_op_(read_val, red_val_over_wg);
-            } while (!res_ref.compare_exchange_strong(read_val, new_val));
-        }
+        // reduction and atomic operations are performed
+        // in group_op_
+        group_op_(it, out_, reduction_id, inp_ + start, inp_ + end);
     }
 };
 
@@ -223,7 +258,7 @@ typedef sycl::event (*boolean_reduction_contig_impl_fn_ptr)(
     py::ssize_t,
     const std::vector<sycl::event> &);
 
-template <typename T1, typename T2, typename T3, typename T4>
+template <typename T1, typename T2, typename T3>
 class boolean_reduction_contig_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -298,7 +333,7 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(init_ev);
 
-            constexpr size_t group_dim = 2;
+            constexpr std::uint8_t group_dim = 2;
 
             constexpr size_t preferred_reductions_per_wi = 4;
             size_t reductions_per_wi =
@@ -314,11 +349,11 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
                 sycl::range<group_dim>{iter_nelems, reduction_groups * wg};
             auto lws = sycl::range<group_dim>{1, wg};
 
-            cgh.parallel_for<class boolean_reduction_contig_krn<
-                argTy, resTy, RedOpT, GroupOpT>>(
+            cgh.parallel_for<
+                class boolean_reduction_contig_krn<argTy, resTy, GroupOpT>>(
                 sycl::nd_range<group_dim>(gws, lws),
-                ContigBooleanReduction<argTy, resTy, RedOpT, GroupOpT>(
-                    arg_tp, res_tp, RedOpT(), GroupOpT(), reduction_nelems,
+                ContigBooleanReduction<argTy, resTy, GroupOpT>(
+                    arg_tp, res_tp, GroupOpT(), reduction_nelems,
                     reductions_per_wi));
         });
     }
@@ -332,7 +367,7 @@ template <typename fnT, typename srcTy> struct AllContigFactory
         using resTy = std::int32_t;
         using RedOpT = sycl::logical_and<resTy>;
         using GroupOpT =
-            all_reduce_wg_contig<srcTy, resTy, boolean_predicate<srcTy>, 2>;
+            all_reduce_wg_contig<srcTy, resTy, boolean_predicate<srcTy>>;
 
         return dpctl::tensor::kernels::boolean_reduction_contig_impl<
             srcTy, resTy, RedOpT, GroupOpT>;
@@ -346,7 +381,7 @@ template <typename fnT, typename srcTy> struct AnyContigFactory
         using resTy = std::int32_t;
         using RedOpT = sycl::logical_or<resTy>;
         using GroupOpT =
-            any_reduce_wg_contig<srcTy, resTy, boolean_predicate<srcTy>, 2>;
+            any_reduce_wg_contig<srcTy, resTy, boolean_predicate<srcTy>>;
 
         return dpctl::tensor::kernels::boolean_reduction_contig_impl<
             srcTy, resTy, RedOpT, GroupOpT>;
@@ -400,8 +435,10 @@ public:
         size_t wg_size = it.get_local_range(1);
 
         auto inp_out_iter_offsets_ = inp_out_iter_indexer_(reduction_id);
-        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
-        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
+        const size_t &inp_iter_offset =
+            inp_out_iter_offsets_.get_first_offset();
+        const size_t &out_iter_offset =
+            inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
         size_t arg_reduce_gid0 =
@@ -416,28 +453,15 @@ public:
 
                 // must convert to boolean first to handle nans
                 using dpctl::tensor::type_utils::convert_impl;
-                outT val = convert_impl<bool, argT>(inp_[inp_offset]);
+                bool val = convert_impl<bool, argT>(inp_[inp_offset]);
 
-                local_red_val = reduction_op_(local_red_val, val);
+                local_red_val =
+                    reduction_op_(local_red_val, static_cast<outT>(val));
             }
         }
-
-        // reduction to the work group level is performed
-        // inside group_op
-        auto work_group = it.get_group();
-        outT red_val_over_wg = group_op_(work_group, local_red_val);
-
-        if (work_group.leader()) {
-            sycl::atomic_ref<outT, sycl::memory_order::relaxed,
-                             sycl::memory_scope::device,
-                             sycl::access::address_space::global_space>
-                res_ref(out_[out_iter_offset]);
-            outT read_val = res_ref.load();
-            outT new_val{};
-            do {
-                new_val = reduction_op_(read_val, red_val_over_wg);
-            } while (!res_ref.compare_exchange_strong(read_val, new_val));
-        }
+        // reduction and atomic operations are performed
+        // in group_op_
+        group_op_(it, out_, out_iter_offset, local_red_val);
     }
 };
 
@@ -541,7 +565,7 @@ boolean_reduction_strided_impl(sycl::queue exec_q,
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(res_init_ev);
 
-            constexpr size_t group_dim = 2;
+            constexpr std::uint8_t group_dim = 2;
 
             using InputOutputIterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
@@ -589,8 +613,7 @@ template <typename fnT, typename srcTy> struct AllStridedFactory
     {
         using resTy = std::int32_t;
         using RedOpT = sycl::logical_and<resTy>;
-        using GroupOpT =
-            all_reduce_wg_strided<resTy, boolean_predicate<srcTy>, 2>;
+        using GroupOpT = all_reduce_wg_strided<resTy>;
 
         return dpctl::tensor::kernels::boolean_reduction_strided_impl<
             srcTy, resTy, RedOpT, GroupOpT>;
@@ -603,8 +626,7 @@ template <typename fnT, typename srcTy> struct AnyStridedFactory
     {
         using resTy = std::int32_t;
         using RedOpT = sycl::logical_or<resTy>;
-        using GroupOpT =
-            any_reduce_wg_strided<resTy, boolean_predicate<srcTy>, 2>;
+        using GroupOpT = any_reduce_wg_strided<resTy>;
 
         return dpctl::tensor::kernels::boolean_reduction_strided_impl<
             srcTy, resTy, RedOpT, GroupOpT>;

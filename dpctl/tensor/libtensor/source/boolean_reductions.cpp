@@ -41,6 +41,7 @@
 #include "kernels/boolean_reductions.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace py = pybind11;
@@ -145,7 +146,7 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
     constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
     if (dst_typeid != int32_typeid) {
         throw py::value_error(
-            "Unexact data type of destination array, expecting 'int32'");
+            "Unexpected data type of destination array, expecting 'int32'");
     }
 
     bool is_src_c_contig = src.is_c_contiguous();
@@ -156,7 +157,7 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
     if ((is_src_c_contig && is_dst_c_contig) ||
         (is_src_f_contig && dst_nd == 0)) {
         auto fn = contig_dispatch_vector[src_typeid];
-        py::ssize_t zero_offset = 0;
+        constexpr py::ssize_t zero_offset = 0;
 
         auto red_ev = fn(exec_q, dst_nelems, red_nelems, src_data, dst_data,
                          zero_offset, zero_offset, zero_offset, depends);
