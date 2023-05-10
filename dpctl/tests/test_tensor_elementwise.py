@@ -1,3 +1,4 @@
+import ctypes
 import itertools
 
 import numpy as np
@@ -5,6 +6,8 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._type_utils as tu
+import dpctl.utils
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
@@ -24,6 +27,157 @@ _all_dtypes = [
     "c16",
 ]
 _usm_types = ["device", "shared", "host"]
+
+
+class MockDevice:
+    def __init__(self, fp16: bool, fp64: bool):
+        self.has_aspect_fp16 = fp16
+        self.has_aspect_fp64 = fp64
+
+
+def _map_to_device_dtype(dt, dev):
+    return tu._to_device_supported_dtype(dt, dev)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_type_utils_map_to_device_type(dtype):
+    for fp64 in [
+        True,
+        False,
+    ]:
+        for fp16 in [True, False]:
+            dev = MockDevice(fp16, fp64)
+            dt_in = dpt.dtype(dtype)
+            dt_out = _map_to_device_dtype(dt_in, dev)
+            assert isinstance(dt_out, dpt.dtype)
+
+
+def test_type_util_all_data_types():
+    for fp64 in [
+        True,
+        False,
+    ]:
+        for fp16 in [True, False]:
+            r = tu._all_data_types(fp16, fp64)
+            assert isinstance(r, list)
+            # 11: bool + 4 signed + 4 unsigned inegral + float32 + complex64
+            assert len(r) == 11 + int(fp16) + 2 * int(fp64)
+
+
+def test_type_util_can_cast():
+    for fp64 in [
+        True,
+        False,
+    ]:
+        for fp16 in [True, False]:
+            for from_ in _all_dtypes:
+                for to_ in _all_dtypes:
+                    r = tu._can_cast(
+                        dpt.dtype(from_), dpt.dtype(to_), fp16, fp64
+                    )
+                    assert isinstance(r, bool)
+
+
+def test_type_utils_empty_like_orderK():
+    try:
+        a = dpt.empty((10, 10), dtype=dpt.int32, order="F")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    X = tu._empty_like_orderK(a, dpt.int32, a.usm_type, a.device)
+    assert X.flags["F"]
+
+
+def test_type_utils_empty_like_orderK_invalid_args():
+    with pytest.raises(TypeError):
+        tu._empty_like_orderK([1, 2, 3], dpt.int32, "device", None)
+    with pytest.raises(TypeError):
+        tu._empty_like_pair_orderK(
+            [1, 2, 3],
+            (
+                1,
+                2,
+                3,
+            ),
+            dpt.int32,
+            "device",
+            None,
+        )
+    try:
+        a = dpt.empty(10, dtype=dpt.int32)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    with pytest.raises(TypeError):
+        tu._empty_like_pair_orderK(
+            a,
+            (
+                1,
+                2,
+                3,
+            ),
+            dpt.int32,
+            "device",
+            None,
+        )
+
+
+def test_type_utils_find_buf_dtype():
+    def _denier_fn(dt):
+        return False
+
+    for fp64 in [
+        True,
+        False,
+    ]:
+        for fp16 in [True, False]:
+            dev = MockDevice(fp16, fp64)
+            arg_dt = dpt.float64
+            r = tu._find_buf_dtype(arg_dt, _denier_fn, dev)
+            assert r == (
+                None,
+                None,
+            )
+
+
+def test_type_utils_find_buf_dtype2():
+    def _denier_fn(dt1, dt2):
+        return False
+
+    for fp64 in [
+        True,
+        False,
+    ]:
+        for fp16 in [True, False]:
+            dev = MockDevice(fp16, fp64)
+            arg1_dt = dpt.float64
+            arg2_dt = dpt.complex64
+            r = tu._find_buf_dtype2(arg1_dt, arg2_dt, _denier_fn, dev)
+            assert r == (
+                None,
+                None,
+                None,
+            )
+
+
+def test_unary_func_arg_validation():
+    with pytest.raises(TypeError):
+        dpt.abs([1, 2, 3])
+    try:
+        a = dpt.arange(8)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    dpt.abs(a, order="invalid")
+
+
+def test_binary_func_arg_vaidation():
+    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+        dpt.add([1, 2, 3], 1)
+    try:
+        a = dpt.arange(8)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    with pytest.raises(ValueError):
+        dpt.add(a, Ellipsis)
+    dpt.add(a, a, order="invalid")
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -111,15 +265,7 @@ def test_abs_complex(dtype):
 def _compare_dtypes(dt, ref_dt, sycl_queue=None):
     assert isinstance(sycl_queue, dpctl.SyclQueue)
     dev = sycl_queue.sycl_device
-    expected_dt = ref_dt
-    if not dev.has_aspect_fp64:
-        if expected_dt == dpt.float64:
-            expected_dt = dpt.float32
-        elif expected_dt == dpt.complex128:
-            expected_dt = dpt.complex64
-    if not dev.has_aspect_fp16:
-        if expected_dt == dpt.float16:
-            expected_dt = dpt.float32
+    expected_dt = _map_to_device_dtype(ref_dt, dev)
     return dt == expected_dt
 
 
@@ -224,22 +370,60 @@ def test_add_broadcasting():
     assert (dpt.asnumpy(r2) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
 
-def _map_to_device_dtype(dt, dev):
-    if np.issubdtype(dt, np.integer):
-        return dt
-    if np.issubdtype(dt, np.floating):
-        dtc = np.dtype(dt).char
-        if dtc == "d":
-            return dt if dev.has_aspect_fp64 else dpt.float32
-        elif dtc == "e":
-            return dt if dev.has_aspect_fp16 else dpt.float32
-        return dt
-    if np.issubdtype(dt, np.complexfloating):
-        dtc = np.dtype(dt).char
-        if dtc == "D":
-            return dt if dev.has_aspect_fp64 else dpt.complex64
-        return dt
-    return dt
+@pytest.mark.parametrize("arr_dt", _all_dtypes)
+def test_add_python_scalar(arr_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arr_dt, q)
+
+    X = dpt.zeros((10, 10), dtype=arr_dt, sycl_queue=q)
+    py_zeros = (
+        bool(0),
+        int(0),
+        float(0),
+        complex(0),
+        np.float32(0),
+        ctypes.c_int(0),
+    )
+    for sc in py_zeros:
+        R = dpt.add(X, sc)
+        assert isinstance(R, dpt.usm_ndarray)
+        R = dpt.add(sc, X)
+        assert isinstance(R, dpt.usm_ndarray)
+
+
+class MockArray:
+    def __init__(self, arr):
+        self.data_ = arr
+
+    @property
+    def __sycl_usm_array_interface__(self):
+        return self.data_.__sycl_usm_array_interface__
+
+
+def test_add_mock_array():
+    get_queue_or_skip()
+    a = dpt.arange(10)
+    b = dpt.ones(10)
+    c = MockArray(b)
+    r = dpt.add(a, c)
+    assert isinstance(r, dpt.usm_ndarray)
+
+
+def test_add_canary_mock_array():
+    get_queue_or_skip()
+    a = dpt.arange(10)
+
+    class Canary:
+        def __init__(self):
+            pass
+
+        @property
+        def __sycl_usm_array_interface__(self):
+            return None
+
+    c = Canary()
+    with pytest.raises(ValueError):
+        dpt.add(a, c)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)

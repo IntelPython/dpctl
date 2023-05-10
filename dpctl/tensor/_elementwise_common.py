@@ -49,9 +49,7 @@ class UnaryElementwiseFunc:
 
     def __call__(self, x, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
-            raise TypeError(
-                f"Expected :class:`dpctl.tensor.usm_ndarray`, got {type(x)}"
-            )
+            raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
         if order not in ["C", "F", "K", "A"]:
             order = "K"
         buf_dt, res_dt = _find_buf_dtype(
@@ -85,8 +83,6 @@ class UnaryElementwiseFunc:
         if order == "K":
             r = _empty_like_orderK(buf, res_dt)
         else:
-            if order == "A":
-                order = "F" if buf.flags.f_contiguous else "C"
             r = dpt.empty_like(buf, dtype=res_dt, order=order)
 
         ht, _ = self.unary_fn_(buf, r, sycl_queue=exec_q, depends=[copy_ev])
@@ -142,6 +138,8 @@ class WeakInexactType:
 def _get_dtype(o, dev):
     if isinstance(o, dpt.usm_ndarray):
         return o.dtype
+    if hasattr(o, "__sycl_usm_array_interface__"):
+        return dpt.asarray(o).dtype
     if _is_buffer(o):
         host_dt = np.array(o).dtype
         dev_dt = _to_device_supported_dtype(host_dt, dev)
@@ -224,13 +222,12 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
                 return dpt.bool, o2_dtype
             if isinstance(o1_dtype, WeakIntegralType):
                 return dpt.int64, o2_dtype
-            if isinstance(o1_dtype, WeakInexactType):
-                if isinstance(o1_dtype.get(), complex):
-                    return (
-                        _to_device_supported_dtype(dpt.complex128, dev),
-                        o2_dtype,
-                    )
-                return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
+            if isinstance(o1_dtype.get(), complex):
+                return (
+                    _to_device_supported_dtype(dpt.complex128, dev),
+                    o2_dtype,
+                )
+            return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
         else:
             return o2_dtype, o2_dtype
     elif isinstance(
@@ -243,15 +240,12 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
                 return o1_dtype, dpt.bool
             if isinstance(o2_dtype, WeakIntegralType):
                 return o1_dtype, dpt.int64
-            if isinstance(o2_dtype, WeakInexactType):
-                if isinstance(o2_dtype.get(), complex):
-                    return o1_dtype, _to_device_supported_dtype(
-                        dpt.complex128, dev
-                    )
-                return (
-                    o1_dtype,
-                    _to_device_supported_dtype(dpt.float64, dev),
-                )
+            if isinstance(o2_dtype.get(), complex):
+                return o1_dtype, _to_device_supported_dtype(dpt.complex128, dev)
+            return (
+                o1_dtype,
+                _to_device_supported_dtype(dpt.float64, dev),
+            )
         else:
             return o1_dtype, o1_dtype
     else:
@@ -287,10 +281,14 @@ class BinaryElementwiseFunc:
         return f"<BinaryElementwiseFunc '{self.name_}'>"
 
     def __call__(self, o1, o2, order="K"):
+        if order not in ["K", "C", "F", "A"]:
+            order = "K"
         q1, o1_usm_type = _get_queue_usm_type(o1)
         q2, o2_usm_type = _get_queue_usm_type(o2)
         if q1 is None and q2 is None:
-            raise ValueError(
+            raise ExecutionPlacementError(
+                "Execution placement can not be unambiguously inferred "
+                "from input arguments. "
                 "One of the arguments must represent USM allocation and "
                 "expose `__sycl_usm_array_interface__` property"
             )
@@ -415,18 +413,6 @@ class BinaryElementwiseFunc:
                     src1, buf2, res_dt, res_usm_type, exec_q
                 )
             else:
-                if order == "A":
-                    order = (
-                        "F"
-                        if all(
-                            arr.flags.f_contiguous
-                            for arr in (
-                                src1,
-                                buf2,
-                            )
-                        )
-                        else "C"
-                    )
                 r = dpt.empty(
                     res_shape,
                     dtype=res_dt,
@@ -461,18 +447,6 @@ class BinaryElementwiseFunc:
                     buf1, src2, res_dt, res_usm_type, exec_q
                 )
             else:
-                if order == "A":
-                    order = (
-                        "F"
-                        if all(
-                            arr.flags.f_contiguous
-                            for arr in (
-                                buf1,
-                                src2,
-                            )
-                        )
-                        else "C"
-                    )
                 r = dpt.empty(
                     res_shape,
                     dtype=res_dt,
@@ -493,7 +467,7 @@ class BinaryElementwiseFunc:
             ht_.wait()
             return r
 
-        if order in "KA":
+        if order in ["K", "A"]:
             if src1.flags.f_contiguous and src2.flags.f_contiguous:
                 order = "F"
             else:
