@@ -187,15 +187,16 @@ public:
     {
 
         auto inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
-        const size_t &inp_iter_offset =
+        const py::ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
-        const size_t &out_iter_offset =
+        const py::ssize_t &out_iter_offset =
             inp_out_iter_offsets_.get_second_offset();
 
         outT red_val(identity_);
         for (size_t m = 0; m < reduction_max_gid_; ++m) {
-            auto inp_reduction_offset = inp_reduced_dims_indexer_(m);
-            auto inp_offset = inp_iter_offset + inp_reduction_offset;
+            py::ssize_t inp_reduction_offset =
+                static_cast<py::ssize_t>(inp_reduced_dims_indexer_(m));
+            py::ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             // must convert to boolean first to handle nans
             using dpctl::tensor::type_utils::convert_impl;
@@ -435,9 +436,9 @@ public:
         size_t wg_size = it.get_local_range(1);
 
         auto inp_out_iter_offsets_ = inp_out_iter_indexer_(reduction_id);
-        const size_t &inp_iter_offset =
+        const py::ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
-        const size_t &out_iter_offset =
+        const py::ssize_t &out_iter_offset =
             inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
@@ -447,9 +448,9 @@ public:
             size_t arg_reduce_gid = arg_reduce_gid0 + m * wg_size;
 
             if (arg_reduce_gid < reduction_max_gid_) {
-                auto inp_reduction_offset =
-                    inp_reduced_dims_indexer_(arg_reduce_gid);
-                auto inp_offset = inp_iter_offset + inp_reduction_offset;
+                py::ssize_t inp_reduction_offset = static_cast<py::ssize_t>(
+                    inp_reduced_dims_indexer_(arg_reduce_gid));
+                py::ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
                 // must convert to boolean first to handle nans
                 using dpctl::tensor::type_utils::convert_impl;
