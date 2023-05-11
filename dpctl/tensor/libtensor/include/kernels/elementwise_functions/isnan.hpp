@@ -19,11 +19,69 @@ namespace isnan
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::vec_cast;
+
+template <typename argT, typename resT> struct IsNanFunctor
+{
+    static_assert(std::is_same_v<resT, bool>);
+
+    /*
+    std::is_same<argT, bool>::value ||
+                           std::is_integral<argT>::value
+    */
+    using is_constant = typename std::disjunction<std::is_same<argT, bool>,
+                                                  std::is_integral<argT>>;
+    static constexpr resT constant_value = false;
+    using supports_vec = typename std::true_type;
+    using supports_sg_loadstore = typename std::negation<
+        std::disjunction<is_complex<resT>, is_complex<argT>>>;
+
+    resT operator()(const argT &in) const
+    {
+        if constexpr (is_complex<argT>::value) {
+            const bool real_isnan = sycl::isnan(std::real(in));
+            const bool imag_isnan = sycl::isnan(std::imag(in));
+            return (real_isnan || imag_isnan);
+        }
+        else if constexpr (std::is_same<argT, bool>::value ||
+                           std::is_integral<argT>::value)
+        {
+            return constant_value;
+        }
+        else {
+            return sycl::isnan(in);
+        }
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    {
+        auto const &res_vec = sycl::isnan(in);
+
+        using deducedT = typename std::remove_cv_t<
+            std::remove_reference_t<decltype(res_vec)>>::element_type;
+
+        return vec_cast<bool, deducedT, vec_sz>(res_vec);
+    }
+};
+
+template <typename argT,
+          typename resT = bool,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using IsNanContigFunctor = elementwise_common::
+    UnaryContigFunctor<argT, resT, IsNanFunctor<argT, resT>, vec_sz, n_vecs>;
+
+template <typename argTy, typename resTy, typename IndexerT>
+using IsNanStridedFunctor = elementwise_common::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, IsNanFunctor<argTy, resTy>>;
+
 template <typename argT,
           typename resT,
           std::uint8_t vec_sz = 4,
           std::uint8_t n_vecs = 2>
-struct IsNanContigFunctor
+struct IsNanContigFunctorOld
 {
 private:
     const argT *in = nullptr;
@@ -31,7 +89,7 @@ private:
     const size_t nelems_;
 
 public:
-    IsNanContigFunctor(const argT *inp, resT *res, const size_t nelems)
+    IsNanContigFunctorOld(const argT *inp, resT *res, const size_t nelems)
         : in(inp), out(res), nelems_(nelems)
     {
     }
@@ -193,7 +251,7 @@ template <typename fnT, typename T> struct IsNanTypeMapFactory
 };
 
 template <typename argT, typename resT, typename IndexerT>
-struct IsNanStridedFunctor
+struct IsNanStridedFunctorOld
 {
 private:
     const argT *inp_ = nullptr;
@@ -201,9 +259,9 @@ private:
     IndexerT inp_out_indexer_;
 
 public:
-    IsNanStridedFunctor(const argT *inp_p,
-                        resT *res_p,
-                        IndexerT inp_out_indexer)
+    IsNanStridedFunctorOld(const argT *inp_p,
+                           resT *res_p,
+                           IndexerT inp_out_indexer)
         : inp_(inp_p), res_(res_p), inp_out_indexer_(inp_out_indexer)
     {
     }

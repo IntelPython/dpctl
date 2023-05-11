@@ -90,7 +90,7 @@ from dpctl.tensor._search_functions import where
 from dpctl.tensor._usmarray import usm_ndarray
 
 from ._constants import e, inf, nan, newaxis, pi
-from ._elementwise_funcs import abs, add, cos, isnan
+from ._elementwise_funcs import abs, add, cos, isfinite, isinf, isnan
 
 __all__ = [
     "Device",
@@ -168,5 +168,7 @@ __all__ = [
     "abs",
     "add",
     "cos",
+    "isinf",
     "isnan",
+    "isfinite",
 ]

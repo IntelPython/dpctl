@@ -2,6 +2,8 @@
 #include <CL/sycl.hpp>
 #include <cstdint>
 
+#include "kernels/elementwise_functions/common.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -19,87 +21,55 @@ namespace cos
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-template <typename argT,
-          typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
-struct CosContigFunctor
+using dpctl::tensor::type_utils::is_complex;
+
+template <typename argT, typename resT> struct CosFunctor
 {
-private:
-    const argT *in = nullptr;
-    resT *out = nullptr;
-    const size_t nelems_;
 
-public:
-    CosContigFunctor(const argT *inp, resT *res, const size_t nelems)
-        : in(inp), out(res), nelems_(nelems)
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT constant_value = resT{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::false_type;
+    // do both argTy and resTy support sugroup store/load operation
+    using supports_sg_loadstore = typename std::negation<
+        std::disjunction<is_complex<resT>, is_complex<argT>>>;
+
+    resT operator()(const argT &in)
     {
-    }
-
-    void operator()(sycl::nd_item<1> ndit) const
-    {
-        auto sg = ndit.get_sub_group();
-
-        using dpctl::tensor::type_utils::is_complex;
         if constexpr (is_complex<argT>::value) {
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
+            using realT = typename argT::value_type;
+            // cos(x + I*y) = cos(x)*cosh(y) - I*sin(x)*sinh(y)
+            auto v = std::real(in);
+            realT cosX_val;
+            const realT sinX_val = sycl::sincos(-v, &cosX_val);
+            v = std::imag(in);
+            const realT sinhY_val = sycl::sinh(v);
+            const realT coshY_val = sycl::cosh(v);
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
-            for (size_t offset = base;
-                 offset < std::min(base + sgSize * (n_vecs * vec_sz), nelems_);
-                 offset += sgSize)
-            {
-                using realT = typename argT::value_type;
-                // cos(x + I*y) = cos(x)*cosh(y) - I*sin(x)*sinh(y)
-                auto v = std::real(in[offset]);
-                realT cosX_val;
-                const realT sinX_val = sycl::sincos(-v, &cosX_val);
-                v = std::imag(in[offset]);
-                const realT sinhY_val = sycl::sinh(v);
-                const realT coshY_val = sycl::cosh(v);
-
-                const realT res_re = coshY_val * cosX_val;
-                const realT res_im = sinX_val * sinhY_val;
-                out[offset] = resT{res_re, res_im};
-            }
+            const realT res_re = coshY_val * cosX_val;
+            const realT res_im = sinX_val * sinhY_val;
+            return resT{res_re, res_im};
         }
         else {
-            using dpctl::tensor::type_utils::vec_cast;
-
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            size_t base = n_vecs * vec_sz *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * sgSize);
-            if (base + n_vecs * vec_sz * sg.get_max_local_range()[0] < nelems_)
-            {
-                using in_ptrT =
-                    sycl::multi_ptr<const argT,
-                                    sycl::access::address_space::global_space>;
-                using out_ptrT =
-                    sycl::multi_ptr<resT,
-                                    sycl::access::address_space::global_space>;
-
-#pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    sycl::vec<argT, vec_sz> x =
-                        sg.load<vec_sz>(in_ptrT(&in[base + it * sgSize]));
-
-                    sycl::vec<resT, vec_sz> res_vec = sycl::cos(
-                        vec_cast<resT, typename decltype(x)::element_type,
-                                 vec_sz>(x));
-                    sg.store<vec_sz>(out_ptrT(&out[base + it * sgSize]),
-                                     res_vec);
-                }
-            }
-            else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                    out[k] = sycl::cos(static_cast<resT>(in[k]));
-            }
+            static_assert(std::is_floating_point_v<argT> ||
+                          std::is_same_v<argT, sycl::half>);
+            return std::cos(in);
         }
     }
 };
+
+template <typename argTy,
+          typename resTy = argTy,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using CosContigFunctor = elementwise_common::
+    UnaryContigFunctor<argTy, resTy, CosFunctor<argTy, resTy>, vec_sz, n_vecs>;
+
+template <typename argTy, typename resTy, typename IndexerT>
+using CosStridedFunctor = elementwise_common::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, CosFunctor<argTy, resTy>>;
 
 template <typename T> struct CosOutputType
 {
@@ -180,49 +150,6 @@ template <typename fnT, typename T> struct CosTypeMapFactory
     }
 };
 
-template <typename argT, typename resT, typename IndexerT>
-struct CosStridedFunctor
-{
-private:
-    const argT *in = nullptr;
-    resT *out = nullptr;
-    IndexerT inp_out_indexer_;
-
-public:
-    CosStridedFunctor(const argT *inp_tp,
-                      resT *res_tp,
-                      IndexerT arg_res_indexer)
-        : in(inp_tp), out(res_tp), inp_out_indexer_(arg_res_indexer)
-    {
-    }
-
-    void operator()(sycl::id<1> wid) const
-    {
-        auto offsets_ = inp_out_indexer_(static_cast<py::ssize_t>(wid.get(0)));
-        const py::ssize_t &inp_offset = offsets_.get_first_offset();
-        const py::ssize_t &out_offset = offsets_.get_second_offset();
-
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (is_complex<argT>::value) {
-            using realT = typename argT::value_type;
-            // cos(x + I*y) = cos(x)*cosh(y) - I*sin(x)*sinh(y)
-            auto v = std::real(in[inp_offset]);
-            realT cosX_val;
-            const realT sinX_val = sycl::sincos(-v, &cosX_val);
-            v = std::imag(in[inp_offset]);
-            const realT sinhY_val = sycl::sinh(v);
-            const realT coshY_val = sycl::cosh(v);
-
-            const realT res_re = coshY_val * cosX_val;
-            const realT res_im = sinX_val * sinhY_val;
-            out[out_offset] = resT{res_re, res_im};
-        }
-        else {
-            out[out_offset] = std::cos(static_cast<resT>(in[inp_offset]));
-        }
-    }
-};
-
 template <typename T1, typename T2, typename T3> class cos_strided_kernel;
 
 typedef sycl::event (*cos_strided_impl_fn_ptr_t)(
@@ -262,9 +189,11 @@ sycl::event cos_strided_impl(sycl::queue exec_q,
         const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
         resTy *res_tp = reinterpret_cast<resTy *>(res_p);
 
+        sycl::range<1> gRange{nelems};
+
         cgh.parallel_for<cos_strided_kernel<argTy, resTy, IndexerT>>(
-            {nelems}, CosStridedFunctor<argTy, resTy, IndexerT>(
-                          arg_tp, res_tp, arg_res_indexer));
+            gRange, CosStridedFunctor<argTy, resTy, IndexerT>(arg_tp, res_tp,
+                                                              arg_res_indexer));
     });
     return comp_ev;
 }

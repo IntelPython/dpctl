@@ -35,6 +35,8 @@
 #include "kernels/elementwise_functions/abs.hpp"
 #include "kernels/elementwise_functions/add.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
+#include "kernels/elementwise_functions/isfinite.hpp"
+#include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
 
 namespace dpctl
@@ -96,8 +98,9 @@ int _result_typeid(int arg_typeid, const int *fn_output_id)
 namespace impl
 {
 
-using dpctl::tensor::kernels::abs::abs_contig_impl_fn_ptr_t;
-using dpctl::tensor::kernels::abs::abs_strided_impl_fn_ptr_t;
+namespace abs_fn_ns = dpctl::tensor::kernels::abs;
+using abs_fn_ns::abs_contig_impl_fn_ptr_t;
+using abs_fn_ns::abs_strided_impl_fn_ptr_t;
 
 static abs_contig_impl_fn_ptr_t abs_contig_dispatch_vector[td_ns::num_types];
 static int abs_output_typeid_vector[td_ns::num_types];
@@ -106,31 +109,106 @@ static abs_strided_impl_fn_ptr_t abs_strided_dispatch_vector[td_ns::num_types];
 void populate_abs_dispatch_vectors(void)
 {
     using namespace td_ns;
+    namespace fn_ns = abs_fn_ns;
 
-    using dpctl::tensor::kernels::abs::AbsContigFactory;
+    using fn_ns::AbsContigFactory;
     DispatchVectorBuilder<abs_contig_impl_fn_ptr_t, AbsContigFactory, num_types>
         dvb1;
     dvb1.populate_dispatch_vector(abs_contig_dispatch_vector);
 
-    using dpctl::tensor::kernels::abs::AbsStridedFactory;
+    using fn_ns::AbsStridedFactory;
     DispatchVectorBuilder<abs_strided_impl_fn_ptr_t, AbsStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(abs_strided_dispatch_vector);
 
-    using dpctl::tensor::kernels::abs::AbsTypeMapFactory;
+    using fn_ns::AbsTypeMapFactory;
     DispatchVectorBuilder<int, AbsTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(abs_output_typeid_vector);
 };
 
 } // namespace impl
 
+// ISFINITE
+namespace impl
+{
+namespace isfinite_fn_ns = dpctl::tensor::kernels::isfinite;
+using isfinite_fn_ns::isfinite_contig_impl_fn_ptr_t;
+using isfinite_fn_ns::isfinite_strided_impl_fn_ptr_t;
+
+static isfinite_contig_impl_fn_ptr_t
+    isfinite_contig_dispatch_vector[td_ns::num_types];
+static int isfinite_output_typeid_vector[td_ns::num_types];
+static isfinite_strided_impl_fn_ptr_t
+    isfinite_strided_dispatch_vector[td_ns::num_types];
+
+void populate_isfinite_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = isfinite_fn_ns;
+
+    using fn_ns::IsFiniteContigFactory;
+    DispatchVectorBuilder<isfinite_contig_impl_fn_ptr_t, IsFiniteContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isfinite_contig_dispatch_vector);
+
+    using fn_ns::IsFiniteStridedFactory;
+    DispatchVectorBuilder<isfinite_strided_impl_fn_ptr_t,
+                          IsFiniteStridedFactory, num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(isfinite_strided_dispatch_vector);
+
+    using fn_ns::IsFiniteTypeMapFactory;
+    DispatchVectorBuilder<int, IsFiniteTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(isfinite_output_typeid_vector);
+}
+
+} // namespace impl
+
+// ISINF
+namespace impl
+{
+namespace isinf_fn_ns = dpctl::tensor::kernels::isinf;
+using isinf_fn_ns::isinf_contig_impl_fn_ptr_t;
+using isinf_fn_ns::isinf_strided_impl_fn_ptr_t;
+
+static isinf_contig_impl_fn_ptr_t
+    isinf_contig_dispatch_vector[td_ns::num_types];
+static int isinf_output_typeid_vector[td_ns::num_types];
+static isinf_strided_impl_fn_ptr_t
+    isinf_strided_dispatch_vector[td_ns::num_types];
+
+void populate_isinf_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = isinf_fn_ns;
+
+    using fn_ns::IsInfContigFactory;
+    DispatchVectorBuilder<isinf_contig_impl_fn_ptr_t, IsInfContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isinf_contig_dispatch_vector);
+
+    using fn_ns::IsInfStridedFactory;
+    DispatchVectorBuilder<isinf_strided_impl_fn_ptr_t, IsInfStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(isinf_strided_dispatch_vector);
+
+    using fn_ns::IsInfTypeMapFactory;
+    DispatchVectorBuilder<int, IsInfTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(isinf_output_typeid_vector);
+}
+
+} // namespace impl
+
 // ISNAN
 namespace impl
 {
-
-using dpctl::tensor::kernels::isnan::isnan_contig_impl_fn_ptr_t;
-using dpctl::tensor::kernels::isnan::isnan_strided_impl_fn_ptr_t;
+namespace isnan_fn_ns = dpctl::tensor::kernels::isnan;
+using isnan_fn_ns::isnan_contig_impl_fn_ptr_t;
+using isnan_fn_ns::isnan_strided_impl_fn_ptr_t;
 
 static isnan_contig_impl_fn_ptr_t
     isnan_contig_dispatch_vector[td_ns::num_types];
@@ -141,20 +219,21 @@ static isnan_strided_impl_fn_ptr_t
 void populate_isnan_dispatch_vectors(void)
 {
     using namespace td_ns;
+    namespace fn_ns = isnan_fn_ns;
 
-    using dpctl::tensor::kernels::isnan::IsNanContigFactory;
+    using fn_ns::IsNanContigFactory;
     DispatchVectorBuilder<isnan_contig_impl_fn_ptr_t, IsNanContigFactory,
                           num_types>
         dvb1;
     dvb1.populate_dispatch_vector(isnan_contig_dispatch_vector);
 
-    using dpctl::tensor::kernels::isnan::IsNanStridedFactory;
+    using fn_ns::IsNanStridedFactory;
     DispatchVectorBuilder<isnan_strided_impl_fn_ptr_t, IsNanStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(isnan_strided_dispatch_vector);
 
-    using dpctl::tensor::kernels::isnan::IsNanTypeMapFactory;
+    using fn_ns::IsNanTypeMapFactory;
     DispatchVectorBuilder<int, IsNanTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(isnan_output_typeid_vector);
 }
@@ -165,8 +244,9 @@ void populate_isnan_dispatch_vectors(void)
 namespace impl
 {
 
-using dpctl::tensor::kernels::cos::cos_contig_impl_fn_ptr_t;
-using dpctl::tensor::kernels::cos::cos_strided_impl_fn_ptr_t;
+namespace cos_fn_ns = dpctl::tensor::kernels::cos;
+using cos_fn_ns::cos_contig_impl_fn_ptr_t;
+using cos_fn_ns::cos_strided_impl_fn_ptr_t;
 
 static cos_contig_impl_fn_ptr_t cos_contig_dispatch_vector[td_ns::num_types];
 static int cos_output_typeid_vector[td_ns::num_types];
@@ -175,19 +255,20 @@ static cos_strided_impl_fn_ptr_t cos_strided_dispatch_vector[td_ns::num_types];
 void populate_cos_dispatch_vectors(void)
 {
     using namespace td_ns;
+    namespace fn_ns = cos_fn_ns;
 
-    using dpctl::tensor::kernels::cos::CosContigFactory;
+    using fn_ns::CosContigFactory;
     DispatchVectorBuilder<cos_contig_impl_fn_ptr_t, CosContigFactory, num_types>
         dvb1;
     dvb1.populate_dispatch_vector(cos_contig_dispatch_vector);
 
-    using dpctl::tensor::kernels::cos::CosStridedFactory;
+    using fn_ns::CosStridedFactory;
     DispatchVectorBuilder<cos_strided_impl_fn_ptr_t, CosStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(cos_strided_dispatch_vector);
 
-    using dpctl::tensor::kernels::cos::CosTypeMapFactory;
+    using fn_ns::CosTypeMapFactory;
     DispatchVectorBuilder<int, CosTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(cos_output_typeid_vector);
 }
@@ -198,11 +279,11 @@ void populate_cos_dispatch_vectors(void)
 
 namespace impl
 {
+namespace fn_ns = dpctl::tensor::kernels::add;
 
-using dpctl::tensor::kernels::add::add_contig_impl_fn_ptr_t;
-using dpctl::tensor::kernels::add::
-    add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
-using dpctl::tensor::kernels::add::add_strided_impl_fn_ptr_t;
+using fn_ns::add_contig_impl_fn_ptr_t;
+using fn_ns::add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using fn_ns::add_strided_impl_fn_ptr_t;
 
 static add_contig_impl_fn_ptr_t add_contig_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
@@ -219,22 +300,22 @@ void populate_add_dispatch_tables(void)
 {
     using namespace td_ns;
 
-    using dpctl::tensor::kernels::add::AddContigFactory;
+    using fn_ns::AddContigFactory;
     DispatchTableBuilder<add_contig_impl_fn_ptr_t, AddContigFactory, num_types>
         dtb1;
     dtb1.populate_dispatch_table(add_contig_dispatch_table);
 
-    using dpctl::tensor::kernels::add::AddStridedFactory;
+    using fn_ns::AddStridedFactory;
     DispatchTableBuilder<add_strided_impl_fn_ptr_t, AddStridedFactory,
                          num_types>
         dtb2;
     dtb2.populate_dispatch_table(add_strided_dispatch_table);
 
-    using dpctl::tensor::kernels::add::AddTypeMapFactory;
+    using fn_ns::AddTypeMapFactory;
     DispatchTableBuilder<int, AddTypeMapFactory, num_types> dtb3;
     dtb3.populate_dispatch_table(add_output_id_table);
 
-    using dpctl::tensor::kernels::add::AddContigMatrixContigRowBroadcastFactory;
+    using fn_ns::AddContigMatrixContigRowBroadcastFactory;
     DispatchTableBuilder<add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
                          AddContigMatrixContigRowBroadcastFactory, num_types>
         dtb4;
@@ -275,6 +356,7 @@ void init_elementwise_functions(py::module_ m)
 
     // U02: ==== ACOS   (x)
     // FIXME:
+
     // U03: ===== ACOSH (x)
     // FIXME:
 
@@ -404,10 +486,53 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U17: ==== ISFINITE    (x)
-    // FIXME:
+    {
+        impl::populate_isfinite_dispatch_vectors();
+
+        using impl::isfinite_contig_dispatch_vector;
+        using impl::isfinite_output_typeid_vector;
+        using impl::isfinite_strided_dispatch_vector;
+        auto isfinite_pyapi =
+            [&](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_unary_ufunc(src, dst, exec_q, depends,
+                                      isfinite_output_typeid_vector,
+                                      isfinite_contig_dispatch_vector,
+                                      isfinite_strided_dispatch_vector);
+            };
+        auto isfinite_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              isfinite_output_typeid_vector);
+        };
+        m.def("_isfinite", isfinite_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_isfinite_result_type", isfinite_result_type_pyapi, "");
+    }
 
     // U18: ==== ISINF       (x)
-    // FIXME:
+    {
+        impl::populate_isinf_dispatch_vectors();
+
+        using impl::isinf_contig_dispatch_vector;
+        using impl::isinf_output_typeid_vector;
+        using impl::isinf_strided_dispatch_vector;
+        auto isinf_pyapi = [&](dpctl::tensor::usm_ndarray src,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, isinf_output_typeid_vector,
+                isinf_contig_dispatch_vector, isinf_strided_dispatch_vector);
+        };
+        auto isinf_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              isinf_output_typeid_vector);
+        };
+        m.def("_isinf", isinf_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_isinf_result_type", isinf_result_type_pyapi, "");
+    }
 
     // U19: ==== ISNAN       (x)
     {

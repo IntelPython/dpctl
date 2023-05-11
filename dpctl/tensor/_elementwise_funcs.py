@@ -42,12 +42,32 @@ Computes cosine for each element `x_i` for input array `x`.
 
 cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
 
+# ISFINITE
+
+_isfinite_docstring_ = """
+Computes if every element of input array is a finite number.
+"""
+
+isfinite = UnaryElementwiseFunc(
+    "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring_
+)
+
 # ISNAN
 
 _isnan_docstring_ = """
-Computes if ever element of input array is a NaN.
+Computes if every element of input array is a NaN.
 """
 
 isnan = UnaryElementwiseFunc(
     "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring_
+)
+
+# ISINF
+
+_isinf_docstring_ = """
+Computes if every element of input array is an infinity.
+"""
+
+isinf = UnaryElementwiseFunc(
+    "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring_
 )
