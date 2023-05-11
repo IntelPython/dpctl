@@ -84,14 +84,22 @@ def test_boolean_reduction_axis(func, identity):
 
 
 @pytest.mark.parametrize("func", [dpt.all, dpt.any])
-def test_all_any_keepdims(func):
+def test_boolean_reduction_keepdims(func):
     get_queue_or_skip()
 
     x = dpt.ones((2, 3, 4, 5, 6), dtype="i4")
-
     res = func(x, axis=(1, 2, -1), keepdims=True)
     assert res.shape == (2, 1, 1, 5, 1)
     assert_array_equal(dpt.asnumpy(res), np.full(res.shape, True))
+
+
+@pytest.mark.parametrize("func,identity", [(dpt.all, True), (dpt.any, False)])
+def test_boolean_reduction_empty(func, identity):
+    get_queue_or_skip()
+
+    x = dpt.empty((0,), dtype="i4")
+    res = func(x)
+    assert_equal(dpt.asnumpy(res), identity)
 
 
 # nan, inf, and -inf should evaluate to true
