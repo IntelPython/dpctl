@@ -238,38 +238,30 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
 
     auto fn = strided_dispatch_vector[src_typeid];
 
+    // using a single host_task for packing here
+    // prevents crashes on CPU
     std::vector<sycl::event> host_task_events{};
-    const auto &iter_src_dst_metadata_packing_triple_ =
+    const auto &iter_red_metadata_packing_triple_ =
         dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_iter_shape,
-            simplified_iter_src_strides, simplified_iter_dst_strides);
-    py::ssize_t *iter_shape_and_strides =
-        std::get<0>(iter_src_dst_metadata_packing_triple_);
-    if (iter_shape_and_strides == nullptr) {
+            simplified_iter_src_strides, simplified_iter_dst_strides,
+            simplified_red_shape, simplified_red_src_strides);
+    py::ssize_t *packed_shapes_and_strides =
+        std::get<0>(iter_red_metadata_packing_triple_);
+    if (packed_shapes_and_strides == nullptr) {
         throw std::runtime_error("Unable to allocate memory on device");
     }
-    const auto &copy_iter_metadata_ev =
-        std::get<2>(iter_src_dst_metadata_packing_triple_);
+    const auto &copy_metadata_ev =
+        std::get<2>(iter_red_metadata_packing_triple_);
 
-    const auto &red_metadata_packing_triple_ =
-        dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, simplified_red_shape,
-            simplified_red_src_strides);
-    py::ssize_t *red_shape_stride = std::get<0>(red_metadata_packing_triple_);
-    if (red_shape_stride == nullptr) {
-        sycl::event::wait(host_task_events);
-        sycl::free(iter_shape_and_strides, exec_q);
-        throw std::runtime_error("Unable to allocate memory on device");
-    }
-    const auto &copy_red_metadata_ev =
-        std::get<2>(red_metadata_packing_triple_);
+    py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
+    py::ssize_t *red_shape_stride = packed_shapes_and_strides + (3 * iter_nd);
 
     std::vector<sycl::event> all_deps;
-    all_deps.reserve(depends.size() + 2);
+    all_deps.reserve(depends.size() + 1);
     all_deps.resize(depends.size());
     std::copy(depends.begin(), depends.end(), all_deps.begin());
-    all_deps.push_back(copy_iter_metadata_ev);
-    all_deps.push_back(copy_red_metadata_ev);
+    all_deps.push_back(copy_metadata_ev);
 
     auto red_ev =
         fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, dst_nd,
@@ -279,9 +271,8 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(red_ev);
         auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, iter_shape_and_strides, red_shape_stride] {
-            sycl::free(iter_shape_and_strides, ctx);
-            sycl::free(red_shape_stride, ctx);
+        cgh.host_task([ctx, packed_shapes_and_strides] {
+            sycl::free(packed_shapes_and_strides, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
