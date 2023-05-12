@@ -240,16 +240,13 @@ public:
 
     void operator()(sycl::id<1> wid) const
     {
-        const argT *const &in = inp_;
-        resT *const &out = res_;
-
-        auto offsets_ = inp_out_indexer_(wid.get(0));
+        const auto &offsets_ = inp_out_indexer_(wid.get(0));
         const py::ssize_t &inp_offset = offsets_.get_first_offset();
-        const py::ssize_t &out_offset = offsets_.get_second_offset();
+        const py::ssize_t &res_offset = offsets_.get_second_offset();
 
         UnaryOpT op{};
 
-        out[out_offset] = op(in[inp_offset]);
+        res_[res_offset] = op(inp_[inp_offset]);
     }
 };
 
