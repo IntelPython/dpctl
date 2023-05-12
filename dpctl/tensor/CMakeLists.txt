@@ -53,7 +53,7 @@ if (WIN32)
 endif()
 set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
-  PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math;-H")
+  PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math;${_clang_prefix}-fno-finite-math-only;${_clang_prefix}-fno-approx-func;-H")
 target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 if(UNIX)
