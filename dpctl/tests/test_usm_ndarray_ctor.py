@@ -1293,6 +1293,26 @@ def test_reshape():
     assert A4.shape == requested_shape
 
 
+def test_reshape_zero_size():
+    try:
+        a = dpt.empty((0,))
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    with pytest.raises(ValueError):
+        dpt.reshape(a, (-1, 0))
+
+
+def test_reshape_large_ndim():
+    ndim = 32
+    idx = tuple(1 if i + 1 < ndim else ndim for i in range(ndim))
+    try:
+        d = dpt.ones(ndim, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    d = dpt.reshape(d, idx)
+    assert d.shape == idx
+
+
 def test_reshape_copy_kwrd():
     try:
         X = dpt.usm_ndarray((2, 3), "i4")
@@ -2012,3 +2032,43 @@ def test_Device():
     assert dict[d2] == 1
     assert d1 == d2.sycl_queue
     assert not d1 == Ellipsis
+
+
+def test_element_offset():
+    n0, n1 = 3, 8
+    try:
+        x = dpt.empty((n0, n1), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert isinstance(x._element_offset, int)
+    assert x._element_offset == 0
+    y = x[::-1, ::2]
+    assert y._element_offset == (n0 - 1) * n1
+
+
+def test_byte_bounds():
+    n0, n1 = 3, 8
+    try:
+        x = dpt.empty((n0, n1), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert isinstance(x._byte_bounds, tuple)
+    assert len(x._byte_bounds) == 2
+    lo, hi = x._byte_bounds
+    assert hi - lo == n0 * n1 * x.itemsize
+    y = x[::-1, ::2]
+    lo, hi = y._byte_bounds
+    assert hi - lo == (n0 * n1 - 1) * x.itemsize
+
+
+def test_gh_1201():
+    n = 100
+    a = np.flipud(np.arange(n, dtype="i4"))
+    try:
+        b = dpt.asarray(a)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    assert (dpt.asnumpy(b) == a).all()
+    c = dpt.flip(dpt.empty(a.shape, dtype=a.dtype))
+    c[:] = a
+    assert (dpt.asnumpy(c) == a).all()

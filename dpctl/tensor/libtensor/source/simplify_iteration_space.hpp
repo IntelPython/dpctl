@@ -90,6 +90,14 @@ void simplify_iteration_space_4(int &,
                                 py::ssize_t &,
                                 py::ssize_t &);
 
+py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &,
+                                 std::vector<py::ssize_t> const &);
+py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &,
+                                 std::vector<py::ssize_t> const &);
+std::vector<py::ssize_t> _unravel_index_c(py::ssize_t,
+                                          std::vector<py::ssize_t> const &);
+std::vector<py::ssize_t> _unravel_index_f(py::ssize_t,
+                                          std::vector<py::ssize_t> const &);
 } // namespace py_internal
 } // namespace tensor
 } // namespace dpctl
