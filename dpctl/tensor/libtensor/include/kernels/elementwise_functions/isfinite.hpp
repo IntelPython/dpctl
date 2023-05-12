@@ -1,6 +1,9 @@
 #pragma once
 #include <CL/sycl.hpp>
+#include <cmath>
+#include <cstddef>
 #include <cstdint>
+#include <type_traits>
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"

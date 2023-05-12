@@ -1,5 +1,33 @@
+//=== common.hpp -  -----------------------------------*-C++-*--/===//
+//= Implementation of tensor elementwise operation kernels ------===//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2022 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines kernels for elementwise operations over tensor .
+//===----------------------------------------------------------------------===//
+
 #pragma once
 #include <CL/sycl.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <pybind11/pybind11.h>
 
 namespace dpctl
 {
@@ -216,8 +244,8 @@ public:
         resT *const &out = res_;
 
         auto offsets_ = inp_out_indexer_(wid.get(0));
-        const ssize_t &inp_offset = offsets_.get_first_offset();
-        const ssize_t &out_offset = offsets_.get_second_offset();
+        const py::ssize_t &inp_offset = offsets_.get_first_offset();
+        const py::ssize_t &out_offset = offsets_.get_second_offset();
 
         UnaryOpT op{};
 
