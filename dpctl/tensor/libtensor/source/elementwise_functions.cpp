@@ -38,6 +38,7 @@
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
+#include "kernels/elementwise_functions/sqrt.hpp"
 
 namespace dpctl
 {
@@ -322,6 +323,43 @@ void populate_add_dispatch_tables(void)
     dtb4.populate_dispatch_table(
         add_contig_matrix_contig_row_broadcast_dispatch_table);
 };
+
+} // namespace impl
+
+// SQRT
+namespace impl
+{
+
+namespace sqrt_fn_ns = dpctl::tensor::kernels::sqrt;
+using sqrt_fn_ns::sqrt_contig_impl_fn_ptr_t;
+using sqrt_fn_ns::sqrt_strided_impl_fn_ptr_t;
+
+static sqrt_contig_impl_fn_ptr_t sqrt_contig_dispatch_vector[td_ns::num_types];
+static int sqrt_output_typeid_vector[td_ns::num_types];
+static sqrt_strided_impl_fn_ptr_t
+    sqrt_strided_dispatch_vector[td_ns::num_types];
+
+void populate_sqrt_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = sqrt_fn_ns;
+
+    using fn_ns::SqrtContigFactory;
+    DispatchVectorBuilder<sqrt_contig_impl_fn_ptr_t, SqrtContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(sqrt_contig_dispatch_vector);
+
+    using fn_ns::SqrtStridedFactory;
+    DispatchVectorBuilder<sqrt_strided_impl_fn_ptr_t, SqrtStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(sqrt_strided_dispatch_vector);
+
+    using fn_ns::SqrtTypeMapFactory;
+    DispatchVectorBuilder<int, SqrtTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(sqrt_output_typeid_vector);
+}
 
 } // namespace impl
 
@@ -628,7 +666,26 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U33: ==== SQRT        (x)
-    // FIXME:
+    {
+        impl::populate_sqrt_dispatch_vectors();
+        using impl::sqrt_contig_dispatch_vector;
+        using impl::sqrt_output_typeid_vector;
+        using impl::sqrt_strided_dispatch_vector;
+
+        auto sqrt_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, sqrt_output_typeid_vector,
+                sqrt_contig_dispatch_vector, sqrt_strided_dispatch_vector);
+        };
+        m.def("_sqrt", sqrt_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto sqrt_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, sqrt_output_typeid_vector);
+        };
+        m.def("_sqrt_result_type", sqrt_result_type_pyapi);
+    }
 
     // B23: ==== SUBTRACT    (x1, x2)
     // FIXME:
