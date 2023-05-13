@@ -24,7 +24,6 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-
 #include <CL/sycl.hpp>
 
 #include <complex>
@@ -32,9 +31,7 @@
 #include <utility>
 #include <vector>
 
-#include "pybind11/numpy.h"
 #include "pybind11/pybind11.h"
-#include "pybind11/stl.h"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"

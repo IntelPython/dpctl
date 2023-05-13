@@ -78,10 +78,6 @@ using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
 
 using dpctl::tensor::py_internal::usm_ndarray_full;
 
-/* ========== Any and All ========= */
-using dpctl::tensor::py_internal::py_all;
-using dpctl::tensor::py_internal::py_any;
-
 /* ============== Advanced Indexing ============= */
 using dpctl::tensor::py_internal::usm_ndarray_put;
 using dpctl::tensor::py_internal::usm_ndarray_take;
@@ -126,7 +122,6 @@ void init_dispatch_vectors(void)
     init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
-    populate_boolean_reduction_dispatch_vectors();
     populate_mask_positions_dispatch_vectors();
     populate_masked_extract_dispatch_vectors();
     populate_masked_place_dispatch_vectors();
@@ -353,11 +348,5 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_all", py_all, "", py::arg("src"),
-          py::arg("trailing_dims_to_reduce"), py::arg("dst"),
-          py::arg("sycl_queue"), py::arg("depends") = py::list());
-
-    m.def("_any", py_any, "", py::arg("src"),
-          py::arg("trailing_dims_to_reduce"), py::arg("dst"),
-          py::arg("sycl_queue"), py::arg("depends") = py::list());
+    dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
 }
