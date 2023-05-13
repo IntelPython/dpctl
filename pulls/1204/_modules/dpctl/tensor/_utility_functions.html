@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._utility_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev1+56.g4109f1b60 documentation</title>
+  <title>dpctl.tensor._utility_functions &mdash; Data-parallel Control (dpctl) 0.14.3dev1+57.g206e24eeb documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -42,7 +42,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev1+56.g4109f1b60
+                0.14.3dev1+57.g206e24eeb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -95,7 +95,6 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 
 
-<span class="c1"># can be refactored later into general reduction</span>
 <span class="k">def</span> <span class="nf">_boolean_reduction</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -154,11 +153,59 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;all(x, axis=None, keepdims=False)</span>
+
+<span class="sd">    Tests whether all input array elements evaluate to True along a given axis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array.</span>
+<span class="sd">        axis (Optional[Union[int, Tuple[int,...]]]): Axis (or axes)</span>
+<span class="sd">            along which to perform a logical AND reduction.</span>
+<span class="sd">            When `axis` is `None`, a logical AND reduction</span>
+<span class="sd">            is performed over all dimensions of `x`.</span>
+<span class="sd">            If `axis` is negative, the axis is counted from</span>
+<span class="sd">            the last dimension to the first.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        keepdims (bool, optional): If `True`, the reduced axes are included</span>
+<span class="sd">            in the result as singleton dimensions, and the result is</span>
+<span class="sd">            broadcastable to the input array shape.</span>
+<span class="sd">            If `False`, the reduced axes are not included in the result.</span>
+<span class="sd">            Default: `False`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            An array with a data type of `bool`</span>
+<span class="sd">            containing the results of the logical AND reduction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_boolean_reduction</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ti</span><span class="o">.</span><span class="n">_all</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="any"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.any">[docs]</a><span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;any(x, axis=None, keepdims=False)</span>
+
+<span class="sd">    Tests whether any input array elements evaluate to True along a given axis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Input array.</span>
+<span class="sd">        axis (Optional[Union[int, Tuple[int,...]]]): Axis (or axes)</span>
+<span class="sd">            along which to perform a logical OR reduction.</span>
+<span class="sd">            When `axis` is `None`, a logical OR reduction</span>
+<span class="sd">            is performed over all dimensions of `x`.</span>
+<span class="sd">            If `axis` is negative, the axis is counted from</span>
+<span class="sd">            the last dimension to the first.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        keepdims (bool, optional): If `True`, the reduced axes are included</span>
+<span class="sd">            in the result as singleton dimensions, and the result is</span>
+<span class="sd">            broadcastable to the input array shape.</span>
+<span class="sd">            If `False`, the reduced axes are not included in the result.</span>
+<span class="sd">            Default: `False`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            An array with a data type of `bool`</span>
+<span class="sd">            containing the results of the logical OR reduction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_boolean_reduction</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ti</span><span class="o">.</span><span class="n">_any</span><span class="p">)</span></div>
 </pre></div>
 

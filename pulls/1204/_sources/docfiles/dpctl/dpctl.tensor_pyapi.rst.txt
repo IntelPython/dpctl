@@ -135,9 +135,9 @@ Other Functions
     :widths: 25,50
 
     * - :func:`all()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Tests whether all input array elements evaluate to True along a given axis.
     * - :func:`any()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Tests whether any input array elements evaluate to True along a given axis.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
