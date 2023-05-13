@@ -5,7 +5,6 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 
 
-# can be refactored later into general reduction
 def _boolean_reduction(x, axis, keepdims, func):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
@@ -64,9 +63,57 @@ def _boolean_reduction(x, axis, keepdims, func):
     return res
 
 
-def all(x, axis=None, out=None, keepdims=False):
+def all(x, axis=None, keepdims=False):
+    """all(x, axis=None, keepdims=False)
+
+    Tests whether all input array elements evaluate to True along a given axis.
+
+    Args:
+        x (usm_ndarray): Input array.
+        axis (Optional[Union[int, Tuple[int,...]]]): Axis (or axes)
+            along which to perform a logical AND reduction.
+            When `axis` is `None`, a logical AND reduction
+            is performed over all dimensions of `x`.
+            If `axis` is negative, the axis is counted from
+            the last dimension to the first.
+            Default: `None`.
+        keepdims (bool, optional): If `True`, the reduced axes are included
+            in the result as singleton dimensions, and the result is
+            broadcastable to the input array shape.
+            If `False`, the reduced axes are not included in the result.
+            Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            An array with a data type of `bool`
+            containing the results of the logical AND reduction.
+    """
     return _boolean_reduction(x, axis, keepdims, ti._all)
 
 
 def any(x, axis=None, keepdims=False):
+    """any(x, axis=None, keepdims=False)
+
+    Tests whether any input array elements evaluate to True along a given axis.
+
+    Args:
+        x (usm_ndarray): Input array.
+        axis (Optional[Union[int, Tuple[int,...]]]): Axis (or axes)
+            along which to perform a logical OR reduction.
+            When `axis` is `None`, a logical OR reduction
+            is performed over all dimensions of `x`.
+            If `axis` is negative, the axis is counted from
+            the last dimension to the first.
+            Default: `None`.
+        keepdims (bool, optional): If `True`, the reduced axes are included
+            in the result as singleton dimensions, and the result is
+            broadcastable to the input array shape.
+            If `False`, the reduced axes are not included in the result.
+            Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            An array with a data type of `bool`
+            containing the results of the logical OR reduction.
+    """
     return _boolean_reduction(x, axis, keepdims, ti._any)
