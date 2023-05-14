@@ -385,6 +385,9 @@ py_extract(dpctl::tensor::usm_ndarray src,
         auto fn =
             masked_extract_all_slices_strided_impl_dispatch_vector[src_typeid];
 
+        assert(dst_shape_vec.size() == 1);
+        assert(dst_strides_vec.size() == 1);
+
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
         const auto &ptr_size_event_tuple1 =
             device_allocate_and_pack<py::ssize_t>(
@@ -396,9 +399,6 @@ py_extract(dpctl::tensor::usm_ndarray src,
         }
         sycl::event copy_src_shape_strides_ev =
             std::get<2>(ptr_size_event_tuple1);
-
-        assert(dst_shape_vec.size() == 1);
-        assert(dst_strides_vec.size() == 1);
 
         std::vector<sycl::event> all_deps;
         all_deps.reserve(depends.size() + 1);
@@ -680,6 +680,9 @@ py_place(dpctl::tensor::usm_ndarray dst,
         auto fn =
             masked_place_all_slices_strided_impl_dispatch_vector[dst_typeid];
 
+        assert(rhs_shape_vec.size() == 1);
+        assert(rhs_strides_vec.size() == 1);
+
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
         const auto &ptr_size_event_tuple1 =
             device_allocate_and_pack<py::ssize_t>(
@@ -691,9 +694,6 @@ py_place(dpctl::tensor::usm_ndarray dst,
         }
         sycl::event copy_dst_shape_strides_ev =
             std::get<2>(ptr_size_event_tuple1);
-
-        assert(rhs_shape_vec.size() == 1);
-        assert(rhs_strides_vec.size() == 1);
 
         std::vector<sycl::event> all_deps;
         all_deps.reserve(depends.size() + 1);
