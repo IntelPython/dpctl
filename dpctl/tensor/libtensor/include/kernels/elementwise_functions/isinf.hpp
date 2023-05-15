@@ -32,7 +32,9 @@ template <typename argT, typename resT> struct IsInfFunctor
     using is_constant = typename std::disjunction<std::is_same<argT, bool>,
                                                   std::is_integral<argT>>;
     static constexpr resT constant_value = false;
-    using supports_vec = typename std::false_type;
+    using supports_vec =
+        typename std::disjunction<std::is_same<argT, sycl::half>,
+                                  std::is_floating_point<argT>>;
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
@@ -56,8 +58,6 @@ template <typename argT, typename resT> struct IsInfFunctor
         }
     }
 
-    // unused (since support_vec is set to false_type) due to bug in sycl::isinf
-    // implementation in OpenCL CPU RT
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
     {
