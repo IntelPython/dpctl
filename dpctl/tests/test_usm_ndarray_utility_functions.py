@@ -92,6 +92,9 @@ def test_boolean_reduction_keepdims(func):
     assert res.shape == (2, 1, 1, 5, 1)
     assert_array_equal(dpt.asnumpy(res), np.full(res.shape, True))
 
+    res = func(x, axis=None, keepdims=True)
+    assert res.shape == (1,) * x.ndim
+
 
 @pytest.mark.parametrize("func,identity", [(dpt.all, True), (dpt.any, False)])
 def test_boolean_reduction_empty(func, identity):
@@ -119,7 +122,19 @@ def test_boolean_reduction_scalars(func):
     get_queue_or_skip()
 
     x = dpt.ones((), dtype="i4")
-    func(x)
+    assert_equal(dpt.asnumpy(func(x)), True)
+
+    x = dpt.zeros((), dtype="i4")
+    assert_equal(dpt.asnumpy(func(x)), False)
+
+
+@pytest.mark.parametrize("func", [dpt.all, dpt.any])
+def test_boolean_reduction_empty_axis(func):
+    get_queue_or_skip()
+
+    x = dpt.ones((5,), dtype="i4")
+    res = func(x, axis=())
+    assert_array_equal(dpt.asnumpy(res), dpt.asnumpy(x).astype(np.bool_))
 
 
 @pytest.mark.parametrize("func", [dpt.all, dpt.any])

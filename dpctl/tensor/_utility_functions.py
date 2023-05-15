@@ -11,21 +11,28 @@ def _boolean_reduction(x, axis, keepdims, func):
 
     nd = x.ndim
     if axis is None:
-        axis = tuple(range(nd))
-    if not isinstance(axis, (tuple, list)):
-        axis = (axis,)
-    axis = normalize_axis_tuple(axis, nd, "axis")
+        red_nd = nd
+        # case of a scalar
+        if red_nd == 0:
+            return dpt.astype(x, dpt.bool)
+        x_tmp = x
+        res_shape = tuple()
+        perm = list(range(nd))
+    else:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, nd, "axis")
+
+        red_nd = len(axis)
+        # check for axis=()
+        if red_nd == 0:
+            return dpt.astype(x, dpt.bool)
+        perm = [i for i in range(nd) if i not in axis] + list(axis)
+        x_tmp = dpt.permute_dims(x, perm)
+        res_shape = x_tmp.shape[: nd - red_nd]
 
     exec_q = x.sycl_queue
     res_usm_type = x.usm_type
-
-    red_nd = len(axis)
-    if red_nd == 0:
-        return dpt.astype(x, dpt.bool)
-
-    perm = [i for i in range(nd) if i not in axis] + list(axis)
-    x_tmp = dpt.permute_dims(x, perm)
-    res_shape = x_tmp.shape[: nd - red_nd]
 
     wait_list = []
     res_tmp = dpt.empty(
@@ -59,7 +66,6 @@ def _boolean_reduction(x, axis, keepdims, func):
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
     dpctl.SyclEvent.wait_for(wait_list)
-
     return res
 
 
