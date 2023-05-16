@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev1+52.gb2a66d2a5 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev1+62.g634348b07 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -43,7 +43,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev1+52.gb2a66d2a5
+                0.14.3dev1+62.g634348b07
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -89,6 +89,481 @@
              
   <section id="dpctl-tensor-functions">
 <span id="dpctl-tensor-functions-api"></span><h1>dpctl.tensor Functions<a class="headerlink" href="#dpctl-tensor-functions" title="Permalink to this heading"></a></h1>
+<section id="other-functions">
+<h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.all">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_utility_functions.html#all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.all" title="Permalink to this definition"></a></dt>
+<dd><p>Tests whether all input array elements evaluate to True along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>]</em><em>]</em><em>]</em>) – Axis (or axes)
+along which to perform a logical AND reduction.
+When <cite>axis</cite> is <cite>None</cite>, a logical AND reduction
+is performed over all dimensions of <cite>x</cite>.
+If <cite>axis</cite> is negative, the axis is counted from
+the last dimension to the first.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, the reduced axes are included
+in the result as singleton dimensions, and the result is
+broadcastable to the input array shape.
+If <cite>False</cite>, the reduced axes are not included in the result.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array with a data type of <cite>bool</cite>
+containing the results of the logical AND reduction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.any">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_utility_functions.html#any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.any" title="Permalink to this definition"></a></dt>
+<dd><p>Tests whether any input array elements evaluate to True along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>]</em><em>]</em><em>]</em>) – Axis (or axes)
+along which to perform a logical OR reduction.
+When <cite>axis</cite> is <cite>None</cite>, a logical OR reduction
+is performed over all dimensions of <cite>x</cite>.
+If <cite>axis</cite> is negative, the axis is counted from
+the last dimension to the first.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, the reduced axes are included
+in the result as singleton dimensions, and the result is
+broadcastable to the input array shape.
+If <cite>False</cite>, the reduced axes are not included in the result.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array with a data type of <cite>bool</cite>
+containing the results of the logical OR reduction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.extract">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.extract" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the elements of an array that satisfies the condition.</p>
+<p>If <cite>condition</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code> is
+equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span></code>.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> does the opposite of
+<code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conditions</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An array whose non-zero or True entries indicate the element
+of <cite>arr</cite> to extract.</p></li>
+<li><p><strong>arr</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array of the same size as <cite>condition</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rank 1 array of values from <cite>arr</cite> where <cite>condition</cite> is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.get_print_options">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">get_print_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#get_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.get_print_options" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a copy of current options for printing
+<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>dictionary with array</dt><dd><p>printing option settings.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p>“linewidth” : int, default 75</p></li>
+<li><p>“edgeitems” : int, default 3</p></li>
+<li><p>“threshold” : int, default 1000</p></li>
+<li><p>“precision” : int, default 8</p></li>
+<li><p>“floatmode” : str, default “maxprec_equal”</p></li>
+<li><p>“suppress” : bool, default False</p></li>
+<li><p>“nanstr” : str, default “nan”</p></li>
+<li><p>“infstr” : str, default “inf”</p></li>
+<li><p>“sign” : str, default “-”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.isdtype">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">isdtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_data_types.html#isdtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.isdtype" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a boolean indicating whether a provided <cite>dtype</cite> is
+of a specified data type <cite>kind</cite>.</p>
+<p>See [array API](array_api) for more information.</p>
+<p>[array_api]: <a class="reference external" href="https://data-apis.org/array-api/latest/">https://data-apis.org/array-api/latest/</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.nonzero">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#nonzero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.nonzero" title="Permalink to this definition"></a></dt>
+<dd><p>Return the indices of non-zero elements.</p>
+<p>Returns the tuple of usm_narrays, one for each dimension
+of <cite>arr</cite>, containing the indices of the non-zero elements
+in that dimension. The values of <cite>arr</cite> are always tested in
+row-major, C-style order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arr</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array, which has non-zero array rank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Indices of non-zero array elements.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>, …]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.place">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.place" title="Permalink to this definition"></a></dt>
+<dd><p>Change elements of an array based on conditional and input values.</p>
+<p>If <cite>mask</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> is
+equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span> <span class="pre">=</span> <span class="pre">vals</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array to put data into.</p></li>
+<li><p><strong>mask</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Boolean mask array. Must have the same size as <cite>arr</cite>.</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><em>sequence</em>) – Values to put into <cite>arr</cite>. Only the first N elements are
+used, where N is the number of True values in <cite>mask</cite>. If
+<cite>vals</cite> is smaller than N, it will be repeated, and if
+elements of <cite>arr</cite> are to be masked, this sequence must be
+non-empty. Array <cite>vals</cite> must be one dimensional.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.print_options">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">print_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.print_options" title="Permalink to this definition"></a></dt>
+<dd><p>Context manager for print options.</p>
+<p>Set print options for the scope of a <cite>with</cite> block.
+<cite>as</cite> yields dictionary of print options.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.put">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put" title="Permalink to this definition"></a></dt>
+<dd><p>Puts values of an array into another array
+along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array the values will be put into.</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
+<li><p><strong>vals</strong> – Array of values to be put into <cite>x</cite>.
+Must be broadcastable to the shape of <cite>indices</cite>.</p></li>
+<li><p><strong>axis</strong> – The axis over which the values will be placed.
+If x is one-dimensional, this argument is optional.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
+“wrap” - clamps indices to (-n &lt;= i &lt; n), then wraps
+negative indices.
+“clip” - clips indices to (0 &lt;= i &lt; n)
+Default: <cite>“wrap”</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.set_print_options">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">set_print_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgeitems</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floatmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nanstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#set_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.set_print_options" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>set_print_options(linewidth=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
+nanstr=None, infstr=None, sign=None, numpy=False)</p>
+</dd>
+</dl>
+<p>Set options for printing <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linewidth</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
+Raises <cite>TypeError</cite> if linewidth is not an integer.
+Default: <cite>75</cite>.</p></li>
+<li><p><strong>edgeitems</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements at the beginning and end
+when the printed array is abbreviated.
+Raises <cite>TypeError</cite> if edgeitems is not an integer.
+Default: <cite>3</cite>.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
+abbreviation.
+Raises <cite>TypeError</cite> if threshold is not an integer.
+Default: <cite>1000</cite>.</p></li>
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
+floating point numbers.
+Raises <cite>TypeError</cite> if precision is not an integer.
+Default: <cite>8</cite>.</p></li>
+<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
+numbers are interpreted.</p>
+<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
+<cite>“unique”</cite>: Ignores precision, prints the number of</p>
+<blockquote>
+<div><p>digits necessary to uniquely specify each number.</p>
+</div></blockquote>
+<dl class="simple">
+<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
+</dd>
+<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
+if fewer will uniquely represent each number.</p>
+</dd>
+</dl>
+<p>Raises <cite>ValueError</cite> if floatmode is not one of
+<cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
+Default: “maxprec_equal”</p>
+</p></li>
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
+in the current precision will print as zero.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>nanstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to repesent nan.
+Raises <cite>TypeError</cite> if nanstr is not a string.
+Default: <cite>“nan”</cite>.</p></li>
+<li><p><strong>infstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to represent infinity.
+Raises <cite>TypeError</cite> if infstr is not a string.
+Default: <cite>“inf”</cite>.</p></li>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
+numbers.
+<cite>“-”</cite>: Omit the sign of positive numbers.
+<cite>“+”</cite>: Always print the sign of positive numbers.
+<cite>” “</cite>: Always print a whitespace in place of the</p>
+<blockquote>
+<div><p>sign of positive numbers.</p>
+</div></blockquote>
+<p>Raises <cite>ValueError</cite> if sign is not one of
+<cite>“-”</cite>, <cite>“+”</cite>, or <cite>” “</cite>.
+Default: <cite>“-”</cite>.</p>
+</p></li>
+<li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
+options are set, a dictionary of Numpy’s print options
+will be used to initialize dpctl’s print options.
+Default: “False”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.take">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.take" title="Permalink to this definition"></a></dt>
+<dd><p>Takes elements from array along a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array that elements will be taken from.</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
+<li><p><strong>axis</strong> – The axis over which the values will be selected.
+If x is one-dimensional, this argument is optional.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
+“wrap” - clamps indices to (-n &lt;= i &lt; n), then wraps
+negative indices.
+“clip” - clips indices to (0 &lt;= i &lt; n)
+Default: <cite>“wrap”</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
+filled with elements from x.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_repr">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usm_ndarray'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_repr" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>usm_ndarray_repr(x, line_width=None, precision=None,</dt><dd><p>suppress=None, prefix=””)</p>
+</dd>
+</dl>
+<p>Returns a formatted string representing the elements
+of a <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> and its data type,
+if not a default type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>line_width</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
+Raises <cite>TypeError</cite> if line_width is not an integer.
+Default: <cite>75</cite>.</p></li>
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
+floating point numbers.
+Raises <cite>TypeError</cite> if precision is not an integer.
+Default: <cite>8</cite>.</p></li>
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
+in the current precision will print as zero.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted at the start of the array
+string.
+Default: “”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>formatted string representing the input array</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_str">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floatmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_str" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
+sign=None, numpy=False, separator=” “, prefix=””,
+suffix=””)</p>
+</dd>
+</dl>
+<p>Returns a string representing the elements of a
+<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>line_width</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
+Raises <cite>TypeError</cite> if line_width is not an integer.
+Default: <cite>75</cite>.</p></li>
+<li><p><strong>edgeitems</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements at the beginning and end
+when the printed array is abbreviated.
+Raises <cite>TypeError</cite> if edgeitems is not an integer.
+Default: <cite>3</cite>.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
+abbreviation.
+Raises <cite>TypeError</cite> if threshold is not an integer.
+Default: <cite>1000</cite>.</p></li>
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
+floating point numbers.
+Raises <cite>TypeError</cite> if precision is not an integer.
+Default: <cite>8</cite>.</p></li>
+<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
+numbers are interpreted.</p>
+<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
+<cite>“unique”</cite>: Ignores precision, prints the number of</p>
+<blockquote>
+<div><p>digits necessary to uniquely specify each number.</p>
+</div></blockquote>
+<dl class="simple">
+<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
+</dd>
+<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
+if fewer will uniquely represent each number.</p>
+</dd>
+</dl>
+<p>Raises <cite>ValueError</cite> if floatmode is not one of
+<cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
+Default: “maxprec_equal”</p>
+</p></li>
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
+in the current precision will print as zero.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
+numbers.
+<cite>“-”</cite>: Omit the sign of positive numbers.
+<cite>“+”</cite>: Always print the sign of positive numbers.
+<cite>” “</cite>: Always print a whitespace in place of the</p>
+<blockquote>
+<div><p>sign of positive numbers.</p>
+</div></blockquote>
+<p>Raises <cite>ValueError</cite> if sign is not one of
+<cite>“-”</cite>, <cite>“+”</cite>, or <cite>” “</cite>.
+Default: <cite>“-”</cite>.</p>
+</p></li>
+<li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
+options are set, a dictionary of Numpy’s print options
+will be used to initialize dpctl’s print options.
+Default: “False”</p></li>
+<li><p><strong>separator</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted between elements of
+the array string.
+Default: ” “</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to determine spacing to the left
+of the array string.
+Default: “”</p></li>
+<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – String that determines length of the last line
+of the array string.
+Default: “”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>string representation of input array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.where">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_search_functions.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.where" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with elements chosen
+from <cite>x1</cite> or <cite>x2</cite> depending on <cite>condition</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – When True yields from <cite>x1</cite>,
+and otherwise yields from <cite>x2</cite>.
+Must be compatible with <cite>x1</cite> and <cite>x2</cite> according
+to broadcasting rules.</p></li>
+<li><p><strong>x1</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array from which values are chosen when
+<cite>condition</cite> is True.
+Must be compatible with <cite>condition</cite> and <cite>x2</cite> according
+to broadcasting rules.</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array from which values are chosen when
+<cite>condition</cite> is not True.
+Must be compatible with <cite>condition</cite> and <cite>x2</cite> according
+to broadcasting rules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array with elements from <cite>x1</cite> where <cite>condition</cite> is True,
+and elements from <cite>x2</cite> elsewhere.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+<p>The data type of the returned array is determined by applying
+the Type Promotion Rules to <cite>x1</cite> and <cite>x2</cite>.</p>
+<p>The memory layout of the returned array is
+F-contiguous (column-major) when all inputs are F-contiguous,
+and C-contiguous (row-major) otherwise.</p>
+</dd></dl>
+
+</section>
 <section id="array-construction">
 <h2>Array Construction<a class="headerlink" href="#array-construction" title="Permalink to this heading"></a></h2>
 <dl class="py function">
@@ -1406,417 +1881,6 @@ Default: <cite>0</cite>.</p></li>
 <dd class="field-even"><p><strong>AxisError</strong> – if the <cite>axis</cite> value is invalid.</p>
 </dd>
 </dl>
-</dd></dl>
-
-</section>
-<section id="other-functions">
-<h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.extract">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.extract" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the elements of an array that satisfies the condition.</p>
-<p>If <cite>condition</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code> is
-equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span></code>.</p>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> does the opposite of
-<code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An array whose non-zero or True entries indicate the element
-of <cite>arr</cite> to extract.</p></li>
-<li><p><strong>arr</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array of the same size as <cite>condition</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Rank 1 array of values from <cite>arr</cite> where <cite>condition</cite> is True.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.get_print_options">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">get_print_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#get_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.get_print_options" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a copy of current options for printing
-<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>dictionary with array</dt><dd><p>printing option settings.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Options:</dt><dd><ul class="simple">
-<li><p>“linewidth” : int, default 75</p></li>
-<li><p>“edgeitems” : int, default 3</p></li>
-<li><p>“threshold” : int, default 1000</p></li>
-<li><p>“precision” : int, default 8</p></li>
-<li><p>“floatmode” : str, default “maxprec_equal”</p></li>
-<li><p>“suppress” : bool, default False</p></li>
-<li><p>“nanstr” : str, default “nan”</p></li>
-<li><p>“infstr” : str, default “inf”</p></li>
-<li><p>“sign” : str, default “-”</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.isdtype">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">isdtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_data_types.html#isdtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.isdtype" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a boolean indicating whether a provided <cite>dtype</cite> is
-of a specified data type <cite>kind</cite>.</p>
-<p>See [array API](array_api) for more information.</p>
-<p>[array_api]: <a class="reference external" href="https://data-apis.org/array-api/latest/">https://data-apis.org/array-api/latest/</a></p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.nonzero">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#nonzero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.nonzero" title="Permalink to this definition"></a></dt>
-<dd><p>Return the indices of non-zero elements.</p>
-<p>Returns the tuple of usm_narrays, one for each dimension
-of <cite>arr</cite>, containing the indices of the non-zero elements
-in that dimension. The values of <cite>arr</cite> are always tested in
-row-major, C-style order.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arr</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array, which has non-zero array rank.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Indices of non-zero array elements.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>, …]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.place">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.place" title="Permalink to this definition"></a></dt>
-<dd><p>Change elements of an array based on conditional and input values.</p>
-<p>If <cite>mask</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> is
-equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span> <span class="pre">=</span> <span class="pre">vals</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array to put data into.</p></li>
-<li><p><strong>mask</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Boolean mask array. Must have the same size as <cite>arr</cite>.</p></li>
-<li><p><strong>vals</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><em>sequence</em>) – Values to put into <cite>arr</cite>. Only the first N elements are
-used, where N is the number of True values in <cite>mask</cite>. If
-<cite>vals</cite> is smaller than N, it will be repeated, and if
-elements of <cite>arr</cite> are to be masked, this sequence must be
-non-empty. Array <cite>vals</cite> must be one dimensional.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.print_options">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">print_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.print_options" title="Permalink to this definition"></a></dt>
-<dd><p>Context manager for print options.</p>
-<p>Set print options for the scope of a <cite>with</cite> block.
-<cite>as</cite> yields dictionary of print options.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.put">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put" title="Permalink to this definition"></a></dt>
-<dd><p>Puts values of an array into another array
-along a given axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array the values will be put into.</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
-<li><p><strong>vals</strong> – Array of values to be put into <cite>x</cite>.
-Must be broadcastable to the shape of <cite>indices</cite>.</p></li>
-<li><p><strong>axis</strong> – The axis over which the values will be placed.
-If x is one-dimensional, this argument is optional.
-Default: <cite>None</cite>.</p></li>
-<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
-“wrap” - clamps indices to (-n &lt;= i &lt; n), then wraps
-negative indices.
-“clip” - clips indices to (0 &lt;= i &lt; n)
-Default: <cite>“wrap”</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.set_print_options">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">set_print_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgeitems</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floatmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nanstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infstr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#set_print_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.set_print_options" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>set_print_options(linewidth=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
-nanstr=None, infstr=None, sign=None, numpy=False)</p>
-</dd>
-</dl>
-<p>Set options for printing <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>linewidth</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
-Raises <cite>TypeError</cite> if linewidth is not an integer.
-Default: <cite>75</cite>.</p></li>
-<li><p><strong>edgeitems</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements at the beginning and end
-when the printed array is abbreviated.
-Raises <cite>TypeError</cite> if edgeitems is not an integer.
-Default: <cite>3</cite>.</p></li>
-<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
-abbreviation.
-Raises <cite>TypeError</cite> if threshold is not an integer.
-Default: <cite>1000</cite>.</p></li>
-<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
-floating point numbers.
-Raises <cite>TypeError</cite> if precision is not an integer.
-Default: <cite>8</cite>.</p></li>
-<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
-numbers are interpreted.</p>
-<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
-<cite>“unique”</cite>: Ignores precision, prints the number of</p>
-<blockquote>
-<div><p>digits necessary to uniquely specify each number.</p>
-</div></blockquote>
-<dl class="simple">
-<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
-</dd>
-<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
-if fewer will uniquely represent each number.</p>
-</dd>
-</dl>
-<p>Raises <cite>ValueError</cite> if floatmode is not one of
-<cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
-Default: “maxprec_equal”</p>
-</p></li>
-<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
-in the current precision will print as zero.
-Default: <cite>False</cite>.</p></li>
-<li><p><strong>nanstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to repesent nan.
-Raises <cite>TypeError</cite> if nanstr is not a string.
-Default: <cite>“nan”</cite>.</p></li>
-<li><p><strong>infstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to represent infinity.
-Raises <cite>TypeError</cite> if infstr is not a string.
-Default: <cite>“inf”</cite>.</p></li>
-<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
-numbers.
-<cite>“-”</cite>: Omit the sign of positive numbers.
-<cite>“+”</cite>: Always print the sign of positive numbers.
-<cite>” “</cite>: Always print a whitespace in place of the</p>
-<blockquote>
-<div><p>sign of positive numbers.</p>
-</div></blockquote>
-<p>Raises <cite>ValueError</cite> if sign is not one of
-<cite>“-”</cite>, <cite>“+”</cite>, or <cite>” “</cite>.
-Default: <cite>“-”</cite>.</p>
-</p></li>
-<li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
-options are set, a dictionary of Numpy’s print options
-will be used to initialize dpctl’s print options.
-Default: “False”</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.take">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.take" title="Permalink to this definition"></a></dt>
-<dd><p>Takes elements from array along a given axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array that elements will be taken from.</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
-<li><p><strong>axis</strong> – The axis over which the values will be selected.
-If x is one-dimensional, this argument is optional.
-Default: <cite>None</cite>.</p></li>
-<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
-“wrap” - clamps indices to (-n &lt;= i &lt; n), then wraps
-negative indices.
-“clip” - clips indices to (0 &lt;= i &lt; n)
-Default: <cite>“wrap”</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-filled with elements from x.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_repr">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usm_ndarray'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_repr" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>usm_ndarray_repr(x, line_width=None, precision=None,</dt><dd><p>suppress=None, prefix=””)</p>
-</dd>
-</dl>
-<p>Returns a formatted string representing the elements
-of a <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> and its data type,
-if not a default type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
-<li><p><strong>line_width</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
-Raises <cite>TypeError</cite> if line_width is not an integer.
-Default: <cite>75</cite>.</p></li>
-<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
-floating point numbers.
-Raises <cite>TypeError</cite> if precision is not an integer.
-Default: <cite>8</cite>.</p></li>
-<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
-in the current precision will print as zero.
-Default: <cite>False</cite>.</p></li>
-<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted at the start of the array
-string.
-Default: “”</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>formatted string representing the input array</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray_str">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floatmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_print.html#usm_ndarray_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.usm_ndarray_str" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,</dt><dd><p>precision=None, floatmode=None, suppress=None,
-sign=None, numpy=False, separator=” “, prefix=””,
-suffix=””)</p>
-</dd>
-</dl>
-<p>Returns a string representing the elements of a
-<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
-<li><p><strong>line_width</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters printed per line.
-Raises <cite>TypeError</cite> if line_width is not an integer.
-Default: <cite>75</cite>.</p></li>
-<li><p><strong>edgeitems</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements at the beginning and end
-when the printed array is abbreviated.
-Raises <cite>TypeError</cite> if edgeitems is not an integer.
-Default: <cite>3</cite>.</p></li>
-<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
-abbreviation.
-Raises <cite>TypeError</cite> if threshold is not an integer.
-Default: <cite>1000</cite>.</p></li>
-<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
-floating point numbers.
-Raises <cite>TypeError</cite> if precision is not an integer.
-Default: <cite>8</cite>.</p></li>
-<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
-numbers are interpreted.</p>
-<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
-<cite>“unique”</cite>: Ignores precision, prints the number of</p>
-<blockquote>
-<div><p>digits necessary to uniquely specify each number.</p>
-</div></blockquote>
-<dl class="simple">
-<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
-</dd>
-<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
-if fewer will uniquely represent each number.</p>
-</dd>
-</dl>
-<p>Raises <cite>ValueError</cite> if floatmode is not one of
-<cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
-Default: “maxprec_equal”</p>
-</p></li>
-<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
-in the current precision will print as zero.
-Default: <cite>False</cite>.</p></li>
-<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
-numbers.
-<cite>“-”</cite>: Omit the sign of positive numbers.
-<cite>“+”</cite>: Always print the sign of positive numbers.
-<cite>” “</cite>: Always print a whitespace in place of the</p>
-<blockquote>
-<div><p>sign of positive numbers.</p>
-</div></blockquote>
-<p>Raises <cite>ValueError</cite> if sign is not one of
-<cite>“-”</cite>, <cite>“+”</cite>, or <cite>” “</cite>.
-Default: <cite>“-”</cite>.</p>
-</p></li>
-<li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
-options are set, a dictionary of Numpy’s print options
-will be used to initialize dpctl’s print options.
-Default: “False”</p></li>
-<li><p><strong>separator</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted between elements of
-the array string.
-Default: ” “</p></li>
-<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to determine spacing to the left
-of the array string.
-Default: “”</p></li>
-<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – String that determines length of the last line
-of the array string.
-Default: “”</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>string representation of input array.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.where">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_search_functions.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.where" title="Permalink to this definition"></a></dt>
-<dd><p>Returns <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with elements chosen
-from <cite>x1</cite> or <cite>x2</cite> depending on <cite>condition</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>condition</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – When True yields from <cite>x1</cite>,
-and otherwise yields from <cite>x2</cite>.
-Must be compatible with <cite>x1</cite> and <cite>x2</cite> according
-to broadcasting rules.</p></li>
-<li><p><strong>x1</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array from which values are chosen when
-<cite>condition</cite> is True.
-Must be compatible with <cite>condition</cite> and <cite>x2</cite> according
-to broadcasting rules.</p></li>
-<li><p><strong>x2</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array from which values are chosen when
-<cite>condition</cite> is not True.
-Must be compatible with <cite>condition</cite> and <cite>x2</cite> according
-to broadcasting rules.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array with elements from <cite>x1</cite> where <cite>condition</cite> is True,
-and elements from <cite>x2</cite> elsewhere.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-</dl>
-<p>The data type of the returned array is determined by applying
-the Type Promotion Rules to <cite>x1</cite> and <cite>x2</cite>.</p>
-<p>The memory layout of the returned array is
-F-contiguous (column-major) when all inputs are F-contiguous,
-and C-contiguous (row-major) otherwise.</p>
 </dd></dl>
 
 </section>
