@@ -44,7 +44,7 @@ jobs:
         run: conda install conda-build
       - name: Build conda package
         run: |
-          CHANNELS="-c intel -c main --override-channels"
+          CHANNELS="-c dppy/label/tools -c intel -c main --override-channels"
           VERSIONS="--python ${{ matrix.python }}"
           TEST="--no-test"
           conda build \
