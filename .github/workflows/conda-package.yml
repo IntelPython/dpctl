@@ -161,13 +161,20 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+      - name: Install gdb
+        run: |
+          sudo apt-get install -y gdb
+      - name: Run test_elementwise under gdb
+        run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate test_dpctl
+          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.test_tensor_elementwise::test_cos_order -vv || true
       - name: Run tests
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          # clinfo -l
-          python -m pytest --pyargs $MODULE_NAME
+          python -m pytest -v --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
