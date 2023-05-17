@@ -333,6 +333,96 @@ template <typename T> struct GetTypeid
     }
 };
 
+/*! @brief Class to generate vector of null function pointers */
+template <typename FunPtrT> struct NullPtrVector
+{
+
+    using iterator_category = std::forward_iterator_tag;
+    using different_type = std::ptrdiff_t;
+    using value_type = FunPtrT;
+    using pointer = value_type *;
+    using reference = value_type &;
+
+    NullPtrVector() : val(nullptr) {}
+
+    reference operator*()
+    {
+        return val;
+    }
+
+    reference operator[](int)
+    {
+        return val;
+    }
+
+    NullPtrVector<FunPtrT> &operator++()
+    {
+        return *this;
+    }
+    NullPtrVector<FunPtrT> operator++(int)
+    {
+        return *this;
+    }
+
+    friend bool operator==(const NullPtrVector<FunPtrT> &a,
+                           const NullPtrVector<FunPtrT> &b)
+    {
+        return true;
+    }
+    friend bool operator!=(const NullPtrVector<FunPtrT> &a,
+                           const NullPtrVector<FunPtrT> &b)
+    {
+        return false;
+    }
+
+private:
+    value_type val;
+};
+
+/*! @brief Class to generate table of null function pointers */
+template <typename FunPtrT> struct NullPtrTable
+{
+    using iterator_category = std::forward_iterator_tag;
+    using different_type = std::ptrdiff_t;
+    using value_type = NullPtrVector<FunPtrT>;
+    using pointer = value_type *;
+    using reference = value_type &;
+
+    NullPtrTable() : val() {}
+
+    reference operator*()
+    {
+        return val;
+    }
+    reference operator[](int)
+    {
+        return val;
+    }
+
+    NullPtrTable<FunPtrT> &operator++()
+    {
+        return *this;
+    }
+    NullPtrTable<FunPtrT> operator++(int)
+    {
+        return *this;
+    }
+
+    friend bool operator==(const NullPtrTable<FunPtrT> &a,
+                           const NullPtrTable<FunPtrT> &b)
+    {
+        return true;
+    }
+    friend bool operator!=(const NullPtrTable<FunPtrT> &a,
+                           const NullPtrTable<FunPtrT> &b)
+    {
+        return false;
+    }
+
+private:
+    value_type val;
+};
+
 } // namespace type_dispatch
 
 } // namespace tensor
