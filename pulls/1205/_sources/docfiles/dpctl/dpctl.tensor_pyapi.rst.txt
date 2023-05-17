@@ -134,6 +134,10 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`all()`
+      - Tests whether all input array elements evaluate to True along a given axis.
+    * - :func:`any()`
+      - Tests whether any input array elements evaluate to True along a given axis.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
