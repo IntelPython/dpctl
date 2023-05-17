@@ -7,6 +7,8 @@
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
+
+#include "kernels/elementwise_functions/common.hpp"
 #include <pybind11/pybind11.h>
 
 namespace dpctl
@@ -20,100 +22,59 @@ namespace add
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace tu_ns = dpctl::tensor::type_utils;
+
+template <typename argT1, typename argT2, typename resT> struct AddFunctor
+{
+
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+
+    resT operator()(const argT1 &in1, const argT2 &in2)
+    {
+        return in1 + in2;
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
+                                       const sycl::vec<argT2, vec_sz> &in2)
+    {
+        auto tmp = in1 + in2;
+        if constexpr (std::is_same_v<resT,
+                                     typename decltype(tmp)::element_type>) {
+            return tmp;
+        }
+        else {
+            using dpctl::tensor::type_utils::vec_cast;
+
+            return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
+                tmp);
+        }
+    }
+};
 
 template <typename argT1,
           typename argT2,
           typename resT,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-struct AddContigFunctor
-{
-private:
-    const argT1 *in1 = nullptr;
-    const argT2 *in2 = nullptr;
-    resT *out = nullptr;
-    const size_t nelems_;
+using AddContigFunctor =
+    elementwise_common::BinaryContigFunctor<argT1,
+                                            argT2,
+                                            resT,
+                                            AddFunctor<argT1, argT2, resT>,
+                                            vec_sz,
+                                            n_vecs>;
 
-public:
-    AddContigFunctor(const argT1 *inp1,
-                     const argT2 *inp2,
-                     resT *res,
-                     const size_t n_elems)
-        : in1(inp1), in2(inp2), out(res), nelems_(n_elems)
-    {
-    }
-
-    void operator()(sycl::nd_item<1> ndit) const
-    {
-        /* Each work-item processes vec_sz elements, contiguous in memory */
-
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (is_complex<argT1>::value || is_complex<argT2>::value) {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
-
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
-            for (size_t offset = base;
-                 offset < std::min(nelems_, base + sgSize * (n_vecs * vec_sz));
-                 offset += sgSize)
-            {
-                out[offset] = in1[offset] + in2[offset];
-            }
-        }
-        else {
-            auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * maxsgSize);
-
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize)) {
-                using in_ptrT1 =
-                    sycl::multi_ptr<const argT1,
-                                    sycl::access::address_space::global_space>;
-                using in_ptrT2 =
-                    sycl::multi_ptr<const argT2,
-                                    sycl::access::address_space::global_space>;
-                using out_ptrT =
-                    sycl::multi_ptr<resT,
-                                    sycl::access::address_space::global_space>;
-                sycl::vec<argT1, vec_sz> arg1_vec;
-                sycl::vec<argT2, vec_sz> arg2_vec;
-                sycl::vec<resT, vec_sz> res_vec;
-
-#pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    arg1_vec =
-                        sg.load<vec_sz>(in_ptrT1(&in1[base + it * sgSize]));
-                    arg2_vec =
-                        sg.load<vec_sz>(in_ptrT2(&in2[base + it * sgSize]));
-                    if constexpr (std::is_same_v<argT1, resT> &&
-                                  std::is_same_v<argT2, resT>) {
-                        res_vec = arg1_vec + arg2_vec;
-                    }
-                    else {
-                        using dpctl::tensor::type_utils::vec_cast;
-
-                        auto tmp = arg1_vec + arg2_vec;
-                        res_vec = std::move(
-                            vec_cast<resT, typename decltype(tmp)::element_type,
-                                     vec_sz>(tmp));
-                    }
-                    sg.store<vec_sz>(out_ptrT(&out[base + it * sgSize]),
-                                     res_vec);
-                }
-            }
-            else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
-                    out[k] = in1[k] + in2[k];
-                }
-            }
-        }
-    }
-};
+template <typename argT1, typename argT2, typename resT, typename IndexerT>
+using AddStridedFunctor =
+    elementwise_common::BinaryStridedFunctor<argT1,
+                                             argT2,
+                                             resT,
+                                             IndexerT,
+                                             AddFunctor<argT1, argT2, resT>>;
 
 template <typename T1, typename T2> struct AddOutputType
 {
@@ -254,41 +215,6 @@ template <typename fnT, typename T1, typename T2> struct AddTypeMapFactory
         using rT = typename AddOutputType<T1, T2>::value_type;
         ;
         return td_ns::GetTypeid<rT>{}.get();
-    }
-};
-
-template <typename argT1,
-          typename argT2,
-          typename resT,
-          typename ThreeOffsets_IndexerT>
-struct AddStridedFunctor
-{
-private:
-    const argT1 *in1 = nullptr;
-    const argT2 *in2 = nullptr;
-    resT *out = nullptr;
-    ThreeOffsets_IndexerT three_offsets_indexer_;
-
-public:
-    AddStridedFunctor(const argT1 *inp1_tp,
-                      const argT2 *inp2_tp,
-                      resT *res_tp,
-                      ThreeOffsets_IndexerT inps_res_indexer)
-        : in1(inp1_tp), in2(inp2_tp), out(res_tp),
-          three_offsets_indexer_(inps_res_indexer)
-    {
-    }
-
-    void operator()(sycl::id<1> wid) const
-    {
-        const auto &three_offsets_ =
-            three_offsets_indexer_(static_cast<py::ssize_t>(wid.get(0)));
-
-        const auto &inp1_offset = three_offsets_.get_first_offset();
-        const auto &inp2_offset = three_offsets_.get_second_offset();
-        const auto &out_offset = three_offsets_.get_third_offset();
-
-        out[out_offset] = in1[inp1_offset] + in2[inp2_offset];
     }
 };
 
@@ -435,40 +361,41 @@ sycl::event add_contig_matrix_contig_row_broadcast_impl(
         size_t n_groups = (n_elems + lws - 1) / lws;
         auto gwsRange = sycl::range<1>(n_groups * lws);
 
-            cgh.parallel_for<class add_matrix_vector_broadcast_sg_krn<argT1, argT2, resT>>(
-                sycl::nd_range<1>(gwsRange, lwsRange),
-                [=](sycl::nd_item<1> ndit)
-            {
-                auto sg = ndit.get_sub_group();
-                size_t gid = ndit.get_global_linear_id();
+        cgh.parallel_for<class add_matrix_vector_broadcast_sg_krn<argT1, argT2, resT>>(
+            sycl::nd_range<1>(gwsRange, lwsRange),
+            [=](sycl::nd_item<1> ndit)
+        {
+            auto sg = ndit.get_sub_group();
+            size_t gid = ndit.get_global_linear_id();
 
-                std::uint8_t sgSize = sg.get_local_range()[0];
-                size_t base = gid - sg.get_local_id()[0];
+            std::uint8_t sgSize = sg.get_local_range()[0];
+            size_t base = gid - sg.get_local_id()[0];
 
-                if (base + sgSize < n_elems) {
-                    using in_ptrT1 = sycl::multi_ptr<
-                        const argT1, sycl::access::address_space::global_space>;
-                    using in_ptrT2 = sycl::multi_ptr<
-                        const argT2, sycl::access::address_space::global_space>;
-                    using res_ptrT = sycl::multi_ptr<
-                        resT, sycl::access::address_space::global_space>;
+            if (base + sgSize < n_elems) {
+                using in_ptrT1 =
+                    sycl::multi_ptr<const argT1,
+                                    sycl::access::address_space::global_space>;
+                using in_ptrT2 =
+                    sycl::multi_ptr<const argT2,
+                                    sycl::access::address_space::global_space>;
+                using res_ptrT =
+                    sycl::multi_ptr<resT,
+                                    sycl::access::address_space::global_space>;
 
-                    const argT1 mat_el = sg.load(in_ptrT1(&mat[base]));
-                    const argT2 vec_el =
-                        sg.load(in_ptrT2(&padded_vec[base % n1]));
+                const argT1 mat_el = sg.load(in_ptrT1(&mat[base]));
+                const argT2 vec_el = sg.load(in_ptrT2(&padded_vec[base % n1]));
 
-                    resT res_el = mat_el + vec_el;
+                resT res_el = mat_el + vec_el;
 
-                    sg.store(res_ptrT(&res[base]), res_el);
+                sg.store(res_ptrT(&res[base]), res_el);
+            }
+            else {
+                for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
+                     k += sgSize) {
+                    res[k] = mat[k] + padded_vec[k % n1];
                 }
-                else {
-                    for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                         k += sgSize) {
-                        res[k] = mat[k] + padded_vec[k % n1];
-                    }
-                }
-                }
-            );
+            }
+        });
     });
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
