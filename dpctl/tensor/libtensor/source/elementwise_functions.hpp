@@ -297,7 +297,8 @@ bool isEqual(Container const &c, std::initializer_list<T> const &l)
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT,
-          typename matrix_row_dispatchT>
+          typename contig_matrix_row_dispatchT,
+          typename contig_row_matrix_dispatchT>
 std::pair<sycl::event, sycl::event> py_binary_ufunc(
     dpctl::tensor::usm_ndarray src1,
     dpctl::tensor::usm_ndarray src2,
@@ -308,7 +309,10 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const output_typesT &output_type_table,
     const contig_dispatchT &contig_dispatch_table,
     const strided_dispatchT &strided_dispatch_table,
-    const matrix_row_dispatchT &contig_matrix_row_broadcast_dispatch_table)
+    const contig_matrix_row_dispatchT
+        &contig_matrix_row_broadcast_dispatch_table,
+    const contig_row_matrix_dispatchT
+        &contig_row_matrix_broadcast_dispatch_table)
 {
     // check type_nums
     int src1_typenum = src1.get_typenum();
@@ -507,15 +511,15 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                 isEqual(simplified_src2_strides, {one, simplified_shape[0]}) &&
                 isEqual(simplified_dst_strides, {one, simplified_shape[0]}))
             {
-                auto matrix_row_broadcast_fn =
-                    contig_matrix_row_broadcast_dispatch_table[src2_typeid]
-                                                              [src1_typeid];
-                if (matrix_row_broadcast_fn != nullptr) {
+                auto row_matrix_broadcast_fn =
+                    contig_row_matrix_broadcast_dispatch_table[src1_typeid]
+                                                              [src2_typeid];
+                if (row_matrix_broadcast_fn != nullptr) {
                     size_t n0 = simplified_shape[1];
                     size_t n1 = simplified_shape[0];
-                    sycl::event comp_ev = matrix_row_broadcast_fn(
-                        exec_q, host_tasks, n0, n1, src2_data, src2_offset,
-                        src1_data, src1_offset, dst_data, dst_offset, depends);
+                    sycl::event comp_ev = row_matrix_broadcast_fn(
+                        exec_q, host_tasks, n0, n1, src1_data, src1_offset,
+                        src2_data, src2_offset, dst_data, dst_offset, depends);
 
                     return std::make_pair(
                         dpctl::utils::keep_args_alive(exec_q, {src1, src2, dst},

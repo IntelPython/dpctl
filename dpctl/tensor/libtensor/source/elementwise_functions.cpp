@@ -283,6 +283,7 @@ namespace fn_ns = dpctl::tensor::kernels::add;
 
 using fn_ns::add_contig_impl_fn_ptr_t;
 using fn_ns::add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using fn_ns::add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
 using fn_ns::add_strided_impl_fn_ptr_t;
 
 static add_contig_impl_fn_ptr_t add_contig_dispatch_table[td_ns::num_types]
@@ -292,28 +293,37 @@ static int add_output_id_table[td_ns::num_types][td_ns::num_types];
 static add_strided_impl_fn_ptr_t add_strided_dispatch_table[td_ns::num_types]
                                                            [td_ns::num_types];
 
+// add(matrix, row)
 static add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
     add_contig_matrix_contig_row_broadcast_dispatch_table[td_ns::num_types]
+                                                         [td_ns::num_types];
+
+// add(row, matrix)
+static add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
+    add_contig_row_contig_matrix_broadcast_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
 
 void populate_add_dispatch_tables(void)
 {
     using namespace td_ns;
 
-    using fn_ns::AddContigFactory;
-    DispatchTableBuilder<add_contig_impl_fn_ptr_t, AddContigFactory, num_types>
-        dtb1;
-    dtb1.populate_dispatch_table(add_contig_dispatch_table);
+    // which input types are supported, and what is the type of the result
+    using fn_ns::AddTypeMapFactory;
+    DispatchTableBuilder<int, AddTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(add_output_id_table);
 
+    // function pointers for operation on general strided arrays
     using fn_ns::AddStridedFactory;
     DispatchTableBuilder<add_strided_impl_fn_ptr_t, AddStridedFactory,
                          num_types>
         dtb2;
     dtb2.populate_dispatch_table(add_strided_dispatch_table);
 
-    using fn_ns::AddTypeMapFactory;
-    DispatchTableBuilder<int, AddTypeMapFactory, num_types> dtb3;
-    dtb3.populate_dispatch_table(add_output_id_table);
+    // function pointers for operation on contiguous inputs and outputs
+    using fn_ns::AddContigFactory;
+    DispatchTableBuilder<add_contig_impl_fn_ptr_t, AddContigFactory, num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(add_contig_dispatch_table);
 
     using fn_ns::AddContigMatrixContigRowBroadcastFactory;
     DispatchTableBuilder<add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
@@ -321,6 +331,13 @@ void populate_add_dispatch_tables(void)
         dtb4;
     dtb4.populate_dispatch_table(
         add_contig_matrix_contig_row_broadcast_dispatch_table);
+
+    using fn_ns::AddContigRowContigMatrixBroadcastFactory;
+    DispatchTableBuilder<add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
+                         AddContigRowContigMatrixBroadcastFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(
+        add_contig_row_contig_matrix_broadcast_dispatch_table);
 };
 
 } // namespace impl
@@ -365,6 +382,7 @@ void init_elementwise_functions(py::module_ m)
         impl::populate_add_dispatch_tables();
         using impl::add_contig_dispatch_table;
         using impl::add_contig_matrix_contig_row_broadcast_dispatch_table;
+        using impl::add_contig_row_contig_matrix_broadcast_dispatch_table;
         using impl::add_output_id_table;
         using impl::add_strided_dispatch_table;
 
@@ -382,7 +400,10 @@ void init_elementwise_functions(py::module_ m)
                 add_strided_dispatch_table,
                 // function pointers to handle operation of c-contig matrix and
                 // c-contig row with broadcasting (may be nullptr)
-                add_contig_matrix_contig_row_broadcast_dispatch_table);
+                add_contig_matrix_contig_row_broadcast_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                add_contig_row_contig_matrix_broadcast_dispatch_table);
         };
         auto add_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
             return py_binary_ufunc_result_type(dtype1, dtype2,

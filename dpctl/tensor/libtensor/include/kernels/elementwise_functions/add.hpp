@@ -436,6 +436,67 @@ struct AddContigMatrixContigRowBroadcastFactory
     }
 };
 
+typedef sycl::event (*add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
+    sycl::queue,
+    std::vector<sycl::event> &,
+    size_t,
+    size_t,
+    const char *,
+    py::ssize_t,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename argT1, typename argT2, typename resT>
+sycl::event add_contig_row_contig_matrix_broadcast_impl(
+    sycl::queue exec_q,
+    std::vector<sycl::event> &host_tasks,
+    size_t n0,
+    size_t n1,
+    const char *vec_p, // typeless pointer to (n1,) contiguous row
+    py::ssize_t vec_offset,
+    const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
+    py::ssize_t mat_offset,
+    char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
+                 //    res[i,j] = mat[i,j] + vec[j]
+    py::ssize_t res_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    return add_contig_matrix_contig_row_broadcast_impl<argT2, argT1, resT>(
+        exec_q, host_tasks, n0, n1, mat_p, mat_offset, vec_p, vec_offset, res_p,
+        res_offset, depends);
+};
+
+template <typename fnT, typename T1, typename T2>
+struct AddContigRowContigMatrixBroadcastFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            using resT = typename AddOutputType<T1, T2>::value_type;
+            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
+                          dpctl::tensor::type_utils::is_complex<T2>::value ||
+                          dpctl::tensor::type_utils::is_complex<resT>::value)
+            {
+                fnT fn = nullptr;
+                return fn;
+            }
+            else {
+                fnT fn =
+                    add_contig_row_contig_matrix_broadcast_impl<T1, T2, resT>;
+                return fn;
+            }
+        }
+    }
+};
+
 } // namespace add
 } // namespace kernels
 } // namespace tensor
