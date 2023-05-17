@@ -41,25 +41,7 @@ template <typename argT, typename resT> struct CosFunctor
 
     resT operator()(const argT &in)
     {
-        if constexpr (is_complex<argT>::value) {
-            using realT = typename argT::value_type;
-            // cos(x + I*y) = cos(x)*cosh(y) - I*sin(x)*sinh(y)
-            auto v = std::real(in);
-            realT cosX_val;
-            const realT sinX_val = sycl::sincos(-v, &cosX_val);
-            v = std::imag(in);
-            const realT sinhY_val = sycl::sinh(v);
-            const realT coshY_val = sycl::cosh(v);
-
-            const realT res_re = coshY_val * cosX_val;
-            const realT res_im = sinX_val * sinhY_val;
-            return resT{res_re, res_im};
-        }
-        else {
-            static_assert(std::is_floating_point_v<argT> ||
-                          std::is_same_v<argT, sycl::half>);
-            return std::cos(in);
-        }
+        return std::cos(in);
     }
 };
 
