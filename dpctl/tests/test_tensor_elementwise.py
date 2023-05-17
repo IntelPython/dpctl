@@ -168,7 +168,7 @@ def test_unary_func_arg_validation():
     dpt.abs(a, order="invalid")
 
 
-def test_binary_func_arg_vaidation():
+def test_binary_func_arg_validation():
     with pytest.raises(dpctl.utils.ExecutionPlacementError):
         dpt.add([1, 2, 3], 1)
     try:
