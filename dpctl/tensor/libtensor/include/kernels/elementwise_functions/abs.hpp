@@ -178,7 +178,7 @@ sycl::event abs_strided_impl(sycl::queue exec_q,
                              const std::vector<sycl::event> &depends,
                              const std::vector<sycl::event> &additional_depends)
 {
-    sycl::event abs_ev = exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
 
@@ -195,7 +195,7 @@ sycl::event abs_strided_impl(sycl::queue exec_q,
             {nelems},
             AbsStridedFunctor<argTy, resTy, IndexerT>(arg_tp, res_tp, indexer));
     });
-    return abs_ev;
+    return comp_ev;
 }
 
 template <typename fnT, typename T> struct AbsStridedFactory
