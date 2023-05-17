@@ -420,6 +420,130 @@ public:
     }
 };
 
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          typename BinaryOperatorT>
+struct BinaryContigMatrixContigRowBroadcastingFunctor
+{
+private:
+    const argT1 *mat;
+    const argT2 *padded_vec;
+    resT *res;
+    size_t n_elems;
+    size_t n1;
+
+public:
+    BinaryContigMatrixContigRowBroadcastingFunctor(const argT1 *mat_tp,
+                                                   const argT2 *row_tp,
+                                                   resT *res_tp,
+                                                   size_t n_elems_in_mat,
+                                                   size_t n_elems_in_row)
+        : mat(mat_tp), padded_vec(row_tp), res(res_tp), n_elems(n_elems_in_mat),
+          n1(n_elems_in_row)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        BinaryOperatorT op{};
+        static_assert(BinaryOperatorT::supports_sg_loadstore::value);
+
+        auto sg = ndit.get_sub_group();
+        size_t gid = ndit.get_global_linear_id();
+
+        std::uint8_t sgSize = sg.get_local_range()[0];
+        size_t base = gid - sg.get_local_id()[0];
+
+        if (base + sgSize < n_elems) {
+            using in_ptrT1 =
+                sycl::multi_ptr<const argT1,
+                                sycl::access::address_space::global_space>;
+            using in_ptrT2 =
+                sycl::multi_ptr<const argT2,
+                                sycl::access::address_space::global_space>;
+            using res_ptrT =
+                sycl::multi_ptr<resT,
+                                sycl::access::address_space::global_space>;
+
+            const argT1 mat_el = sg.load(in_ptrT1(&mat[base]));
+            const argT2 vec_el = sg.load(in_ptrT2(&padded_vec[base % n1]));
+
+            resT res_el = op(mat_el, vec_el);
+
+            sg.store(res_ptrT(&res[base]), res_el);
+        }
+        else {
+            for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
+                 k += sgSize) {
+                res[k] = op(mat[k], padded_vec[k % n1]);
+            }
+        }
+    }
+};
+
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          typename BinaryOperatorT>
+struct BinaryContigRowContigMatrixBroadcastingFunctor
+{
+private:
+    const argT1 *padded_vec;
+    const argT2 *mat;
+    resT *res;
+    size_t n_elems;
+    size_t n1;
+
+public:
+    BinaryContigRowContigMatrixBroadcastingFunctor(const argT1 *row_tp,
+                                                   const argT2 *mat_tp,
+                                                   resT *res_tp,
+                                                   size_t n_elems_in_mat,
+                                                   size_t n_elems_in_row)
+        : padded_vec(row_tp), mat(mat_tp), res(res_tp), n_elems(n_elems_in_mat),
+          n1(n_elems_in_row)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        BinaryOperatorT op{};
+        static_assert(BinaryOperatorT::supports_sg_loadstore::value);
+
+        auto sg = ndit.get_sub_group();
+        size_t gid = ndit.get_global_linear_id();
+
+        std::uint8_t sgSize = sg.get_local_range()[0];
+        size_t base = gid - sg.get_local_id()[0];
+
+        if (base + sgSize < n_elems) {
+            using in_ptrT1 =
+                sycl::multi_ptr<const argT1,
+                                sycl::access::address_space::global_space>;
+            using in_ptrT2 =
+                sycl::multi_ptr<const argT2,
+                                sycl::access::address_space::global_space>;
+            using res_ptrT =
+                sycl::multi_ptr<resT,
+                                sycl::access::address_space::global_space>;
+
+            const argT2 mat_el = sg.load(in_ptrT2(&mat[base]));
+            const argT1 vec_el = sg.load(in_ptrT1(&padded_vec[base % n1]));
+
+            resT res_el = op(vec_el, mat_el);
+
+            sg.store(res_ptrT(&res[base]), res_el);
+        }
+        else {
+            for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
+                 k += sgSize) {
+                res[k] = op(padded_vec[k % n1], mat[k]);
+            }
+        }
+    }
+};
+
 } // namespace elementwise_common
 } // namespace kernels
 } // namespace tensor

@@ -39,6 +39,7 @@
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
+#include "kernels/elementwise_functions/true_divide.hpp"
 
 namespace dpctl
 {
@@ -280,12 +281,12 @@ void populate_cos_dispatch_vectors(void)
 
 namespace impl
 {
-namespace fn_ns = dpctl::tensor::kernels::add;
+namespace add_fn_ns = dpctl::tensor::kernels::add;
 
-using fn_ns::add_contig_impl_fn_ptr_t;
-using fn_ns::add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
-using fn_ns::add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
-using fn_ns::add_strided_impl_fn_ptr_t;
+using add_fn_ns::add_contig_impl_fn_ptr_t;
+using add_fn_ns::add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using add_fn_ns::add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using add_fn_ns::add_strided_impl_fn_ptr_t;
 
 static add_contig_impl_fn_ptr_t add_contig_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
@@ -307,6 +308,7 @@ static add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
 void populate_add_dispatch_tables(void)
 {
     using namespace td_ns;
+    namespace fn_ns = add_fn_ns;
 
     // which input types are supported, and what is the type of the result
     using fn_ns::AddTypeMapFactory;
@@ -320,12 +322,14 @@ void populate_add_dispatch_tables(void)
         dtb2;
     dtb2.populate_dispatch_table(add_strided_dispatch_table);
 
-    // function pointers for operation on contiguous inputs and outputs
+    // function pointers for operation on contiguous inputs and output
     using fn_ns::AddContigFactory;
     DispatchTableBuilder<add_contig_impl_fn_ptr_t, AddContigFactory, num_types>
         dtb3;
     dtb3.populate_dispatch_table(add_contig_dispatch_table);
 
+    // function pointers for operation on contiguous matrix, contiguous row
+    // with contiguous matrix output
     using fn_ns::AddContigMatrixContigRowBroadcastFactory;
     DispatchTableBuilder<add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
                          AddContigMatrixContigRowBroadcastFactory, num_types>
@@ -333,6 +337,8 @@ void populate_add_dispatch_tables(void)
     dtb4.populate_dispatch_table(
         add_contig_matrix_contig_row_broadcast_dispatch_table);
 
+    // function pointers for operation on contiguous row, contiguous matrix
+    // with contiguous matrix output
     using fn_ns::AddContigRowContigMatrixBroadcastFactory;
     DispatchTableBuilder<add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
                          AddContigRowContigMatrixBroadcastFactory, num_types>
@@ -377,6 +383,82 @@ void populate_sqrt_dispatch_vectors(void)
     DispatchVectorBuilder<int, SqrtTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(sqrt_output_typeid_vector);
 }
+
+} // namespace impl
+
+// DIVIDE
+namespace impl
+{
+namespace true_divide_fn_ns = dpctl::tensor::kernels::true_divide;
+
+using true_divide_fn_ns::true_divide_contig_impl_fn_ptr_t;
+using true_divide_fn_ns::
+    true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using true_divide_fn_ns::
+    true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using true_divide_fn_ns::true_divide_strided_impl_fn_ptr_t;
+
+static true_divide_contig_impl_fn_ptr_t
+    true_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int true_divide_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static true_divide_strided_impl_fn_ptr_t
+    true_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+// divide(matrix, row)
+static true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
+    true_divide_contig_matrix_contig_row_broadcast_dispatch_table
+        [td_ns::num_types][td_ns::num_types];
+
+// divide(row, matrix)
+static true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
+    true_divide_contig_row_contig_matrix_broadcast_dispatch_table
+        [td_ns::num_types][td_ns::num_types];
+
+void populate_true_divide_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = true_divide_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::TrueDivideTypeMapFactory;
+    DispatchTableBuilder<int, TrueDivideTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(true_divide_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::TrueDivideStridedFactory;
+    DispatchTableBuilder<true_divide_strided_impl_fn_ptr_t,
+                         TrueDivideStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(true_divide_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::TrueDivideContigFactory;
+    DispatchTableBuilder<true_divide_contig_impl_fn_ptr_t,
+                         TrueDivideContigFactory, num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(true_divide_contig_dispatch_table);
+
+    // function pointers for operation on contiguous matrix, contiguous row
+    // with contiguous matrix output
+    using fn_ns::TrueDivideContigMatrixContigRowBroadcastFactory;
+    DispatchTableBuilder<
+        true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
+        TrueDivideContigMatrixContigRowBroadcastFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(
+        true_divide_contig_matrix_contig_row_broadcast_dispatch_table);
+
+    // function pointers for operation on contiguous row, contiguous matrix
+    // with contiguous matrix output
+    using fn_ns::TrueDivideContigRowContigMatrixBroadcastFactory;
+    DispatchTableBuilder<
+        true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
+        TrueDivideContigRowContigMatrixBroadcastFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(
+        true_divide_contig_row_contig_matrix_broadcast_dispatch_table);
+};
 
 } // namespace impl
 
@@ -518,7 +600,46 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B08: ==== DIVIDE        (x1, x2)
-    // FIXME:
+    {
+        impl::populate_true_divide_dispatch_tables();
+        using impl::true_divide_contig_dispatch_table;
+        using impl::
+            true_divide_contig_matrix_contig_row_broadcast_dispatch_table;
+        using impl::
+            true_divide_contig_row_contig_matrix_broadcast_dispatch_table;
+        using impl::true_divide_output_id_table;
+        using impl::true_divide_strided_dispatch_table;
+
+        auto divide_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                dpctl::tensor::usm_ndarray src2,
+                                dpctl::tensor::usm_ndarray dst,
+                                sycl::queue exec_q,
+                                const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, true_divide_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                true_divide_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                true_divide_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                true_divide_contig_matrix_contig_row_broadcast_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                true_divide_contig_row_contig_matrix_broadcast_dispatch_table);
+        };
+        auto divide_result_type_pyapi = [&](py::dtype dtype1,
+                                            py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               true_divide_output_id_table);
+        };
+        m.def("_divide", divide_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_divide_result_type", divide_result_type_pyapi, "");
+    }
 
     // B09: ==== EQUAL         (x1, x2)
     // FIXME:
