@@ -385,6 +385,9 @@ py_extract(dpctl::tensor::usm_ndarray src,
         auto fn =
             masked_extract_all_slices_strided_impl_dispatch_vector[src_typeid];
 
+        assert(dst_shape_vec.size() == 1);
+        assert(dst_strides_vec.size() == 1);
+
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
         const auto &ptr_size_event_tuple1 =
             device_allocate_and_pack<py::ssize_t>(
@@ -396,9 +399,6 @@ py_extract(dpctl::tensor::usm_ndarray src,
         }
         sycl::event copy_src_shape_strides_ev =
             std::get<2>(ptr_size_event_tuple1);
-
-        assert(dst_shape_vec.size() == 1);
-        assert(dst_strides_vec.size() == 1);
 
         std::vector<sycl::event> all_deps;
         all_deps.reserve(depends.size() + 1);
@@ -469,40 +469,31 @@ py_extract(dpctl::tensor::usm_ndarray src,
             simplified_ortho_shape, simplified_ortho_src_strides,
             simplified_ortho_dst_strides, ortho_src_offset, ortho_dst_offset);
 
+        assert(masked_dst_shape.size() == 1);
+        assert(masked_dst_strides.size() == 1);
+
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
         const auto &ptr_size_event_tuple1 =
             device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events, simplified_ortho_shape,
-                simplified_ortho_src_strides, simplified_ortho_dst_strides);
-        py::ssize_t *packed_ortho_src_dst_shape_strides =
-            std::get<0>(ptr_size_event_tuple1);
-        if (packed_ortho_src_dst_shape_strides == nullptr) {
+                simplified_ortho_src_strides, simplified_ortho_dst_strides,
+                masked_src_shape, masked_src_strides);
+        py::ssize_t *packed_shapes_strides = std::get<0>(ptr_size_event_tuple1);
+        if (packed_shapes_strides == nullptr) {
             throw std::runtime_error("Unable to allocate device memory");
         }
-        sycl::event copy_shape_strides_ev1 = std::get<2>(ptr_size_event_tuple1);
+        sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
 
-        const auto &ptr_size_event_tuple2 =
-            device_allocate_and_pack<py::ssize_t>(
-                exec_q, host_task_events, masked_src_shape, masked_src_strides);
+        py::ssize_t *packed_ortho_src_dst_shape_strides = packed_shapes_strides;
         py::ssize_t *packed_masked_src_shape_strides =
-            std::get<0>(ptr_size_event_tuple2);
-        if (packed_masked_src_shape_strides == nullptr) {
-            copy_shape_strides_ev1.wait();
-            sycl::free(packed_ortho_src_dst_shape_strides, exec_q);
-            throw std::runtime_error("Unable to allocate device memory");
-        }
-        sycl::event copy_shape_strides_ev2 = std::get<2>(ptr_size_event_tuple2);
-
-        assert(masked_dst_shape.size() == 1);
-        assert(masked_dst_strides.size() == 1);
+            packed_shapes_strides + (3 * ortho_nd);
 
         std::vector<sycl::event> all_deps;
-        all_deps.reserve(depends.size() + 2);
+        all_deps.reserve(depends.size() + 1);
         all_deps.insert(all_deps.end(), depends.begin(), depends.end());
-        all_deps.push_back(copy_shape_strides_ev1);
-        all_deps.push_back(copy_shape_strides_ev2);
+        all_deps.push_back(copy_shapes_strides_ev);
 
-        assert(all_deps.size() == depends.size() + 2);
+        assert(all_deps.size() == depends.size() + 1);
 
         // OrthogIndexerT orthog_src_dst_indexer_, MaskedIndexerT
         // masked_src_indexer_, MaskedIndexerT masked_dst_indexer_
@@ -520,10 +511,8 @@ py_extract(dpctl::tensor::usm_ndarray src,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(extract_ev);
                 auto ctx = exec_q.get_context();
-                cgh.host_task([ctx, packed_ortho_src_dst_shape_strides,
-                               packed_masked_src_shape_strides] {
-                    sycl::free(packed_ortho_src_dst_shape_strides, ctx);
-                    sycl::free(packed_masked_src_shape_strides, ctx);
+                cgh.host_task([ctx, packed_shapes_strides] {
+                    sycl::free(packed_shapes_strides, ctx);
                 });
             });
         host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -684,12 +673,15 @@ py_place(dpctl::tensor::usm_ndarray dst,
     auto rhs_shape_vec = rhs.get_shape_vector();
     auto rhs_strides_vec = rhs.get_strides_vector();
 
-    sycl::event extract_ev;
+    sycl::event place_ev;
     std::vector<sycl::event> host_task_events{};
     if (axis_start == 0 && axis_end == dst_nd) {
         // empty orthogonal directions
         auto fn =
             masked_place_all_slices_strided_impl_dispatch_vector[dst_typeid];
+
+        assert(rhs_shape_vec.size() == 1);
+        assert(rhs_strides_vec.size() == 1);
 
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
         const auto &ptr_size_event_tuple1 =
@@ -703,9 +695,6 @@ py_place(dpctl::tensor::usm_ndarray dst,
         sycl::event copy_dst_shape_strides_ev =
             std::get<2>(ptr_size_event_tuple1);
 
-        assert(rhs_shape_vec.size() == 1);
-        assert(rhs_strides_vec.size() == 1);
-
         std::vector<sycl::event> all_deps;
         all_deps.reserve(depends.size() + 1);
         all_deps.insert(all_deps.end(), depends.begin(), depends.end());
@@ -713,13 +702,13 @@ py_place(dpctl::tensor::usm_ndarray dst,
 
         assert(all_deps.size() == depends.size() + 1);
 
-        extract_ev = fn(exec_q, cumsum_sz, dst_data_p, cumsum_data_p,
-                        rhs_data_p, dst_nd, packed_dst_shape_strides,
-                        rhs_shape_vec[0], rhs_strides_vec[0], all_deps);
+        place_ev = fn(exec_q, cumsum_sz, dst_data_p, cumsum_data_p, rhs_data_p,
+                      dst_nd, packed_dst_shape_strides, rhs_shape_vec[0],
+                      rhs_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(extract_ev);
+                cgh.depends_on(place_ev);
                 auto ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_dst_shape_strides] {
                     sycl::free(packed_dst_shape_strides, ctx);
@@ -774,69 +763,59 @@ py_place(dpctl::tensor::usm_ndarray dst,
             simplified_ortho_shape, simplified_ortho_dst_strides,
             simplified_ortho_rhs_strides, ortho_dst_offset, ortho_rhs_offset);
 
+        assert(masked_rhs_shape.size() == 1);
+        assert(masked_rhs_strides.size() == 1);
+
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
         const auto &ptr_size_event_tuple1 =
             device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events, simplified_ortho_shape,
-                simplified_ortho_dst_strides, simplified_ortho_rhs_strides);
-        py::ssize_t *packed_ortho_dst_rhs_shape_strides =
-            std::get<0>(ptr_size_event_tuple1);
-        if (packed_ortho_dst_rhs_shape_strides == nullptr) {
+                simplified_ortho_dst_strides, simplified_ortho_rhs_strides,
+                masked_dst_shape, masked_dst_strides);
+        py::ssize_t *packed_shapes_strides = std::get<0>(ptr_size_event_tuple1);
+        if (packed_shapes_strides == nullptr) {
             throw std::runtime_error("Unable to allocate device memory");
         }
-        sycl::event copy_shape_strides_ev1 = std::get<2>(ptr_size_event_tuple1);
+        sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
 
-        auto ptr_size_event_tuple2 = device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, masked_dst_shape, masked_dst_strides);
+        py::ssize_t *packed_ortho_dst_rhs_shape_strides = packed_shapes_strides;
         py::ssize_t *packed_masked_dst_shape_strides =
-            std::get<0>(ptr_size_event_tuple2);
-        if (packed_masked_dst_shape_strides == nullptr) {
-            copy_shape_strides_ev1.wait();
-            sycl::free(packed_ortho_dst_rhs_shape_strides, exec_q);
-            throw std::runtime_error("Unable to allocate device memory");
-        }
-        sycl::event copy_shape_strides_ev2 = std::get<2>(ptr_size_event_tuple2);
-
-        assert(masked_rhs_shape.size() == 1);
-        assert(masked_rhs_strides.size() == 1);
+            packed_shapes_strides + (3 * ortho_nd);
 
         std::vector<sycl::event> all_deps;
-        all_deps.reserve(depends.size() + 2);
+        all_deps.reserve(depends.size() + 1);
         all_deps.insert(all_deps.end(), depends.begin(), depends.end());
-        all_deps.push_back(copy_shape_strides_ev1);
-        all_deps.push_back(copy_shape_strides_ev2);
+        all_deps.push_back(copy_shapes_strides_ev);
 
-        assert(all_deps.size() == depends.size() + 2);
+        assert(all_deps.size() == depends.size() + 1);
 
-        extract_ev = fn(exec_q, ortho_nelems, masked_dst_nelems, dst_data_p,
-                        cumsum_data_p, rhs_data_p,
-                        // data to build orthog_dst_rhs_indexer
-                        ortho_nd, packed_ortho_dst_rhs_shape_strides,
-                        ortho_dst_offset, ortho_rhs_offset,
-                        // data to build masked_dst_indexer
-                        masked_dst_nd, packed_masked_dst_shape_strides,
-                        // data to build masked_dst_indexer,
-                        masked_rhs_shape[0], masked_rhs_strides[0], all_deps);
+        place_ev = fn(exec_q, ortho_nelems, masked_dst_nelems, dst_data_p,
+                      cumsum_data_p, rhs_data_p,
+                      // data to build orthog_dst_rhs_indexer
+                      ortho_nd, packed_ortho_dst_rhs_shape_strides,
+                      ortho_dst_offset, ortho_rhs_offset,
+                      // data to build masked_dst_indexer
+                      masked_dst_nd, packed_masked_dst_shape_strides,
+                      // data to build masked_dst_indexer,
+                      masked_rhs_shape[0], masked_rhs_strides[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(extract_ev);
+                cgh.depends_on(place_ev);
                 auto ctx = exec_q.get_context();
-                cgh.host_task([ctx, packed_ortho_dst_rhs_shape_strides,
-                               packed_masked_dst_shape_strides] {
-                    sycl::free(packed_ortho_dst_rhs_shape_strides, ctx);
-                    sycl::free(packed_masked_dst_shape_strides, ctx);
+                cgh.host_task([ctx, packed_shapes_strides] {
+                    sycl::free(packed_shapes_strides, ctx);
                 });
             });
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    host_task_events.push_back(extract_ev);
+    host_task_events.push_back(place_ev);
 
     sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
         exec_q, {dst, cumsum, rhs}, host_task_events);
 
-    return std::make_pair(py_obj_management_host_task_ev, extract_ev);
+    return std::make_pair(py_obj_management_host_task_ev, place_ev);
 }
 
 // Non-zero

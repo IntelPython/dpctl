@@ -34,6 +34,7 @@
 #include "dpctl4pybind11.hpp"
 
 #include "boolean_advanced_indexing.hpp"
+#include "boolean_reductions.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -349,4 +350,5 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("depends") = py::list());
 
     dpctl::tensor::py_internal::init_elementwise_functions(m);
+    dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
 }
