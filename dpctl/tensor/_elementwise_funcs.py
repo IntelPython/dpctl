@@ -71,3 +71,13 @@ Computes if every element of input array is an infinity.
 isinf = UnaryElementwiseFunc(
     "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring_
 )
+
+# SQRT
+
+_sqrt_docstring_ = """
+Computes sqrt for each element `x_i` for input array `x`.
+"""
+
+sqrt = UnaryElementwiseFunc(
+    "sqrt", ti._sqrt_result_type, ti._sqrt, _sqrt_docstring_
+)
