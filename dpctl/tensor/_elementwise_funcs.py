@@ -31,6 +31,28 @@ add = BinaryElementwiseFunc(
     "add", ti._add_result_type, ti._add, _add_docstring_
 )
 
+# DIVIDE
+
+_divide_docstring_ = """
+divide(x1, x2, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+Returns:
+    usm_narray:
+        an array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+divide = BinaryElementwiseFunc(
+    "divide", ti._divide_result_type, ti._divide, _divide_docstring_
+)
+
 
 # COS
 
