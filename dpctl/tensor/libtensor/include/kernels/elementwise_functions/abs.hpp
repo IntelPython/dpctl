@@ -64,21 +64,21 @@ template <typename T> struct AbsOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::TypeMapEntry<T, bool>,
-        td_ns::TypeMapEntry<T, std::uint8_t>,
-        td_ns::TypeMapEntry<T, std::uint16_t>,
-        td_ns::TypeMapEntry<T, std::uint32_t>,
-        td_ns::TypeMapEntry<T, std::uint64_t>,
-        td_ns::TypeMapEntry<T, std::int8_t>,
-        td_ns::TypeMapEntry<T, std::int16_t>,
-        td_ns::TypeMapEntry<T, std::int32_t>,
-        td_ns::TypeMapEntry<T, std::int64_t>,
-        td_ns::TypeMapEntry<T, sycl::half>,
-        td_ns::TypeMapEntry<T, float>,
-        td_ns::TypeMapEntry<T, double>,
-        td_ns::TypeMapEntry<T, std::complex<float>, float>,
-        td_ns::TypeMapEntry<T, std::complex<double>, double>,
-        td_ns::DefaultEntry<void>>::result_type;
+        td_ns::TypeMapResultEntry<T, bool>,
+        td_ns::TypeMapResultEntry<T, std::uint8_t>,
+        td_ns::TypeMapResultEntry<T, std::uint16_t>,
+        td_ns::TypeMapResultEntry<T, std::uint32_t>,
+        td_ns::TypeMapResultEntry<T, std::uint64_t>,
+        td_ns::TypeMapResultEntry<T, std::int8_t>,
+        td_ns::TypeMapResultEntry<T, std::int16_t>,
+        td_ns::TypeMapResultEntry<T, std::int32_t>,
+        td_ns::TypeMapResultEntry<T, std::int64_t>,
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>, float>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>, double>,
+        td_ns::DefaultResultEntry<void>>::result_type;
 };
 
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>

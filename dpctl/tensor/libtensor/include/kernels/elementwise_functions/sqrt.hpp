@@ -60,12 +60,13 @@ template <typename T> struct SqrtOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::TypeMapEntry<T, sycl::half, sycl::half>,
-        td_ns::TypeMapEntry<T, float, float>,
-        td_ns::TypeMapEntry<T, double, double>,
-        td_ns::TypeMapEntry<T, std::complex<float>, std::complex<float>>,
-        td_ns::TypeMapEntry<T, std::complex<double>, std::complex<double>>,
-        td_ns::DefaultEntry<void>>::result_type;
+        td_ns::TypeMapResultEntry<T, sycl::half, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float, float>,
+        td_ns::TypeMapResultEntry<T, double, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        td_ns::
+            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
+        td_ns::DefaultResultEntry<void>>::result_type;
 };
 
 typedef sycl::event (*sqrt_contig_impl_fn_ptr_t)(

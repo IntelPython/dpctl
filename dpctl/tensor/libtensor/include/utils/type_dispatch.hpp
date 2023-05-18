@@ -252,7 +252,7 @@ private:
 
 /*! @brief struct to define result_type typename for Ty == ArgTy */
 template <typename Ty, typename ArgTy, typename ResTy = ArgTy>
-struct TypeMapEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
+struct TypeMapResultEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
 {
     using result_type = ResTy;
 };
@@ -264,7 +264,7 @@ template <typename Ty1,
           typename Ty2,
           typename ArgTy2,
           typename ResTy>
-struct BinaryTypeMapEntry
+struct BinaryTypeMapResultEntry
     : std::bool_constant<std::conjunction_v<std::is_same<Ty1, ArgTy1>,
                                             std::is_same<Ty2, ArgTy2>>>
 {
@@ -272,7 +272,7 @@ struct BinaryTypeMapEntry
 };
 
 /*! @brief fall-through struct with specified result_type, usually void */
-template <typename Ty = void> struct DefaultEntry : std::true_type
+template <typename Ty = void> struct DefaultResultEntry : std::true_type
 {
     using result_type = Ty;
 };
@@ -366,6 +366,18 @@ template <typename FunPtrT> struct NullPtrTable
 
 private:
     value_type val;
+};
+
+template <typename Ty1, typename ArgTy, typename Ty2, typename outTy>
+struct TypePairDefinedEntry : std::bool_constant<std::is_same_v<Ty1, ArgTy> &&
+                                                 std::is_same_v<Ty2, outTy>>
+{
+    static constexpr bool is_defined = true;
+};
+
+struct NotDefinedEntry : std::true_type
+{
+    static constexpr bool is_defined = false;
 };
 
 } // namespace type_dispatch
