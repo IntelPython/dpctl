@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "simplify_iteration_space.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -122,22 +123,13 @@ py_unary_ufunc(dpctl::tensor::usm_ndarray src,
     }
 
     // check memory overlap
-    const char *src_data = src.get_data();
-    char *dst_data = dst.get_data();
-
-    // check that arrays do not overlap, and concurrent copying is safe.
-    auto src_offsets = src.get_minmax_offsets();
-    int src_elem_size = src.get_elemsize();
-    int dst_elem_size = dst.get_elemsize();
-
-    bool memory_overlap =
-        ((dst_data - src_data > src_offsets.second * src_elem_size -
-                                    dst_offsets.first * dst_elem_size) &&
-         (src_data - dst_data > dst_offsets.second * dst_elem_size -
-                                    src_offsets.first * src_elem_size));
-    if (memory_overlap) {
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
+
+    const char *src_data = src.get_data();
+    char *dst_data = dst.get_data();
 
     // handle contiguous inputs
     bool is_src_c_contig = src.is_c_contiguous();
@@ -379,30 +371,14 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     }
 
     // check memory overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src1, dst) || overlap(src2, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+    // check memory overlap
     const char *src1_data = src1.get_data();
     const char *src2_data = src2.get_data();
     char *dst_data = dst.get_data();
-
-    // check that arrays do not overlap, and concurrent copying is safe.
-    auto src1_offsets = src1.get_minmax_offsets();
-    int src1_elem_size = src1.get_elemsize();
-    auto src2_offsets = src2.get_minmax_offsets();
-    int src2_elem_size = src2.get_elemsize();
-    int dst_elem_size = dst.get_elemsize();
-
-    bool memory_overlap_src1_dst =
-        ((dst_data - src1_data > src1_offsets.second * src1_elem_size -
-                                     dst_offsets.first * dst_elem_size) &&
-         (src1_data - dst_data > dst_offsets.second * dst_elem_size -
-                                     src1_offsets.first * src1_elem_size));
-    bool memory_overlap_src2_dst =
-        ((dst_data - src2_data > src2_offsets.second * src2_elem_size -
-                                     dst_offsets.first * dst_elem_size) &&
-         (src2_data - dst_data > dst_offsets.second * dst_elem_size -
-                                     src2_offsets.first * src2_elem_size));
-    if (memory_overlap_src1_dst || memory_overlap_src2_dst) {
-        throw py::value_error("Arrays index overlapping segments of memory");
-    }
 
     // handle contiguous inputs
     bool is_src1_c_contig = src1.is_c_contiguous();
