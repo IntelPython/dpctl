@@ -86,6 +86,7 @@ class UnaryElementwiseFunc:
             r = dpt.empty_like(buf, dtype=res_dt, order=order)
 
         ht, _ = self.unary_fn_(buf, r, sycl_queue=exec_q, depends=[copy_ev])
+        ht_copy_ev.wait()
         ht.wait()
 
         return r
