@@ -145,7 +145,6 @@ template <typename fnT, typename T> struct IsFiniteTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename IsFiniteOutputType<T>::value_type;
-        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };

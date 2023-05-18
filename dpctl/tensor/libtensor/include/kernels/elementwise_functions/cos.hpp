@@ -130,7 +130,6 @@ template <typename fnT, typename T> struct CosTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename CosOutputType<T>::value_type;
-        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };

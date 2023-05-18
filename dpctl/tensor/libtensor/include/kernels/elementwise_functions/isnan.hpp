@@ -247,7 +247,6 @@ template <typename fnT, typename T> struct IsNanTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename IsNanOutputType<T>::value_type;
-        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
