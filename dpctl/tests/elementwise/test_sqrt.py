@@ -5,30 +5,9 @@ import pytest
 from numpy.testing import assert_equal
 
 import dpctl.tensor as dpt
-import dpctl.tensor._type_utils as tu
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-_all_dtypes = [
-    "b1",
-    "i1",
-    "u1",
-    "i2",
-    "u2",
-    "i4",
-    "u4",
-    "i8",
-    "u8",
-    "f2",
-    "f4",
-    "f8",
-    "c8",
-    "c16",
-]
-_usm_types = ["device", "shared", "host"]
-
-
-def _map_to_device_dtype(dt, dev):
-    return tu._to_device_supported_dtype(dt, dev)
+from .utils import _all_dtypes, _map_to_device_dtype, _usm_types
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
