@@ -112,6 +112,17 @@ def test_type_utils_find_buf_dtype():
             )
 
 
+def test_type_utils_get_device_default_type():
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    for k in ["b", "i", "u", "f", "c"]:
+        dt = tu._get_device_default_dtype(k, dev)
+        assert isinstance(dt, dpt.dtype)
+        assert dt.kind == k
+
+
 def test_type_utils_find_buf_dtype2():
     def _denier_fn(dt1, dt2):
         return False
