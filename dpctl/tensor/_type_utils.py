@@ -17,6 +17,7 @@
 import builtins
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 
 
 def _all_data_types(_fp16, _fp64):
@@ -237,6 +238,20 @@ def _find_buf_dtype(arg_dtype, query_fn, sycl_dev):
     return None, None
 
 
+def _get_device_default_dtype(dt_kind, sycl_dev):
+    if dt_kind == "b":
+        return dpt.dtype(ti.default_device_bool_type(sycl_dev))
+    elif dt_kind == "i":
+        return dpt.dtype(ti.default_device_int_type(sycl_dev))
+    elif dt_kind == "u":
+        return dpt.dtype(ti.default_device_int_type(sycl_dev).upper())
+    elif dt_kind == "f":
+        return dpt.dtype(ti.default_device_fp_type(sycl_dev))
+    elif dt_kind == "c":
+        return dpt.dtype(ti.default_device_complex_type(sycl_dev))
+    raise RuntimeError
+
+
 def _find_buf_dtype2(arg1_dtype, arg2_dtype, query_fn, sycl_dev):
     res_dt = query_fn(arg1_dtype, arg2_dtype)
     if res_dt:
@@ -254,7 +269,24 @@ def _find_buf_dtype2(arg1_dtype, arg2_dtype, query_fn, sycl_dev):
                 if res_dt:
                     ret_buf1_dt = None if buf1_dt == arg1_dtype else buf1_dt
                     ret_buf2_dt = None if buf2_dt == arg2_dtype else buf2_dt
-                    return ret_buf1_dt, ret_buf2_dt, res_dt
+                    if ret_buf1_dt is None or ret_buf2_dt is None:
+                        return ret_buf1_dt, ret_buf2_dt, res_dt
+                    else:
+                        # both are being promoted, if the kind of result is
+                        # different than the kind of original input dtypes,
+                        # we must use default dtype for the resulting kind.
+                        if (res_dt.kind != arg1_dtype.kind) and (
+                            res_dt.kind != arg2_dtype.kind
+                        ):
+                            default_dt = _get_device_default_dtype(
+                                res_dt.kind, sycl_dev
+                            )
+                            if res_dt == default_dt:
+                                return ret_buf1_dt, ret_buf2_dt, res_dt
+                            else:
+                                continue
+                        else:
+                            return ret_buf1_dt, ret_buf2_dt, res_dt
 
     return None, None, None
 
