@@ -96,6 +96,7 @@ from ._elementwise_funcs import (
     add,
     cos,
     divide,
+    equal,
     isfinite,
     isinf,
     isnan,
@@ -185,4 +186,5 @@ __all__ = [
     "isfinite",
     "sqrt",
     "divide",
+    "equal",
 ]

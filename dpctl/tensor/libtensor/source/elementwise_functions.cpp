@@ -35,6 +35,7 @@
 #include "kernels/elementwise_functions/abs.hpp"
 #include "kernels/elementwise_functions/add.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
+#include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
@@ -96,7 +97,7 @@ int _result_typeid(int arg_typeid, const int *fn_output_id)
     return fn_output_id[arg_typeid];
 }
 
-// ABS
+// U01: ==== ABS   (x)
 namespace impl
 {
 
@@ -131,154 +132,19 @@ void populate_abs_dispatch_vectors(void)
 
 } // namespace impl
 
-// ISFINITE
+// U02: ==== ACOS   (x)
 namespace impl
 {
-namespace isfinite_fn_ns = dpctl::tensor::kernels::isfinite;
-using isfinite_fn_ns::isfinite_contig_impl_fn_ptr_t;
-using isfinite_fn_ns::isfinite_strided_impl_fn_ptr_t;
-
-static isfinite_contig_impl_fn_ptr_t
-    isfinite_contig_dispatch_vector[td_ns::num_types];
-static int isfinite_output_typeid_vector[td_ns::num_types];
-static isfinite_strided_impl_fn_ptr_t
-    isfinite_strided_dispatch_vector[td_ns::num_types];
-
-void populate_isfinite_dispatch_vectors(void)
-{
-    using namespace td_ns;
-    namespace fn_ns = isfinite_fn_ns;
-
-    using fn_ns::IsFiniteContigFactory;
-    DispatchVectorBuilder<isfinite_contig_impl_fn_ptr_t, IsFiniteContigFactory,
-                          num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(isfinite_contig_dispatch_vector);
-
-    using fn_ns::IsFiniteStridedFactory;
-    DispatchVectorBuilder<isfinite_strided_impl_fn_ptr_t,
-                          IsFiniteStridedFactory, num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(isfinite_strided_dispatch_vector);
-
-    using fn_ns::IsFiniteTypeMapFactory;
-    DispatchVectorBuilder<int, IsFiniteTypeMapFactory, num_types> dvb3;
-    dvb3.populate_dispatch_vector(isfinite_output_typeid_vector);
-}
-
+// FIXME: add code for U02
 } // namespace impl
 
-// ISINF
+// U03: ===== ACOSH (x)
 namespace impl
 {
-namespace isinf_fn_ns = dpctl::tensor::kernels::isinf;
-using isinf_fn_ns::isinf_contig_impl_fn_ptr_t;
-using isinf_fn_ns::isinf_strided_impl_fn_ptr_t;
-
-static isinf_contig_impl_fn_ptr_t
-    isinf_contig_dispatch_vector[td_ns::num_types];
-static int isinf_output_typeid_vector[td_ns::num_types];
-static isinf_strided_impl_fn_ptr_t
-    isinf_strided_dispatch_vector[td_ns::num_types];
-
-void populate_isinf_dispatch_vectors(void)
-{
-    using namespace td_ns;
-    namespace fn_ns = isinf_fn_ns;
-
-    using fn_ns::IsInfContigFactory;
-    DispatchVectorBuilder<isinf_contig_impl_fn_ptr_t, IsInfContigFactory,
-                          num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(isinf_contig_dispatch_vector);
-
-    using fn_ns::IsInfStridedFactory;
-    DispatchVectorBuilder<isinf_strided_impl_fn_ptr_t, IsInfStridedFactory,
-                          num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(isinf_strided_dispatch_vector);
-
-    using fn_ns::IsInfTypeMapFactory;
-    DispatchVectorBuilder<int, IsInfTypeMapFactory, num_types> dvb3;
-    dvb3.populate_dispatch_vector(isinf_output_typeid_vector);
-}
-
+// FIXME: add code for U03
 } // namespace impl
 
-// ISNAN
-namespace impl
-{
-namespace isnan_fn_ns = dpctl::tensor::kernels::isnan;
-using isnan_fn_ns::isnan_contig_impl_fn_ptr_t;
-using isnan_fn_ns::isnan_strided_impl_fn_ptr_t;
-
-static isnan_contig_impl_fn_ptr_t
-    isnan_contig_dispatch_vector[td_ns::num_types];
-static int isnan_output_typeid_vector[td_ns::num_types];
-static isnan_strided_impl_fn_ptr_t
-    isnan_strided_dispatch_vector[td_ns::num_types];
-
-void populate_isnan_dispatch_vectors(void)
-{
-    using namespace td_ns;
-    namespace fn_ns = isnan_fn_ns;
-
-    using fn_ns::IsNanContigFactory;
-    DispatchVectorBuilder<isnan_contig_impl_fn_ptr_t, IsNanContigFactory,
-                          num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(isnan_contig_dispatch_vector);
-
-    using fn_ns::IsNanStridedFactory;
-    DispatchVectorBuilder<isnan_strided_impl_fn_ptr_t, IsNanStridedFactory,
-                          num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(isnan_strided_dispatch_vector);
-
-    using fn_ns::IsNanTypeMapFactory;
-    DispatchVectorBuilder<int, IsNanTypeMapFactory, num_types> dvb3;
-    dvb3.populate_dispatch_vector(isnan_output_typeid_vector);
-}
-
-} // namespace impl
-
-// COS
-namespace impl
-{
-
-namespace cos_fn_ns = dpctl::tensor::kernels::cos;
-using cos_fn_ns::cos_contig_impl_fn_ptr_t;
-using cos_fn_ns::cos_strided_impl_fn_ptr_t;
-
-static cos_contig_impl_fn_ptr_t cos_contig_dispatch_vector[td_ns::num_types];
-static int cos_output_typeid_vector[td_ns::num_types];
-static cos_strided_impl_fn_ptr_t cos_strided_dispatch_vector[td_ns::num_types];
-
-void populate_cos_dispatch_vectors(void)
-{
-    using namespace td_ns;
-    namespace fn_ns = cos_fn_ns;
-
-    using fn_ns::CosContigFactory;
-    DispatchVectorBuilder<cos_contig_impl_fn_ptr_t, CosContigFactory, num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(cos_contig_dispatch_vector);
-
-    using fn_ns::CosStridedFactory;
-    DispatchVectorBuilder<cos_strided_impl_fn_ptr_t, CosStridedFactory,
-                          num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(cos_strided_dispatch_vector);
-
-    using fn_ns::CosTypeMapFactory;
-    DispatchVectorBuilder<int, CosTypeMapFactory, num_types> dvb3;
-    dvb3.populate_dispatch_vector(cos_output_typeid_vector);
-}
-
-} // namespace impl
-
-// ADD
-
+// B01: ===== ADD   (x1, x2)
 namespace impl
 {
 namespace add_fn_ns = dpctl::tensor::kernels::add;
@@ -349,44 +215,126 @@ void populate_add_dispatch_tables(void)
 
 } // namespace impl
 
-// SQRT
+// U04: ===== ASIN  (x)
+namespace impl
+{
+// FIXME: add code for U04
+} // namespace impl
+
+// U05: ===== ASINH (x)
+namespace impl
+{
+// FIXME: add code for U05
+} // namespace impl
+
+// U06: ===== ATAN  (x)
+namespace impl
+{
+// FIXME: add code for U06
+} // namespace impl
+
+// B02: ===== ATAN2 (x1, x2)
+namespace impl
+{
+// FIXME: add code for B02
+} // namespace impl
+
+// U07: ===== ATANH (x)
+namespace impl
+{
+// FIXME: add code for U07
+} // namespace impl
+
+// B03: ===== BITWISE_AND           (x1, x2)
+namespace impl
+{
+// FIXME: add code for B03
+} // namespace impl
+
+// B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
+namespace impl
+{
+// FIXME: add code for B04
+} // namespace impl
+
+// U08: ===== BITWISE_INVERT        (x)
+namespace impl
+{
+// FIXME: add code for U08
+} // namespace impl
+
+// B05: ===== BITWISE_OR            (x1, x2)
+namespace impl
+{
+// FIXME: add code for B05
+} // namespace impl
+
+// B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
+namespace impl
+{
+// FIXME: add code for B06
+} // namespace impl
+
+// B07: ===== BITWISE_XOR           (x1, x2)
+namespace impl
+{
+// FIXME: add code for B07
+} // namespace impl
+
+// U09: ==== CEIL          (x)
+namespace impl
+{
+// FIXME: add code for U09
+} // namespace impl
+
+// U10: ==== CONJ          (x)
+namespace impl
+{
+// FIXME: add code for U10
+} // namespace impl
+
+// U11: ==== COS           (x)
 namespace impl
 {
 
-namespace sqrt_fn_ns = dpctl::tensor::kernels::sqrt;
-using sqrt_fn_ns::sqrt_contig_impl_fn_ptr_t;
-using sqrt_fn_ns::sqrt_strided_impl_fn_ptr_t;
+namespace cos_fn_ns = dpctl::tensor::kernels::cos;
+using cos_fn_ns::cos_contig_impl_fn_ptr_t;
+using cos_fn_ns::cos_strided_impl_fn_ptr_t;
 
-static sqrt_contig_impl_fn_ptr_t sqrt_contig_dispatch_vector[td_ns::num_types];
-static int sqrt_output_typeid_vector[td_ns::num_types];
-static sqrt_strided_impl_fn_ptr_t
-    sqrt_strided_dispatch_vector[td_ns::num_types];
+static cos_contig_impl_fn_ptr_t cos_contig_dispatch_vector[td_ns::num_types];
+static int cos_output_typeid_vector[td_ns::num_types];
+static cos_strided_impl_fn_ptr_t cos_strided_dispatch_vector[td_ns::num_types];
 
-void populate_sqrt_dispatch_vectors(void)
+void populate_cos_dispatch_vectors(void)
 {
     using namespace td_ns;
-    namespace fn_ns = sqrt_fn_ns;
+    namespace fn_ns = cos_fn_ns;
 
-    using fn_ns::SqrtContigFactory;
-    DispatchVectorBuilder<sqrt_contig_impl_fn_ptr_t, SqrtContigFactory,
-                          num_types>
+    using fn_ns::CosContigFactory;
+    DispatchVectorBuilder<cos_contig_impl_fn_ptr_t, CosContigFactory, num_types>
         dvb1;
-    dvb1.populate_dispatch_vector(sqrt_contig_dispatch_vector);
+    dvb1.populate_dispatch_vector(cos_contig_dispatch_vector);
 
-    using fn_ns::SqrtStridedFactory;
-    DispatchVectorBuilder<sqrt_strided_impl_fn_ptr_t, SqrtStridedFactory,
+    using fn_ns::CosStridedFactory;
+    DispatchVectorBuilder<cos_strided_impl_fn_ptr_t, CosStridedFactory,
                           num_types>
         dvb2;
-    dvb2.populate_dispatch_vector(sqrt_strided_dispatch_vector);
+    dvb2.populate_dispatch_vector(cos_strided_dispatch_vector);
 
-    using fn_ns::SqrtTypeMapFactory;
-    DispatchVectorBuilder<int, SqrtTypeMapFactory, num_types> dvb3;
-    dvb3.populate_dispatch_vector(sqrt_output_typeid_vector);
+    using fn_ns::CosTypeMapFactory;
+    DispatchVectorBuilder<int, CosTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(cos_output_typeid_vector);
 }
 
 } // namespace impl
 
-// DIVIDE
+// U12: ==== COSH          (x)
+namespace impl
+{
+// FIXME: add code for U12
+} // namespace impl
+
+// B08: ==== DIVIDE        (x1, x2)
 namespace impl
 {
 namespace true_divide_fn_ns = dpctl::tensor::kernels::true_divide;
@@ -461,6 +409,404 @@ void populate_true_divide_dispatch_tables(void)
 };
 
 } // namespace impl
+
+// B09: ==== EQUAL         (x1, x2)
+namespace impl
+{
+namespace equal_fn_ns = dpctl::tensor::kernels::equal;
+
+using equal_fn_ns::equal_contig_impl_fn_ptr_t;
+using equal_fn_ns::equal_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using equal_fn_ns::equal_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using equal_fn_ns::equal_strided_impl_fn_ptr_t;
+
+static equal_contig_impl_fn_ptr_t equal_contig_dispatch_table[td_ns::num_types]
+                                                             [td_ns::num_types];
+static int equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static equal_strided_impl_fn_ptr_t
+    equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::EqualTypeMapFactory;
+    DispatchTableBuilder<int, EqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::EqualStridedFactory;
+    DispatchTableBuilder<equal_strided_impl_fn_ptr_t, EqualStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::EqualContigFactory;
+    DispatchTableBuilder<equal_contig_impl_fn_ptr_t, EqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(equal_contig_dispatch_table);
+};
+} // namespace impl
+
+// U13: ==== EXP           (x)
+namespace impl
+{
+// FIXME: add code for U13
+} // namespace impl
+
+// U14: ==== EXPM1         (x)
+namespace impl
+{
+// FIXME: add code for U14
+} // namespace impl
+
+// U15: ==== FLOOR         (x)
+namespace impl
+{
+// FIXME: add code for U15
+} // namespace impl
+
+// B10: ==== FLOOR_DIVIDE  (x1, x2)
+namespace impl
+{
+// FIXME: add code for B10
+} // namespace impl
+
+// B11: ==== GREATER       (x1, x2)
+namespace impl
+{
+// FIXME: add code for B11
+} // namespace impl
+
+// B12: ==== GREATER_EQUAL (x1, x2)
+namespace impl
+{
+// FIXME: add code for B12
+} // namespace impl
+
+// U16: ==== IMAG        (x)
+namespace impl
+{
+// FIXME: add code for U16
+} // namespace impl
+
+// U17: ==== ISFINITE    (x)
+namespace impl
+{
+namespace isfinite_fn_ns = dpctl::tensor::kernels::isfinite;
+using isfinite_fn_ns::isfinite_contig_impl_fn_ptr_t;
+using isfinite_fn_ns::isfinite_strided_impl_fn_ptr_t;
+
+static isfinite_contig_impl_fn_ptr_t
+    isfinite_contig_dispatch_vector[td_ns::num_types];
+static int isfinite_output_typeid_vector[td_ns::num_types];
+static isfinite_strided_impl_fn_ptr_t
+    isfinite_strided_dispatch_vector[td_ns::num_types];
+
+void populate_isfinite_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = isfinite_fn_ns;
+
+    using fn_ns::IsFiniteContigFactory;
+    DispatchVectorBuilder<isfinite_contig_impl_fn_ptr_t, IsFiniteContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isfinite_contig_dispatch_vector);
+
+    using fn_ns::IsFiniteStridedFactory;
+    DispatchVectorBuilder<isfinite_strided_impl_fn_ptr_t,
+                          IsFiniteStridedFactory, num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(isfinite_strided_dispatch_vector);
+
+    using fn_ns::IsFiniteTypeMapFactory;
+    DispatchVectorBuilder<int, IsFiniteTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(isfinite_output_typeid_vector);
+}
+
+} // namespace impl
+
+// U18: ==== ISINF       (x)
+namespace impl
+{
+namespace isinf_fn_ns = dpctl::tensor::kernels::isinf;
+using isinf_fn_ns::isinf_contig_impl_fn_ptr_t;
+using isinf_fn_ns::isinf_strided_impl_fn_ptr_t;
+
+static isinf_contig_impl_fn_ptr_t
+    isinf_contig_dispatch_vector[td_ns::num_types];
+static int isinf_output_typeid_vector[td_ns::num_types];
+static isinf_strided_impl_fn_ptr_t
+    isinf_strided_dispatch_vector[td_ns::num_types];
+
+void populate_isinf_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = isinf_fn_ns;
+
+    using fn_ns::IsInfContigFactory;
+    DispatchVectorBuilder<isinf_contig_impl_fn_ptr_t, IsInfContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isinf_contig_dispatch_vector);
+
+    using fn_ns::IsInfStridedFactory;
+    DispatchVectorBuilder<isinf_strided_impl_fn_ptr_t, IsInfStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(isinf_strided_dispatch_vector);
+
+    using fn_ns::IsInfTypeMapFactory;
+    DispatchVectorBuilder<int, IsInfTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(isinf_output_typeid_vector);
+}
+
+} // namespace impl
+
+// U19: ==== ISNAN       (x)
+namespace impl
+{
+namespace isnan_fn_ns = dpctl::tensor::kernels::isnan;
+using isnan_fn_ns::isnan_contig_impl_fn_ptr_t;
+using isnan_fn_ns::isnan_strided_impl_fn_ptr_t;
+
+static isnan_contig_impl_fn_ptr_t
+    isnan_contig_dispatch_vector[td_ns::num_types];
+static int isnan_output_typeid_vector[td_ns::num_types];
+static isnan_strided_impl_fn_ptr_t
+    isnan_strided_dispatch_vector[td_ns::num_types];
+
+void populate_isnan_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = isnan_fn_ns;
+
+    using fn_ns::IsNanContigFactory;
+    DispatchVectorBuilder<isnan_contig_impl_fn_ptr_t, IsNanContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isnan_contig_dispatch_vector);
+
+    using fn_ns::IsNanStridedFactory;
+    DispatchVectorBuilder<isnan_strided_impl_fn_ptr_t, IsNanStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(isnan_strided_dispatch_vector);
+
+    using fn_ns::IsNanTypeMapFactory;
+    DispatchVectorBuilder<int, IsNanTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(isnan_output_typeid_vector);
+}
+
+} // namespace impl
+
+// B13: ==== LESS        (x1, x2)
+namespace impl
+{
+// FIXME: add code for B13
+} // namespace impl
+
+// B14: ==== LESS_EQUAL  (x1, x2)
+namespace impl
+{
+// FIXME: add code for B14
+} // namespace impl
+
+// U20: ==== LOG         (x)
+namespace impl
+{
+// FIXME: add code for U20
+} // namespace impl
+
+// U21: ==== LOG1P       (x)
+namespace impl
+{
+// FIXME: add code for U21
+} // namespace impl
+
+// U22: ==== LOG2        (x)
+namespace impl
+{
+// FIXME: add code for U22
+} // namespace impl
+
+// U23: ==== LOG10       (x)
+namespace impl
+{
+// FIXME: add code for U23
+} // namespace impl
+
+// B15: ==== LOGADDEXP   (x1, x2)
+namespace impl
+{
+// FIXME: add code for B15
+} // namespace impl
+
+// B16: ==== LOGICAL_AND (x1, x2)
+namespace impl
+{
+// FIXME: add code for B16
+} // namespace impl
+
+// U24: ==== LOGICAL_NOT (x)
+namespace impl
+{
+// FIXME: add code for U24
+} // namespace impl
+
+// B17: ==== LOGICAL_OR  (x1, x2)
+namespace impl
+{
+// FIXME: add code for B17
+} // namespace impl
+
+// B18: ==== LOGICAL_XOR (x1, x2)
+namespace impl
+{
+// FIXME: add code for B18
+} // namespace impl
+
+// B19: ==== MULTIPLY    (x1, x2)
+namespace impl
+{
+// FIXME: add code for B19
+} // namespace impl
+
+// U25: ==== NEGATIVE    (x)
+namespace impl
+{
+// FIXME: add code for U25
+} // namespace impl
+
+// B20: ==== NOT_EQUAL   (x1, x2)
+namespace impl
+{
+// FIXME: add code for B20
+} // namespace impl
+
+// U26: ==== POSITIVE    (x)
+namespace impl
+{
+// FIXME: add code for U26
+} // namespace impl
+
+// B21: ==== POW         (x1, x2)
+namespace impl
+{
+// FIXME: add code for B21
+} // namespace impl
+
+// U27: ==== REAL        (x)
+namespace impl
+{
+// FIXME: add code for U27
+} // namespace impl
+
+// B22: ==== REMAINDER   (x1, x2)
+namespace impl
+{
+// FIXME: add code for B22
+} // namespace impl
+
+// U28: ==== ROUND       (x)
+namespace impl
+{
+// FIXME: add code for U28
+} // namespace impl
+
+// U29: ==== SIGN        (x)
+namespace impl
+{
+// FIXME: add code for U29
+} // namespace impl
+
+// U30: ==== SIN         (x)
+namespace impl
+{
+// FIXME: add code for U30
+} // namespace impl
+
+// U31: ==== SINH        (x)
+namespace impl
+{
+// FIXME: add code for U31
+} // namespace impl
+
+// U32: ==== SQUARE      (x)
+namespace impl
+{
+// FIXME: add code for U32
+} // namespace impl
+
+// U33: ==== SQRT        (x)
+namespace impl
+{
+
+namespace sqrt_fn_ns = dpctl::tensor::kernels::sqrt;
+using sqrt_fn_ns::sqrt_contig_impl_fn_ptr_t;
+using sqrt_fn_ns::sqrt_strided_impl_fn_ptr_t;
+
+static sqrt_contig_impl_fn_ptr_t sqrt_contig_dispatch_vector[td_ns::num_types];
+static int sqrt_output_typeid_vector[td_ns::num_types];
+static sqrt_strided_impl_fn_ptr_t
+    sqrt_strided_dispatch_vector[td_ns::num_types];
+
+void populate_sqrt_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = sqrt_fn_ns;
+
+    using fn_ns::SqrtContigFactory;
+    DispatchVectorBuilder<sqrt_contig_impl_fn_ptr_t, SqrtContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(sqrt_contig_dispatch_vector);
+
+    using fn_ns::SqrtStridedFactory;
+    DispatchVectorBuilder<sqrt_strided_impl_fn_ptr_t, SqrtStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(sqrt_strided_dispatch_vector);
+
+    using fn_ns::SqrtTypeMapFactory;
+    DispatchVectorBuilder<int, SqrtTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(sqrt_output_typeid_vector);
+}
+
+} // namespace impl
+
+// B23: ==== SUBTRACT    (x1, x2)
+namespace impl
+{
+// FIXME: add code for B23
+} // namespace impl
+
+// U34: ==== TAN         (x)
+namespace impl
+{
+// FIXME: add code for U34
+} // namespace impl
+
+// U35: ==== TANH        (x)
+namespace impl
+{
+// FIXME: add code for U35
+} // namespace impl
+
+// U36: ==== TRUNC       (x)
+namespace impl
+{
+// FIXME: add code for U36
+} // namespace impl
+
+// ==========================================================================================
+// //
 
 namespace py = pybind11;
 
@@ -642,7 +988,45 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B09: ==== EQUAL         (x1, x2)
-    // FIXME:
+    {
+        impl::populate_equal_dispatch_tables();
+        using impl::equal_contig_dispatch_table;
+        using impl::equal_output_id_table;
+        using impl::equal_strided_dispatch_table;
+
+        auto equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                               dpctl::tensor::usm_ndarray src2,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    impl::
+                        equal_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    impl::
+                        equal_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto equal_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               equal_output_id_table);
+        };
+        m.def("_equal", equal_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_equal_result_type", equal_result_type_pyapi, "");
+    }
 
     // U13: ==== EXP           (x)
     // FIXME:
