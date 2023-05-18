@@ -470,23 +470,36 @@ class BinaryElementwiseFunc:
         if order in ["K", "A"]:
             if src1.flags.f_contiguous and src2.flags.f_contiguous:
                 order = "F"
-            else:
+            elif src1.flags.c_contiguous and src2.flags.c_contiguous:
                 order = "C"
-        buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
+            else:
+                order = "C" if order == "A" else "K"
+        if order == "K":
+            buf1 = _empty_like_orderK(src1, buf1_dt)
+        else:
+            buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=src1, dst=buf1, sycl_queue=exec_q
         )
-        buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
+        if order == "K":
+            buf2 = _empty_like_orderK(src2, buf2_dt)
+        else:
+            buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=src2, dst=buf2, sycl_queue=exec_q
         )
-        r = dpt.empty(
-            res_shape,
-            dtype=res_dt,
-            usm_type=res_usm_type,
-            sycl_queue=exec_q,
-            order=order,
-        )
+        if order == "K":
+            r = _empty_like_pair_orderK(
+                buf1, buf2, res_dt, res_usm_type, exec_q
+            )
+        else:
+            r = dpt.empty(
+                res_shape,
+                dtype=res_dt,
+                usm_type=res_usm_type,
+                sycl_queue=exec_q,
+                order=order,
+            )
         buf1 = dpt.broadcast_to(buf1, res_shape)
         buf2 = dpt.broadcast_to(buf2, res_shape)
         ht_, _ = self.binary_fn_(
