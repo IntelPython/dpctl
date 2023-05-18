@@ -113,6 +113,8 @@ def test_type_utils_find_buf_dtype():
 
 
 def test_type_utils_get_device_default_type():
+    with pytest.raises(RuntimeError):
+        tu._get_device_default_dtype("-", MockDevice(True, True))
     try:
         dev = dpctl.SyclDevice()
     except dpctl.SyclDeviceCreationError:
