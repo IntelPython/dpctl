@@ -2,6 +2,7 @@ import itertools
 
 import numpy as np
 import pytest
+from numpy.testing import assert_raises_regex
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -85,3 +86,63 @@ def test_cos_order(dtype):
             np.testing.assert_allclose(
                 dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
             )
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+def test_cos_out_keyword(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    n_seq = 100
+    n_rep = 137
+
+    Xnp = np.linspace(-np.pi / 4, np.pi / 4, num=n_seq, dtype=dtype)
+    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
+    Y = dpt.empty_like(X, dtype=dtype)
+
+    dpt.cos(X, Y)
+    tol = 8 * dpt.finfo(Y.dtype).resolution
+
+    np.testing.assert_allclose(
+        dpt.asnumpy(Y), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+
+def test_cos_errors():
+    x = dpt.zeros(2, device="gpu")
+    y = dpt.empty_like(x, device="cpu")
+    assert_raises_regex(
+        TypeError,
+        "Input and output allocation queues are not compatible",
+        dpt.cos,
+        x,
+        y,
+    )
+
+    x = dpt.zeros(2)
+    y = dpt.empty(3)
+    assert_raises_regex(
+        TypeError,
+        "The shape of input and output arrays are inconsistent",
+        dpt.cos,
+        x,
+        y,
+    )
+
+    x = dpt.zeros(2)
+    y = x
+    assert_raises_regex(
+        TypeError, "Input and output arrays have memory overlap", dpt.cos, x, y
+    )
+
+    x = dpt.zeros(2, dtype="int32")
+    y = dpt.empty_like(x, dtype="int32")
+    assert_raises_regex(
+        TypeError, "Expected output array of type.*is supported", dpt.cos, x, y
+    )
+
+    x = dpt.zeros(2, dtype="float32")
+    y = np.empty_like(x)
+    assert_raises_regex(
+        TypeError, "output array must be of usm_ndarray type", dpt.cos, x, y
+    )

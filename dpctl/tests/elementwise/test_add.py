@@ -2,6 +2,7 @@ import ctypes
 
 import numpy as np
 import pytest
+from numpy.testing import assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
@@ -165,3 +166,79 @@ def test_add_canary_mock_array():
     c = Canary()
     with pytest.raises(ValueError):
         dpt.add(a, c)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes)
+@pytest.mark.parametrize("op2_dtype", _all_dtypes)
+def test_add_dtype_out_keyword(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+
+    r = dpt.add(ar1, ar2)
+
+    y = dpt.zeros_like(ar1, dtype=r.dtype)
+    dpt.add(ar1, ar2, y)
+
+    assert np.array_equal(dpt.asnumpy(r), dpt.asnumpy(y))
+
+
+def test_add_errors():
+    ar1 = dpt.ones(2, dtype="float32", device="gpu")
+    ar2 = dpt.ones_like(ar1, dtype="int32", device="gpu")
+    y = dpt.empty_like(ar1, device="cpu")
+    assert_raises_regex(
+        TypeError,
+        "Input and output allocation queues are not compatible",
+        dpt.add,
+        ar1,
+        ar2,
+        y,
+    )
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dpt.ones_like(ar1, dtype="int32")
+    y = dpt.empty(3)
+    assert_raises_regex(
+        TypeError,
+        "The shape of input and output arrays are inconsistent",
+        dpt.add,
+        ar1,
+        ar2,
+        y,
+    )
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dpt.ones_like(ar1, dtype="int32")
+    y = ar1
+    assert_raises_regex(
+        TypeError,
+        "Input and output arrays have memory overlap",
+        dpt.add,
+        ar1,
+        ar2,
+        y,
+    )
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dpt.ones_like(ar1, dtype="int32")
+    y = dpt.empty_like(ar1, dtype="int32")
+    assert_raises_regex(
+        TypeError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
+    )
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dpt.ones_like(ar1, dtype="int32")
+    y = np.empty_like(ar1)
+    assert_raises_regex(
+        TypeError,
+        "output array must be of usm_ndarray type",
+        dpt.add,
+        ar1,
+        ar2,
+        y,
+    )

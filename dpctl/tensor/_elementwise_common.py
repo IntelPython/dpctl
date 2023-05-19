@@ -47,9 +47,33 @@ class UnaryElementwiseFunc:
         self.unary_fn_ = unary_dp_impl_fn
         self.__doc__ = docs
 
-    def __call__(self, x, order="K"):
+    def __call__(self, x, out=None, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
             raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+
+        if out is not None:
+            if not isinstance(out, dpt.usm_ndarray):
+                raise TypeError(
+                    f"output array must be of usm_ndarray type, got {type(out)}"
+                )
+
+            if out.shape != x.shape:
+                raise TypeError(
+                    "The shape of input and output arrays are inconsistent."
+                    f"Expected output shape is {x.shape}, got {out.shape}"
+                )
+
+            if ti._array_overlap(x, out):
+                raise TypeError("Input and output arrays have memory overlap")
+
+            if (
+                dpctl.utils.get_execution_queue((x.sycl_queue, out.sycl_queue))
+                is None
+            ):
+                raise TypeError(
+                    "Input and output allocation queues are not compatible"
+                )
+
         if order not in ["C", "F", "K", "A"]:
             order = "K"
         buf_dt, res_dt = _find_buf_dtype(
@@ -59,17 +83,24 @@ class UnaryElementwiseFunc:
             raise RuntimeError
         exec_q = x.sycl_queue
         if buf_dt is None:
-            if order == "K":
-                r = _empty_like_orderK(x, res_dt)
+            if out is None:
+                if order == "K":
+                    out = _empty_like_orderK(x, res_dt)
+                else:
+                    if order == "A":
+                        order = "F" if x.flags.f_contiguous else "C"
+                    out = dpt.empty_like(x, dtype=res_dt, order=order)
             else:
-                if order == "A":
-                    order = "F" if x.flags.f_contiguous else "C"
-                r = dpt.empty_like(x, dtype=res_dt, order=order)
+                if res_dt != out.dtype:
+                    raise TypeError(
+                        f"Expected output array of type {res_dt} is supported"
+                        f", got {out.dtype}"
+                    )
 
-            ht, _ = self.unary_fn_(x, r, sycl_queue=exec_q)
+            ht, _ = self.unary_fn_(x, out, sycl_queue=exec_q)
             ht.wait()
 
-            return r
+            return out
         if order == "K":
             buf = _empty_like_orderK(x, buf_dt)
         else:
@@ -80,16 +111,23 @@ class UnaryElementwiseFunc:
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=buf, sycl_queue=exec_q
         )
-        if order == "K":
-            r = _empty_like_orderK(buf, res_dt)
+        if out is None:
+            if order == "K":
+                out = _empty_like_orderK(buf, res_dt)
+            else:
+                out = dpt.empty_like(buf, dtype=res_dt, order=order)
         else:
-            r = dpt.empty_like(buf, dtype=res_dt, order=order)
+            if buf_dt != out.dtype:
+                raise TypeError(
+                    f"Expected output array of type {buf_dt} is supported,"
+                    f"got {out.dtype}"
+                )
 
-        ht, _ = self.unary_fn_(buf, r, sycl_queue=exec_q, depends=[copy_ev])
+        ht, _ = self.unary_fn_(buf, out, sycl_queue=exec_q, depends=[copy_ev])
         ht_copy_ev.wait()
         ht.wait()
 
-        return r
+        return out
 
 
 def _get_queue_usm_type(o):
@@ -281,7 +319,7 @@ class BinaryElementwiseFunc:
     def __repr__(self):
         return f"<BinaryElementwiseFunc '{self.name_}'>"
 
-    def __call__(self, o1, o2, order="K"):
+    def __call__(self, o1, o2, out=None, order="K"):
         if order not in ["K", "C", "F", "A"]:
             order = "K"
         q1, o1_usm_type = _get_queue_usm_type(o1)
@@ -358,6 +396,31 @@ class BinaryElementwiseFunc:
                 "supported types according to the casting rule ''safe''."
             )
 
+        if out is not None:
+            if not isinstance(out, dpt.usm_ndarray):
+                raise TypeError(
+                    f"output array must be of usm_ndarray type, got {type(out)}"
+                )
+
+            if out.shape != o1_shape or out.shape != o2_shape:
+                raise TypeError(
+                    "The shape of input and output arrays are inconsistent."
+                    f"Expected output shape is {o1_shape}, got {out.shape}"
+                )
+
+            if ti._array_overlap(o1, out) or ti._array_overlap(o2, out):
+                raise TypeError("Input and output arrays have memory overlap")
+
+            if (
+                dpctl.utils.get_execution_queue(
+                    (o1.sycl_queue, o2.sycl_queue, out.sycl_queue)
+                )
+                is None
+            ):
+                raise TypeError(
+                    "Input and output allocation queues are not compatible"
+                )
+
         if isinstance(o1, dpt.usm_ndarray):
             src1 = o1
         else:
@@ -368,37 +431,45 @@ class BinaryElementwiseFunc:
             src2 = dpt.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
 
         if buf1_dt is None and buf2_dt is None:
-            if order == "K":
-                r = _empty_like_pair_orderK(
-                    src1, src2, res_dt, res_usm_type, exec_q
-                )
-            else:
-                if order == "A":
-                    order = (
-                        "F"
-                        if all(
-                            arr.flags.f_contiguous
-                            for arr in (
-                                src1,
-                                src2,
-                            )
-                        )
-                        else "C"
+            if out is None:
+                if order == "K":
+                    out = _empty_like_pair_orderK(
+                        src1, src2, res_dt, res_usm_type, exec_q
                     )
-                r = dpt.empty(
-                    res_shape,
-                    dtype=res_dt,
-                    usm_type=res_usm_type,
-                    sycl_queue=exec_q,
-                    order=order,
-                )
+                else:
+                    if order == "A":
+                        order = (
+                            "F"
+                            if all(
+                                arr.flags.f_contiguous
+                                for arr in (
+                                    src1,
+                                    src2,
+                                )
+                            )
+                            else "C"
+                        )
+                    out = dpt.empty(
+                        res_shape,
+                        dtype=res_dt,
+                        usm_type=res_usm_type,
+                        sycl_queue=exec_q,
+                        order=order,
+                    )
+            else:
+                if res_dt != out.dtype:
+                    raise TypeError(
+                        f"Output array of type {res_dt} is needed,"
+                        f"got {out.dtype}"
+                    )
+
             src1 = dpt.broadcast_to(src1, res_shape)
             src2 = dpt.broadcast_to(src2, res_shape)
             ht_, _ = self.binary_fn_(
-                src1=src1, src2=src2, dst=r, sycl_queue=exec_q
+                src1=src1, src2=src2, dst=out, sycl_queue=exec_q
             )
             ht_.wait()
-            return r
+            return out
         elif buf1_dt is None:
             if order == "K":
                 buf2 = _empty_like_orderK(src2, buf2_dt)
@@ -409,30 +480,38 @@ class BinaryElementwiseFunc:
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=src2, dst=buf2, sycl_queue=exec_q
             )
-            if order == "K":
-                r = _empty_like_pair_orderK(
-                    src1, buf2, res_dt, res_usm_type, exec_q
-                )
+            if out is None:
+                if order == "K":
+                    out = _empty_like_pair_orderK(
+                        src1, buf2, res_dt, res_usm_type, exec_q
+                    )
+                else:
+                    out = dpt.empty(
+                        res_shape,
+                        dtype=res_dt,
+                        usm_type=res_usm_type,
+                        sycl_queue=exec_q,
+                        order=order,
+                    )
             else:
-                r = dpt.empty(
-                    res_shape,
-                    dtype=res_dt,
-                    usm_type=res_usm_type,
-                    sycl_queue=exec_q,
-                    order=order,
-                )
+                if res_dt != out.dtype:
+                    raise TypeError(
+                        f"Output array of type {res_dt} is needed,"
+                        f"got {out.dtype}"
+                    )
+
             src1 = dpt.broadcast_to(src1, res_shape)
             buf2 = dpt.broadcast_to(buf2, res_shape)
             ht_, _ = self.binary_fn_(
                 src1=src1,
                 src2=buf2,
-                dst=r,
+                dst=out,
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
             ht_copy_ev.wait()
             ht_.wait()
-            return r
+            return out
         elif buf2_dt is None:
             if order == "K":
                 buf1 = _empty_like_orderK(src1, buf1_dt)
@@ -443,30 +522,38 @@ class BinaryElementwiseFunc:
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=src1, dst=buf1, sycl_queue=exec_q
             )
-            if order == "K":
-                r = _empty_like_pair_orderK(
-                    buf1, src2, res_dt, res_usm_type, exec_q
-                )
+            if out is None:
+                if order == "K":
+                    out = _empty_like_pair_orderK(
+                        buf1, src2, res_dt, res_usm_type, exec_q
+                    )
+                else:
+                    out = dpt.empty(
+                        res_shape,
+                        dtype=res_dt,
+                        usm_type=res_usm_type,
+                        sycl_queue=exec_q,
+                        order=order,
+                    )
             else:
-                r = dpt.empty(
-                    res_shape,
-                    dtype=res_dt,
-                    usm_type=res_usm_type,
-                    sycl_queue=exec_q,
-                    order=order,
-                )
+                if res_dt != out.dtype:
+                    raise TypeError(
+                        f"Output array of type {res_dt} is needed,"
+                        f"got {out.dtype}"
+                    )
+
             buf1 = dpt.broadcast_to(buf1, res_shape)
             src2 = dpt.broadcast_to(src2, res_shape)
             ht_, _ = self.binary_fn_(
                 src1=buf1,
                 src2=src2,
-                dst=r,
+                dst=out,
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
             ht_copy_ev.wait()
             ht_.wait()
-            return r
+            return out
 
         if order in ["K", "A"]:
             if src1.flags.f_contiguous and src2.flags.f_contiguous:
@@ -489,26 +576,33 @@ class BinaryElementwiseFunc:
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=src2, dst=buf2, sycl_queue=exec_q
         )
-        if order == "K":
-            r = _empty_like_pair_orderK(
-                buf1, buf2, res_dt, res_usm_type, exec_q
-            )
+        if out is None:
+            if order == "K":
+                out = _empty_like_pair_orderK(
+                    buf1, buf2, res_dt, res_usm_type, exec_q
+                )
+            else:
+                out = dpt.empty(
+                    res_shape,
+                    dtype=res_dt,
+                    usm_type=res_usm_type,
+                    sycl_queue=exec_q,
+                    order=order,
+                )
         else:
-            r = dpt.empty(
-                res_shape,
-                dtype=res_dt,
-                usm_type=res_usm_type,
-                sycl_queue=exec_q,
-                order=order,
-            )
+            if res_dt != out.dtype:
+                raise TypeError(
+                    f"Output array of type {res_dt} is needed, got {out.dtype}"
+                )
+
         buf1 = dpt.broadcast_to(buf1, res_shape)
         buf2 = dpt.broadcast_to(buf2, res_shape)
         ht_, _ = self.binary_fn_(
             src1=buf1,
             src2=buf2,
-            dst=r,
+            dst=out,
             sycl_queue=exec_q,
             depends=[copy1_ev, copy2_ev],
         )
         dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
-        return r
+        return out

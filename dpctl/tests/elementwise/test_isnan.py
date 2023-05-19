@@ -72,3 +72,38 @@ def test_isnan_order(dtype):
             Y = dpt.isnan(U, order=ord)
             expected_Y = np.full(Y.shape, False, dtype=Y.dtype)
             assert np.allclose(dpt.asnumpy(Y), expected_Y)
+
+
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_isnan_complex_out_keyword(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    y1 = complex(np.nan, np.nan)
+    y2 = complex(1, np.nan)
+    y3 = complex(np.nan, 1)
+    y4 = complex(2, 1)
+    y5 = complex(np.inf, 1)
+
+    Ynp = np.repeat(np.array([y1, y2, y3, y4, y5], dtype=dtype), 123)
+    Y = dpt.asarray(Ynp, sycl_queue=q)
+    out = dpt.empty_like(Y, dtype="bool")
+    dpt.isnan(Y, out)
+    assert np.array_equal(dpt.asnumpy(out)[()], np.isnan(Ynp))
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_isnan_floats_out_keyword(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    y1 = np.nan
+    y2 = 1
+    y3 = np.inf
+
+    for mult in [123, 137, 255, 271, 272]:
+        Ynp = np.repeat(np.array([y1, y2, y3], dtype=dtype), mult)
+        Y = dpt.asarray(Ynp, sycl_queue=q)
+        out = dpt.empty_like(Y, dtype="bool")
+        dpt.isnan(Y, out)
+        assert np.array_equal(dpt.asnumpy(out)[()], np.isnan(Ynp))
