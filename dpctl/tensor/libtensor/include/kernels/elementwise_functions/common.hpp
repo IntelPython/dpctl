@@ -99,7 +99,7 @@ public:
                 sycl::multi_ptr<const argT,
                                 sycl::access::address_space::global_space>;
             using out_ptrT =
-                sycl::multi_ptr<bool,
+                sycl::multi_ptr<resT,
                                 sycl::access::address_space::global_space>;
 
             auto sg = ndit.get_sub_group();
