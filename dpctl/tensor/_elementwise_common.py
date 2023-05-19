@@ -402,7 +402,7 @@ class BinaryElementwiseFunc:
                     f"output array must be of usm_ndarray type, got {type(out)}"
                 )
 
-            if out.shape != o1_shape or out.shape != o2_shape:
+            if out.shape != res_shape:
                 raise TypeError(
                     "The shape of input and output arrays are inconsistent."
                     f"Expected output shape is {o1_shape}, got {out.shape}"

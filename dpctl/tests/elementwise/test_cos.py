@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_raises_regex
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -109,8 +110,17 @@ def test_cos_out_keyword(dtype):
 
 
 def test_cos_errors():
-    x = dpt.zeros(2, device="gpu")
-    y = dpt.empty_like(x, device="cpu")
+    try:
+        gpu_queue = dpctl.SyclQueue("gpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('gpu') failed, skipping")
+    try:
+        cpu_queue = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('cpu') failed, skipping")
+
+    x = dpt.zeros(2, sycl_queue=gpu_queue)
+    y = dpt.empty_like(x, sycl_queue=cpu_queue)
     assert_raises_regex(
         TypeError,
         "Input and output allocation queues are not compatible",

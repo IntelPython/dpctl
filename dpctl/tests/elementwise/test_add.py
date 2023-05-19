@@ -111,6 +111,18 @@ def test_add_broadcasting():
     r2 = dpt.add(v, m)
     assert (dpt.asnumpy(r2) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
+    out = dpt.empty_like(m)
+    dpt.add(m, v, out)
+    assert (
+        dpt.asnumpy(out) == np.arange(1, 6, dtype="i4")[np.newaxis, :]
+    ).all()
+
+    out2 = dpt.empty_like(m)
+    dpt.add(v, m, out2)
+    assert (
+        dpt.asnumpy(out2) == np.arange(1, 6, dtype="i4")[np.newaxis, :]
+    ).all()
+
 
 @pytest.mark.parametrize("arr_dt", _all_dtypes)
 def test_add_python_scalar(arr_dt):
@@ -188,9 +200,18 @@ def test_add_dtype_out_keyword(op1_dtype, op2_dtype):
 
 
 def test_add_errors():
-    ar1 = dpt.ones(2, dtype="float32", device="gpu")
-    ar2 = dpt.ones_like(ar1, dtype="int32", device="gpu")
-    y = dpt.empty_like(ar1, device="cpu")
+    try:
+        gpu_queue = dpctl.SyclQueue("gpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('gpu') failed, skipping")
+    try:
+        cpu_queue = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('cpu') failed, skipping")
+
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
+    ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
+    y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
     assert_raises_regex(
         TypeError,
         "Input and output allocation queues are not compatible",
