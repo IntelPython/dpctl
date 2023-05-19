@@ -544,6 +544,78 @@ public:
     }
 };
 
+// Typdefs for function pointers
+
+typedef sycl::event (*unary_contig_impl_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    const char *,
+    char *,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*unary_strided_impl_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    int,
+    const py::ssize_t *,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_contig_impl_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    const char *,
+    py::ssize_t,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_strided_impl_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    int,
+    const py::ssize_t *,
+    const char *,
+    py::ssize_t,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t)(
+    sycl::queue,
+    std::vector<sycl::event> &,
+    size_t,
+    size_t,
+    const char *,
+    py::ssize_t,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
+    sycl::queue,
+    std::vector<sycl::event> &,
+    size_t,
+    size_t,
+    const char *,
+    py::ssize_t,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &);
+
 } // namespace elementwise_common
 } // namespace kernels
 } // namespace tensor

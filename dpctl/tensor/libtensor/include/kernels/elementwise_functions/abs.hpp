@@ -84,13 +84,6 @@ template <typename T> struct AbsOutputType
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class abs_contig_kernel;
 
-typedef sycl::event (*abs_contig_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const char *,
-    char *,
-    const std::vector<sycl::event> &);
-
 template <typename argTy>
 sycl::event abs_contig_impl(sycl::queue exec_q,
                             size_t nelems,
@@ -152,18 +145,6 @@ using AbsStridedFunctor = elementwise_common::
     UnaryStridedFunctor<argTy, resTy, IndexerT, AbsFunctor<argTy, resTy>>;
 
 template <typename T1, typename T2, typename T3> class abs_strided_kernel;
-
-typedef sycl::event (*abs_strided_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    const py::ssize_t *,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
 
 template <typename argTy>
 sycl::event abs_strided_impl(sycl::queue exec_q,

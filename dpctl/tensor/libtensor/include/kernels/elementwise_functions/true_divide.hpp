@@ -128,17 +128,6 @@ template <typename argT1,
           unsigned int n_vecs>
 class true_divide_contig_kernel;
 
-typedef sycl::event (*true_divide_contig_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const char *,
-    py::ssize_t,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &);
-
 template <typename argTy1, typename argTy2>
 sycl::event
 true_divide_contig_impl(sycl::queue exec_q,
@@ -210,20 +199,6 @@ struct TrueDivideTypeMapFactory
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
 class true_divide_strided_strided_kernel;
-
-typedef sycl::event (*true_divide_strided_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    const py::ssize_t *,
-    const char *,
-    py::ssize_t,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -306,20 +281,6 @@ class true_divide_matrix_row_broadcast_sg_krn;
 
 template <typename argT1, typename argT2, typename resT>
 class true_divide_row_matrix_broadcast_sg_krn;
-
-typedef sycl::event (
-    *true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t)(
-    sycl::queue,
-    std::vector<sycl::event> &,
-    size_t,
-    size_t,
-    const char *,
-    py::ssize_t,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &);
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event true_divide_contig_matrix_contig_row_broadcast_impl(
@@ -425,20 +386,6 @@ struct TrueDivideContigMatrixContigRowBroadcastFactory
         }
     }
 };
-
-typedef sycl::event (
-    *true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
-    sycl::queue,
-    std::vector<sycl::event> &,
-    size_t,
-    size_t,
-    const char *,
-    py::ssize_t,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &);
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event true_divide_contig_row_contig_matrix_broadcast_impl(

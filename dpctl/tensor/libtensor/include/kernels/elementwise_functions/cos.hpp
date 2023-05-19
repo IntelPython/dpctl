@@ -69,13 +69,6 @@ template <typename T> struct CosOutputType
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
-typedef sycl::event (*cos_contig_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const char *,
-    char *,
-    const std::vector<sycl::event> &);
-
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class cos_contig_kernel;
 
@@ -136,18 +129,6 @@ template <typename fnT, typename T> struct CosTypeMapFactory
 };
 
 template <typename T1, typename T2, typename T3> class cos_strided_kernel;
-
-typedef sycl::event (*cos_strided_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    const py::ssize_t *,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
 
 template <typename argTy>
 sycl::event cos_strided_impl(sycl::queue exec_q,

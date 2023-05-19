@@ -97,17 +97,24 @@ int _result_typeid(int arg_typeid, const int *fn_output_id)
     return fn_output_id[arg_typeid];
 }
 
+namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
+using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
+using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
+
 // U01: ==== ABS   (x)
 namespace impl
 {
 
 namespace abs_fn_ns = dpctl::tensor::kernels::abs;
-using abs_fn_ns::abs_contig_impl_fn_ptr_t;
-using abs_fn_ns::abs_strided_impl_fn_ptr_t;
 
-static abs_contig_impl_fn_ptr_t abs_contig_dispatch_vector[td_ns::num_types];
+static unary_contig_impl_fn_ptr_t abs_contig_dispatch_vector[td_ns::num_types];
 static int abs_output_typeid_vector[td_ns::num_types];
-static abs_strided_impl_fn_ptr_t abs_strided_dispatch_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    abs_strided_dispatch_vector[td_ns::num_types];
 
 void populate_abs_dispatch_vectors(void)
 {
@@ -115,12 +122,13 @@ void populate_abs_dispatch_vectors(void)
     namespace fn_ns = abs_fn_ns;
 
     using fn_ns::AbsContigFactory;
-    DispatchVectorBuilder<abs_contig_impl_fn_ptr_t, AbsContigFactory, num_types>
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AbsContigFactory,
+                          num_types>
         dvb1;
     dvb1.populate_dispatch_vector(abs_contig_dispatch_vector);
 
     using fn_ns::AbsStridedFactory;
-    DispatchVectorBuilder<abs_strided_impl_fn_ptr_t, AbsStridedFactory,
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AbsStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(abs_strided_dispatch_vector);
@@ -149,25 +157,20 @@ namespace impl
 {
 namespace add_fn_ns = dpctl::tensor::kernels::add;
 
-using add_fn_ns::add_contig_impl_fn_ptr_t;
-using add_fn_ns::add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
-using add_fn_ns::add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
-using add_fn_ns::add_strided_impl_fn_ptr_t;
-
-static add_contig_impl_fn_ptr_t add_contig_dispatch_table[td_ns::num_types]
-                                                         [td_ns::num_types];
+static binary_contig_impl_fn_ptr_t add_contig_dispatch_table[td_ns::num_types]
+                                                            [td_ns::num_types];
 static int add_output_id_table[td_ns::num_types][td_ns::num_types];
 
-static add_strided_impl_fn_ptr_t add_strided_dispatch_table[td_ns::num_types]
-                                                           [td_ns::num_types];
+static binary_strided_impl_fn_ptr_t
+    add_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 // add(matrix, row)
-static add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
+static binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
     add_contig_matrix_contig_row_broadcast_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
 
 // add(row, matrix)
-static add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
+static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     add_contig_row_contig_matrix_broadcast_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
 
@@ -183,22 +186,24 @@ void populate_add_dispatch_tables(void)
 
     // function pointers for operation on general strided arrays
     using fn_ns::AddStridedFactory;
-    DispatchTableBuilder<add_strided_impl_fn_ptr_t, AddStridedFactory,
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, AddStridedFactory,
                          num_types>
         dtb2;
     dtb2.populate_dispatch_table(add_strided_dispatch_table);
 
     // function pointers for operation on contiguous inputs and output
     using fn_ns::AddContigFactory;
-    DispatchTableBuilder<add_contig_impl_fn_ptr_t, AddContigFactory, num_types>
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, AddContigFactory,
+                         num_types>
         dtb3;
     dtb3.populate_dispatch_table(add_contig_dispatch_table);
 
     // function pointers for operation on contiguous matrix, contiguous row
     // with contiguous matrix output
     using fn_ns::AddContigMatrixContigRowBroadcastFactory;
-    DispatchTableBuilder<add_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
-                         AddContigMatrixContigRowBroadcastFactory, num_types>
+    DispatchTableBuilder<
+        binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
+        AddContigMatrixContigRowBroadcastFactory, num_types>
         dtb4;
     dtb4.populate_dispatch_table(
         add_contig_matrix_contig_row_broadcast_dispatch_table);
@@ -206,8 +211,9 @@ void populate_add_dispatch_tables(void)
     // function pointers for operation on contiguous row, contiguous matrix
     // with contiguous matrix output
     using fn_ns::AddContigRowContigMatrixBroadcastFactory;
-    DispatchTableBuilder<add_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
-                         AddContigRowContigMatrixBroadcastFactory, num_types>
+    DispatchTableBuilder<
+        binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
+        AddContigRowContigMatrixBroadcastFactory, num_types>
         dtb5;
     dtb5.populate_dispatch_table(
         add_contig_row_contig_matrix_broadcast_dispatch_table);
@@ -298,12 +304,11 @@ namespace impl
 {
 
 namespace cos_fn_ns = dpctl::tensor::kernels::cos;
-using cos_fn_ns::cos_contig_impl_fn_ptr_t;
-using cos_fn_ns::cos_strided_impl_fn_ptr_t;
 
-static cos_contig_impl_fn_ptr_t cos_contig_dispatch_vector[td_ns::num_types];
+static unary_contig_impl_fn_ptr_t cos_contig_dispatch_vector[td_ns::num_types];
 static int cos_output_typeid_vector[td_ns::num_types];
-static cos_strided_impl_fn_ptr_t cos_strided_dispatch_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    cos_strided_dispatch_vector[td_ns::num_types];
 
 void populate_cos_dispatch_vectors(void)
 {
@@ -311,12 +316,13 @@ void populate_cos_dispatch_vectors(void)
     namespace fn_ns = cos_fn_ns;
 
     using fn_ns::CosContigFactory;
-    DispatchVectorBuilder<cos_contig_impl_fn_ptr_t, CosContigFactory, num_types>
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, CosContigFactory,
+                          num_types>
         dvb1;
     dvb1.populate_dispatch_vector(cos_contig_dispatch_vector);
 
     using fn_ns::CosStridedFactory;
-    DispatchVectorBuilder<cos_strided_impl_fn_ptr_t, CosStridedFactory,
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, CosStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(cos_strided_dispatch_vector);
@@ -339,27 +345,20 @@ namespace impl
 {
 namespace true_divide_fn_ns = dpctl::tensor::kernels::true_divide;
 
-using true_divide_fn_ns::true_divide_contig_impl_fn_ptr_t;
-using true_divide_fn_ns::
-    true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
-using true_divide_fn_ns::
-    true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
-using true_divide_fn_ns::true_divide_strided_impl_fn_ptr_t;
-
-static true_divide_contig_impl_fn_ptr_t
+static binary_contig_impl_fn_ptr_t
     true_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static int true_divide_output_id_table[td_ns::num_types][td_ns::num_types];
 
-static true_divide_strided_impl_fn_ptr_t
+static binary_strided_impl_fn_ptr_t
     true_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 // divide(matrix, row)
-static true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
+static binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
     true_divide_contig_matrix_contig_row_broadcast_dispatch_table
         [td_ns::num_types][td_ns::num_types];
 
 // divide(row, matrix)
-static true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
+static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     true_divide_contig_row_contig_matrix_broadcast_dispatch_table
         [td_ns::num_types][td_ns::num_types];
 
@@ -375,15 +374,15 @@ void populate_true_divide_dispatch_tables(void)
 
     // function pointers for operation on general strided arrays
     using fn_ns::TrueDivideStridedFactory;
-    DispatchTableBuilder<true_divide_strided_impl_fn_ptr_t,
-                         TrueDivideStridedFactory, num_types>
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, TrueDivideStridedFactory,
+                         num_types>
         dtb2;
     dtb2.populate_dispatch_table(true_divide_strided_dispatch_table);
 
     // function pointers for operation on contiguous inputs and output
     using fn_ns::TrueDivideContigFactory;
-    DispatchTableBuilder<true_divide_contig_impl_fn_ptr_t,
-                         TrueDivideContigFactory, num_types>
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, TrueDivideContigFactory,
+                         num_types>
         dtb3;
     dtb3.populate_dispatch_table(true_divide_contig_dispatch_table);
 
@@ -391,7 +390,7 @@ void populate_true_divide_dispatch_tables(void)
     // with contiguous matrix output
     using fn_ns::TrueDivideContigMatrixContigRowBroadcastFactory;
     DispatchTableBuilder<
-        true_divide_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
+        binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
         TrueDivideContigMatrixContigRowBroadcastFactory, num_types>
         dtb4;
     dtb4.populate_dispatch_table(
@@ -401,7 +400,7 @@ void populate_true_divide_dispatch_tables(void)
     // with contiguous matrix output
     using fn_ns::TrueDivideContigRowContigMatrixBroadcastFactory;
     DispatchTableBuilder<
-        true_divide_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
+        binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
         TrueDivideContigRowContigMatrixBroadcastFactory, num_types>
         dtb5;
     dtb5.populate_dispatch_table(
@@ -415,16 +414,11 @@ namespace impl
 {
 namespace equal_fn_ns = dpctl::tensor::kernels::equal;
 
-using equal_fn_ns::equal_contig_impl_fn_ptr_t;
-using equal_fn_ns::equal_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
-using equal_fn_ns::equal_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
-using equal_fn_ns::equal_strided_impl_fn_ptr_t;
-
-static equal_contig_impl_fn_ptr_t equal_contig_dispatch_table[td_ns::num_types]
-                                                             [td_ns::num_types];
+static binary_contig_impl_fn_ptr_t
+    equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static int equal_output_id_table[td_ns::num_types][td_ns::num_types];
 
-static equal_strided_impl_fn_ptr_t
+static binary_strided_impl_fn_ptr_t
     equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 void populate_equal_dispatch_tables(void)
@@ -439,14 +433,14 @@ void populate_equal_dispatch_tables(void)
 
     // function pointers for operation on general strided arrays
     using fn_ns::EqualStridedFactory;
-    DispatchTableBuilder<equal_strided_impl_fn_ptr_t, EqualStridedFactory,
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, EqualStridedFactory,
                          num_types>
         dtb2;
     dtb2.populate_dispatch_table(equal_strided_dispatch_table);
 
     // function pointers for operation on contiguous inputs and output
     using fn_ns::EqualContigFactory;
-    DispatchTableBuilder<equal_contig_impl_fn_ptr_t, EqualContigFactory,
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, EqualContigFactory,
                          num_types>
         dtb3;
     dtb3.populate_dispatch_table(equal_contig_dispatch_table);
@@ -499,13 +493,11 @@ namespace impl
 namespace impl
 {
 namespace isfinite_fn_ns = dpctl::tensor::kernels::isfinite;
-using isfinite_fn_ns::isfinite_contig_impl_fn_ptr_t;
-using isfinite_fn_ns::isfinite_strided_impl_fn_ptr_t;
 
-static isfinite_contig_impl_fn_ptr_t
+static unary_contig_impl_fn_ptr_t
     isfinite_contig_dispatch_vector[td_ns::num_types];
 static int isfinite_output_typeid_vector[td_ns::num_types];
-static isfinite_strided_impl_fn_ptr_t
+static unary_strided_impl_fn_ptr_t
     isfinite_strided_dispatch_vector[td_ns::num_types];
 
 void populate_isfinite_dispatch_vectors(void)
@@ -514,14 +506,14 @@ void populate_isfinite_dispatch_vectors(void)
     namespace fn_ns = isfinite_fn_ns;
 
     using fn_ns::IsFiniteContigFactory;
-    DispatchVectorBuilder<isfinite_contig_impl_fn_ptr_t, IsFiniteContigFactory,
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, IsFiniteContigFactory,
                           num_types>
         dvb1;
     dvb1.populate_dispatch_vector(isfinite_contig_dispatch_vector);
 
     using fn_ns::IsFiniteStridedFactory;
-    DispatchVectorBuilder<isfinite_strided_impl_fn_ptr_t,
-                          IsFiniteStridedFactory, num_types>
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, IsFiniteStridedFactory,
+                          num_types>
         dvb2;
     dvb2.populate_dispatch_vector(isfinite_strided_dispatch_vector);
 
@@ -536,13 +528,11 @@ void populate_isfinite_dispatch_vectors(void)
 namespace impl
 {
 namespace isinf_fn_ns = dpctl::tensor::kernels::isinf;
-using isinf_fn_ns::isinf_contig_impl_fn_ptr_t;
-using isinf_fn_ns::isinf_strided_impl_fn_ptr_t;
 
-static isinf_contig_impl_fn_ptr_t
+static unary_contig_impl_fn_ptr_t
     isinf_contig_dispatch_vector[td_ns::num_types];
 static int isinf_output_typeid_vector[td_ns::num_types];
-static isinf_strided_impl_fn_ptr_t
+static unary_strided_impl_fn_ptr_t
     isinf_strided_dispatch_vector[td_ns::num_types];
 
 void populate_isinf_dispatch_vectors(void)
@@ -551,13 +541,13 @@ void populate_isinf_dispatch_vectors(void)
     namespace fn_ns = isinf_fn_ns;
 
     using fn_ns::IsInfContigFactory;
-    DispatchVectorBuilder<isinf_contig_impl_fn_ptr_t, IsInfContigFactory,
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, IsInfContigFactory,
                           num_types>
         dvb1;
     dvb1.populate_dispatch_vector(isinf_contig_dispatch_vector);
 
     using fn_ns::IsInfStridedFactory;
-    DispatchVectorBuilder<isinf_strided_impl_fn_ptr_t, IsInfStridedFactory,
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, IsInfStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(isinf_strided_dispatch_vector);
@@ -573,13 +563,11 @@ void populate_isinf_dispatch_vectors(void)
 namespace impl
 {
 namespace isnan_fn_ns = dpctl::tensor::kernels::isnan;
-using isnan_fn_ns::isnan_contig_impl_fn_ptr_t;
-using isnan_fn_ns::isnan_strided_impl_fn_ptr_t;
 
-static isnan_contig_impl_fn_ptr_t
+static unary_contig_impl_fn_ptr_t
     isnan_contig_dispatch_vector[td_ns::num_types];
 static int isnan_output_typeid_vector[td_ns::num_types];
-static isnan_strided_impl_fn_ptr_t
+static unary_strided_impl_fn_ptr_t
     isnan_strided_dispatch_vector[td_ns::num_types];
 
 void populate_isnan_dispatch_vectors(void)
@@ -588,13 +576,13 @@ void populate_isnan_dispatch_vectors(void)
     namespace fn_ns = isnan_fn_ns;
 
     using fn_ns::IsNanContigFactory;
-    DispatchVectorBuilder<isnan_contig_impl_fn_ptr_t, IsNanContigFactory,
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, IsNanContigFactory,
                           num_types>
         dvb1;
     dvb1.populate_dispatch_vector(isnan_contig_dispatch_vector);
 
     using fn_ns::IsNanStridedFactory;
-    DispatchVectorBuilder<isnan_strided_impl_fn_ptr_t, IsNanStridedFactory,
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, IsNanStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(isnan_strided_dispatch_vector);
@@ -749,12 +737,10 @@ namespace impl
 {
 
 namespace sqrt_fn_ns = dpctl::tensor::kernels::sqrt;
-using sqrt_fn_ns::sqrt_contig_impl_fn_ptr_t;
-using sqrt_fn_ns::sqrt_strided_impl_fn_ptr_t;
 
-static sqrt_contig_impl_fn_ptr_t sqrt_contig_dispatch_vector[td_ns::num_types];
+static unary_contig_impl_fn_ptr_t sqrt_contig_dispatch_vector[td_ns::num_types];
 static int sqrt_output_typeid_vector[td_ns::num_types];
-static sqrt_strided_impl_fn_ptr_t
+static unary_strided_impl_fn_ptr_t
     sqrt_strided_dispatch_vector[td_ns::num_types];
 
 void populate_sqrt_dispatch_vectors(void)
@@ -763,13 +749,13 @@ void populate_sqrt_dispatch_vectors(void)
     namespace fn_ns = sqrt_fn_ns;
 
     using fn_ns::SqrtContigFactory;
-    DispatchVectorBuilder<sqrt_contig_impl_fn_ptr_t, SqrtContigFactory,
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SqrtContigFactory,
                           num_types>
         dvb1;
     dvb1.populate_dispatch_vector(sqrt_contig_dispatch_vector);
 
     using fn_ns::SqrtStridedFactory;
-    DispatchVectorBuilder<sqrt_strided_impl_fn_ptr_t, SqrtStridedFactory,
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SqrtStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(sqrt_strided_dispatch_vector);
@@ -1010,13 +996,11 @@ void init_elementwise_functions(py::module_ m)
                 // function pointers to handle operation of c-contig matrix and
                 // c-contig row with broadcasting (may be nullptr)
                 td_ns::NullPtrTable<
-                    impl::
-                        equal_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
                 // function pointers to handle operation of c-contig matrix and
                 // c-contig row with broadcasting (may be nullptr)
                 td_ns::NullPtrTable<
-                    impl::
-                        equal_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
         };
         auto equal_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
             return py_binary_ufunc_result_type(dtype1, dtype2,
