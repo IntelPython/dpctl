@@ -33,7 +33,7 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     assert (dpt.asnumpy(r) == np.full(r.shape, 2, dtype=r.dtype)).all()
     assert r.sycl_queue == ar1.sycl_queue
 
-    out = dpt.empty_like(ar1, dtype=expected_dtype)
+    out = dpt.empty_like(ar1, dtype=r.dtype)
     dpt.add(ar1, ar2, out)
     assert (dpt.asnumpy(out) == np.full(out.shape, 2, dtype=out.dtype)).all()
 
@@ -49,7 +49,7 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == np.full(r.shape, 2, dtype=r.dtype)).all()
 
-    out = dpt.empty_like(ar1, dtype=expected_dtype)
+    out = dpt.empty_like(ar1, dtype=r.dtype)
     dpt.add(ar3[::-1], ar4[::2], out)
     assert (dpt.asnumpy(out) == np.full(out.shape, 2, dtype=out.dtype)).all()
 
@@ -74,37 +74,49 @@ def test_add_usm_type_matrix(op1_usm_type, op2_usm_type):
 def test_add_order():
     get_queue_or_skip()
 
-    ar1 = dpt.ones((20, 20), dtype="i4", order="C")
-    ar2 = dpt.ones((20, 20), dtype="i4", order="C")
-    r1 = dpt.add(ar1, ar2, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.add(ar1, ar2, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.add(ar1, ar2, order="A")
-    assert r3.flags.c_contiguous
-    r4 = dpt.add(ar1, ar2, order="K")
-    assert r4.flags.c_contiguous
+    test_shape = (
+        20,
+        20,
+    )
+    test_shape2 = tuple(2 * dim for dim in test_shape)
+    n = test_shape[-1]
 
-    ar1 = dpt.ones((20, 20), dtype="i4", order="F")
-    ar2 = dpt.ones((20, 20), dtype="i4", order="F")
-    r1 = dpt.add(ar1, ar2, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.add(ar1, ar2, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.add(ar1, ar2, order="A")
-    assert r3.flags.f_contiguous
-    r4 = dpt.add(ar1, ar2, order="K")
-    assert r4.flags.f_contiguous
+    for dt1, dt2 in zip(["i4", "i4", "f4"], ["i4", "f4", "i4"]):
+        ar1 = dpt.ones(test_shape, dtype=dt1, order="C")
+        ar2 = dpt.ones(test_shape, dtype=dt2, order="C")
+        r1 = dpt.add(ar1, ar2, order="C")
+        assert r1.flags.c_contiguous
+        r2 = dpt.add(ar1, ar2, order="F")
+        assert r2.flags.f_contiguous
+        r3 = dpt.add(ar1, ar2, order="A")
+        assert r3.flags.c_contiguous
+        r4 = dpt.add(ar1, ar2, order="K")
+        assert r4.flags.c_contiguous
 
-    ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
-    ar2 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
-    r4 = dpt.add(ar1, ar2, order="K")
-    assert r4.strides == (20, -1)
+        ar1 = dpt.ones(test_shape, dtype=dt1, order="F")
+        ar2 = dpt.ones(test_shape, dtype=dt2, order="F")
+        r1 = dpt.add(ar1, ar2, order="C")
+        assert r1.flags.c_contiguous
+        r2 = dpt.add(ar1, ar2, order="F")
+        assert r2.flags.f_contiguous
+        r3 = dpt.add(ar1, ar2, order="A")
+        assert r3.flags.f_contiguous
+        r4 = dpt.add(ar1, ar2, order="K")
+        assert r4.flags.f_contiguous
 
-    ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2].mT
-    ar2 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2].mT
-    r4 = dpt.add(ar1, ar2, order="K")
-    assert r4.strides == (-1, 20)
+        ar1 = dpt.ones(test_shape2, dtype=dt1, order="C")[:20, ::-2]
+        ar2 = dpt.ones(test_shape2, dtype=dt2, order="C")[:20, ::-2]
+        r4 = dpt.add(ar1, ar2, order="K")
+        assert r4.strides == (n, -1)
+        r5 = dpt.add(ar1, ar2, order="C")
+        assert r5.strides == (n, 1)
+
+        ar1 = dpt.ones(test_shape2, dtype=dt1, order="C")[:20, ::-2].mT
+        ar2 = dpt.ones(test_shape2, dtype=dt2, order="C")[:20, ::-2].mT
+        r4 = dpt.add(ar1, ar2, order="K")
+        assert r4.strides == (-1, n)
+        r5 = dpt.add(ar1, ar2, order="C")
+        assert r5.strides == (n, 1)
 
 
 def test_add_broadcasting():
@@ -266,7 +278,7 @@ def test_add_dtype_error(
     skip_if_dtype_not_supported(dtype, q)
 
     ar1 = dpt.ones(5, dtype=dtype)
-    ar2 = dpt.ones_like(ar1, dtype="f8")
+    ar2 = dpt.ones_like(ar1, dtype="f4")
 
     y = dpt.zeros_like(ar1, dtype="int8")
     assert_raises_regex(
