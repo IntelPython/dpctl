@@ -22,8 +22,16 @@ def test_abs_out_type(dtype):
             np.dtype("c16"): np.dtype("f8"),
         }
         assert dpt.abs(X).dtype == type_map[arg_dt]
+
+        r = dpt.empty_like(X, dtype=type_map[arg_dt])
+        dpt.abs(X, out=r)
+        assert np.allclose(dpt.asnumpy(r), dpt.asnumpy(dpt.abs(X)))
     else:
         assert dpt.abs(X).dtype == arg_dt
+
+        r = dpt.empty_like(X, dtype=arg_dt)
+        dpt.abs(X, out=r)
+        assert np.allclose(dpt.asnumpy(r), dpt.asnumpy(dpt.abs(X)))
 
 
 @pytest.mark.parametrize("usm_type", _usm_types)

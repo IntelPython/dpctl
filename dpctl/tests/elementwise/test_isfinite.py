@@ -41,6 +41,10 @@ def test_isfinite_complex(dtype):
     Y = dpt.asarray(Ynp, sycl_queue=q)
     assert np.array_equal(dpt.asnumpy(dpt.isfinite(Y)), np.isfinite(Ynp))
 
+    r = dpt.empty_like(Y, dtype="bool")
+    dpt.isfinite(Y, out=r)
+    assert np.array_equal(dpt.asnumpy(r)[()], np.isfinite(Ynp))
+
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
 def test_isfinite_floats(dtype):
@@ -55,6 +59,10 @@ def test_isfinite_floats(dtype):
         Ynp = np.repeat(np.array([y1, y2, y3], dtype=dtype), mult)
         Y = dpt.asarray(Ynp, sycl_queue=q)
         assert np.array_equal(dpt.asnumpy(dpt.isfinite(Y)), np.isfinite(Ynp))
+
+        r = dpt.empty_like(Y, dtype="bool")
+        dpt.isfinite(Y, out=r)
+        assert np.array_equal(dpt.asnumpy(r)[()], np.isfinite(Ynp))
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
