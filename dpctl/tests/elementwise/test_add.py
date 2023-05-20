@@ -144,6 +144,14 @@ def test_add_broadcasting():
     ).all()
 
 
+def test_add_broadcasting_error():
+    get_queue_or_skip()
+    m = dpt.ones((10, 10), dtype="i4")
+    v = dpt.ones((3,), dtype="i4")
+    with pytest.raises(ValueError):
+        dpt.add(m, v)
+
+
 @pytest.mark.parametrize("arr_dt", _all_dtypes)
 def test_add_python_scalar(arr_dt):
     q = get_queue_or_skip()
