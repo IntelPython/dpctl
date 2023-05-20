@@ -7,6 +7,7 @@ from numpy.testing import assert_raises_regex
 import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
+from dpctl.utils import ExecutionPlacementError
 
 from .utils import _all_dtypes, _compare_dtypes, _usm_types
 
@@ -32,6 +33,10 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     assert (dpt.asnumpy(r) == np.full(r.shape, 2, dtype=r.dtype)).all()
     assert r.sycl_queue == ar1.sycl_queue
 
+    out = dpt.empty_like(ar1, dtype=expected_dtype)
+    dpt.add(ar1, ar2, out)
+    assert (dpt.asnumpy(out) == np.full(out.shape, 2, dtype=out.dtype)).all()
+
     ar3 = dpt.ones(sz, dtype=op1_dtype)
     ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
 
@@ -43,6 +48,10 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     assert _compare_dtypes(r.dtype, expected_dtype, sycl_queue=q)
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == np.full(r.shape, 2, dtype=r.dtype)).all()
+
+    out = dpt.empty_like(ar1, dtype=expected_dtype)
+    dpt.add(ar3[::-1], ar4[::2], out)
+    assert (dpt.asnumpy(out) == np.full(out.shape, 2, dtype=out.dtype)).all()
 
 
 @pytest.mark.parametrize("op1_usm_type", _usm_types)
@@ -105,7 +114,6 @@ def test_add_broadcasting():
     v = dpt.arange(5, dtype="i4")
 
     r = dpt.add(m, v)
-
     assert (dpt.asnumpy(r) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
     r2 = dpt.add(v, m)
@@ -180,26 +188,8 @@ def test_add_canary_mock_array():
         dpt.add(a, c)
 
 
-@pytest.mark.parametrize("op1_dtype", _all_dtypes)
-@pytest.mark.parametrize("op2_dtype", _all_dtypes)
-def test_add_dtype_out_keyword(op1_dtype, op2_dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(op1_dtype, q)
-    skip_if_dtype_not_supported(op2_dtype, q)
-
-    sz = 127
-    ar1 = dpt.ones(sz, dtype=op1_dtype)
-    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
-
-    r = dpt.add(ar1, ar2)
-
-    y = dpt.zeros_like(ar1, dtype=r.dtype)
-    dpt.add(ar1, ar2, y)
-
-    assert np.array_equal(dpt.asnumpy(r), dpt.asnumpy(y))
-
-
 def test_add_errors():
+    get_queue_or_skip()
     try:
         gpu_queue = dpctl.SyclQueue("gpu")
     except dpctl.SyclQueueCreationError:
@@ -245,11 +235,14 @@ def test_add_errors():
         y,
     )
 
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = dpt.empty_like(ar1, dtype="int32")
+    ar1 = np.ones(2, dtype="float32")
+    ar2 = np.ones_like(ar1, dtype="int32")
     assert_raises_regex(
-        TypeError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred.*",
+        dpt.add,
+        ar1,
+        ar2,
     )
 
     ar1 = dpt.ones(2, dtype="float32")
@@ -262,4 +255,20 @@ def test_add_errors():
         ar1,
         ar2,
         y,
+    )
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_add_dtype_error(
+    dtype,
+):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    ar1 = dpt.ones(5, dtype=dtype)
+    ar2 = dpt.ones_like(ar1, dtype="f8")
+
+    y = dpt.zeros_like(ar1, dtype="int8")
+    assert_raises_regex(
+        TypeError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
     )

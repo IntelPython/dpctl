@@ -22,8 +22,16 @@ def test_abs_out_type(dtype):
             np.dtype("c16"): np.dtype("f8"),
         }
         assert dpt.abs(X).dtype == type_map[arg_dt]
+
+        out = dpt.empty_like(X, dtype=type_map[arg_dt])
+        dpt.abs(X, out)
+        assert np.allclose(dpt.asnumpy(out), dpt.asnumpy(dpt.abs(X)))
     else:
         assert dpt.abs(X).dtype == arg_dt
+
+        out = dpt.empty_like(X, dtype=arg_dt)
+        dpt.abs(X, out)
+        assert np.allclose(dpt.asnumpy(out), dpt.asnumpy(dpt.abs(X)))
 
 
 @pytest.mark.parametrize("usm_type", _usm_types)
@@ -89,20 +97,3 @@ def test_abs_complex(dtype):
             np.testing.assert_allclose(
                 dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
             )
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes[:-2])
-def test_abs_out_keyword(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = 1
-    X[..., 1::2] = 0
-    Y = dpt.empty_like(X, dtype=arg_dt)
-    dpt.abs(X, Y)
-
-    expected_Y = dpt.asnumpy(X)
-    assert np.allclose(dpt.asnumpy(Y), expected_Y)

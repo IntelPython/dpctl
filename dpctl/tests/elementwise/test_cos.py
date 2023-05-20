@@ -21,6 +21,13 @@ def test_cos_out_type(dtype):
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
     assert dpt.cos(X).dtype == expected_dtype
 
+    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
+    expected_dtype = np.cos(np.array(0, dtype=dtype)).dtype
+    expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
+    Y = dpt.empty_like(X, dtype=expected_dtype)
+    dpt.cos(X, Y)
+    np.testing.assert_allclose(dpt.asnumpy(dpt.cos(X)), dpt.asnumpy(Y))
+
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
 def test_cos_output(dtype):
@@ -38,6 +45,13 @@ def test_cos_output(dtype):
 
     np.testing.assert_allclose(
         dpt.asnumpy(Y), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+    Z = dpt.empty_like(X, dtype=dtype)
+    dpt.cos(X, Z)
+
+    np.testing.assert_allclose(
+        dpt.asnumpy(Z), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol
     )
 
 
@@ -89,27 +103,8 @@ def test_cos_order(dtype):
             )
 
 
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_cos_out_keyword(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    n_seq = 100
-    n_rep = 137
-
-    Xnp = np.linspace(-np.pi / 4, np.pi / 4, num=n_seq, dtype=dtype)
-    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
-    Y = dpt.empty_like(X, dtype=dtype)
-
-    dpt.cos(X, Y)
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    np.testing.assert_allclose(
-        dpt.asnumpy(Y), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol
-    )
-
-
 def test_cos_errors():
+    get_queue_or_skip()
     try:
         gpu_queue = dpctl.SyclQueue("gpu")
     except dpctl.SyclQueueCreationError:
@@ -145,14 +140,20 @@ def test_cos_errors():
         TypeError, "Input and output arrays have memory overlap", dpt.cos, x, y
     )
 
-    x = dpt.zeros(2, dtype="int32")
-    y = dpt.empty_like(x, dtype="int32")
-    assert_raises_regex(
-        TypeError, "Expected output array of type.*is supported", dpt.cos, x, y
-    )
-
     x = dpt.zeros(2, dtype="float32")
     y = np.empty_like(x)
     assert_raises_regex(
         TypeError, "output array must be of usm_ndarray type", dpt.cos, x, y
+    )
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_cos_error_dtype(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = dpt.zeros(5, dtype=dtype)
+    y = dpt.empty_like(x, dtype="int16")
+    assert_raises_regex(
+        TypeError, "Output array of type.*is needed", dpt.cos, x, y
     )

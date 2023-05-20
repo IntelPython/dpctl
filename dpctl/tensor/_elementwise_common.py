@@ -93,8 +93,8 @@ class UnaryElementwiseFunc:
             else:
                 if res_dt != out.dtype:
                     raise TypeError(
-                        f"Expected output array of type {res_dt} is supported"
-                        f", got {out.dtype}"
+                        f"Output array of type {res_dt} is needed,"
+                        f" got {out.dtype}"
                     )
 
             ht, _ = self.unary_fn_(x, out, sycl_queue=exec_q)
@@ -119,8 +119,7 @@ class UnaryElementwiseFunc:
         else:
             if buf_dt != out.dtype:
                 raise TypeError(
-                    f"Expected output array of type {buf_dt} is supported,"
-                    f"got {out.dtype}"
+                    f"Output array of type {buf_dt} is needed, got {out.dtype}"
                 )
 
         ht, _ = self.unary_fn_(buf, out, sycl_queue=exec_q, depends=[copy_ev])
