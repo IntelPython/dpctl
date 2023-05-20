@@ -25,7 +25,7 @@ def test_cos_out_type(dtype):
     expected_dtype = np.cos(np.array(0, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
     Y = dpt.empty_like(X, dtype=expected_dtype)
-    dpt.cos(X, Y)
+    dpt.cos(X, out=Y)
     np.testing.assert_allclose(dpt.asnumpy(dpt.cos(X)), dpt.asnumpy(Y))
 
 
@@ -48,7 +48,7 @@ def test_cos_output(dtype):
     )
 
     Z = dpt.empty_like(X, dtype=dtype)
-    dpt.cos(X, Z)
+    dpt.cos(X, out=Z)
 
     np.testing.assert_allclose(
         dpt.asnumpy(Z), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol

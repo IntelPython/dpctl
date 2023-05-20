@@ -33,9 +33,9 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     assert (dpt.asnumpy(r) == np.full(r.shape, 2, dtype=r.dtype)).all()
     assert r.sycl_queue == ar1.sycl_queue
 
-    out = dpt.empty_like(ar1, dtype=r.dtype)
-    dpt.add(ar1, ar2, out)
-    assert (dpt.asnumpy(out) == np.full(out.shape, 2, dtype=out.dtype)).all()
+    r2 = dpt.empty_like(ar1, dtype=r.dtype)
+    dpt.add(ar1, ar2, out=r2)
+    assert (dpt.asnumpy(r2) == np.full(r2.shape, 2, dtype=r2.dtype)).all()
 
     ar3 = dpt.ones(sz, dtype=op1_dtype)
     ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
@@ -49,9 +49,9 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == np.full(r.shape, 2, dtype=r.dtype)).all()
 
-    out = dpt.empty_like(ar1, dtype=r.dtype)
-    dpt.add(ar3[::-1], ar4[::2], out)
-    assert (dpt.asnumpy(out) == np.full(out.shape, 2, dtype=out.dtype)).all()
+    r2 = dpt.empty_like(ar1, dtype=r.dtype)
+    dpt.add(ar3[::-1], ar4[::2], out=r2)
+    assert (dpt.asnumpy(r2) == np.full(r2.shape, 2, dtype=r2.dtype)).all()
 
 
 @pytest.mark.parametrize("op1_usm_type", _usm_types)
@@ -131,17 +131,13 @@ def test_add_broadcasting():
     r2 = dpt.add(v, m)
     assert (dpt.asnumpy(r2) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
-    out = dpt.empty_like(m)
-    dpt.add(m, v, out)
-    assert (
-        dpt.asnumpy(out) == np.arange(1, 6, dtype="i4")[np.newaxis, :]
-    ).all()
+    r3 = dpt.empty_like(m)
+    dpt.add(m, v, out=r3)
+    assert (dpt.asnumpy(r3) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
-    out2 = dpt.empty_like(m)
-    dpt.add(v, m, out2)
-    assert (
-        dpt.asnumpy(out2) == np.arange(1, 6, dtype="i4")[np.newaxis, :]
-    ).all()
+    r4 = dpt.empty_like(m)
+    dpt.add(v, m, out=r4)
+    assert (dpt.asnumpy(r4) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
 
 def test_add_broadcasting_error():
