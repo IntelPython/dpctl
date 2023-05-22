@@ -1,5 +1,5 @@
-//=== boolean_reductions.hpp - Implementation of boolean reduction kernels
-//---*-C++-*--/===//
+//=== boolean_reductions.hpp - Implementation of boolean reduction kernels    //
+//                                                            ---*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
