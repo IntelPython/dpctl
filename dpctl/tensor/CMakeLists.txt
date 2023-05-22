@@ -47,6 +47,7 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions.cpp
 )
 set(_clang_prefix "")
 if (WIN32)
