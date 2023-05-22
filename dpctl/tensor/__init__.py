@@ -91,6 +91,17 @@ from dpctl.tensor._usmarray import usm_ndarray
 from dpctl.tensor._utility_functions import all, any
 
 from ._constants import e, inf, nan, newaxis, pi
+from ._elementwise_funcs import (
+    abs,
+    add,
+    cos,
+    divide,
+    equal,
+    isfinite,
+    isinf,
+    isnan,
+    sqrt,
+)
 
 __all__ = [
     "Device",
@@ -167,4 +178,13 @@ __all__ = [
     "pi",
     "nan",
     "inf",
+    "abs",
+    "add",
+    "cos",
+    "isinf",
+    "isnan",
+    "isfinite",
+    "sqrt",
+    "divide",
+    "equal",
 ]

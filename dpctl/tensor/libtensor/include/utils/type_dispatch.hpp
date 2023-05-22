@@ -250,6 +250,136 @@ private:
     }
 };
 
+/*! @brief struct to define result_type typename for Ty == ArgTy */
+template <typename Ty, typename ArgTy, typename ResTy = ArgTy>
+struct TypeMapResultEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
+{
+    using result_type = ResTy;
+};
+
+/*! @brief struct to define result_type typename for Ty1 == ArgTy1 && Ty2 ==
+ * ArgTy2 */
+template <typename Ty1,
+          typename ArgTy1,
+          typename Ty2,
+          typename ArgTy2,
+          typename ResTy>
+struct BinaryTypeMapResultEntry
+    : std::bool_constant<std::conjunction_v<std::is_same<Ty1, ArgTy1>,
+                                            std::is_same<Ty2, ArgTy2>>>
+{
+    using result_type = ResTy;
+};
+
+/*! @brief fall-through struct with specified result_type, usually void */
+template <typename Ty = void> struct DefaultResultEntry : std::true_type
+{
+    using result_type = Ty;
+};
+
+/*! @brief Utility struct to convert C++ type into typeid integer */
+template <typename T> struct GetTypeid
+{
+    int get()
+    {
+        if constexpr (std::is_same_v<T, bool>) {
+            return static_cast<int>(typenum_t::BOOL);
+        }
+        else if constexpr (std::is_same_v<T, std::int8_t>) {
+            return static_cast<int>(typenum_t::INT8);
+        }
+        else if constexpr (std::is_same_v<T, std::uint8_t>) {
+            return static_cast<int>(typenum_t::UINT8);
+        }
+        else if constexpr (std::is_same_v<T, std::int16_t>) {
+            return static_cast<int>(typenum_t::INT16);
+        }
+        else if constexpr (std::is_same_v<T, std::uint16_t>) {
+            return static_cast<int>(typenum_t::UINT16);
+        }
+        else if constexpr (std::is_same_v<T, std::int32_t>) {
+            return static_cast<int>(typenum_t::INT32);
+        }
+        else if constexpr (std::is_same_v<T, std::uint32_t>) {
+            return static_cast<int>(typenum_t::UINT32);
+        }
+        else if constexpr (std::is_same_v<T, std::int64_t>) {
+            return static_cast<int>(typenum_t::INT64);
+        }
+        else if constexpr (std::is_same_v<T, std::uint64_t>) {
+            return static_cast<int>(typenum_t::UINT64);
+        }
+        else if constexpr (std::is_same_v<T, sycl::half>) {
+            return static_cast<int>(typenum_t::HALF);
+        }
+        else if constexpr (std::is_same_v<T, float>) {
+            return static_cast<int>(typenum_t::FLOAT);
+        }
+        else if constexpr (std::is_same_v<T, double>) {
+            return static_cast<int>(typenum_t::DOUBLE);
+        }
+        else if constexpr (std::is_same_v<T, std::complex<float>>) {
+            return static_cast<int>(typenum_t::CFLOAT);
+        }
+        else if constexpr (std::is_same_v<T, std::complex<double>>) {
+            return static_cast<int>(typenum_t::CDOUBLE);
+        }
+        else if constexpr (std::is_same_v<T, void>) { // special token
+            return -1;
+        }
+
+        assert(("Unsupported type T", false));
+        return -2;
+    }
+};
+
+/*! @brief Class to generate vector of null function pointers */
+template <typename FunPtrT> struct NullPtrVector
+{
+
+    using value_type = FunPtrT;
+    using const_reference = value_type const &;
+
+    NullPtrVector() : val(nullptr) {}
+
+    const_reference operator[](int) const
+    {
+        return val;
+    }
+
+private:
+    value_type val;
+};
+
+/*! @brief Class to generate table of null function pointers */
+template <typename FunPtrT> struct NullPtrTable
+{
+    using value_type = NullPtrVector<FunPtrT>;
+    using const_reference = value_type const &;
+
+    NullPtrTable() : val() {}
+
+    const_reference operator[](int) const
+    {
+        return val;
+    }
+
+private:
+    value_type val;
+};
+
+template <typename Ty1, typename ArgTy, typename Ty2, typename outTy>
+struct TypePairDefinedEntry : std::bool_constant<std::is_same_v<Ty1, ArgTy> &&
+                                                 std::is_same_v<Ty2, outTy>>
+{
+    static constexpr bool is_defined = true;
+};
+
+struct NotDefinedEntry : std::true_type
+{
+    static constexpr bool is_defined = false;
+};
+
 } // namespace type_dispatch
 
 } // namespace tensor

@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2022 Intel Corporation
+// Copyright 2020-2023 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@
 #include "copy_for_reshape.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
+#include "elementwise_functions.hpp"
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
@@ -348,5 +349,6 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
+    dpctl::tensor::py_internal::init_elementwise_functions(m);
     dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
 }

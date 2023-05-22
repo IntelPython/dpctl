@@ -46,7 +46,15 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
 )
+set(_clang_prefix "")
+if (WIN32)
+  set(_clang_prefix "/clang:")
+endif()
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+  PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math")
 target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 if(UNIX)
