@@ -96,6 +96,7 @@ jobs:
       - name: Upload coverage data to coveralls.io
         shell: bash -l {0}
         run: |
+          export SYCL_QUEUE_THREAD_POOL_SIZE=6
           echo "Processing c-api-coverage"
           export DPCTL_LCOV_FN=$(find _skbuild -name dpctl.lcov)
           grep "/tmp" $DPCTL_LCOV_FN

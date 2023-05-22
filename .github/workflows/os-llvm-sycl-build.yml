@@ -112,6 +112,7 @@ jobs:
         run: |
           cat << 'EOF' > set_allvars.sh
           #!/usr/bin/bash
+          export SYCL_QUEUE_THREAD_POOL_SIZE=6
           export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
           source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}

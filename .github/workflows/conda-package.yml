@@ -174,6 +174,7 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
+          export SYCL_QUEUE_THREAD_POOL_SIZE=6
           python -m pytest -v --pyargs $MODULE_NAME
 
   test_windows:
@@ -291,7 +292,7 @@ jobs:
         env:
           DPCTL_VERBOSITY: error
         run: >-
-          conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
+          SET SYCL_QUEUE_THREAD_POOL_SIZE=6 && conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
@@ -583,6 +584,7 @@ jobs:
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
+          export SYCL_QUEUE_THREAD_POOL_SIZE=6
           cd /home/runner/work/array-api-tests
           pytest --ci --json-report --json-report-file=$FILE array_api_tests/ || true
       - name: Set Github environment variables
@@ -602,8 +604,8 @@ jobs:
             echo "$MESSAGE" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           else
-            MESSAGE="Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
-            echo "MESSAGE=$MESSAGE" >> $GITHUB_ENV
+            echo "Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
+            exit 1
           fi
       - name: Post result to PR
         uses: mshick/add-pr-comment@v1
