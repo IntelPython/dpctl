@@ -78,6 +78,14 @@ def test_sum_arg_out_dtype_matrix(arg_dtype, out_dtype):
     assert (dpt.asnumpy(r) == 100).all()
 
 
+def test_sum_empty():
+    get_queue_or_skip()
+    x = dpt.empty((0,), dtype="u1")
+    y = dpt.sum(x)
+    assert y.shape == tuple()
+    assert int(y) == 0
+
+
 def test_sum_axis():
     get_queue_or_skip()
 
