@@ -171,10 +171,11 @@ jobs:
           conda activate test_dpctl
           gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.test_tensor_elementwise::test_cos_order -vv || true
       - name: Run tests
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          export SYCL_QUEUE_THREAD_POOL_SIZE=6
           python -m pytest -v --pyargs $MODULE_NAME
 
   test_windows:
@@ -578,6 +579,8 @@ jobs:
       - name: Run array API conformance tests
         id: run-array-api-tests
         shell: bash -l {0}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: |
           FILE=/home/runner/work/.report.json
           . $CONDA/etc/profile.d/conda.sh
@@ -585,7 +588,6 @@ jobs:
           # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
           python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
-          export SYCL_QUEUE_THREAD_POOL_SIZE=6
           cd /home/runner/work/array-api-tests
           pytest --ci --json-report --json-report-file=$FILE array_api_tests/ || true
       - name: Set Github environment variables
