@@ -28,6 +28,8 @@ Attributes
 ----------
 
 .. autoattribute:: dpctl.tensor.usm_ndarray.T
+.. autoattribute:: dpctl.tensor.usm_ndarray._byte_bounds
+.. autoattribute:: dpctl.tensor.usm_ndarray._element_offset
 .. autoattribute:: dpctl.tensor.usm_ndarray._pointer
 .. autoattribute:: dpctl.tensor.usm_ndarray.device
 .. autoattribute:: dpctl.tensor.usm_ndarray.dtype

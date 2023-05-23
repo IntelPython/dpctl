@@ -8,6 +8,24 @@ dpctl.tensor Functions
 .. currentmodule:: dpctl.tensor
 
 
+Other Functions
+---------------
+
+.. autofunction:: all
+.. autofunction:: any
+.. autofunction:: extract
+.. autofunction:: get_print_options
+.. autofunction:: isdtype
+.. autofunction:: nonzero
+.. autofunction:: place
+.. autofunction:: print_options
+.. autofunction:: put
+.. autofunction:: set_print_options
+.. autofunction:: take
+.. autofunction:: usm_ndarray_repr
+.. autofunction:: usm_ndarray_str
+.. autofunction:: where
+
 Array Construction
 ------------------
 
@@ -53,19 +71,3 @@ Array Manipulation
 .. autofunction:: stack
 .. autofunction:: swapaxes
 .. autofunction:: unstack
-
-Other Functions
----------------
-
-.. autofunction:: extract
-.. autofunction:: get_print_options
-.. autofunction:: isdtype
-.. autofunction:: nonzero
-.. autofunction:: place
-.. autofunction:: print_options
-.. autofunction:: put
-.. autofunction:: set_print_options
-.. autofunction:: take
-.. autofunction:: usm_ndarray_repr
-.. autofunction:: usm_ndarray_str
-.. autofunction:: where
