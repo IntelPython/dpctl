@@ -291,8 +291,9 @@ jobs:
         shell: cmd /C CALL {0}
         env:
           DPCTL_VERBOSITY: error
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: >-
-          SET SYCL_QUEUE_THREAD_POOL_SIZE=6 && conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
+          conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
