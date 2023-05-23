@@ -666,8 +666,6 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                             remaining_reduction_nelems,
                             preferrered_reductions_per_wi));
                 });
-            // FIXME: may be unnecessary
-            partial_reduction_ev.wait();
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
