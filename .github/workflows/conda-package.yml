@@ -171,6 +171,8 @@ jobs:
           conda activate test_dpctl
           gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.test_tensor_elementwise::test_cos_order -vv || true
       - name: Run tests
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
@@ -290,6 +292,7 @@ jobs:
         shell: cmd /C CALL {0}
         env:
           DPCTL_VERBOSITY: error
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: >-
           conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
@@ -576,6 +579,8 @@ jobs:
       - name: Run array API conformance tests
         id: run-array-api-tests
         shell: bash -l {0}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: |
           FILE=/home/runner/work/.report.json
           . $CONDA/etc/profile.d/conda.sh
@@ -602,8 +607,8 @@ jobs:
             echo "$MESSAGE" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           else
-            MESSAGE="Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
-            echo "MESSAGE=$MESSAGE" >> $GITHUB_ENV
+            echo "Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
+            exit 1
           fi
       - name: Post result to PR
         uses: mshick/add-pr-comment@v1
