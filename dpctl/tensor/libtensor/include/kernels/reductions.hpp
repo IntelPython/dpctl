@@ -259,7 +259,7 @@ sycl::event sum_reduction_over_group_with_atomics_strided_impl(
         constexpr size_t preferrered_reductions_per_wi = 4;
         size_t reductions_per_wi =
             (reduction_nelems < preferrered_reductions_per_wi * wg)
-                ? ((reduction_nelems + wg - 1) / wg)
+                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferrered_reductions_per_wi;
 
         size_t reduction_groups =
@@ -349,7 +349,7 @@ sycl::event sum_reduction_over_group_with_atomics_contig_impl(
         constexpr size_t preferrered_reductions_per_wi = 8;
         size_t reductions_per_wi =
             (reduction_nelems < preferrered_reductions_per_wi * wg)
-                ? ((reduction_nelems + wg - 1) / wg)
+                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferrered_reductions_per_wi;
 
         size_t reduction_groups =
@@ -514,7 +514,8 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                                                 reduction_shape_stride};
 
             wg = max_wg;
-            reductions_per_wi = (reduction_nelems + wg - 1) / wg;
+            reductions_per_wi =
+                std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
             size_t reduction_groups =
                 (reduction_nelems + reductions_per_wi * wg - 1) /
@@ -698,7 +699,8 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
             ReductionIndexerT reduction_indexer{};
 
             wg = max_wg;
-            reductions_per_wi = (remaining_reduction_nelems + wg - 1) / wg;
+            reductions_per_wi =
+                std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
             size_t reduction_groups =
                 (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
