@@ -37,12 +37,14 @@
 #include "kernels/elementwise_functions/cos.hpp"
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
+#include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
 #include "kernels/elementwise_functions/log.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
+#include "kernels/elementwise_functions/sin.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
 #include "kernels/elementwise_functions/subtract.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
@@ -455,7 +457,36 @@ void populate_equal_dispatch_tables(void)
 // U13: ==== EXP           (x)
 namespace impl
 {
-// FIXME: add code for U13
+
+namespace exp_fn_ns = dpctl::tensor::kernels::exp;
+
+static unary_contig_impl_fn_ptr_t exp_contig_dispatch_vector[td_ns::num_types];
+static int exp_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    exp_strided_dispatch_vector[td_ns::num_types];
+
+void populate_exp_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = exp_fn_ns;
+
+    using fn_ns::ExpContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, ExpContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(exp_contig_dispatch_vector);
+
+    using fn_ns::ExpStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, ExpStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(exp_strided_dispatch_vector);
+
+    using fn_ns::ExpTypeMapFactory;
+    DispatchVectorBuilder<int, ExpTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(exp_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U14: ==== EXPM1         (x)
@@ -875,7 +906,36 @@ namespace impl
 // U30: ==== SIN         (x)
 namespace impl
 {
-// FIXME: add code for U30
+
+namespace sin_fn_ns = dpctl::tensor::kernels::sin;
+
+static unary_contig_impl_fn_ptr_t sin_contig_dispatch_vector[td_ns::num_types];
+static int sin_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    sin_strided_dispatch_vector[td_ns::num_types];
+
+void populate_sin_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = sin_fn_ns;
+
+    using fn_ns::SinContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SinContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(sin_contig_dispatch_vector);
+
+    using fn_ns::SinStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SinStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(sin_strided_dispatch_vector);
+
+    using fn_ns::SinTypeMapFactory;
+    DispatchVectorBuilder<int, SinTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(sin_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U31: ==== SINH        (x)
@@ -1234,7 +1294,26 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U13: ==== EXP           (x)
-    // FIXME:
+    {
+        impl::populate_exp_dispatch_vectors();
+        using impl::exp_contig_dispatch_vector;
+        using impl::exp_output_typeid_vector;
+        using impl::exp_strided_dispatch_vector;
+
+        auto exp_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                             const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, exp_output_typeid_vector,
+                exp_contig_dispatch_vector, exp_strided_dispatch_vector);
+        };
+        m.def("_exp", exp_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto exp_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, exp_output_typeid_vector);
+        };
+        m.def("_exp_result_type", exp_result_type_pyapi);
+    }
 
     // U14: ==== EXPM1         (x)
     {
@@ -1484,8 +1563,26 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U30: ==== SIN         (x)
-    // FIXME:
+    {
+        impl::populate_sin_dispatch_vectors();
+        using impl::sin_contig_dispatch_vector;
+        using impl::sin_output_typeid_vector;
+        using impl::sin_strided_dispatch_vector;
 
+        auto sin_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                             const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, sin_output_typeid_vector,
+                sin_contig_dispatch_vector, sin_strided_dispatch_vector);
+        };
+        m.def("_sin", sin_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto sin_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, sin_output_typeid_vector);
+        };
+        m.def("_sin_result_type", sin_result_type_pyapi);
+    }
     // U31: ==== SINH        (x)
     // FIXME:
 

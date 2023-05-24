@@ -150,7 +150,13 @@ equal = BinaryElementwiseFunc(
 )
 
 # U13: ==== EXP           (x)
-# FIXME: implement U13
+_exp_docstring = """
+exp(x, order='K')
+
+Computes exponential for each element `x_i` for input array `x`.
+"""
+
+exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
 
 # U14: ==== EXPM1         (x)
 _expm1_docstring = """
@@ -337,7 +343,13 @@ multiply = BinaryElementwiseFunc(
 # FIXME: implement U29
 
 # U30: ==== SIN         (x)
-# FIXME: implement U30
+_sin_docstring = """
+sin(x, order='K')
+
+Computes sin for each element `x_i` for input array `x`.
+"""
+
+sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 
 # U31: ==== SINH        (x)
 # FIXME: implement U31
