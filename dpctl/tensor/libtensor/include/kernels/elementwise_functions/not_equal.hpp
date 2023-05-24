@@ -97,12 +97,12 @@ using NotEqualContigFunctor =
                                             n_vecs>;
 
 template <typename argT1, typename argT2, typename resT, typename IndexerT>
-using NotEqualStridedFunctor =
-    elementwise_common::BinaryStridedFunctor<argT1,
-                                             argT2,
-                                             resT,
-                                             IndexerT,
-                                             NotEqualFunctor<argT1, argT2, resT>>;
+using NotEqualStridedFunctor = elementwise_common::BinaryStridedFunctor<
+    argT1,
+    argT2,
+    resT,
+    IndexerT,
+    NotEqualFunctor<argT1, argT2, resT>>;
 
 template <typename T1, typename T2> struct NotEqualOutputType
 {
@@ -158,14 +158,14 @@ class not_equal_contig_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event not_equal_contig_impl(sycl::queue exec_q,
-                              size_t nelems,
-                              const char *arg1_p,
-                              py::ssize_t arg1_offset,
-                              const char *arg2_p,
-                              py::ssize_t arg2_offset,
-                              char *res_p,
-                              py::ssize_t res_offset,
-                              const std::vector<sycl::event> &depends = {})
+                                  size_t nelems,
+                                  const char *arg1_p,
+                                  py::ssize_t arg1_offset,
+                                  const char *arg2_p,
+                                  py::ssize_t arg2_offset,
+                                  char *res_p,
+                                  py::ssize_t res_offset,
+                                  const std::vector<sycl::event> &depends = {})
 {
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -200,7 +200,8 @@ template <typename fnT, typename T1, typename T2> struct NotEqualContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<
-                         typename NotEqualOutputType<T1, T2>::value_type, void>)
+                          typename NotEqualOutputType<T1, T2>::value_type,
+                          void>)
         {
             fnT fn = nullptr;
             return fn;
@@ -228,17 +229,17 @@ class not_equal_strided_strided_kernel;
 template <typename argTy1, typename argTy2>
 sycl::event
 not_equal_strided_impl(sycl::queue exec_q,
-                   size_t nelems,
-                   int nd,
-                   const py::ssize_t *shape_and_strides,
-                   const char *arg1_p,
-                   py::ssize_t arg1_offset,
-                   const char *arg2_p,
-                   py::ssize_t arg2_offset,
-                   char *res_p,
-                   py::ssize_t res_offset,
-                   const std::vector<sycl::event> &depends,
-                   const std::vector<sycl::event> &additional_depends)
+                       size_t nelems,
+                       int nd,
+                       const py::ssize_t *shape_and_strides,
+                       const char *arg1_p,
+                       py::ssize_t arg1_offset,
+                       const char *arg2_p,
+                       py::ssize_t arg2_offset,
+                       char *res_p,
+                       py::ssize_t res_offset,
+                       const std::vector<sycl::event> &depends,
+                       const std::vector<sycl::event> &additional_depends)
 {
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -269,7 +270,8 @@ template <typename fnT, typename T1, typename T2> struct NotEqualStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<
-                         typename NotEqualOutputType<T1, T2>::value_type, void>)
+                          typename NotEqualOutputType<T1, T2>::value_type,
+                          void>)
         {
             fnT fn = nullptr;
             return fn;
