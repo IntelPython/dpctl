@@ -406,7 +406,7 @@ jobs:
           conda install -n examples -y ninja $CHANNELS || exit 1
           conda install -n examples -y pybind11 cython scikit-build $CHANNELS || exit 1
           conda install -n examples -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
-          conda create -y -n build_env -c intel gcc_linux-64 gxx_linux-64 dpcpp_linux-64
+          conda create -y -n build_env $CHANNELS gcc_linux-64 gxx_linux-64 dpcpp_linux-64 sysroot_linux-64">=2.28"
       - name: Install dpctl
         shell: bash -l {0}
         run: |
