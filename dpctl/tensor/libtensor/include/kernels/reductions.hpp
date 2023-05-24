@@ -32,6 +32,7 @@
 
 #include "pybind11/pybind11.h"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -150,35 +151,6 @@ public:
     }
 };
 
-template <size_t f = 4>
-size_t choose_workgroup_size(const size_t reduction_nelems,
-                             const std::vector<size_t> &sg_sizes)
-{
-    std::vector<size_t> wg_choices;
-    wg_choices.reserve(f * sg_sizes.size());
-
-    for (const auto &sg_size : sg_sizes) {
-#pragma unroll
-        for (size_t i = 1; i <= f; ++i) {
-            wg_choices.push_back(sg_size * i);
-        }
-    }
-    std::sort(std::begin(wg_choices), std::end(wg_choices));
-
-    size_t wg = 1;
-    for (size_t i = 0; i < wg_choices.size(); ++i) {
-        if (wg_choices[i] == wg) {
-            continue;
-        }
-        wg = wg_choices[i];
-        size_t n_groups = ((reduction_nelems + wg - 1) / wg);
-        if (n_groups == 1)
-            break;
-    }
-
-    return wg;
-}
-
 typedef sycl::event (*sum_reduction_strided_impl_fn_ptr)(
     sycl::queue,
     size_t,
@@ -199,6 +171,8 @@ class sum_reduction_over_group_with_atomics_krn;
 
 template <typename T1, typename T2, typename T3>
 class sum_reduction_over_group_with_atomics_1d_krn;
+
+using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_over_group_with_atomics_strided_impl(
@@ -548,12 +522,21 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
             (preferrered_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        resTy *partially_reduced_tmp =
-            sycl::malloc_device<resTy>(iter_nelems * reduction_groups, exec_q);
+        size_t second_iter_reduction_groups_ =
+            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
+            (preferrered_reductions_per_wi * wg);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
+            exec_q);
         resTy *partially_reduced_tmp2 = nullptr;
 
         if (partially_reduced_tmp == nullptr) {
             throw std::runtime_error("Unabled to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_groups * iter_nelems;
         }
 
         sycl::event first_reduction_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -609,21 +592,6 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                  preferrered_reductions_per_wi * wg - 1) /
                 (preferrered_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
-
-            if (partially_reduced_tmp2 == nullptr) {
-                partially_reduced_tmp2 = sycl::malloc_device<resTy>(
-                    iter_nelems * reduction_groups_, exec_q);
-
-                if (partially_reduced_tmp2 == nullptr) {
-                    dependent_ev.wait();
-                    sycl::free(partially_reduced_tmp, exec_q);
-
-                    throw std::runtime_error(
-                        "Unable to allocate device memory");
-                }
-
-                temp2_arg = partially_reduced_tmp2;
-            }
 
             // keep reducing
             sycl::event partial_reduction_ev =
@@ -727,13 +695,9 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                 cgh.depends_on(final_reduction_ev);
                 sycl::context ctx = exec_q.get_context();
 
-                cgh.host_task(
-                    [ctx, partially_reduced_tmp, partially_reduced_tmp2] {
-                        sycl::free(partially_reduced_tmp, ctx);
-                        if (partially_reduced_tmp2) {
-                            sycl::free(partially_reduced_tmp2, ctx);
-                        }
-                    });
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
+                });
             });
 
         // FIXME: do not return host-task event
