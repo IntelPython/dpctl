@@ -237,7 +237,27 @@ isnan = UnaryElementwiseFunc(
 # FIXME: implement U25
 
 # B20: ==== NOT_EQUAL   (x1, x2)
-# FIXME: implement B20
+_not_equal_docstring_ = """
+not_equal(x1, x2, order='K')
+
+Calculates inequality test results for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+Returns:
+    usm_narray:
+        an array containing the result of element-wise inequality comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+not_equal = BinaryElementwiseFunc(
+    "not_equal", ti._not_equal_result_type, ti._not_equal, _not_equal_docstring_
+)
 
 # U26: ==== POSITIVE    (x)
 # FIXME: implement U26

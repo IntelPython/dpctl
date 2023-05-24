@@ -39,6 +39,7 @@
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
+#include "kernels/elementwise_functions/not_equal.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
 
@@ -675,7 +676,39 @@ namespace impl
 // B20: ==== NOT_EQUAL   (x1, x2)
 namespace impl
 {
-// FIXME: add code for B20
+namespace not_equal_fn_ns = dpctl::tensor::kernels::not_equal;
+
+static binary_contig_impl_fn_ptr_t
+    not_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int not_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    not_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_not_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = not_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::NotEqualTypeMapFactory;
+    DispatchTableBuilder<int, NotEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(not_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::NotEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, NotEqualStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(not_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::NotEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, NotEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(not_equal_contig_dispatch_table);
+};
 } // namespace impl
 
 // U26: ==== POSITIVE    (x)
@@ -1146,7 +1179,43 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B20: ==== NOT_EQUAL   (x1, x2)
-    // FIXME:
+    {
+        impl::populate_not_equal_dispatch_tables();
+        using impl::not_equal_contig_dispatch_table;
+        using impl::not_equal_output_id_table;
+        using impl::not_equal_strided_dispatch_table;
+
+        auto not_equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                               dpctl::tensor::usm_ndarray src2,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, not_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                not_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                not_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto not_equal_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               not_equal_output_id_table);
+        };
+        m.def("_not_equal", not_equal_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_not_equal_result_type", not_equal_result_type_pyapi, "");
+    }
 
     // U26: ==== POSITIVE    (x)
     // FIXME:

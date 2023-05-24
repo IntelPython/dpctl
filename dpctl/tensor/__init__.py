@@ -100,6 +100,7 @@ from ._elementwise_funcs import (
     isfinite,
     isinf,
     isnan,
+    not_equal,
     sqrt,
 )
 
@@ -187,4 +188,5 @@ __all__ = [
     "sqrt",
     "divide",
     "equal",
+    "not_equal",
 ]
