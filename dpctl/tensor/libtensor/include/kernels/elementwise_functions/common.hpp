@@ -705,7 +705,9 @@ template <typename argTy1,
                     typename T3,
                     unsigned int vs,
                     unsigned int nv>
-          class kernel_name>
+          class kernel_name,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
 sycl::event binary_contig_impl(sycl::queue exec_q,
                                size_t nelems,
                                const char *arg1_p,
@@ -720,8 +722,6 @@ sycl::event binary_contig_impl(sycl::queue exec_q,
         cgh.depends_on(depends);
 
         size_t lws = 64;
-        constexpr unsigned int vec_sz = 4;
-        constexpr unsigned int n_vecs = 2;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
