@@ -103,27 +103,9 @@ sycl::event cos_contig_impl(sycl::queue exec_q,
                             char *res_p,
                             const std::vector<sycl::event> &depends = {})
 {
-    sycl::event cos_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        constexpr size_t lws = 64;
-        constexpr unsigned int vec_sz = 4;
-        constexpr unsigned int n_vecs = 2;
-        static_assert(lws % vec_sz == 0);
-        auto gws_range = sycl::range<1>(
-            ((nelems + n_vecs * lws * vec_sz - 1) / (lws * n_vecs * vec_sz)) *
-            lws);
-        auto lws_range = sycl::range<1>(lws);
-
-        using resTy = typename CosOutputType<argTy>::value_type;
-        const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
-        resTy *res_tp = reinterpret_cast<resTy *>(res_p);
-
-        cgh.parallel_for<class cos_contig_kernel<argTy, resTy, vec_sz, n_vecs>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            CosContigFunctor<argTy, resTy, vec_sz, n_vecs>(arg_tp, res_tp,
-                                                           nelems));
-    });
-    return cos_ev;
+    return elementwise_common::unary_contig_impl<
+        argTy, CosOutputType, CosContigFunctor, cos_contig_kernel>(
+        exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct CosContigFactory
@@ -166,26 +148,10 @@ sycl::event cos_strided_impl(sycl::queue exec_q,
                              const std::vector<sycl::event> &depends,
                              const std::vector<sycl::event> &additional_depends)
 {
-    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        cgh.depends_on(additional_depends);
-
-        using resTy = typename CosOutputType<argTy>::value_type;
-        using IndexerT =
-            typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-
-        IndexerT arg_res_indexer(nd, arg_offset, res_offset, shape_and_strides);
-
-        const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
-        resTy *res_tp = reinterpret_cast<resTy *>(res_p);
-
-        sycl::range<1> gRange{nelems};
-
-        cgh.parallel_for<cos_strided_kernel<argTy, resTy, IndexerT>>(
-            gRange, CosStridedFunctor<argTy, resTy, IndexerT>(arg_tp, res_tp,
-                                                              arg_res_indexer));
-    });
-    return comp_ev;
+    return elementwise_common::unary_strided_impl<
+        argTy, CosOutputType, CosStridedFunctor, cos_strided_kernel>(
+        exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
+        res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T> struct CosStridedFactory
