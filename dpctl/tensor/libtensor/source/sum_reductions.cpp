@@ -35,9 +35,10 @@
 #include <pybind11/stl.h>
 
 #include "kernels/reductions.hpp"
-#include "reductions.hpp"
+#include "sum_reductions.hpp"
 
 #include "simplify_iteration_space.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -135,9 +136,23 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
         reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
     }
 
-    // FIXME: check that dst and src do not overlap
-    //        check that dst is ample enough (memory span is sufficient
-    //          to accommodate all elements)
+    // check that dst and src do not overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    // destination must be ample enough to accomodate all elements
+    {
+        auto dst_offsets = dst.get_minmax_offsets();
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < dst_nelems) {
+            throw py::value_error(
+                "Destination array can not accomodate all the "
+                "elements of source array.");
+        }
+    }
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -297,38 +312,33 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
     }
 
     std::vector<sycl::event> host_task_events{};
-    const auto &iter_src_dst_metadata_packing_triple_ =
-        dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, simplified_iteration_shape,
-            simplified_iteration_src_strides, simplified_iteration_dst_strides);
-    py::ssize_t *iter_shape_and_strides =
-        std::get<0>(iter_src_dst_metadata_packing_triple_);
-    if (iter_shape_and_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate memory on device");
-    }
-    const auto &copy_iter_metadata_ev =
-        std::get<2>(iter_src_dst_metadata_packing_triple_);
 
-    const auto &reduction_metadata_packing_triple_ =
-        dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
-            exec_q, host_task_events, simplified_reduction_shape,
-            simplified_reduction_src_strides);
-    py::ssize_t *reduction_shape_stride =
-        std::get<0>(reduction_metadata_packing_triple_);
-    if (reduction_shape_stride == nullptr) {
-        sycl::event::wait(host_task_events);
-        sycl::free(iter_shape_and_strides, exec_q);
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+
+    const auto &arrays_metainfo_packing_triple_ =
+        device_allocate_and_pack<py::ssize_t>(
+            exec_q, host_task_events,
+            // iteration metadata
+            simplified_iteration_shape, simplified_iteration_src_strides,
+            simplified_iteration_dst_strides,
+            // reduction metadata
+            simplified_reduction_shape, simplified_reduction_src_strides);
+    py::ssize_t *temp_allocation_ptr =
+        std::get<0>(arrays_metainfo_packing_triple_);
+    if (temp_allocation_ptr == nullptr) {
         throw std::runtime_error("Unable to allocate memory on device");
     }
-    const auto &copy_reduction_metadata_ev =
-        std::get<2>(reduction_metadata_packing_triple_);
+    const auto &copy_metadata_ev = std::get<2>(arrays_metainfo_packing_triple_);
+
+    py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
+    py::ssize_t *reduction_shape_stride =
+        temp_allocation_ptr + 3 * simplified_iteration_shape.size();
 
     std::vector<sycl::event> all_deps;
-    all_deps.reserve(depends.size() + 2);
+    all_deps.reserve(depends.size() + 1);
     all_deps.resize(depends.size());
     std::copy(depends.begin(), depends.end(), all_deps.begin());
-    all_deps.push_back(copy_iter_metadata_ev);
-    all_deps.push_back(copy_reduction_metadata_ev);
+    all_deps.push_back(copy_metadata_ev);
 
     auto comp_ev = fn(exec_q, dst_nelems, reduction_nelems, src.get_data(),
                       dst.get_data(), iteration_nd, iter_shape_and_strides,
@@ -339,9 +349,8 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
         auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, iter_shape_and_strides, reduction_shape_stride] {
-            sycl::free(iter_shape_and_strides, ctx);
-            sycl::free(reduction_shape_stride, ctx);
+        cgh.host_task([ctx, temp_allocation_ptr] {
+            sycl::free(temp_allocation_ptr, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
