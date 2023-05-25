@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev2+9.gcf431d7b3 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.3dev3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev2+9.gcf431d7b3
+                0.14.3dev3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -370,6 +370,64 @@ options are set, a dictionary of Numpy’s print options
 will be used to initialize dpctl’s print options.
 Default: “False”</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.sum">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.sum" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the sum of the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>]</em><em>]</em>) – axis or axes along which sums must be computed. If a tuple
+of unique integers, sums are computed over multiple axes.
+If <cite>None</cite>, the sum if computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real-valued floating-point data type,
+the returned array will have the default real-valued
+floating-point data type for the device where input
+array <cite>x</cite> is allocated.</p></li>
+<li><p>If x` has signed integral data type, the returned array
+will have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has unsigned integral data type, the returned array
+will have the default unsigned integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a complex-valued floating-point data typee,
+the returned array will have the default complex-valued
+floating-pointer data type for the device where input
+array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean data type, the returned array will
+have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the sum. Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the sums. If the sum was computed over the
+entire array, a zero-dimensional array is returned. The returned
+array has the data type as described in the <cite>dtype</cite> parameter
+description above.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
