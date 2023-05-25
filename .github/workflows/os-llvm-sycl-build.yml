@@ -149,6 +149,8 @@ jobs:
 
       - name: Run dpctl/tests
         shell: bash -l {0}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: |
           source set_allvars.sh
           # skip test due to https://github.com/intel/llvm/issues/9264

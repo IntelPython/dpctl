@@ -44,7 +44,7 @@ jobs:
         run: conda install conda-build
       - name: Build conda package
         run: |
-          CHANNELS="-c intel -c main --override-channels"
+          CHANNELS="-c dppy/label/tools -c intel -c main --override-channels"
           VERSIONS="--python ${{ matrix.python }}"
           TEST="--no-test"
           conda build \
@@ -161,13 +161,22 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          python -c "import dpctl; dpctl.lsplatform()"
-      - name: Run tests
+          python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+      - name: Install gdb
+        run: |
+          sudo apt-get install -y gdb
+      - name: Run test_elementwise under gdb
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          # clinfo -l
-          python -m pytest --pyargs $MODULE_NAME
+          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.test_tensor_elementwise::test_cos_order -vv || true
+      - name: Run tests
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
+        run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate test_dpctl
+          python -m pytest -v --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
@@ -283,6 +292,7 @@ jobs:
         shell: cmd /C CALL {0}
         env:
           DPCTL_VERBOSITY: error
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: >-
           conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
@@ -569,6 +579,8 @@ jobs:
       - name: Run array API conformance tests
         id: run-array-api-tests
         shell: bash -l {0}
+        env:
+          SYCL_QUEUE_THREAD_POOL_SIZE: 6
         run: |
           FILE=/home/runner/work/.report.json
           . $CONDA/etc/profile.d/conda.sh
@@ -595,8 +607,8 @@ jobs:
             echo "$MESSAGE" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           else
-            MESSAGE="Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
-            echo "MESSAGE=$MESSAGE" >> $GITHUB_ENV
+            echo "Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
+            exit 1
           fi
       - name: Post result to PR
         uses: mshick/add-pr-comment@v1

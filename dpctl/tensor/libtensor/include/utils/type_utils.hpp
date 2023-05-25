@@ -26,6 +26,7 @@
 #include <CL/sycl.hpp>
 #include <complex>
 #include <exception>
+#include <utility>
 
 namespace dpctl
 {
@@ -98,6 +99,21 @@ template <typename T> void validate_type_for_device(const sycl::device &d)
 template <typename T> void validate_type_for_device(const sycl::queue &q)
 {
     validate_type_for_device<T>(q.get_device());
+}
+
+template <typename Op, typename Vec, std::size_t... I>
+auto vec_cast_impl(const Vec &v, std::index_sequence<I...>)
+{
+    return Op{v[I]...};
+}
+
+template <typename dstT,
+          typename srcT,
+          std::size_t N,
+          typename Indices = std::make_index_sequence<N>>
+auto vec_cast(const sycl::vec<srcT, N> &s)
+{
+    return vec_cast_impl<sycl::vec<dstT, N>, sycl::vec<srcT, N>>(s, Indices{});
 }
 
 } // namespace type_utils
