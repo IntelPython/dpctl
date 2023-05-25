@@ -113,7 +113,29 @@ add = BinaryElementwiseFunc(
 # FIXME: implement U09
 
 # U10: ==== CONJ          (x)
-# FIXME: implement U10
+_conj_docstring = """
+conj(x, out=None, order='K')
+
+Computes conjugate of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise conjugate values. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+conj = UnaryElementwiseFunc(
+    "conj", ti._conj_result_type, ti._conj, _conj_docstring
+)
 
 # U11: ==== COS           (x)
 _cos_docstring = """
@@ -257,7 +279,30 @@ expm1 = UnaryElementwiseFunc(
 # FIXME: implement B12
 
 # U16: ==== IMAG        (x)
-# FIXME: implement U16
+_imag_docstring = """
+imag(x, out=None, order='K')
+
+Computes imaginary part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise imaginary component of input.
+        The data type of the returned array is determined
+        by the Type Promotion Rules.
+"""
+
+imag = UnaryElementwiseFunc(
+    "imag", ti._imag_result_type, ti._imag, _imag_docstring
+)
 
 # U17: ==== ISFINITE    (x)
 _isfinite_docstring_ = """
@@ -443,8 +488,55 @@ multiply = BinaryElementwiseFunc(
 # B21: ==== POW         (x1, x2)
 # FIXME: implement B21
 
+# U??: ==== PROJ        (x)
+_proj_docstring = """
+proj(x, out=None, order='K')
+
+Computes projection of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise projection. The data
+        type of the returned array is determined by the Type Promotion Rules.
+"""
+
+proj = UnaryElementwiseFunc(
+    "proj", ti._proj_result_type, ti._proj, _proj_docstring
+)
+
 # U27: ==== REAL        (x)
-# FIXME: implement U27
+_real_docstring = """
+real(x, out=None, order='K')
+
+Computes real part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise real component of input. The data
+        type of the returned array is determined by the Type Promotion Rules.
+"""
+
+real = UnaryElementwiseFunc(
+    "real", ti._real_result_type, ti._real, _real_docstring
+)
 
 # B22: ==== REMAINDER   (x1, x2)
 # FIXME: implement B22
