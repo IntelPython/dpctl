@@ -18,5 +18,6 @@ include dpctl/program/_program_api.h
 include dpctl/tensor/_usmarray.h
 include dpctl/tensor/_usmarray_api.h
 recursive-include dpctl/tensor/include *
+recursive-include dpctl/tensor/libtensor/include *
 include dpctl/tests/input_files/*
 include dpctl/tests/*.pyx
