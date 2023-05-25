@@ -104,6 +104,7 @@ from ._elementwise_funcs import (
     sqrt,
     subtract,
 )
+from ._reduction import sum
 
 __all__ = [
     "Device",
@@ -191,4 +192,5 @@ __all__ = [
     "multiply",
     "subtract",
     "equal",
+    "sum",
 ]
