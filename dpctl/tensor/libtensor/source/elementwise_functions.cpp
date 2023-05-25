@@ -39,8 +39,10 @@
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
+#include "kernels/elementwise_functions/multiply.hpp"
 #include "kernels/elementwise_functions/not_equal.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
+#include "kernels/elementwise_functions/subtract.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
 
 namespace dpctl
@@ -664,7 +666,71 @@ namespace impl
 // B19: ==== MULTIPLY    (x1, x2)
 namespace impl
 {
-// FIXME: add code for B19
+
+namespace multiply_fn_ns = dpctl::tensor::kernels::multiply;
+
+static binary_contig_impl_fn_ptr_t
+    multiply_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int multiply_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    multiply_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+// mul(matrix, row)
+static binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
+    multiply_contig_matrix_contig_row_broadcast_dispatch_table
+        [td_ns::num_types][td_ns::num_types];
+
+// mul(row, matrix)
+static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
+    multiply_contig_row_contig_matrix_broadcast_dispatch_table
+        [td_ns::num_types][td_ns::num_types];
+
+void populate_multiply_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = multiply_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::MultiplyTypeMapFactory;
+    DispatchTableBuilder<int, MultiplyTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(multiply_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::MultiplyStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, MultiplyStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(multiply_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::MultiplyContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, MultiplyContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(multiply_contig_dispatch_table);
+
+    // function pointers for operation on contiguous matrix, contiguous row
+    // with contiguous matrix output
+    using fn_ns::MultiplyContigMatrixContigRowBroadcastFactory;
+    DispatchTableBuilder<
+        binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
+        MultiplyContigMatrixContigRowBroadcastFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(
+        multiply_contig_matrix_contig_row_broadcast_dispatch_table);
+
+    // function pointers for operation on contiguous row, contiguous matrix
+    // with contiguous matrix output
+    using fn_ns::MultiplyContigRowContigMatrixBroadcastFactory;
+    DispatchTableBuilder<
+        binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
+        MultiplyContigRowContigMatrixBroadcastFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(
+        multiply_contig_row_contig_matrix_broadcast_dispatch_table);
+};
+
 } // namespace impl
 
 // U25: ==== NEGATIVE    (x)
@@ -803,7 +869,70 @@ void populate_sqrt_dispatch_vectors(void)
 // B23: ==== SUBTRACT    (x1, x2)
 namespace impl
 {
-// FIXME: add code for B23
+namespace subtract_fn_ns = dpctl::tensor::kernels::subtract;
+
+static binary_contig_impl_fn_ptr_t
+    subtract_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int subtract_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    subtract_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+// sub(matrix, row)
+static binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
+    subtract_contig_matrix_contig_row_broadcast_dispatch_table
+        [td_ns::num_types][td_ns::num_types];
+
+// sub(row, matrix)
+static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
+    subtract_contig_row_contig_matrix_broadcast_dispatch_table
+        [td_ns::num_types][td_ns::num_types];
+
+void populate_subtract_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = subtract_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::SubtractTypeMapFactory;
+    DispatchTableBuilder<int, SubtractTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(subtract_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::SubtractStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, SubtractStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(subtract_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::SubtractContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, SubtractContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(subtract_contig_dispatch_table);
+
+    // function pointers for operation on contiguous matrix, contiguous row
+    // with contiguous matrix output
+    using fn_ns::SubtractContigMatrixContigRowBroadcastFactory;
+    DispatchTableBuilder<
+        binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t,
+        SubtractContigMatrixContigRowBroadcastFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(
+        subtract_contig_matrix_contig_row_broadcast_dispatch_table);
+
+    // function pointers for operation on contiguous row, contiguous matrix
+    // with contiguous matrix output
+    using fn_ns::SubtractContigRowContigMatrixBroadcastFactory;
+    DispatchTableBuilder<
+        binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t,
+        SubtractContigRowContigMatrixBroadcastFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(
+        subtract_contig_row_contig_matrix_broadcast_dispatch_table);
+};
+
 } // namespace impl
 
 // U34: ==== TAN         (x)
@@ -1173,7 +1302,44 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B19: ==== MULTIPLY    (x1, x2)
-    // FIXME:
+    {
+        impl::populate_multiply_dispatch_tables();
+        using impl::multiply_contig_dispatch_table;
+        using impl::multiply_contig_matrix_contig_row_broadcast_dispatch_table;
+        using impl::multiply_contig_row_contig_matrix_broadcast_dispatch_table;
+        using impl::multiply_output_id_table;
+        using impl::multiply_strided_dispatch_table;
+
+        auto multiply_pyapi =
+            [&](dpctl::tensor::usm_ndarray src1,
+                dpctl::tensor::usm_ndarray src2, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_ufunc(
+                    src1, src2, dst, exec_q, depends, multiply_output_id_table,
+                    // function pointers to handle operation on contiguous
+                    // arrays (pointers may be nullptr)
+                    multiply_contig_dispatch_table,
+                    // function pointers to handle operation on strided arrays
+                    // (most general case)
+                    multiply_strided_dispatch_table,
+                    // function pointers to handle operation of c-contig matrix
+                    // and c-contig row with broadcasting (may be nullptr)
+                    multiply_contig_matrix_contig_row_broadcast_dispatch_table,
+                    // function pointers to handle operation of c-contig matrix
+                    // and c-contig row with broadcasting (may be nullptr)
+                    multiply_contig_row_contig_matrix_broadcast_dispatch_table);
+            };
+        auto multiply_result_type_pyapi = [&](py::dtype dtype1,
+                                              py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               multiply_output_id_table);
+        };
+        m.def("_multiply", multiply_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_multiply_result_type", multiply_result_type_pyapi, "");
+    }
 
     // U25: ==== NEGATIVE    (x)
     // FIXME:
@@ -1269,7 +1435,44 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B23: ==== SUBTRACT    (x1, x2)
-    // FIXME:
+    {
+        impl::populate_subtract_dispatch_tables();
+        using impl::subtract_contig_dispatch_table;
+        using impl::subtract_contig_matrix_contig_row_broadcast_dispatch_table;
+        using impl::subtract_contig_row_contig_matrix_broadcast_dispatch_table;
+        using impl::subtract_output_id_table;
+        using impl::subtract_strided_dispatch_table;
+
+        auto subtract_pyapi =
+            [&](dpctl::tensor::usm_ndarray src1,
+                dpctl::tensor::usm_ndarray src2, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_ufunc(
+                    src1, src2, dst, exec_q, depends, subtract_output_id_table,
+                    // function pointers to handle operation on contiguous
+                    // arrays (pointers may be nullptr)
+                    subtract_contig_dispatch_table,
+                    // function pointers to handle operation on strided arrays
+                    // (most general case)
+                    subtract_strided_dispatch_table,
+                    // function pointers to handle operation of c-contig matrix
+                    // and c-contig row with broadcasting (may be nullptr)
+                    subtract_contig_matrix_contig_row_broadcast_dispatch_table,
+                    // function pointers to handle operation of c-contig matrix
+                    // and c-contig row with broadcasting (may be nullptr)
+                    subtract_contig_row_contig_matrix_broadcast_dispatch_table);
+            };
+        auto subtract_result_type_pyapi = [&](py::dtype dtype1,
+                                              py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               subtract_output_id_table);
+        };
+        m.def("_subtract", subtract_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_subtract_result_type", subtract_result_type_pyapi, "");
+    }
 
     // U34: ==== TAN         (x)
     // FIXME:

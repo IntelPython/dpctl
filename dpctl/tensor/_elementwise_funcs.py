@@ -34,7 +34,7 @@ abs = UnaryElementwiseFunc("abs", ti._abs_result_type, ti._abs, _abs_docstring_)
 # B01: ===== ADD   (x1, x2)
 
 _add_docstring_ = """
-add(x1, x2, order='K')
+add(x1, x2, out=None, order='K')
 
 Calculates the sum for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
@@ -94,7 +94,7 @@ add = BinaryElementwiseFunc(
 
 # U11: ==== COS           (x)
 _cos_docstring = """
-cos(x, order='K')
+cos(x, out=None, order='K')
 
 Computes cosine for each element `x_i` for input array `x`.
 """
@@ -106,7 +106,7 @@ cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
 
 # B08: ==== DIVIDE        (x1, x2)
 _divide_docstring_ = """
-divide(x1, x2, order='K')
+divide(x1, x2, out=None, order='K')
 
 Calculates the ratio for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
@@ -128,7 +128,7 @@ divide = BinaryElementwiseFunc(
 
 # B09: ==== EQUAL         (x1, x2)
 _equal_docstring_ = """
-equal(x1, x2, order='K')
+equal(x1, x2, out=None, order='K')
 
 Calculates equality test results for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
@@ -172,6 +172,8 @@ equal = BinaryElementwiseFunc(
 
 # U17: ==== ISFINITE    (x)
 _isfinite_docstring_ = """
+isfinite(x, out=None, order='K')
+
 Computes if every element of input array is a finite number.
 """
 
@@ -181,6 +183,8 @@ isfinite = UnaryElementwiseFunc(
 
 # U18: ==== ISINF       (x)
 _isinf_docstring_ = """
+isinf(x, out=None, order='K')
+
 Computes if every element of input array is an infinity.
 """
 
@@ -190,6 +194,8 @@ isinf = UnaryElementwiseFunc(
 
 # U19: ==== ISNAN       (x)
 _isnan_docstring_ = """
+isnan(x, out=None, order='K')
+
 Computes if every element of input array is a NaN.
 """
 
@@ -231,7 +237,25 @@ isnan = UnaryElementwiseFunc(
 # FIXME: implement B18
 
 # B19: ==== MULTIPLY    (x1, x2)
-# FIXME: implement B19
+_multiply_docstring_ = """
+multiply(x1, x2, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+Returns:
+    usm_narray:
+        an array containing the element-wise products. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+multiply = BinaryElementwiseFunc(
+    "multiply", ti._multiply_result_type, ti._multiply, _multiply_docstring_
+)
 
 # U25: ==== NEGATIVE    (x)
 # FIXME: implement U25
@@ -288,6 +312,8 @@ not_equal = BinaryElementwiseFunc(
 
 # U33: ==== SQRT        (x)
 _sqrt_docstring_ = """
+sqrt(x, out=None, order='K')
+
 Computes sqrt for each element `x_i` for input array `x`.
 """
 
@@ -296,7 +322,26 @@ sqrt = UnaryElementwiseFunc(
 )
 
 # B23: ==== SUBTRACT    (x1, x2)
-# FIXME: implement B23
+_subtract_docstring_ = """
+subtract(x1, x2, out=None, order='K')
+
+Calculates the difference bewteen each element `x1_i` of the input
+array `x1` and the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+Returns:
+    usm_narray:
+        an array containing the element-wise differences. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+subtract = BinaryElementwiseFunc(
+    "subtract", ti._subtract_result_type, ti._subtract, _subtract_docstring_
+)
+
 
 # U34: ==== TAN         (x)
 # FIXME: implement U34

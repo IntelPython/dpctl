@@ -1,4 +1,4 @@
-//=== add.hpp -   Binary function ADD                    ------  *-C++-*--/===//
+//=== subtract.hpp -   Binary function SUBTRACT         ------  *-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of ADD(x1, x2)
+/// This file defines kernels for elementwise evaluation of DIVIDE(x1, x2)
 /// function.
 //===---------------------------------------------------------------------===//
 
@@ -42,14 +42,14 @@ namespace tensor
 {
 namespace kernels
 {
-namespace add
+namespace subtract
 {
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
-template <typename argT1, typename argT2, typename resT> struct AddFunctor
+template <typename argT1, typename argT2, typename resT> struct SubtractFunctor
 {
 
     using supports_sg_loadstore = std::negation<
@@ -59,14 +59,14 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        return in1 + in2;
+        return in1 - in2;
     }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
-        auto tmp = in1 + in2;
+        auto tmp = in1 - in2;
         if constexpr (std::is_same_v<resT,
                                      typename decltype(tmp)::element_type>) {
             return tmp;
@@ -85,27 +85,26 @@ template <typename argT1,
           typename resT,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-using AddContigFunctor =
+using SubtractContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
                                             argT2,
                                             resT,
-                                            AddFunctor<argT1, argT2, resT>,
+                                            SubtractFunctor<argT1, argT2, resT>,
                                             vec_sz,
                                             n_vecs>;
 
 template <typename argT1, typename argT2, typename resT, typename IndexerT>
-using AddStridedFunctor =
-    elementwise_common::BinaryStridedFunctor<argT1,
-                                             argT2,
-                                             resT,
-                                             IndexerT,
-                                             AddFunctor<argT1, argT2, resT>>;
+using SubtractStridedFunctor = elementwise_common::BinaryStridedFunctor<
+    argT1,
+    argT2,
+    resT,
+    IndexerT,
+    SubtractFunctor<argT1, argT2, resT>>;
 
-template <typename T1, typename T2> struct AddOutputType
+template <typename T1, typename T2> struct SubtractOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
                                         T2,
@@ -171,105 +170,120 @@ template <typename argT1,
           typename resT,
           unsigned int vec_sz,
           unsigned int n_vecs>
-class add_contig_kernel;
+class subtract_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event add_contig_impl(sycl::queue exec_q,
-                            size_t nelems,
-                            const char *arg1_p,
-                            py::ssize_t arg1_offset,
-                            const char *arg2_p,
-                            py::ssize_t arg2_offset,
-                            char *res_p,
-                            py::ssize_t res_offset,
-                            const std::vector<sycl::event> &depends = {})
+sycl::event subtract_contig_impl(sycl::queue exec_q,
+                                 size_t nelems,
+                                 const char *arg1_p,
+                                 py::ssize_t arg1_offset,
+                                 const char *arg2_p,
+                                 py::ssize_t arg2_offset,
+                                 char *res_p,
+                                 py::ssize_t res_offset,
+                                 const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_impl<
-        argTy1, argTy2, AddOutputType, AddContigFunctor, add_contig_kernel>(
-        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
-        res_offset, depends);
+        argTy1, argTy2, SubtractOutputType, SubtractContigFunctor,
+        subtract_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
+                                arg2_offset, res_p, res_offset, depends);
 }
 
-template <typename fnT, typename T1, typename T2> struct AddContigFactory
+template <typename fnT, typename T1, typename T2> struct SubtractContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>) {
+        if constexpr (std::is_same_v<
+                          typename SubtractOutputType<T1, T2>::value_type,
+                          void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = add_contig_impl<T1, T2>;
+            fnT fn = subtract_contig_impl<T1, T2>;
             return fn;
         }
     }
 };
 
-template <typename fnT, typename T1, typename T2> struct AddTypeMapFactory
+template <typename fnT, typename T1, typename T2> struct SubtractTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::add(T1 x, T2 y) */
+    /*! @brief get typeid for output type of divide(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename AddOutputType<T1, T2>::value_type;
-        ;
+        using rT = typename SubtractOutputType<T1, T2>::value_type;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class add_strided_strided_kernel;
+class subtract_strided_strided_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event add_strided_impl(sycl::queue exec_q,
-                             size_t nelems,
-                             int nd,
-                             const py::ssize_t *shape_and_strides,
-                             const char *arg1_p,
-                             py::ssize_t arg1_offset,
-                             const char *arg2_p,
-                             py::ssize_t arg2_offset,
-                             char *res_p,
-                             py::ssize_t res_offset,
-                             const std::vector<sycl::event> &depends,
-                             const std::vector<sycl::event> &additional_depends)
+sycl::event
+subtract_strided_impl(sycl::queue exec_q,
+                      size_t nelems,
+                      int nd,
+                      const py::ssize_t *shape_and_strides,
+                      const char *arg1_p,
+                      py::ssize_t arg1_offset,
+                      const char *arg2_p,
+                      py::ssize_t arg2_offset,
+                      char *res_p,
+                      py::ssize_t res_offset,
+                      const std::vector<sycl::event> &depends,
+                      const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
-        argTy1, argTy2, AddOutputType, AddStridedFunctor,
-        add_strided_strided_kernel>(
+        argTy1, argTy2, SubtractOutputType, SubtractStridedFunctor,
+        subtract_strided_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
         arg2_offset, res_p, res_offset, depends, additional_depends);
 }
 
-template <typename fnT, typename T1, typename T2> struct AddStridedFactory
+template <typename fnT, typename T1, typename T2> struct SubtractStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>) {
+        if constexpr (std::is_same_v<
+                          typename SubtractOutputType<T1, T2>::value_type,
+                          void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = add_strided_impl<T1, T2>;
+            fnT fn = subtract_strided_impl<T1, T2>;
             return fn;
         }
     }
 };
 
 template <typename argT1, typename argT2, typename resT>
-class add_matrix_row_broadcast_sg_krn;
-
-template <typename argT1, typename argT2, typename resT>
-using AddContigMatrixContigRowBroadcastingFunctor =
+using SubtractContigMatrixContigRowBroadcastingFunctor =
     elementwise_common::BinaryContigMatrixContigRowBroadcastingFunctor<
         argT1,
         argT2,
         resT,
-        AddFunctor<argT1, argT2, resT>>;
+        SubtractFunctor<argT1, argT2, resT>>;
 
 template <typename argT1, typename argT2, typename resT>
-sycl::event add_contig_matrix_contig_row_broadcast_impl(
+using SubtractContigRowContigMatrixBroadcastingFunctor =
+    elementwise_common::BinaryContigRowContigMatrixBroadcastingFunctor<
+        argT1,
+        argT2,
+        resT,
+        SubtractFunctor<argT1, argT2, resT>>;
+
+template <typename argT1, typename argT2, typename resT>
+class subtract_matrix_row_broadcast_sg_krn;
+
+template <typename argT1, typename argT2, typename resT>
+class subtract_row_matrix_broadcast_sg_krn;
+
+template <typename argT1, typename argT2, typename resT>
+sycl::event subtract_contig_matrix_contig_row_broadcast_impl(
     sycl::queue exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
@@ -279,28 +293,31 @@ sycl::event add_contig_matrix_contig_row_broadcast_impl(
     const char *vec_p, // typeless pointer to (n1,) contiguous row
     py::ssize_t vec_offset,
     char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
-                 //    res[i,j] = mat[i,j] + vec[j]
+                 //    res[i,j] = mat[i,j] - vec[j]
     py::ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_matrix_contig_row_broadcast_impl<
-        argT1, argT2, resT, AddContigMatrixContigRowBroadcastingFunctor,
-        add_matrix_row_broadcast_sg_krn>(exec_q, host_tasks, n0, n1, mat_p,
-                                         mat_offset, vec_p, vec_offset, res_p,
-                                         res_offset, depends);
+        argT1, argT2, resT, SubtractContigMatrixContigRowBroadcastingFunctor,
+        subtract_matrix_row_broadcast_sg_krn>(exec_q, host_tasks, n0, n1, mat_p,
+                                              mat_offset, vec_p, vec_offset,
+                                              res_p, res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2>
-struct AddContigMatrixContigRowBroadcastFactory
+struct SubtractContigMatrixContigRowBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename AddOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<resT, void>) {
+        if constexpr (std::is_same_v<
+                          typename SubtractOutputType<T1, T2>::value_type,
+                          void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
         else {
+            using resT = typename SubtractOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
                           dpctl::tensor::type_utils::is_complex<resT>::value)
@@ -310,7 +327,8 @@ struct AddContigMatrixContigRowBroadcastFactory
             }
             else {
                 fnT fn =
-                    add_contig_matrix_contig_row_broadcast_impl<T1, T2, resT>;
+                    subtract_contig_matrix_contig_row_broadcast_impl<T1, T2,
+                                                                     resT>;
                 return fn;
             }
         }
@@ -318,7 +336,7 @@ struct AddContigMatrixContigRowBroadcastFactory
 };
 
 template <typename argT1, typename argT2, typename resT>
-sycl::event add_contig_row_contig_matrix_broadcast_impl(
+sycl::event subtract_contig_row_contig_matrix_broadcast_impl(
     sycl::queue exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
@@ -328,21 +346,23 @@ sycl::event add_contig_row_contig_matrix_broadcast_impl(
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
     py::ssize_t mat_offset,
     char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
-                 //    res[i,j] = mat[i,j] + vec[j]
+                 //    res[i,j] = op(vec[j], mat[i,j])
     py::ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
-    return add_contig_matrix_contig_row_broadcast_impl<argT2, argT1, resT>(
-        exec_q, host_tasks, n0, n1, mat_p, mat_offset, vec_p, vec_offset, res_p,
-        res_offset, depends);
-};
+    return elementwise_common::binary_contig_row_contig_matrix_broadcast_impl<
+        argT1, argT2, resT, SubtractContigRowContigMatrixBroadcastingFunctor,
+        subtract_row_matrix_broadcast_sg_krn>(exec_q, host_tasks, n0, n1, vec_p,
+                                              vec_offset, mat_p, mat_offset,
+                                              res_p, res_offset, depends);
+}
 
 template <typename fnT, typename T1, typename T2>
-struct AddContigRowContigMatrixBroadcastFactory
+struct SubtractContigRowContigMatrixBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename AddOutputType<T1, T2>::value_type;
+        using resT = typename SubtractOutputType<T1, T2>::value_type;
         if constexpr (std::is_same_v<resT, void>) {
             fnT fn = nullptr;
             return fn;
@@ -357,14 +377,15 @@ struct AddContigRowContigMatrixBroadcastFactory
             }
             else {
                 fnT fn =
-                    add_contig_row_contig_matrix_broadcast_impl<T1, T2, resT>;
+                    subtract_contig_row_contig_matrix_broadcast_impl<T1, T2,
+                                                                     resT>;
                 return fn;
             }
         }
     }
 };
 
-} // namespace add
+} // namespace subtract
 } // namespace kernels
 } // namespace tensor
 } // namespace dpctl
