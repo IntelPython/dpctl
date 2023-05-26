@@ -153,7 +153,26 @@ equal = BinaryElementwiseFunc(
 # FIXME: implement U13
 
 # U14: ==== EXPM1         (x)
-# FIXME: implement U14
+_expm1_docstring = """
+expm1(x, out=None, order='K')
+Computes an approximation of exp(x)-1 element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise exp(x)-1 values.
+"""
+
+expm1 = UnaryElementwiseFunc(
+    "expm1", ti._expm1_result_type, ti._expm1, _expm1_docstring
+)
 
 # U15: ==== FLOOR         (x)
 # FIXME: implement U15
@@ -210,10 +229,46 @@ isnan = UnaryElementwiseFunc(
 # FIXME: implement B14
 
 # U20: ==== LOG         (x)
-# FIXME: implement U20
+_log_docstring = """
+log(x, out=None, order='K')
+Computes the natural logarithm element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise natural logarithm values.
+"""
+
+log = UnaryElementwiseFunc("log", ti._log_result_type, ti._log, _log_docstring)
 
 # U21: ==== LOG1P       (x)
-# FIXME: implement U21
+_log1p_docstring = """
+log1p(x, out=None, order='K')
+Computes an approximation of log(1+x) element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise log(1+x) values.
+"""
+
+log1p = UnaryElementwiseFunc(
+    "log1p", ti._log1p_result_type, ti._log1p, _log1p_docstring
+)
 
 # U22: ==== LOG2        (x)
 # FIXME: implement U22
