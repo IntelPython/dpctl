@@ -82,15 +82,15 @@ template <typename argT, typename resT> struct Log1pFunctor
             // imaginary part of result
             const realT res_im = std::atan2(y, x + 1);
 
-            if (std::max(std::abs(x), std::abs(y)) < realT(.1)) {
+            if (std::max(std::abs(x), std::abs(y)) < realT{.1}) {
                 const realT v = x * (2 + x) + y * y;
-                return {std::log1p(v) / 2, res_im};
+                return resT{std::log1p(v) / 2, res_im};
             }
             else {
                 // when not close to zero,
                 // prevent overflow
                 const realT m = std::hypot(x + 1, y);
-                return {std::log(m), res_im};
+                return resT{std::log(m), res_im};
             }
         }
         else {
