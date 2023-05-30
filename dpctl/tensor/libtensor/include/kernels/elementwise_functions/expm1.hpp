@@ -70,18 +70,16 @@ template <typename argT, typename resT> struct Expm1Functor
             using realT = typename argT::value_type;
             // expm1(x + I*y) = expm1(x)*cos(y) - 2*sin(y / 2)^2 +
             // I*exp(x)*sin(y)
-            auto x = std::real(in);
-            const realT expm1X_val = std::expm1(x);
-            const realT expX_val = std::exp(x);
+            const realT x = std::real(in);
+            const realT y = std::imag(in);
 
-            x = std::imag(in);
             realT cosY_val;
-            const realT sinY_val = sycl::sincos(x, &cosY_val);
-            const realT sinhalfY_val = std::sin(x / realT{2});
+            const realT sinY_val = sycl::sincos(y, &cosY_val);
+            const realT sinhalfY_val = std::sin(y / 2);
 
             const realT res_re =
-                expm1X_val * cosY_val - realT{2} * sinhalfY_val * sinhalfY_val;
-            const realT res_im = expX_val * sinY_val;
+                std::expm1(x) * cosY_val - 2 * sinhalfY_val * sinhalfY_val;
+            const realT res_im = std::exp(x) * sinY_val;
             return resT{res_re, res_im};
         }
         else {
