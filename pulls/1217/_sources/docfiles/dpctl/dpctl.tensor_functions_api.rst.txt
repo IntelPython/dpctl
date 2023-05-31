@@ -21,6 +21,7 @@ Other Functions
 .. autofunction:: print_options
 .. autofunction:: put
 .. autofunction:: set_print_options
+.. autofunction:: sum
 .. autofunction:: take
 .. autofunction:: usm_ndarray_repr
 .. autofunction:: usm_ndarray_str
