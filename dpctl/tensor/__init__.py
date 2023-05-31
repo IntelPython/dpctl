@@ -97,6 +97,7 @@ from ._elementwise_funcs import (
     cos,
     divide,
     equal,
+    floor_divide,
     isfinite,
     isinf,
     isnan,
@@ -191,4 +192,5 @@ __all__ = [
     "multiply",
     "subtract",
     "equal",
+    "floor_divide",
 ]
