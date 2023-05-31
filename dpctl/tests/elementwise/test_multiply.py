@@ -152,3 +152,18 @@ def test_multiply_python_scalar(arr_dt):
         assert isinstance(R, dpt.usm_ndarray)
         R = dpt.multiply(sc, X)
         assert isinstance(R, dpt.usm_ndarray)
+
+
+def test_multiply_python_scalar_gh1219():
+    q = get_queue_or_skip()
+
+    X = dpt.ones(4, dtype="f4", sycl_queue=q)
+
+    r = dpt.multiply(X, 2j)
+    expected = dpt.multiply(X, dpt.asarray(2j, sycl_queue=q))
+    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+
+    # symmetric case
+    r = dpt.multiply(2j, X)
+    expected = dpt.multiply(dpt.asarray(2j, sycl_queue=q), X)
+    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
