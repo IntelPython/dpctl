@@ -20,7 +20,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of CONJ(x) function.
+/// This file defines kernels for elementwise evaluation of PROJ(x) function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -29,6 +29,7 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -62,12 +63,19 @@ template <typename argT, typename resT> struct ProjFunctor
     // is function defined for sycl::vec
     using supports_vec = typename std::false_type;
     // do both argTy and resTy support sugroup store/load operation
-    using supports_sg_loadstore = typename std::negation<
-        std::disjunction<is_complex<resT>, is_complex<argT>>>;
+    using supports_sg_loadstore = typename std::false_type;
 
     resT operator()(const argT &in)
     {
-        return std::proj(in);
+        using realT = typename argT::value_type;
+        const realT x = std::real(in);
+        const realT y = std::imag(in);
+
+        if (std::isinf(x) || std::isinf(y)) {
+            const realT res_im = std::copysign(0.0, y);
+            return resT{std::numeric_limits<realT>::infinity(), res_im};
+        }
+        return in;
     }
 };
 
@@ -86,8 +94,6 @@ template <typename T> struct ProjOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::TypeMapResultEntry<T, float, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, double, std::complex<double>>,
         td_ns::TypeMapResultEntry<T, std::complex<float>>,
         td_ns::TypeMapResultEntry<T, std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
