@@ -50,6 +50,7 @@ namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::vec_cast;
 
 // TODO: evaluate precision against alternatives
 template <typename argT, typename resT> struct Log1pFunctor
@@ -60,7 +61,8 @@ template <typename argT, typename resT> struct Log1pFunctor
     // constant value, if constant
     // constexpr resT constant_value = resT{};
     // is function defined for sycl::vec
-    using supports_vec = typename std::false_type;
+    using supports_vec = typename std::negation<
+        std::disjunction<is_complex<resT>, is_complex<argT>>>;
     // do both argTy and resTy support sugroup store/load operation
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
@@ -97,6 +99,20 @@ template <typename argT, typename resT> struct Log1pFunctor
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
             return std::log1p(in);
+        }
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    {
+        auto const &res_vec = sycl::log1p(in);
+        using deducedT = typename std::remove_cv_t<
+            std::remove_reference_t<decltype(res_vec)>>::element_type;
+        if constexpr (std::is_same_v<resT, deducedT>) {
+            return res_vec;
+        }
+        else {
+            return vec_cast<resT, deducedT, vec_sz>(res_vec);
         }
     }
 };

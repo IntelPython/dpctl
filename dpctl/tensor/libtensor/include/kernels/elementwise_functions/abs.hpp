@@ -52,13 +52,15 @@ namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT, typename resT> struct AbsFunctor
 {
 
     using is_constant = typename std::false_type;
     // constexpr resT constant_value = resT{};
-    using supports_vec = typename std::false_type;
+    using supports_vec = typename std::negation<
+        std::disjunction<is_complex<resT>, is_complex<argT>>>;
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
@@ -83,6 +85,40 @@ template <typename argT, typename resT> struct AbsFunctor
             }
             else {
                 return std::abs(x);
+            }
+        }
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    {
+        if constexpr (std::is_integral<argT>::value) {
+            if constexpr (std::is_same_v<argT, bool> ||
+                          std::is_unsigned<argT>::value) {
+                return in;
+            }
+            else {
+                auto const &res_vec = sycl::abs(in);
+                using deducedT = typename std::remove_cv_t<
+                    std::remove_reference_t<decltype(res_vec)>>::element_type;
+                if constexpr (std::is_same_v<resT, deducedT>) {
+                    return res_vec;
+                }
+                else {
+
+                    return vec_cast<resT, deducedT, vec_sz>(res_vec);
+                }
+            }
+        }
+        else {
+            auto const &res_vec = sycl::fabs(in);
+            using deducedT = typename std::remove_cv_t<
+                std::remove_reference_t<decltype(res_vec)>>::element_type;
+            if constexpr (std::is_same_v<resT, deducedT>) {
+                return res_vec;
+            }
+            else {
+                return vec_cast<resT, deducedT, vec_sz>(res_vec);
             }
         }
     }
