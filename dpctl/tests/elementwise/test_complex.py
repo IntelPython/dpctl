@@ -127,16 +127,24 @@ def test_projection_complex(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    X = [complex(1, 2), complex(dpt.inf, -1), complex(0, -dpt.inf)]
-    Y = [complex(1, 2), complex(dpt.inf, -0), complex(dpt.inf, -0)]
+    X = [
+        complex(1, 2),
+        complex(dpt.inf, -1),
+        complex(0, -dpt.inf),
+        complex(-dpt.inf, dpt.nan),
+    ]
+    Y = [
+        complex(1, 2),
+        complex(np.inf, -0.0),
+        complex(np.inf, -0.0),
+        complex(np.inf, 0.0),
+    ]
 
     Xf = dpt.asarray(X, dtype=dtype, sycl_queue=q)
-    Yf = dpt.asarray(Y, dtype=dtype, sycl_queue=q)
+    Yf = np.array(Y, dtype=dtype)
 
     tol = 8 * dpt.finfo(Xf.dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.proj(Xf)), dpt.asnumpy(Yf), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(dpt.proj(Xf)), Yf, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -146,19 +154,17 @@ def test_projection(dtype):
 
     Xf = dpt.asarray(1, dtype=dtype, sycl_queue=q)
     out_dtype = dpt.proj(Xf).dtype
-    Yf = dpt.asarray(complex(1, 0), dtype=out_dtype, sycl_queue=q)
+    Yf = np.array(complex(1, 0), dtype=out_dtype)
 
     tol = 8 * dpt.finfo(Yf.dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.proj(Xf)), dpt.asnumpy(Yf), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(dpt.proj(Xf)), Yf, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize(
     "np_call, dpt_call",
     [(np.real, dpt.real), (np.imag, dpt.imag), (np.conj, dpt.conj)],
 )
-@pytest.mark.parametrize("dtype", ["f", "d"])
+@pytest.mark.parametrize("dtype", ["f4", "f8"])
 @pytest.mark.parametrize("stride", [-1, 1, 2, 4, 5])
 def test_complex_strided(np_call, dpt_call, dtype, stride):
     q = get_queue_or_skip()
@@ -176,7 +182,7 @@ def test_complex_strided(np_call, dpt_call, dtype, stride):
     assert_allclose(y, dpt.asnumpy(z), atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("dtype", ["e", "f", "d"])
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
 def test_complex_special_cases(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
