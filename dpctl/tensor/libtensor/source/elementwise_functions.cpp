@@ -33,9 +33,16 @@
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/elementwise_functions/abs.hpp"
+#include "kernels/elementwise_functions/acos.hpp"
+#include "kernels/elementwise_functions/acosh.hpp"
 #include "kernels/elementwise_functions/add.hpp"
+#include "kernels/elementwise_functions/asin.hpp"
+#include "kernels/elementwise_functions/asinh.hpp"
+#include "kernels/elementwise_functions/atan.hpp"
+#include "kernels/elementwise_functions/atanh.hpp"
 #include "kernels/elementwise_functions/conj.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
+#include "kernels/elementwise_functions/cosh.hpp"
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
@@ -64,9 +71,12 @@
 #include "kernels/elementwise_functions/proj.hpp"
 #include "kernels/elementwise_functions/real.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
+#include "kernels/elementwise_functions/sinh.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
 #include "kernels/elementwise_functions/square.hpp"
 #include "kernels/elementwise_functions/subtract.hpp"
+#include "kernels/elementwise_functions/tan.hpp"
+#include "kernels/elementwise_functions/tanh.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
 
 namespace dpctl
@@ -174,13 +184,72 @@ void populate_abs_dispatch_vectors(void)
 // U02: ==== ACOS   (x)
 namespace impl
 {
-// FIXME: add code for U02
+
+namespace acos_fn_ns = dpctl::tensor::kernels::acos;
+
+static unary_contig_impl_fn_ptr_t acos_contig_dispatch_vector[td_ns::num_types];
+static int acos_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    acos_strided_dispatch_vector[td_ns::num_types];
+
+void populate_acos_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = acos_fn_ns;
+
+    using fn_ns::AcosContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AcosContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(acos_contig_dispatch_vector);
+
+    using fn_ns::AcosStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AcosStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(acos_strided_dispatch_vector);
+
+    using fn_ns::AcosTypeMapFactory;
+    DispatchVectorBuilder<int, AcosTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(acos_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U03: ===== ACOSH (x)
 namespace impl
 {
-// FIXME: add code for U03
+
+namespace acosh_fn_ns = dpctl::tensor::kernels::acosh;
+
+static unary_contig_impl_fn_ptr_t
+    acosh_contig_dispatch_vector[td_ns::num_types];
+static int acosh_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    acosh_strided_dispatch_vector[td_ns::num_types];
+
+void populate_acosh_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = acosh_fn_ns;
+
+    using fn_ns::AcoshContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AcoshContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(acosh_contig_dispatch_vector);
+
+    using fn_ns::AcoshStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AcoshStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(acosh_strided_dispatch_vector);
+
+    using fn_ns::AcoshTypeMapFactory;
+    DispatchVectorBuilder<int, AcoshTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(acosh_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B01: ===== ADD   (x1, x2)
@@ -284,19 +353,107 @@ void populate_add_dispatch_tables(void)
 // U04: ===== ASIN  (x)
 namespace impl
 {
-// FIXME: add code for U04
+
+namespace asin_fn_ns = dpctl::tensor::kernels::asin;
+
+static unary_contig_impl_fn_ptr_t asin_contig_dispatch_vector[td_ns::num_types];
+static int asin_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    asin_strided_dispatch_vector[td_ns::num_types];
+
+void populate_asin_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = asin_fn_ns;
+
+    using fn_ns::AsinContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AsinContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(asin_contig_dispatch_vector);
+
+    using fn_ns::AsinStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AsinStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(asin_strided_dispatch_vector);
+
+    using fn_ns::AsinTypeMapFactory;
+    DispatchVectorBuilder<int, AsinTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(asin_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U05: ===== ASINH (x)
 namespace impl
 {
-// FIXME: add code for U05
+
+namespace asinh_fn_ns = dpctl::tensor::kernels::asinh;
+
+static unary_contig_impl_fn_ptr_t
+    asinh_contig_dispatch_vector[td_ns::num_types];
+static int asinh_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    asinh_strided_dispatch_vector[td_ns::num_types];
+
+void populate_asinh_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = asinh_fn_ns;
+
+    using fn_ns::AsinhContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AsinhContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(asinh_contig_dispatch_vector);
+
+    using fn_ns::AsinhStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AsinhStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(asinh_strided_dispatch_vector);
+
+    using fn_ns::AsinhTypeMapFactory;
+    DispatchVectorBuilder<int, AsinhTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(asinh_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U06: ===== ATAN  (x)
 namespace impl
 {
-// FIXME: add code for U06
+
+namespace atan_fn_ns = dpctl::tensor::kernels::atan;
+
+static unary_contig_impl_fn_ptr_t atan_contig_dispatch_vector[td_ns::num_types];
+static int atan_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    atan_strided_dispatch_vector[td_ns::num_types];
+
+void populate_atan_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = atan_fn_ns;
+
+    using fn_ns::AtanContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AtanContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(atan_contig_dispatch_vector);
+
+    using fn_ns::AtanStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AtanStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(atan_strided_dispatch_vector);
+
+    using fn_ns::AtanTypeMapFactory;
+    DispatchVectorBuilder<int, AtanTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(atan_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B02: ===== ATAN2 (x1, x2)
@@ -308,7 +465,37 @@ namespace impl
 // U07: ===== ATANH (x)
 namespace impl
 {
-// FIXME: add code for U07
+
+namespace atanh_fn_ns = dpctl::tensor::kernels::atanh;
+
+static unary_contig_impl_fn_ptr_t
+    atanh_contig_dispatch_vector[td_ns::num_types];
+static int atanh_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    atanh_strided_dispatch_vector[td_ns::num_types];
+
+void populate_atanh_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = atanh_fn_ns;
+
+    using fn_ns::AtanhContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, AtanhContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(atanh_contig_dispatch_vector);
+
+    using fn_ns::AtanhStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, AtanhStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(atanh_strided_dispatch_vector);
+
+    using fn_ns::AtanhTypeMapFactory;
+    DispatchVectorBuilder<int, AtanhTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(atanh_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B03: ===== BITWISE_AND           (x1, x2)
@@ -425,7 +612,36 @@ void populate_cos_dispatch_vectors(void)
 // U12: ==== COSH          (x)
 namespace impl
 {
-// FIXME: add code for U12
+
+namespace cosh_fn_ns = dpctl::tensor::kernels::cosh;
+
+static unary_contig_impl_fn_ptr_t cosh_contig_dispatch_vector[td_ns::num_types];
+static int cosh_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    cosh_strided_dispatch_vector[td_ns::num_types];
+
+void populate_cosh_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = cosh_fn_ns;
+
+    using fn_ns::CoshContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, CoshContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(cosh_contig_dispatch_vector);
+
+    using fn_ns::CoshStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, CoshStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(cosh_strided_dispatch_vector);
+
+    using fn_ns::CoshTypeMapFactory;
+    DispatchVectorBuilder<int, CoshTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(cosh_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B08: ==== DIVIDE        (x1, x2)
@@ -1612,7 +1828,36 @@ void populate_sin_dispatch_vectors(void)
 // U31: ==== SINH        (x)
 namespace impl
 {
-// FIXME: add code for U31
+
+namespace sinh_fn_ns = dpctl::tensor::kernels::sinh;
+
+static unary_contig_impl_fn_ptr_t sinh_contig_dispatch_vector[td_ns::num_types];
+static int sinh_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    sinh_strided_dispatch_vector[td_ns::num_types];
+
+void populate_sinh_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = sinh_fn_ns;
+
+    using fn_ns::SinhContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SinhContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(sinh_contig_dispatch_vector);
+
+    using fn_ns::SinhStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SinhStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(sinh_strided_dispatch_vector);
+
+    using fn_ns::SinhTypeMapFactory;
+    DispatchVectorBuilder<int, SinhTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(sinh_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U32: ==== SQUARE      (x)
@@ -1788,13 +2033,71 @@ void populate_subtract_dispatch_tables(void)
 // U34: ==== TAN         (x)
 namespace impl
 {
-// FIXME: add code for U34
+
+namespace tan_fn_ns = dpctl::tensor::kernels::tan;
+
+static unary_contig_impl_fn_ptr_t tan_contig_dispatch_vector[td_ns::num_types];
+static int tan_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    tan_strided_dispatch_vector[td_ns::num_types];
+
+void populate_tan_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = tan_fn_ns;
+
+    using fn_ns::TanContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, TanContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(tan_contig_dispatch_vector);
+
+    using fn_ns::TanStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, TanStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(tan_strided_dispatch_vector);
+
+    using fn_ns::TanTypeMapFactory;
+    DispatchVectorBuilder<int, TanTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(tan_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U35: ==== TANH        (x)
 namespace impl
 {
-// FIXME: add code for U35
+
+namespace tanh_fn_ns = dpctl::tensor::kernels::tanh;
+
+static unary_contig_impl_fn_ptr_t tanh_contig_dispatch_vector[td_ns::num_types];
+static int tanh_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    tanh_strided_dispatch_vector[td_ns::num_types];
+
+void populate_tanh_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = tanh_fn_ns;
+
+    using fn_ns::TanhContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, TanhContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(tanh_contig_dispatch_vector);
+
+    using fn_ns::TanhStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, TanhStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(tanh_strided_dispatch_vector);
+
+    using fn_ns::TanhTypeMapFactory;
+    DispatchVectorBuilder<int, TanhTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(tanh_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U36: ==== TRUNC       (x)
@@ -1836,10 +2139,49 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U02: ==== ACOS   (x)
-    // FIXME:
+    {
+        impl::populate_acos_dispatch_vectors();
+        using impl::acos_contig_dispatch_vector;
+        using impl::acos_output_typeid_vector;
+        using impl::acos_strided_dispatch_vector;
+
+        auto acos_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, acos_output_typeid_vector,
+                acos_contig_dispatch_vector, acos_strided_dispatch_vector);
+        };
+        m.def("_acos", acos_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto acos_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, acos_output_typeid_vector);
+        };
+        m.def("_acos_result_type", acos_result_type_pyapi);
+    }
 
     // U03: ===== ACOSH (x)
-    // FIXME:
+    {
+        impl::populate_acosh_dispatch_vectors();
+        using impl::acosh_contig_dispatch_vector;
+        using impl::acosh_output_typeid_vector;
+        using impl::acosh_strided_dispatch_vector;
+
+        auto acosh_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, acosh_output_typeid_vector,
+                acosh_contig_dispatch_vector, acosh_strided_dispatch_vector);
+        };
+        m.def("_acosh", acosh_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto acosh_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              acosh_output_typeid_vector);
+        };
+        m.def("_acosh_result_type", acosh_result_type_pyapi);
+    }
 
     // B01: ===== ADD   (x1, x2)
     {
@@ -1905,19 +2247,97 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U04: ===== ASIN  (x)
-    // FIXME:
+    {
+        impl::populate_asin_dispatch_vectors();
+        using impl::asin_contig_dispatch_vector;
+        using impl::asin_output_typeid_vector;
+        using impl::asin_strided_dispatch_vector;
+
+        auto asin_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, asin_output_typeid_vector,
+                asin_contig_dispatch_vector, asin_strided_dispatch_vector);
+        };
+        m.def("_asin", asin_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto asin_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, asin_output_typeid_vector);
+        };
+        m.def("_asin_result_type", asin_result_type_pyapi);
+    }
 
     // U05: ===== ASINH (x)
-    // FIXME:
+    {
+        impl::populate_asinh_dispatch_vectors();
+        using impl::asinh_contig_dispatch_vector;
+        using impl::asinh_output_typeid_vector;
+        using impl::asinh_strided_dispatch_vector;
+
+        auto asinh_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, asinh_output_typeid_vector,
+                asinh_contig_dispatch_vector, asinh_strided_dispatch_vector);
+        };
+        m.def("_asinh", asinh_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto asinh_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              asinh_output_typeid_vector);
+        };
+        m.def("_asinh_result_type", asinh_result_type_pyapi);
+    }
 
     // U06: ===== ATAN  (x)
-    // FIXME:
+    {
+        impl::populate_atan_dispatch_vectors();
+        using impl::atan_contig_dispatch_vector;
+        using impl::atan_output_typeid_vector;
+        using impl::atan_strided_dispatch_vector;
+
+        auto atan_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, atan_output_typeid_vector,
+                atan_contig_dispatch_vector, atan_strided_dispatch_vector);
+        };
+        m.def("_atan", atan_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto atan_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, atan_output_typeid_vector);
+        };
+        m.def("_atan_result_type", atan_result_type_pyapi);
+    }
 
     // B02: ===== ATAN2 (x1, x2)
     // FIXME:
 
     // U07: ===== ATANH (x)
-    // FIXME:
+    {
+        impl::populate_atanh_dispatch_vectors();
+        using impl::atanh_contig_dispatch_vector;
+        using impl::atanh_output_typeid_vector;
+        using impl::atanh_strided_dispatch_vector;
+
+        auto atanh_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, atanh_output_typeid_vector,
+                atanh_contig_dispatch_vector, atanh_strided_dispatch_vector);
+        };
+        m.def("_atanh", atanh_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto atanh_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              atanh_output_typeid_vector);
+        };
+        m.def("_atanh_result_type", atanh_result_type_pyapi);
+    }
 
     // B03: ===== BITWISE_AND           (x1, x2)
     // FIXME:
@@ -1985,7 +2405,26 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U12: ==== COSH          (x)
-    // FIXME:
+    {
+        impl::populate_cosh_dispatch_vectors();
+        using impl::cosh_contig_dispatch_vector;
+        using impl::cosh_output_typeid_vector;
+        using impl::cosh_strided_dispatch_vector;
+
+        auto cosh_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, cosh_output_typeid_vector,
+                cosh_contig_dispatch_vector, cosh_strided_dispatch_vector);
+        };
+        m.def("_cosh", cosh_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto cosh_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, cosh_output_typeid_vector);
+        };
+        m.def("_cosh_result_type", cosh_result_type_pyapi);
+    }
 
     // B08: ==== DIVIDE        (x1, x2)
     {
@@ -2925,7 +3364,26 @@ void init_elementwise_functions(py::module_ m)
         m.def("_sin_result_type", sin_result_type_pyapi);
     }
     // U31: ==== SINH        (x)
-    // FIXME:
+    {
+        impl::populate_sinh_dispatch_vectors();
+        using impl::sinh_contig_dispatch_vector;
+        using impl::sinh_output_typeid_vector;
+        using impl::sinh_strided_dispatch_vector;
+
+        auto sinh_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, sinh_output_typeid_vector,
+                sinh_contig_dispatch_vector, sinh_strided_dispatch_vector);
+        };
+        m.def("_sinh", sinh_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto sinh_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, sinh_output_typeid_vector);
+        };
+        m.def("_sinh_result_type", sinh_result_type_pyapi);
+    }
 
     // U32: ==== SQUARE      (x)
     {
@@ -3038,10 +3496,48 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U34: ==== TAN         (x)
-    // FIXME:
+    {
+        impl::populate_tan_dispatch_vectors();
+        using impl::tan_contig_dispatch_vector;
+        using impl::tan_output_typeid_vector;
+        using impl::tan_strided_dispatch_vector;
+
+        auto tan_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                             const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, tan_output_typeid_vector,
+                tan_contig_dispatch_vector, tan_strided_dispatch_vector);
+        };
+        m.def("_tan", tan_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto tan_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, tan_output_typeid_vector);
+        };
+        m.def("_tan_result_type", tan_result_type_pyapi);
+    }
 
     // U35: ==== TANH        (x)
-    // FIXME:
+    {
+        impl::populate_tanh_dispatch_vectors();
+        using impl::tanh_contig_dispatch_vector;
+        using impl::tanh_output_typeid_vector;
+        using impl::tanh_strided_dispatch_vector;
+
+        auto tanh_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, tanh_output_typeid_vector,
+                tanh_contig_dispatch_vector, tanh_strided_dispatch_vector);
+        };
+        m.def("_tanh", tanh_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto tanh_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, tanh_output_typeid_vector);
+        };
+        m.def("_tanh_result_type", tanh_result_type_pyapi);
+    }
 
     // U36: ==== TRUNC       (x)
     // FIXME:

@@ -64,7 +64,107 @@ template <typename argT, typename resT> struct SinFunctor
 
     resT operator()(const argT &in)
     {
-        return std::sin(in);
+        if constexpr (is_complex<argT>::value) {
+            /*
+             * Handle the nearly-non-exceptional cases where
+             * real and imaginary parts of input are finite.
+             */
+            if (std::isfinite(std::real(in)) && std::isfinite(std::imag(in))) {
+                return std::sin(in);
+            }
+
+            using realT = typename argT::value_type;
+            /*
+             * since sin(in) = -I * sinh(I * in), for special cases,
+             * we calculate real and imaginary parts of z = sinh(I * in) and
+             * then return { imag(z) , -real(z) } which is sin(in).
+             */
+            const realT x = -std::imag(in);
+            const realT y = std::real(in);
+            const bool xfinite = std::isfinite(x);
+            const bool yfinite = std::isfinite(y);
+            /*
+             * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.
+             * The sign of 0 in the result is unspecified.  Choice = normally
+             * the same as dNaN.
+             *
+             * sinh(+-0 +- I NaN) = sign(d(+-0, NaN))0 + I d(NaN).
+             * The sign of 0 in the result is unspecified.  Choice = normally
+             * the same as d(NaN).
+             */
+            if (x == 0 && !yfinite) {
+                const realT sinh_re = std::copysign(0, x * (y - y));
+                const realT sinh_im = y - y;
+                return resT{sinh_im, -sinh_re};
+            }
+
+            /*
+             * sinh(+-Inf +- I 0) = +-Inf + I +-0.
+             *
+             * sinh(NaN +- I 0)   = d(NaN) + I +-0.
+             */
+            if (y == 0 && !xfinite) {
+                if (std::isnan(x)) {
+                    const realT sinh_re = x;
+                    const realT sinh_im = y;
+                    return resT{sinh_im, -sinh_re};
+                }
+                const realT sinh_re = x;
+                const realT sinh_im = std::copysign(0, y);
+                return resT{sinh_im, -sinh_re};
+            }
+
+            /*
+             * sinh(x +- I Inf) = dNaN + I dNaN.
+             *
+             * sinh(x + I NaN) = d(NaN) + I d(NaN).
+             */
+            if (xfinite && !yfinite) {
+                const realT sinh_re = y - y;
+                const realT sinh_im = x * (y - y);
+                return resT{sinh_im, -sinh_re};
+            }
+
+            /*
+             * sinh(+-Inf + I NaN)  = +-Inf + I d(NaN).
+             * The sign of Inf in the result is unspecified.  Choice = normally
+             * the same as d(NaN).
+             *
+             * sinh(+-Inf +- I Inf) = +Inf + I dNaN.
+             * The sign of Inf in the result is unspecified.
+             * Choice = always - here for sinh to have positive result for
+             * imaginary part of sin.
+             *
+             * sinh(+-Inf + I y)   = +-Inf cos(y) + I Inf sin(y)
+             */
+            if (!xfinite && !std::isnan(x)) {
+                if (!yfinite) {
+                    const realT sinh_re = -x * x;
+                    const realT sinh_im = x * (y - y);
+                    return resT{sinh_im, -sinh_re};
+                }
+                const realT sinh_re = x * std::cos(y);
+                const realT sinh_im =
+                    std::numeric_limits<realT>::infinity() * std::sin(y);
+                return resT{sinh_im, -sinh_re};
+            }
+
+            /*
+             * sinh(NaN + I NaN)  = d(NaN) + I d(NaN).
+             *
+             * sinh(NaN +- I Inf) = d(NaN) + I d(NaN).
+             *
+             * sinh(NaN + I y)    = d(NaN) + I d(NaN).
+             */
+            const realT sinh_re = (x * x) * (y - y);
+            const realT sinh_im = (x + x) * (y - y);
+            return resT{sinh_im, -sinh_re};
+        }
+        else {
+            static_assert(std::is_floating_point_v<argT> ||
+                          std::is_same_v<argT, sycl::half>);
+            return std::sin(in);
+        }
     }
 };
 

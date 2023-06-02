@@ -43,10 +43,56 @@ Returns:
 abs = UnaryElementwiseFunc("abs", ti._abs_result_type, ti._abs, _abs_docstring_)
 
 # U02: ==== ACOS   (x)
-# FIXME: implement U02
+_acos_docstring = """
+acos(x, out=None, order='K')
+
+Computes inverse cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse cosine, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+acos = UnaryElementwiseFunc(
+    "acos", ti._acos_result_type, ti._acos, _acos_docstring
+)
 
 # U03: ===== ACOSH (x)
-# FIXME: implement U03
+_acosh_docstring = """
+acosh(x, out=None, order='K')
+
+Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse hyperbolic cosine.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+acosh = UnaryElementwiseFunc(
+    "acosh", ti._acosh_result_type, ti._acosh, _acosh_docstring
+)
 
 # B01: ===== ADD   (x1, x2)
 
@@ -81,19 +127,111 @@ add = BinaryElementwiseFunc(
 )
 
 # U04: ===== ASIN  (x)
-# FIXME: implement U04
+_asin_docstring = """
+asin(x, out=None, order='K')
+
+Computes inverse sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse sine, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+asin = UnaryElementwiseFunc(
+    "asin", ti._asin_result_type, ti._asin, _asin_docstring
+)
 
 # U05: ===== ASINH (x)
-# FIXME: implement U05
+_asinh_docstring = """
+asinh(x, out=None, order='K')
+
+Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse hyperbolic sine.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+asinh = UnaryElementwiseFunc(
+    "asinh", ti._asinh_result_type, ti._asinh, _asinh_docstring
+)
 
 # U06: ===== ATAN  (x)
-# FIXME: implement U06
+_atan_docstring = """
+atan(x, out=None, order='K')
+
+Computes inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse tangent, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+atan = UnaryElementwiseFunc(
+    "atan", ti._atan_result_type, ti._atan, _atan_docstring
+)
 
 # B02: ===== ATAN2 (x1, x2)
 # FIXME: implemetn B02
 
 # U07: ===== ATANH (x)
-# FIXME: implemetn U07
+_atanh_docstring = """
+atanh(x, out=None, order='K')
+
+Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic inverse tangent.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+atanh = UnaryElementwiseFunc(
+    "atanh", ti._atanh_result_type, ti._atanh, _atanh_docstring
+)
 
 # B03: ===== BITWISE_AND           (x1, x2)
 # FIXME: implemetn B03
@@ -165,7 +303,29 @@ Returns:
 cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
 
 # U12: ==== COSH          (x)
-# FIXME: implement U12
+_cosh_docstring = """
+cosh(x, out=None, order='K')
+
+Computes hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+cosh = UnaryElementwiseFunc(
+    "cosh", ti._cosh_result_type, ti._cosh, _cosh_docstring
+)
 
 # B08: ==== DIVIDE        (x1, x2)
 _divide_docstring_ = """
@@ -939,7 +1099,29 @@ Returns:
 sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 
 # U31: ==== SINH        (x)
-# FIXME: implement U31
+_sinh_docstring = """
+sinh(x, out=None, order='K')
+
+Computes hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic sine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+sinh = UnaryElementwiseFunc(
+    "sinh", ti._sinh_result_type, ti._sinh, _sinh_docstring
+)
 
 # U32: ==== SQUARE      (x)
 _square_docstring_ = """
@@ -1025,10 +1207,52 @@ subtract = BinaryElementwiseFunc(
 
 
 # U34: ==== TAN         (x)
-# FIXME: implement U34
+_tan_docstring = """
+tan(x, out=None, order='K')
+
+Computes tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tan = UnaryElementwiseFunc("tan", ti._tan_result_type, ti._tan, _tan_docstring)
 
 # U35: ==== TANH        (x)
-# FIXME: implement U35
+_tanh_docstring = """
+tanh(x, out=None, order='K')
+
+Computes hyperbolic tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tanh = UnaryElementwiseFunc(
+    "tanh", ti._tanh_result_type, ti._tanh, _tanh_docstring
+)
 
 # U36: ==== TRUNC       (x)
 # FIXME: implement U36

@@ -1,0 +1,335 @@
+#                       Data Parallel Control (dpctl)
+#
+#  Copyright 2020-2023 Intel Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+import itertools
+
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose, assert_raises_regex
+
+import dpctl
+import dpctl.tensor as dpt
+from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
+
+from .utils import _all_dtypes, _map_to_device_dtype
+
+_trig_funcs = [(np.sin, dpt.sin), (np.cos, dpt.cos), (np.tan, dpt.tan)]
+_inv_trig_funcs = [
+    (np.arcsin, dpt.asin),
+    (np.arccos, dpt.acos),
+    (np.arctan, dpt.atan),
+]
+_all_funcs = _trig_funcs + _inv_trig_funcs
+_dpt_funcs = [t[1] for t in _all_funcs]
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_trig_out_type(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
+    expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
+    expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
+    assert dpt_call(X).dtype == expected_dtype
+
+    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
+    expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
+    expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
+    Y = dpt.empty_like(X, dtype=expected_dtype)
+    dpt_call(X, out=Y)
+    assert_allclose(dpt.asnumpy(dpt_call(X)), dpt.asnumpy(Y))
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_trig_real_contig(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    n_seq = 100
+    n_rep = 137
+    if np_call in _trig_funcs:
+        Xnp = np.linspace(-np.pi / 4, np.pi / 4, num=n_seq, dtype=dtype)
+    if np_call == np.arctan:
+        Xnp = np.linspace(-100.0, 100.0, num=n_seq, dtype=dtype)
+    else:
+        Xnp = np.linspace(-1.0, 1.0, num=n_seq, dtype=dtype)
+
+    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
+    Y = dpt_call(X)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(Y), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+    Z = dpt.empty_like(X, dtype=dtype)
+    dpt_call(X, out=Z)
+
+    assert_allclose(
+        dpt.asnumpy(Z), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_trig_complex_contig(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    n_seq = 100
+    n_rep = 137
+    low = -9.0
+    high = 9.0
+    x1 = np.random.uniform(low=low, high=high, size=n_seq)
+    x2 = np.random.uniform(low=low, high=high, size=n_seq)
+    Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+
+    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
+    Y = dpt_call(X)
+
+    tol = 50 * dpt.finfo(dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(Y), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+    Z = dpt.empty_like(X, dtype=dtype)
+    dpt_call(X, out=Z)
+
+    assert_allclose(
+        dpt.asnumpy(Z), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+def test_trig_usm_type(np_call, dpt_call, usm_type):
+    q = get_queue_or_skip()
+
+    arg_dt = np.dtype("f4")
+    input_shape = (10, 10, 10, 10)
+    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
+    if np_call in _trig_funcs:
+        X[..., 0::2] = np.pi / 6
+        X[..., 1::2] = np.pi / 3
+    if np_call == np.arctan:
+        X[..., 0::2] = -2.2
+        X[..., 1::2] = 3.3
+    else:
+        X[..., 0::2] = -0.3
+        X[..., 1::2] = 0.7
+
+    Y = dpt_call(X)
+    assert Y.usm_type == X.usm_type
+    assert Y.sycl_queue == X.sycl_queue
+    assert Y.flags.c_contiguous
+
+    expected_Y = np.empty(input_shape, dtype=arg_dt)
+    expected_Y = np_call(np.float32(X))
+    tol = 8 * dpt.finfo(Y.dtype).resolution
+    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_trig_order(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    arg_dt = np.dtype(dtype)
+    input_shape = (10, 10, 10, 10)
+    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
+    if np_call in _trig_funcs:
+        X[..., 0::2] = np.pi / 6
+        X[..., 1::2] = np.pi / 3
+    if np_call == np.arctan:
+        X[..., 0::2] = -2.2
+        X[..., 1::2] = 3.3
+    else:
+        X[..., 0::2] = -0.3
+        X[..., 1::2] = 0.7
+
+    for ord in ["C", "F", "A", "K"]:
+        for perms in itertools.permutations(range(4)):
+            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+            Y = dpt_call(U, order=ord)
+            expected_Y = np_call(dpt.asnumpy(U))
+            tol = 8 * max(
+                dpt.finfo(Y.dtype).resolution,
+                np.finfo(expected_Y.dtype).resolution,
+            )
+            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("callable", _dpt_funcs)
+def test_trig_errors(callable):
+    get_queue_or_skip()
+    try:
+        gpu_queue = dpctl.SyclQueue("gpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('gpu') failed, skipping")
+    try:
+        cpu_queue = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('cpu') failed, skipping")
+
+    x = dpt.zeros(2, sycl_queue=gpu_queue)
+    y = dpt.empty_like(x, sycl_queue=cpu_queue)
+    assert_raises_regex(
+        TypeError,
+        "Input and output allocation queues are not compatible",
+        callable,
+        x,
+        y,
+    )
+
+    x = dpt.zeros(2)
+    y = dpt.empty(3)
+    assert_raises_regex(
+        TypeError,
+        "The shape of input and output arrays are inconsistent",
+        callable,
+        x,
+        y,
+    )
+
+    x = dpt.zeros(2)
+    y = x
+    assert_raises_regex(
+        TypeError, "Input and output arrays have memory overlap", callable, x, y
+    )
+
+    x = dpt.zeros(2, dtype="float32")
+    y = np.empty_like(x)
+    assert_raises_regex(
+        TypeError, "output array must be of usm_ndarray type", callable, x, y
+    )
+
+
+@pytest.mark.parametrize("callable", _dpt_funcs)
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_trig_error_dtype(callable, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = dpt.zeros(5, dtype=dtype)
+    y = dpt.empty_like(x, dtype="int16")
+    assert_raises_regex(
+        TypeError, "Output array of type.*is needed", callable, x, y
+    )
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_trig_real_strided(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    np.random.seed(42)
+    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
+    sizes = np.arange(2, 100)
+    tol = 8 * dpt.finfo(dtype).resolution
+
+    low = -100.0
+    high = 100.0
+    if np_call in [np.arccos, np.arcsin]:
+        low = -1.0
+        high = 1.0
+
+    for ii in sizes:
+        Xnp = np.random.uniform(low=low, high=high, size=ii)
+        Xnp.astype(dtype)
+        X = dpt.asarray(Xnp)
+        Ynp = np_call(Xnp)
+        for jj in strides:
+            assert_allclose(
+                dpt.asnumpy(dpt_call(X[::jj])),
+                Ynp[::jj],
+                atol=tol,
+                rtol=tol,
+            )
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_trig_complex_strided(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    np.random.seed(42)
+    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
+    sizes = np.arange(2, 100)
+    tol = 50 * dpt.finfo(dtype).resolution
+
+    low = -9.0
+    high = 9.0
+    for ii in sizes:
+        x1 = np.random.uniform(low=low, high=high, size=ii)
+        x2 = np.random.uniform(low=low, high=high, size=ii)
+        Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+        X = dpt.asarray(Xnp)
+        Ynp = np_call(Xnp)
+        for jj in strides:
+            assert_allclose(
+                dpt.asnumpy(dpt_call(X[::jj])),
+                Ynp[::jj],
+                atol=tol,
+                rtol=tol,
+            )
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_trig_real_special_cases(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [np.nan, np.inf, -np.inf, 2.0, -2.0, +0.0, -0.0, +1.0, -1.0]
+
+    xf = np.array(x, dtype=dtype)
+    yf = dpt.asarray(xf, dtype=dtype, sycl_queue=q)
+
+    with np.errstate(all="ignore"):
+        Y_np = np_call(xf)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_trig_complex_special_cases(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [np.nan, np.inf, -np.inf, +0.0, -0.0, +1.0, -1.0]
+    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
+
+    Xc_np = np.array(xc, dtype=dtype)
+    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
+
+    with np.errstate(all="ignore"):
+        Ynp = np_call(Xc_np)
+
+    tol = 50 * dpt.finfo(dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(dpt.real(dpt_call(Xc))), np.real(Ynp), atol=tol, rtol=tol
+    )
+    assert_allclose(
+        dpt.asnumpy(dpt.imag(dpt_call(Xc))), np.imag(Ynp), atol=tol, rtol=tol
+    )
