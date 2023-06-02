@@ -158,38 +158,41 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
     return dpt.permute_dims(R, inv_perm)
 
 
-def _empty_like_pair_orderK(X1, X2, dt, usm_type, dev):
+def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     if not isinstance(X1, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray, got {type(X1)}")
     if not isinstance(X2, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray, got {type(X2)}")
     nd1 = X1.ndim
     nd2 = X2.ndim
-    if nd1 > nd2:
+    if nd1 > nd2 and X1.shape == res_shape:
         return _empty_like_orderK(X1, dt, usm_type, dev)
-    elif nd1 < nd2:
+    elif nd1 < nd2 and X2.shape == res_shape:
         return _empty_like_orderK(X2, dt, usm_type, dev)
     fl1 = X1.flags
     fl2 = X2.flags
     if fl1["C"] or fl2["C"]:
-        return dpt.empty_like(
-            X1, dtype=dt, usm_type=usm_type, device=dev, order="C"
+        return dpt.empty(
+            res_shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     if fl1["F"] and fl2["F"]:
-        return dpt.empty_like(
-            X1, dtype=dt, usm_type=usm_type, device=dev, order="F"
+        return dpt.empty(
+            res_shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
     st1 = list(X1.strides)
     st2 = list(X2.strides)
+    max_ndim = max(nd1, nd2)
+    st1 += [0] * (max_ndim - len(st1))
+    st2 += [0] * (max_ndim - len(st2))
     perm = sorted(
-        range(nd1),
+        range(max_ndim),
         key=lambda d: (builtins.abs(st1[d]), builtins.abs(st2[d])),
         reverse=True,
     )
-    inv_perm = sorted(range(nd1), key=lambda i: perm[i])
+    inv_perm = sorted(range(max_ndim), key=lambda i: perm[i])
     st1_sorted = [st1[i] for i in perm]
     st2_sorted = [st2[i] for i in perm]
-    sh = X1.shape
+    sh = res_shape
     sh_sorted = tuple(sh[i] for i in perm)
     R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
     if max(min(st1_sorted), min(st2_sorted)) < 0:
