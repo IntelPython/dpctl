@@ -45,6 +45,7 @@
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
 #include "simplify_iteration_space.hpp"
+#include "sum_reductions.hpp"
 #include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
@@ -351,4 +352,5 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     dpctl::tensor::py_internal::init_elementwise_functions(m);
     dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
+    dpctl::tensor::py_internal::init_reduction_functions(m);
 }
