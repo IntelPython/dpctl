@@ -97,14 +97,18 @@ from ._elementwise_funcs import (
     cos,
     divide,
     equal,
+    expm1,
     floor_divide,
     isfinite,
     isinf,
     isnan,
+    log,
+    log1p,
     multiply,
     sqrt,
     subtract,
 )
+from ._reduction import sum
 
 __all__ = [
     "Device",
@@ -184,13 +188,17 @@ __all__ = [
     "abs",
     "add",
     "cos",
+    "expm1",
     "isinf",
     "isnan",
     "isfinite",
+    "log",
+    "log1p",
     "sqrt",
     "divide",
     "multiply",
     "subtract",
     "equal",
+    "sum",
     "floor_divide",
 ]

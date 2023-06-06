@@ -183,7 +183,7 @@ public:
     void operator()(sycl::id<1> id) const
     {
 
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
+        auto const &inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
         const py::ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
         const py::ssize_t &out_iter_offset =

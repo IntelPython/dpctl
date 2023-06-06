@@ -36,10 +36,13 @@
 #include "kernels/elementwise_functions/add.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
 #include "kernels/elementwise_functions/equal.hpp"
+#include "kernels/elementwise_functions/expm1.hpp"
 #include "kernels/elementwise_functions/floor_divide.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
+#include "kernels/elementwise_functions/log.hpp"
+#include "kernels/elementwise_functions/log1p.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
 #include "kernels/elementwise_functions/subtract.hpp"
@@ -459,7 +462,37 @@ namespace impl
 // U14: ==== EXPM1         (x)
 namespace impl
 {
-// FIXME: add code for U14
+
+namespace expm1_fn_ns = dpctl::tensor::kernels::expm1;
+
+static unary_contig_impl_fn_ptr_t
+    expm1_contig_dispatch_vector[td_ns::num_types];
+static int expm1_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    expm1_strided_dispatch_vector[td_ns::num_types];
+
+void populate_expm1_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = expm1_fn_ns;
+
+    using fn_ns::Expm1ContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Expm1ContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(expm1_contig_dispatch_vector);
+
+    using fn_ns::Expm1StridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Expm1StridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(expm1_strided_dispatch_vector);
+
+    using fn_ns::Expm1TypeMapFactory;
+    DispatchVectorBuilder<int, Expm1TypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(expm1_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U15: ==== FLOOR         (x)
@@ -645,13 +678,72 @@ namespace impl
 // U20: ==== LOG         (x)
 namespace impl
 {
-// FIXME: add code for U20
+
+namespace log_fn_ns = dpctl::tensor::kernels::log;
+
+static unary_contig_impl_fn_ptr_t log_contig_dispatch_vector[td_ns::num_types];
+static int log_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    log_strided_dispatch_vector[td_ns::num_types];
+
+void populate_log_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = log_fn_ns;
+
+    using fn_ns::LogContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, LogContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(log_contig_dispatch_vector);
+
+    using fn_ns::LogStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, LogStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(log_strided_dispatch_vector);
+
+    using fn_ns::LogTypeMapFactory;
+    DispatchVectorBuilder<int, LogTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(log_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U21: ==== LOG1P       (x)
 namespace impl
 {
-// FIXME: add code for U21
+
+namespace log1p_fn_ns = dpctl::tensor::kernels::log1p;
+
+static unary_contig_impl_fn_ptr_t
+    log1p_contig_dispatch_vector[td_ns::num_types];
+static int log1p_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    log1p_strided_dispatch_vector[td_ns::num_types];
+
+void populate_log1p_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = log1p_fn_ns;
+
+    using fn_ns::Log1pContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Log1pContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(log1p_contig_dispatch_vector);
+
+    using fn_ns::Log1pStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Log1pStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(log1p_strided_dispatch_vector);
+
+    using fn_ns::Log1pTypeMapFactory;
+    DispatchVectorBuilder<int, Log1pTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(log1p_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U22: ==== LOG2        (x)
@@ -1179,7 +1271,27 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U14: ==== EXPM1         (x)
-    // FIXME:
+    {
+        impl::populate_expm1_dispatch_vectors();
+        using impl::expm1_contig_dispatch_vector;
+        using impl::expm1_output_typeid_vector;
+        using impl::expm1_strided_dispatch_vector;
+
+        auto expm1_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, expm1_output_typeid_vector,
+                expm1_contig_dispatch_vector, expm1_strided_dispatch_vector);
+        };
+        m.def("_expm1", expm1_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto expm1_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              expm1_output_typeid_vector);
+        };
+        m.def("_expm1_result_type", expm1_result_type_pyapi);
+    }
 
     // U15: ==== FLOOR         (x)
     // FIXME:
@@ -1314,10 +1426,49 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U20: ==== LOG         (x)
-    // FIXME:
+    {
+        impl::populate_log_dispatch_vectors();
+        using impl::log_contig_dispatch_vector;
+        using impl::log_output_typeid_vector;
+        using impl::log_strided_dispatch_vector;
+
+        auto log_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                             const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log_output_typeid_vector,
+                log_contig_dispatch_vector, log_strided_dispatch_vector);
+        };
+        m.def("_log", log_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto log_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, log_output_typeid_vector);
+        };
+        m.def("_log_result_type", log_result_type_pyapi);
+    }
 
     // U21: ==== LOG1P       (x)
-    // FIXME:
+    {
+        impl::populate_log1p_dispatch_vectors();
+        using impl::log1p_contig_dispatch_vector;
+        using impl::log1p_output_typeid_vector;
+        using impl::log1p_strided_dispatch_vector;
+
+        auto log1p_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log1p_output_typeid_vector,
+                log1p_contig_dispatch_vector, log1p_strided_dispatch_vector);
+        };
+        m.def("_log1p", log1p_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto log1p_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              log1p_output_typeid_vector);
+        };
+        m.def("_log1p_result_type", log1p_result_type_pyapi);
+    }
 
     // U22: ==== LOG2        (x)
     // FIXME:
