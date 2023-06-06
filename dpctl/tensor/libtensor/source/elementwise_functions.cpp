@@ -34,16 +34,22 @@
 
 #include "kernels/elementwise_functions/abs.hpp"
 #include "kernels/elementwise_functions/add.hpp"
+#include "kernels/elementwise_functions/conj.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
 #include "kernels/elementwise_functions/equal.hpp"
+#include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
 #include "kernels/elementwise_functions/floor_divide.hpp"
+#include "kernels/elementwise_functions/imag.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
 #include "kernels/elementwise_functions/log.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
+#include "kernels/elementwise_functions/proj.hpp"
+#include "kernels/elementwise_functions/real.hpp"
+#include "kernels/elementwise_functions/sin.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
 #include "kernels/elementwise_functions/subtract.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
@@ -302,7 +308,35 @@ namespace impl
 // U10: ==== CONJ          (x)
 namespace impl
 {
-// FIXME: add code for U10
+
+namespace conj_fn_ns = dpctl::tensor::kernels::conj;
+
+static unary_contig_impl_fn_ptr_t conj_contig_dispatch_vector[td_ns::num_types];
+static int conj_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    conj_strided_dispatch_vector[td_ns::num_types];
+
+void populate_conj_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = conj_fn_ns;
+
+    using fn_ns::ConjContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, ConjContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(conj_contig_dispatch_vector);
+
+    using fn_ns::ConjStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, ConjStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(conj_strided_dispatch_vector);
+
+    using fn_ns::ConjTypeMapFactory;
+    DispatchVectorBuilder<int, ConjTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(conj_output_typeid_vector);
+}
 } // namespace impl
 
 // U11: ==== COS           (x)
@@ -456,7 +490,36 @@ void populate_equal_dispatch_tables(void)
 // U13: ==== EXP           (x)
 namespace impl
 {
-// FIXME: add code for U13
+
+namespace exp_fn_ns = dpctl::tensor::kernels::exp;
+
+static unary_contig_impl_fn_ptr_t exp_contig_dispatch_vector[td_ns::num_types];
+static int exp_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    exp_strided_dispatch_vector[td_ns::num_types];
+
+void populate_exp_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = exp_fn_ns;
+
+    using fn_ns::ExpContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, ExpContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(exp_contig_dispatch_vector);
+
+    using fn_ns::ExpStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, ExpStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(exp_strided_dispatch_vector);
+
+    using fn_ns::ExpTypeMapFactory;
+    DispatchVectorBuilder<int, ExpTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(exp_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U14: ==== EXPM1         (x)
@@ -555,7 +618,35 @@ namespace impl
 // U16: ==== IMAG        (x)
 namespace impl
 {
-// FIXME: add code for U16
+
+namespace imag_fn_ns = dpctl::tensor::kernels::imag;
+
+static unary_contig_impl_fn_ptr_t imag_contig_dispatch_vector[td_ns::num_types];
+static int imag_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    imag_strided_dispatch_vector[td_ns::num_types];
+
+void populate_imag_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = imag_fn_ns;
+
+    using fn_ns::ImagContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, ImagContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(imag_contig_dispatch_vector);
+
+    using fn_ns::ImagStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, ImagStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(imag_strided_dispatch_vector);
+
+    using fn_ns::ImagTypeMapFactory;
+    DispatchVectorBuilder<int, ImagTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(imag_output_typeid_vector);
+}
 } // namespace impl
 
 // U17: ==== ISFINITE    (x)
@@ -882,10 +973,72 @@ namespace impl
 // FIXME: add code for B21
 } // namespace impl
 
+// U??: ==== PROJ        (x)
+namespace impl
+{
+
+namespace proj_fn_ns = dpctl::tensor::kernels::proj;
+
+static unary_contig_impl_fn_ptr_t proj_contig_dispatch_vector[td_ns::num_types];
+static int proj_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    proj_strided_dispatch_vector[td_ns::num_types];
+
+void populate_proj_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = proj_fn_ns;
+
+    using fn_ns::ProjContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, ProjContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(proj_contig_dispatch_vector);
+
+    using fn_ns::ProjStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, ProjStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(proj_strided_dispatch_vector);
+
+    using fn_ns::ProjTypeMapFactory;
+    DispatchVectorBuilder<int, ProjTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(proj_output_typeid_vector);
+}
+} // namespace impl
+
 // U27: ==== REAL        (x)
 namespace impl
 {
-// FIXME: add code for U27
+
+namespace real_fn_ns = dpctl::tensor::kernels::real;
+
+static unary_contig_impl_fn_ptr_t real_contig_dispatch_vector[td_ns::num_types];
+static int real_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    real_strided_dispatch_vector[td_ns::num_types];
+
+void populate_real_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = real_fn_ns;
+
+    using fn_ns::RealContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, RealContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(real_contig_dispatch_vector);
+
+    using fn_ns::RealStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, RealStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(real_strided_dispatch_vector);
+
+    using fn_ns::RealTypeMapFactory;
+    DispatchVectorBuilder<int, RealTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(real_output_typeid_vector);
+}
 } // namespace impl
 
 // B22: ==== REMAINDER   (x1, x2)
@@ -909,7 +1062,36 @@ namespace impl
 // U30: ==== SIN         (x)
 namespace impl
 {
-// FIXME: add code for U30
+
+namespace sin_fn_ns = dpctl::tensor::kernels::sin;
+
+static unary_contig_impl_fn_ptr_t sin_contig_dispatch_vector[td_ns::num_types];
+static int sin_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    sin_strided_dispatch_vector[td_ns::num_types];
+
+void populate_sin_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = sin_fn_ns;
+
+    using fn_ns::SinContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SinContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(sin_contig_dispatch_vector);
+
+    using fn_ns::SinStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SinStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(sin_strided_dispatch_vector);
+
+    using fn_ns::SinTypeMapFactory;
+    DispatchVectorBuilder<int, SinTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(sin_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U31: ==== SINH        (x)
@@ -1159,7 +1341,26 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U10: ==== CONJ          (x)
-    // FIXME:
+    {
+        impl::populate_conj_dispatch_vectors();
+        using impl::conj_contig_dispatch_vector;
+        using impl::conj_output_typeid_vector;
+        using impl::conj_strided_dispatch_vector;
+
+        auto conj_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, conj_output_typeid_vector,
+                conj_contig_dispatch_vector, conj_strided_dispatch_vector);
+        };
+        m.def("_conj", conj_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto conj_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, conj_output_typeid_vector);
+        };
+        m.def("_conj_result_type", conj_result_type_pyapi);
+    }
 
     // U11: ==== COS           (x)
     {
@@ -1268,7 +1469,26 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U13: ==== EXP           (x)
-    // FIXME:
+    {
+        impl::populate_exp_dispatch_vectors();
+        using impl::exp_contig_dispatch_vector;
+        using impl::exp_output_typeid_vector;
+        using impl::exp_strided_dispatch_vector;
+
+        auto exp_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                             const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, exp_output_typeid_vector,
+                exp_contig_dispatch_vector, exp_strided_dispatch_vector);
+        };
+        m.def("_exp", exp_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto exp_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, exp_output_typeid_vector);
+        };
+        m.def("_exp_result_type", exp_result_type_pyapi);
+    }
 
     // U14: ==== EXPM1         (x)
     {
@@ -1344,7 +1564,26 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U16: ==== IMAG        (x)
-    // FIXME:
+    {
+        impl::populate_imag_dispatch_vectors();
+        using impl::imag_contig_dispatch_vector;
+        using impl::imag_output_typeid_vector;
+        using impl::imag_strided_dispatch_vector;
+
+        auto imag_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, imag_output_typeid_vector,
+                imag_contig_dispatch_vector, imag_strided_dispatch_vector);
+        };
+        m.def("_imag", imag_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto imag_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, imag_output_typeid_vector);
+        };
+        m.def("_imag_result_type", imag_result_type_pyapi);
+    }
 
     // U17: ==== ISFINITE    (x)
     {
@@ -1543,8 +1782,49 @@ void init_elementwise_functions(py::module_ m)
     // B21: ==== POW         (x1, x2)
     // FIXME:
 
+    // U??: ==== PROJ        (x)
+    {
+        impl::populate_proj_dispatch_vectors();
+        using impl::proj_contig_dispatch_vector;
+        using impl::proj_output_typeid_vector;
+        using impl::proj_strided_dispatch_vector;
+
+        auto proj_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, proj_output_typeid_vector,
+                proj_contig_dispatch_vector, proj_strided_dispatch_vector);
+        };
+        m.def("_proj", proj_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto proj_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, proj_output_typeid_vector);
+        };
+        m.def("_proj_result_type", proj_result_type_pyapi);
+    }
+
     // U27: ==== REAL        (x)
-    // FIXME:
+    {
+        impl::populate_real_dispatch_vectors();
+        using impl::real_contig_dispatch_vector;
+        using impl::real_output_typeid_vector;
+        using impl::real_strided_dispatch_vector;
+
+        auto real_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, real_output_typeid_vector,
+                real_contig_dispatch_vector, real_strided_dispatch_vector);
+        };
+        m.def("_real", real_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto real_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, real_output_typeid_vector);
+        };
+        m.def("_real_result_type", real_result_type_pyapi);
+    }
 
     // B22: ==== REMAINDER   (x1, x2)
     // FIXME:
@@ -1556,8 +1836,26 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U30: ==== SIN         (x)
-    // FIXME:
+    {
+        impl::populate_sin_dispatch_vectors();
+        using impl::sin_contig_dispatch_vector;
+        using impl::sin_output_typeid_vector;
+        using impl::sin_strided_dispatch_vector;
 
+        auto sin_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                             const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, sin_output_typeid_vector,
+                sin_contig_dispatch_vector, sin_strided_dispatch_vector);
+        };
+        m.def("_sin", sin_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto sin_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, sin_output_typeid_vector);
+        };
+        m.def("_sin_result_type", sin_result_type_pyapi);
+    }
     // U31: ==== SINH        (x)
     // FIXME:
 

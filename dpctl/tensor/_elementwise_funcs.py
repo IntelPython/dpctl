@@ -20,7 +20,24 @@ from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = """
-Calculate the absolute value element-wise.
+abs(x, out=None, order='K')
+
+Calculates the absolute value for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise absolute values.
+        For complex input, the absolute value is its magnitude. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 abs = UnaryElementwiseFunc("abs", ti._abs_result_type, ti._abs, _abs_docstring_)
@@ -44,9 +61,15 @@ Args:
         First input array, expected to have numeric data type.
     x2 (usm_ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_narray:
-        an array containing the element-wise sums. The data type of the
+        An array containing the element-wise sums. The data type of the
         returned array is determined by the Type Promotion Rules.
 """
 add = BinaryElementwiseFunc(
@@ -90,13 +113,49 @@ add = BinaryElementwiseFunc(
 # FIXME: implement U09
 
 # U10: ==== CONJ          (x)
-# FIXME: implement U10
+_conj_docstring = """
+conj(x, out=None, order='K')
+
+Computes conjugate of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise conjugate values. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+conj = UnaryElementwiseFunc(
+    "conj", ti._conj_result_type, ti._conj, _conj_docstring
+)
 
 # U11: ==== COS           (x)
 _cos_docstring = """
 cos(x, out=None, order='K')
 
 Computes cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
@@ -116,9 +175,15 @@ Args:
         First input array, expected to have numeric data type.
     x2 (usm_ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_narray:
-        an array containing the result of element-wise division. The data type
+        An array containing the result of element-wise division. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
@@ -138,9 +203,15 @@ Args:
         First input array, expected to have numeric data type.
     x2 (usm_ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_narray:
-        an array containing the result of element-wise equality comparison.
+        An array containing the result of element-wise equality comparison.
         The data type of the returned array is determined by the
         Type Promotion Rules.
 """
@@ -150,7 +221,28 @@ equal = BinaryElementwiseFunc(
 )
 
 # U13: ==== EXP           (x)
-# FIXME: implement U13
+_exp_docstring = """
+exp(x, out=None, order='K')
+
+Computes exponential for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise exponential of x.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
 
 # U14: ==== EXPM1         (x)
 _expm1_docstring = """
@@ -211,13 +303,51 @@ floor_divide = BinaryElementwiseFunc(
 # FIXME: implement B12
 
 # U16: ==== IMAG        (x)
-# FIXME: implement U16
+_imag_docstring = """
+imag(x, out=None, order='K')
+
+Computes imaginary part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise imaginary component of input.
+        The data type of the returned array is determined
+        by the Type Promotion Rules.
+"""
+
+imag = UnaryElementwiseFunc(
+    "imag", ti._imag_result_type, ti._imag, _imag_docstring
+)
 
 # U17: ==== ISFINITE    (x)
 _isfinite_docstring_ = """
 isfinite(x, out=None, order='K')
 
-Computes if every element of input array is a finite number.
+Checks if each element of input array is a finite number.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array which is True where `x` is not positive infinity,
+        negative infinity, or NaN, False otherwise.
+        The data type of the returned array is boolean.
 """
 
 isfinite = UnaryElementwiseFunc(
@@ -228,7 +358,21 @@ isfinite = UnaryElementwiseFunc(
 _isinf_docstring_ = """
 isinf(x, out=None, order='K')
 
-Computes if every element of input array is an infinity.
+Checks if each element of input array is an infinity.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array which is True where `x` is positive or negative infinity,
+        False otherwise. The data type of the returned array is boolean.
 """
 
 isinf = UnaryElementwiseFunc(
@@ -239,7 +383,21 @@ isinf = UnaryElementwiseFunc(
 _isnan_docstring_ = """
 isnan(x, out=None, order='K')
 
-Computes if every element of input array is a NaN.
+Checks if each element of an input array is a NaN.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array which is True where x is NaN, False otherwise.
+        The data type of the returned array is boolean.
 """
 
 isnan = UnaryElementwiseFunc(
@@ -327,9 +485,15 @@ Args:
         First input array, expected to have numeric data type.
     x2 (usm_ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_narray:
-        an array containing the element-wise products. The data type of
+        An array containing the element-wise products. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
 multiply = BinaryElementwiseFunc(
@@ -348,8 +512,55 @@ multiply = BinaryElementwiseFunc(
 # B21: ==== POW         (x1, x2)
 # FIXME: implement B21
 
+# U??: ==== PROJ        (x)
+_proj_docstring = """
+proj(x, out=None, order='K')
+
+Computes projection of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise projection. The data
+        type of the returned array is determined by the Type Promotion Rules.
+"""
+
+proj = UnaryElementwiseFunc(
+    "proj", ti._proj_result_type, ti._proj, _proj_docstring
+)
+
 # U27: ==== REAL        (x)
-# FIXME: implement U27
+_real_docstring = """
+real(x, out=None, order='K')
+
+Computes real part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise real component of input. The data
+        type of the returned array is determined by the Type Promotion Rules.
+"""
+
+real = UnaryElementwiseFunc(
+    "real", ti._real_result_type, ti._real, _real_docstring
+)
 
 # B22: ==== REMAINDER   (x1, x2)
 # FIXME: implement B22
@@ -361,7 +572,27 @@ multiply = BinaryElementwiseFunc(
 # FIXME: implement U29
 
 # U30: ==== SIN         (x)
-# FIXME: implement U30
+_sin_docstring = """
+sin(x, out=None, order='K')
+
+Computes sine for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise sine. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 
 # U31: ==== SINH        (x)
 # FIXME: implement U31
@@ -373,7 +604,22 @@ multiply = BinaryElementwiseFunc(
 _sqrt_docstring_ = """
 sqrt(x, out=None, order='K')
 
-Computes sqrt for each element `x_i` for input array `x`.
+Computes positive square-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise positive square-root.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
 """
 
 sqrt = UnaryElementwiseFunc(
@@ -392,9 +638,15 @@ Args:
         First input array, expected to have numeric data type.
     x2 (usm_ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_narray:
-        an array containing the element-wise differences. The data type
+        An array containing the element-wise differences. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 subtract = BinaryElementwiseFunc(
