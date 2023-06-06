@@ -481,7 +481,7 @@ multiply = BinaryElementwiseFunc(
 
 # B20: ==== NOT_EQUAL   (x1, x2)
 _not_equal_docstring_ = """
-not_equal(x1, x2, order='K')
+not_equal(x1, x2, out=None, order='K')
 
 Calculates inequality test results for each element `x1_i` of the
 input array `x1` with the respective element `x2_i` of the input array `x2`.
@@ -491,6 +491,12 @@ Args:
         First input array, expected to have numeric data type.
     x2 (usm_ndarray):
         Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_narray:
         an array containing the result of element-wise inequality comparison.

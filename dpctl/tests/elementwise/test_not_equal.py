@@ -127,6 +127,10 @@ def test_not_equal_broadcasting():
     r2 = dpt.not_equal(v, m)
     assert (dpt.asnumpy(r2) == expected).all()
 
+    r3 = dpt.empty_like(m, dtype="?")
+    dpt.not_equal(m, v, r3)
+    assert (dpt.asnumpy(r3) == expected).all()
+
 
 @pytest.mark.parametrize("arr_dt", _all_dtypes)
 def test_not_equal_python_scalar(arr_dt):
