@@ -81,24 +81,24 @@ struct FloorDivideFunctor
         {
             return tmp;
         }
-        if constexpr (std::is_integral_v<typename decltype(tmp)::element_type>)
-        {
+        else if constexpr (std::is_integral_v<typename decltype(
+                               tmp)::element_type>) {
             using dpctl::tensor::type_utils::vec_cast;
             return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
                 tmp);
         }
         else {
-            sycl::vec<resT, vec_sz> res;
-            for (int i = 0; i < vec_sz; i++) {
-                auto tmp2 = sycl::floor(tmp[i]);
-                if constexpr (std::is_same_v<resT, decltype(tmp2)>) {
-                    res[i] = tmp2;
-                }
-                else {
-                    res[i] = static_cast<resT>(tmp2);
-                }
+            sycl::vec<resT, vec_sz> res = sycl::floor(tmp);
+            if constexpr (std::is_same_v<resT,
+                                         typename decltype(res)::element_type>)
+            {
+                return res;
             }
-            return res;
+            else {
+                using dpctl::tensor::type_utils::vec_cast;
+                return vec_cast<resT, typename decltype(res)::element_type,
+                                vec_sz>(res);
+            }
         }
     }
 };
