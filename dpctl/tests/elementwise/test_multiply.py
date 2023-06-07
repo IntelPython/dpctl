@@ -154,16 +154,21 @@ def test_multiply_python_scalar(arr_dt):
         assert isinstance(R, dpt.usm_ndarray)
 
 
-def test_multiply_python_scalar_gh1219():
+@pytest.mark.parametrize("arr_dt", _all_dtypes)
+@pytest.mark.parametrize("sc", [bool(1), int(1), float(1), complex(1)])
+def test_multiply_python_scalar_gh1219(arr_dt, sc):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arr_dt, q)
 
-    X = dpt.ones(4, dtype="f4", sycl_queue=q)
+    Xnp = np.ones(4, dtype=arr_dt)
 
-    r = dpt.multiply(X, 2j)
-    expected = dpt.multiply(X, dpt.asarray(2j, sycl_queue=q))
-    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+    X = dpt.ones(4, dtype=arr_dt, sycl_queue=q)
+
+    R = dpt.multiply(X, sc)
+    Rnp = np.multiply(Xnp, sc)
+    assert _compare_dtypes(R.dtype, Rnp.dtype, sycl_queue=q)
 
     # symmetric case
-    r = dpt.multiply(2j, X)
-    expected = dpt.multiply(dpt.asarray(2j, sycl_queue=q), X)
-    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+    R = dpt.multiply(sc, X)
+    Rnp = np.multiply(sc, Xnp)
+    assert _compare_dtypes(R.dtype, Rnp.dtype, sycl_queue=q)
