@@ -433,7 +433,7 @@ class BinaryElementwiseFunc:
             if out is None:
                 if order == "K":
                     out = _empty_like_pair_orderK(
-                        src1, src2, res_dt, res_usm_type, exec_q
+                        src1, src2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
                     if order == "A":
@@ -482,7 +482,7 @@ class BinaryElementwiseFunc:
             if out is None:
                 if order == "K":
                     out = _empty_like_pair_orderK(
-                        src1, buf2, res_dt, res_usm_type, exec_q
+                        src1, buf2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
                     out = dpt.empty(
@@ -524,7 +524,7 @@ class BinaryElementwiseFunc:
             if out is None:
                 if order == "K":
                     out = _empty_like_pair_orderK(
-                        buf1, src2, res_dt, res_usm_type, exec_q
+                        buf1, src2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
                     out = dpt.empty(
@@ -578,7 +578,7 @@ class BinaryElementwiseFunc:
         if out is None:
             if order == "K":
                 out = _empty_like_pair_orderK(
-                    buf1, buf2, res_dt, res_usm_type, exec_q
+                    buf1, buf2, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
                 out = dpt.empty(
