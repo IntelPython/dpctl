@@ -107,6 +107,7 @@ from ._elementwise_funcs import (
     log,
     log1p,
     multiply,
+    not_equal,
     proj,
     real,
     sin,
@@ -210,5 +211,6 @@ __all__ = [
     "multiply",
     "subtract",
     "equal",
+    "not_equal",
     "sum",
 ]
