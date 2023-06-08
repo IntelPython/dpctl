@@ -65,28 +65,20 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         if constexpr (supports_complex::value) {
-
-            if (std::real(in1) < std::real(in2)) {
-                return (std::imag(in1) == in1.imag() ||
-                        std::imag(in2) != std::imag(in2));
-            }
-            else if (std::real(in1) > std::real(in2)) {
-                return (std::imag(in2) != std::imag(in2) &&
-                        in1.imag() == in1.imag());
-            }
-            else if (std::real(in1) == std::real(in2) ||
-                     (std::real(in1) != std::real(in1) &&
-                      std::real(in2) != std::real(in2)))
-            {
-                return (in1.imag() < std::imag(in2) ||
-                        (std::imag(in2) != std::imag(in2) &&
-                         in1.imag() == in1.imag()));
-            }
-            else {
-                return (std::real(in2) != std::real(in2));
-            }
+            return (std::real(in1) < std::real(in2))
+                       ? (std::imag(in1) == in1.imag() ||
+                          std::imag(in2) != std::imag(in2))
+                   : (std::real(in1) > std::real(in2))
+                       ? (std::imag(in2) != std::imag(in2) &&
+                          in1.imag() == in1.imag())
+                   : (std::real(in1) == std::real(in2) ||
+                      (std::real(in1) != std::real(in1) &&
+                       std::real(in2) != std::real(in2)))
+                       ? (in1.imag() < std::imag(in2) ||
+                          (std::imag(in2) != std::imag(in2) &&
+                           in1.imag() == in1.imag()))
+                       : (std::real(in2) != std::real(in2));
         }
-
         else {
             return (in1 < in2);
         }
