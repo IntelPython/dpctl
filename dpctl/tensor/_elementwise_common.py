@@ -162,9 +162,18 @@ class WeakIntegralType:
         return self.o_
 
 
-class WeakInexactType:
-    """Python type representing type of Python real- or
-    complex-valued floating point objects"""
+class WeakFloatingType:
+    """Python type representing type of Python floating point objects"""
+
+    def __init__(self, o):
+        self.o_ = o
+
+    def get(self):
+        return self.o_
+
+
+class WeakComplexType:
+    """Python type representing type of Python complex floating point objects"""
 
     def __init__(self, o):
         self.o_ = o
@@ -189,14 +198,17 @@ def _get_dtype(o, dev):
         return WeakBooleanType(o)
     if isinstance(o, int):
         return WeakIntegralType(o)
-    if isinstance(o, (float, complex)):
-        return WeakInexactType(o)
+    if isinstance(o, float):
+        return WeakFloatingType(o)
+    if isinstance(o, complex):
+        return WeakComplexType(o)
     return np.object_
 
 
 def _validate_dtype(dt) -> bool:
     return isinstance(
-        dt, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+        dt,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
     ) or (
         isinstance(dt, dpt.dtype)
         and dt
@@ -220,22 +232,24 @@ def _validate_dtype(dt) -> bool:
 
 
 def _weak_type_num_kind(o):
-    _map = {"?": 0, "i": 1, "f": 2}
+    _map = {"?": 0, "i": 1, "f": 2, "c": 3}
     if isinstance(o, WeakBooleanType):
         return _map["?"]
     if isinstance(o, WeakIntegralType):
         return _map["i"]
-    if isinstance(o, WeakInexactType):
+    if isinstance(o, WeakFloatingType):
         return _map["f"]
+    if isinstance(o, WeakComplexType):
+        return _map["c"]
     raise TypeError(
         f"Unexpected type {o} while expecting "
-        "`WeakBooleanType`, `WeakIntegralType`, or "
-        "`WeakInexactType`."
+        "`WeakBooleanType`, `WeakIntegralType`,"
+        "`WeakFloatingType`, or `WeakComplexType`."
     )
 
 
 def _strong_dtype_num_kind(o):
-    _map = {"b": 0, "i": 1, "u": 1, "f": 2, "c": 2}
+    _map = {"b": 0, "i": 1, "u": 1, "f": 2, "c": 3}
     if not isinstance(o, dpt.dtype):
         raise TypeError
     k = o.kind
@@ -247,20 +261,29 @@ def _strong_dtype_num_kind(o):
 def _resolve_weak_types(o1_dtype, o2_dtype, dev):
     "Resolves weak data type per NEP-0050"
     if isinstance(
-        o1_dtype, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+        o1_dtype,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
     ):
         if isinstance(
-            o2_dtype, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+            o2_dtype,
+            (
+                WeakBooleanType,
+                WeakIntegralType,
+                WeakFloatingType,
+                WeakComplexType,
+            ),
         ):
             raise ValueError
         o1_kind_num = _weak_type_num_kind(o1_dtype)
         o2_kind_num = _strong_dtype_num_kind(o2_dtype)
-        if o1_kind_num > o2_kind_num or o1_kind_num == 2:
+        if o1_kind_num > o2_kind_num:
             if isinstance(o1_dtype, WeakBooleanType):
                 return dpt.bool, o2_dtype
             if isinstance(o1_dtype, WeakIntegralType):
                 return dpt.int64, o2_dtype
-            if isinstance(o1_dtype.get(), complex):
+            if isinstance(o1_dtype, WeakComplexType):
+                if o2_dtype is dpt.float16 or o2_dtype is dpt.float32:
+                    return dpt.complex64, o2_dtype
                 return (
                     _to_device_supported_dtype(dpt.complex128, dev),
                     o2_dtype,
@@ -269,16 +292,19 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         else:
             return o2_dtype, o2_dtype
     elif isinstance(
-        o2_dtype, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+        o2_dtype,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
     ):
         o1_kind_num = _strong_dtype_num_kind(o1_dtype)
         o2_kind_num = _weak_type_num_kind(o2_dtype)
-        if o2_kind_num > o1_kind_num or o2_kind_num == 2:
+        if o2_kind_num > o1_kind_num:
             if isinstance(o2_dtype, WeakBooleanType):
                 return o1_dtype, dpt.bool
             if isinstance(o2_dtype, WeakIntegralType):
                 return o1_dtype, dpt.int64
-            if isinstance(o2_dtype.get(), complex):
+            if isinstance(o2_dtype, WeakComplexType):
+                if o1_dtype is dpt.float16 or o1_dtype is dpt.float32:
+                    return o1_dtype, dpt.complex64
                 return o1_dtype, _to_device_supported_dtype(dpt.complex128, dev)
             return (
                 o1_dtype,
