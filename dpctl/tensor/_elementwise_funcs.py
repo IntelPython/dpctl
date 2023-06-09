@@ -382,7 +382,7 @@ isnan = UnaryElementwiseFunc(
 
 # B13: ==== LESS        (x1, x2)
 _less_docstring_ = """
-divide(x1, x2, out=None, order='K')
+less(x1, x2, out=None, order='K')
 
 Computes the less-than test results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.

@@ -53,8 +53,6 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
 {
     static_assert(std::is_same_v<resT, bool>);
 
-    using supports_complex =
-        std::conjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>;
     using supports_sg_loadstore = std::negation<
         std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
     using supports_vec = std::conjunction<
@@ -64,20 +62,28 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        if constexpr (supports_complex::value) {
-            return (std::real(in1) < std::real(in2))
-                       ? (std::imag(in1) == in1.imag() ||
-                          std::imag(in2) != std::imag(in2))
-                   : (std::real(in1) > std::real(in2))
-                       ? (std::imag(in2) != std::imag(in2) &&
-                          in1.imag() == in1.imag())
-                   : (std::real(in1) == std::real(in2) ||
-                      (std::real(in1) != std::real(in1) &&
-                       std::real(in2) != std::real(in2)))
-                       ? (in1.imag() < std::imag(in2) ||
-                          (std::imag(in2) != std::imag(in2) &&
-                           in1.imag() == in1.imag()))
-                       : (std::real(in2) != std::real(in2));
+        if constexpr (std::is_same_v<argT1, std::complex<float>> &&
+                      std::is_same_v<argT2, float>)
+        {
+            float real1 = std::real(in1);
+            return (real1 == in2) ? (std::imag(in1) < 0.0f) : real1 < in2;
+        }
+        else if constexpr (std::is_same_v<argT1, float> &&
+                           std::is_same_v<argT2, std::complex<float>>)
+        {
+            float real2 = std::real(in2);
+            return (in1 == real2) ? (0.0f < std::imag(in2)) : in1 < real2;
+        }
+        else if constexpr (tu_ns::is_complex<argT1>::value ||
+                           tu_ns::is_complex<argT2>::value)
+        {
+            static_assert(std::is_same_v<argT1, argT2>);
+            using realT = typename argT1::value_type;
+            realT real1 = std::real(in1);
+            realT real2 = std::real(in2);
+
+            return (real1 == real2) ? (std::imag(in1) < std::imag(in2))
+                                    : real1 < real2;
         }
         else {
             return (in1 < in2);
@@ -167,6 +173,10 @@ template <typename T1, typename T2> struct LessOutputType
                                         T2,
                                         std::complex<double>,
                                         bool>,
+        td_ns::
+            BinaryTypeMapResultEntry<T1, float, T2, std::complex<float>, bool>,
+        td_ns::
+            BinaryTypeMapResultEntry<T1, std::complex<float>, T2, float, bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
