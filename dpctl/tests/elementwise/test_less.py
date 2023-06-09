@@ -34,23 +34,27 @@ def test_less_dtype_matrix(op1_dtype, op2_dtype):
     skip_if_dtype_not_supported(op2_dtype, q)
 
     sz = 127
-    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar1 = dpt.zeros(sz, dtype=op1_dtype)
     ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
 
     r = dpt.less(ar1, ar2)
     assert isinstance(r, dpt.usm_ndarray)
-    expected = np.less(np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype))
+    expected = np.less(
+        np.zeros(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
+    )
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar1.shape
     assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
     assert r.sycl_queue == ar1.sycl_queue
 
-    ar3 = dpt.ones(sz, dtype=op1_dtype)
+    ar3 = dpt.zeros(sz, dtype=op1_dtype)
     ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
 
     r = dpt.less(ar3[::-1], ar4[::2])
     assert isinstance(r, dpt.usm_ndarray)
-    expected = np.less(np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype))
+    expected = np.less(
+        np.zeros(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
+    )
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
@@ -81,6 +85,44 @@ def test_less_complex_matrix(op_dtype):
     assert _compare_dtypes(r.dtype, expected1.dtype, sycl_queue=q)
     assert r1.shape == expected1.shape
     assert (dpt.asnumpy(r1) == expected1).all()
+
+    ar3 = dpt.asarray([1.0 + 9j, 2.0 + 0j, 2.0 + 1j, 2.0 + 2j], dtype=op_dtype)
+    ar4 = dpt.asarray([2.0 + 0j, dpt.nan, dpt.inf, -dpt.inf], dtype=op_dtype)
+    r2 = dpt.less(ar3, ar4)
+    with np.errstate(invalid="ignore"):
+        expected2 = np.less(dpt.asnumpy(ar3), dpt.asnumpy(ar4))
+    assert (dpt.asnumpy(r2) == expected2).all()
+
+    r3 = dpt.less(ar4, ar4)
+    with np.errstate(invalid="ignore"):
+        expected3 = np.less(dpt.asnumpy(ar4), dpt.asnumpy(ar4))
+    assert (dpt.asnumpy(r3) == expected3).all()
+
+
+def test_less_complex_float():
+    get_queue_or_skip()
+
+    ar1 = dpt.asarray([1.0 + 9j, 2.0 + 0j, 2.0 + 1j, 2.0 + 2j], dtype="c8")
+    ar2 = dpt.full((4,), 2, dtype="f4")
+
+    r = dpt.less(ar1, ar2)
+    expected = np.less(dpt.asnumpy(ar1), dpt.asnumpy(ar2))
+    assert (dpt.asnumpy(r) == expected).all()
+
+    r1 = dpt.less(ar2, ar1)
+    expected1 = np.less(dpt.asnumpy(ar2), dpt.asnumpy(ar1))
+    assert (dpt.asnumpy(r1) == expected1).all()
+    with np.errstate(invalid="ignore"):
+        for tp in [dpt.nan, dpt.inf, -dpt.inf]:
+
+            ar3 = dpt.full((4,), tp)
+            r2 = dpt.less(ar1, ar3)
+            expected2 = np.less(dpt.asnumpy(ar1), dpt.asnumpy(ar3))
+            assert (dpt.asnumpy(r2) == expected2).all()
+
+            r3 = dpt.less(ar3, ar1)
+            expected3 = np.less(dpt.asnumpy(ar3), dpt.asnumpy(ar1))
+            assert (dpt.asnumpy(r3) == expected3).all()
 
 
 @pytest.mark.parametrize("op1_usm_type", _usm_types)
