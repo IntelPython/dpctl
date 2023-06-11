@@ -122,6 +122,9 @@ using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
+using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
+
 // U01: ==== ABS   (x)
 namespace impl
 {
@@ -191,6 +194,11 @@ static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     add_contig_row_contig_matrix_broadcast_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    add_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    add_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 void populate_add_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -234,6 +242,20 @@ void populate_add_dispatch_tables(void)
         dtb5;
     dtb5.populate_dispatch_table(
         add_contig_row_contig_matrix_broadcast_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::AddInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         AddInplaceStridedFactory, num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(add_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::AddInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         AddInplaceContigFactory, num_types>
+        dtb7;
+    dtb7.populate_dispatch_table(add_inplace_contig_dispatch_table);
 };
 
 } // namespace impl
@@ -1467,6 +1489,26 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_add_result_type", add_result_type_pyapi, "");
+
+        using impl::add_inplace_contig_dispatch_table;
+        using impl::add_inplace_strided_dispatch_table;
+
+        auto add_inplace_pyapi =
+            [&](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, add_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    add_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    add_inplace_strided_dispatch_table);
+            };
+        m.def("_add_inplace", add_inplace_pyapi, "", py::arg("lhs"),
+              py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // U04: ===== ASIN  (x)

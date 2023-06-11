@@ -73,7 +73,11 @@ Returns:
         returned array is determined by the Type Promotion Rules.
 """
 add = BinaryElementwiseFunc(
-    "add", ti._add_result_type, ti._add, _add_docstring_
+    "add",
+    ti._add_result_type,
+    ti._add,
+    _add_docstring_,
+    binary_inplace_fn=ti._add_inplace,
 )
 
 # U04: ===== ASIN  (x)

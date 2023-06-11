@@ -1245,11 +1245,8 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise2(other, "logical_xor", self)
 
     def __iadd__(self, other):
-        res = self.__add__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        from ._elementwise_funcs import add
+        return add.inplace(self, other)
 
     def __iand__(self, other):
         res = self.__and__(other)
