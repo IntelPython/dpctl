@@ -39,6 +39,7 @@
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
+#include "kernels/elementwise_functions/floor_divide.hpp"
 #include "kernels/elementwise_functions/imag.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
@@ -47,6 +48,7 @@
 #include "kernels/elementwise_functions/log.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
+#include "kernels/elementwise_functions/not_equal.hpp"
 #include "kernels/elementwise_functions/proj.hpp"
 #include "kernels/elementwise_functions/real.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
@@ -567,7 +569,40 @@ namespace impl
 // B10: ==== FLOOR_DIVIDE  (x1, x2)
 namespace impl
 {
-// FIXME: add code for B10
+namespace floor_divide_fn_ns = dpctl::tensor::kernels::floor_divide;
+
+static binary_contig_impl_fn_ptr_t
+    floor_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int floor_divide_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    floor_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_floor_divide_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = floor_divide_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::FloorDivideTypeMapFactory;
+    DispatchTableBuilder<int, FloorDivideTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(floor_divide_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::FloorDivideStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         FloorDivideStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(floor_divide_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::FloorDivideContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, FloorDivideContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(floor_divide_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // B11: ==== GREATER       (x1, x2)
@@ -957,7 +992,39 @@ namespace impl
 // B20: ==== NOT_EQUAL   (x1, x2)
 namespace impl
 {
-// FIXME: add code for B20
+namespace not_equal_fn_ns = dpctl::tensor::kernels::not_equal;
+
+static binary_contig_impl_fn_ptr_t
+    not_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int not_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    not_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_not_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = not_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::NotEqualTypeMapFactory;
+    DispatchTableBuilder<int, NotEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(not_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::NotEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, NotEqualStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(not_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::NotEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, NotEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(not_equal_contig_dispatch_table);
+};
 } // namespace impl
 
 // U26: ==== POSITIVE    (x)
@@ -1516,7 +1583,45 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B10: ==== FLOOR_DIVIDE  (x1, x2)
-    // FIXME:
+    {
+        impl::populate_floor_divide_dispatch_tables();
+        using impl::floor_divide_contig_dispatch_table;
+        using impl::floor_divide_output_id_table;
+        using impl::floor_divide_strided_dispatch_table;
+
+        auto floor_divide_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                      dpctl::tensor::usm_ndarray src2,
+                                      dpctl::tensor::usm_ndarray dst,
+                                      sycl::queue exec_q,
+                                      const std::vector<sycl::event> &depends =
+                                          {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, floor_divide_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                floor_divide_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                floor_divide_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto floor_divide_result_type_pyapi = [&](py::dtype dtype1,
+                                                  py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               floor_divide_output_id_table);
+        };
+        m.def("_floor_divide", floor_divide_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_floor_divide_result_type", floor_divide_result_type_pyapi, "");
+    }
 
     // B11: ==== GREATER       (x1, x2)
     // FIXME:
@@ -1771,7 +1876,45 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B20: ==== NOT_EQUAL   (x1, x2)
-    // FIXME:
+    {
+        impl::populate_not_equal_dispatch_tables();
+        using impl::not_equal_contig_dispatch_table;
+        using impl::not_equal_output_id_table;
+        using impl::not_equal_strided_dispatch_table;
+
+        auto not_equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                   dpctl::tensor::usm_ndarray src2,
+                                   dpctl::tensor::usm_ndarray dst,
+                                   sycl::queue exec_q,
+                                   const std::vector<sycl::event> &depends =
+                                       {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, not_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                not_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                not_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto not_equal_result_type_pyapi = [&](py::dtype dtype1,
+                                               py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               not_equal_output_id_table);
+        };
+        m.def("_not_equal", not_equal_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_not_equal_result_type", not_equal_result_type_pyapi, "");
+    }
 
     // U26: ==== POSITIVE    (x)
     // FIXME:

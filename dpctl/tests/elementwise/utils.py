@@ -17,7 +17,7 @@
 import dpctl
 import dpctl.tensor._type_utils as tu
 
-_all_dtypes = [
+_no_complex_dtypes = [
     "b1",
     "i1",
     "u1",
@@ -30,6 +30,8 @@ _all_dtypes = [
     "f2",
     "f4",
     "f8",
+]
+_all_dtypes = _no_complex_dtypes + [
     "c8",
     "c16",
 ]
@@ -48,6 +50,7 @@ def _compare_dtypes(dt, ref_dt, sycl_queue=None):
 
 
 __all__ = [
+    "_no_complex_dtypes",
     "_all_dtypes",
     "_usm_types",
     "_map_to_device_dtype",

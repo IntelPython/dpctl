@@ -23,12 +23,12 @@ import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _compare_dtypes, _usm_types
+from .utils import _compare_dtypes, _no_complex_dtypes, _usm_types
 
 
-@pytest.mark.parametrize("op1_dtype", _all_dtypes)
-@pytest.mark.parametrize("op2_dtype", _all_dtypes)
-def test_equal_dtype_matrix(op1_dtype, op2_dtype):
+@pytest.mark.parametrize("op1_dtype", _no_complex_dtypes)
+@pytest.mark.parametrize("op2_dtype", _no_complex_dtypes)
+def test_floor_divide_dtype_matrix(op1_dtype, op2_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(op1_dtype, q)
     skip_if_dtype_not_supported(op2_dtype, q)
@@ -37,39 +37,39 @@ def test_equal_dtype_matrix(op1_dtype, op2_dtype):
     ar1 = dpt.ones(sz, dtype=op1_dtype)
     ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
 
-    r = dpt.equal(ar1, ar2)
+    r = dpt.floor_divide(ar1, ar2)
     assert isinstance(r, dpt.usm_ndarray)
-    expected_dtype = np.equal(
-        np.zeros(1, dtype=op1_dtype), np.zeros(1, dtype=op2_dtype)
-    ).dtype
-    assert _compare_dtypes(r.dtype, expected_dtype, sycl_queue=q)
+    expected = np.floor_divide(
+        np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
+    )
+    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar1.shape
-    assert (dpt.asnumpy(r) == np.full(r.shape, True, dtype=r.dtype)).all()
+    assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
     assert r.sycl_queue == ar1.sycl_queue
 
     ar3 = dpt.ones(sz, dtype=op1_dtype)
     ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
 
-    r = dpt.equal(ar3[::-1], ar4[::2])
+    r = dpt.floor_divide(ar3[::-1], ar4[::2])
     assert isinstance(r, dpt.usm_ndarray)
-    expected_dtype = np.equal(
+    expected = np.floor_divide(
         np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
-    ).dtype
-    assert _compare_dtypes(r.dtype, expected_dtype, sycl_queue=q)
+    )
+    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar3.shape
-    assert (dpt.asnumpy(r) == np.full(r.shape, True, dtype=r.dtype)).all()
+    assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
 
 
 @pytest.mark.parametrize("op1_usm_type", _usm_types)
 @pytest.mark.parametrize("op2_usm_type", _usm_types)
-def test_equal_usm_type_matrix(op1_usm_type, op2_usm_type):
+def test_floor_divide_usm_type_matrix(op1_usm_type, op2_usm_type):
     get_queue_or_skip()
 
     sz = 128
     ar1 = dpt.ones(sz, dtype="i4", usm_type=op1_usm_type)
     ar2 = dpt.ones_like(ar1, dtype="i4", usm_type=op2_usm_type)
 
-    r = dpt.equal(ar1, ar2)
+    r = dpt.floor_divide(ar1, ar2)
     assert isinstance(r, dpt.usm_ndarray)
     expected_usm_type = dpctl.utils.get_coerced_usm_type(
         (op1_usm_type, op2_usm_type)
@@ -77,82 +77,80 @@ def test_equal_usm_type_matrix(op1_usm_type, op2_usm_type):
     assert r.usm_type == expected_usm_type
 
 
-def test_equal_order():
+def test_floor_divide_order():
     get_queue_or_skip()
 
     ar1 = dpt.ones((20, 20), dtype="i4", order="C")
     ar2 = dpt.ones((20, 20), dtype="i4", order="C")
-    r1 = dpt.equal(ar1, ar2, order="C")
+    r1 = dpt.floor_divide(ar1, ar2, order="C")
     assert r1.flags.c_contiguous
-    r2 = dpt.equal(ar1, ar2, order="F")
+    r2 = dpt.floor_divide(ar1, ar2, order="F")
     assert r2.flags.f_contiguous
-    r3 = dpt.equal(ar1, ar2, order="A")
+    r3 = dpt.floor_divide(ar1, ar2, order="A")
     assert r3.flags.c_contiguous
-    r4 = dpt.equal(ar1, ar2, order="K")
+    r4 = dpt.floor_divide(ar1, ar2, order="K")
     assert r4.flags.c_contiguous
 
     ar1 = dpt.ones((20, 20), dtype="i4", order="F")
     ar2 = dpt.ones((20, 20), dtype="i4", order="F")
-    r1 = dpt.equal(ar1, ar2, order="C")
+    r1 = dpt.floor_divide(ar1, ar2, order="C")
     assert r1.flags.c_contiguous
-    r2 = dpt.equal(ar1, ar2, order="F")
+    r2 = dpt.floor_divide(ar1, ar2, order="F")
     assert r2.flags.f_contiguous
-    r3 = dpt.equal(ar1, ar2, order="A")
+    r3 = dpt.floor_divide(ar1, ar2, order="A")
     assert r3.flags.f_contiguous
-    r4 = dpt.equal(ar1, ar2, order="K")
+    r4 = dpt.floor_divide(ar1, ar2, order="K")
     assert r4.flags.f_contiguous
 
     ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
     ar2 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
-    r4 = dpt.equal(ar1, ar2, order="K")
+    r4 = dpt.floor_divide(ar1, ar2, order="K")
     assert r4.strides == (20, -1)
 
     ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2].mT
     ar2 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2].mT
-    r4 = dpt.equal(ar1, ar2, order="K")
+    r4 = dpt.floor_divide(ar1, ar2, order="K")
     assert r4.strides == (-1, 20)
 
 
-def test_equal_broadcasting():
+def test_floor_divide_broadcasting():
     get_queue_or_skip()
 
     m = dpt.ones((100, 5), dtype="i4")
-    v = dpt.arange(5, dtype="i4")
+    v = dpt.arange(1, 6, dtype="i4")
 
-    r = dpt.equal(m, v)
-    expected = np.full((100, 5), [False, True, False, False, False], dtype="?")
+    r = dpt.floor_divide(m, v)
 
-    assert (dpt.asnumpy(r) == expected).all()
+    expected = np.floor_divide(
+        np.ones((100, 5), dtype="i4"), np.arange(1, 6, dtype="i4")
+    )
+    assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
 
-    r2 = dpt.equal(v, m)
-    assert (dpt.asnumpy(r2) == expected).all()
+    r2 = dpt.floor_divide(v, m)
+    expected2 = np.floor_divide(
+        np.arange(1, 6, dtype="i4"), np.ones((100, 5), dtype="i4")
+    )
+    assert (dpt.asnumpy(r2) == expected2.astype(r2.dtype)).all()
 
-    r3 = dpt.empty_like(m, dtype="?")
-    dpt.equal(m, v, r3)
-    assert (dpt.asnumpy(r3) == expected).all()
 
-
-@pytest.mark.parametrize("arr_dt", _all_dtypes)
-def test_equal_python_scalar(arr_dt):
+@pytest.mark.parametrize("arr_dt", _no_complex_dtypes)
+def test_floor_divide_python_scalar(arr_dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arr_dt, q)
 
-    X = dpt.zeros((10, 10), dtype=arr_dt, sycl_queue=q)
-    py_zeros = (
-        bool(0),
-        int(0),
-        float(0),
-        complex(0),
-        np.float32(0),
-        ctypes.c_int(0),
+    X = dpt.ones((10, 10), dtype=arr_dt, sycl_queue=q)
+    py_ones = (
+        bool(1),
+        int(1),
+        float(1),
+        np.float32(1),
+        ctypes.c_int(1),
     )
-    for sc in py_zeros:
-        R = dpt.equal(X, sc)
+    for sc in py_ones:
+        R = dpt.floor_divide(X, sc)
         assert isinstance(R, dpt.usm_ndarray)
-        assert dpt.all(R)
-        R = dpt.equal(sc, X)
+        R = dpt.floor_divide(sc, X)
         assert isinstance(R, dpt.usm_ndarray)
-        assert dpt.all(R)
 
 
 class MockArray:
@@ -164,16 +162,16 @@ class MockArray:
         return self.data_.__sycl_usm_array_interface__
 
 
-def test_equal_mock_array():
+def test_floor_divide_mock_array():
     get_queue_or_skip()
     a = dpt.arange(10)
     b = dpt.ones(10)
     c = MockArray(b)
-    r = dpt.equal(a, c)
+    r = dpt.floor_divide(a, c)
     assert isinstance(r, dpt.usm_ndarray)
 
 
-def test_equal_canary_mock_array():
+def test_floor_divide_canary_mock_array():
     get_queue_or_skip()
     a = dpt.arange(10)
 
@@ -187,4 +185,4 @@ def test_equal_canary_mock_array():
 
     c = Canary()
     with pytest.raises(ValueError):
-        dpt.equal(a, c)
+        dpt.floor_divide(a, c)

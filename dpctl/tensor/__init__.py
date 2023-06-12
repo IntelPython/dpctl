@@ -100,6 +100,7 @@ from ._elementwise_funcs import (
     equal,
     exp,
     expm1,
+    floor_divide,
     imag,
     isfinite,
     isinf,
@@ -108,6 +109,7 @@ from ._elementwise_funcs import (
     log,
     log1p,
     multiply,
+    not_equal,
     proj,
     real,
     sin,
@@ -212,5 +214,7 @@ __all__ = [
     "multiply",
     "subtract",
     "equal",
+    "not_equal",
     "sum",
+    "floor_divide",
 ]
