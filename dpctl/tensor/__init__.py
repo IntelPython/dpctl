@@ -100,6 +100,7 @@ from ._elementwise_funcs import (
     equal,
     exp,
     expm1,
+    floor_divide,
     imag,
     isfinite,
     isinf,
@@ -213,4 +214,5 @@ __all__ = [
     "equal",
     "not_equal",
     "sum",
+    "floor_divide",
 ]

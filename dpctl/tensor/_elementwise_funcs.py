@@ -270,7 +270,31 @@ expm1 = UnaryElementwiseFunc(
 # FIXME: implement U15
 
 # B10: ==== FLOOR_DIVIDE  (x1, x2)
-# FIXME: implement B10
+_floor_divide_docstring_ = """
+floor_divide(x1, x2, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2` to the greatest
+integer-value number that is not greater than the division result.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+Returns:
+    usm_narray:
+        an array containing the result of element-wise  floor division.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+floor_divide = BinaryElementwiseFunc(
+    "floor_divide",
+    ti._floor_divide_result_type,
+    ti._floor_divide,
+    _floor_divide_docstring_,
+)
 
 # B11: ==== GREATER       (x1, x2)
 # FIXME: implement B11

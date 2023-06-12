@@ -39,6 +39,7 @@
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
+#include "kernels/elementwise_functions/floor_divide.hpp"
 #include "kernels/elementwise_functions/imag.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
@@ -567,7 +568,40 @@ namespace impl
 // B10: ==== FLOOR_DIVIDE  (x1, x2)
 namespace impl
 {
-// FIXME: add code for B10
+namespace floor_divide_fn_ns = dpctl::tensor::kernels::floor_divide;
+
+static binary_contig_impl_fn_ptr_t
+    floor_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int floor_divide_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    floor_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_floor_divide_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = floor_divide_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::FloorDivideTypeMapFactory;
+    DispatchTableBuilder<int, FloorDivideTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(floor_divide_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::FloorDivideStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         FloorDivideStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(floor_divide_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::FloorDivideContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, FloorDivideContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(floor_divide_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // B11: ==== GREATER       (x1, x2)
@@ -1516,7 +1550,45 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B10: ==== FLOOR_DIVIDE  (x1, x2)
-    // FIXME:
+    {
+        impl::populate_floor_divide_dispatch_tables();
+        using impl::floor_divide_contig_dispatch_table;
+        using impl::floor_divide_output_id_table;
+        using impl::floor_divide_strided_dispatch_table;
+
+        auto floor_divide_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                      dpctl::tensor::usm_ndarray src2,
+                                      dpctl::tensor::usm_ndarray dst,
+                                      sycl::queue exec_q,
+                                      const std::vector<sycl::event> &depends =
+                                          {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, floor_divide_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                floor_divide_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                floor_divide_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto floor_divide_result_type_pyapi = [&](py::dtype dtype1,
+                                                  py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               floor_divide_output_id_table);
+        };
+        m.def("_floor_divide", floor_divide_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_floor_divide_result_type", floor_divide_result_type_pyapi, "");
+    }
 
     // B11: ==== GREATER       (x1, x2)
     // FIXME:
