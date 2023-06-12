@@ -169,3 +169,55 @@ def test_subtract_python_scalar(arr_dt):
         assert isinstance(R, dpt.usm_ndarray)
         R = dpt.subtract(sc, X)
         assert isinstance(R, dpt.usm_ndarray)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes[1:])
+def test_subtract_inplace_python_scalar(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.zeros((10, 10), dtype=dtype, sycl_queue=q)
+    dt_kind = X.dtype.kind
+    if dt_kind in "ui":
+        X -= int(0)
+    elif dt_kind == "f":
+        X -= float(0)
+    elif dt_kind == "c":
+        X -= complex(0)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes[1:])
+@pytest.mark.parametrize("op2_dtype", _all_dtypes[1:])
+def test_subtract_inplace_dtype_matrix(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+
+    if dpt.can_cast(op2_dtype, op1_dtype, casting="safe"):
+        ar1 -= ar2
+        assert (dpt.asnumpy(ar1) == np.zeros(ar1.shape, dtype=ar1.dtype)).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
+
+        ar3[::-1] -= ar4[::2]
+        assert (dpt.asnumpy(ar3) == np.zeros(ar3.shape, dtype=ar3.dtype)).all()
+
+    else:
+        with pytest.raises(TypeError):
+            ar1 -= ar2
+
+
+def test_subtract_inplace_broadcasting():
+    get_queue_or_skip()
+
+    m = dpt.ones((100, 5), dtype="i4")
+    v = dpt.arange(5, dtype="i4")
+
+    m -= v
+    assert (
+        dpt.asnumpy(m) == np.arange(1, -4, step=-1, dtype="i4")[np.newaxis, :]
+    ).all()

@@ -172,3 +172,59 @@ def test_multiply_python_scalar_gh1219(arr_dt, sc):
     R = dpt.multiply(sc, X)
     Rnp = np.multiply(sc, Xnp)
     assert _compare_dtypes(R.dtype, Rnp.dtype, sycl_queue=q)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_multiply_inplace_python_scalar(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.ones((10, 10), dtype=dtype, sycl_queue=q)
+    dt_kind = X.dtype.kind
+    if dt_kind in "ui":
+        X *= int(1)
+    elif dt_kind == "f":
+        X *= float(1)
+    elif dt_kind == "c":
+        X *= complex(1)
+    elif dt_kind == "b":
+        X *= bool(1)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes)
+@pytest.mark.parametrize("op2_dtype", _all_dtypes)
+def test_multiply_inplace_dtype_matrix(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+
+    if dpt.can_cast(op2_dtype, op1_dtype, casting="safe"):
+        ar1 *= ar2
+        assert (
+            dpt.asnumpy(ar1) == np.full(ar1.shape, 1, dtype=ar1.dtype)
+        ).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
+
+        ar3[::-1] *= ar4[::2]
+        assert (
+            dpt.asnumpy(ar3) == np.full(ar3.shape, 1, dtype=ar3.dtype)
+        ).all()
+
+    else:
+        with pytest.raises(TypeError):
+            ar1 *= ar2
+
+
+def test_multiply_inplace_broadcasting():
+    get_queue_or_skip()
+
+    m = dpt.ones((100, 5), dtype="i4")
+    v = dpt.arange(5, dtype="i4")
+
+    m *= v
+    assert (dpt.asnumpy(m) == np.arange(0, 5, dtype="i4")[np.newaxis, :]).all()

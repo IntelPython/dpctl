@@ -423,7 +423,7 @@ def test_add_inplace_errors():
     ar1 = np.ones(2, dtype="float32")
     ar2 = dpt.ones(2, dtype="float32")
     with pytest.raises(TypeError):
-        ar1 += ar2
+        dpt.add.inplace(ar1, ar2)
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dict()
