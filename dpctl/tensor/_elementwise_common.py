@@ -650,6 +650,10 @@ class BinaryElementwiseFunc:
             raise TypeError(
                 f"Expected dpctl.tensor.usm_ndarray, got {type(lhs)}"
             )
+        if isinstance(val, dpt.usm_ndarray):
+            if ti._array_overlap(lhs, val):
+                # call standard operator in this case
+                return self(lhs, val)
         q1, lhs_usm_type = _get_queue_usm_type(lhs)
         q2, val_usm_type = _get_queue_usm_type(val)
         if q2 is None:

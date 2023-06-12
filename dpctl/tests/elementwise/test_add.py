@@ -366,11 +366,11 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
     skip_if_dtype_not_supported(op1_dtype, q)
     skip_if_dtype_not_supported(op2_dtype, q)
 
-    if dpt.can_cast(op2_dtype, op1_dtype, casting="safe"):
-        sz = 127
-        ar1 = dpt.ones(sz, dtype=op1_dtype)
-        ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
 
+    if dpt.can_cast(op2_dtype, op1_dtype, casting="safe"):
         ar1 += ar2
         assert (
             dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype=ar1.dtype)
@@ -385,7 +385,8 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
         ).all()
 
     else:
-        assert pytest.raises(TypeError)
+        with pytest.raises(TypeError):
+            ar1 += ar2
 
 
 def test_add_inplace_broadcasting():
@@ -396,3 +397,40 @@ def test_add_inplace_broadcasting():
 
     m += v
     assert (dpt.asnumpy(m) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
+
+
+def test_add_inplace_errors():
+    get_queue_or_skip()
+    try:
+        gpu_queue = dpctl.SyclQueue("gpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('gpu') failed, skipping")
+    try:
+        cpu_queue = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('cpu') failed, skipping")
+
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
+    ar2 = dpt.ones_like(ar1, sycl_queue=cpu_queue)
+    with pytest.raises(ExecutionPlacementError):
+        ar1 += ar2
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dpt.ones(3, dtype="float32")
+    with pytest.raises(ValueError):
+        ar1 += ar2
+
+    ar1 = np.ones(2, dtype="float32")
+    ar2 = dpt.ones(2, dtype="float32")
+    with pytest.raises(TypeError):
+        ar1 += ar2
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dict()
+    with pytest.raises(ValueError):
+        ar1 += ar2
+
+    ar1 = dpt.ones((2, 1), dtype="float32")
+    ar2 = dpt.ones((1, 2), dtype="float32")
+    with pytest.raises(ValueError):
+        ar1 += ar2
