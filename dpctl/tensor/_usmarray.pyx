@@ -1284,11 +1284,8 @@ cdef class usm_ndarray:
         return self
 
     def __imul__(self, other):
-        res = self.__mul__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        from ._elementwise_funcs import multiply
+        return multiply.inplace(self, other)
 
     def __ior__(self, other):
         res = self.__or__(other)
@@ -1312,11 +1309,8 @@ cdef class usm_ndarray:
         return self
 
     def __isub__(self, other):
-        res = self.__sub__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        from ._elementwise_funcs import subtract
+        return subtract.inplace(self, other)
 
     def __itruediv__(self, other):
         res = self.__truediv__(other)

@@ -607,7 +607,11 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 multiply = BinaryElementwiseFunc(
-    "multiply", ti._multiply_result_type, ti._multiply, _multiply_docstring_
+    "multiply",
+    ti._multiply_result_type,
+    ti._multiply,
+    _multiply_docstring_,
+    ti._multiply_inplace,
 )
 
 # U25: ==== NEGATIVE    (x)
@@ -786,7 +790,11 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 subtract = BinaryElementwiseFunc(
-    "subtract", ti._subtract_result_type, ti._subtract, _subtract_docstring_
+    "subtract",
+    ti._subtract_result_type,
+    ti._subtract,
+    _subtract_docstring_,
+    ti._subtract_inplace,
 )
 
 
