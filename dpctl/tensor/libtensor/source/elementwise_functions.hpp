@@ -63,6 +63,10 @@ py_unary_ufunc(dpctl::tensor::usm_ndarray src,
                const contig_dispatchT &contig_dispatch_vector,
                const strided_dispatchT &strided_dispatch_vector)
 {
+    if (!dst.is_writable()) {
+        throw py::value_error("Output array is read-only.");
+    }
+
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
@@ -306,6 +310,9 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const contig_row_matrix_dispatchT
         &contig_row_matrix_broadcast_dispatch_table)
 {
+    if (!dst.is_writable()) {
+        throw py::value_error("Output array is read-only.");
+    }
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
@@ -602,6 +609,10 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
                         const contig_dispatchT &contig_dispatch_table,
                         const strided_dispatchT &strided_dispatch_table)
 {
+    if (!lhs.is_writable()) {
+        throw py::value_error("Output array is read-only.");
+    }
+
     // check type_nums
     int rhs_typenum = rhs.get_typenum();
     int lhs_typenum = lhs.get_typenum();
