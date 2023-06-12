@@ -650,10 +650,6 @@ class BinaryElementwiseFunc:
             raise TypeError(
                 f"Expected dpctl.tensor.usm_ndarray, got {type(lhs)}"
             )
-        if isinstance(val, dpt.usm_ndarray):
-            if ti._array_overlap(lhs, val):
-                # call standard operator in this case
-                return self(lhs, val)
         q1, lhs_usm_type = _get_queue_usm_type(lhs)
         q2, val_usm_type = _get_queue_usm_type(val)
         if q2 is None:
@@ -727,10 +723,12 @@ class BinaryElementwiseFunc:
 
         if isinstance(val, dpt.usm_ndarray):
             rhs = val
+            overlap = ti._array_overlap(lhs, rhs)
         else:
             rhs = dpt.asarray(val, dtype=val_dtype, sycl_queue=exec_q)
+            overlap = False
 
-        if buf_dt == val_dtype:
+        if buf_dt == val_dtype and overlap is False:
             rhs = dpt.broadcast_to(rhs, res_shape)
             ht_, _ = self.binary_inplace_fn_(
                 lhs=lhs, rhs=rhs, sycl_queue=exec_q
