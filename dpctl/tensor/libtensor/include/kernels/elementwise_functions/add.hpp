@@ -34,6 +34,7 @@
 #include "utils/type_utils.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "kernels/elementwise_functions/common_inplace.hpp"
 #include <pybind11/pybind11.h>
 
 namespace dpctl
@@ -212,7 +213,6 @@ template <typename fnT, typename T1, typename T2> struct AddTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AddOutputType<T1, T2>::value_type;
-        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
@@ -360,6 +360,122 @@ struct AddContigRowContigMatrixBroadcastFactory
                     add_contig_row_contig_matrix_broadcast_impl<T1, T2, resT>;
                 return fn;
             }
+        }
+    }
+};
+
+template <typename argT, typename resT> struct AddInplaceFunctor
+{
+
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+
+    void operator()(resT &res, const argT &in)
+    {
+        res += in;
+    }
+
+    template <int vec_sz>
+    void operator()(sycl::vec<resT, vec_sz> &res,
+                    const sycl::vec<argT, vec_sz> &in)
+    {
+        res += in;
+    }
+};
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using AddInplaceContigFunctor = elementwise_common::BinaryInplaceContigFunctor<
+    argT,
+    resT,
+    AddInplaceFunctor<argT, resT>,
+    vec_sz,
+    n_vecs>;
+
+template <typename argT, typename resT, typename IndexerT>
+using AddInplaceStridedFunctor =
+    elementwise_common::BinaryInplaceStridedFunctor<
+        argT,
+        resT,
+        IndexerT,
+        AddInplaceFunctor<argT, resT>>;
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class add_inplace_contig_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+add_inplace_contig_impl(sycl::queue exec_q,
+                        size_t nelems,
+                        const char *arg_p,
+                        py::ssize_t arg_offset,
+                        char *res_p,
+                        py::ssize_t res_offset,
+                        const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_contig_impl<
+        argTy, resTy, AddInplaceContigFunctor, add_inplace_contig_kernel>(
+        exec_q, nelems, arg_p, arg_offset, res_p, res_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2> struct AddInplaceContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = add_inplace_contig_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename resT, typename argT, typename IndexerT>
+class add_inplace_strided_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+add_inplace_strided_impl(sycl::queue exec_q,
+                         size_t nelems,
+                         int nd,
+                         const py::ssize_t *shape_and_strides,
+                         const char *arg_p,
+                         py::ssize_t arg_offset,
+                         char *res_p,
+                         py::ssize_t res_offset,
+                         const std::vector<sycl::event> &depends,
+                         const std::vector<sycl::event> &additional_depends)
+{
+    return elementwise_common::binary_inplace_strided_impl<
+        argTy, resTy, AddInplaceStridedFunctor, add_inplace_strided_kernel>(
+        exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
+        res_offset, depends, additional_depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct AddInplaceStridedFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = add_inplace_strided_impl<T1, T2>;
+            return fn;
         }
     }
 };
