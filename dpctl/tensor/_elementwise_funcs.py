@@ -408,7 +408,35 @@ isnan = UnaryElementwiseFunc(
 # FIXME: implement B13
 
 # B14: ==== LESS_EQUAL  (x1, x2)
-# FIXME: implement B14
+_less_equal_docstring_ = """
+less_equal(x1, x2, out=None, order='K')
+Computes the less-than or equal-to test results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the result of element-wise less-than or equal-to
+        comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+less_equal = BinaryElementwiseFunc(
+    "less_equal",
+    ti._less_equal_result_type,
+    ti._less_equal,
+    _less_equal_docstring_,
+)
 
 # U20: ==== LOG         (x)
 _log_docstring = """
