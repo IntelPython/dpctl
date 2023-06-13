@@ -46,6 +46,7 @@
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
+#include "kernels/elementwise_functions/less.hpp"
 #include "kernels/elementwise_functions/less_equal.hpp"
 #include "kernels/elementwise_functions/log.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
@@ -825,7 +826,39 @@ void populate_isnan_dispatch_vectors(void)
 // B13: ==== LESS        (x1, x2)
 namespace impl
 {
-// FIXME: add code for B13
+namespace less_fn_ns = dpctl::tensor::kernels::less;
+
+static binary_contig_impl_fn_ptr_t less_contig_dispatch_table[td_ns::num_types]
+                                                             [td_ns::num_types];
+static int less_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    less_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_less_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = less_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LessTypeMapFactory;
+    DispatchTableBuilder<int, LessTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(less_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LessStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LessStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(less_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LessContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LessContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(less_contig_dispatch_table);
+};
 } // namespace impl
 
 // B14: ==== LESS_EQUAL  (x1, x2)
@@ -1867,7 +1900,43 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B13: ==== LESS        (x1, x2)
-    // FIXME:
+    {
+        impl::populate_less_dispatch_tables();
+        using impl::less_contig_dispatch_table;
+        using impl::less_output_id_table;
+        using impl::less_strided_dispatch_table;
+
+        auto less_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                              dpctl::tensor::usm_ndarray src2,
+                              dpctl::tensor::usm_ndarray dst,
+                              sycl::queue exec_q,
+                              const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, less_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                less_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                less_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto less_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               less_output_id_table);
+        };
+        m.def("_less", less_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_less_result_type", less_result_type_pyapi, "");
+    }
 
     // B14: ==== LESS_EQUAL  (x1, x2)
     {
