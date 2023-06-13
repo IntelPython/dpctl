@@ -81,7 +81,12 @@ class UnaryElementwiseFunc:
             x.dtype, self.result_type_resolver_fn_, x.sycl_device
         )
         if res_dt is None:
-            raise RuntimeError
+            raise TypeError(
+                f"function '{self.name_}' does not support input type "
+                f"({x.dtype}), "
+                "and the input could not be safely coerced to any "
+                "supported types according to the casting rule ''safe''."
+            )
         exec_q = x.sycl_queue
         if buf_dt is None:
             if out is None:
