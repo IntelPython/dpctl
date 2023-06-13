@@ -31,6 +31,7 @@ from ._type_utils import (
     _empty_like_pair_orderK,
     _find_buf_dtype,
     _find_buf_dtype2,
+    _find_inplace_dtype,
     _to_device_supported_dtype,
 )
 
@@ -331,11 +332,19 @@ class BinaryElementwiseFunc:
     Class that implements binary element-wise functions.
     """
 
-    def __init__(self, name, result_type_resolver_fn, binary_dp_impl_fn, docs):
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        binary_dp_impl_fn,
+        docs,
+        binary_inplace_fn=None,
+    ):
         self.__name__ = "BinaryElementwiseFunc"
         self.name_ = name
         self.result_type_resolver_fn_ = result_type_resolver_fn
         self.binary_fn_ = binary_dp_impl_fn
+        self.binary_inplace_fn_ = binary_inplace_fn
         self.__doc__ = docs
 
     def __str__(self):
@@ -345,6 +354,13 @@ class BinaryElementwiseFunc:
         return f"<BinaryElementwiseFunc '{self.name_}'>"
 
     def __call__(self, o1, o2, out=None, order="K"):
+        # FIXME: replace with check against base array
+        # when views can be identified
+        if o1 is out:
+            return self._inplace(o1, o2)
+        elif o2 is out:
+            return self._inplace(o2, o1)
+
         if order not in ["K", "C", "F", "A"]:
             order = "K"
         q1, o1_usm_type = _get_queue_usm_type(o1)
@@ -388,6 +404,7 @@ class BinaryElementwiseFunc:
             raise TypeError(
                 "Shape of arguments can not be inferred. "
                 "Arguments are expected to be "
+                "lists, tuples, or both"
             )
         try:
             res_shape = _broadcast_shape_impl(
@@ -415,7 +432,7 @@ class BinaryElementwiseFunc:
 
         if res_dt is None:
             raise TypeError(
-                "function 'add' does not support input types "
+                f"function '{self.name_}' does not support input types "
                 f"({o1_dtype}, {o2_dtype}), "
                 "and the inputs could not be safely coerced to any "
                 "supported types according to the casting rule ''safe''."
@@ -631,3 +648,116 @@ class BinaryElementwiseFunc:
         )
         dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
         return out
+
+    def _inplace(self, lhs, val):
+        if self.binary_inplace_fn_ is None:
+            raise ValueError(
+                f"In-place operation not supported for ufunc '{self.name_}'"
+            )
+        if not isinstance(lhs, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected dpctl.tensor.usm_ndarray, got {type(lhs)}"
+            )
+        q1, lhs_usm_type = _get_queue_usm_type(lhs)
+        q2, val_usm_type = _get_queue_usm_type(val)
+        if q2 is None:
+            exec_q = q1
+            usm_type = lhs_usm_type
+        else:
+            exec_q = dpctl.utils.get_execution_queue((q1, q2))
+            if exec_q is None:
+                raise ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    lhs_usm_type,
+                    val_usm_type,
+                )
+            )
+        dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+        lhs_shape = _get_shape(lhs)
+        val_shape = _get_shape(val)
+        if not all(
+            isinstance(s, (tuple, list))
+            for s in (
+                lhs_shape,
+                val_shape,
+            )
+        ):
+            raise TypeError(
+                "Shape of arguments can not be inferred. "
+                "Arguments are expected to be "
+                "lists, tuples, or both"
+            )
+        try:
+            res_shape = _broadcast_shape_impl(
+                [
+                    lhs_shape,
+                    val_shape,
+                ]
+            )
+        except ValueError:
+            raise ValueError(
+                "operands could not be broadcast together with shapes "
+                f"{lhs_shape} and {val_shape}"
+            )
+        if res_shape != lhs_shape:
+            raise ValueError(
+                f"output shape {lhs_shape} does not match "
+                f"broadcast shape {res_shape}"
+            )
+        sycl_dev = exec_q.sycl_device
+        lhs_dtype = lhs.dtype
+        val_dtype = _get_dtype(val, sycl_dev)
+        if not _validate_dtype(val_dtype):
+            raise ValueError("Input operand of unsupported type")
+
+        lhs_dtype, val_dtype = _resolve_weak_types(
+            lhs_dtype, val_dtype, sycl_dev
+        )
+
+        buf_dt = _find_inplace_dtype(
+            lhs_dtype, val_dtype, self.result_type_resolver_fn_, sycl_dev
+        )
+
+        if buf_dt is None:
+            raise TypeError(
+                f"In-place '{self.name_}' does not support input types "
+                f"({lhs_dtype}, {val_dtype}), "
+                "and the inputs could not be safely coerced to any "
+                "supported types according to the casting rule ''safe''."
+            )
+
+        if isinstance(val, dpt.usm_ndarray):
+            rhs = val
+            overlap = ti._array_overlap(lhs, rhs)
+        else:
+            rhs = dpt.asarray(val, dtype=val_dtype, sycl_queue=exec_q)
+            overlap = False
+
+        if buf_dt == val_dtype and overlap is False:
+            rhs = dpt.broadcast_to(rhs, res_shape)
+            ht_, _ = self.binary_inplace_fn_(
+                lhs=lhs, rhs=rhs, sycl_queue=exec_q
+            )
+            ht_.wait()
+
+        else:
+            buf = dpt.empty_like(rhs, dtype=buf_dt)
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=rhs, dst=buf, sycl_queue=exec_q
+            )
+
+            buf = dpt.broadcast_to(buf, res_shape)
+            ht_, _ = self.binary_inplace_fn_(
+                lhs=lhs,
+                rhs=buf,
+                sycl_queue=exec_q,
+                depends=[copy_ev],
+            )
+            ht_copy_ev.wait()
+            ht_.wait()
+
+        return lhs

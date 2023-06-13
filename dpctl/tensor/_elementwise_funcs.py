@@ -73,7 +73,11 @@ Returns:
         returned array is determined by the Type Promotion Rules.
 """
 add = BinaryElementwiseFunc(
-    "add", ti._add_result_type, ti._add, _add_docstring_
+    "add",
+    ti._add_result_type,
+    ti._add,
+    _add_docstring_,
+    binary_inplace_fn=ti._add_inplace,
 )
 
 # U04: ===== ASIN  (x)
@@ -603,7 +607,11 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 multiply = BinaryElementwiseFunc(
-    "multiply", ti._multiply_result_type, ti._multiply, _multiply_docstring_
+    "multiply",
+    ti._multiply_result_type,
+    ti._multiply,
+    _multiply_docstring_,
+    ti._multiply_inplace,
 )
 
 # U25: ==== NEGATIVE    (x)
@@ -782,7 +790,11 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 subtract = BinaryElementwiseFunc(
-    "subtract", ti._subtract_result_type, ti._subtract, _subtract_docstring_
+    "subtract",
+    ti._subtract_result_type,
+    ti._subtract,
+    _subtract_docstring_,
+    ti._subtract_inplace,
 )
 
 
