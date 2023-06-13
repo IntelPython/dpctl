@@ -89,6 +89,7 @@ def test_type_utils_empty_like_orderK_invalid_args():
                 3,
             ),
             dpt.int32,
+            (3,),
             "device",
             None,
         )
@@ -105,6 +106,7 @@ def test_type_utils_empty_like_orderK_invalid_args():
                 3,
             ),
             dpt.int32,
+            (10,),
             "device",
             None,
         )

@@ -18,7 +18,7 @@ import itertools
 
 import numpy as np
 import pytest
-from numpy.testing import assert_raises_regex
+from numpy.testing import assert_allclose, assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
@@ -27,26 +27,32 @@ from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 from .utils import _all_dtypes, _map_to_device_dtype
 
 
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.sin, dpt.sin), (np.cos, dpt.cos)]
+)
 @pytest.mark.parametrize("dtype", _all_dtypes)
-def test_cos_out_type(dtype):
+def test_sincos_out_type(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
-    expected_dtype = np.cos(np.array(0, dtype=dtype)).dtype
+    expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    assert dpt.cos(X).dtype == expected_dtype
+    assert dpt_call(X).dtype == expected_dtype
 
     X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
-    expected_dtype = np.cos(np.array(0, dtype=dtype)).dtype
+    expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
     Y = dpt.empty_like(X, dtype=expected_dtype)
-    dpt.cos(X, out=Y)
-    np.testing.assert_allclose(dpt.asnumpy(dpt.cos(X)), dpt.asnumpy(Y))
+    dpt_call(X, out=Y)
+    assert_allclose(dpt.asnumpy(dpt_call(X)), dpt.asnumpy(Y))
 
 
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.sin, dpt.sin), (np.cos, dpt.cos)]
+)
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_cos_output(dtype):
+def test_sincos_output(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -56,23 +62,26 @@ def test_cos_output(dtype):
     Xnp = np.linspace(-np.pi / 4, np.pi / 4, num=n_seq, dtype=dtype)
     X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
 
-    Y = dpt.cos(X)
+    Y = dpt_call(X)
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
-    np.testing.assert_allclose(
-        dpt.asnumpy(Y), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol
+    assert_allclose(
+        dpt.asnumpy(Y), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
     )
 
     Z = dpt.empty_like(X, dtype=dtype)
-    dpt.cos(X, out=Z)
+    dpt_call(X, out=Z)
 
-    np.testing.assert_allclose(
-        dpt.asnumpy(Z), np.repeat(np.cos(Xnp), n_rep), atol=tol, rtol=tol
+    assert_allclose(
+        dpt.asnumpy(Z), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
     )
 
 
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.sin, dpt.sin), (np.cos, dpt.cos)]
+)
 @pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
-def test_cos_usm_type(usm_type):
+def test_sincos_usm_type(np_call, dpt_call, usm_type):
     q = get_queue_or_skip()
 
     arg_dt = np.dtype("f4")
@@ -81,21 +90,24 @@ def test_cos_usm_type(usm_type):
     X[..., 0::2] = np.pi / 6
     X[..., 1::2] = np.pi / 3
 
-    Y = dpt.cos(X)
+    Y = dpt_call(X)
     assert Y.usm_type == X.usm_type
     assert Y.sycl_queue == X.sycl_queue
     assert Y.flags.c_contiguous
 
     expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y[..., 0::2] = np.cos(np.float32(np.pi / 6))
-    expected_Y[..., 1::2] = np.cos(np.float32(np.pi / 3))
+    expected_Y[..., 0::2] = np_call(np.float32(np.pi / 6))
+    expected_Y[..., 1::2] = np_call(np.float32(np.pi / 3))
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
-    np.testing.assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.sin, dpt.sin), (np.cos, dpt.cos)]
+)
 @pytest.mark.parametrize("dtype", _all_dtypes)
-def test_cos_order(dtype):
+def test_sincos_order(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -108,18 +120,17 @@ def test_cos_order(dtype):
     for ord in ["C", "F", "A", "K"]:
         for perms in itertools.permutations(range(4)):
             U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-            Y = dpt.cos(U, order=ord)
-            expected_Y = np.cos(dpt.asnumpy(U))
+            Y = dpt_call(U, order=ord)
+            expected_Y = np_call(dpt.asnumpy(U))
             tol = 8 * max(
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,
             )
-            np.testing.assert_allclose(
-                dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
-            )
+            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
-def test_cos_errors():
+@pytest.mark.parametrize("callable", [dpt.sin, dpt.cos])
+def test_sincos_errors(callable):
     get_queue_or_skip()
     try:
         gpu_queue = dpctl.SyclQueue("gpu")
@@ -135,7 +146,7 @@ def test_cos_errors():
     assert_raises_regex(
         TypeError,
         "Input and output allocation queues are not compatible",
-        dpt.cos,
+        callable,
         x,
         y,
     )
@@ -145,7 +156,7 @@ def test_cos_errors():
     assert_raises_regex(
         TypeError,
         "The shape of input and output arrays are inconsistent",
-        dpt.cos,
+        callable,
         x,
         y,
     )
@@ -153,23 +164,69 @@ def test_cos_errors():
     x = dpt.zeros(2)
     y = x
     assert_raises_regex(
-        TypeError, "Input and output arrays have memory overlap", dpt.cos, x, y
+        TypeError, "Input and output arrays have memory overlap", callable, x, y
     )
 
     x = dpt.zeros(2, dtype="float32")
     y = np.empty_like(x)
     assert_raises_regex(
-        TypeError, "output array must be of usm_ndarray type", dpt.cos, x, y
+        TypeError, "output array must be of usm_ndarray type", callable, x, y
     )
 
 
+@pytest.mark.parametrize("callable", [dpt.sin, dpt.cos])
 @pytest.mark.parametrize("dtype", _all_dtypes)
-def test_cos_error_dtype(dtype):
+def test_sincos_error_dtype(callable, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     x = dpt.zeros(5, dtype=dtype)
     y = dpt.empty_like(x, dtype="int16")
     assert_raises_regex(
-        TypeError, "Output array of type.*is needed", dpt.cos, x, y
+        TypeError, "Output array of type.*is needed", callable, x, y
     )
+
+
+@pytest.mark.parametrize("dtype", ["e", "f", "d"])
+def test_sincos_special_cases(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    x = [np.nan, np.nan, np.nan, np.nan]
+    y = [np.nan, -np.nan, np.inf, -np.inf]
+    xf = np.array(x, dtype=dtype)
+    yf = dpt.asarray(y, dtype=dtype)
+    assert_allclose(dpt.asnumpy(dpt.sin(yf)), xf, atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(dpt.cos(yf)), xf, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_sincos_strided(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    np.random.seed(42)
+    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
+    sizes = np.arange(2, 100)
+    tol = 8 * dpt.finfo(dtype).resolution
+
+    for ii in sizes:
+        Xnp = dtype(np.random.uniform(low=0.01, high=88.1, size=ii))
+        Xnp[3:-1:4] = 120000.0
+        X = dpt.asarray(Xnp)
+        sin_true = np.sin(Xnp)
+        cos_true = np.cos(Xnp)
+        for jj in strides:
+            assert_allclose(
+                dpt.asnumpy(dpt.sin(X[::jj])),
+                sin_true[::jj],
+                atol=tol,
+                rtol=tol,
+            )
+            assert_allclose(
+                dpt.asnumpy(dpt.cos(X[::jj])),
+                cos_true[::jj],
+                atol=tol,
+                rtol=tol,
+            )

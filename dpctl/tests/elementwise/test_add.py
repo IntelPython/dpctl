@@ -156,6 +156,43 @@ def test_add_broadcasting():
     assert (dpt.asnumpy(r4) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
 
+def test_add_broadcasting_new_shape():
+    get_queue_or_skip()
+
+    ar1 = dpt.ones((6, 1), dtype="i4")
+    ar2 = dpt.arange(6, dtype="i4")
+
+    r = dpt.add(ar1, ar2)
+    assert (dpt.asnumpy(r) == np.arange(1, 7, dtype="i4")[np.newaxis, :]).all()
+
+    r1 = dpt.add(ar2, ar1)
+    assert (dpt.asnumpy(r1) == np.arange(1, 7, dtype="i4")[np.newaxis, :]).all()
+
+    r2 = dpt.add(ar1[::2], ar2[::2])
+    assert (
+        dpt.asnumpy(r2) == np.arange(1, 7, dtype="i4")[::2][np.newaxis, :]
+    ).all()
+
+    r3 = dpt.empty_like(ar1)
+    with pytest.raises(TypeError):
+        dpt.add(ar1, ar2, out=r3)
+
+    ar3 = dpt.ones((6, 1), dtype="i4")
+    ar4 = dpt.ones((1, 6), dtype="i4")
+
+    r4 = dpt.add(ar3, ar4)
+    assert (dpt.asnumpy(r4) == np.full((6, 6), 2, dtype="i4")).all()
+
+    r5 = dpt.add(ar4, ar3)
+    assert (dpt.asnumpy(r5) == np.full((6, 6), 2, dtype="i4")).all()
+
+    r6 = dpt.add(ar3[::2], ar4[:, ::2])
+    assert (dpt.asnumpy(r6) == np.full((3, 3), 2, dtype="i4")).all()
+
+    r7 = dpt.add(ar3[::2], ar4)
+    assert (dpt.asnumpy(r7) == np.full((3, 6), 2, dtype="i4")).all()
+
+
 def test_add_broadcasting_error():
     get_queue_or_skip()
     m = dpt.ones((10, 10), dtype="i4")
