@@ -354,6 +354,13 @@ class BinaryElementwiseFunc:
         return f"<BinaryElementwiseFunc '{self.name_}'>"
 
     def __call__(self, o1, o2, out=None, order="K"):
+        # FIXME: replace with check against base array
+        # when views can be identified
+        if o1 is out:
+            return self._inplace(o1, o2)
+        elif o2 is out:
+            return self._inplace(o2, o1)
+
         if order not in ["K", "C", "F", "A"]:
             order = "K"
         q1, o1_usm_type = _get_queue_usm_type(o1)
@@ -397,6 +404,7 @@ class BinaryElementwiseFunc:
             raise TypeError(
                 "Shape of arguments can not be inferred. "
                 "Arguments are expected to be "
+                "lists, tuples, or both"
             )
         try:
             res_shape = _broadcast_shape_impl(
@@ -424,7 +432,7 @@ class BinaryElementwiseFunc:
 
         if res_dt is None:
             raise TypeError(
-                "function 'add' does not support input types "
+                f"function '{self.name_}' does not support input types "
                 f"({o1_dtype}, {o2_dtype}), "
                 "and the inputs could not be safely coerced to any "
                 "supported types according to the casting rule ''safe''."
@@ -641,7 +649,7 @@ class BinaryElementwiseFunc:
         dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
         return out
 
-    def inplace(self, lhs, val):
+    def _inplace(self, lhs, val):
         if self.binary_inplace_fn_ is None:
             raise ValueError(
                 f"In-place operation not supported for ufunc '{self.name_}'"
@@ -681,6 +689,7 @@ class BinaryElementwiseFunc:
             raise TypeError(
                 "Shape of arguments can not be inferred. "
                 "Arguments are expected to be "
+                "lists, tuples, or both"
             )
         try:
             res_shape = _broadcast_shape_impl(
@@ -715,7 +724,7 @@ class BinaryElementwiseFunc:
 
         if buf_dt is None:
             raise TypeError(
-                f"function '{self.name_}' does not support input types "
+                f"In-place '{self.name_}' does not support input types "
                 f"({lhs_dtype}, {val_dtype}), "
                 "and the inputs could not be safely coerced to any "
                 "supported types according to the casting rule ''safe''."

@@ -294,7 +294,8 @@ def test_add_errors():
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = ar1
+    # identical view but a different object
+    y = ar1[:]
     assert_raises_regex(
         TypeError,
         "Input and output arrays have memory overlap",
@@ -423,7 +424,7 @@ def test_add_inplace_errors():
     ar1 = np.ones(2, dtype="float32")
     ar2 = dpt.ones(2, dtype="float32")
     with pytest.raises(TypeError):
-        dpt.add.inplace(ar1, ar2)
+        ar1 += ar2
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dict()
@@ -434,3 +435,19 @@ def test_add_inplace_errors():
     ar2 = dpt.ones((1, 2), dtype="float32")
     with pytest.raises(ValueError):
         ar1 += ar2
+
+
+def test_add_inplace_overlap():
+    get_queue_or_skip()
+
+    ar1 = dpt.ones(10, dtype="i4")
+    ar1 += ar1
+    assert (dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype="i4")).all()
+
+    ar1 = dpt.ones(10, dtype="i4")
+    ar2 = dpt.ones(10, dtype="i4")
+    dpt.add(ar1, ar2, out=ar1)
+    assert (dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype="i4")).all()
+
+    dpt.add(ar2, ar1, out=ar2)
+    assert (dpt.asnumpy(ar2) == np.full(ar2.shape, 3, dtype="i4")).all()

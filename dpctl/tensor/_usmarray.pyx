@@ -1246,7 +1246,7 @@ cdef class usm_ndarray:
 
     def __iadd__(self, other):
         from ._elementwise_funcs import add
-        return add.inplace(self, other)
+        return add._inplace(self, other)
 
     def __iand__(self, other):
         res = self.__and__(other)
@@ -1285,7 +1285,7 @@ cdef class usm_ndarray:
 
     def __imul__(self, other):
         from ._elementwise_funcs import multiply
-        return multiply.inplace(self, other)
+        return multiply._inplace(self, other)
 
     def __ior__(self, other):
         res = self.__or__(other)
@@ -1310,7 +1310,7 @@ cdef class usm_ndarray:
 
     def __isub__(self, other):
         from ._elementwise_funcs import subtract
-        return subtract.inplace(self, other)
+        return subtract._inplace(self, other)
 
     def __itruediv__(self, other):
         res = self.__truediv__(other)
