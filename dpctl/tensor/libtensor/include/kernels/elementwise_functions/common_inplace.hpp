@@ -191,7 +191,7 @@ public:
     }
 };
 
-// Typdefs for function pointers
+// Typedefs for function pointers
 
 typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
     sycl::queue,
