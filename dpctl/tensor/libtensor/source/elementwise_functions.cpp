@@ -41,6 +41,7 @@
 #include "kernels/elementwise_functions/expm1.hpp"
 #include "kernels/elementwise_functions/floor_divide.hpp"
 #include "kernels/elementwise_functions/greater.hpp"
+#include "kernels/elementwise_functions/greater_equal.hpp"
 #include "kernels/elementwise_functions/imag.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
@@ -647,7 +648,39 @@ void populate_greater_dispatch_tables(void)
 // B12: ==== GREATER_EQUAL (x1, x2)
 namespace impl
 {
-// FIXME: add code for B12
+namespace greater_equal_fn_ns = dpctl::tensor::kernels::greater_equal;
+
+static binary_contig_impl_fn_ptr_t
+    greater_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int greater_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    greater_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_greater_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = greater_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::GreaterEqualTypeMapFactory;
+    DispatchTableBuilder<int, GreaterEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(greater_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::GreaterEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         GreaterEqualStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(greater_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::GreaterEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, GreaterEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(greater_equal_contig_dispatch_table);
+};
 } // namespace impl
 
 // U16: ==== IMAG        (x)
@@ -1697,7 +1730,46 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B12: ==== GREATER_EQUAL (x1, x2)
-    // FIXME:
+    {
+        impl::populate_greater_equal_dispatch_tables();
+        using impl::greater_equal_contig_dispatch_table;
+        using impl::greater_equal_output_id_table;
+        using impl::greater_equal_strided_dispatch_table;
+
+        auto greater_equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                       dpctl::tensor::usm_ndarray src2,
+                                       dpctl::tensor::usm_ndarray dst,
+                                       sycl::queue exec_q,
+                                       const std::vector<sycl::event> &depends =
+                                           {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, greater_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                greater_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                greater_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto greater_equal_result_type_pyapi = [&](py::dtype dtype1,
+                                                   py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               greater_equal_output_id_table);
+        };
+        m.def("_greater_equal", greater_equal_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_greater_equal_result_type", greater_equal_result_type_pyapi,
+              "");
+    }
 
     // U16: ==== IMAG        (x)
     {
