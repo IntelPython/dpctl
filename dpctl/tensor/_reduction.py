@@ -122,10 +122,12 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
         res_dt = _to_device_supported_dtype(res_dt, q.sycl_device)
 
     res_usm_type = arr.usm_type
-    if red_nd == 0:
+    if arr.size == 0:
         return dpt.zeros(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
+    if red_nd == 0:
+        return dpt.astype(arr, res_dt, copy=False)
 
     host_tasks_list = []
     if ti._sum_over_axis_dtype_supported(inp_dt, res_dt, res_usm_type, q):
