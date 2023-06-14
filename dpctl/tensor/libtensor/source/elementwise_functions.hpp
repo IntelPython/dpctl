@@ -442,7 +442,6 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         simplified_dst_strides, src1_offset, src2_offset, dst_offset);
 
     std::vector<sycl::event> host_tasks{};
-
     if (nd < 3) {
         static constexpr auto unit_stride =
             std::initializer_list<py::ssize_t>{1};
@@ -598,7 +597,8 @@ py::object py_binary_ufunc_result_type(py::dtype input1_dtype,
 
 template <typename output_typesT,
           typename contig_dispatchT,
-          typename strided_dispatchT>
+          typename strided_dispatchT,
+          typename contig_row_matrix_dispatchT>
 std::pair<sycl::event, sycl::event>
 py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
                         dpctl::tensor::usm_ndarray rhs,
@@ -607,7 +607,9 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
                         //
                         const output_typesT &output_type_table,
                         const contig_dispatchT &contig_dispatch_table,
-                        const strided_dispatchT &strided_dispatch_table)
+                        const strided_dispatchT &strided_dispatch_table,
+                        const contig_row_matrix_dispatchT
+                            &contig_row_matrix_broadcast_dispatch_table)
 {
     if (!lhs.is_writable()) {
         throw py::value_error("Output array is read-only.");
@@ -729,15 +731,14 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
         rhs_offset, lhs_offset);
 
     std::vector<sycl::event> host_tasks{};
-
-    if (nd < 2) {
+    if (nd < 3) {
         static constexpr auto unit_stride =
             std::initializer_list<py::ssize_t>{1};
 
         if ((nd == 1) && isEqual(simplified_rhs_strides, unit_stride) &&
             isEqual(simplified_lhs_strides, unit_stride))
         {
-            auto contig_fn = contig_dispatch_table[lhs_typeid][rhs_typeid];
+            auto contig_fn = contig_dispatch_table[rhs_typeid][lhs_typeid];
 
             if (contig_fn != nullptr) {
                 auto comp_ev =
@@ -749,10 +750,34 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
                 return std::make_pair(ht_ev, comp_ev);
             }
         }
+        if (nd == 2) {
+            static constexpr auto one_zero_strides =
+                std::initializer_list<py::ssize_t>{1, 0};
+            constexpr py::ssize_t one{1};
+            // special case of C-contiguous matrix and a row
+            if (isEqual(simplified_rhs_strides, one_zero_strides) &&
+                isEqual(simplified_lhs_strides, {one, simplified_shape[0]}))
+            {
+                auto row_matrix_broadcast_fn =
+                    contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
+                                                              [lhs_typeid];
+                if (row_matrix_broadcast_fn != nullptr) {
+                    size_t n0 = simplified_shape[1];
+                    size_t n1 = simplified_shape[0];
+                    sycl::event comp_ev = row_matrix_broadcast_fn(
+                        exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
+                        lhs_data, lhs_offset, depends);
+
+                    return std::make_pair(dpctl::utils::keep_args_alive(
+                                              exec_q, {lhs, rhs}, host_tasks),
+                                          comp_ev);
+                }
+            }
+        }
     }
 
     // dispatch to strided code
-    auto strided_fn = strided_dispatch_table[lhs_typeid][rhs_typeid];
+    auto strided_fn = strided_dispatch_table[rhs_typeid][lhs_typeid];
 
     if (strided_fn == nullptr) {
         throw std::runtime_error(

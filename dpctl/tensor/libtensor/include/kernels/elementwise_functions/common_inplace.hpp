@@ -191,6 +191,60 @@ public:
     }
 };
 
+template <typename argT, typename resT, typename BinaryOperatorT>
+struct BinaryInplaceRowMatrixBroadcastingFunctor
+{
+private:
+    const argT *padded_vec;
+    resT *mat;
+    size_t n_elems;
+    size_t n1;
+
+public:
+    BinaryInplaceRowMatrixBroadcastingFunctor(const argT *row_tp,
+                                              resT *mat_tp,
+                                              size_t n_elems_in_mat,
+                                              size_t n_elems_in_row)
+        : padded_vec(row_tp), mat(mat_tp), n_elems(n_elems_in_mat),
+          n1(n_elems_in_row)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        BinaryOperatorT op{};
+        static_assert(BinaryOperatorT::supports_sg_loadstore::value);
+
+        auto sg = ndit.get_sub_group();
+        size_t gid = ndit.get_global_linear_id();
+
+        std::uint8_t sgSize = sg.get_local_range()[0];
+        size_t base = gid - sg.get_local_id()[0];
+
+        if (base + sgSize < n_elems) {
+            using in_ptrT =
+                sycl::multi_ptr<const argT,
+                                sycl::access::address_space::global_space>;
+            using res_ptrT =
+                sycl::multi_ptr<resT,
+                                sycl::access::address_space::global_space>;
+
+            const argT vec_el = sg.load(in_ptrT(&padded_vec[base % n1]));
+            resT mat_el = sg.load(res_ptrT(&mat[base]));
+
+            op(mat_el, vec_el);
+
+            sg.store(res_ptrT(&mat[base]), mat_el);
+        }
+        else {
+            for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
+                 k += sgSize) {
+                op(mat[k], padded_vec[k % n1]);
+            }
+        }
+    }
+};
+
 // Typedefs for function pointers
 
 typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
@@ -212,6 +266,17 @@ typedef sycl::event (*binary_inplace_strided_impl_fn_ptr_t)(
     char *,
     py::ssize_t,
     const std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_inplace_row_matrix_broadcast_impl_fn_ptr_t)(
+    sycl::queue,
+    std::vector<sycl::event> &,
+    size_t,
+    size_t,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename argTy,
@@ -286,6 +351,79 @@ binary_inplace_strided_impl(sycl::queue exec_q,
             {nelems}, BinaryInplaceStridedFunctorT<argTy, resTy, IndexerT>(
                           arg_tp, res_tp, indexer));
     });
+    return comp_ev;
+}
+
+template <typename argT,
+          typename resT,
+          template <typename T1, typename T3>
+          class BinaryInplaceRowMatrixBroadcastFunctorT,
+          template <typename T1, typename T3>
+          class kernel_name>
+sycl::event binary_inplace_row_matrix_broadcast_impl(
+    sycl::queue exec_q,
+    std::vector<sycl::event> &host_tasks,
+    size_t n0,
+    size_t n1,
+    const char *vec_p, // typeless pointer to (n1,) contiguous row
+    py::ssize_t vec_offset,
+    char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
+    py::ssize_t mat_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    const argT *vec = reinterpret_cast<const argT *>(vec_p) + vec_offset;
+    resT *mat = reinterpret_cast<resT *>(mat_p) + mat_offset;
+
+    const auto &dev = exec_q.get_device();
+    const auto &sg_sizes = dev.get_info<sycl::info::device::sub_group_sizes>();
+    // Get device-specific kernel info max_sub_group_size
+    size_t max_sgSize =
+        *(std::max_element(std::begin(sg_sizes), std::end(sg_sizes)));
+
+    size_t n1_padded = n1 + max_sgSize;
+    argT *padded_vec = sycl::malloc_device<argT>(n1_padded, exec_q);
+
+    if (padded_vec == nullptr) {
+        throw std::runtime_error("Could not allocate memory on the device");
+    }
+    sycl::event make_padded_vec_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends); // ensure vec contains actual data
+        cgh.parallel_for({n1_padded}, [=](sycl::id<1> id) {
+            auto i = id[0];
+            padded_vec[i] = vec[i % n1];
+        });
+    });
+
+    // sub-group spans work-items [I, I + sgSize)
+    // base = ndit.get_global_linear_id() - sg.get_local_id()[0]
+    // Generically, sg.load( &mat[base]) may load arrays from
+    // different rows of mat. The start corresponds to row (base / n0)
+    // We read sg.load(&padded_vec[(base / n0)]). The vector is padded to
+    // ensure that reads are accessible
+
+    size_t lws = 64;
+
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(make_padded_vec_ev);
+
+        auto lwsRange = sycl::range<1>(lws);
+        size_t n_elems = n0 * n1;
+        size_t n_groups = (n_elems + lws - 1) / lws;
+        auto gwsRange = sycl::range<1>(n_groups * lws);
+
+        cgh.parallel_for<class kernel_name<argT, resT>>(
+            sycl::nd_range<1>(gwsRange, lwsRange),
+            BinaryInplaceRowMatrixBroadcastFunctorT<argT, resT>(padded_vec, mat,
+                                                                n_elems, n1));
+    });
+
+    sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(comp_ev);
+        sycl::context ctx = exec_q.get_context();
+        cgh.host_task([ctx, padded_vec]() { sycl::free(padded_vec, ctx); });
+    });
+    host_tasks.push_back(tmp_cleanup_ev);
+
     return comp_ev;
 }
 
