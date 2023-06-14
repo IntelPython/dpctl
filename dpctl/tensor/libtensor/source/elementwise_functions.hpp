@@ -517,7 +517,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
 
     if (strided_fn == nullptr) {
         throw std::runtime_error(
-            "Contiguous implementation is missing for src1_typeid=" +
+            "Strided implementation is missing for src1_typeid=" +
             std::to_string(src1_typeid) +
             " and src2_typeid=" + std::to_string(src2_typeid));
     }
@@ -627,7 +627,7 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
 
     if (output_typeid != lhs_typeid) {
         throw py::value_error(
-            "Destination array has unexpected elemental data type.");
+            "Left-hand side array has unexpected elemental data type.");
     }
 
     // check that queues are compatible
@@ -696,7 +696,7 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
 
     // dispatch for contiguous inputs
     if (both_c_contig || both_f_contig) {
-        auto contig_fn = contig_dispatch_table[lhs_typeid][rhs_typeid];
+        auto contig_fn = contig_dispatch_table[rhs_typeid][lhs_typeid];
 
         if (contig_fn != nullptr) {
             auto comp_ev = contig_fn(exec_q, rhs_nelems, rhs_data, 0, lhs_data,
@@ -781,7 +781,7 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
 
     if (strided_fn == nullptr) {
         throw std::runtime_error(
-            "Contiguous implementation is missing for rhs_typeid=" +
+            "Strided implementation is missing for rhs_typeid=" +
             std::to_string(rhs_typeid) +
             " and lhs_typeid=" + std::to_string(lhs_typeid));
     }

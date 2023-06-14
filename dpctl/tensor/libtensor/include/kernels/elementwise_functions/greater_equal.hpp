@@ -261,7 +261,7 @@ struct GreaterEqualTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class greater_equal_strided_strided_kernel;
+class greater_equal_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -295,8 +295,8 @@ greater_equal_strided_impl(sycl::queue exec_q,
         const argTy2 *arg2_tp = reinterpret_cast<const argTy2 *>(arg2_p);
         resTy *res_tp = reinterpret_cast<resTy *>(res_p);
 
-        cgh.parallel_for<greater_equal_strided_strided_kernel<argTy1, argTy2,
-                                                              resTy, IndexerT>>(
+        cgh.parallel_for<
+            greater_equal_strided_kernel<argTy1, argTy2, resTy, IndexerT>>(
             {nelems},
             GreaterEqualStridedFunctor<argTy1, argTy2, resTy, IndexerT>(
                 arg1_tp, arg2_tp, res_tp, indexer));

@@ -218,7 +218,7 @@ template <typename fnT, typename T1, typename T2> struct SubtractTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class subtract_strided_strided_kernel;
+class subtract_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -237,9 +237,9 @@ subtract_strided_impl(sycl::queue exec_q,
 {
     return elementwise_common::binary_strided_impl<
         argTy1, argTy2, SubtractOutputType, SubtractStridedFunctor,
-        subtract_strided_strided_kernel>(
-        exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
-        arg2_offset, res_p, res_offset, depends, additional_depends);
+        subtract_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
+                                 arg1_offset, arg2_p, arg2_offset, res_p,
+                                 res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct SubtractStridedFactory
@@ -544,14 +544,13 @@ struct SubtractInplaceRowMatrixBroadcastFactory
     fnT get()
     {
         using resT = typename SubtractOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<resT, void>) {
+        if constexpr (!std::is_same_v<resT, T2>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
-                          dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value)
+                          dpctl::tensor::type_utils::is_complex<T2>::value)
             {
                 fnT fn = nullptr;
                 return fn;
