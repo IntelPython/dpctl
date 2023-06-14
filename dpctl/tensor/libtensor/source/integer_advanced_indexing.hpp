@@ -1,4 +1,4 @@
-//===----------- Implementation of _tensor_impl module  ---------*-C++-*-/===//
+//===-- integer_advanced_indexing.hpp -                         --*-C++-*-/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file declares Python API for implementation functions of
+/// dpctl.tensor.take and dpctl.tensor.put
 //===----------------------------------------------------------------------===//
 
 #pragma once
