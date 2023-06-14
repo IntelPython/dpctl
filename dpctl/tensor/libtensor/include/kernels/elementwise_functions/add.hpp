@@ -218,7 +218,7 @@ template <typename fnT, typename T1, typename T2> struct AddTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class add_strided_strided_kernel;
+class add_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event add_strided_impl(sycl::queue exec_q,
@@ -235,8 +235,7 @@ sycl::event add_strided_impl(sycl::queue exec_q,
                              const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
-        argTy1, argTy2, AddOutputType, AddStridedFunctor,
-        add_strided_strided_kernel>(
+        argTy1, argTy2, AddOutputType, AddStridedFunctor, add_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
         arg2_offset, res_p, res_offset, depends, additional_depends);
 }
@@ -476,6 +475,60 @@ struct AddInplaceStridedFactory
         else {
             fnT fn = add_inplace_strided_impl<T1, T2>;
             return fn;
+        }
+    }
+};
+
+template <typename argT, typename resT>
+class add_inplace_row_matrix_broadcast_sg_krn;
+
+template <typename argT, typename resT>
+using AddInplaceRowMatrixBroadcastingFunctor =
+    elementwise_common::BinaryInplaceRowMatrixBroadcastingFunctor<
+        argT,
+        resT,
+        AddInplaceFunctor<argT, resT>>;
+
+template <typename argT, typename resT>
+sycl::event add_inplace_row_matrix_broadcast_impl(
+    sycl::queue exec_q,
+    std::vector<sycl::event> &host_tasks,
+    size_t n0,
+    size_t n1,
+    const char *vec_p, // typeless pointer to (n1,) contiguous row
+    py::ssize_t vec_offset,
+    char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
+    py::ssize_t mat_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_row_matrix_broadcast_impl<
+        argT, resT, AddInplaceRowMatrixBroadcastingFunctor,
+        add_inplace_row_matrix_broadcast_sg_krn>(exec_q, host_tasks, n0, n1,
+                                                 vec_p, vec_offset, mat_p,
+                                                 mat_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct AddInplaceRowMatrixBroadcastFactory
+{
+    fnT get()
+    {
+        using resT = typename AddOutputType<T1, T2>::value_type;
+        if constexpr (!std::is_same_v<resT, T2>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
+                          dpctl::tensor::type_utils::is_complex<T2>::value)
+            {
+                fnT fn = nullptr;
+                return fn;
+            }
+            else {
+                fnT fn = add_inplace_row_matrix_broadcast_impl<T1, T2>;
+                return fn;
+            }
         }
     }
 };

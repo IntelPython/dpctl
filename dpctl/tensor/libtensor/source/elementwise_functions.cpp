@@ -123,6 +123,7 @@ using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_row_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 
 // U01: ==== ABS   (x)
@@ -198,6 +199,8 @@ static binary_inplace_contig_impl_fn_ptr_t
     add_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static binary_inplace_strided_impl_fn_ptr_t
     add_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    add_inplace_row_matrix_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 void populate_add_dispatch_tables(void)
 {
@@ -256,6 +259,14 @@ void populate_add_dispatch_tables(void)
                          AddInplaceContigFactory, num_types>
         dtb7;
     dtb7.populate_dispatch_table(add_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::AddInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         AddInplaceRowMatrixBroadcastFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(add_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -1061,6 +1072,9 @@ static binary_inplace_contig_impl_fn_ptr_t
     multiply_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static binary_inplace_strided_impl_fn_ptr_t
     multiply_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    multiply_inplace_row_matrix_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 void populate_multiply_dispatch_tables(void)
 {
@@ -1119,6 +1133,14 @@ void populate_multiply_dispatch_tables(void)
                          MultiplyInplaceContigFactory, num_types>
         dtb7;
     dtb7.populate_dispatch_table(multiply_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::MultiplyInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         MultiplyInplaceRowMatrixBroadcastFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(multiply_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -1373,6 +1395,9 @@ static binary_inplace_contig_impl_fn_ptr_t
     subtract_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static binary_inplace_strided_impl_fn_ptr_t
     subtract_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    subtract_inplace_row_matrix_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 void populate_subtract_dispatch_tables(void)
 {
@@ -1431,6 +1456,14 @@ void populate_subtract_dispatch_tables(void)
                          SubtractInplaceContigFactory, num_types>
         dtb7;
     dtb7.populate_dispatch_table(subtract_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::SubtractInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         SubtractInplaceRowMatrixBroadcastFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(subtract_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -1529,6 +1562,7 @@ void init_elementwise_functions(py::module_ m)
         m.def("_add_result_type", add_result_type_pyapi, "");
 
         using impl::add_inplace_contig_dispatch_table;
+        using impl::add_inplace_row_matrix_dispatch_table;
         using impl::add_inplace_strided_dispatch_table;
 
         auto add_inplace_pyapi =
@@ -1542,7 +1576,11 @@ void init_elementwise_functions(py::module_ m)
                     add_inplace_contig_dispatch_table,
                     // function pointers to handle inplace operation on strided
                     // arrays (most general case)
-                    add_inplace_strided_dispatch_table);
+                    add_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    add_inplace_row_matrix_dispatch_table);
             };
         m.def("_add_inplace", add_inplace_pyapi, "", py::arg("lhs"),
               py::arg("rhs"), py::arg("sycl_queue"),
@@ -2165,6 +2203,7 @@ void init_elementwise_functions(py::module_ m)
         m.def("_multiply_result_type", multiply_result_type_pyapi, "");
 
         using impl::multiply_inplace_contig_dispatch_table;
+        using impl::multiply_inplace_row_matrix_dispatch_table;
         using impl::multiply_inplace_strided_dispatch_table;
 
         auto multiply_inplace_pyapi =
@@ -2178,7 +2217,11 @@ void init_elementwise_functions(py::module_ m)
                     multiply_inplace_contig_dispatch_table,
                     // function pointers to handle inplace operation on strided
                     // arrays (most general case)
-                    multiply_inplace_strided_dispatch_table);
+                    multiply_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    multiply_inplace_row_matrix_dispatch_table);
             };
         m.def("_multiply_inplace", multiply_inplace_pyapi, "", py::arg("lhs"),
               py::arg("rhs"), py::arg("sycl_queue"),
@@ -2377,6 +2420,7 @@ void init_elementwise_functions(py::module_ m)
         m.def("_subtract_result_type", subtract_result_type_pyapi, "");
 
         using impl::subtract_inplace_contig_dispatch_table;
+        using impl::subtract_inplace_row_matrix_dispatch_table;
         using impl::subtract_inplace_strided_dispatch_table;
 
         auto subtract_inplace_pyapi =
@@ -2390,7 +2434,11 @@ void init_elementwise_functions(py::module_ m)
                     subtract_inplace_contig_dispatch_table,
                     // function pointers to handle inplace operation on strided
                     // arrays (most general case)
-                    subtract_inplace_strided_dispatch_table);
+                    subtract_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    subtract_inplace_row_matrix_dispatch_table);
             };
         m.def("_subtract_inplace", subtract_inplace_pyapi, "", py::arg("lhs"),
               py::arg("rhs"), py::arg("sycl_queue"),
