@@ -201,7 +201,7 @@ template <typename fnT, typename T1, typename T2> struct EqualTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class equal_strided_strided_kernel;
+class equal_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -220,9 +220,9 @@ equal_strided_impl(sycl::queue exec_q,
 {
     return elementwise_common::binary_strided_impl<
         argTy1, argTy2, EqualOutputType, EqualStridedFunctor,
-        equal_strided_strided_kernel>(
-        exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
-        arg2_offset, res_p, res_offset, depends, additional_depends);
+        equal_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
+                              arg1_offset, arg2_p, arg2_offset, res_p,
+                              res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct EqualStridedFactory

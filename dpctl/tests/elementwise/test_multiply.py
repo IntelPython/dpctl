@@ -21,6 +21,7 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 from .utils import _all_dtypes, _compare_dtypes, _usm_types
@@ -201,7 +202,10 @@ def test_multiply_inplace_dtype_matrix(op1_dtype, op2_dtype):
     ar1 = dpt.ones(sz, dtype=op1_dtype)
     ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
 
-    if dpt.can_cast(op2_dtype, op1_dtype, casting="safe"):
+    dev = q.sycl_device
+    _fp16 = dev.has_aspect_fp16
+    _fp64 = dev.has_aspect_fp64
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
         ar1 *= ar2
         assert (
             dpt.asnumpy(ar1) == np.full(ar1.shape, 1, dtype=ar1.dtype)

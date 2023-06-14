@@ -218,7 +218,7 @@ template <typename fnT, typename T1, typename T2> struct SubtractTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class subtract_strided_strided_kernel;
+class subtract_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -237,9 +237,9 @@ subtract_strided_impl(sycl::queue exec_q,
 {
     return elementwise_common::binary_strided_impl<
         argTy1, argTy2, SubtractOutputType, SubtractStridedFunctor,
-        subtract_strided_strided_kernel>(
-        exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
-        arg2_offset, res_p, res_offset, depends, additional_depends);
+        subtract_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
+                                 arg1_offset, arg2_p, arg2_offset, res_p,
+                                 res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct SubtractStridedFactory
@@ -505,6 +505,60 @@ struct SubtractInplaceStridedFactory
         else {
             fnT fn = subtract_inplace_strided_impl<T1, T2>;
             return fn;
+        }
+    }
+};
+
+template <typename argT, typename resT>
+class subtract_inplace_row_matrix_broadcast_sg_krn;
+
+template <typename argT, typename resT>
+using SubtractInplaceRowMatrixBroadcastingFunctor =
+    elementwise_common::BinaryInplaceRowMatrixBroadcastingFunctor<
+        argT,
+        resT,
+        SubtractInplaceFunctor<argT, resT>>;
+
+template <typename argT, typename resT>
+sycl::event subtract_inplace_row_matrix_broadcast_impl(
+    sycl::queue exec_q,
+    std::vector<sycl::event> &host_tasks,
+    size_t n0,
+    size_t n1,
+    const char *vec_p, // typeless pointer to (n1,) contiguous row
+    py::ssize_t vec_offset,
+    char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
+    py::ssize_t mat_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_row_matrix_broadcast_impl<
+        argT, resT, SubtractInplaceRowMatrixBroadcastingFunctor,
+        subtract_inplace_row_matrix_broadcast_sg_krn>(
+        exec_q, host_tasks, n0, n1, vec_p, vec_offset, mat_p, mat_offset,
+        depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct SubtractInplaceRowMatrixBroadcastFactory
+{
+    fnT get()
+    {
+        using resT = typename SubtractOutputType<T1, T2>::value_type;
+        if constexpr (!std::is_same_v<resT, T2>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
+                          dpctl::tensor::type_utils::is_complex<T2>::value)
+            {
+                fnT fn = nullptr;
+                return fn;
+            }
+            else {
+                fnT fn = subtract_inplace_row_matrix_broadcast_impl<T1, T2>;
+                return fn;
+            }
         }
     }
 };
