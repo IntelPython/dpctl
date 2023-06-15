@@ -304,7 +304,7 @@ floor_divide = BinaryElementwiseFunc(
 _greater_docstring_ = """
 greater(x1, x2, out=None, order='K')
 Computes the greater-than test results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 Args:
     x1 (usm_ndarray):
         First input array, expected to have numeric data type.
@@ -331,7 +331,7 @@ greater = BinaryElementwiseFunc(
 _greater_equal_docstring_ = """
 greater_equal(x1, x2, out=None, order='K')
 Computes the greater-than or equal-to test results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 Args:
     x1 (usm_ndarray):
         First input array, expected to have numeric data type.
@@ -465,7 +465,7 @@ _less_docstring_ = """
 less(x1, x2, out=None, order='K')
 
 Computes the less-than test results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
@@ -493,7 +493,7 @@ less = BinaryElementwiseFunc(
 _less_equal_docstring_ = """
 less_equal(x1, x2, out=None, order='K')
 Computes the less-than or equal-to test results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 Args:
     x1 (usm_ndarray):
         First input array, expected to have numeric data type.

@@ -256,7 +256,7 @@ template <typename fnT, typename T1, typename T2> struct LessEqualTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class less_equal_strided_strided_kernel;
+class less_equal_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -290,7 +290,7 @@ less_equal_strided_impl(sycl::queue exec_q,
         resTy *res_tp = reinterpret_cast<resTy *>(res_p);
 
         cgh.parallel_for<
-            less_equal_strided_strided_kernel<argTy1, argTy2, resTy, IndexerT>>(
+            less_equal_strided_kernel<argTy1, argTy2, resTy, IndexerT>>(
             {nelems}, LessEqualStridedFunctor<argTy1, argTy2, resTy, IndexerT>(
                           arg1_tp, arg2_tp, res_tp, indexer));
     });
