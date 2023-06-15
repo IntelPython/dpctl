@@ -63,6 +63,10 @@ py_unary_ufunc(dpctl::tensor::usm_ndarray src,
                const contig_dispatchT &contig_dispatch_vector,
                const strided_dispatchT &strided_dispatch_vector)
 {
+    if (!dst.is_writable()) {
+        throw py::value_error("Output array is read-only.");
+    }
+
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
@@ -306,6 +310,9 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const contig_row_matrix_dispatchT
         &contig_row_matrix_broadcast_dispatch_table)
 {
+    if (!dst.is_writable()) {
+        throw py::value_error("Output array is read-only.");
+    }
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
@@ -435,7 +442,6 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         simplified_dst_strides, src1_offset, src2_offset, dst_offset);
 
     std::vector<sycl::event> host_tasks{};
-
     if (nd < 3) {
         static constexpr auto unit_stride =
             std::initializer_list<py::ssize_t>{1};
@@ -511,7 +517,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
 
     if (strided_fn == nullptr) {
         throw std::runtime_error(
-            "Contiguous implementation is missing for src1_typeid=" +
+            "Strided implementation is missing for src1_typeid=" +
             std::to_string(src1_typeid) +
             " and src2_typeid=" + std::to_string(src2_typeid));
     }
@@ -585,6 +591,231 @@ py::object py_binary_ufunc_result_type(py::dtype input1_dtype,
 
         return py::cast<py::object>(dt);
     }
+}
+
+// ==================== Inplace binary functions =======================
+
+template <typename output_typesT,
+          typename contig_dispatchT,
+          typename strided_dispatchT,
+          typename contig_row_matrix_dispatchT>
+std::pair<sycl::event, sycl::event>
+py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
+                        dpctl::tensor::usm_ndarray rhs,
+                        sycl::queue exec_q,
+                        const std::vector<sycl::event> depends,
+                        //
+                        const output_typesT &output_type_table,
+                        const contig_dispatchT &contig_dispatch_table,
+                        const strided_dispatchT &strided_dispatch_table,
+                        const contig_row_matrix_dispatchT
+                            &contig_row_matrix_broadcast_dispatch_table)
+{
+    if (!lhs.is_writable()) {
+        throw py::value_error("Output array is read-only.");
+    }
+
+    // check type_nums
+    int rhs_typenum = rhs.get_typenum();
+    int lhs_typenum = lhs.get_typenum();
+
+    auto array_types = td_ns::usm_ndarray_types();
+    int rhs_typeid = array_types.typenum_to_lookup_id(rhs_typenum);
+    int lhs_typeid = array_types.typenum_to_lookup_id(lhs_typenum);
+
+    int output_typeid = output_type_table[rhs_typeid][lhs_typeid];
+
+    if (output_typeid != lhs_typeid) {
+        throw py::value_error(
+            "Left-hand side array has unexpected elemental data type.");
+    }
+
+    // check that queues are compatible
+    if (!dpctl::utils::queues_are_compatible(exec_q, {rhs, lhs})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    // check shapes, broadcasting is assumed done by caller
+    // check that dimensions are the same
+    int lhs_nd = lhs.get_ndim();
+    if (lhs_nd != rhs.get_ndim()) {
+        throw py::value_error("Array dimensions are not the same.");
+    }
+
+    // check that shapes are the same
+    const py::ssize_t *rhs_shape = rhs.get_shape_raw();
+    const py::ssize_t *lhs_shape = lhs.get_shape_raw();
+    bool shapes_equal(true);
+    size_t rhs_nelems(1);
+
+    for (int i = 0; i < lhs_nd; ++i) {
+        rhs_nelems *= static_cast<size_t>(rhs_shape[i]);
+        shapes_equal = shapes_equal && (rhs_shape[i] == lhs_shape[i]);
+    }
+    if (!shapes_equal) {
+        throw py::value_error("Array shapes are not the same.");
+    }
+
+    // if nelems is zero, return
+    if (rhs_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    // ensure that output is ample enough to accomodate all elements
+    auto lhs_offsets = lhs.get_minmax_offsets();
+    // destination must be ample enough to accomodate all elements
+    {
+        size_t range =
+            static_cast<size_t>(lhs_offsets.second - lhs_offsets.first);
+        if (range + 1 < rhs_nelems) {
+            throw py::value_error(
+                "Destination array can not accomodate all the "
+                "elements of source array.");
+        }
+    }
+
+    // check memory overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(rhs, lhs)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+    // check memory overlap
+    const char *rhs_data = rhs.get_data();
+    char *lhs_data = lhs.get_data();
+
+    // handle contiguous inputs
+    bool is_rhs_c_contig = rhs.is_c_contiguous();
+    bool is_rhs_f_contig = rhs.is_f_contiguous();
+
+    bool is_lhs_c_contig = lhs.is_c_contiguous();
+    bool is_lhs_f_contig = lhs.is_f_contiguous();
+
+    bool both_c_contig = (is_rhs_c_contig && is_lhs_c_contig);
+    bool both_f_contig = (is_rhs_f_contig && is_lhs_f_contig);
+
+    // dispatch for contiguous inputs
+    if (both_c_contig || both_f_contig) {
+        auto contig_fn = contig_dispatch_table[rhs_typeid][lhs_typeid];
+
+        if (contig_fn != nullptr) {
+            auto comp_ev = contig_fn(exec_q, rhs_nelems, rhs_data, 0, lhs_data,
+                                     0, depends);
+            sycl::event ht_ev =
+                dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, {comp_ev});
+
+            return std::make_pair(ht_ev, comp_ev);
+        }
+    }
+
+    // simplify strides
+    auto const &rhs_strides = rhs.get_strides_vector();
+    auto const &lhs_strides = lhs.get_strides_vector();
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_rhs_strides;
+    shT simplified_lhs_strides;
+    py::ssize_t rhs_offset(0);
+    py::ssize_t lhs_offset(0);
+
+    int nd = lhs_nd;
+    const py::ssize_t *shape = rhs_shape;
+
+    // all args except itemsizes and is_?_contig bools can be modified by
+    // reference
+    dpctl::tensor::py_internal::simplify_iteration_space(
+        nd, shape, rhs_strides, lhs_strides,
+        // outputs
+        simplified_shape, simplified_rhs_strides, simplified_lhs_strides,
+        rhs_offset, lhs_offset);
+
+    std::vector<sycl::event> host_tasks{};
+    if (nd < 3) {
+        static constexpr auto unit_stride =
+            std::initializer_list<py::ssize_t>{1};
+
+        if ((nd == 1) && isEqual(simplified_rhs_strides, unit_stride) &&
+            isEqual(simplified_lhs_strides, unit_stride))
+        {
+            auto contig_fn = contig_dispatch_table[rhs_typeid][lhs_typeid];
+
+            if (contig_fn != nullptr) {
+                auto comp_ev =
+                    contig_fn(exec_q, rhs_nelems, rhs_data, rhs_offset,
+                              lhs_data, lhs_offset, depends);
+                sycl::event ht_ev = dpctl::utils::keep_args_alive(
+                    exec_q, {rhs, lhs}, {comp_ev});
+
+                return std::make_pair(ht_ev, comp_ev);
+            }
+        }
+        if (nd == 2) {
+            static constexpr auto one_zero_strides =
+                std::initializer_list<py::ssize_t>{1, 0};
+            constexpr py::ssize_t one{1};
+            // special case of C-contiguous matrix and a row
+            if (isEqual(simplified_rhs_strides, one_zero_strides) &&
+                isEqual(simplified_lhs_strides, {one, simplified_shape[0]}))
+            {
+                auto row_matrix_broadcast_fn =
+                    contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
+                                                              [lhs_typeid];
+                if (row_matrix_broadcast_fn != nullptr) {
+                    size_t n0 = simplified_shape[1];
+                    size_t n1 = simplified_shape[0];
+                    sycl::event comp_ev = row_matrix_broadcast_fn(
+                        exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
+                        lhs_data, lhs_offset, depends);
+
+                    return std::make_pair(dpctl::utils::keep_args_alive(
+                                              exec_q, {lhs, rhs}, host_tasks),
+                                          comp_ev);
+                }
+            }
+        }
+    }
+
+    // dispatch to strided code
+    auto strided_fn = strided_dispatch_table[rhs_typeid][lhs_typeid];
+
+    if (strided_fn == nullptr) {
+        throw std::runtime_error(
+            "Strided implementation is missing for rhs_typeid=" +
+            std::to_string(rhs_typeid) +
+            " and lhs_typeid=" + std::to_string(lhs_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    const auto &ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_tasks, simplified_shape, simplified_rhs_strides,
+        simplified_lhs_strides);
+
+    py::ssize_t *shape_strides = std::get<0>(ptr_sz_event_triple_);
+    sycl::event copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
+
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Unabled to allocate device memory");
+    }
+
+    sycl::event strided_fn_ev =
+        strided_fn(exec_q, rhs_nelems, nd, shape_strides, rhs_data, rhs_offset,
+                   lhs_data, lhs_offset, depends, {copy_shape_ev});
+
+    // async free of shape_strides temporary
+    auto ctx = exec_q.get_context();
+
+    sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(strided_fn_ev);
+        cgh.host_task(
+            [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
+    });
+
+    host_tasks.push_back(tmp_cleanup_ev);
+
+    return std::make_pair(
+        dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, host_tasks),
+        strided_fn_ev);
 }
 
 extern void init_elementwise_functions(py::module_ m);

@@ -1,4 +1,4 @@
-//=== equal.hpp -   Binary function EQUAL                ------  *-C++-*--/===//
+//=== not_equal.hpp -   Binary function NOT_EQUAL        ------  *-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of equality of
+/// This file defines kernels for elementwise evaluation of inequality of
 /// tensor elements.
 //===---------------------------------------------------------------------===//
 
@@ -42,14 +42,14 @@ namespace tensor
 {
 namespace kernels
 {
-namespace equal
+namespace not_equal
 {
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
-template <typename argT1, typename argT2, typename resT> struct EqualFunctor
+template <typename argT1, typename argT2, typename resT> struct NotEqualFunctor
 {
     static_assert(std::is_same_v<resT, bool>);
 
@@ -62,14 +62,26 @@ template <typename argT1, typename argT2, typename resT> struct EqualFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        return (in1 == in2);
+        if constexpr (std::is_same_v<argT1, std::complex<float>> &&
+                      std::is_same_v<argT2, float>)
+        {
+            return (std::real(in1) != in2 || std::imag(in1) != 0.0f);
+        }
+        else if constexpr (std::is_same_v<argT1, float> &&
+                           std::is_same_v<argT2, std::complex<float>>)
+        {
+            return (in1 != std::real(in2) || std::imag(in2) != 0.0f);
+        }
+        else {
+            return (in1 != in2);
+        }
     }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
-        auto tmp = (in1 == in2);
+        auto tmp = (in1 != in2);
         if constexpr (std::is_same_v<resT,
                                      typename decltype(tmp)::element_type>) {
             return tmp;
@@ -88,23 +100,23 @@ template <typename argT1,
           typename resT,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-using EqualContigFunctor =
+using NotEqualContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
                                             argT2,
                                             resT,
-                                            EqualFunctor<argT1, argT2, resT>,
+                                            NotEqualFunctor<argT1, argT2, resT>,
                                             vec_sz,
                                             n_vecs>;
 
 template <typename argT1, typename argT2, typename resT, typename IndexerT>
-using EqualStridedFunctor =
-    elementwise_common::BinaryStridedFunctor<argT1,
-                                             argT2,
-                                             resT,
-                                             IndexerT,
-                                             EqualFunctor<argT1, argT2, resT>>;
+using NotEqualStridedFunctor = elementwise_common::BinaryStridedFunctor<
+    argT1,
+    argT2,
+    resT,
+    IndexerT,
+    NotEqualFunctor<argT1, argT2, resT>>;
 
-template <typename T1, typename T2> struct EqualOutputType
+template <typename T1, typename T2> struct NotEqualOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
@@ -146,6 +158,10 @@ template <typename T1, typename T2> struct EqualOutputType
                                         T2,
                                         std::complex<double>,
                                         bool>,
+        td_ns::
+            BinaryTypeMapResultEntry<T1, float, T2, std::complex<float>, bool>,
+        td_ns::
+            BinaryTypeMapResultEntry<T1, std::complex<float>, T2, float, bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
@@ -154,95 +170,97 @@ template <typename argT1,
           typename resT,
           unsigned int vec_sz,
           unsigned int n_vecs>
-class equal_contig_kernel;
+class not_equal_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event equal_contig_impl(sycl::queue exec_q,
-                              size_t nelems,
-                              const char *arg1_p,
-                              py::ssize_t arg1_offset,
-                              const char *arg2_p,
-                              py::ssize_t arg2_offset,
-                              char *res_p,
-                              py::ssize_t res_offset,
-                              const std::vector<sycl::event> &depends = {})
+sycl::event not_equal_contig_impl(sycl::queue exec_q,
+                                  size_t nelems,
+                                  const char *arg1_p,
+                                  py::ssize_t arg1_offset,
+                                  const char *arg2_p,
+                                  py::ssize_t arg2_offset,
+                                  char *res_p,
+                                  py::ssize_t res_offset,
+                                  const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_impl<
-        argTy1, argTy2, EqualOutputType, EqualContigFunctor,
-        equal_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
-                             arg2_offset, res_p, res_offset, depends);
+        argTy1, argTy2, NotEqualOutputType, NotEqualContigFunctor,
+        not_equal_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
+                                 arg2_offset, res_p, res_offset, depends);
 }
 
-template <typename fnT, typename T1, typename T2> struct EqualContigFactory
+template <typename fnT, typename T1, typename T2> struct NotEqualContigFactory
 {
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename EqualOutputType<T1, T2>::value_type, void>)
+                          typename NotEqualOutputType<T1, T2>::value_type,
+                          void>)
         {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = equal_contig_impl<T1, T2>;
+            fnT fn = not_equal_contig_impl<T1, T2>;
             return fn;
         }
     }
 };
 
-template <typename fnT, typename T1, typename T2> struct EqualTypeMapFactory
+template <typename fnT, typename T1, typename T2> struct NotEqualTypeMapFactory
 {
-    /*! @brief get typeid for output type of operator()==(x, y), always bool */
+    /*! @brief get typeid for output type of operator()!=(x, y), always bool */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename EqualOutputType<T1, T2>::value_type;
+        using rT = typename NotEqualOutputType<T1, T2>::value_type;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class equal_strided_kernel;
+class not_equal_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-equal_strided_impl(sycl::queue exec_q,
-                   size_t nelems,
-                   int nd,
-                   const py::ssize_t *shape_and_strides,
-                   const char *arg1_p,
-                   py::ssize_t arg1_offset,
-                   const char *arg2_p,
-                   py::ssize_t arg2_offset,
-                   char *res_p,
-                   py::ssize_t res_offset,
-                   const std::vector<sycl::event> &depends,
-                   const std::vector<sycl::event> &additional_depends)
+not_equal_strided_impl(sycl::queue exec_q,
+                       size_t nelems,
+                       int nd,
+                       const py::ssize_t *shape_and_strides,
+                       const char *arg1_p,
+                       py::ssize_t arg1_offset,
+                       const char *arg2_p,
+                       py::ssize_t arg2_offset,
+                       char *res_p,
+                       py::ssize_t res_offset,
+                       const std::vector<sycl::event> &depends,
+                       const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
-        argTy1, argTy2, EqualOutputType, EqualStridedFunctor,
-        equal_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
-                              arg1_offset, arg2_p, arg2_offset, res_p,
-                              res_offset, depends, additional_depends);
+        argTy1, argTy2, NotEqualOutputType, NotEqualStridedFunctor,
+        not_equal_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
+                                  arg1_offset, arg2_p, arg2_offset, res_p,
+                                  res_offset, depends, additional_depends);
 }
 
-template <typename fnT, typename T1, typename T2> struct EqualStridedFactory
+template <typename fnT, typename T1, typename T2> struct NotEqualStridedFactory
 {
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename EqualOutputType<T1, T2>::value_type, void>)
+                          typename NotEqualOutputType<T1, T2>::value_type,
+                          void>)
         {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = equal_strided_impl<T1, T2>;
+            fnT fn = not_equal_strided_impl<T1, T2>;
             return fn;
         }
     }
 };
 
-} // namespace equal
+} // namespace not_equal
 } // namespace kernels
 } // namespace tensor
 } // namespace dpctl

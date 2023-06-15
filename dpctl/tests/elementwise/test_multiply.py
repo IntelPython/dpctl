@@ -21,6 +21,7 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 from .utils import _all_dtypes, _compare_dtypes, _usm_types
@@ -154,16 +155,80 @@ def test_multiply_python_scalar(arr_dt):
         assert isinstance(R, dpt.usm_ndarray)
 
 
-def test_multiply_python_scalar_gh1219():
+@pytest.mark.parametrize("arr_dt", _all_dtypes)
+@pytest.mark.parametrize("sc", [bool(1), int(1), float(1), complex(1)])
+def test_multiply_python_scalar_gh1219(arr_dt, sc):
     q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arr_dt, q)
 
-    X = dpt.ones(4, dtype="f4", sycl_queue=q)
+    Xnp = np.ones(4, dtype=arr_dt)
 
-    r = dpt.multiply(X, 2j)
-    expected = dpt.multiply(X, dpt.asarray(2j, sycl_queue=q))
-    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+    X = dpt.ones(4, dtype=arr_dt, sycl_queue=q)
+
+    R = dpt.multiply(X, sc)
+    Rnp = np.multiply(Xnp, sc)
+    assert _compare_dtypes(R.dtype, Rnp.dtype, sycl_queue=q)
 
     # symmetric case
-    r = dpt.multiply(2j, X)
-    expected = dpt.multiply(dpt.asarray(2j, sycl_queue=q), X)
-    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+    R = dpt.multiply(sc, X)
+    Rnp = np.multiply(sc, Xnp)
+    assert _compare_dtypes(R.dtype, Rnp.dtype, sycl_queue=q)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_multiply_inplace_python_scalar(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.ones((10, 10), dtype=dtype, sycl_queue=q)
+    dt_kind = X.dtype.kind
+    if dt_kind in "ui":
+        X *= int(1)
+    elif dt_kind == "f":
+        X *= float(1)
+    elif dt_kind == "c":
+        X *= complex(1)
+    elif dt_kind == "b":
+        X *= bool(1)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes)
+@pytest.mark.parametrize("op2_dtype", _all_dtypes)
+def test_multiply_inplace_dtype_matrix(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+
+    dev = q.sycl_device
+    _fp16 = dev.has_aspect_fp16
+    _fp64 = dev.has_aspect_fp64
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+        ar1 *= ar2
+        assert (
+            dpt.asnumpy(ar1) == np.full(ar1.shape, 1, dtype=ar1.dtype)
+        ).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
+
+        ar3[::-1] *= ar4[::2]
+        assert (
+            dpt.asnumpy(ar3) == np.full(ar3.shape, 1, dtype=ar3.dtype)
+        ).all()
+
+    else:
+        with pytest.raises(TypeError):
+            ar1 *= ar2
+
+
+def test_multiply_inplace_broadcasting():
+    get_queue_or_skip()
+
+    m = dpt.ones((100, 5), dtype="i4")
+    v = dpt.arange(5, dtype="i4")
+
+    m *= v
+    assert (dpt.asnumpy(m) == np.arange(0, 5, dtype="i4")[np.newaxis, :]).all()

@@ -1245,11 +1245,8 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise2(other, "logical_xor", self)
 
     def __iadd__(self, other):
-        res = self.__add__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        from ._elementwise_funcs import add
+        return add._inplace(self, other)
 
     def __iand__(self, other):
         res = self.__and__(other)
@@ -1287,11 +1284,8 @@ cdef class usm_ndarray:
         return self
 
     def __imul__(self, other):
-        res = self.__mul__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        from ._elementwise_funcs import multiply
+        return multiply._inplace(self, other)
 
     def __ior__(self, other):
         res = self.__or__(other)
@@ -1315,11 +1309,8 @@ cdef class usm_ndarray:
         return self
 
     def __isub__(self, other):
-        res = self.__sub__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        from ._elementwise_funcs import subtract
+        return subtract._inplace(self, other)
 
     def __itruediv__(self, other):
         res = self.__truediv__(other)

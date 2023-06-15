@@ -73,7 +73,11 @@ Returns:
         returned array is determined by the Type Promotion Rules.
 """
 add = BinaryElementwiseFunc(
-    "add", ti._add_result_type, ti._add, _add_docstring_
+    "add",
+    ti._add_result_type,
+    ti._add,
+    _add_docstring_,
+    binary_inplace_fn=ti._add_inplace,
 )
 
 # U04: ===== ASIN  (x)
@@ -270,13 +274,89 @@ expm1 = UnaryElementwiseFunc(
 # FIXME: implement U15
 
 # B10: ==== FLOOR_DIVIDE  (x1, x2)
-# FIXME: implement B10
+_floor_divide_docstring_ = """
+floor_divide(x1, x2, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2` to the greatest
+integer-value number that is not greater than the division result.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+Returns:
+    usm_narray:
+        an array containing the result of element-wise  floor division.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+floor_divide = BinaryElementwiseFunc(
+    "floor_divide",
+    ti._floor_divide_result_type,
+    ti._floor_divide,
+    _floor_divide_docstring_,
+)
 
 # B11: ==== GREATER       (x1, x2)
-# FIXME: implement B11
+_greater_docstring_ = """
+greater(x1, x2, out=None, order='K')
+Computes the greater-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the result of element-wise greater-than comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+greater = BinaryElementwiseFunc(
+    "greater", ti._greater_result_type, ti._greater, _greater_docstring_
+)
 
 # B12: ==== GREATER_EQUAL (x1, x2)
-# FIXME: implement B12
+_greater_equal_docstring_ = """
+greater_equal(x1, x2, out=None, order='K')
+Computes the greater-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the result of element-wise greater-than or equal-to
+        comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+greater_equal = BinaryElementwiseFunc(
+    "greater_equal",
+    ti._greater_equal_result_type,
+    ti._greater_equal,
+    _greater_equal_docstring_,
+)
 
 # U16: ==== IMAG        (x)
 _imag_docstring = """
@@ -381,10 +461,64 @@ isnan = UnaryElementwiseFunc(
 )
 
 # B13: ==== LESS        (x1, x2)
-# FIXME: implement B13
+_less_docstring_ = """
+less(x1, x2, out=None, order='K')
+
+Computes the less-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the result of element-wise less-than comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+less = BinaryElementwiseFunc(
+    "less", ti._less_result_type, ti._less, _less_docstring_
+)
 
 # B14: ==== LESS_EQUAL  (x1, x2)
-# FIXME: implement B14
+_less_equal_docstring_ = """
+less_equal(x1, x2, out=None, order='K')
+Computes the less-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the result of element-wise less-than or equal-to
+        comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+less_equal = BinaryElementwiseFunc(
+    "less_equal",
+    ti._less_equal_result_type,
+    ti._less_equal,
+    _less_equal_docstring_,
+)
 
 # U20: ==== LOG         (x)
 _log_docstring = """
@@ -473,14 +607,44 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 multiply = BinaryElementwiseFunc(
-    "multiply", ti._multiply_result_type, ti._multiply, _multiply_docstring_
+    "multiply",
+    ti._multiply_result_type,
+    ti._multiply,
+    _multiply_docstring_,
+    ti._multiply_inplace,
 )
 
 # U25: ==== NEGATIVE    (x)
 # FIXME: implement U25
 
 # B20: ==== NOT_EQUAL   (x1, x2)
-# FIXME: implement B20
+_not_equal_docstring_ = """
+not_equal(x1, x2, out=None, order='K')
+
+Calculates inequality test results for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        an array containing the result of element-wise inequality comparison.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+not_equal = BinaryElementwiseFunc(
+    "not_equal", ti._not_equal_result_type, ti._not_equal, _not_equal_docstring_
+)
 
 # U26: ==== POSITIVE    (x)
 # FIXME: implement U26
@@ -626,7 +790,11 @@ Returns:
         of the returned array is determined by the Type Promotion Rules.
 """
 subtract = BinaryElementwiseFunc(
-    "subtract", ti._subtract_result_type, ti._subtract, _subtract_docstring_
+    "subtract",
+    ti._subtract_result_type,
+    ti._subtract,
+    _subtract_docstring_,
+    ti._subtract_inplace,
 )
 
 

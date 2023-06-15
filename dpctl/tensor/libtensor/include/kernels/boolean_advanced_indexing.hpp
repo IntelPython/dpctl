@@ -1,4 +1,4 @@
-//=== boolean_advance_indexing.hpp -                      ------*-C++-*--/===//
+//=== boolean_advanced_indexing.hpp -                      ------*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //

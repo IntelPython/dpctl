@@ -22,6 +22,7 @@ from numpy.testing import assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 from dpctl.utils import ExecutionPlacementError
 
@@ -294,7 +295,8 @@ def test_add_errors():
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = ar1
+    # identical view but a different object
+    y = ar1[:]
     assert_raises_regex(
         TypeError,
         "Input and output arrays have memory overlap",
@@ -341,3 +343,115 @@ def test_add_dtype_error(
     assert_raises_regex(
         TypeError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
     )
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_add_inplace_python_scalar(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.zeros((10, 10), dtype=dtype, sycl_queue=q)
+    dt_kind = X.dtype.kind
+    if dt_kind in "ui":
+        X += int(0)
+    elif dt_kind == "f":
+        X += float(0)
+    elif dt_kind == "c":
+        X += complex(0)
+    elif dt_kind == "b":
+        X += bool(0)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes)
+@pytest.mark.parametrize("op2_dtype", _all_dtypes)
+def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+
+    dev = q.sycl_device
+    _fp16 = dev.has_aspect_fp16
+    _fp64 = dev.has_aspect_fp64
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+        ar1 += ar2
+        assert (
+            dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype=ar1.dtype)
+        ).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
+
+        ar3[::-1] += ar4[::2]
+        assert (
+            dpt.asnumpy(ar3) == np.full(ar3.shape, 2, dtype=ar3.dtype)
+        ).all()
+
+    else:
+        with pytest.raises(TypeError):
+            ar1 += ar2
+
+
+def test_add_inplace_broadcasting():
+    get_queue_or_skip()
+
+    m = dpt.ones((100, 5), dtype="i4")
+    v = dpt.arange(5, dtype="i4")
+
+    m += v
+    assert (dpt.asnumpy(m) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
+
+
+def test_add_inplace_errors():
+    get_queue_or_skip()
+    try:
+        gpu_queue = dpctl.SyclQueue("gpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('gpu') failed, skipping")
+    try:
+        cpu_queue = dpctl.SyclQueue("cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("SyclQueue('cpu') failed, skipping")
+
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
+    ar2 = dpt.ones_like(ar1, sycl_queue=cpu_queue)
+    with pytest.raises(ExecutionPlacementError):
+        ar1 += ar2
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dpt.ones(3, dtype="float32")
+    with pytest.raises(ValueError):
+        ar1 += ar2
+
+    ar1 = np.ones(2, dtype="float32")
+    ar2 = dpt.ones(2, dtype="float32")
+    with pytest.raises(TypeError):
+        ar1 += ar2
+
+    ar1 = dpt.ones(2, dtype="float32")
+    ar2 = dict()
+    with pytest.raises(ValueError):
+        ar1 += ar2
+
+    ar1 = dpt.ones((2, 1), dtype="float32")
+    ar2 = dpt.ones((1, 2), dtype="float32")
+    with pytest.raises(ValueError):
+        ar1 += ar2
+
+
+def test_add_inplace_overlap():
+    get_queue_or_skip()
+
+    ar1 = dpt.ones(10, dtype="i4")
+    ar1 += ar1
+    assert (dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype="i4")).all()
+
+    ar1 = dpt.ones(10, dtype="i4")
+    ar2 = dpt.ones(10, dtype="i4")
+    dpt.add(ar1, ar2, out=ar1)
+    assert (dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype="i4")).all()
+
+    dpt.add(ar2, ar1, out=ar2)
+    assert (dpt.asnumpy(ar2) == np.full(ar2.shape, 3, dtype="i4")).all()

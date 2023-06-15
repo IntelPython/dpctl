@@ -39,13 +39,19 @@
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
+#include "kernels/elementwise_functions/floor_divide.hpp"
+#include "kernels/elementwise_functions/greater.hpp"
+#include "kernels/elementwise_functions/greater_equal.hpp"
 #include "kernels/elementwise_functions/imag.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
 #include "kernels/elementwise_functions/isnan.hpp"
+#include "kernels/elementwise_functions/less.hpp"
+#include "kernels/elementwise_functions/less_equal.hpp"
 #include "kernels/elementwise_functions/log.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
+#include "kernels/elementwise_functions/not_equal.hpp"
 #include "kernels/elementwise_functions/proj.hpp"
 #include "kernels/elementwise_functions/real.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
@@ -116,6 +122,10 @@ using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
+using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_row_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
+
 // U01: ==== ABS   (x)
 namespace impl
 {
@@ -185,6 +195,13 @@ static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     add_contig_row_contig_matrix_broadcast_dispatch_table[td_ns::num_types]
                                                          [td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    add_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    add_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    add_inplace_row_matrix_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 void populate_add_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -228,6 +245,28 @@ void populate_add_dispatch_tables(void)
         dtb5;
     dtb5.populate_dispatch_table(
         add_contig_row_contig_matrix_broadcast_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::AddInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         AddInplaceStridedFactory, num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(add_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::AddInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         AddInplaceContigFactory, num_types>
+        dtb7;
+    dtb7.populate_dispatch_table(add_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::AddInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         AddInplaceRowMatrixBroadcastFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(add_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -566,19 +605,116 @@ namespace impl
 // B10: ==== FLOOR_DIVIDE  (x1, x2)
 namespace impl
 {
-// FIXME: add code for B10
+namespace floor_divide_fn_ns = dpctl::tensor::kernels::floor_divide;
+
+static binary_contig_impl_fn_ptr_t
+    floor_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int floor_divide_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    floor_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_floor_divide_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = floor_divide_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::FloorDivideTypeMapFactory;
+    DispatchTableBuilder<int, FloorDivideTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(floor_divide_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::FloorDivideStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         FloorDivideStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(floor_divide_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::FloorDivideContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, FloorDivideContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(floor_divide_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // B11: ==== GREATER       (x1, x2)
 namespace impl
 {
-// FIXME: add code for B11
+namespace greater_fn_ns = dpctl::tensor::kernels::greater;
+
+static binary_contig_impl_fn_ptr_t
+    greater_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int greater_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    greater_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_greater_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = greater_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::GreaterTypeMapFactory;
+    DispatchTableBuilder<int, GreaterTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(greater_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::GreaterStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, GreaterStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(greater_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::GreaterContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, GreaterContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(greater_contig_dispatch_table);
+};
 } // namespace impl
 
 // B12: ==== GREATER_EQUAL (x1, x2)
 namespace impl
 {
-// FIXME: add code for B12
+namespace greater_equal_fn_ns = dpctl::tensor::kernels::greater_equal;
+
+static binary_contig_impl_fn_ptr_t
+    greater_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int greater_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    greater_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_greater_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = greater_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::GreaterEqualTypeMapFactory;
+    DispatchTableBuilder<int, GreaterEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(greater_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::GreaterEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         GreaterEqualStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(greater_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::GreaterEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, GreaterEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(greater_equal_contig_dispatch_table);
+};
 } // namespace impl
 
 // U16: ==== IMAG        (x)
@@ -723,13 +859,77 @@ void populate_isnan_dispatch_vectors(void)
 // B13: ==== LESS        (x1, x2)
 namespace impl
 {
-// FIXME: add code for B13
+namespace less_fn_ns = dpctl::tensor::kernels::less;
+
+static binary_contig_impl_fn_ptr_t less_contig_dispatch_table[td_ns::num_types]
+                                                             [td_ns::num_types];
+static int less_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    less_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_less_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = less_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LessTypeMapFactory;
+    DispatchTableBuilder<int, LessTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(less_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LessStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LessStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(less_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LessContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LessContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(less_contig_dispatch_table);
+};
 } // namespace impl
 
 // B14: ==== LESS_EQUAL  (x1, x2)
 namespace impl
 {
-// FIXME: add code for B14
+namespace less_equal_fn_ns = dpctl::tensor::kernels::less_equal;
+
+static binary_contig_impl_fn_ptr_t
+    less_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int less_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    less_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_less_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = less_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LessEqualTypeMapFactory;
+    DispatchTableBuilder<int, LessEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(less_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LessEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LessEqualStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(less_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LessEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LessEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(less_equal_contig_dispatch_table);
+};
 } // namespace impl
 
 // U20: ==== LOG         (x)
@@ -868,6 +1068,14 @@ static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     multiply_contig_row_contig_matrix_broadcast_dispatch_table
         [td_ns::num_types][td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    multiply_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    multiply_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    multiply_inplace_row_matrix_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+
 void populate_multiply_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -911,6 +1119,28 @@ void populate_multiply_dispatch_tables(void)
         dtb5;
     dtb5.populate_dispatch_table(
         multiply_contig_row_contig_matrix_broadcast_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::MultiplyInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         MultiplyInplaceStridedFactory, num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(multiply_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::MultiplyInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         MultiplyInplaceContigFactory, num_types>
+        dtb7;
+    dtb7.populate_dispatch_table(multiply_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::MultiplyInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         MultiplyInplaceRowMatrixBroadcastFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(multiply_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -924,7 +1154,39 @@ namespace impl
 // B20: ==== NOT_EQUAL   (x1, x2)
 namespace impl
 {
-// FIXME: add code for B20
+namespace not_equal_fn_ns = dpctl::tensor::kernels::not_equal;
+
+static binary_contig_impl_fn_ptr_t
+    not_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int not_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    not_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_not_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = not_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::NotEqualTypeMapFactory;
+    DispatchTableBuilder<int, NotEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(not_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::NotEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, NotEqualStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(not_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::NotEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, NotEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(not_equal_contig_dispatch_table);
+};
 } // namespace impl
 
 // U26: ==== POSITIVE    (x)
@@ -1129,6 +1391,14 @@ static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     subtract_contig_row_contig_matrix_broadcast_dispatch_table
         [td_ns::num_types][td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    subtract_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    subtract_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    subtract_inplace_row_matrix_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+
 void populate_subtract_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -1172,6 +1442,28 @@ void populate_subtract_dispatch_tables(void)
         dtb5;
     dtb5.populate_dispatch_table(
         subtract_contig_row_contig_matrix_broadcast_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::SubtractInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         SubtractInplaceStridedFactory, num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(subtract_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::SubtractInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         SubtractInplaceContigFactory, num_types>
+        dtb7;
+    dtb7.populate_dispatch_table(subtract_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::SubtractInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         SubtractInplaceRowMatrixBroadcastFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(subtract_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -1268,6 +1560,31 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_add_result_type", add_result_type_pyapi, "");
+
+        using impl::add_inplace_contig_dispatch_table;
+        using impl::add_inplace_row_matrix_dispatch_table;
+        using impl::add_inplace_strided_dispatch_table;
+
+        auto add_inplace_pyapi =
+            [&](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, add_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    add_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    add_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    add_inplace_row_matrix_dispatch_table);
+            };
+        m.def("_add_inplace", add_inplace_pyapi, "", py::arg("lhs"),
+              py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // U04: ===== ASIN  (x)
@@ -1483,13 +1800,127 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B10: ==== FLOOR_DIVIDE  (x1, x2)
-    // FIXME:
+    {
+        impl::populate_floor_divide_dispatch_tables();
+        using impl::floor_divide_contig_dispatch_table;
+        using impl::floor_divide_output_id_table;
+        using impl::floor_divide_strided_dispatch_table;
+
+        auto floor_divide_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                      dpctl::tensor::usm_ndarray src2,
+                                      dpctl::tensor::usm_ndarray dst,
+                                      sycl::queue exec_q,
+                                      const std::vector<sycl::event> &depends =
+                                          {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, floor_divide_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                floor_divide_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                floor_divide_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto floor_divide_result_type_pyapi = [&](py::dtype dtype1,
+                                                  py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               floor_divide_output_id_table);
+        };
+        m.def("_floor_divide", floor_divide_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_floor_divide_result_type", floor_divide_result_type_pyapi, "");
+    }
 
     // B11: ==== GREATER       (x1, x2)
-    // FIXME:
+    {
+        impl::populate_greater_dispatch_tables();
+        using impl::greater_contig_dispatch_table;
+        using impl::greater_output_id_table;
+        using impl::greater_strided_dispatch_table;
+
+        auto greater_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                 dpctl::tensor::usm_ndarray src2,
+                                 dpctl::tensor::usm_ndarray dst,
+                                 sycl::queue exec_q,
+                                 const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, greater_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                greater_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                greater_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto greater_result_type_pyapi = [&](py::dtype dtype1,
+                                             py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               greater_output_id_table);
+        };
+        m.def("_greater", greater_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_greater_result_type", greater_result_type_pyapi, "");
+    }
 
     // B12: ==== GREATER_EQUAL (x1, x2)
-    // FIXME:
+    {
+        impl::populate_greater_equal_dispatch_tables();
+        using impl::greater_equal_contig_dispatch_table;
+        using impl::greater_equal_output_id_table;
+        using impl::greater_equal_strided_dispatch_table;
+
+        auto greater_equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                       dpctl::tensor::usm_ndarray src2,
+                                       dpctl::tensor::usm_ndarray dst,
+                                       sycl::queue exec_q,
+                                       const std::vector<sycl::event> &depends =
+                                           {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, greater_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                greater_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                greater_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto greater_equal_result_type_pyapi = [&](py::dtype dtype1,
+                                                   py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               greater_equal_output_id_table);
+        };
+        m.def("_greater_equal", greater_equal_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_greater_equal_result_type", greater_equal_result_type_pyapi,
+              "");
+    }
 
     // U16: ==== IMAG        (x)
     {
@@ -1587,10 +2018,84 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B13: ==== LESS        (x1, x2)
-    // FIXME:
+    {
+        impl::populate_less_dispatch_tables();
+        using impl::less_contig_dispatch_table;
+        using impl::less_output_id_table;
+        using impl::less_strided_dispatch_table;
+
+        auto less_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                              dpctl::tensor::usm_ndarray src2,
+                              dpctl::tensor::usm_ndarray dst,
+                              sycl::queue exec_q,
+                              const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, less_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                less_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                less_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto less_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               less_output_id_table);
+        };
+        m.def("_less", less_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_less_result_type", less_result_type_pyapi, "");
+    }
 
     // B14: ==== LESS_EQUAL  (x1, x2)
-    // FIXME:
+    {
+        impl::populate_less_equal_dispatch_tables();
+        using impl::less_equal_contig_dispatch_table;
+        using impl::less_equal_output_id_table;
+        using impl::less_equal_strided_dispatch_table;
+
+        auto less_equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                    dpctl::tensor::usm_ndarray src2,
+                                    dpctl::tensor::usm_ndarray dst,
+                                    sycl::queue exec_q,
+                                    const std::vector<sycl::event> &depends =
+                                        {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, less_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                less_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                less_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto less_equal_result_type_pyapi = [&](py::dtype dtype1,
+                                                py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               less_equal_output_id_table);
+        };
+        m.def("_less_equal", less_equal_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_less_equal_result_type", less_equal_result_type_pyapi, "");
+    }
 
     // U20: ==== LOG         (x)
     {
@@ -1696,13 +2201,76 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_multiply_result_type", multiply_result_type_pyapi, "");
+
+        using impl::multiply_inplace_contig_dispatch_table;
+        using impl::multiply_inplace_row_matrix_dispatch_table;
+        using impl::multiply_inplace_strided_dispatch_table;
+
+        auto multiply_inplace_pyapi =
+            [&](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, multiply_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    multiply_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    multiply_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    multiply_inplace_row_matrix_dispatch_table);
+            };
+        m.def("_multiply_inplace", multiply_inplace_pyapi, "", py::arg("lhs"),
+              py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // U25: ==== NEGATIVE    (x)
     // FIXME:
 
     // B20: ==== NOT_EQUAL   (x1, x2)
-    // FIXME:
+    {
+        impl::populate_not_equal_dispatch_tables();
+        using impl::not_equal_contig_dispatch_table;
+        using impl::not_equal_output_id_table;
+        using impl::not_equal_strided_dispatch_table;
+
+        auto not_equal_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                   dpctl::tensor::usm_ndarray src2,
+                                   dpctl::tensor::usm_ndarray dst,
+                                   sycl::queue exec_q,
+                                   const std::vector<sycl::event> &depends =
+                                       {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, not_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                not_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                not_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto not_equal_result_type_pyapi = [&](py::dtype dtype1,
+                                               py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               not_equal_output_id_table);
+        };
+        m.def("_not_equal", not_equal_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_not_equal_result_type", not_equal_result_type_pyapi, "");
+    }
 
     // U26: ==== POSITIVE    (x)
     // FIXME:
@@ -1850,6 +2418,31 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_subtract_result_type", subtract_result_type_pyapi, "");
+
+        using impl::subtract_inplace_contig_dispatch_table;
+        using impl::subtract_inplace_row_matrix_dispatch_table;
+        using impl::subtract_inplace_strided_dispatch_table;
+
+        auto subtract_inplace_pyapi =
+            [&](dpctl::tensor::usm_ndarray src, dpctl::tensor::usm_ndarray dst,
+                sycl::queue exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, subtract_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    subtract_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    subtract_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    subtract_inplace_row_matrix_dispatch_table);
+            };
+        m.def("_subtract_inplace", subtract_inplace_pyapi, "", py::arg("lhs"),
+              py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // U34: ==== TAN         (x)

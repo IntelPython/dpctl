@@ -31,6 +31,7 @@ from ._type_utils import (
     _empty_like_pair_orderK,
     _find_buf_dtype,
     _find_buf_dtype2,
+    _find_inplace_dtype,
     _to_device_supported_dtype,
 )
 
@@ -162,9 +163,18 @@ class WeakIntegralType:
         return self.o_
 
 
-class WeakInexactType:
-    """Python type representing type of Python real- or
-    complex-valued floating point objects"""
+class WeakFloatingType:
+    """Python type representing type of Python floating point objects"""
+
+    def __init__(self, o):
+        self.o_ = o
+
+    def get(self):
+        return self.o_
+
+
+class WeakComplexType:
+    """Python type representing type of Python complex floating point objects"""
 
     def __init__(self, o):
         self.o_ = o
@@ -189,14 +199,17 @@ def _get_dtype(o, dev):
         return WeakBooleanType(o)
     if isinstance(o, int):
         return WeakIntegralType(o)
-    if isinstance(o, (float, complex)):
-        return WeakInexactType(o)
+    if isinstance(o, float):
+        return WeakFloatingType(o)
+    if isinstance(o, complex):
+        return WeakComplexType(o)
     return np.object_
 
 
 def _validate_dtype(dt) -> bool:
     return isinstance(
-        dt, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+        dt,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
     ) or (
         isinstance(dt, dpt.dtype)
         and dt
@@ -220,22 +233,24 @@ def _validate_dtype(dt) -> bool:
 
 
 def _weak_type_num_kind(o):
-    _map = {"?": 0, "i": 1, "f": 2}
+    _map = {"?": 0, "i": 1, "f": 2, "c": 3}
     if isinstance(o, WeakBooleanType):
         return _map["?"]
     if isinstance(o, WeakIntegralType):
         return _map["i"]
-    if isinstance(o, WeakInexactType):
+    if isinstance(o, WeakFloatingType):
         return _map["f"]
+    if isinstance(o, WeakComplexType):
+        return _map["c"]
     raise TypeError(
         f"Unexpected type {o} while expecting "
-        "`WeakBooleanType`, `WeakIntegralType`, or "
-        "`WeakInexactType`."
+        "`WeakBooleanType`, `WeakIntegralType`,"
+        "`WeakFloatingType`, or `WeakComplexType`."
     )
 
 
 def _strong_dtype_num_kind(o):
-    _map = {"b": 0, "i": 1, "u": 1, "f": 2, "c": 2}
+    _map = {"b": 0, "i": 1, "u": 1, "f": 2, "c": 3}
     if not isinstance(o, dpt.dtype):
         raise TypeError
     k = o.kind
@@ -247,20 +262,29 @@ def _strong_dtype_num_kind(o):
 def _resolve_weak_types(o1_dtype, o2_dtype, dev):
     "Resolves weak data type per NEP-0050"
     if isinstance(
-        o1_dtype, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+        o1_dtype,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
     ):
         if isinstance(
-            o2_dtype, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+            o2_dtype,
+            (
+                WeakBooleanType,
+                WeakIntegralType,
+                WeakFloatingType,
+                WeakComplexType,
+            ),
         ):
             raise ValueError
         o1_kind_num = _weak_type_num_kind(o1_dtype)
         o2_kind_num = _strong_dtype_num_kind(o2_dtype)
-        if o1_kind_num > o2_kind_num or o1_kind_num == 2:
+        if o1_kind_num > o2_kind_num:
             if isinstance(o1_dtype, WeakBooleanType):
                 return dpt.bool, o2_dtype
             if isinstance(o1_dtype, WeakIntegralType):
                 return dpt.int64, o2_dtype
-            if isinstance(o1_dtype.get(), complex):
+            if isinstance(o1_dtype, WeakComplexType):
+                if o2_dtype is dpt.float16 or o2_dtype is dpt.float32:
+                    return dpt.complex64, o2_dtype
                 return (
                     _to_device_supported_dtype(dpt.complex128, dev),
                     o2_dtype,
@@ -269,16 +293,19 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         else:
             return o2_dtype, o2_dtype
     elif isinstance(
-        o2_dtype, (WeakBooleanType, WeakInexactType, WeakIntegralType)
+        o2_dtype,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
     ):
         o1_kind_num = _strong_dtype_num_kind(o1_dtype)
         o2_kind_num = _weak_type_num_kind(o2_dtype)
-        if o2_kind_num > o1_kind_num or o2_kind_num == 2:
+        if o2_kind_num > o1_kind_num:
             if isinstance(o2_dtype, WeakBooleanType):
                 return o1_dtype, dpt.bool
             if isinstance(o2_dtype, WeakIntegralType):
                 return o1_dtype, dpt.int64
-            if isinstance(o2_dtype.get(), complex):
+            if isinstance(o2_dtype, WeakComplexType):
+                if o1_dtype is dpt.float16 or o1_dtype is dpt.float32:
+                    return o1_dtype, dpt.complex64
                 return o1_dtype, _to_device_supported_dtype(dpt.complex128, dev)
             return (
                 o1_dtype,
@@ -305,11 +332,19 @@ class BinaryElementwiseFunc:
     Class that implements binary element-wise functions.
     """
 
-    def __init__(self, name, result_type_resolver_fn, binary_dp_impl_fn, docs):
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        binary_dp_impl_fn,
+        docs,
+        binary_inplace_fn=None,
+    ):
         self.__name__ = "BinaryElementwiseFunc"
         self.name_ = name
         self.result_type_resolver_fn_ = result_type_resolver_fn
         self.binary_fn_ = binary_dp_impl_fn
+        self.binary_inplace_fn_ = binary_inplace_fn
         self.__doc__ = docs
 
     def __str__(self):
@@ -319,6 +354,13 @@ class BinaryElementwiseFunc:
         return f"<BinaryElementwiseFunc '{self.name_}'>"
 
     def __call__(self, o1, o2, out=None, order="K"):
+        # FIXME: replace with check against base array
+        # when views can be identified
+        if o1 is out:
+            return self._inplace(o1, o2)
+        elif o2 is out:
+            return self._inplace(o2, o1)
+
         if order not in ["K", "C", "F", "A"]:
             order = "K"
         q1, o1_usm_type = _get_queue_usm_type(o1)
@@ -362,6 +404,7 @@ class BinaryElementwiseFunc:
             raise TypeError(
                 "Shape of arguments can not be inferred. "
                 "Arguments are expected to be "
+                "lists, tuples, or both"
             )
         try:
             res_shape = _broadcast_shape_impl(
@@ -389,7 +432,7 @@ class BinaryElementwiseFunc:
 
         if res_dt is None:
             raise TypeError(
-                "function 'add' does not support input types "
+                f"function '{self.name_}' does not support input types "
                 f"({o1_dtype}, {o2_dtype}), "
                 "and the inputs could not be safely coerced to any "
                 "supported types according to the casting rule ''safe''."
@@ -605,3 +648,116 @@ class BinaryElementwiseFunc:
         )
         dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
         return out
+
+    def _inplace(self, lhs, val):
+        if self.binary_inplace_fn_ is None:
+            raise ValueError(
+                f"In-place operation not supported for ufunc '{self.name_}'"
+            )
+        if not isinstance(lhs, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected dpctl.tensor.usm_ndarray, got {type(lhs)}"
+            )
+        q1, lhs_usm_type = _get_queue_usm_type(lhs)
+        q2, val_usm_type = _get_queue_usm_type(val)
+        if q2 is None:
+            exec_q = q1
+            usm_type = lhs_usm_type
+        else:
+            exec_q = dpctl.utils.get_execution_queue((q1, q2))
+            if exec_q is None:
+                raise ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    lhs_usm_type,
+                    val_usm_type,
+                )
+            )
+        dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+        lhs_shape = _get_shape(lhs)
+        val_shape = _get_shape(val)
+        if not all(
+            isinstance(s, (tuple, list))
+            for s in (
+                lhs_shape,
+                val_shape,
+            )
+        ):
+            raise TypeError(
+                "Shape of arguments can not be inferred. "
+                "Arguments are expected to be "
+                "lists, tuples, or both"
+            )
+        try:
+            res_shape = _broadcast_shape_impl(
+                [
+                    lhs_shape,
+                    val_shape,
+                ]
+            )
+        except ValueError:
+            raise ValueError(
+                "operands could not be broadcast together with shapes "
+                f"{lhs_shape} and {val_shape}"
+            )
+        if res_shape != lhs_shape:
+            raise ValueError(
+                f"output shape {lhs_shape} does not match "
+                f"broadcast shape {res_shape}"
+            )
+        sycl_dev = exec_q.sycl_device
+        lhs_dtype = lhs.dtype
+        val_dtype = _get_dtype(val, sycl_dev)
+        if not _validate_dtype(val_dtype):
+            raise ValueError("Input operand of unsupported type")
+
+        lhs_dtype, val_dtype = _resolve_weak_types(
+            lhs_dtype, val_dtype, sycl_dev
+        )
+
+        buf_dt = _find_inplace_dtype(
+            lhs_dtype, val_dtype, self.result_type_resolver_fn_, sycl_dev
+        )
+
+        if buf_dt is None:
+            raise TypeError(
+                f"In-place '{self.name_}' does not support input types "
+                f"({lhs_dtype}, {val_dtype}), "
+                "and the inputs could not be safely coerced to any "
+                "supported types according to the casting rule ''safe''."
+            )
+
+        if isinstance(val, dpt.usm_ndarray):
+            rhs = val
+            overlap = ti._array_overlap(lhs, rhs)
+        else:
+            rhs = dpt.asarray(val, dtype=val_dtype, sycl_queue=exec_q)
+            overlap = False
+
+        if buf_dt == val_dtype and overlap is False:
+            rhs = dpt.broadcast_to(rhs, res_shape)
+            ht_, _ = self.binary_inplace_fn_(
+                lhs=lhs, rhs=rhs, sycl_queue=exec_q
+            )
+            ht_.wait()
+
+        else:
+            buf = dpt.empty_like(rhs, dtype=buf_dt)
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=rhs, dst=buf, sycl_queue=exec_q
+            )
+
+            buf = dpt.broadcast_to(buf, res_shape)
+            ht_, _ = self.binary_inplace_fn_(
+                lhs=lhs,
+                rhs=buf,
+                sycl_queue=exec_q,
+                depends=[copy_ev],
+            )
+            ht_copy_ev.wait()
+            ht_.wait()
+
+        return lhs

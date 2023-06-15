@@ -106,3 +106,30 @@ def test_sum_keepdims():
     assert isinstance(s, dpt.usm_ndarray)
     assert s.shape == (3, 1, 1, 6, 1)
     assert (dpt.asnumpy(s) == np.full(s.shape, 4 * 5 * 7)).all()
+
+
+def test_sum_scalar():
+    get_queue_or_skip()
+
+    m = dpt.ones(())
+    s = dpt.sum(m)
+
+    assert isinstance(s, dpt.usm_ndarray)
+    assert m.sycl_queue == s.sycl_queue
+    assert s.shape == ()
+    assert dpt.asnumpy(s) == np.full((), 1)
+
+
+@pytest.mark.parametrize("arg_dtype", _all_dtypes)
+@pytest.mark.parametrize("out_dtype", _all_dtypes[1:])
+def test_sum_arg_out_dtype_scalar(arg_dtype, out_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+    skip_if_dtype_not_supported(out_dtype, q)
+
+    m = dpt.ones((), dtype=arg_dtype)
+    r = dpt.sum(m, dtype=out_dtype)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype == dpt.dtype(out_dtype)
+    assert dpt.asnumpy(r) == 1

@@ -1,4 +1,4 @@
-//===-- take_kernel_impl.cpp - Implementation of take  --*-C++-*-/===//
+//===-- integer_advanced_indexing.cpp -                         --*-C++-*-/===//
 //
 //                      Data Parallel Control (dpctl)
 //
