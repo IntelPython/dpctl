@@ -71,7 +71,6 @@ template <typename argT, typename resT> struct CeilFunctor
         else {
             return sycl::ceil(in);
         }
-        // return sycl::ceil(in);
     }
 };
 
@@ -90,7 +89,14 @@ template <typename T> struct CeilOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::TypeMapResultEntry<T, bool, sycl::half>,
+        td_ns::TypeMapResultEntry<T, std::uint8_t>,
+        td_ns::TypeMapResultEntry<T, std::uint16_t>,
+        td_ns::TypeMapResultEntry<T, std::uint32_t>,
+        td_ns::TypeMapResultEntry<T, std::uint64_t>,
+        td_ns::TypeMapResultEntry<T, std::int8_t>,
+        td_ns::TypeMapResultEntry<T, std::int16_t>,
+        td_ns::TypeMapResultEntry<T, std::int32_t>,
+        td_ns::TypeMapResultEntry<T, std::int64_t>,
         td_ns::TypeMapResultEntry<T, sycl::half>,
         td_ns::TypeMapResultEntry<T, float>,
         td_ns::TypeMapResultEntry<T, double>,
