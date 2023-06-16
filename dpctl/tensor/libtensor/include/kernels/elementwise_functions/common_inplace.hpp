@@ -1,4 +1,5 @@
-//=== common.hpp -  Common code for elementwise operations ----- *-C++-*--/===//
+//=== common_inplace.hpp -  Common code for in-place elementwise operations
+//----- *-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +20,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines common code for elementwise tensor operations.
+/// This file defines common code for in-place elementwise tensor operations.
 //===---------------------------------------------------------------------===//
 
 #pragma once
