@@ -2,7 +2,7 @@ About
 =====
 
 dpctl is developed by Intel(R) and is part of the `Intel Distribution for
-Python <https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/distribution-for-python.html>`_.
+Python <https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html>`_.
 
 Contributing
 ============
