@@ -69,7 +69,10 @@ template <typename argT, typename resT> struct CeilFunctor
             return in;
         }
         else {
-            return sycl::ceil(in);
+            if (in == 0 && std::signbit(in)) {
+                return in;
+            }
+            return std::ceil(in);
         }
     }
 };

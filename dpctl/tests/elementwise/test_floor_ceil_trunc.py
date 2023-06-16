@@ -18,7 +18,11 @@ import itertools
 
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose, assert_raises_regex
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_raises_regex,
+)
 
 import dpctl
 import dpctl.tensor as dpt
@@ -196,12 +200,14 @@ def test_floor_ceil_trunc_special_cases(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    x = [np.nan, np.inf, -np.inf]
+    x = [np.nan, np.inf, -np.inf, +0.0, -0.0]
 
     xf = np.array(x, dtype=dtype)
     yf = dpt.asarray(xf, dtype=dtype, sycl_queue=q)
 
     Y_np = np_call(xf)
+    Y = dpt.asnumpy(dpt_call(yf))
 
     tol = 8 * dpt.finfo(dtype).resolution
-    assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
+    assert_allclose(Y, Y_np, atol=tol, rtol=tol)
+    assert_array_equal(np.signbit(Y), np.signbit(Y_np))

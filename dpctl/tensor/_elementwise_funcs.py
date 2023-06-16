@@ -131,9 +131,8 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise inverse cosine, in radians
-        and in the closed interval `[-pi/2, pi/2]`. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise ceiling of input array.
+        The returned array has the same data type as `x`.
 """
 
 ceil = UnaryElementwiseFunc(
@@ -312,9 +311,8 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise floor, in radians
-        and in the closed interval `[-pi/2, pi/2]`. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise floor of input array.
+        The returned array has the same data type as `x`.
 """
 
 floor = UnaryElementwiseFunc(
@@ -972,9 +970,8 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise inverse cosine, in radians
-        and in the closed interval `[-pi/2, pi/2]`. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise truncated value of input array.
+        The returned array has the same data type as `x`.
 """
 
 trunc = UnaryElementwiseFunc(

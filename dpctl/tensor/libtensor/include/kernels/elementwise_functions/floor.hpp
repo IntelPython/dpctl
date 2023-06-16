@@ -69,7 +69,10 @@ template <typename argT, typename resT> struct FloorFunctor
             return in;
         }
         else {
-            return sycl::floor(in);
+            if (in == 0 && std::signbit(in)) {
+                return in;
+            }
+            return std::floor(in);
         }
     }
 };
