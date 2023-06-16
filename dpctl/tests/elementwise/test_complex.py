@@ -114,11 +114,11 @@ def test_complex_order(np_call, dpt_call, dtype):
     X[..., 0::2] = np.pi / 6 + 1j * np.pi / 3
     X[..., 1::2] = np.pi / 3 + 1j * np.pi / 6
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np_call(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt_call(U, order=ord)
-            expected_Y = np_call(dpt.asnumpy(U))
             assert np.allclose(dpt.asnumpy(Y), expected_Y)
 
 
@@ -164,35 +164,51 @@ def test_projection(dtype):
     "np_call, dpt_call",
     [(np.real, dpt.real), (np.imag, dpt.imag), (np.conj, dpt.conj)],
 )
-@pytest.mark.parametrize("dtype", ["f4", "f8"])
-@pytest.mark.parametrize("stride", [-1, 1, 2, 4, 5])
-def test_complex_strided(np_call, dpt_call, dtype, stride):
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_complex_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    N = 100
-    rng = np.random.default_rng(42)
-    x1 = rng.standard_normal(N, dtype)
-    x2 = 1j * rng.standard_normal(N, dtype)
-    x = x1 + x2
-    y = np_call(x[::stride])
-    z = dpt_call(dpt.asarray(x[::stride]))
+    np.random.seed(42)
+    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
+    sizes = [2, 4, 6, 8, 9, 24, 72]
+    tol = 8 * dpt.finfo(dtype).resolution
 
-    tol = 8 * dpt.finfo(y.dtype).resolution
-    assert_allclose(y, dpt.asnumpy(z), atol=tol, rtol=tol)
+    low = -1000.0
+    high = 1000.0
+    for ii in sizes:
+        x1 = np.random.uniform(low=low, high=high, size=ii)
+        x2 = np.random.uniform(low=low, high=high, size=ii)
+        Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+        X = dpt.asarray(Xnp)
+        Ynp = np_call(Xnp)
+        for jj in strides:
+            assert_allclose(
+                dpt.asnumpy(dpt_call(X[::jj])),
+                Ynp[::jj],
+                atol=tol,
+                rtol=tol,
+            )
 
 
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_complex_special_cases(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    x = [np.nan, -np.nan, np.inf, -np.inf]
-    with np.errstate(all="ignore"):
-        Xnp = 1j * np.array(x, dtype=dtype)
-    X = dpt.asarray(Xnp, dtype=Xnp.dtype)
+    x = [np.nan, -np.nan, np.inf, -np.inf, +0.0, -0.0]
+    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
+
+    Xc_np = np.array(xc, dtype=dtype)
+    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
 
     tol = 8 * dpt.finfo(dtype).resolution
-    assert_allclose(dpt.asnumpy(dpt.real(X)), np.real(Xnp), atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(dpt.imag(X)), np.imag(Xnp), atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(dpt.conj(X)), np.conj(Xnp), atol=tol, rtol=tol)
+    assert_allclose(
+        dpt.asnumpy(dpt.real(Xc)), np.real(Xc_np), atol=tol, rtol=tol
+    )
+    assert_allclose(
+        dpt.asnumpy(dpt.imag(Xc)), np.imag(Xc_np), atol=tol, rtol=tol
+    )
+    assert_allclose(
+        dpt.asnumpy(dpt.conj(Xc)), np.conj(Xc_np), atol=tol, rtol=tol
+    )

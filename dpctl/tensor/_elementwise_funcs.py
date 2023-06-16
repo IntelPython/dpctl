@@ -36,8 +36,11 @@ Args:
 Returns:
     usm_narray:
         An array containing the element-wise absolute values.
-        For complex input, the absolute value is its magnitude. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        For complex input, the absolute value is its magnitude.
+        If `x` has a real-valued data type, the returned array has the
+        same data type as `x`. If `x` has a complex floating-point data type,
+        the returned array has a real-valued floating-point data type whose
+        precision matches the precision of `x`.
 """
 
 abs = UnaryElementwiseFunc("abs", ti._abs_result_type, ti._abs, _abs_docstring_)
@@ -133,8 +136,8 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise conjugate values. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise conjugate values.
+        The returned array has the same data type as `x`.
 """
 
 conj = UnaryElementwiseFunc(
@@ -216,8 +219,7 @@ Args:
 Returns:
     usm_narray:
         An array containing the result of element-wise equality comparison.
-        The data type of the returned array is determined by the
-        Type Promotion Rules.
+        The returned array has a data type of `bool`.
 """
 
 equal = BinaryElementwiseFunc(
@@ -264,6 +266,8 @@ Args:
 Return:
     usm_ndarray:
         An array containing the element-wise exp(x)-1 values.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
 """
 
 expm1 = UnaryElementwiseFunc(
@@ -288,7 +292,7 @@ Args:
         Second input array, also expected to have numeric data type.
 Returns:
     usm_narray:
-        an array containing the result of element-wise  floor division.
+        an array containing the result of element-wise floor division.
         The data type of the returned array is determined by the Type
         Promotion Rules.
 """
@@ -319,8 +323,7 @@ Args:
 Returns:
     usm_narray:
         An array containing the result of element-wise greater-than comparison.
-        The data type of the returned array is determined by the
-        Type Promotion Rules.
+        The returned array has a data type of `bool`.
 """
 
 greater = BinaryElementwiseFunc(
@@ -347,8 +350,7 @@ Returns:
     usm_narray:
         An array containing the result of element-wise greater-than or equal-to
         comparison.
-        The data type of the returned array is determined by the
-        Type Promotion Rules.
+        The returned array has a data type of `bool`.
 """
 
 greater_equal = BinaryElementwiseFunc(
@@ -376,8 +378,10 @@ Args:
 Returns:
     usm_narray:
         An array containing the element-wise imaginary component of input.
-        The data type of the returned array is determined
-        by the Type Promotion Rules.
+        If the input is a real-valued data type, the returned array has
+        the same datat type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
 """
 
 imag = UnaryElementwiseFunc(
@@ -403,7 +407,7 @@ Returns:
     usm_narray:
         An array which is True where `x` is not positive infinity,
         negative infinity, or NaN, False otherwise.
-        The data type of the returned array is boolean.
+        The data type of the returned array is `bool`.
 """
 
 isfinite = UnaryElementwiseFunc(
@@ -428,7 +432,7 @@ Args:
 Returns:
     usm_narray:
         An array which is True where `x` is positive or negative infinity,
-        False otherwise. The data type of the returned array is boolean.
+        False otherwise. The data type of the returned array is `bool`.
 """
 
 isinf = UnaryElementwiseFunc(
@@ -453,7 +457,7 @@ Args:
 Returns:
     usm_narray:
         An array which is True where x is NaN, False otherwise.
-        The data type of the returned array is boolean.
+        The data type of the returned array is `bool`.
 """
 
 isnan = UnaryElementwiseFunc(
@@ -481,8 +485,7 @@ Args:
 Returns:
     usm_narray:
         An array containing the result of element-wise less-than comparison.
-        The data type of the returned array is determined by the
-        Type Promotion Rules.
+        The returned array has a data type of `bool`.
 """
 
 less = BinaryElementwiseFunc(
@@ -508,9 +511,7 @@ Args:
 Returns:
     usm_narray:
         An array containing the result of element-wise less-than or equal-to
-        comparison.
-        The data type of the returned array is determined by the
-        Type Promotion Rules.
+        comparison. The returned array has a data type of `bool`.
 """
 
 less_equal = BinaryElementwiseFunc(
@@ -536,6 +537,8 @@ Args:
 Return:
     usm_ndarray:
         An array containing the element-wise natural logarithm values.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
 """
 
 log = UnaryElementwiseFunc("log", ti._log_result_type, ti._log, _log_docstring)
@@ -555,7 +558,8 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise log(1+x) values.
+        An array containing the element-wise log(1+x) values. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 log1p = UnaryElementwiseFunc(
@@ -804,8 +808,7 @@ Args:
 Returns:
     usm_narray:
         an array containing the result of element-wise inequality comparison.
-        The data type of the returned array is determined by the
-        Type Promotion Rules.
+        The returned array has a data type of `bool`.
 """
 
 not_equal = BinaryElementwiseFunc(
@@ -873,8 +876,8 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise projection. The data
-        type of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise projection.
+        The returned array has the same data type as `x`.
 """
 
 proj = UnaryElementwiseFunc(
@@ -898,8 +901,11 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise real component of input. The data
-        type of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise real component of input.
+        If the input is a real-valued data type, the returned array has
+        the same datat type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
 """
 
 real = UnaryElementwiseFunc(

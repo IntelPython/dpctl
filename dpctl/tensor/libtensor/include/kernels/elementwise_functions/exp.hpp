@@ -64,7 +64,58 @@ template <typename argT, typename resT> struct ExpFunctor
 
     resT operator()(const argT &in)
     {
-        return std::exp(in);
+        if constexpr (is_complex<argT>::value) {
+            using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
+            const realT x = std::real(in);
+            const realT y = std::imag(in);
+            if (std::isfinite(x)) {
+                if (std::isfinite(y)) {
+                    return std::exp(in);
+                }
+                else {
+                    return resT{q_nan, q_nan};
+                }
+            }
+            else if (std::isnan(x)) {
+                /* x is nan */
+                if (y == realT(0)) {
+                    return resT{in};
+                }
+                else {
+                    return resT{x, q_nan};
+                }
+            }
+            else {
+                if (x > realT(0)) { /* x is +inf */
+                    if (y == realT(0)) {
+                        return resT{x, y};
+                    }
+                    else if (std::isfinite(y)) {
+                        return resT{x * std::cos(y), x * std::sin(y)};
+                    }
+                    else {
+                        /* x = +inf, y = +-inf || nan */
+                        return resT{x, q_nan};
+                    }
+                }
+                else { /* x is -inf */
+                    if (std::isfinite(y)) {
+                        realT exp_x = std::exp(x);
+                        return resT{exp_x * std::cos(y), exp_x * std::sin(y)};
+                    }
+                    else {
+                        /* x = -inf, y = +-inf || nan */
+                        return resT{0, 0};
+                    }
+                }
+            }
+        }
+        else {
+            return std::exp(in);
+        }
     }
 };
 
