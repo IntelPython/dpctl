@@ -27,6 +27,9 @@
 #include "dpctl_service.h"
 #include <cstring>
 #include <sstream>
+#ifdef _WIN32
+#include <cstdlib>
+#endif
 #ifdef ENABLE_GLOG
 #include <glog/logging.h>
 #endif
@@ -48,9 +51,16 @@ namespace
 {
 int requested_verbosity_level(void)
 {
-    int requested_level = 0;
+    char *verbose = nullptr;
+    size_t len = 0;
 
-    const char *verbose = std::getenv("DPCTL_VERBOSITY");
+#ifdef _WIN32
+    _dupenv_s(&verbose, &len, "DPCTL_VERBOSITY");
+#else
+    verbose = std::getenv("DPCTL_VERBOSITY");
+#endif
+
+    int requested_level = 0;
 
     if (verbose) {
         if (!std::strncmp(verbose, "none", 4))
@@ -60,6 +70,11 @@ int requested_verbosity_level(void)
         else if (!std::strncmp(verbose, "warning", 7))
             requested_level = error_level::warning;
     }
+
+#ifdef _WIN32
+    if (verbose)
+        free(verbose);
+#endif
 
     return requested_level;
 }
