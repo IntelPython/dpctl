@@ -52,9 +52,9 @@ namespace
 int requested_verbosity_level(void)
 {
     char *verbose = nullptr;
-    size_t len = 0;
 
 #ifdef _WIN32
+    size_t len = 0;
     _dupenv_s(&verbose, &len, "DPCTL_VERBOSITY");
 #else
     verbose = std::getenv("DPCTL_VERBOSITY");
