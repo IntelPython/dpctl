@@ -18,8 +18,13 @@
 """
 
 import numpy
+import pytest
 
 from dpctl.tensor import numpy_usm_shared as dparray
+
+pytestmark = pytest.mark.skip(
+    "skipping numpy_usm_shared unit tests pending submodule removal"
+)
 
 
 def get_arg():
