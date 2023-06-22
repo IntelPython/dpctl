@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>numpy.dtype &mdash; Data-parallel Control (dpctl) 0.14.4+6.g179ce150a documentation</title>
+  <title>numpy.dtype &mdash; Data-parallel Control (dpctl) 0.14.4+8.gd10977089 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.4+6.g179ce150a
+                0.14.4+8.gd10977089
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -118,7 +118,7 @@
 <span id="dtype-api"></span><h1>numpy.dtype<a class="headerlink" href="#numpy-dtype" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="numpy.dtype">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">numpy.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#numpy.dtype" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">numpy.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy=False</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#numpy.dtype" title="Permalink to this definition"></a></dt>
 <dd><p>Create a data type object.</p>
 <p>A numpy array is homogeneous, and contains elements described by a
 dtype object. A dtype object can be constructed from different
@@ -133,6 +133,7 @@ or a comma-separated string. If a struct dtype is being created,
 this also sets a sticky alignment flag <code class="docutils literal notranslate"><span class="pre">isalignedstruct</span></code>.</p></li>
 <li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Make a new copy of the data-type object. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result
 may just be a reference to a built-in data-type object.</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em>, </em><em>optional</em>) – An optional dictionary with dtype metadata.</p></li>
 </ul>
 </dd>
 </dl>
@@ -591,8 +592,8 @@ byte order.  <cite>new_order</cite> codes can be any of:</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sys_is_le</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">native_code</span> <span class="o">=</span> <span class="n">sys_is_le</span> <span class="ow">and</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;&gt;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_code</span> <span class="o">=</span> <span class="n">sys_is_le</span> <span class="ow">and</span> <span class="s1">&#39;&gt;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;&lt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">native_code</span> <span class="o">=</span> <span class="s1">&#39;&lt;&#39;</span> <span class="k">if</span> <span class="n">sys_is_le</span> <span class="k">else</span> <span class="s1">&#39;&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_code</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">if</span> <span class="n">sys_is_le</span> <span class="k">else</span> <span class="s1">&#39;&lt;&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">native_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">native_code</span><span class="o">+</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">swapped_code</span><span class="o">+</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">native_dt</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">swapped_dt</span>
