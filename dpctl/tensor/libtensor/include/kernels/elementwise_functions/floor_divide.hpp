@@ -56,14 +56,25 @@ struct FloorDivideFunctor
     using supports_sg_loadstore =
         std::negation<std::disjunction<tu_ns::is_complex<argT1>,
                                        tu_ns::is_complex<argT2>>>; // TRUE
-    using supports_vec = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_vec = std::negation<std::disjunction<
+        tu_ns::is_complex<argT1>,
+        tu_ns::is_complex<argT2>,
+        std::conjunction<std::is_integral<argT1>, std::is_signed<argT1>>,
+        std::conjunction<std::is_integral<argT2>, std::is_signed<argT2>>>>;
+    // no vec overload for signed integers to avoid loop
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         auto tmp = in1 / in2;
         if constexpr (std::is_integral_v<decltype(tmp)>) {
-            return tmp;
+            if constexpr (std::is_unsigned_v<decltype(tmp)>) {
+                return tmp;
+            }
+            else {
+                auto rem = in1 % in2;
+                auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
+                return (tmp - corr);
+            }
         }
         else {
             return sycl::floor(tmp);

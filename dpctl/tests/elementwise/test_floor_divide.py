@@ -186,3 +186,28 @@ def test_floor_divide_canary_mock_array():
     c = Canary()
     with pytest.raises(ValueError):
         dpt.floor_divide(a, c)
+
+
+def test_floor_divide_gh_1247():
+    get_queue_or_skip()
+
+    x = dpt.ones(1, dtype="i4")
+    res = dpt.floor_divide(x, -2)
+    np.testing.assert_array_equal(
+        dpt.asnumpy(res), np.full(res.shape, -1, dtype=res.dtype)
+    )
+
+    x = dpt.full(1, -1, dtype="i4")
+    res = dpt.floor_divide(x, 2)
+    np.testing.assert_array_equal(
+        dpt.asnumpy(res), np.full(res.shape, -1, dtype=res.dtype)
+    )
+
+    x = dpt.arange(-5, 6, 1, dtype="i4")
+    np.testing.assert_array_equal(
+        dpt.asnumpy(dpt.floor_divide(x, 3)), np.floor_divide(dpt.asnumpy(x), 3)
+    )
+    np.testing.assert_array_equal(
+        dpt.asnumpy(dpt.floor_divide(x, -3)),
+        np.floor_divide(dpt.asnumpy(x), -3),
+    )
