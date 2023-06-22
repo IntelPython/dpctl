@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._reduction &mdash; Data-parallel Control (dpctl) 0.14.3dev3+20.ga62b4f94f documentation</title>
+  <title>dpctl.tensor._reduction &mdash; Data-parallel Control (dpctl) 0.14.4+11.g7e6c30ce7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.3dev3+20.ga62b4f94f
+                0.14.4+11.g7e6c30ce7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -214,10 +214,12 @@
         <span class="n">res_dt</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
-    <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_sum_over_axis_dtype_supported</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
