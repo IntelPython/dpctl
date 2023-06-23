@@ -53,27 +53,27 @@ template <typename argT1, typename argT2, typename resT>
 struct FloorDivideFunctor
 {
 
-    using supports_sg_loadstore =
-        std::negation<std::disjunction<tu_ns::is_complex<argT1>,
-                                       tu_ns::is_complex<argT2>>>; // TRUE
-    using supports_vec = std::negation<std::disjunction<
-        tu_ns::is_complex<argT1>,
-        tu_ns::is_complex<argT2>,
-        std::conjunction<std::is_integral<argT1>, std::is_signed<argT1>>,
-        std::conjunction<std::is_integral<argT2>, std::is_signed<argT2>>>>;
-    // no vec overload for signed integers to avoid loop
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         auto tmp = in1 / in2;
         if constexpr (std::is_integral_v<decltype(tmp)>) {
             if constexpr (std::is_unsigned_v<decltype(tmp)>) {
-                return tmp;
+                return (in2 == argT2(0)) ? resT(0) : tmp;
             }
             else {
-                auto rem = in1 % in2;
-                auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
-                return (tmp - corr);
+                if (in2 == argT2(0)) {
+                    return resT(0);
+                }
+                else {
+                    auto rem = in1 % in2;
+                    auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
+                    return (tmp - corr);
+                }
             }
         }
         else {
@@ -86,17 +86,37 @@ struct FloorDivideFunctor
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
         auto tmp = in1 / in2;
-        if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type> &&
-                      std::is_integral_v<resT>)
-        {
-            return tmp;
-        }
-        else if constexpr (std::is_integral_v<typename decltype(
-                               tmp)::element_type>) {
-            using dpctl::tensor::type_utils::vec_cast;
-            return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
-                tmp);
+        using tmpT = typename decltype(tmp)::element_type;
+        if constexpr (std::is_integral_v<tmpT>) {
+            if constexpr (std::is_signed_v<tmpT>) {
+                auto rem_tmp = in1 % in2;
+#pragma unroll
+                for (int i = 0; i < vec_sz; ++i) {
+                    if (in2[i] == argT2(0)) {
+                        tmp[i] = tmpT(0);
+                    }
+                    else {
+                        tmpT corr = (rem_tmp[i] != 0 &&
+                                     ((rem_tmp[i] < 0) != (in2[i] < 0)));
+                        tmp[i] -= corr;
+                    }
+                }
+            }
+            else {
+#pragma unroll
+                for (int i = 0; i < vec_sz; ++i) {
+                    if (in2[i] == argT2(0)) {
+                        tmp[i] = tmpT(0);
+                    }
+                }
+            }
+            if constexpr (std::is_same_v<resT, tmpT>) {
+                return tmp;
+            }
+            else {
+                using dpctl::tensor::type_utils::vec_cast;
+                return vec_cast<resT, tmpT, vec_sz>(tmp);
+            }
         }
         else {
             sycl::vec<resT, vec_sz> res = sycl::floor(tmp);

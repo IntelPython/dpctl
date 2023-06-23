@@ -203,11 +203,33 @@ def test_floor_divide_gh_1247():
         dpt.asnumpy(res), np.full(res.shape, -1, dtype=res.dtype)
     )
 
-    x = dpt.arange(-5, 6, 1, dtype="i4")
+    # attempt to invoke sycl::vec overload using a larger array
+    x = dpt.arange(-64, 65, 1, dtype="i4")
     np.testing.assert_array_equal(
         dpt.asnumpy(dpt.floor_divide(x, 3)), np.floor_divide(dpt.asnumpy(x), 3)
     )
     np.testing.assert_array_equal(
         dpt.asnumpy(dpt.floor_divide(x, -3)),
         np.floor_divide(dpt.asnumpy(x), -3),
+    )
+
+
+@pytest.mark.parametrize("dtype", _no_complex_dtypes[1:9])
+def test_floor_divide_integer_zero(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = dpt.arange(10, dtype=dtype, sycl_queue=q)
+    y = dpt.zeros_like(x, sycl_queue=q)
+    res = dpt.floor_divide(x, y)
+    np.testing.assert_array_equal(
+        dpt.asnumpy(res), np.zeros(x.shape, dtype=res.dtype)
+    )
+
+    # attempt to invoke sycl::vec overload using a larger array
+    x = dpt.arange(129, dtype=dtype, sycl_queue=q)
+    y = dpt.zeros_like(x, sycl_queue=q)
+    res = dpt.floor_divide(x, y)
+    np.testing.assert_array_equal(
+        dpt.asnumpy(res), np.zeros(x.shape, dtype=res.dtype)
     )
