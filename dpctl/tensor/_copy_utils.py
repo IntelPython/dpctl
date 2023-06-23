@@ -23,6 +23,7 @@ import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
+from dpctl.tensor._ctors import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 
 __doc__ = (
@@ -364,7 +365,8 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         array (usm_ndarray):
             An input array.
         new_dtype (dtype):
-            The data type of the resulting array.
+            The data type of the resulting array. If None, gives default
+            floating point type supported by device where `array` is allocated.
         order ({"C", "F", "A", "K"}, optional):
             Controls memory layout of the resulting array if a copy
             is returned.
@@ -392,7 +394,7 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
             "Recognized values are 'A', 'C', 'F', or 'K'"
         )
     ary_dtype = usm_ary.dtype
-    target_dtype = dpt.dtype(newdtype)
+    target_dtype = _get_dtype(newdtype, usm_ary.sycl_queue)
     if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
         raise TypeError(
             f"Can not cast from {ary_dtype} to {newdtype} "
