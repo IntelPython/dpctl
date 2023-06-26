@@ -365,7 +365,7 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         array (usm_ndarray):
             An input array.
         new_dtype (dtype):
-            The data type of the resulting array. If None, gives default
+            The data type of the resulting array. If `None`, gives default
             floating point type supported by device where `array` is allocated.
         order ({"C", "F", "A", "K"}, optional):
             Controls memory layout of the resulting array if a copy
