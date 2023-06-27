@@ -1216,6 +1216,11 @@ def test_astype():
     assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f4"))
     Y = dpt.astype(X[::2, ::-1], "i4", order="K", copy=False)
     assert Y.usm_data is X.usm_data
+    Y = dpt.astype(X, None, order="K")
+    if X.sycl_queue.sycl_device.has_aspect_fp64:
+        assert Y.dtype is dpt.float64
+    else:
+        assert Y.dtype is dpt.float32
 
 
 def test_astype_invalid_order():
