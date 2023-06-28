@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.5dev0+1.gcc029419 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data-parallel Control (dpctl) 0.14.5dev0+3.g0506a490b documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.5dev0+1.gcc029419
+                0.14.5dev0+3.g0506a490b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -1193,6 +1193,8 @@
         <span class="n">fill_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fill_value</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">fill_value_type</span> <span class="ow">is</span> <span class="nb">complex</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
         <span class="n">fill_value</span> <span class="o">=</span> <span class="n">fill_value</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">elif</span> <span class="n">fill_value_type</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">_to_scalar</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
 
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
