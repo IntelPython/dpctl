@@ -15,11 +15,11 @@
 # limitations under the License.
 
 import glob
+import importlib.machinery as imm
 import os.path
 import pathlib
 import shutil
 import sys
-import importlib.machinery as imm
 
 import skbuild
 import skbuild.setuptools_wrap
@@ -193,7 +193,7 @@ skbuild.setup(
         "coverage": ["Cython<3", "pytest", "pytest-cov", "coverage", "tomli"],
     },
     keywords="dpctl",
-    classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
+    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
     platforms=["Linux", "Windows"],
     cmake_process_manifest_hook=cleanup_destination,
 )
