@@ -572,16 +572,119 @@ log1p = UnaryElementwiseFunc(
 # FIXME: implement B15
 
 # B16: ==== LOGICAL_AND (x1, x2)
-# FIXME: implement B16
+_logical_and_docstring_ = """
+multiply(x1, x2, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise products. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+logical_and = BinaryElementwiseFunc(
+    "logical_and",
+    ti._logical_and_result_type,
+    ti._logical_and,
+    _logical_and_docstring_,
+)
 
 # U24: ==== LOGICAL_NOT (x)
-# FIXME: implement U24
+_logical_not_docstring = """
+log(x, out=None, order='K')
+Computes the natural logarithm element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise natural logarithm values.
+"""
+
+logical_not = UnaryElementwiseFunc(
+    "logical_not",
+    ti._logical_not_result_type,
+    ti._logical_not,
+    _logical_not_docstring,
+)
 
 # B17: ==== LOGICAL_OR  (x1, x2)
-# FIXME: implement B17
+_logical_or_docstring_ = """
+multiply(x1, x2, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise products. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+logical_or = BinaryElementwiseFunc(
+    "logical_or",
+    ti._logical_or_result_type,
+    ti._logical_or,
+    _logical_or_docstring_,
+)
 
 # B18: ==== LOGICAL_XOR (x1, x2)
-# FIXME: implement B18
+_logical_xor_docstring_ = """
+multiply(x1, x2, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise products. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+logical_xor = BinaryElementwiseFunc(
+    "logical_xor",
+    ti._logical_xor_result_type,
+    ti._logical_xor,
+    _logical_xor_docstring_,
+)
 
 # B19: ==== MULTIPLY    (x1, x2)
 _multiply_docstring_ = """

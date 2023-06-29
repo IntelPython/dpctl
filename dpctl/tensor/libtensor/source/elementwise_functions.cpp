@@ -50,6 +50,10 @@
 #include "kernels/elementwise_functions/less_equal.hpp"
 #include "kernels/elementwise_functions/log.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
+#include "kernels/elementwise_functions/logical_and.hpp"
+#include "kernels/elementwise_functions/logical_not.hpp"
+#include "kernels/elementwise_functions/logical_or.hpp"
+#include "kernels/elementwise_functions/logical_xor.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
 #include "kernels/elementwise_functions/not_equal.hpp"
 #include "kernels/elementwise_functions/proj.hpp"
@@ -1024,25 +1028,149 @@ namespace impl
 // B16: ==== LOGICAL_AND (x1, x2)
 namespace impl
 {
-// FIXME: add code for B16
+namespace logical_and_fn_ns = dpctl::tensor::kernels::logical_and;
+
+static binary_contig_impl_fn_ptr_t
+    logical_and_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int logical_and_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    logical_and_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_logical_and_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = logical_and_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LogicalAndTypeMapFactory;
+    DispatchTableBuilder<int, LogicalAndTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(logical_and_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LogicalAndStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LogicalAndStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(logical_and_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LogicalAndContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LogicalAndContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(logical_and_contig_dispatch_table);
+};
 } // namespace impl
 
 // U24: ==== LOGICAL_NOT (x)
 namespace impl
 {
-// FIXME: add code for U24
+namespace logical_not_fn_ns = dpctl::tensor::kernels::logical_not;
+
+static unary_contig_impl_fn_ptr_t
+    logical_not_contig_dispatch_vector[td_ns::num_types];
+static int logical_not_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    logical_not_strided_dispatch_vector[td_ns::num_types];
+
+void populate_logical_not_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = logical_not_fn_ns;
+
+    using fn_ns::LogicalNotContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, LogicalNotContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(logical_not_contig_dispatch_vector);
+
+    using fn_ns::LogicalNotStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, LogicalNotStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(logical_not_strided_dispatch_vector);
+
+    using fn_ns::LogicalNotTypeMapFactory;
+    DispatchVectorBuilder<int, LogicalNotTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(logical_not_output_typeid_vector);
+};
 } // namespace impl
 
 // B17: ==== LOGICAL_OR  (x1, x2)
 namespace impl
 {
-// FIXME: add code for B17
+namespace logical_or_fn_ns = dpctl::tensor::kernels::logical_or;
+
+static binary_contig_impl_fn_ptr_t
+    logical_or_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int logical_or_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    logical_or_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_logical_or_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = logical_or_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LogicalOrTypeMapFactory;
+    DispatchTableBuilder<int, LogicalOrTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(logical_or_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LogicalOrStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LogicalOrStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(logical_or_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LogicalOrContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LogicalOrContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(logical_or_contig_dispatch_table);
+};
 } // namespace impl
 
 // B18: ==== LOGICAL_XOR (x1, x2)
 namespace impl
 {
-// FIXME: add code for B18
+namespace logical_xor_fn_ns = dpctl::tensor::kernels::logical_xor;
+
+static binary_contig_impl_fn_ptr_t
+    logical_xor_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int logical_xor_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    logical_xor_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_logical_xor_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = logical_xor_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LogicalXorTypeMapFactory;
+    DispatchTableBuilder<int, LogicalXorTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(logical_xor_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LogicalXorStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LogicalXorStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(logical_xor_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LogicalXorContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LogicalXorContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(logical_xor_contig_dispatch_table);
+};
 } // namespace impl
 
 // B19: ==== MULTIPLY    (x1, x2)
@@ -2152,16 +2280,152 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // B16: ==== LOGICAL_AND (x1, x2)
-    // FIXME:
+    {
+        impl::populate_logical_and_dispatch_tables();
+        using impl::logical_and_contig_dispatch_table;
+        using impl::logical_and_output_id_table;
+        using impl::logical_and_strided_dispatch_table;
+
+        auto logical_and_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                     dpctl::tensor::usm_ndarray src2,
+                                     dpctl::tensor::usm_ndarray dst,
+                                     sycl::queue exec_q,
+                                     const std::vector<sycl::event> &depends =
+                                         {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, logical_and_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                logical_and_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                logical_and_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto logical_and_result_type_pyapi = [&](py::dtype dtype1,
+                                                 py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               logical_and_output_id_table);
+        };
+        m.def("_logical_and", logical_and_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_logical_and_result_type", logical_and_result_type_pyapi, "");
+    }
 
     // U24: ==== LOGICAL_NOT (x)
-    // FIXME:
+    {
+        impl::populate_logical_not_dispatch_vectors();
+        using impl::logical_not_contig_dispatch_vector;
+        using impl::logical_not_output_typeid_vector;
+        using impl::logical_not_strided_dispatch_vector;
+
+        auto logical_not_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                                     const event_vecT &depends = {}) {
+            return py_unary_ufunc(src, dst, exec_q, depends,
+                                  logical_not_output_typeid_vector,
+                                  logical_not_contig_dispatch_vector,
+                                  logical_not_strided_dispatch_vector);
+        };
+        m.def("_logical_not", logical_not_pyapi, "", py::arg("src"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+
+        auto logical_not_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              logical_not_output_typeid_vector);
+        };
+        m.def("_logical_not_result_type", logical_not_result_type_pyapi);
+    }
 
     // B17: ==== LOGICAL_OR  (x1, x2)
-    // FIXME:
+    {
+        impl::populate_logical_or_dispatch_tables();
+        using impl::logical_or_contig_dispatch_table;
+        using impl::logical_or_output_id_table;
+        using impl::logical_or_strided_dispatch_table;
+
+        auto logical_or_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                    dpctl::tensor::usm_ndarray src2,
+                                    dpctl::tensor::usm_ndarray dst,
+                                    sycl::queue exec_q,
+                                    const std::vector<sycl::event> &depends =
+                                        {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, logical_or_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                logical_or_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                logical_or_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto logical_or_result_type_pyapi = [&](py::dtype dtype1,
+                                                py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               logical_or_output_id_table);
+        };
+        m.def("_logical_or", logical_or_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_logical_or_result_type", logical_or_result_type_pyapi, "");
+    }
 
     // B18: ==== LOGICAL_XOR (x1, x2)
-    // FIXME:
+    {
+        impl::populate_logical_xor_dispatch_tables();
+        using impl::logical_xor_contig_dispatch_table;
+        using impl::logical_xor_output_id_table;
+        using impl::logical_xor_strided_dispatch_table;
+
+        auto logical_xor_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                     dpctl::tensor::usm_ndarray src2,
+                                     dpctl::tensor::usm_ndarray dst,
+                                     sycl::queue exec_q,
+                                     const std::vector<sycl::event> &depends =
+                                         {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, logical_xor_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                logical_xor_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                logical_xor_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto logical_xor_result_type_pyapi = [&](py::dtype dtype1,
+                                                 py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               logical_xor_output_id_table);
+        };
+        m.def("_logical_xor", logical_xor_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_logical_xor_result_type", logical_xor_result_type_pyapi, "");
+    }
 
     // B19: ==== MULTIPLY    (x1, x2)
     {
