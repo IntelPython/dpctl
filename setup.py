@@ -61,6 +61,7 @@ Operating System :: POSIX
 Operating System :: Unix
 """
 
+
 def cleanup_destination(cmake_manifest):
     """Delete library files from dpctl/ folder before
     letting skbuild copy them over to avoid errors.
