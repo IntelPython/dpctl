@@ -573,16 +573,16 @@ log1p = UnaryElementwiseFunc(
 
 # B16: ==== LOGICAL_AND (x1, x2)
 _logical_and_docstring_ = """
-multiply(x1, x2, out=None, order='K')
+logical_and(x1, x2, out=None, order='K')
 
-Calculates the product for each element `x1_i` of the input array `x1`
+Computes the logical AND for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -591,8 +591,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise products. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise logical AND results.
 """
 logical_and = BinaryElementwiseFunc(
     "logical_and",
@@ -604,10 +603,10 @@ logical_and = BinaryElementwiseFunc(
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = """
 log(x, out=None, order='K')
-Computes the natural logarithm element-wise.
+Computes the logical NOT for each element `x_i` of input array `x`.
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -616,7 +615,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise natural logarithm values.
+        An array containing the element-wise logical NOT results.
 """
 
 logical_not = UnaryElementwiseFunc(
@@ -628,16 +627,16 @@ logical_not = UnaryElementwiseFunc(
 
 # B17: ==== LOGICAL_OR  (x1, x2)
 _logical_or_docstring_ = """
-multiply(x1, x2, out=None, order='K')
+logical_or(x1, x2, out=None, order='K')
 
-Calculates the product for each element `x1_i` of the input array `x1`
+Computes the logical OR for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -646,8 +645,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise products. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise logical OR results.
 """
 logical_or = BinaryElementwiseFunc(
     "logical_or",
@@ -658,16 +656,16 @@ logical_or = BinaryElementwiseFunc(
 
 # B18: ==== LOGICAL_XOR (x1, x2)
 _logical_xor_docstring_ = """
-multiply(x1, x2, out=None, order='K')
+logical_xor(x1, x2, out=None, order='K')
 
-Calculates the product for each element `x1_i` of the input array `x1`
+Computes the logical XOR for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -676,8 +674,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise products. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise logical XOR results.
 """
 logical_xor = BinaryElementwiseFunc(
     "logical_xor",
