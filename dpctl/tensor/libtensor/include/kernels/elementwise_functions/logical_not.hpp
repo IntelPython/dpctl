@@ -52,9 +52,8 @@ template <typename argT, typename resT> struct LogicalNotFunctor
 {
     static_assert(std::is_same_v<resT, bool>);
 
-    using is_constant = typename std::disjunction<std::is_same<argT, bool>,
-                                                  std::is_integral<argT>>;
-    static constexpr resT constant_value = false;
+    using is_constant = typename std::false_type;
+    // constexpr resT constant_value = resT{};
     using supports_vec = typename std::false_type;
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<tu_ns::is_complex<resT>, tu_ns::is_complex<argT>>>;

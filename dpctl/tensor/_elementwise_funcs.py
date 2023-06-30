@@ -602,7 +602,7 @@ logical_and = BinaryElementwiseFunc(
 
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = """
-log(x, out=None, order='K')
+logical_not(x, out=None, order='K')
 Computes the logical NOT for each element `x_i` of input array `x`.
 Args:
     x (usm_ndarray):
