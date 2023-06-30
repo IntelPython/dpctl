@@ -60,24 +60,25 @@ struct FloorDivideFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        auto tmp = in1 / in2;
-        if constexpr (std::is_integral_v<decltype(tmp)>) {
-            if constexpr (std::is_unsigned_v<decltype(tmp)>) {
-                return (in2 == argT2(0)) ? resT(0) : tmp;
+        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+            static_assert(std::is_same_v<argT1, argT2>);
+            if (in2 == 0) {
+                return resT(0);
+            }
+            auto tmp = in1 / in2;
+            if constexpr (std::is_unsigned_v<argT1> ||
+                          std::is_unsigned_v<argT2>) {
+                return tmp;
             }
             else {
-                if (in2 == argT2(0)) {
-                    return resT(0);
-                }
-                else {
-                    auto rem = in1 % in2;
-                    auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
-                    return (tmp - corr);
-                }
+                auto rem = in1 % in2;
+                auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
+                return (tmp - corr);
             }
         }
         else {
-            return sycl::floor(tmp);
+            auto tmp = in1 / in2;
+            return (tmp == 0) ? resT(tmp) : resT(std::floor(tmp));
         }
     }
 
@@ -88,25 +89,25 @@ struct FloorDivideFunctor
         auto tmp = in1 / in2;
         using tmpT = typename decltype(tmp)::element_type;
         if constexpr (std::is_integral_v<tmpT>) {
-            if constexpr (std::is_signed_v<tmpT>) {
-                auto rem_tmp = in1 % in2;
+            if constexpr (std::is_unsigned_v<tmpT>) {
 #pragma unroll
                 for (int i = 0; i < vec_sz; ++i) {
                     if (in2[i] == argT2(0)) {
                         tmp[i] = tmpT(0);
-                    }
-                    else {
-                        tmpT corr = (rem_tmp[i] != 0 &&
-                                     ((rem_tmp[i] < 0) != (in2[i] < 0)));
-                        tmp[i] -= corr;
                     }
                 }
             }
             else {
+                auto rem = in1 % in2;
 #pragma unroll
                 for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == argT2(0)) {
+                    if (in2[i] == 0) {
                         tmp[i] = tmpT(0);
+                    }
+                    else {
+                        tmpT corr =
+                            (rem[i] != 0 && ((rem[i] < 0) != (in2[i] < 0)));
+                        tmp[i] -= corr;
                     }
                 }
             }
@@ -119,16 +120,18 @@ struct FloorDivideFunctor
             }
         }
         else {
-            sycl::vec<resT, vec_sz> res = sycl::floor(tmp);
-            if constexpr (std::is_same_v<resT,
-                                         typename decltype(res)::element_type>)
-            {
-                return res;
+#pragma unroll
+            for (int i = 0; i < vec_sz; ++i) {
+                if (in2[i] != 0) {
+                    tmp[i] = std::floor(tmp[i]);
+                }
+            }
+            if constexpr (std::is_same_v<resT, tmpT>) {
+                return tmp;
             }
             else {
                 using dpctl::tensor::type_utils::vec_cast;
-                return vec_cast<resT, typename decltype(res)::element_type,
-                                vec_sz>(res);
+                return vec_cast<resT, tmpT, vec_sz>(tmp);
             }
         }
     }
