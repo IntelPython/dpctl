@@ -563,10 +563,48 @@ log1p = UnaryElementwiseFunc(
 )
 
 # U22: ==== LOG2        (x)
-# FIXME: implement U22
+_log2_docstring_ = """
+log2(x, out=None, order='K')
+Computes the base 2 logarithm element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise base 2 logarithm values.
+"""
+
+log2 = UnaryElementwiseFunc(
+    "log2", ti._log2_result_type, ti._log2, _log2_docstring_
+)
 
 # U23: ==== LOG10       (x)
-# FIXME: implement U23
+_log10_docstring_ = """
+log10(x, out=None, order='K')
+Computes the base 10 logarithm element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise base 10 logarithm values.
+"""
+
+log10 = UnaryElementwiseFunc(
+    "log10", ti._log10_result_type, ti._log10, _log10_docstring_
+)
 
 # B15: ==== LOGADDEXP   (x1, x2)
 # FIXME: implement B15
