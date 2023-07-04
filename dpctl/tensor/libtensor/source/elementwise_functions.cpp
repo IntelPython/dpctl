@@ -44,6 +44,7 @@
 #include "kernels/elementwise_functions/floor_divide.hpp"
 #include "kernels/elementwise_functions/greater.hpp"
 #include "kernels/elementwise_functions/greater_equal.hpp"
+#include "kernels/elementwise_functions/hypot.hpp"
 #include "kernels/elementwise_functions/imag.hpp"
 #include "kernels/elementwise_functions/isfinite.hpp"
 #include "kernels/elementwise_functions/isinf.hpp"
@@ -54,6 +55,7 @@
 #include "kernels/elementwise_functions/log10.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
 #include "kernels/elementwise_functions/log2.hpp"
+#include "kernels/elementwise_functions/logaddexp.hpp"
 #include "kernels/elementwise_functions/logical_and.hpp"
 #include "kernels/elementwise_functions/logical_not.hpp"
 #include "kernels/elementwise_functions/logical_or.hpp"
@@ -1149,7 +1151,39 @@ void populate_log10_dispatch_vectors(void)
 // B15: ==== LOGADDEXP   (x1, x2)
 namespace impl
 {
-// FIXME: add code for B15
+namespace logaddexp_fn_ns = dpctl::tensor::kernels::logaddexp;
+
+static binary_contig_impl_fn_ptr_t
+    logaddexp_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int logaddexp_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    logaddexp_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_logaddexp_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = logaddexp_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::LogAddExpTypeMapFactory;
+    DispatchTableBuilder<int, LogAddExpTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(logaddexp_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::LogAddExpStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, LogAddExpStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(logaddexp_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::LogAddExpContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, LogAddExpContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(logaddexp_contig_dispatch_table);
+};
 } // namespace impl
 
 // B16: ==== LOGICAL_AND (x1, x2)
@@ -1892,6 +1926,46 @@ void populate_trunc_dispatch_vectors(void)
     DispatchVectorBuilder<int, TruncTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(trunc_output_typeid_vector);
 }
+
+} // namespace impl
+
+// B24:  ==== HYPOT    (x1, x2)
+
+namespace impl
+{
+namespace hypot_fn_ns = dpctl::tensor::kernels::hypot;
+
+static binary_contig_impl_fn_ptr_t
+    hypot_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int hypot_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    hypot_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_hypot_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = hypot_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::HypotTypeMapFactory;
+    DispatchTableBuilder<int, HypotTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(hypot_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::HypotStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, HypotStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(hypot_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::HypotContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, HypotContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(hypot_contig_dispatch_table);
+};
 
 } // namespace impl
 
@@ -2638,7 +2712,45 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B15: ==== LOGADDEXP   (x1, x2)
-    // FIXME:
+    {
+        impl::populate_logaddexp_dispatch_tables();
+        using impl::logaddexp_contig_dispatch_table;
+        using impl::logaddexp_output_id_table;
+        using impl::logaddexp_strided_dispatch_table;
+
+        auto logaddexp_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                   dpctl::tensor::usm_ndarray src2,
+                                   dpctl::tensor::usm_ndarray dst,
+                                   sycl::queue exec_q,
+                                   const std::vector<sycl::event> &depends =
+                                       {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, logaddexp_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                logaddexp_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                logaddexp_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto logaddexp_result_type_pyapi = [&](py::dtype dtype1,
+                                               py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               logaddexp_output_id_table);
+        };
+        m.def("_logaddexp", logaddexp_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_logaddexp_result_type", logaddexp_result_type_pyapi, "");
+    }
 
     // B16: ==== LOGICAL_AND (x1, x2)
     {
@@ -3195,6 +3307,45 @@ void init_elementwise_functions(py::module_ m)
                                               trunc_output_typeid_vector);
         };
         m.def("_trunc_result_type", trunc_result_type_pyapi);
+    }
+
+    // B24: ==== HYPOT       (x)
+    {
+        impl::populate_hypot_dispatch_tables();
+        using impl::hypot_contig_dispatch_table;
+        using impl::hypot_output_id_table;
+        using impl::hypot_strided_dispatch_table;
+
+        auto hypot_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                               dpctl::tensor::usm_ndarray src2,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, hypot_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                hypot_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                hypot_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto hypot_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               hypot_output_id_table);
+        };
+        m.def("_hypot", hypot_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_hypot_result_type", hypot_result_type_pyapi, "");
     }
 }
 
