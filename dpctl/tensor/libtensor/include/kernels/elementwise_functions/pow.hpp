@@ -27,6 +27,7 @@
 #include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -60,9 +61,31 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
                                        std::is_integral<argT1>,
                                        std::is_integral<argT2>>>;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(argT1 in1, argT2 in2)
     {
-        return std::pow(in1, in2);
+        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+            if constexpr (std::is_signed_v<argT2>) {
+                if (in2 < 0) {
+                    // invalid; return 0
+                    return resT(0);
+                }
+            }
+            resT res = 1;
+            if (in1 == 1 || in2 == 0) {
+                return res;
+            }
+            while (in2 > 0) {
+                if (in2 & 1) {
+                    res *= in1;
+                }
+                in2 >>= 1;
+                in1 *= in1;
+            }
+            return res;
+        }
+        else {
+            return std::pow(in1, in2);
+        }
     }
 
     template <int vec_sz>
