@@ -715,7 +715,27 @@ multiply = BinaryElementwiseFunc(
 )
 
 # U25: ==== NEGATIVE    (x)
-# FIXME: implement U25
+_negative_docstring_ = """
+negative(x, out=None, order='K')
+
+Computes the numerical negative elementwise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise negative values.
+"""
+
+negative = UnaryElementwiseFunc(
+    "negative", ti._negative_result_type, ti._negative, _negative_docstring_
+)
 
 # B20: ==== NOT_EQUAL   (x1, x2)
 _not_equal_docstring_ = """
@@ -747,10 +767,48 @@ not_equal = BinaryElementwiseFunc(
 )
 
 # U26: ==== POSITIVE    (x)
-# FIXME: implement U26
+_positive_docstring_ = """
+positive(x, out=None, order='K')
+
+Computes the numerical positive element-wise.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise positive values.
+"""
+
+positive = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring_
+)
 
 # B21: ==== POW         (x1, x2)
-# FIXME: implement B21
+_pow_docstring_ = """
+pow(x1, x2, out=None, order='K')
+
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a numeric data type.
+Returns:
+    usm_narray:
+        an array containing the element-wise result. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+pow = BinaryElementwiseFunc(
+    "pow", ti._pow_result_type, ti._pow, _pow_docstring_
+)
 
 # U??: ==== PROJ        (x)
 _proj_docstring = """
@@ -838,7 +896,15 @@ sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 # FIXME: implement U31
 
 # U32: ==== SQUARE      (x)
-# FIXME: implement U32
+_square_docstring_ = """
+square(x, out=None, order='K')
+
+Computes `x_i**2` for each element `x_i` for input array `x`.
+"""
+
+square = UnaryElementwiseFunc(
+    "square", ti._square_result_type, ti._square, _square_docstring_
+)
 
 # U33: ==== SQRT        (x)
 _sqrt_docstring_ = """
