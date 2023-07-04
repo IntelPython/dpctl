@@ -260,7 +260,7 @@ cdef class usm_ndarray:
             if q is not None:
                 dtype = default_device_fp_type(q)
             else:
-                dev = dpctl.SyclDevice()
+                dev = dpctl.select_default_device()
                 dtype = "f8" if dev.has_aspect_fp64 else "f4"
         typenum = dtype_to_typenum(dtype)
         if (typenum < 0):
