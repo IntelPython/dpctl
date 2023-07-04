@@ -69,7 +69,7 @@ template <typename argT, typename resT> struct CeilFunctor
             return in;
         }
         else {
-            if (in == 0 && std::signbit(in)) {
+            if (in == 0) {
                 return in;
             }
             return std::ceil(in);
