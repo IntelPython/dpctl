@@ -718,7 +718,7 @@ multiply = BinaryElementwiseFunc(
 _negative_docstring_ = """
 negative(x, out=None, order='K')
 
-Computes the numerical negative elementwise.
+Computes the numerical negative for each element `x_i` of input array `x`.
 Args:
     x (usm_ndarray):
         Input array, expected to have numeric data type.
@@ -730,7 +730,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise negative values.
+        An array containing the negative of `x`.
 """
 
 negative = UnaryElementwiseFunc(
@@ -770,7 +770,7 @@ not_equal = BinaryElementwiseFunc(
 _positive_docstring_ = """
 positive(x, out=None, order='K')
 
-Computes the numerical positive element-wise.
+Computes the numerical positive for each element `x_i` of input array `x`.
 Args:
     x (usm_ndarray):
         Input array, expected to have numeric data type.
@@ -782,7 +782,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise positive values.
+        An array containing the values of `x`.
 """
 
 positive = UnaryElementwiseFunc(
@@ -802,7 +802,7 @@ Args:
     x2 (usm_ndarray):
         Second input array, also expected to have a numeric data type.
 Returns:
-    usm_narray:
+    usm_ndarray:
         an array containing the element-wise result. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -899,7 +899,21 @@ sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 _square_docstring_ = """
 square(x, out=None, order='K')
 
-Computes `x_i**2` for each element `x_i` for input array `x`.
+Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_ndarray:
+        An array containing the square `x`.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
 """
 
 square = UnaryElementwiseFunc(
