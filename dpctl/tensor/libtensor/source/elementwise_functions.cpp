@@ -49,7 +49,9 @@
 #include "kernels/elementwise_functions/less.hpp"
 #include "kernels/elementwise_functions/less_equal.hpp"
 #include "kernels/elementwise_functions/log.hpp"
+#include "kernels/elementwise_functions/log10.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
+#include "kernels/elementwise_functions/log2.hpp"
 #include "kernels/elementwise_functions/logical_and.hpp"
 #include "kernels/elementwise_functions/logical_not.hpp"
 #include "kernels/elementwise_functions/logical_or.hpp"
@@ -1014,13 +1016,72 @@ void populate_log1p_dispatch_vectors(void)
 // U22: ==== LOG2        (x)
 namespace impl
 {
-// FIXME: add code for U22
+
+namespace log2_fn_ns = dpctl::tensor::kernels::log2;
+
+static unary_contig_impl_fn_ptr_t log2_contig_dispatch_vector[td_ns::num_types];
+static int log2_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    log2_strided_dispatch_vector[td_ns::num_types];
+
+void populate_log2_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = log2_fn_ns;
+
+    using fn_ns::Log2ContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Log2ContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(log2_contig_dispatch_vector);
+
+    using fn_ns::Log2StridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Log2StridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(log2_strided_dispatch_vector);
+
+    using fn_ns::Log2TypeMapFactory;
+    DispatchVectorBuilder<int, Log2TypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(log2_output_typeid_vector);
+};
+
 } // namespace impl
 
 // U23: ==== LOG10       (x)
 namespace impl
 {
-// FIXME: add code for U23
+
+namespace log10_fn_ns = dpctl::tensor::kernels::log10;
+
+static unary_contig_impl_fn_ptr_t
+    log10_contig_dispatch_vector[td_ns::num_types];
+static int log10_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    log10_strided_dispatch_vector[td_ns::num_types];
+
+void populate_log10_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = log10_fn_ns;
+
+    using fn_ns::Log10ContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Log10ContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(log10_contig_dispatch_vector);
+
+    using fn_ns::Log10StridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Log10StridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(log10_strided_dispatch_vector);
+
+    using fn_ns::Log10TypeMapFactory;
+    DispatchVectorBuilder<int, Log10TypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(log10_output_typeid_vector);
+};
+
 } // namespace impl
 
 // B15: ==== LOGADDEXP   (x1, x2)
@@ -2399,10 +2460,51 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U22: ==== LOG2        (x)
-    // FIXME:
+    {
+        impl::populate_log2_dispatch_vectors();
+
+        using impl::log2_contig_dispatch_vector;
+        using impl::log2_output_typeid_vector;
+        using impl::log2_strided_dispatch_vector;
+        auto log2_pyapi = [&](dpctl::tensor::usm_ndarray src,
+                              dpctl::tensor::usm_ndarray dst,
+                              sycl::queue exec_q,
+                              const std::vector<sycl::event> &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log2_output_typeid_vector,
+                log2_contig_dispatch_vector, log2_strided_dispatch_vector);
+        };
+        auto log2_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, log2_output_typeid_vector);
+        };
+        m.def("_log2", log2_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_log2_result_type", log2_result_type_pyapi, "");
+    }
 
     // U23: ==== LOG10       (x)
-    // FIXME:
+    {
+        impl::populate_log10_dispatch_vectors();
+
+        using impl::log10_contig_dispatch_vector;
+        using impl::log10_output_typeid_vector;
+        using impl::log10_strided_dispatch_vector;
+        auto log10_pyapi = [&](dpctl::tensor::usm_ndarray src,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log10_output_typeid_vector,
+                log10_contig_dispatch_vector, log10_strided_dispatch_vector);
+        };
+        auto log10_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              log10_output_typeid_vector);
+        };
+        m.def("_log10", log10_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_log10_result_type", log10_result_type_pyapi, "");
+    }
 
     // B15: ==== LOGADDEXP   (x1, x2)
     // FIXME:

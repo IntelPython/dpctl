@@ -563,10 +563,56 @@ log1p = UnaryElementwiseFunc(
 )
 
 # U22: ==== LOG2        (x)
-# FIXME: implement U22
+_log2_docstring_ = """
+log2(x, out=None, order='K')
+
+Computes the base-2 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the base-2 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log2 = UnaryElementwiseFunc(
+    "log2", ti._log2_result_type, ti._log2, _log2_docstring_
+)
 
 # U23: ==== LOG10       (x)
-# FIXME: implement U23
+_log10_docstring_ = """
+log10(x, out=None, order='K')
+
+Computes the base-10 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the base-1- logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log10 = UnaryElementwiseFunc(
+    "log10", ti._log10_result_type, ti._log10, _log10_docstring_
+)
 
 # B15: ==== LOGADDEXP   (x1, x2)
 # FIXME: implement B15
