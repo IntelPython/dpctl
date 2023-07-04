@@ -1502,6 +1502,19 @@ def test_full_strides():
     assert np.array_equal(dpt.asnumpy(X), Xnp)
 
 
+def test_full_gh_1230():
+    q = get_queue_or_skip()
+    dtype = "i4"
+    dt_maxint = dpt.iinfo(dtype).max
+    X = dpt.full(1, dt_maxint + 1, dtype=dtype, sycl_queue=q)
+    X_np = dpt.asnumpy(X)
+    assert X.dtype == dpt.dtype(dtype)
+    assert np.array_equal(X_np, np.full_like(X_np, dt_maxint + 1))
+
+    with pytest.raises(OverflowError):
+        dpt.full(1, dpt.iinfo(dpt.uint64).max + 1, sycl_queue=q)
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes[1:],
