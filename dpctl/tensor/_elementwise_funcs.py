@@ -563,25 +563,171 @@ log1p = UnaryElementwiseFunc(
 )
 
 # U22: ==== LOG2        (x)
-# FIXME: implement U22
+_log2_docstring_ = """
+log2(x, out=None, order='K')
+
+Computes the base-2 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the base-2 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log2 = UnaryElementwiseFunc(
+    "log2", ti._log2_result_type, ti._log2, _log2_docstring_
+)
 
 # U23: ==== LOG10       (x)
-# FIXME: implement U23
+_log10_docstring_ = """
+log10(x, out=None, order='K')
+
+Computes the base-10 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the base-1- logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log10 = UnaryElementwiseFunc(
+    "log10", ti._log10_result_type, ti._log10, _log10_docstring_
+)
 
 # B15: ==== LOGADDEXP   (x1, x2)
 # FIXME: implement B15
 
 # B16: ==== LOGICAL_AND (x1, x2)
-# FIXME: implement B16
+_logical_and_docstring_ = """
+logical_and(x1, x2, out=None, order='K')
+
+Computes the logical AND for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array.
+    x2 (usm_ndarray):
+        Second input array.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise logical AND results.
+"""
+logical_and = BinaryElementwiseFunc(
+    "logical_and",
+    ti._logical_and_result_type,
+    ti._logical_and,
+    _logical_and_docstring_,
+)
 
 # U24: ==== LOGICAL_NOT (x)
-# FIXME: implement U24
+_logical_not_docstring = """
+logical_not(x, out=None, order='K')
+Computes the logical NOT for each element `x_i` of input array `x`.
+Args:
+    x (usm_ndarray):
+        Input array.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the element-wise logical NOT results.
+"""
+
+logical_not = UnaryElementwiseFunc(
+    "logical_not",
+    ti._logical_not_result_type,
+    ti._logical_not,
+    _logical_not_docstring,
+)
 
 # B17: ==== LOGICAL_OR  (x1, x2)
-# FIXME: implement B17
+_logical_or_docstring_ = """
+logical_or(x1, x2, out=None, order='K')
+
+Computes the logical OR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array.
+    x2 (usm_ndarray):
+        Second input array.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise logical OR results.
+"""
+logical_or = BinaryElementwiseFunc(
+    "logical_or",
+    ti._logical_or_result_type,
+    ti._logical_or,
+    _logical_or_docstring_,
+)
 
 # B18: ==== LOGICAL_XOR (x1, x2)
-# FIXME: implement B18
+_logical_xor_docstring_ = """
+logical_xor(x1, x2, out=None, order='K')
+
+Computes the logical XOR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array.
+    x2 (usm_ndarray):
+        Second input array.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise logical XOR results.
+"""
+logical_xor = BinaryElementwiseFunc(
+    "logical_xor",
+    ti._logical_xor_result_type,
+    ti._logical_xor,
+    _logical_xor_docstring_,
+)
 
 # B19: ==== MULTIPLY    (x1, x2)
 _multiply_docstring_ = """
@@ -615,7 +761,27 @@ multiply = BinaryElementwiseFunc(
 )
 
 # U25: ==== NEGATIVE    (x)
-# FIXME: implement U25
+_negative_docstring_ = """
+negative(x, out=None, order='K')
+
+Computes the numerical negative for each element `x_i` of input array `x`.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the negative of `x`.
+"""
+
+negative = UnaryElementwiseFunc(
+    "negative", ti._negative_result_type, ti._negative, _negative_docstring_
+)
 
 # B20: ==== NOT_EQUAL   (x1, x2)
 _not_equal_docstring_ = """
@@ -647,10 +813,48 @@ not_equal = BinaryElementwiseFunc(
 )
 
 # U26: ==== POSITIVE    (x)
-# FIXME: implement U26
+_positive_docstring_ = """
+positive(x, out=None, order='K')
+
+Computes the numerical positive for each element `x_i` of input array `x`.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is `None`.
+        Default: "K".
+Return:
+    usm_ndarray:
+        An array containing the values of `x`.
+"""
+
+positive = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring_
+)
 
 # B21: ==== POW         (x1, x2)
-# FIXME: implement B21
+_pow_docstring_ = """
+pow(x1, x2, out=None, order='K')
+
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a numeric data type.
+Returns:
+    usm_ndarray:
+        an array containing the element-wise result. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+pow = BinaryElementwiseFunc(
+    "pow", ti._pow_result_type, ti._pow, _pow_docstring_
+)
 
 # U??: ==== PROJ        (x)
 _proj_docstring = """
@@ -738,7 +942,29 @@ sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 # FIXME: implement U31
 
 # U32: ==== SQUARE      (x)
-# FIXME: implement U32
+_square_docstring_ = """
+square(x, out=None, order='K')
+
+Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_ndarray:
+        An array containing the square `x`.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+square = UnaryElementwiseFunc(
+    "square", ti._square_result_type, ti._square, _square_docstring_
+)
 
 # U33: ==== SQRT        (x)
 _sqrt_docstring_ = """
