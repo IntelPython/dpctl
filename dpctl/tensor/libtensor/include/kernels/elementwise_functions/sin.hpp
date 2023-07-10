@@ -50,6 +50,7 @@ namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT, typename resT> struct SinFunctor
 {
