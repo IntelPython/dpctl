@@ -59,14 +59,14 @@ def test_complex_output(np_call, dpt_call, dtype):
     x1 = np.linspace(0, 10, num=n_seq, dtype=dtype)
     x2 = np.linspace(0, 20, num=n_seq, dtype=dtype)
     Xnp = x1 + 1j * x2
-    X = dpt.asarray(Xnp, dtype=Xnp.dtype, sycl_queue=q)
+    X = dpt.asarray(Xnp, sycl_queue=q)
 
     Y = dpt_call(X)
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
     assert_allclose(dpt.asnumpy(Y), np_call(Xnp), atol=tol, rtol=tol)
 
-    Z = dpt.empty_like(X, dtype=np_call(Xnp).dtype)
+    Z = dpt.empty_like(X, dtype=Y.dtype)
     dpt_call(X, out=Z)
 
     assert_allclose(dpt.asnumpy(Z), np_call(Xnp), atol=tol, rtol=tol)
