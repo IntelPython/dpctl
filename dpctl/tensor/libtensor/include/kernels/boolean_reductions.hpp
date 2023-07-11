@@ -198,8 +198,9 @@ public:
             // must convert to boolean first to handle nans
             using dpctl::tensor::type_utils::convert_impl;
             outT val = convert_impl<bool, argT>(inp_[inp_offset]);
+            ReductionOp op = reduction_op_;
 
-            red_val = reduction_op_(red_val, val);
+            red_val = op(red_val, val);
         }
 
         out_[out_iter_offset] = red_val;
@@ -452,9 +453,10 @@ public:
                 // must convert to boolean first to handle nans
                 using dpctl::tensor::type_utils::convert_impl;
                 bool val = convert_impl<bool, argT>(inp_[inp_offset]);
+                ReductionOp op = reduction_op_;
 
                 local_red_val =
-                    reduction_op_(local_red_val, static_cast<outT>(val));
+                    op(local_red_val, static_cast<outT>(val));
             }
         }
         // reduction and atomic operations are performed
