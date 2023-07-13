@@ -161,12 +161,6 @@ def test_sincos_errors(callable):
         y,
     )
 
-    x = dpt.zeros(2)
-    y = x
-    assert_raises_regex(
-        TypeError, "Input and output arrays have memory overlap", callable, x, y
-    )
-
     x = dpt.zeros(2, dtype="float32")
     y = np.empty_like(x)
     assert_raises_regex(
@@ -230,3 +224,28 @@ def test_sincos_strided(dtype):
                 atol=tol,
                 rtol=tol,
             )
+
+
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.sin, dpt.sin), (np.cos, dpt.cos)]
+)
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+def test_sincos_out_overlap(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.linspace(-np.pi / 2, np.pi / 2, 60, dtype=dtype, sycl_queue=q)
+    X = dpt.reshape(X, (3, 5, 4))
+
+    Xnp = dpt.asnumpy(X)
+    Ynp = np_call(Xnp, out=Xnp)
+
+    Y = dpt_call(X, out=X)
+    assert Y is X
+    assert np.allclose(dpt.asnumpy(X), Xnp)
+
+    Ynp = np_call(Xnp, out=Xnp[::-1])
+    Y = dpt_call(X, out=X[::-1])
+    assert Y is not X
+    assert np.allclose(dpt.asnumpy(X), Xnp)
+    assert np.allclose(dpt.asnumpy(Y), Ynp)

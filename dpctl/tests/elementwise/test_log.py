@@ -18,7 +18,7 @@ import itertools
 
 import numpy as np
 import pytest
-from numpy.testing import assert_equal
+from numpy.testing import assert_allclose, assert_equal
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -50,7 +50,7 @@ def test_log_output_contig(dtype):
     Y = dpt.log(X)
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
-    np.testing.assert_allclose(dpt.asnumpy(Y), np.log(Xnp), atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(Y), np.log(Xnp), atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
@@ -66,7 +66,7 @@ def test_log_output_strided(dtype):
     Y = dpt.log(X)
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
-    np.testing.assert_allclose(dpt.asnumpy(Y), np.log(Xnp), atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(Y), np.log(Xnp), atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("usm_type", _usm_types)
@@ -89,7 +89,7 @@ def test_log_usm_type(usm_type):
     expected_Y[..., 1::2] = np.log(np.float32(10 * dpt.e))
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
-    np.testing.assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -112,9 +112,7 @@ def test_log_order(dtype):
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,
             )
-            np.testing.assert_allclose(
-                dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
-            )
+            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
 def test_log_special_cases():
@@ -126,3 +124,27 @@ def test_log_special_cases():
     Xnp = dpt.asnumpy(X)
 
     assert_equal(dpt.asnumpy(dpt.log(X)), np.log(Xnp))
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+def test_log_out_overlap(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.linspace(5, 35, 60, dtype=dtype, sycl_queue=q)
+    X = dpt.reshape(X, (3, 5, 4))
+
+    Xnp = dpt.asnumpy(X)
+    Ynp = np.log(Xnp, out=Xnp)
+
+    Y = dpt.log(X, out=X)
+    assert Y is X
+
+    tol = 8 * dpt.finfo(Y.dtype).resolution
+    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
+
+    Ynp = np.log(Xnp, out=Xnp[::-1])
+    Y = dpt.log(X, out=X[::-1])
+    assert Y is not X
+    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)

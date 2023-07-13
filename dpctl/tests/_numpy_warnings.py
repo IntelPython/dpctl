@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2022 Intel Corporation
+# Copyright 2023 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,27 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Configures pytest to discover helper/ module
-"""
+import numpy
+import pytest
 
-import os
-import sys
 
-from _device_attributes_checks import (
-    check,
-    device_selector,
-    invalid_filter,
-    valid_filter,
-)
-from _numpy_warnings import suppress_invalid_numpy_warnings
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "helper"))
-
-# common fixtures
-__all__ = [
-    "check",
-    "device_selector",
-    "invalid_filter",
-    "suppress_invalid_numpy_warnings",
-    "valid_filter",
-]
+@pytest.fixture
+def suppress_invalid_numpy_warnings():
+    # invalid: treatment for invalid floating-point operation
+    # (result is not an expressible number, typically indicates
+    # that a NaN was produced)
+    old_settings = numpy.seterr(invalid="ignore")
+    yield
+    numpy.seterr(**old_settings)  # reset to default
