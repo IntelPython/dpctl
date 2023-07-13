@@ -26,7 +26,7 @@ jobs:
       - name: Install Intel OneAPI
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
-          sudo apt-get install intel-oneapi-dpcpp-cpp-compiler
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
       - name: Install Lua
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
