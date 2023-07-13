@@ -51,17 +51,23 @@
 #include "kernels/elementwise_functions/less.hpp"
 #include "kernels/elementwise_functions/less_equal.hpp"
 #include "kernels/elementwise_functions/log.hpp"
+#include "kernels/elementwise_functions/log10.hpp"
 #include "kernels/elementwise_functions/log1p.hpp"
+#include "kernels/elementwise_functions/log2.hpp"
 #include "kernels/elementwise_functions/logical_and.hpp"
 #include "kernels/elementwise_functions/logical_not.hpp"
 #include "kernels/elementwise_functions/logical_or.hpp"
 #include "kernels/elementwise_functions/logical_xor.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
+#include "kernels/elementwise_functions/negative.hpp"
 #include "kernels/elementwise_functions/not_equal.hpp"
+#include "kernels/elementwise_functions/positive.hpp"
+#include "kernels/elementwise_functions/pow.hpp"
 #include "kernels/elementwise_functions/proj.hpp"
 #include "kernels/elementwise_functions/real.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
+#include "kernels/elementwise_functions/square.hpp"
 #include "kernels/elementwise_functions/subtract.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
 #include "kernels/elementwise_functions/trunc.hpp"
@@ -1072,13 +1078,72 @@ void populate_log1p_dispatch_vectors(void)
 // U22: ==== LOG2        (x)
 namespace impl
 {
-// FIXME: add code for U22
+
+namespace log2_fn_ns = dpctl::tensor::kernels::log2;
+
+static unary_contig_impl_fn_ptr_t log2_contig_dispatch_vector[td_ns::num_types];
+static int log2_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    log2_strided_dispatch_vector[td_ns::num_types];
+
+void populate_log2_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = log2_fn_ns;
+
+    using fn_ns::Log2ContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Log2ContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(log2_contig_dispatch_vector);
+
+    using fn_ns::Log2StridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Log2StridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(log2_strided_dispatch_vector);
+
+    using fn_ns::Log2TypeMapFactory;
+    DispatchVectorBuilder<int, Log2TypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(log2_output_typeid_vector);
+};
+
 } // namespace impl
 
 // U23: ==== LOG10       (x)
 namespace impl
 {
-// FIXME: add code for U23
+
+namespace log10_fn_ns = dpctl::tensor::kernels::log10;
+
+static unary_contig_impl_fn_ptr_t
+    log10_contig_dispatch_vector[td_ns::num_types];
+static int log10_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    log10_strided_dispatch_vector[td_ns::num_types];
+
+void populate_log10_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = log10_fn_ns;
+
+    using fn_ns::Log10ContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Log10ContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(log10_contig_dispatch_vector);
+
+    using fn_ns::Log10StridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Log10StridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(log10_strided_dispatch_vector);
+
+    using fn_ns::Log10TypeMapFactory;
+    DispatchVectorBuilder<int, Log10TypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(log10_output_typeid_vector);
+};
+
 } // namespace impl
 
 // B15: ==== LOGADDEXP   (x1, x2)
@@ -1338,7 +1403,37 @@ void populate_multiply_dispatch_tables(void)
 // U25: ==== NEGATIVE    (x)
 namespace impl
 {
-// FIXME: add code for U25
+
+namespace negative_fn_ns = dpctl::tensor::kernels::negative;
+
+static unary_contig_impl_fn_ptr_t
+    negative_contig_dispatch_vector[td_ns::num_types];
+static int negative_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    negative_strided_dispatch_vector[td_ns::num_types];
+
+void populate_negative_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = negative_fn_ns;
+
+    using fn_ns::NegativeContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, NegativeContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(negative_contig_dispatch_vector);
+
+    using fn_ns::NegativeStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, NegativeStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(negative_strided_dispatch_vector);
+
+    using fn_ns::NegativeTypeMapFactory;
+    DispatchVectorBuilder<int, NegativeTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(negative_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B20: ==== NOT_EQUAL   (x1, x2)
@@ -1382,13 +1477,77 @@ void populate_not_equal_dispatch_tables(void)
 // U26: ==== POSITIVE    (x)
 namespace impl
 {
-// FIXME: add code for U26
+
+namespace positive_fn_ns = dpctl::tensor::kernels::positive;
+
+static unary_contig_impl_fn_ptr_t
+    positive_contig_dispatch_vector[td_ns::num_types];
+static int positive_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    positive_strided_dispatch_vector[td_ns::num_types];
+
+void populate_positive_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = positive_fn_ns;
+
+    using fn_ns::PositiveContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, PositiveContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(positive_contig_dispatch_vector);
+
+    using fn_ns::PositiveStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, PositiveStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(positive_strided_dispatch_vector);
+
+    using fn_ns::PositiveTypeMapFactory;
+    DispatchVectorBuilder<int, PositiveTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(positive_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B21: ==== POW         (x1, x2)
 namespace impl
 {
-// FIXME: add code for B21
+
+namespace pow_fn_ns = dpctl::tensor::kernels::pow;
+
+static binary_contig_impl_fn_ptr_t pow_contig_dispatch_table[td_ns::num_types]
+                                                            [td_ns::num_types];
+static int pow_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    pow_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_pow_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = pow_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::PowTypeMapFactory;
+    DispatchTableBuilder<int, PowTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(pow_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::PowStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, PowStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(pow_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::PowContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, PowContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(pow_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // U??: ==== PROJ        (x)
@@ -1521,7 +1680,37 @@ namespace impl
 // U32: ==== SQUARE      (x)
 namespace impl
 {
-// FIXME: add code for U32
+
+namespace square_fn_ns = dpctl::tensor::kernels::square;
+
+static unary_contig_impl_fn_ptr_t
+    square_contig_dispatch_vector[td_ns::num_types];
+static int square_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    square_strided_dispatch_vector[td_ns::num_types];
+
+void populate_square_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = square_fn_ns;
+
+    using fn_ns::SquareContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SquareContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(square_contig_dispatch_vector);
+
+    using fn_ns::SquareStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SquareStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(square_strided_dispatch_vector);
+
+    using fn_ns::SquareTypeMapFactory;
+    DispatchVectorBuilder<int, SquareTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(square_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U33: ==== SQRT        (x)
@@ -2402,10 +2591,51 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U22: ==== LOG2        (x)
-    // FIXME:
+    {
+        impl::populate_log2_dispatch_vectors();
+
+        using impl::log2_contig_dispatch_vector;
+        using impl::log2_output_typeid_vector;
+        using impl::log2_strided_dispatch_vector;
+        auto log2_pyapi = [&](dpctl::tensor::usm_ndarray src,
+                              dpctl::tensor::usm_ndarray dst,
+                              sycl::queue exec_q,
+                              const std::vector<sycl::event> &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log2_output_typeid_vector,
+                log2_contig_dispatch_vector, log2_strided_dispatch_vector);
+        };
+        auto log2_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, log2_output_typeid_vector);
+        };
+        m.def("_log2", log2_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_log2_result_type", log2_result_type_pyapi, "");
+    }
 
     // U23: ==== LOG10       (x)
-    // FIXME:
+    {
+        impl::populate_log10_dispatch_vectors();
+
+        using impl::log10_contig_dispatch_vector;
+        using impl::log10_output_typeid_vector;
+        using impl::log10_strided_dispatch_vector;
+        auto log10_pyapi = [&](dpctl::tensor::usm_ndarray src,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log10_output_typeid_vector,
+                log10_contig_dispatch_vector, log10_strided_dispatch_vector);
+        };
+        auto log10_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              log10_output_typeid_vector);
+        };
+        m.def("_log10", log10_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_log10_result_type", log10_result_type_pyapi, "");
+    }
 
     // B15: ==== LOGADDEXP   (x1, x2)
     // FIXME:
@@ -2624,7 +2854,28 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U25: ==== NEGATIVE    (x)
-    // FIXME:
+    {
+        impl::populate_negative_dispatch_vectors();
+        using impl::negative_contig_dispatch_vector;
+        using impl::negative_output_typeid_vector;
+        using impl::negative_strided_dispatch_vector;
+
+        auto negative_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                                  const event_vecT &depends = {}) {
+            return py_unary_ufunc(src, dst, exec_q, depends,
+                                  negative_output_typeid_vector,
+                                  negative_contig_dispatch_vector,
+                                  negative_strided_dispatch_vector);
+        };
+        m.def("_negative", negative_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto negative_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              negative_output_typeid_vector);
+        };
+        m.def("_negative_result_type", negative_result_type_pyapi);
+    }
 
     // B20: ==== NOT_EQUAL   (x1, x2)
     {
@@ -2668,10 +2919,67 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U26: ==== POSITIVE    (x)
-    // FIXME:
+    {
+        impl::populate_positive_dispatch_vectors();
+        using impl::positive_contig_dispatch_vector;
+        using impl::positive_output_typeid_vector;
+        using impl::positive_strided_dispatch_vector;
+
+        auto positive_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                                  const event_vecT &depends = {}) {
+            return py_unary_ufunc(src, dst, exec_q, depends,
+                                  positive_output_typeid_vector,
+                                  positive_contig_dispatch_vector,
+                                  positive_strided_dispatch_vector);
+        };
+        m.def("_positive", positive_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto positive_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              positive_output_typeid_vector);
+        };
+        m.def("_positive_result_type", positive_result_type_pyapi);
+    }
 
     // B21: ==== POW         (x1, x2)
-    // FIXME:
+    {
+
+        impl::populate_pow_dispatch_tables();
+        using impl::pow_contig_dispatch_table;
+        using impl::pow_output_id_table;
+        using impl::pow_strided_dispatch_table;
+
+        auto pow_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                             dpctl::tensor::usm_ndarray src2,
+                             dpctl::tensor::usm_ndarray dst, sycl::queue exec_q,
+                             const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, pow_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                pow_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                pow_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto pow_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               pow_output_id_table);
+        };
+        m.def("_pow", pow_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_pow_result_type", pow_result_type_pyapi, "");
+    }
 
     // U??: ==== PROJ        (x)
     {
@@ -2751,7 +3059,27 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U32: ==== SQUARE      (x)
-    // FIXME:
+    {
+        impl::populate_square_dispatch_vectors();
+        using impl::square_contig_dispatch_vector;
+        using impl::square_output_typeid_vector;
+        using impl::square_strided_dispatch_vector;
+
+        auto square_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                                const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, square_output_typeid_vector,
+                square_contig_dispatch_vector, square_strided_dispatch_vector);
+        };
+        m.def("_square", square_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto square_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              square_output_typeid_vector);
+        };
+        m.def("_square_result_type", square_result_type_pyapi);
+    }
 
     // U33: ==== SQRT        (x)
     {

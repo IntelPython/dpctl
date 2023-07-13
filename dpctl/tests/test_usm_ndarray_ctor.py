@@ -140,6 +140,26 @@ def test_dtypes(dtype):
     assert expected_fmt == actual_fmt
 
 
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+@pytest.mark.parametrize("buffer_ctor_kwargs", [dict(), {"queue": None}])
+def test_default_dtype(usm_type, buffer_ctor_kwargs):
+    q = get_queue_or_skip()
+    dev = q.get_sycl_device()
+    if buffer_ctor_kwargs:
+        buffer_ctor_kwargs["queue"] = q
+    Xusm = dpt.usm_ndarray(
+        (1,), buffer=usm_type, buffer_ctor_kwargs=buffer_ctor_kwargs
+    )
+    if dev.has_aspect_fp64:
+        expected_dtype = "f8"
+    else:
+        expected_dtype = "f4"
+    assert Xusm.itemsize == dpt.dtype(expected_dtype).itemsize
+    expected_fmt = (dpt.dtype(expected_dtype).str)[1:]
+    actual_fmt = Xusm.__sycl_usm_array_interface__["typestr"][1:]
+    assert expected_fmt == actual_fmt
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
