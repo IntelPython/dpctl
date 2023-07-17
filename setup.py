@@ -149,20 +149,20 @@ skbuild.setup(
     package_data={"dpctl": ["tests/*.*", "tests/helper/*.py"]},
     include_package_data=True,
     zip_safe=False,
-    setup_requires=["Cython"],
+    setup_requires=["Cython<3"],
     install_requires=[
         "numpy",
     ],
     extras_require={
         "docs": [
-            "Cython",
+            "Cython<3",
             "sphinx",
             "sphinx_rtd_theme",
             "pydot",
             "graphviz",
             "sphinxcontrib-programoutput",
         ],
-        "coverage": ["Cython", "pytest", "pytest-cov", "coverage", "tomli"],
+        "coverage": ["Cython<3", "pytest", "pytest-cov", "coverage", "tomli"],
     },
     keywords="dpctl",
     classifiers=[

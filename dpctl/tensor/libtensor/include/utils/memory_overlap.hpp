@@ -100,6 +100,53 @@ struct MemoryOverlap
     }
 };
 
+struct SameLogicalTensors
+{
+    bool operator()(dpctl::tensor::usm_ndarray ar1,
+                    dpctl::tensor::usm_ndarray ar2) const
+    {
+        // Same ndim
+        int nd1 = ar1.get_ndim();
+        if (nd1 != ar2.get_ndim())
+            return false;
+
+        // Same dtype
+        int tn1 = ar1.get_typenum();
+        if (tn1 != ar2.get_typenum())
+            return false;
+
+        // Same pointer
+        const char *ar1_data = ar1.get_data();
+        const char *ar2_data = ar2.get_data();
+
+        if (ar1_data != ar2_data)
+            return false;
+
+        // Same shape and strides
+        const py::ssize_t *ar1_shape = ar1.get_shape_raw();
+        const py::ssize_t *ar2_shape = ar2.get_shape_raw();
+
+        if (!std::equal(ar1_shape, ar1_shape + nd1, ar2_shape))
+            return false;
+
+        // Same shape and strides
+        auto const &ar1_strides = ar1.get_strides_vector();
+        auto const &ar2_strides = ar2.get_strides_vector();
+
+        auto ar1_beg_it = std::begin(ar1_strides);
+        auto ar1_end_it = std::end(ar1_strides);
+
+        auto ar2_beg_it = std::begin(ar2_strides);
+
+        if (!std::equal(ar1_beg_it, ar1_end_it, ar2_beg_it))
+            return false;
+
+        // all checks passed: arrays are logical views
+        // into the same memory
+        return true;
+    }
+};
+
 } // namespace overlap
 } // namespace tensor
 } // namespace dpctl

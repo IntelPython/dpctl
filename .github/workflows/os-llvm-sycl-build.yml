@@ -108,7 +108,7 @@ jobs:
       - name: Install dpctl dependencies
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools pytest scikit-build cmake
+          pip install numpy cython"<3" setuptools pytest scikit-build cmake
 
       - name: Checkout repo
         uses: actions/checkout@v3
