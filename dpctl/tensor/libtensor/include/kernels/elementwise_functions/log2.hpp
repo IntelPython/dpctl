@@ -1,4 +1,4 @@
-//=== proj.hpp -   Unary function CONJ                     ------
+//=== log2.hpp -   Unary function LOG2                     ------
 //*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
@@ -20,16 +20,14 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of PROJ(x) function.
+/// This file defines kernels for elementwise evaluation of LOG2(x) function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
 #include <CL/sycl.hpp>
 #include <cmath>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -45,15 +43,16 @@ namespace tensor
 {
 namespace kernels
 {
-namespace proj
+namespace log2
 {
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::vec_cast;
 
-template <typename argT, typename resT> struct ProjFunctor
+template <typename argT, typename resT> struct Log2Functor
 {
 
     // is function constant for given argT
@@ -61,21 +60,35 @@ template <typename argT, typename resT> struct ProjFunctor
     // constant value, if constant
     // constexpr resT constant_value = resT{};
     // is function defined for sycl::vec
-    using supports_vec = typename std::false_type;
+    using supports_vec = typename std::negation<
+        std::disjunction<is_complex<resT>, is_complex<argT>>>;
     // do both argTy and resTy support sugroup store/load operation
-    using supports_sg_loadstore = typename std::false_type;
+    using supports_sg_loadstore = typename std::negation<
+        std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
     resT operator()(const argT &in)
     {
-        using realT = typename argT::value_type;
-        const realT x = std::real(in);
-        const realT y = std::imag(in);
-
-        if (std::isinf(x) || std::isinf(y)) {
-            const realT res_im = std::copysign(realT(0), y);
-            return resT{std::numeric_limits<realT>::infinity(), res_im};
+        if constexpr (is_complex<argT>::value) {
+            using realT = typename argT::value_type;
+            return std::log(in) / std::log(realT{2});
         }
-        return in;
+        else {
+            return std::log2(in);
+        }
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    {
+        auto const &res_vec = sycl::log2(in);
+        using deducedT = typename std::remove_cv_t<
+            std::remove_reference_t<decltype(res_vec)>>::element_type;
+        if constexpr (std::is_same_v<resT, deducedT>) {
+            return res_vec;
+        }
+        else {
+            return vec_cast<resT, deducedT, vec_sz>(res_vec);
+        }
     }
 };
 
@@ -83,68 +96,92 @@ template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-using ProjContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, ProjFunctor<argTy, resTy>, vec_sz, n_vecs>;
+using Log2ContigFunctor = elementwise_common::
+    UnaryContigFunctor<argTy, resTy, Log2Functor<argTy, resTy>, vec_sz, n_vecs>;
 
 template <typename argTy, typename resTy, typename IndexerT>
-using ProjStridedFunctor = elementwise_common::
-    UnaryStridedFunctor<argTy, resTy, IndexerT, ProjFunctor<argTy, resTy>>;
+using Log2StridedFunctor = elementwise_common::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, Log2Functor<argTy, resTy>>;
 
-template <typename T> struct ProjOutputType
+template <typename T> struct Log2OutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::TypeMapResultEntry<T, sycl::half, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float, float>,
+        td_ns::TypeMapResultEntry<T, double, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
+        td_ns::
+            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
+typedef sycl::event (*log2_contig_impl_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    const char *,
+    char *,
+    const std::vector<sycl::event> &);
+
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
-class proj_contig_kernel;
+class log2_contig_kernel;
 
 template <typename argTy>
-sycl::event proj_contig_impl(sycl::queue exec_q,
+sycl::event log2_contig_impl(sycl::queue exec_q,
                              size_t nelems,
                              const char *arg_p,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::unary_contig_impl<
-        argTy, ProjOutputType, ProjContigFunctor, proj_contig_kernel>(
+        argTy, Log2OutputType, Log2ContigFunctor, log2_contig_kernel>(
         exec_q, nelems, arg_p, res_p, depends);
 }
 
-template <typename fnT, typename T> struct ProjContigFactory
+template <typename fnT, typename T> struct Log2ContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename ProjOutputType<T>::value_type,
+        if constexpr (std::is_same_v<typename Log2OutputType<T>::value_type,
                                      void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = proj_contig_impl<T>;
+            fnT fn = log2_contig_impl<T>;
             return fn;
         }
     }
 };
 
-template <typename fnT, typename T> struct ProjTypeMapFactory
+template <typename fnT, typename T> struct Log2TypeMapFactory
 {
-    /*! @brief get typeid for output type of std::proj(T x) */
+    /*! @brief get typeid for output type of std::log2(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename ProjOutputType<T>::value_type;
+        using rT = typename Log2OutputType<T>::value_type;
+        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
-template <typename T1, typename T2, typename T3> class proj_strided_kernel;
+template <typename T1, typename T2, typename T3> class log2_strided_kernel;
+
+typedef sycl::event (*log2_strided_impl_fn_ptr_t)(
+    sycl::queue,
+    size_t,
+    int,
+    const py::ssize_t *,
+    const char *,
+    py::ssize_t,
+    char *,
+    py::ssize_t,
+    const std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
 
 template <typename argTy>
 sycl::event
-proj_strided_impl(sycl::queue exec_q,
+log2_strided_impl(sycl::queue exec_q,
                   size_t nelems,
                   int nd,
                   const py::ssize_t *shape_and_strides,
@@ -156,28 +193,28 @@ proj_strided_impl(sycl::queue exec_q,
                   const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::unary_strided_impl<
-        argTy, ProjOutputType, ProjStridedFunctor, proj_strided_kernel>(
+        argTy, Log2OutputType, Log2StridedFunctor, log2_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
         res_offset, depends, additional_depends);
 }
 
-template <typename fnT, typename T> struct ProjStridedFactory
+template <typename fnT, typename T> struct Log2StridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename ProjOutputType<T>::value_type,
+        if constexpr (std::is_same_v<typename Log2OutputType<T>::value_type,
                                      void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = proj_strided_impl<T>;
+            fnT fn = log2_strided_impl<T>;
             return fn;
         }
     }
 };
 
-} // namespace proj
+} // namespace log2
 } // namespace kernels
 } // namespace tensor
 } // namespace dpctl

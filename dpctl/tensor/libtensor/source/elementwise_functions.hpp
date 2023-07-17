@@ -128,7 +128,9 @@ py_unary_ufunc(dpctl::tensor::usm_ndarray src,
 
     // check memory overlap
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(src, dst)) {
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if (overlap(src, dst) && !same_logical_tensors(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 

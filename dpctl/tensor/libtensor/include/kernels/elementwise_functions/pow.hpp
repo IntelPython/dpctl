@@ -1,4 +1,4 @@
-//=== floor_divide.hpp -  Binary function FLOOR_DIVIDE  ------  *-C++-*--/===//
+//=== POW.hpp -   Binary function POW                    ------  *-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of FLOOR_DIVIDE(x1, x2)
+/// This file defines kernels for elementwise evaluation of POW(x1, x2)
 /// function.
 //===---------------------------------------------------------------------===//
 
@@ -27,6 +27,7 @@
 #include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -42,42 +43,48 @@ namespace tensor
 {
 namespace kernels
 {
-namespace floor_divide
+namespace pow
 {
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
-template <typename argT1, typename argT2, typename resT>
-struct FloorDivideFunctor
+template <typename argT1, typename argT2, typename resT> struct PowFunctor
 {
 
     using supports_sg_loadstore = std::negation<
         std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_vec =
+        std::negation<std::disjunction<tu_ns::is_complex<argT1>,
+                                       tu_ns::is_complex<argT2>,
+                                       std::is_integral<argT1>,
+                                       std::is_integral<argT2>>>;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(argT1 in1, argT2 in2)
     {
-        auto tmp = in1 / in2;
-        if constexpr (std::is_integral_v<decltype(tmp)>) {
-            if constexpr (std::is_unsigned_v<decltype(tmp)>) {
-                return (in2 == argT2(0)) ? resT(0) : tmp;
-            }
-            else {
-                if (in2 == argT2(0)) {
+        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+            if constexpr (std::is_signed_v<argT2>) {
+                if (in2 < 0) {
+                    // invalid; return 0
                     return resT(0);
                 }
-                else {
-                    auto rem = in1 % in2;
-                    auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
-                    return (tmp - corr);
-                }
             }
+            resT res = 1;
+            if (in1 == 1 || in2 == 0) {
+                return res;
+            }
+            while (in2 > 0) {
+                if (in2 & 1) {
+                    res *= in1;
+                }
+                in2 >>= 1;
+                in1 *= in1;
+            }
+            return res;
         }
         else {
-            return sycl::floor(tmp);
+            return std::pow(in1, in2);
         }
     }
 
@@ -85,51 +92,16 @@ struct FloorDivideFunctor
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
-        auto tmp = in1 / in2;
-        using tmpT = typename decltype(tmp)::element_type;
-        if constexpr (std::is_integral_v<tmpT>) {
-            if constexpr (std::is_signed_v<tmpT>) {
-                auto rem_tmp = in1 % in2;
-#pragma unroll
-                for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == argT2(0)) {
-                        tmp[i] = tmpT(0);
-                    }
-                    else {
-                        tmpT corr = (rem_tmp[i] != 0 &&
-                                     ((rem_tmp[i] < 0) != (in2[i] < 0)));
-                        tmp[i] -= corr;
-                    }
-                }
-            }
-            else {
-#pragma unroll
-                for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == argT2(0)) {
-                        tmp[i] = tmpT(0);
-                    }
-                }
-            }
-            if constexpr (std::is_same_v<resT, tmpT>) {
-                return tmp;
-            }
-            else {
-                using dpctl::tensor::type_utils::vec_cast;
-                return vec_cast<resT, tmpT, vec_sz>(tmp);
-            }
+        auto res = sycl::pow(in1, in2);
+        if constexpr (std::is_same_v<resT,
+                                     typename decltype(res)::element_type>) {
+            return res;
         }
         else {
-            sycl::vec<resT, vec_sz> res = sycl::floor(tmp);
-            if constexpr (std::is_same_v<resT,
-                                         typename decltype(res)::element_type>)
-            {
-                return res;
-            }
-            else {
-                using dpctl::tensor::type_utils::vec_cast;
-                return vec_cast<resT, typename decltype(res)::element_type,
-                                vec_sz>(res);
-            }
+            using dpctl::tensor::type_utils::vec_cast;
+
+            return vec_cast<resT, typename decltype(res)::element_type, vec_sz>(
+                res);
         }
     }
 };
@@ -139,27 +111,30 @@ template <typename argT1,
           typename resT,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-using FloorDivideContigFunctor = elementwise_common::BinaryContigFunctor<
-    argT1,
-    argT2,
-    resT,
-    FloorDivideFunctor<argT1, argT2, resT>,
-    vec_sz,
-    n_vecs>;
+using PowContigFunctor =
+    elementwise_common::BinaryContigFunctor<argT1,
+                                            argT2,
+                                            resT,
+                                            PowFunctor<argT1, argT2, resT>,
+                                            vec_sz,
+                                            n_vecs>;
 
 template <typename argT1, typename argT2, typename resT, typename IndexerT>
-using FloorDivideStridedFunctor = elementwise_common::BinaryStridedFunctor<
-    argT1,
-    argT2,
-    resT,
-    IndexerT,
-    FloorDivideFunctor<argT1, argT2, resT>>;
+using PowStridedFunctor =
+    elementwise_common::BinaryStridedFunctor<argT1,
+                                             argT2,
+                                             resT,
+                                             IndexerT,
+                                             PowFunctor<argT1, argT2, resT>>;
 
-template <typename T1, typename T2> struct FloorDivideOutputType
+// TODO: when type promotion logic is better defined,
+// consider implementing overloads of std::pow that take
+// integers for the exponents. Seem to give better accuracy in
+// some cases (complex data especially)
+template <typename T1, typename T2> struct PowOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, std::int8_t>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
                                         T2,
@@ -207,6 +182,16 @@ template <typename T1, typename T2> struct FloorDivideOutputType
                                         sycl::half>,
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        std::complex<float>,
+                                        T2,
+                                        std::complex<float>,
+                                        std::complex<float>>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        std::complex<double>,
+                                        T2,
+                                        std::complex<double>,
+                                        std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
@@ -215,101 +200,93 @@ template <typename argT1,
           typename resT,
           unsigned int vec_sz,
           unsigned int n_vecs>
-class floor_divide_contig_kernel;
+class pow_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event
-floor_divide_contig_impl(sycl::queue exec_q,
-                         size_t nelems,
-                         const char *arg1_p,
-                         py::ssize_t arg1_offset,
-                         const char *arg2_p,
-                         py::ssize_t arg2_offset,
-                         char *res_p,
-                         py::ssize_t res_offset,
-                         const std::vector<sycl::event> &depends = {})
+sycl::event pow_contig_impl(sycl::queue exec_q,
+                            size_t nelems,
+                            const char *arg1_p,
+                            py::ssize_t arg1_offset,
+                            const char *arg2_p,
+                            py::ssize_t arg2_offset,
+                            char *res_p,
+                            py::ssize_t res_offset,
+                            const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_impl<
-        argTy1, argTy2, FloorDivideOutputType, FloorDivideContigFunctor,
-        floor_divide_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
-                                    arg2_offset, res_p, res_offset, depends);
+        argTy1, argTy2, PowOutputType, PowContigFunctor, pow_contig_kernel>(
+        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
+        res_offset, depends);
 }
 
-template <typename fnT, typename T1, typename T2>
-struct FloorDivideContigFactory
+template <typename fnT, typename T1, typename T2> struct PowContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename FloorDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
+                                     void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = floor_divide_contig_impl<T1, T2>;
+            fnT fn = pow_contig_impl<T1, T2>;
             return fn;
         }
     }
 };
 
-template <typename fnT, typename T1, typename T2>
-struct FloorDivideTypeMapFactory
+template <typename fnT, typename T1, typename T2> struct PowTypeMapFactory
 {
-    /*! @brief get typeid for output type of floor_divide(T1 x, T2 y) */
+    /*! @brief get typeid for output type of std::pow(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename FloorDivideOutputType<T1, T2>::value_type;
+        using rT = typename PowOutputType<T1, T2>::value_type;
+        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class floor_divide_strided_kernel;
+class pow_strided_strided_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event
-floor_divide_strided_impl(sycl::queue exec_q,
-                          size_t nelems,
-                          int nd,
-                          const py::ssize_t *shape_and_strides,
-                          const char *arg1_p,
-                          py::ssize_t arg1_offset,
-                          const char *arg2_p,
-                          py::ssize_t arg2_offset,
-                          char *res_p,
-                          py::ssize_t res_offset,
-                          const std::vector<sycl::event> &depends,
-                          const std::vector<sycl::event> &additional_depends)
+sycl::event pow_strided_impl(sycl::queue exec_q,
+                             size_t nelems,
+                             int nd,
+                             const py::ssize_t *shape_and_strides,
+                             const char *arg1_p,
+                             py::ssize_t arg1_offset,
+                             const char *arg2_p,
+                             py::ssize_t arg2_offset,
+                             char *res_p,
+                             py::ssize_t res_offset,
+                             const std::vector<sycl::event> &depends,
+                             const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
-        argTy1, argTy2, FloorDivideOutputType, FloorDivideStridedFunctor,
-        floor_divide_strided_kernel>(
+        argTy1, argTy2, PowOutputType, PowStridedFunctor,
+        pow_strided_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
         arg2_offset, res_p, res_offset, depends, additional_depends);
 }
 
-template <typename fnT, typename T1, typename T2>
-struct FloorDivideStridedFactory
+template <typename fnT, typename T1, typename T2> struct PowStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename FloorDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
+                                     void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = floor_divide_strided_impl<T1, T2>;
+            fnT fn = pow_strided_impl<T1, T2>;
             return fn;
         }
     }
 };
 
-} // namespace floor_divide
+} // namespace pow
 } // namespace kernels
 } // namespace tensor
 } // namespace dpctl

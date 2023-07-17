@@ -140,6 +140,26 @@ def test_dtypes(dtype):
     assert expected_fmt == actual_fmt
 
 
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+@pytest.mark.parametrize("buffer_ctor_kwargs", [dict(), {"queue": None}])
+def test_default_dtype(usm_type, buffer_ctor_kwargs):
+    q = get_queue_or_skip()
+    dev = q.get_sycl_device()
+    if buffer_ctor_kwargs:
+        buffer_ctor_kwargs["queue"] = q
+    Xusm = dpt.usm_ndarray(
+        (1,), buffer=usm_type, buffer_ctor_kwargs=buffer_ctor_kwargs
+    )
+    if dev.has_aspect_fp64:
+        expected_dtype = "f8"
+    else:
+        expected_dtype = "f4"
+    assert Xusm.itemsize == dpt.dtype(expected_dtype).itemsize
+    expected_fmt = (dpt.dtype(expected_dtype).str)[1:]
+    actual_fmt = Xusm.__sycl_usm_array_interface__["typestr"][1:]
+    assert expected_fmt == actual_fmt
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
@@ -1196,6 +1216,11 @@ def test_astype():
     assert np.allclose(dpt.to_numpy(Y), np.full(Y.shape, 7, dtype="f4"))
     Y = dpt.astype(X[::2, ::-1], "i4", order="K", copy=False)
     assert Y.usm_data is X.usm_data
+    Y = dpt.astype(X, None, order="K")
+    if X.sycl_queue.sycl_device.has_aspect_fp64:
+        assert Y.dtype is dpt.float64
+    else:
+        assert Y.dtype is dpt.float32
 
 
 def test_astype_invalid_order():
@@ -1475,6 +1500,19 @@ def test_full_strides():
     Xnp = np.full((3, 3), np.arange(6, dtype="i4")[::2])
     assert X.strides == tuple(el // Xnp.itemsize for el in Xnp.strides)
     assert np.array_equal(dpt.asnumpy(X), Xnp)
+
+
+def test_full_gh_1230():
+    q = get_queue_or_skip()
+    dtype = "i4"
+    dt_maxint = dpt.iinfo(dtype).max
+    X = dpt.full(1, dt_maxint + 1, dtype=dtype, sycl_queue=q)
+    X_np = dpt.asnumpy(X)
+    assert X.dtype == dpt.dtype(dtype)
+    assert np.array_equal(X_np, np.full_like(X_np, dt_maxint + 1))
+
+    with pytest.raises(OverflowError):
+        dpt.full(1, dpt.iinfo(dpt.uint64).max + 1, sycl_queue=q)
 
 
 @pytest.mark.parametrize(

@@ -1101,6 +1101,8 @@ def full(
         fill_value = int(fill_value.real)
     elif fill_value_type is complex and np.issubdtype(dtype, np.floating):
         fill_value = fill_value.real
+    elif fill_value_type is int and np.issubdtype(dtype, np.integer):
+        fill_value = _to_scalar(fill_value, dtype)
 
     hev, _ = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     hev.wait()
