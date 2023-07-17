@@ -60,6 +60,7 @@ using dpctl::tensor::c_contiguous_strides;
 using dpctl::tensor::f_contiguous_strides;
 
 using dpctl::tensor::overlap::MemoryOverlap;
+using dpctl::tensor::overlap::SameLogicalTensors;
 
 using dpctl::tensor::py_internal::copy_usm_ndarray_into_usm_ndarray;
 
@@ -336,6 +337,15 @@ PYBIND11_MODULE(_tensor_impl, m)
     };
     m.def("_array_overlap", overlap,
           "Determines if the memory regions indexed by each array overlap",
+          py::arg("array1"), py::arg("array2"));
+
+    auto same_logical_tensors = [](dpctl::tensor::usm_ndarray x1,
+                                   dpctl::tensor::usm_ndarray x2) -> bool {
+        auto const &same_logical_tensors = SameLogicalTensors();
+        return same_logical_tensors(x1, x2);
+    };
+    m.def("_same_logical_tensors", same_logical_tensors,
+          "Determines if the memory regions indexed by each array are the same",
           py::arg("array1"), py::arg("array2"));
 
     m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
