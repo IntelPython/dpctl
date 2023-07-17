@@ -20,7 +20,7 @@ requirements:
         - cmake  >=3.21
         - ninja
         - git
-        - cython
+        - cython  <3
         - python
         - scikit-build
         - numpy
