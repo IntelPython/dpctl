@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.4+13.ga0db09343 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.5dev1+11.ga041d647e documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.4+13.ga0db09343
+                0.14.5dev1+11.ga041d647e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -115,6 +115,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._ctors</span> <span class="kn">import</span> <span class="n">_get_dtype</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
@@ -456,7 +457,8 @@
 <span class="sd">        array (usm_ndarray):</span>
 <span class="sd">            An input array.</span>
 <span class="sd">        new_dtype (dtype):</span>
-<span class="sd">            The data type of the resulting array.</span>
+<span class="sd">            The data type of the resulting array. If `None`, gives default</span>
+<span class="sd">            floating point type supported by device where `array` is allocated.</span>
 <span class="sd">        order ({&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional):</span>
 <span class="sd">            Controls memory layout of the resulting array if a copy</span>
 <span class="sd">            is returned.</span>
@@ -484,7 +486,7 @@
             <span class="s2">&quot;Recognized values are &#39;A&#39;, &#39;C&#39;, &#39;F&#39;, or &#39;K&#39;&quot;</span>
         <span class="p">)</span>
     <span class="n">ary_dtype</span> <span class="o">=</span> <span class="n">usm_ary</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">target_dtype</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">newdtype</span><span class="p">)</span>
+    <span class="n">target_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">newdtype</span><span class="p">,</span> <span class="n">usm_ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">ary_dtype</span><span class="p">,</span> <span class="n">target_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Can not cast from </span><span class="si">{</span><span class="n">ary_dtype</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">newdtype</span><span class="si">}</span><span class="s2"> &quot;</span>

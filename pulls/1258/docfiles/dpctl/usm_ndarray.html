@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.4+13.ga0db09343 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.5dev1+11.ga041d647e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data-parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.4+13.ga0db09343
+                0.14.5dev1+11.ga041d647e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -118,7 +118,7 @@
 <span id="usm-ndarray-api"></span><h1>dpctl.tensor.usm_ndarray<a class="headerlink" href="#dpctl-tensor-usm-ndarray" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|f8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_ctor_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_ctor_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
 <dd><p>An array object represents a multidimensional tensor of numeric
 elements stored in a USM allocation on a SYCL device.</p>
 <dl>
@@ -126,6 +126,8 @@ elements stored in a USM allocation on a SYCL device.</p>
 <dt>shape (int, tuple):</dt><dd><p>Shape of the array to be created.</p>
 </dd>
 <dt>dtype (str, dtype):</dt><dd><p>Array data type, i.e. the type of array elements.
+If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> has the value <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined by default
+floating point type supported by target device.
 The supported types are</p>
 <blockquote>
 <div><ul class="simple">
@@ -166,7 +168,7 @@ types, supported if target device’s property
 </li>
 </ul>
 </div></blockquote>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;|f8&quot;</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 <dt>strides (tuple, optional):</dt><dd><p>Strides of the array to be created in elements.
 If <code class="docutils literal notranslate"><span class="pre">strides</span></code> has the value <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined by the
