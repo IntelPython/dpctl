@@ -52,29 +52,6 @@ class UnaryElementwiseFunc:
         if not isinstance(x, dpt.usm_ndarray):
             raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
 
-        if out is not None:
-            if not isinstance(out, dpt.usm_ndarray):
-                raise TypeError(
-                    f"output array must be of usm_ndarray type, got {type(out)}"
-                )
-
-            if out.shape != x.shape:
-                raise TypeError(
-                    "The shape of input and output arrays are inconsistent."
-                    f"Expected output shape is {x.shape}, got {out.shape}"
-                )
-
-            if ti._array_overlap(x, out):
-                raise TypeError("Input and output arrays have memory overlap")
-
-            if (
-                dpctl.utils.get_execution_queue((x.sycl_queue, out.sycl_queue))
-                is None
-            ):
-                raise TypeError(
-                    "Input and output allocation queues are not compatible"
-                )
-
         if order not in ["C", "F", "K", "A"]:
             order = "K"
         buf_dt, res_dt = _find_buf_dtype(
@@ -87,6 +64,44 @@ class UnaryElementwiseFunc:
                 "and the input could not be safely coerced to any "
                 "supported types according to the casting rule ''safe''."
             )
+
+        orig_out = out
+        if out is not None:
+            if not isinstance(out, dpt.usm_ndarray):
+                raise TypeError(
+                    f"output array must be of usm_ndarray type, got {type(out)}"
+                )
+
+            if out.shape != x.shape:
+                raise TypeError(
+                    "The shape of input and output arrays are inconsistent."
+                    f"Expected output shape is {x.shape}, got {out.shape}"
+                )
+
+            if res_dt != out.dtype:
+                raise TypeError(
+                    f"Output array of type {res_dt} is needed,"
+                    f" got {out.dtype}"
+                )
+
+            if (
+                buf_dt is None
+                and ti._array_overlap(x, out)
+                and not ti._same_logical_tensors(x, out)
+            ):
+                # Allocate a temporary buffer to avoid memory overlapping.
+                # Note if `buf_dt` is not None, a temporary copy of `x` will be
+                # created, so the array overlap check isn't needed.
+                out = dpt.empty_like(out)
+
+            if (
+                dpctl.utils.get_execution_queue((x.sycl_queue, out.sycl_queue))
+                is None
+            ):
+                raise TypeError(
+                    "Input and output allocation queues are not compatible"
+                )
+
         exec_q = x.sycl_queue
         if buf_dt is None:
             if out is None:
@@ -96,17 +111,20 @@ class UnaryElementwiseFunc:
                     if order == "A":
                         order = "F" if x.flags.f_contiguous else "C"
                     out = dpt.empty_like(x, dtype=res_dt, order=order)
-            else:
-                if res_dt != out.dtype:
-                    raise TypeError(
-                        f"Output array of type {res_dt} is needed,"
-                        f" got {out.dtype}"
-                    )
 
-            ht, _ = self.unary_fn_(x, out, sycl_queue=exec_q)
-            ht.wait()
+            ht_unary_ev, unary_ev = self.unary_fn_(x, out, sycl_queue=exec_q)
 
+            if not (orig_out is None or orig_out is out):
+                # Copy the out data from temporary buffer to original memory
+                ht_copy_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=out, dst=orig_out, sycl_queue=exec_q, depends=[unary_ev]
+                )
+                ht_copy_ev.wait()
+                out = orig_out
+
+            ht_unary_ev.wait()
             return out
+
         if order == "K":
             buf = _empty_like_orderK(x, buf_dt)
         else:
@@ -122,11 +140,6 @@ class UnaryElementwiseFunc:
                 out = _empty_like_orderK(buf, res_dt)
             else:
                 out = dpt.empty_like(buf, dtype=res_dt, order=order)
-        else:
-            if buf_dt != out.dtype:
-                raise TypeError(
-                    f"Output array of type {buf_dt} is needed, got {out.dtype}"
-                )
 
         ht, _ = self.unary_fn_(buf, out, sycl_queue=exec_q, depends=[copy_ev])
         ht_copy_ev.wait()

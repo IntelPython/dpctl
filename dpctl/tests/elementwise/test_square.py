@@ -97,3 +97,29 @@ def test_square_special_cases(dtype):
             rtol=tol,
             equal_nan=True,
         )
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+def test_square_out_overlap(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.linspace(0, 35, 60, dtype=dtype, sycl_queue=q)
+    X = dpt.reshape(X, (3, 5, 4))
+
+    Xnp = dpt.asnumpy(X)
+    Ynp = np.square(Xnp, out=Xnp)
+
+    Y = dpt.square(X, out=X)
+    assert Y is X
+    assert np.allclose(dpt.asnumpy(X), Xnp)
+
+    X = dpt.linspace(0, 35, 60, dtype=dtype, sycl_queue=q)
+    X = dpt.reshape(X, (3, 5, 4))
+    Xnp = dpt.asnumpy(X)
+
+    Ynp = np.square(Xnp, out=Xnp[::-1])
+    Y = dpt.square(X, out=X[::-1])
+    assert Y is not X
+    assert np.allclose(dpt.asnumpy(X), Xnp)
+    assert np.allclose(dpt.asnumpy(Y), Ynp)
