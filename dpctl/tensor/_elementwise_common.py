@@ -79,7 +79,11 @@ class UnaryElementwiseFunc:
                     f" got {out.dtype}"
                 )
 
-            if buf_dt is None and ti._array_overlap(x, out):
+            if (
+                buf_dt is None
+                and ti._array_overlap(x, out)
+                and not ti._same_logical_tensors(x, out)
+            ):
                 # Allocate a temporary buffer to avoid memory overlapping.
                 # Note if `buf_dt` is not None, a temporary copy of `x` will be
                 # created, so the array overlap check isn't needed.
