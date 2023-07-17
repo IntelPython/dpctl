@@ -213,6 +213,11 @@ def _copy_same_shape(dst, src):
     """Assumes src and dst have the same shape."""
     # check that memory regions do not overlap
     if ti._array_overlap(dst, src):
+        if src._pointer == dst._pointer and (
+            src is dst
+            or (src.strides == dst.strides and src.dtype == dst.dtype)
+        ):
+            return
         _copy_overlapping(src=src, dst=dst)
         return
 

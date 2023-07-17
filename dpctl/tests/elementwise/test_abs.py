@@ -22,7 +22,7 @@ import pytest
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _usm_types
+from .utils import _all_dtypes, _no_complex_dtypes, _usm_types
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -113,3 +113,25 @@ def test_abs_complex(dtype):
             np.testing.assert_allclose(
                 dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
             )
+
+
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
+def test_abs_out_overlap(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.linspace(0, 35, 60, dtype=dtype, sycl_queue=q)
+    X = dpt.reshape(X, (3, 5, 4))
+
+    Xnp = dpt.asnumpy(X)
+    Ynp = np.abs(Xnp, out=Xnp)
+
+    Y = dpt.abs(X, out=X)
+    assert Y is X
+    assert np.allclose(dpt.asnumpy(X), Xnp)
+
+    Ynp = np.abs(Xnp, out=Xnp[::-1])
+    Y = dpt.abs(X, out=X[::-1])
+    assert Y is not X
+    assert np.allclose(dpt.asnumpy(X), Xnp)
+    assert np.allclose(dpt.asnumpy(Y), Ynp)

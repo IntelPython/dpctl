@@ -72,7 +72,7 @@ template <typename argT, typename resT> struct ProjFunctor
         const realT y = std::imag(in);
 
         if (std::isinf(x) || std::isinf(y)) {
-            const realT res_im = std::copysign(0.0, y);
+            const realT res_im = std::copysign(realT(0), y);
             return resT{std::numeric_limits<realT>::infinity(), res_im};
         }
         return in;
