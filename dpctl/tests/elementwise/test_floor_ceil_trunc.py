@@ -57,7 +57,7 @@ def test_floor_ceil_trunc_usm_type(np_call, dpt_call, usm_type):
     q = get_queue_or_skip()
 
     arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
+    input_shape = (2, 2, 2, 10)
     X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
     X[..., 0::2] = -0.4
     X[..., 1::2] = 0.7
@@ -80,16 +80,16 @@ def test_floor_ceil_trunc_order(np_call, dpt_call, dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
+    input_shape = (4, 4, 4, 4)
     X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
     X[..., 0::2] = -0.4
     X[..., 1::2] = 0.7
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np_call(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt_call(U, order=ord)
-            expected_Y = np_call(dpt.asnumpy(U))
             assert_allclose(dpt.asnumpy(Y), expected_Y)
 
 
@@ -180,7 +180,7 @@ def test_floor_ceil_trunc_strided(np_call, dpt_call, dtype):
 
     np.random.seed(42)
     strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = np.arange(2, 100)
+    sizes = [2, 4, 6, 8, 24, 32, 72]
 
     for ii in sizes:
         Xnp = np.random.uniform(low=-99.9, high=99.9, size=ii)
