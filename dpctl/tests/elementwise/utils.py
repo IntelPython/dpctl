@@ -31,6 +31,19 @@ _no_complex_dtypes = [
     "f4",
     "f8",
 ]
+_real_value_dtypes = [
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+]
 _all_dtypes = _no_complex_dtypes + [
     "c8",
     "c16",
