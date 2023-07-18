@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `dpctl.tensor.astype` behavior for `newdtype=None` changes [#1261](https://github.com/IntelPython/dpctl/pull/1262)
 * `dpctl.tensor.usm_ndaray` constructor default value of `dtype` keyword argument changed to `None`: [#1265](https://github.com/IntelPython/dpctl/pull/1265)
-* Support for `out`` arguments that overlap with inputs for unary elementwise functions[#1281](https://github.com/IntelPython/dpctl/pull/1281)
+* Support for `out` arguments that overlap with inputs for unary elementwise functions[#1281](https://github.com/IntelPython/dpctl/pull/1281)
 * Copying from one array to another a no-op if both arrays view into the same memory [#1284](https://github.com/IntelPython/dpctl/pull/1284)
 
 ## [0.14.4] - 06/14/2023
@@ -87,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Added empty values check for `dpctl.tensor.place` [#1105](https://github.com/IntelPython/dpctl/pull/1105), [#1106](https://github.com/IntelPython/dpctl/pull/1106)
+* Fix to add empty values check for `dpctl.tensor.place` [#1105](https://github.com/IntelPython/dpctl/pull/1105), [#1106](https://github.com/IntelPython/dpctl/pull/1106)
 * Fixed [gh-1089](https://github.com/IntelPython/dpctl/issues/1089) by improving `dpctl.tensor.asarray` handling of NumPy arrays viewing into host-accessible USM allocation objects.
 * MAINT: Fixed build break with newer GCC and SYCLOS [#1118](https://github.com/IntelPython/dpctl/pull/1118)
 * Fixed a bug in basic indexing of `dpctl.tensor.usm_ndarray` [#1136](https://github.com/IntelPython/dpctl/pull/1136)
