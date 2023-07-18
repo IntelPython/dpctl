@@ -1,0 +1,57 @@
+libsyclinterface
+================
+
+.. toctree::
+	:hidden:
+
+	group_ContextInterface.rst
+	group_DeviceInterface.rst
+	group_DeviceManager.rst
+	group_DeviceSelectors.rst
+	group_EventInterface.rst
+	group_KernelInterface.rst
+	group_KernelBundleInterface.rst
+	group_PlatformInterface.rst
+	group_PlatformManager.rst
+	group_QueueInterface.rst
+	group_QueueManager.rst
+	group_Service.rst
+	group_USMInterface.rst
+
+.. rubric:: Further Reading:
+
+|	:ref:`Context class C wrapper<doxid-d6/dad/group___context_interface>`
+|	:ref:`Device class C wrapper<doxid-db/dd1/group___device_interface>`
+|	:ref:`Device class helper functions<doxid-dc/ddc/group___device_manager>`
+|	:ref:`Device selection<doxid-d8/d27/group___device_selectors>`
+|	:ref:`Event class C wrapper<doxid-df/d2d/group___event_interface>`
+|	:ref:`Kernel class C wrapper<doxid-da/df6/group___kernel_interface>`
+|	:ref:`Kernel_bundle class C wrapper<doxid-d2/d0d/group___kernel_bundle_interface>`
+|	:ref:`Platform class C wrapper<doxid-da/dbd/group___platform_interface>`
+|	:ref:`Platform class helper functions<doxid-d5/dcf/group___platform_manager>`
+|	:ref:`Queue class C wrapper<doxid-d2/d22/group___queue_interface>`
+|	:ref:`Queue class helper functions<doxid-d0/dde/group___queue_manager>`
+|	:ref:`Service functions<doxid-d8/d1a/group___service>`
+|	:ref:`USM Interface<doxid-df/d6e/group___u_s_m_interface>`
+
+
+.. toctree::
+	:hidden:
+
+	page_todo.rst
+
+.. rubric:: Related Pages:
+
+|	:doc:`page_todo`
+
+
+.. rubric:: Reference and Index:
+
+.. toctree::
+	:hidden:
+
+	global.rst
+
+|	:doc:`global`
+|	:ref:`genindex`
+
