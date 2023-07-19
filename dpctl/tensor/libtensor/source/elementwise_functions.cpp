@@ -40,12 +40,14 @@
 #include "kernels/elementwise_functions/asinh.hpp"
 #include "kernels/elementwise_functions/atan.hpp"
 #include "kernels/elementwise_functions/atanh.hpp"
+#include "kernels/elementwise_functions/ceil.hpp"
 #include "kernels/elementwise_functions/conj.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
 #include "kernels/elementwise_functions/cosh.hpp"
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/exp.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
+#include "kernels/elementwise_functions/floor.hpp"
 #include "kernels/elementwise_functions/floor_divide.hpp"
 #include "kernels/elementwise_functions/greater.hpp"
 #include "kernels/elementwise_functions/greater_equal.hpp"
@@ -78,6 +80,7 @@
 #include "kernels/elementwise_functions/tan.hpp"
 #include "kernels/elementwise_functions/tanh.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
+#include "kernels/elementwise_functions/trunc.hpp"
 
 namespace dpctl
 {
@@ -537,7 +540,36 @@ namespace impl
 // U09: ==== CEIL          (x)
 namespace impl
 {
-// FIXME: add code for U09
+
+namespace ceil_fn_ns = dpctl::tensor::kernels::ceil;
+
+static unary_contig_impl_fn_ptr_t ceil_contig_dispatch_vector[td_ns::num_types];
+static int ceil_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    ceil_strided_dispatch_vector[td_ns::num_types];
+
+void populate_ceil_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = ceil_fn_ns;
+
+    using fn_ns::CeilContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, CeilContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(ceil_contig_dispatch_vector);
+
+    using fn_ns::CeilStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, CeilStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(ceil_strided_dispatch_vector);
+
+    using fn_ns::CeilTypeMapFactory;
+    DispatchVectorBuilder<int, CeilTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(ceil_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U10: ==== CONJ          (x)
@@ -825,7 +857,37 @@ void populate_expm1_dispatch_vectors(void)
 // U15: ==== FLOOR         (x)
 namespace impl
 {
-// FIXME: add code for U15
+
+namespace floor_fn_ns = dpctl::tensor::kernels::floor;
+
+static unary_contig_impl_fn_ptr_t
+    floor_contig_dispatch_vector[td_ns::num_types];
+static int floor_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    floor_strided_dispatch_vector[td_ns::num_types];
+
+void populate_floor_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = floor_fn_ns;
+
+    using fn_ns::FloorContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, FloorContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(floor_contig_dispatch_vector);
+
+    using fn_ns::FloorStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, FloorStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(floor_strided_dispatch_vector);
+
+    using fn_ns::FloorTypeMapFactory;
+    DispatchVectorBuilder<int, FloorTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(floor_output_typeid_vector);
+}
+
 } // namespace impl
 
 // B10: ==== FLOOR_DIVIDE  (x1, x2)
@@ -2103,7 +2165,37 @@ void populate_tanh_dispatch_vectors(void)
 // U36: ==== TRUNC       (x)
 namespace impl
 {
-// FIXME: add code for U36
+
+namespace trunc_fn_ns = dpctl::tensor::kernels::trunc;
+
+static unary_contig_impl_fn_ptr_t
+    trunc_contig_dispatch_vector[td_ns::num_types];
+static int trunc_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    trunc_strided_dispatch_vector[td_ns::num_types];
+
+void populate_trunc_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = trunc_fn_ns;
+
+    using fn_ns::TruncContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, TruncContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(trunc_contig_dispatch_vector);
+
+    using fn_ns::TruncStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, TruncStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(trunc_strided_dispatch_vector);
+
+    using fn_ns::TruncTypeMapFactory;
+    DispatchVectorBuilder<int, TruncTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(trunc_output_typeid_vector);
+}
+
 } // namespace impl
 
 // ==========================================================================================
@@ -2358,7 +2450,26 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U09: ==== CEIL          (x)
-    // FIXME:
+    {
+        impl::populate_ceil_dispatch_vectors();
+        using impl::ceil_contig_dispatch_vector;
+        using impl::ceil_output_typeid_vector;
+        using impl::ceil_strided_dispatch_vector;
+
+        auto ceil_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, ceil_output_typeid_vector,
+                ceil_contig_dispatch_vector, ceil_strided_dispatch_vector);
+        };
+        m.def("_ceil", ceil_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto ceil_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, ceil_output_typeid_vector);
+        };
+        m.def("_ceil_result_type", ceil_result_type_pyapi);
+    }
 
     // U10: ==== CONJ          (x)
     {
@@ -2553,7 +2664,27 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U15: ==== FLOOR         (x)
-    // FIXME:
+    {
+        impl::populate_floor_dispatch_vectors();
+        using impl::floor_contig_dispatch_vector;
+        using impl::floor_output_typeid_vector;
+        using impl::floor_strided_dispatch_vector;
+
+        auto floor_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, floor_output_typeid_vector,
+                floor_contig_dispatch_vector, floor_strided_dispatch_vector);
+        };
+        m.def("_floor", floor_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto floor_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              floor_output_typeid_vector);
+        };
+        m.def("_floor_result_type", floor_result_type_pyapi);
+    }
 
     // B10: ==== FLOOR_DIVIDE  (x1, x2)
     {
@@ -3540,7 +3671,27 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U36: ==== TRUNC       (x)
-    // FIXME:
+    {
+        impl::populate_trunc_dispatch_vectors();
+        using impl::trunc_contig_dispatch_vector;
+        using impl::trunc_output_typeid_vector;
+        using impl::trunc_strided_dispatch_vector;
+
+        auto trunc_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, trunc_output_typeid_vector,
+                trunc_contig_dispatch_vector, trunc_strided_dispatch_vector);
+        };
+        m.def("_trunc", trunc_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto trunc_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              trunc_output_typeid_vector);
+        };
+        m.def("_trunc_result_type", trunc_result_type_pyapi);
+    }
 }
 
 } // namespace py_internal

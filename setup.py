@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import glob
+import importlib.machinery as imm
 import os.path
 import pathlib
 import shutil
@@ -28,9 +29,37 @@ from skbuild.command.install import install as _skbuild_install
 
 import versioneer
 
+"""
+Get the project version
+"""
+thefile_path = os.path.abspath(os.path.dirname(__file__))
+version_mod = imm.SourceFileLoader(
+    "version", os.path.join(thefile_path, "dpctl", "_version.py")
+).load_module()
+__version__ = version_mod.get_versions()["version"]
+
 # Get long description
 with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
+
+CLASSIFIERS = """\
+Development Status :: 4 - Beta
+Intended Audience :: Science/Research
+Intended Audience :: Developers
+License :: OSI Approved :: Apache Software License
+Programming Language :: C
+Programming Language :: Python
+Programming Language :: Python :: 3
+Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10
+Programming Language :: Python :: Implementation :: CPython
+Topic :: Software Development
+Topic :: Scientific/Engineering
+Operating System :: Microsoft :: Windows
+Operating System :: POSIX
+Operating System :: Unix
+"""
 
 
 def cleanup_destination(cmake_manifest):
@@ -131,7 +160,7 @@ def _get_cmdclass():
 
 skbuild.setup(
     name="dpctl",
-    version=versioneer.get_version(),
+    version=__version__,
     cmdclass=_get_cmdclass(),
     description="A lightweight Python wrapper for a subset of SYCL.",
     long_description=long_description,
@@ -149,27 +178,23 @@ skbuild.setup(
     package_data={"dpctl": ["tests/*.*", "tests/helper/*.py"]},
     include_package_data=True,
     zip_safe=False,
-    setup_requires=["Cython"],
+    setup_requires=["Cython<3"],
     install_requires=[
         "numpy",
     ],
     extras_require={
         "docs": [
-            "Cython",
+            "Cython<3",
             "sphinx",
             "sphinx_rtd_theme",
             "pydot",
             "graphviz",
             "sphinxcontrib-programoutput",
         ],
-        "coverage": ["Cython", "pytest", "pytest-cov", "coverage", "tomli"],
+        "coverage": ["Cython<3", "pytest", "pytest-cov", "coverage", "tomli"],
     },
     keywords="dpctl",
-    classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-    ],
+    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
+    platforms=["Linux", "Windows"],
     cmake_process_manifest_hook=cleanup_destination,
 )

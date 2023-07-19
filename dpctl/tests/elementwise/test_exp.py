@@ -145,3 +145,26 @@ def test_exp_strided(dtype):
                 atol=tol,
                 rtol=tol,
             )
+
+
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+def test_exp_out_overlap(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    X = dpt.linspace(0, 1, 15, dtype=dtype, sycl_queue=q)
+    X = dpt.reshape(X, (3, 5))
+
+    Xnp = dpt.asnumpy(X)
+    Ynp = np.exp(Xnp, out=Xnp)
+
+    Y = dpt.exp(X, out=X)
+    tol = 8 * dpt.finfo(Y.dtype).resolution
+    assert Y is X
+    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
+
+    Ynp = np.exp(Xnp, out=Xnp[::-1])
+    Y = dpt.exp(X, out=X[::-1])
+    assert Y is not X
+    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)

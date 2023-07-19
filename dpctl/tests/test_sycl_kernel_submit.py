@@ -121,12 +121,22 @@ def test_async_submit():
         pytest.skip("OpenCL queue could not be created")
     oclSrc = (
         "kernel void kern1(global unsigned int *res, unsigned int mod) {"
+        "   size_t unused_sum = 0;"
+        "   size_t i = 0; "
+        "   for (i = 0; i < 4000; i++) { "
+        "       unused_sum += i;"
+        "   } "
         "   size_t index = get_global_id(0);"
         "   int ri = (index % mod);"
         "   res[index] = (ri * ri) % mod;"
         "}"
         " "
         "kernel void kern2(global unsigned int *res, unsigned int mod) {"
+        "   size_t unused_sum = 0;"
+        "   size_t i = 0; "
+        "   for (i = 0; i < 4000; i++) { "
+        "       unused_sum += i;"
+        "   } "
         "   size_t index = get_global_id(0);"
         "   int ri = (index % mod);"
         "   int ri2 = (ri * ri) % mod;"
@@ -137,13 +147,13 @@ def test_async_submit():
         "   global unsigned int *res, global unsigned int *arg1, "
         "   global unsigned int *arg2)"
         "{"
-        "  size_t index = get_global_id(0);"
-        "  size_t i = 0; "
-        "  size_t unused_sum = 0;"
-        "  for (i = 0; i < 4000; i++) { "
+        "   size_t index = get_global_id(0);"
+        "   size_t i = 0; "
+        "   size_t unused_sum = 0;"
+        "   for (i = 0; i < 4000; i++) { "
         "       unused_sum += i;"
-        "  } "
-        "  res[index] = "
+        "   } "
+        "   res[index] = "
         "      (arg1[index] < arg2[index]) ? arg1[index] : arg2[index];"
         "}"
     )
@@ -157,61 +167,68 @@ def test_async_submit():
     assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
 
     status_complete = dpctl.event_status_type.complete
-    n = 1024 * 1024 * 4
+    n = 256 * 1024
     X = dpt.empty((3, n), dtype="u4", usm_type="device", sycl_queue=q)
     first_row = dpctl_mem.as_usm_memory(X[0])
     second_row = dpctl_mem.as_usm_memory(X[1])
     third_row = dpctl_mem.as_usm_memory(X[2])
 
-    e1 = q.submit(
-        kern1Kernel,
-        [
-            first_row,
-            ctypes.c_uint(17),
-        ],
-        [
-            n,
-        ],
-    )
-    e2 = q.submit(
-        kern2Kernel,
-        [
-            second_row,
-            ctypes.c_uint(27),
-        ],
-        [
-            n,
-        ],
-    )
-    e3 = q.submit(
-        kern3Kernel,
-        [third_row, first_row, second_row],
-        [
-            n,
-        ],
-        None,
-        [e1, e2],
-    )
-    e3_st = e3.execution_status
-    e2_st = e2.execution_status
-    e1_st = e1.execution_status
-    assert not all(
-        [
-            e == status_complete
-            for e in (
-                e1_st,
-                e2_st,
-                e3_st,
-            )
-        ]
-    )
+    p1, p2 = 17, 27
 
-    e3.wait()
+    async_detected = False
+    for _ in range(5):
+        e1 = q.submit(
+            kern1Kernel,
+            [
+                first_row,
+                ctypes.c_uint(p1),
+            ],
+            [
+                n,
+            ],
+        )
+        e2 = q.submit(
+            kern2Kernel,
+            [
+                second_row,
+                ctypes.c_uint(p2),
+            ],
+            [
+                n,
+            ],
+        )
+        e3 = q.submit(
+            kern3Kernel,
+            [third_row, first_row, second_row],
+            [
+                n,
+            ],
+            None,
+            [e1, e2],
+        )
+        e3_st = e3.execution_status
+        e2_st = e2.execution_status
+        e1_st = e1.execution_status
+        if not all(
+            [
+                e == status_complete
+                for e in (
+                    e1_st,
+                    e2_st,
+                    e3_st,
+                )
+            ]
+        ):
+            async_detected = True
+            e3.wait()
+            break
+
+    assert async_detected, "No evidence of async submission detected, unlucky?"
     Xnp = dpt.asnumpy(X)
     Xref = np.empty((3, n), dtype="u4")
     for i in range(n):
-        Xref[0, i] = (i * i) % 17
-        Xref[1, i] = (i * i * i) % 27
+        Xref[0, i] = (i * i) % p1
+        Xref[1, i] = (i * i * i) % p2
         Xref[2, i] = min(Xref[0, i], Xref[1, i])
 
     assert np.array_equal(Xnp, Xref)
