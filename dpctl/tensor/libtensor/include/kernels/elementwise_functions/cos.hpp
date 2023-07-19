@@ -92,8 +92,8 @@ template <typename argT, typename resT> struct CosFunctor
              * The sign of 0 in the result is unspecified.  Choice = normally
              * the same as d(NaN).
              */
-            if (x == 0 && !yfinite) {
-                const realT res_im = std::copysign(0, x * (y - y));
+            if (x == realT(0) && !yfinite) {
+                const realT res_im = std::copysign(realT(0), x * (y - y));
                 return resT{y - y, res_im};
             }
 
@@ -103,8 +103,8 @@ template <typename argT, typename resT> struct CosFunctor
              * cosh(NaN +- I 0)   = d(NaN) + I sign(d(NaN, +-0))0.
              * The sign of 0 in the result is unspecified.
              */
-            if (y == 0 && !xfinite) {
-                const realT res_im = std::copysign(0, x) * y;
+            if (y == realT(0) && !xfinite) {
+                const realT res_im = std::copysign(realT(0), x) * y;
                 return resT{x * x, res_im};
             }
 

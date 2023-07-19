@@ -88,8 +88,8 @@ template <typename argT, typename resT> struct SinhFunctor
              * The sign of 0 in the result is unspecified.  Choice = normally
              * the same as d(NaN).
              */
-            if (x == 0 && !yfinite) {
-                const realT res_re = std::copysign(0, x * (y - y));
+            if (x == realT(0) && !yfinite) {
+                const realT res_re = std::copysign(realT(0), x * (y - y));
                 return resT{res_re, y - y};
             }
 
@@ -98,11 +98,11 @@ template <typename argT, typename resT> struct SinhFunctor
              *
              * sinh(NaN +- I 0)   = d(NaN) + I +-0.
              */
-            if (y == 0 && !xfinite) {
+            if (y == realT(0) && !xfinite) {
                 if (std::isnan(x)) {
                     return resT{x, y};
                 }
-                const realT res_im = std::copysign(0, y);
+                const realT res_im = std::copysign(realT(0), y);
                 return resT{x, res_im};
             }
 

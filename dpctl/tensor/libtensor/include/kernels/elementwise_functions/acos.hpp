@@ -80,8 +80,8 @@ template <typename argT, typename resT> struct AcosFunctor
                     return resT{x + x, -y};
                 }
                 /* acos(0 + I*NaN) = PI/2 + I*NaN with inexact */
-                if (x == 0) {
-                    const realT res_re = std::atan(1) * 2; // PI/2
+                if (x == realT(0)) {
+                    const realT res_re = std::atan(realT(1)) * 2; // PI/2
                     return resT{res_re, y + y};
                 }
                 /*
@@ -96,13 +96,14 @@ template <typename argT, typename resT> struct AcosFunctor
              * For large x or y including acos(+-Inf + I*+-Inf)
              */
             const realT RECIP_EPSILON =
-                1.0 / std::numeric_limits<realT>::epsilon();
+                realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
-                const realT wx = std::real(std::log(in));
-                const realT wy = std::imag(std::log(in));
+                argT log_in = std::log(in);
+                const realT wx = std::real(log_in);
+                const realT wy = std::imag(log_in);
                 const realT rx = std::abs(wy);
-                realT ry = wx + std::log(2);
-                if (std::signbit(y) == 0) {
+                realT ry = wx + std::log(realT(2));
+                if (!std::signbit(y)) {
                     ry = -ry;
                 }
                 return resT{rx, ry};

@@ -79,7 +79,7 @@ template <typename argT, typename resT> struct AsinhFunctor
                     return resT{y, x + x};
                 }
                 /* asinh(NaN + I*0) = NaN + I*0 */
-                if (y == 0) {
+                if (y == realT(0)) {
                     return resT{x + x, y};
                 }
                 /*
@@ -99,19 +99,11 @@ template <typename argT, typename resT> struct AsinhFunctor
              * O(y/in^3) as in -> infinity, uniformly in y
              */
             const realT RECIP_EPSILON =
-                1.0 / std::numeric_limits<realT>::epsilon();
+                realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
-                realT wx, wy;
-                if (std::signbit(x) == 0) {
-                    wx = std::real(std::log(in));
-                    wy = std::imag(std::log(in));
-                    wx += std::log(2);
-                }
-                else {
-                    wx = std::real(std::log(-in));
-                    wy = std::imag(std::log(-in));
-                    wx += std::log(2);
-                }
+                resT log_in = (std::signbit(x)) ? std::log(-in) : std::log(in);
+                realT wx = std::real(log_in) + std::log(realT(2));
+                realT wy = std::imag(log_in);
                 const realT res_re = std::copysign(wx, x);
                 const realT res_im = std::copysign(wy, y);
                 return resT{res_re, res_im};

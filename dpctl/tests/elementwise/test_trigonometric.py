@@ -64,7 +64,9 @@ def test_trig_real_contig(np_call, dpt_call, dtype):
     n_seq = 100
     n_rep = 137
     if np_call in _trig_funcs:
-        Xnp = np.linspace(-np.pi / 4, np.pi / 4, num=n_seq, dtype=dtype)
+        Xnp = np.linspace(
+            -np.pi / 2 * 0.99, np.pi / 2 * 0.99, num=n_seq, dtype=dtype
+        )
     if np_call == np.arctan:
         Xnp = np.linspace(-100.0, 100.0, num=n_seq, dtype=dtype)
     else:
@@ -236,7 +238,7 @@ def test_trig_real_strided(np_call, dpt_call, dtype):
 
     np.random.seed(42)
     strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = [2, 4, 6, 8, 9, 24, 72]
+    sizes = [2, 3, 4, 6, 8, 9, 24, 50, 72]
     tol = 8 * dpt.finfo(dtype).resolution
 
     low = -100.0
@@ -244,6 +246,9 @@ def test_trig_real_strided(np_call, dpt_call, dtype):
     if np_call in [np.arccos, np.arcsin]:
         low = -1.0
         high = 1.0
+    elif np_call in [np.tan]:
+        low = -np.pi / 2 * (0.99)
+        high = np.pi / 2 * (0.99)
 
     for ii in sizes:
         Xnp = np.random.uniform(low=low, high=high, size=ii)

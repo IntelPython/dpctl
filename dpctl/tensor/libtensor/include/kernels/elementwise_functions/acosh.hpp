@@ -75,7 +75,7 @@ template <typename argT, typename resT> struct AcoshFunctor
             const realT x = std::real(in);
             const realT y = std::imag(in);
             const realT RECIP_EPSILON =
-                1.0 / std::numeric_limits<realT>::epsilon();
+                realT(1) / std::numeric_limits<realT>::epsilon();
             resT acos_in;
             if (std::isnan(x) || std::isnan(y)) {
                 /* acos(+-Inf + I*NaN) = NaN + I*opt(-)Inf */
@@ -88,7 +88,7 @@ template <typename argT, typename resT> struct AcoshFunctor
                     acos_in = resT{x + x, -y};
                 }
                 /* acos(0 + I*NaN) = PI/2 + I*NaN with inexact */
-                else if (x == 0) {
+                else if (x == realT(0)) {
                     const realT res_re = std::atan(1) * 2; // PI/2
                     acos_in = resT{res_re, y + y};
                 }
@@ -110,8 +110,8 @@ template <typename argT, typename resT> struct AcoshFunctor
                 const realT wx = std::real(std::log(in));
                 const realT wy = std::imag(std::log(in));
                 const realT rx = std::abs(wy);
-                realT ry = wx + std::log(2);
-                if (std::signbit(y) == 0) {
+                realT ry = wx + std::log(realT(2));
+                if (!std::signbit(y)) {
                     ry = -ry;
                 }
                 acos_in = resT{rx, ry};

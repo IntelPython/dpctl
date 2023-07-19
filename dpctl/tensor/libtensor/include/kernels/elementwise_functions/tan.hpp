@@ -95,12 +95,12 @@ template <typename argT, typename resT> struct TanFunctor
             if (!std::isfinite(x)) {
                 if (std::isnan(x)) {
                     const realT tanh_re = x;
-                    const realT tanh_im = (y == 0 ? y : x * y);
+                    const realT tanh_im = (y == realT(0) ? y : x * y);
                     return resT{tanh_im, -tanh_re};
                 }
-                const realT tanh_re = std::copysign(1.0, x);
+                const realT tanh_re = std::copysign(realT(1), x);
                 const realT tanh_im = std::copysign(
-                    0.0, std::isinf(y) ? y : std::sin(y) * std::cos(y));
+                    realT(0), std::isinf(y) ? y : std::sin(y) * std::cos(y));
                 return resT{tanh_im, -tanh_re};
             }
             /*
@@ -110,7 +110,7 @@ template <typename argT, typename resT> struct TanFunctor
              * tanh(0 +- i Inf) = 0 + i NaN
              */
             if (!std::isfinite(y)) {
-                if (x == 0) {
+                if (x == realT(0)) {
                     return resT{y - y, x};
                 }
                 return resT{y - y, y - y};

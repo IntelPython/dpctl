@@ -74,15 +74,15 @@ template <typename argT, typename resT> struct AtanhFunctor
             if (std::isnan(x) || std::isnan(y)) {
                 /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
                 /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
-                if (std::isinf(x) || x == 0) {
-                    const realT res_re = std::copysign(0, x);
+                if (std::isinf(x) || x == realT(0)) {
+                    const realT res_re = std::copysign(realT(0), x);
                     return resT{res_re, y + y};
                 }
                 /* atanh(NaN + I*+-Inf) = sign(NaN)0 + I*+-PI/2 */
                 if (std::isinf(y)) {
-                    const realT res_re = std::copysign(0, x);
+                    const realT res_re = std::copysign(realT(0), x);
                     const realT res_im =
-                        std::copysign(std::atan(1) * 2, y); // PI/2
+                        std::copysign(std::atan(realT(1)) * 2, y); // PI/2
                     return resT{res_re, res_im};
                 }
                 /*
@@ -101,10 +101,10 @@ template <typename argT, typename resT> struct AtanhFunctor
              * input.
              */
             const realT RECIP_EPSILON =
-                1.0 / std::numeric_limits<realT>::epsilon();
+                realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
-                const realT res_re = 0.0;
-                const realT res_im = std::copysign(std::atan(1) * 2, y);
+                const realT res_re = realT(0);
+                const realT res_im = std::copysign(std::atan(realT(1)) * 2, y);
                 return resT{res_re, res_im};
             }
             /* ordinary cases */
