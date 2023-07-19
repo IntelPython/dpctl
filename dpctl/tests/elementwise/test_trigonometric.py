@@ -124,7 +124,7 @@ def test_trig_usm_type(np_call, dpt_call, usm_type):
     q = get_queue_or_skip()
 
     arg_dt = np.dtype("f4")
-    input_shape = (2, 2, 2, 10)
+    input_shape = (10, 10, 10, 10)
     X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
     if np_call in _trig_funcs:
         X[..., 0::2] = np.pi / 6
@@ -141,8 +141,7 @@ def test_trig_usm_type(np_call, dpt_call, usm_type):
     assert Y.sycl_queue == X.sycl_queue
     assert Y.flags.c_contiguous
 
-    expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y = np_call(np.float32(X))
+    expected_Y = np_call(dpt.asnumpy(X))
     tol = 8 * dpt.finfo(Y.dtype).resolution
     assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
