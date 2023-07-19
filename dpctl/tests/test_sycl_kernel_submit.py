@@ -167,7 +167,9 @@ def test_async_submit():
     assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
 
     status_complete = dpctl.event_status_type.complete
-    n = 256 * 1024
+    # choose input size based on capability of the device
+    f = q.sycl_device.max_work_group_size
+    n = f * 1024
     X = dpt.empty((3, n), dtype="u4", usm_type="device", sycl_queue=q)
     first_row = dpctl_mem.as_usm_memory(X[0])
     second_row = dpctl_mem.as_usm_memory(X[1])
