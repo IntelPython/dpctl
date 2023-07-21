@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data-parallel Control (dpctl) 0.14.5dev0+9.g24688d956 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev0+24.gdc0556f8e documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -41,10 +41,10 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.5dev0+9.g24688d956
+                0.14.6dev0+24.gdc0556f8e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -70,7 +70,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -305,6 +305,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assumes src and dst have the same shape.&quot;&quot;&quot;</span>
     <span class="c1"># check that memory regions do not overlap</span>
     <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">_pointer</span> <span class="o">==</span> <span class="n">dst</span><span class="o">.</span><span class="n">_pointer</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">src</span> <span class="ow">is</span> <span class="n">dst</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">strides</span> <span class="o">==</span> <span class="n">dst</span><span class="o">.</span><span class="n">strides</span> <span class="ow">and</span> <span class="n">src</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dst</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span>
         <span class="n">_copy_overlapping</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span>
         <span class="k">return</span>
 
