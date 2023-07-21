@@ -66,23 +66,33 @@ template <typename argT, typename resT> struct CosFunctor
     resT operator()(const argT &in)
     {
         if constexpr (is_complex<argT>::value) {
+            using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
+            realT const &in_re = std::real(in);
+            realT const &in_im = std::imag(in);
+
+            const bool in_re_finite = std::isfinite(in_re);
+            const bool in_im_finite = std::isfinite(in_im);
+
             /*
              * Handle the nearly-non-exceptional cases where
              * real and imaginary parts of input are finite.
              */
-            if (std::isfinite(std::real(in)) && std::isfinite(std::imag(in))) {
+            if (in_re_finite && in_im_finite) {
                 return std::cos(in);
             }
 
-            using realT = typename argT::value_type;
             /*
              * since cos(in) = cosh(I * in), for special cases,
              * we return cosh(I * in).
              */
-            const realT x = -std::imag(in);
-            const realT y = std::real(in);
-            const bool xfinite = std::isfinite(x);
-            const bool yfinite = std::isfinite(y);
+            const realT x = -in_im;
+            const realT y = in_re;
+
+            const bool xfinite = in_im_finite;
+            const bool yfinite = in_re_finite;
             /*
              * cosh(+-0 +- I Inf) = dNaN + I sign(d(+-0, dNaN))0.
              * The sign of 0 in the result is unspecified.  Choice = normally
@@ -93,8 +103,9 @@ template <typename argT, typename resT> struct CosFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT res_im = std::copysign(realT(0), x * (y - y));
-                return resT{y - y, res_im};
+                const realT y_m_y = (y - y);
+                const realT res_im = std::copysign(realT(0), x * y_m_y);
+                return resT{y_m_y, res_im};
             }
 
             /*
@@ -114,7 +125,8 @@ template <typename argT, typename resT> struct CosFunctor
              * cosh(x + I NaN) = d(NaN) + I d(NaN).
              */
             if (xfinite && !yfinite) {
-                return resT{y - y, x * (y - y)};
+                const realT y_m_y = (y - y);
+                return resT{y_m_y, x * y_m_y};
             }
 
             /*
@@ -127,7 +139,7 @@ template <typename argT, typename resT> struct CosFunctor
              */
             if (std::isinf(x)) {
                 if (!yfinite) {
-                    return resT{x * x, x * (y - y)};
+                    return resT{x * x, std::copysign(q_nan, x)};
                 }
                 return resT{(x * x) * std::cos(y), x * std::sin(y)};
             }
@@ -139,7 +151,7 @@ template <typename argT, typename resT> struct CosFunctor
              *
              * cosh(NaN + I y)    = d(NaN) + I d(NaN).
              */
-            return resT{(x * x) * (y - y), (x + x) * (y - y)};
+            return resT{(x * x) * q_nan, (x + x) * q_nan};
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

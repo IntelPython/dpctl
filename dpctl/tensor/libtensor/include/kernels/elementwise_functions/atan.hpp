@@ -68,6 +68,8 @@ template <typename argT, typename resT> struct AtanFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
             /*
              * atan(in) = I * conj( atanh(I * conj(in)) )
              * so we first calculate w = atanh(I * conj(in)) with
@@ -77,49 +79,54 @@ template <typename argT, typename resT> struct AtanFunctor
              */
             const realT x = std::imag(in);
             const realT y = std::real(in);
-            if (std::isnan(x) || std::isnan(y)) {
-                /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
-                /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
-                if (std::isinf(x) || x == realT(0)) {
-                    const realT atan_re = std::copysign(realT(0), x);
-                    const realT atan_im = y + y;
-                    return resT{atan_im, atan_re};
-                }
-                /* atanh(NaN + I*+-Inf) = sign(NaN)0 + I*+-PI/2 */
+            if (std::isnan(x)) {
+                /* atanh(NaN + I*+-Inf) = sign(NaN)*0 + I*+-Pi/2 */
                 if (std::isinf(y)) {
-                    const realT atan_re = std::copysign(realT(0), x);
-                    const realT atan_im =
-                        std::copysign(std::atan(realT(1)) * 2, y); // PI/2
-                    return resT{atan_im, atan_re};
+                    const realT pi_half = std::atan(realT(1)) * 2;
+
+                    const realT atanh_re = std::copysign(realT(0), x);
+                    const realT atanh_im = std::copysign(pi_half, y);
+                    return resT{atanh_im, atanh_re};
                 }
                 /*
                  * All other cases involving NaN return NaN + I*NaN.
-                 * C99 leaves it optional whether to raise invalid if one of
-                 * the arguments is not NaN, so we opt not to raise it.
                  */
-                return resT{std::numeric_limits<realT>::quiet_NaN(),
-                            std::numeric_limits<realT>::quiet_NaN()};
+                return resT{q_nan, q_nan};
+            }
+            else if (std::isnan(y)) {
+                /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
+                if (std::isinf(x)) {
+                    const realT atanh_re = std::copysign(realT(0), x);
+                    const realT atanh_im = q_nan;
+                    return resT{atanh_im, atanh_re};
+                }
+                /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
+                if (x == realT(0)) {
+                    return resT{q_nan, x};
+                }
+                /*
+                 * All other cases involving NaN return NaN + I*NaN.
+                 */
+                return resT{q_nan, q_nan};
             }
 
             /*
              * For large x or y including
              * atanh(+-Inf + I*+-Inf) = 0 + I*+-PI/2
-             * The sign of PI/2 depends on the sign of imaginary part of the
+             * The sign of pi/2 depends on the sign of imaginary part of the
              * input.
              */
-            const realT RECIP_EPSILON =
+            constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
-            if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
+            if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
+                const realT pi_half = std::atan(realT(1)) * 2;
+
                 const realT atanh_re = realT(0);
-                const realT atanh_im =
-                    std::copysign(std::atan(realT(1)) * 2, y);
+                const realT atanh_im = std::copysign(pi_half, y);
                 return resT{atanh_im, atanh_re};
             }
             /* ordinary cases */
-            const resT z = {x, y};
-            const realT atanh_re = std::real(std::atanh(z));
-            const realT atanh_im = std::imag(std::atanh(z));
-            return resT{atanh_im, atanh_re};
+            return std::atan(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

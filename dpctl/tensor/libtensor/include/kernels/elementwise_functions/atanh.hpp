@@ -68,30 +68,39 @@ template <typename argT, typename resT> struct AtanhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
             const realT x = std::real(in);
             const realT y = std::imag(in);
 
-            if (std::isnan(x) || std::isnan(y)) {
-                /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
-                /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
-                if (std::isinf(x) || x == realT(0)) {
-                    const realT res_re = std::copysign(realT(0), x);
-                    return resT{res_re, y + y};
-                }
+            if (std::isnan(x)) {
                 /* atanh(NaN + I*+-Inf) = sign(NaN)0 + I*+-PI/2 */
                 if (std::isinf(y)) {
+                    const realT pi_half = std::atan(realT(1)) * 2;
+
                     const realT res_re = std::copysign(realT(0), x);
-                    const realT res_im =
-                        std::copysign(std::atan(realT(1)) * 2, y); // PI/2
+                    const realT res_im = std::copysign(pi_half, y);
                     return resT{res_re, res_im};
                 }
                 /*
                  * All other cases involving NaN return NaN + I*NaN.
-                 * C99 leaves it optional whether to raise invalid if one of
-                 * the arguments is not NaN, so we opt not to raise it.
                  */
-                return resT{std::numeric_limits<realT>::quiet_NaN(),
-                            std::numeric_limits<realT>::quiet_NaN()};
+                return resT{q_nan, q_nan};
+            }
+            else if (std::isnan(y)) {
+                /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
+                if (std::isinf(x)) {
+                    const realT res_re = std::copysign(realT(0), x);
+                    return resT{res_re, q_nan};
+                }
+                /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
+                if (x == realT(0)) {
+                    return resT{x, q_nan};
+                }
+                /*
+                 * All other cases involving NaN return NaN + I*NaN.
+                 */
+                return resT{q_nan, q_nan};
             }
 
             /*
@@ -103,8 +112,10 @@ template <typename argT, typename resT> struct AtanhFunctor
             const realT RECIP_EPSILON =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
+                const realT pi_half = std::atan(realT(1)) * 2;
+
                 const realT res_re = realT(0);
-                const realT res_im = std::copysign(std::atan(realT(1)) * 2, y);
+                const realT res_im = std::copysign(pi_half, y);
                 return resT{res_re, res_im};
             }
             /* ordinary cases */

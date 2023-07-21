@@ -67,8 +67,12 @@ template <typename argT, typename resT> struct CoshFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
             const realT x = std::real(in);
             const realT y = std::imag(in);
+
             const bool xfinite = std::isfinite(x);
             const bool yfinite = std::isfinite(y);
 
@@ -90,8 +94,8 @@ template <typename argT, typename resT> struct CoshFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT res_im = std::copysign(realT(0), x * (y - y));
-                return resT{y - y, res_im};
+                const realT res_im = std::copysign(realT(0), x * q_nan);
+                return resT{q_nan, res_im};
             }
 
             /*
@@ -111,7 +115,7 @@ template <typename argT, typename resT> struct CoshFunctor
              * cosh(x + I NaN) = d(NaN) + I d(NaN).
              */
             if (xfinite && !yfinite) {
-                return resT{y - y, x * (y - y)};
+                return resT{q_nan, x * q_nan};
             }
 
             /*
@@ -124,7 +128,7 @@ template <typename argT, typename resT> struct CoshFunctor
              */
             if (std::isinf(x)) {
                 if (!yfinite) {
-                    return resT{x * x, x * (y - y)};
+                    return resT{x * x, x * q_nan};
                 }
                 return resT{(x * x) * std::cos(y), x * std::sin(y)};
             }

@@ -67,8 +67,10 @@ template <typename argT, typename resT> struct SinhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
+
             const realT x = std::real(in);
             const realT y = std::imag(in);
+
             const bool xfinite = std::isfinite(x);
             const bool yfinite = std::isfinite(y);
 

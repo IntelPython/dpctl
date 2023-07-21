@@ -67,28 +67,32 @@ template <typename argT, typename resT> struct AsinhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
             const realT x = std::real(in);
             const realT y = std::imag(in);
-            if (std::isnan(x) || std::isnan(y)) {
-                /* asinh(+-Inf + I*NaN) = +-Inf + I*NaN */
-                if (std::isinf(x)) {
-                    return resT{x, y + y};
-                }
+
+            if (std::isnan(x)) {
                 /* asinh(NaN + I*+-Inf) = opt(+-)Inf + I*NaN */
                 if (std::isinf(y)) {
-                    return resT{y, x + x};
+                    return resT{y, q_nan};
                 }
                 /* asinh(NaN + I*0) = NaN + I*0 */
                 if (y == realT(0)) {
-                    return resT{x + x, y};
+                    return resT{q_nan, y};
                 }
-                /*
-                 * All other cases involving NaN return NaN + I*NaN.
-                 * C99 leaves it optional whether to raise invalid if one of
-                 * the arguments is not NaN, so we opt not to raise it.
-                 */
-                return resT{std::numeric_limits<realT>::quiet_NaN(),
-                            std::numeric_limits<realT>::quiet_NaN()};
+                /* All other cases involving NaN return NaN + I*NaN. */
+                return resT{q_nan, q_nan};
+            }
+
+            if (std::isnan(y)) {
+                /* asinh(+-Inf + I*NaN) = +-Inf + I*NaN */
+                if (std::isinf(x)) {
+                    return resT{x, q_nan};
+                }
+                /* All other cases involving NaN return NaN + I*NaN. */
+                return resT{q_nan, q_nan};
             }
 
             /*
@@ -98,9 +102,10 @@ template <typename argT, typename resT> struct AsinhFunctor
              * because Im(asinh(in)) = sign(x)*atan2(sign(x)*y, fabs(x)) +
              * O(y/in^3) as in -> infinity, uniformly in y
              */
-            const realT RECIP_EPSILON =
+            constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
-            if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
+
+            if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
                 resT log_in = (std::signbit(x)) ? std::log(-in) : std::log(in);
                 realT wx = std::real(log_in) + std::log(realT(2));
                 realT wy = std::imag(log_in);
@@ -108,6 +113,7 @@ template <typename argT, typename resT> struct AsinhFunctor
                 const realT res_im = std::copysign(wy, y);
                 return resT{res_re, res_im};
             }
+
             /* ordinary cases */
             return std::asinh(in);
         }

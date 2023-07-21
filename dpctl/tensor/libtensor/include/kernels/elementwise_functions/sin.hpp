@@ -65,24 +65,32 @@ template <typename argT, typename resT> struct SinFunctor
     resT operator()(const argT &in)
     {
         if constexpr (is_complex<argT>::value) {
+            using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
+            realT const &in_re = std::real(in);
+            realT const &in_im = std::imag(in);
+
+            const bool in_re_finite = std::isfinite(in_re);
+            const bool in_im_finite = std::isfinite(in_im);
             /*
              * Handle the nearly-non-exceptional cases where
              * real and imaginary parts of input are finite.
              */
-            if (std::isfinite(std::real(in)) && std::isfinite(std::imag(in))) {
+            if (in_re_finite && in_im_finite) {
                 return std::sin(in);
             }
 
-            using realT = typename argT::value_type;
             /*
              * since sin(in) = -I * sinh(I * in), for special cases,
              * we calculate real and imaginary parts of z = sinh(I * in) and
              * then return { imag(z) , -real(z) } which is sin(in).
              */
-            const realT x = -std::imag(in);
-            const realT y = std::real(in);
-            const bool xfinite = std::isfinite(x);
-            const bool yfinite = std::isfinite(y);
+            const realT x = -in_im;
+            const realT y = in_re;
+            const bool xfinite = in_im_finite;
+            const bool yfinite = in_re_finite;
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.
              * The sign of 0 in the result is unspecified.  Choice = normally
@@ -93,8 +101,8 @@ template <typename argT, typename resT> struct SinFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT sinh_re = std::copysign(realT(0), x * (y - y));
-                const realT sinh_im = y - y;
+                const realT sinh_im = q_nan;
+                const realT sinh_re = std::copysign(realT(0), x * sinh_im);
                 return resT{sinh_im, -sinh_re};
             }
 
@@ -120,8 +128,8 @@ template <typename argT, typename resT> struct SinFunctor
              * sinh(x + I NaN) = d(NaN) + I d(NaN).
              */
             if (xfinite && !yfinite) {
-                const realT sinh_re = y - y;
-                const realT sinh_im = x * (y - y);
+                const realT sinh_re = q_nan;
+                const realT sinh_im = x * sinh_re;
                 return resT{sinh_im, -sinh_re};
             }
 
@@ -137,7 +145,7 @@ template <typename argT, typename resT> struct SinFunctor
              *
              * sinh(+-Inf + I y)   = +-Inf cos(y) + I Inf sin(y)
              */
-            if (!xfinite && !std::isnan(x)) {
+            if (std::isinf(x)) {
                 if (!yfinite) {
                     const realT sinh_re = -x * x;
                     const realT sinh_im = x * (y - y);
@@ -156,8 +164,9 @@ template <typename argT, typename resT> struct SinFunctor
              *
              * sinh(NaN + I y)    = d(NaN) + I d(NaN).
              */
-            const realT sinh_re = (x * x) * (y - y);
-            const realT sinh_im = (x + x) * (y - y);
+            const realT y_m_y = (y - y);
+            const realT sinh_re = (x * x) * y_m_y;
+            const realT sinh_im = (x + x) * y_m_y;
             return resT{sinh_im, -sinh_re};
         }
         else {
