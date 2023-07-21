@@ -123,6 +123,10 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
 
     res_usm_type = arr.usm_type
     if arr.size == 0:
+        if keepdims:
+            res_shape = res_shape + (1,) * red_nd
+            inv_perm = sorted(range(nd), key=lambda d: perm[d])
+            res_shape = tuple(res_shape[i] for i in inv_perm)
         return dpt.zeros(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )

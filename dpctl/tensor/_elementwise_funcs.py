@@ -114,7 +114,30 @@ add = BinaryElementwiseFunc(
 # FIXME: implement B07
 
 # U09: ==== CEIL          (x)
-# FIXME: implement U09
+_ceil_docstring = """
+ceil(x, out=None, order='K')
+
+Returns the ceiling for each element `x_i` for input array `x`.
+The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise ceiling of input array.
+        The returned array has the same data type as `x`.
+"""
+
+ceil = UnaryElementwiseFunc(
+    "ceil", ti._ceil_result_type, ti._ceil, _ceil_docstring
+)
 
 # U10: ==== CONJ          (x)
 _conj_docstring = """
@@ -271,7 +294,30 @@ expm1 = UnaryElementwiseFunc(
 )
 
 # U15: ==== FLOOR         (x)
-# FIXME: implement U15
+_floor_docstring = """
+floor(x, out=None, order='K')
+
+Returns the floor for each element `x_i` for input array `x`.
+The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise floor of input array.
+        The returned array has the same data type as `x`.
+"""
+
+floor = UnaryElementwiseFunc(
+    "floor", ti._floor_result_type, ti._floor, _floor_docstring
+)
 
 # B10: ==== FLOOR_DIVIDE  (x1, x2)
 _floor_divide_docstring_ = """
@@ -1031,4 +1077,29 @@ subtract = BinaryElementwiseFunc(
 # FIXME: implement U35
 
 # U36: ==== TRUNC       (x)
-# FIXME: implement U36
+_trunc_docstring = """
+trunc(x, out=None, order='K')
+
+Returns the truncated value for each element `x_i` for input array `x`.
+The truncated value of the scalar `x` is the nearest integer i which is
+ closer to zero than `x` is. In short, the fractional part of the
+ signed number `x` is discarded.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise truncated value of input array.
+        The returned array has the same data type as `x`.
+"""
+
+trunc = UnaryElementwiseFunc(
+    "trunc", ti._trunc_result_type, ti._trunc, _trunc_docstring
+)
