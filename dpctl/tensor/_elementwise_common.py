@@ -386,10 +386,11 @@ class BinaryElementwiseFunc:
     def __call__(self, o1, o2, out=None, order="K"):
         # FIXME: replace with check against base array
         # when views can be identified
-        if o1 is out:
-            return self._inplace(o1, o2)
-        elif o2 is out:
-            return self._inplace(o2, o1)
+        if self.binary_inplace_fn_:
+            if o1 is out:
+                return self._inplace(o1, o2)
+            elif o2 is out:
+                return self._inplace(o2, o1)
 
         if order not in ["K", "C", "F", "A"]:
             order = "K"
