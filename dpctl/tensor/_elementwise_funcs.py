@@ -17,6 +17,7 @@
 import dpctl.tensor._tensor_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
+from ._type_utils import _acceptance_fn_divide
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = """
@@ -215,7 +216,11 @@ Returns:
 """
 
 divide = BinaryElementwiseFunc(
-    "divide", ti._divide_result_type, ti._divide, _divide_docstring_
+    "divide",
+    ti._divide_result_type,
+    ti._divide,
+    _divide_docstring_,
+    acceptance_fn=_acceptance_fn_divide,
 )
 
 # B09: ==== EQUAL         (x1, x2)
