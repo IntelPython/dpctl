@@ -62,22 +62,25 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        return std::log(std::exp(in1) + std::exp(in2));
+        resT max = std::max<resT>(in1, in2);
+        resT min = std::min<resT>(in1, in2);
+        return max + std::log(resT(1) + std::exp(min - max));
     }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
-        auto res = sycl::log(sycl::exp(in1) + sycl::exp(in2));
-        if constexpr (std::is_same_v<resT,
-                                     typename decltype(res)::element_type>) {
-            return res;
+        sycl::vec<resT, vec_sz> res;
+        auto diff = in1 - in2;
+
+#pragma unroll
+        for (int i = 0; i < vec_sz; ++i) {
+            resT max = std::max<resT>(in1[i], in2[i]);
+            res[i] = max + std::log(resT(1) + std::exp(std::abs(diff[i])));
         }
-        else {
-            return vec_cast<resT, typename decltype(res)::element_type, vec_sz>(
-                res);
-        }
+
+        return res;
     }
 };
 
