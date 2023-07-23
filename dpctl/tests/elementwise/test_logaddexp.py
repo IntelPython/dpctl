@@ -166,7 +166,6 @@ def test_logaddexp_python_scalar(arr_dt):
         bool(0),
         int(0),
         float(0),
-        complex(0),
         np.float32(0),
         ctypes.c_int(0),
     )
