@@ -28,6 +28,7 @@
 // Ordering of includes is important here. dpctl_sycl_types defines types
 // used by dpctl's Python C-API headers.
 #include "syclinterface/dpctl_sycl_types.h"
+#define CYTHON_EXTERN_C extern "C"
 #include "../_sycl_device.h"
 #include "../_sycl_device_api.h"
 #include "../_sycl_context.h"
