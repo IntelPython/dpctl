@@ -69,6 +69,9 @@ template <typename argT, typename resT> struct TanhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
             const realT x = std::real(in);
             const realT y = std::imag(in);
             /*
@@ -89,7 +92,7 @@ template <typename argT, typename resT> struct TanhFunctor
              */
             if (!std::isfinite(x)) {
                 if (std::isnan(x)) {
-                    return resT{x, (y == realT(0) ? y : x * y)};
+                    return resT{q_nan, (y == realT(0) ? y : q_nan)};
                 }
                 const realT res_re = std::copysign(realT(1), x);
                 const realT res_im = std::copysign(
@@ -104,9 +107,9 @@ template <typename argT, typename resT> struct TanhFunctor
              */
             if (!std::isfinite(y)) {
                 if (x == realT(0)) {
-                    return resT{x, y - y};
+                    return resT{x, q_nan};
                 }
-                return resT{y - y, y - y};
+                return resT{q_nan, q_nan};
             }
             /* ordinary cases */
             return std::tanh(in);

@@ -69,6 +69,8 @@ template <typename argT, typename resT> struct TanFunctor
         if constexpr (is_complex<argT>::value) {
 
             using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
             /*
              * since tan(in) = -I * tanh(I * in), for special cases,
              * we calculate real and imaginary parts of z = tanh(I * in) and
@@ -111,9 +113,9 @@ template <typename argT, typename resT> struct TanFunctor
              */
             if (!std::isfinite(y)) {
                 if (x == realT(0)) {
-                    return resT{y - y, x};
+                    return resT{q_nan, x};
                 }
-                return resT{y - y, y - y};
+                return resT{q_nan, q_nan};
             }
             /* ordinary cases */
             return std::tan(in);
