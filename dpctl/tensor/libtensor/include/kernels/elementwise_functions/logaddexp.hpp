@@ -64,7 +64,7 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
     {
         resT max = std::max<resT>(in1, in2);
         resT min = std::min<resT>(in1, in2);
-        return max + std::log(resT(1) + std::exp(min - max));
+        return max + std::log1p(std::exp(min - max));
     }
 
     template <int vec_sz>
@@ -77,7 +77,7 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
             resT max = std::max<resT>(in1[i], in2[i]);
-            res[i] = max + std::log(resT(1) + std::exp(std::abs(diff[i])));
+            res[i] = max + std::log1p(std::exp(std::abs(diff[i])));
         }
 
         return res;
