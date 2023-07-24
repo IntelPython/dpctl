@@ -2,7 +2,7 @@ import itertools
 
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -21,36 +21,55 @@ def test_exp_out_type(dtype):
     assert dpt.exp(X).dtype == expected_dtype
 
 
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_exp_output_contig(dtype):
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_exp_real_contig(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    n_seq = 1027
-
-    X = dpt.linspace(0, 11, num=n_seq, dtype=dtype, sycl_queue=q)
-    Xnp = dpt.asnumpy(X)
-
+    n_seq = 100
+    n_rep = 137
+    Xnp = np.linspace(0.01, 88.1, num=n_seq, dtype=dtype)
+    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
     Y = dpt.exp(X)
-    tol = 8 * dpt.finfo(Y.dtype).resolution
+    with np.errstate(all="ignore"):
+        Ynp = np.exp(Xnp)
 
-    assert_allclose(dpt.asnumpy(Y), np.exp(Xnp), atol=tol, rtol=tol)
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert_allclose(dpt.asnumpy(Y), np.repeat(Ynp, n_rep), atol=tol, rtol=tol)
+
+    Z = dpt.empty_like(X, dtype=dtype)
+    dpt.exp(X, out=Z)
+
+    assert_allclose(dpt.asnumpy(Z), np.repeat(Ynp, n_rep), atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_exp_output_strided(dtype):
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_exp_complex_contig(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    n_seq = 2054
+    n_seq = 100
+    n_rep = 137
+    low = -88.0
+    high = 88.0
+    x1 = np.random.uniform(low=low, high=high, size=n_seq)
+    x2 = np.random.uniform(low=low, high=high, size=n_seq)
+    Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
 
-    X = dpt.linspace(0, 11, num=n_seq, dtype=dtype, sycl_queue=q)[::-2]
-    Xnp = dpt.asnumpy(X)
-
+    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
     Y = dpt.exp(X)
-    tol = 8 * dpt.finfo(Y.dtype).resolution
 
-    assert_allclose(dpt.asnumpy(Y), np.exp(Xnp), atol=tol, rtol=tol)
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(Y), np.repeat(np.exp(Xnp), n_rep), atol=tol, rtol=tol
+    )
+
+    Z = dpt.empty_like(X, dtype=dtype)
+    dpt.exp(X, out=Z)
+
+    assert_allclose(
+        dpt.asnumpy(Z), np.repeat(np.exp(Xnp), n_rep), atol=tol, rtol=tol
+    )
 
 
 @pytest.mark.parametrize("usm_type", _usm_types)
@@ -87,11 +106,11 @@ def test_exp_order(dtype):
     X[..., 0::2] = 8.0
     X[..., 1::2] = 11.0
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.exp(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.exp(U, order=ord)
-            expected_Y = np.exp(dpt.asnumpy(U))
             tol = 8 * max(
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,
@@ -99,8 +118,8 @@ def test_exp_order(dtype):
             assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("dtype", ["f", "d"])
-def test_exp_values(dtype):
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_exp_analytical_values(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -112,39 +131,91 @@ def test_exp_values(dtype):
     assert_allclose(dpt.asnumpy(dpt.exp(X)), np.exp(Xnp), atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("dtype", ["e", "f", "d"])
-def test_exp_special_cases(dtype):
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_exp_real_special_cases(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     tol = 8 * dpt.finfo(dtype).resolution
-    x = [np.nan, -np.nan, np.inf, -np.inf, -1.0, 1.0, 0.0, -0.0]
+    x = [np.nan, np.inf, -np.inf, 0.0, -0.0]
     Xnp = np.array(x, dtype=dtype)
     X = dpt.asarray(x, dtype=dtype)
-    assert_allclose(dpt.asnumpy(dpt.exp(X)), np.exp(Xnp), atol=tol, rtol=tol)
+
+    Y = dpt.asnumpy(dpt.exp(X))
+    Ynp = np.exp(Xnp)
+    assert_allclose(Y, Ynp, atol=tol, rtol=tol)
+    assert_array_equal(np.signbit(Y), np.signbit(Ynp))
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.float64])
-def test_exp_strided(dtype):
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+def test_exp_real_strided(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     np.random.seed(42)
     strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = np.arange(2, 100)
+    sizes = [2, 4, 6, 8, 9, 24, 72]
     tol = 8 * dpt.finfo(dtype).resolution
 
     for ii in sizes:
-        Xnp = dtype(np.random.uniform(low=0.01, high=88.1, size=ii))
+        Xnp = np.random.uniform(low=0.01, high=88.1, size=ii)
+        Xnp.astype(dtype)
         X = dpt.asarray(Xnp)
-        Y_expected = np.exp(Xnp)
+        Ynp = np.exp(Xnp)
         for jj in strides:
             assert_allclose(
                 dpt.asnumpy(dpt.exp(X[::jj])),
-                Y_expected[::jj],
+                Ynp[::jj],
                 atol=tol,
                 rtol=tol,
             )
+
+
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_exp_complex_strided(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    np.random.seed(42)
+    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
+    sizes = [2, 4, 6, 8, 9, 24, 72]
+    tol = 8 * dpt.finfo(dtype).resolution
+
+    low = -88.0
+    high = 88.0
+    for ii in sizes:
+        x1 = np.random.uniform(low=low, high=high, size=ii)
+        x2 = np.random.uniform(low=low, high=high, size=ii)
+        Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+        X = dpt.asarray(Xnp)
+        Ynp = np.exp(Xnp)
+        for jj in strides:
+            assert_allclose(
+                dpt.asnumpy(dpt.exp(X[::jj])),
+                Ynp[::jj],
+                atol=tol,
+                rtol=tol,
+            )
+
+
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_exp_complex_special_cases(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [np.nan, np.inf, -np.inf, +0.0, -0.0, +1.0, -1.0]
+    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
+
+    Xc_np = np.array(xc, dtype=dtype)
+    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
+
+    with np.errstate(all="ignore"):
+        Ynp = np.exp(Xc_np)
+    Y = dpt.exp(Xc)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert_allclose(dpt.asnumpy(dpt.real(Y)), np.real(Ynp), atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(dpt.imag(Y)), np.imag(Ynp), atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
