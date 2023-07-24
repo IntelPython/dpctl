@@ -155,7 +155,9 @@ def test_type_utils_find_buf_dtype2():
             dev = MockDevice(fp16, fp64)
             arg1_dt = dpt.float64
             arg2_dt = dpt.complex64
-            r = tu._find_buf_dtype2(arg1_dt, arg2_dt, _denier_fn, dev)
+            r = tu._find_buf_dtype2(
+                arg1_dt, arg2_dt, _denier_fn, dev, tu._acceptance_fn_default
+            )
             assert r == (
                 None,
                 None,

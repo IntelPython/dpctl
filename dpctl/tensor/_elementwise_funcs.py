@@ -17,6 +17,7 @@
 import dpctl.tensor._tensor_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
+from ._type_utils import _acceptance_fn_divide
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = """
@@ -218,7 +219,11 @@ Returns:
 """
 
 divide = BinaryElementwiseFunc(
-    "divide", ti._divide_result_type, ti._divide, _divide_docstring_
+    "divide",
+    ti._divide_result_type,
+    ti._divide,
+    _divide_docstring_,
+    acceptance_fn=_acceptance_fn_divide,
 )
 
 # B09: ==== EQUAL         (x1, x2)
@@ -665,7 +670,32 @@ log10 = UnaryElementwiseFunc(
 )
 
 # B15: ==== LOGADDEXP   (x1, x2)
-# FIXME: implement B15
+_logaddexp_docstring_ = """
+logaddexp(x1, x2, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+logaddexp = BinaryElementwiseFunc(
+    "logaddexp", ti._logaddexp_result_type, ti._logaddexp, _logaddexp_docstring_
+)
 
 # B16: ==== LOGICAL_AND (x1, x2)
 _logical_and_docstring_ = """
@@ -1102,10 +1132,38 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
+        An array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+trunc = UnaryElementwiseFunc(
+    "trunc", ti._trunc_result_type, ti._trunc, _trunc_docstring
+)
+
+
+# B24: ==== HYPOT        (x1, x2)
+_hypot_docstring_ = """
+hypot(x1, x2, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
         An array containing the element-wise truncated value of input array.
         The returned array has the same data type as `x`.
 """
 
-trunc = UnaryElementwiseFunc(
-    "trunc", ti._trunc_result_type, ti._trunc, _trunc_docstring
+hypot = BinaryElementwiseFunc(
+    "hypot", ti._hypot_result_type, ti._hypot, _hypot_docstring_
 )
