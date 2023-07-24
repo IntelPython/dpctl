@@ -65,6 +65,7 @@
 #include "kernels/elementwise_functions/pow.hpp"
 #include "kernels/elementwise_functions/proj.hpp"
 #include "kernels/elementwise_functions/real.hpp"
+#include "kernels/elementwise_functions/round.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
 #include "kernels/elementwise_functions/square.hpp"
@@ -1627,7 +1628,37 @@ namespace impl
 // U28: ==== ROUND       (x)
 namespace impl
 {
-// FIXME: add code for U28
+
+namespace round_fn_ns = dpctl::tensor::kernels::round;
+
+static unary_contig_impl_fn_ptr_t
+    round_contig_dispatch_vector[td_ns::num_types];
+static int round_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    round_strided_dispatch_vector[td_ns::num_types];
+
+void populate_round_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = round_fn_ns;
+
+    using fn_ns::RoundContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, RoundContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(round_contig_dispatch_vector);
+
+    using fn_ns::RoundStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, RoundStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(round_strided_dispatch_vector);
+
+    using fn_ns::RoundTypeMapFactory;
+    DispatchVectorBuilder<int, RoundTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(round_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U29: ==== SIGN        (x)
@@ -3029,7 +3060,27 @@ void init_elementwise_functions(py::module_ m)
     // FIXME:
 
     // U28: ==== ROUND       (x)
-    // FIXME:
+    {
+        impl::populate_round_dispatch_vectors();
+        using impl::round_contig_dispatch_vector;
+        using impl::round_output_typeid_vector;
+        using impl::round_strided_dispatch_vector;
+
+        auto round_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, round_output_typeid_vector,
+                round_contig_dispatch_vector, round_strided_dispatch_vector);
+        };
+        m.def("_round", round_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto round_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              round_output_typeid_vector);
+        };
+        m.def("_round_result_type", round_result_type_pyapi);
+    }
 
     // U29: ==== SIGN        (x)
     // FIXME:
