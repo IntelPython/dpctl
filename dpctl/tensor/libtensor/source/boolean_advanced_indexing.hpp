@@ -68,8 +68,8 @@ py_place(dpctl::tensor::usm_ndarray dst,
 extern void populate_masked_place_dispatch_vectors(void);
 
 extern std::pair<sycl::event, sycl::event> py_nonzero(
-    dpctl::tensor::usm_ndarray cumsum,  // int64 input array, 1D, C-contiguous
-    dpctl::tensor::usm_ndarray indexes, // int64 2D output array, C-contiguous
+    dpctl::tensor::usm_ndarray cumsum,  // int32 input array, 1D, C-contiguous
+    dpctl::tensor::usm_ndarray indexes, // int32 2D output array, C-contiguous
     std::vector<py::ssize_t>
         mask_shape, // shape of array from which cumsum was computed
     sycl::queue exec_q,

@@ -393,7 +393,7 @@ size_t mask_positions_contig_impl(sycl::queue q,
         throw std::bad_alloc();
     }
     sycl::event copy_e =
-        q.copy<std::int64_t>(last_elem, last_elem_host_usm, 1, {comp_ev});
+        q.copy<cumsumT>(last_elem, last_elem_host_usm, 1, {comp_ev});
     copy_e.wait();
     size_t return_val = static_cast<size_t>(*last_elem_host_usm);
     sycl::free(last_elem_host_usm, q);
@@ -401,7 +401,16 @@ size_t mask_positions_contig_impl(sycl::queue q,
     return return_val;
 }
 
-template <typename fnT, typename T> struct MaskPositionsContigFactory
+template <typename fnT, typename T> struct MaskPositionsContigFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = mask_positions_contig_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T> struct MaskPositionsContigFactoryForInt64
 {
     fnT get()
     {
@@ -452,7 +461,7 @@ size_t mask_positions_strided_impl(sycl::queue q,
         throw std::bad_alloc();
     }
     sycl::event copy_e =
-        q.copy<std::int64_t>(last_elem, last_elem_host_usm, 1, {comp_ev});
+        q.copy<cumsumT>(last_elem, last_elem_host_usm, 1, {comp_ev});
     copy_e.wait();
     size_t return_val = static_cast<size_t>(*last_elem_host_usm);
     sycl::free(last_elem_host_usm, q);
@@ -460,7 +469,16 @@ size_t mask_positions_strided_impl(sycl::queue q,
     return return_val;
 }
 
-template <typename fnT, typename T> struct MaskPositionsStridedFactory
+template <typename fnT, typename T> struct MaskPositionsStridedFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = mask_positions_strided_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T> struct MaskPositionsStridedFactoryForInt64
 {
     fnT get()
     {
@@ -611,7 +629,18 @@ sycl::event masked_extract_some_slices_strided_impl(
     return comp_ev;
 }
 
-template <typename fnT, typename T> struct MaskExtractAllSlicesStridedFactory
+template <typename fnT, typename T>
+struct MaskExtractAllSlicesStridedFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = masked_extract_all_slices_strided_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T>
+struct MaskExtractAllSlicesStridedFactoryForInt64
 {
     fnT get()
     {
@@ -620,7 +649,18 @@ template <typename fnT, typename T> struct MaskExtractAllSlicesStridedFactory
     }
 };
 
-template <typename fnT, typename T> struct MaskExtractSomeSlicesStridedFactory
+template <typename fnT, typename T>
+struct MaskExtractSomeSlicesStridedFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = masked_extract_some_slices_strided_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T>
+struct MaskExtractSomeSlicesStridedFactoryForInt64
 {
     fnT get()
     {
@@ -763,7 +803,18 @@ sycl::event masked_place_some_slices_strided_impl(
     return comp_ev;
 }
 
-template <typename fnT, typename T> struct MaskPlaceAllSlicesStridedFactory
+template <typename fnT, typename T>
+struct MaskPlaceAllSlicesStridedFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = masked_place_all_slices_strided_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T>
+struct MaskPlaceAllSlicesStridedFactoryForInt64
 {
     fnT get()
     {
@@ -772,7 +823,18 @@ template <typename fnT, typename T> struct MaskPlaceAllSlicesStridedFactory
     }
 };
 
-template <typename fnT, typename T> struct MaskPlaceSomeSlicesStridedFactory
+template <typename fnT, typename T>
+struct MaskPlaceSomeSlicesStridedFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = masked_place_some_slices_strided_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T>
+struct MaskPlaceSomeSlicesStridedFactoryForInt64
 {
     fnT get()
     {
@@ -783,7 +845,17 @@ template <typename fnT, typename T> struct MaskPlaceSomeSlicesStridedFactory
 
 // Non-zero
 
-class non_zero_indexes_krn;
+template <typename T1, typename T2> class non_zero_indexes_krn;
+
+typedef sycl::event (*non_zero_indexes_fn_ptr_t)(
+    sycl::queue,
+    py::ssize_t,
+    py::ssize_t,
+    int,
+    const char *,
+    char *,
+    const py::ssize_t *,
+    std::vector<sycl::event> const &);
 
 template <typename indT1, typename indT2>
 sycl::event non_zero_indexes_impl(sycl::queue exec_q,
@@ -800,28 +872,29 @@ sycl::event non_zero_indexes_impl(sycl::queue exec_q,
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        cgh.parallel_for<class non_zero_indexes_krn>(
-            sycl::range<1>(iter_size), [=](sycl::id<1> idx) {
-                auto i = idx[0];
+        cgh.parallel_for<class non_zero_indexes_krn<indT1, indT2>>(
+            sycl::range<1>(iter_size), [=](sycl::id<1> idx)
+        {
+            auto i = idx[0];
 
-                auto cs_curr_val = cumsum_data[i] - 1;
-                auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
-                bool cond = (cs_curr_val == cs_prev_val);
+            auto cs_curr_val = cumsum_data[i] - 1;
+            auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
+            bool cond = (cs_curr_val == cs_prev_val);
 
-                py::ssize_t i_ = static_cast<py::ssize_t>(i);
-                for (int dim = nd; --dim > 0;) {
-                    auto sd = mask_shape[dim];
-                    py::ssize_t q = i_ / sd;
-                    py::ssize_t r = (i_ - q * sd);
-                    if (cond) {
-                        indexes_data[cs_curr_val + dim * nz_elems] =
-                            static_cast<indT2>(r);
-                    }
-                    i_ = q;
-                }
+            py::ssize_t i_ = static_cast<py::ssize_t>(i);
+            for (int dim = nd; --dim > 0;) {
+                auto sd = mask_shape[dim];
+                py::ssize_t q = i_ / sd;
+                py::ssize_t r = (i_ - q * sd);
                 if (cond) {
-                    indexes_data[cs_curr_val] = static_cast<indT2>(i_);
+                    indexes_data[cs_curr_val + dim * nz_elems] =
+                        static_cast<indT2>(r);
                 }
+                i_ = q;
+            }
+            if (cond) {
+                indexes_data[cs_curr_val] = static_cast<indT2>(i_);
+            }
             });
     });
 
