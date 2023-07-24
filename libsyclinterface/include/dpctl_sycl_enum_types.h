@@ -127,7 +127,6 @@ typedef enum
     usm_device_allocations,
     usm_host_allocations,
     usm_shared_allocations,
-    usm_restricted_shared_allocations,
     usm_system_allocations,
     usm_atomic_host_allocations,
     usm_atomic_shared_allocations,
