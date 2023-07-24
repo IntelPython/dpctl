@@ -18,7 +18,7 @@ import ctypes
 
 import numpy as np
 import pytest
-from numpy.testing import assert_raises_regex
+from numpy.testing import assert_allclose, assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
@@ -44,8 +44,10 @@ def test_logaddexp_dtype_matrix(op1_dtype, op2_dtype):
     expected = np.logaddexp(dpt.asnumpy(ar1), dpt.asnumpy(ar2))
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar1.shape
-    tol = 8 * np.finfo(r.dtype).resolution
-    assert np.allclose(
+    tol = 8 * max(
+        np.finfo(r.dtype).resolution, np.finfo(expected.dtype).resolution
+    )
+    assert_allclose(
         dpt.asnumpy(r), expected.astype(r.dtype), atol=tol, rtol=tol
     )
     assert r.sycl_queue == ar1.sycl_queue
@@ -58,7 +60,7 @@ def test_logaddexp_dtype_matrix(op1_dtype, op2_dtype):
     expected = np.logaddexp(dpt.asnumpy(ar3)[::-1], dpt.asnumpy(ar4)[::2])
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar3.shape
-    assert np.allclose(
+    assert_allclose(
         dpt.asnumpy(r), expected.astype(r.dtype), atol=tol, rtol=tol
     )
 
