@@ -89,7 +89,7 @@ template <typename argT, typename resT> struct ExpFunctor
                 }
             }
             else {
-                if (x > realT(0)) { /* x is +inf */
+                if (!std::signbit(x)) { /* x is +inf */
                     if (y == realT(0)) {
                         return resT{x, y};
                     }
