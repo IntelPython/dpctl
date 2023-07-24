@@ -13,7 +13,7 @@ build:
 requirements:
     build:
         - {{ compiler('cxx') }}
-        - {{ compiler('dpcpp') }} >=2023.1  # [not osx]
+        - {{ compiler('dpcpp') }} >=2023.2  # [not osx]
         - sysroot_linux-64 >=2.28  # [linux]
     host:
         - setuptools
@@ -28,8 +28,7 @@ requirements:
     run:
         - python
         - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
-        - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}  # [py<=39]
-        - dpcpp-cpp-rt >=2023.1  # [py>39]
+        - dpcpp-cpp-rt >=2023.2
         - level-zero  # [linux]
 
 test:
