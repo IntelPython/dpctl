@@ -73,7 +73,7 @@ cdef api SyclEvent SyclEvent_Make(DPCTLSyclEventRef ERef):
     return SyclEvent._create(copied_ERef)
 
 
-cdef void _event_capsule_deleter(object o):
+cdef void _event_capsule_deleter(object o) noexcept:
     cdef DPCTLSyclEventRef ERef = NULL
     if pycapsule.PyCapsule_IsValid(o, "SyclEventRef"):
         ERef = <DPCTLSyclEventRef> pycapsule.PyCapsule_GetPointer(

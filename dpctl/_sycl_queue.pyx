@@ -121,7 +121,7 @@ cdef class SyclAsynchronousError(Exception):
     """
 
 
-cdef void default_async_error_handler(int err) nogil except *:
+cdef void default_async_error_handler(int err) except * nogil:
     with gil:
         raise SyclAsynchronousError(err)
 
@@ -159,7 +159,7 @@ cdef int _parse_queue_properties(object prop) except *:
     return res
 
 
-cdef void _queue_capsule_deleter(object o):
+cdef void _queue_capsule_deleter(object o) noexcept:
     cdef DPCTLSyclQueueRef QRef = NULL
     if pycapsule.PyCapsule_IsValid(o, "SyclQueueRef"):
         QRef = <DPCTLSyclQueueRef> pycapsule.PyCapsule_GetPointer(
