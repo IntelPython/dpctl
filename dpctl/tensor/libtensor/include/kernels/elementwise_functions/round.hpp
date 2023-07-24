@@ -65,47 +65,24 @@ template <typename argT, typename resT> struct RoundFunctor
 
     resT operator()(const argT &in)
     {
+
         if constexpr (std::is_integral_v<argT>) {
             return in;
         }
         else if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
-            realT x_round, y_round;
-            if (std::abs(x - std::floor(x)) == std::abs(x - std::ceil(x))) {
-                x_round = static_cast<int>(std::ceil(x)) % 2 == 0
-                              ? std::ceil(x)
-                              : std::floor(x);
-            }
-            else {
-                x_round = std::round(x);
-            }
-            if (std::abs(y - std::floor(y)) == std::abs(y - std::ceil(y))) {
-                y_round = static_cast<int>(std::ceil(y)) % 2 == 0
-                              ? std::ceil(y)
-                              : std::floor(y);
-            }
-            else {
-                y_round = std::round(y);
-            }
-            return resT{x_round, y_round};
+            return resT{round_func<realT>(std::real(in)),
+                        round_func<realT>(std::imag(in))};
         }
         else {
-            if (in == 0) {
-                return in;
-            }
-            else if (std::abs(in - std::floor(in)) ==
-                     std::abs(in - std::ceil(in))) {
-                return static_cast<int>(std::ceil(in)) % 2 == 0
-                           ? std::ceil(in)
-                           : std::floor(in);
-            }
-            else {
-                return std::round(in);
-            }
+            return round_func<argT>(in);
         }
+    }
+
+private:
+    template <typename T> T round_func(const T &input) const
+    {
+        return std::rint(input);
     }
 };
 

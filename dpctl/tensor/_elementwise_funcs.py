@@ -959,7 +959,8 @@ real = UnaryElementwiseFunc(
 _round_docstring = """
 round(x, out=None, order='K')
 
-Computes cosine for each element `x_i` for input array `x`.
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
 
 Args:
     x (usm_ndarray):
