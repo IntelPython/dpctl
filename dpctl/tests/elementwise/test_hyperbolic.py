@@ -100,7 +100,7 @@ def test_hyper_complex_contig(np_call, dpt_call, dtype):
     high = 9.0
     x1 = np.random.uniform(low=low, high=high, size=n_seq)
     x2 = np.random.uniform(low=low, high=high, size=n_seq)
-    Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+    Xnp = x1 + 1j * x2
 
     X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
     Y = dpt_call(X)

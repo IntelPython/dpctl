@@ -100,22 +100,20 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
     high = 9.0
     x1 = np.random.uniform(low=low, high=high, size=n_seq)
     x2 = np.random.uniform(low=low, high=high, size=n_seq)
-    Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+    Xnp = x1 + 1j * x2
 
     X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
     Y = dpt_call(X)
 
+    expected = np.repeat(np_call(Xnp), n_rep)
+
     tol = 50 * dpt.finfo(dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(Y), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(Y), expected, atol=tol, rtol=tol)
 
     Z = dpt.empty_like(X, dtype=dtype)
     dpt_call(X, out=Z)
 
-    assert_allclose(
-        dpt.asnumpy(Z), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(Z), expected, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
