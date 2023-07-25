@@ -1,4 +1,4 @@
-//=== cos.hpp -   Unary function COS                     ------  *-C++-*--/===//
+//=== cosh.hpp -   Unary function COSH                  ------  *-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of COS(x) function.
+/// This file defines kernels for elementwise evaluation of COSH(x) function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -42,7 +42,7 @@ namespace tensor
 {
 namespace kernels
 {
-namespace cos
+namespace cosh
 {
 
 namespace py = pybind11;
@@ -50,7 +50,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
 
-template <typename argT, typename resT> struct CosFunctor
+template <typename argT, typename resT> struct CoshFunctor
 {
 
     // is function constant for given argT
@@ -70,29 +70,20 @@ template <typename argT, typename resT> struct CosFunctor
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            realT const &in_re = std::real(in);
-            realT const &in_im = std::imag(in);
+            const realT x = std::real(in);
+            const realT y = std::imag(in);
 
-            const bool in_re_finite = std::isfinite(in_re);
-            const bool in_im_finite = std::isfinite(in_im);
+            const bool xfinite = std::isfinite(x);
+            const bool yfinite = std::isfinite(y);
 
             /*
              * Handle the nearly-non-exceptional cases where
              * real and imaginary parts of input are finite.
              */
-            if (in_re_finite && in_im_finite) {
-                return std::cos(in);
+            if (xfinite && yfinite) {
+                return std::cosh(in);
             }
 
-            /*
-             * since cos(in) = cosh(I * in), for special cases,
-             * we return cosh(I * in).
-             */
-            const realT x = -in_im;
-            const realT y = in_re;
-
-            const bool xfinite = in_im_finite;
-            const bool yfinite = in_re_finite;
             /*
              * cosh(+-0 +- I Inf) = dNaN + I sign(d(+-0, dNaN))0.
              * The sign of 0 in the result is unspecified.  Choice = normally
@@ -103,9 +94,8 @@ template <typename argT, typename resT> struct CosFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT y_m_y = (y - y);
-                const realT res_im = std::copysign(realT(0), x * y_m_y);
-                return resT{y_m_y, res_im};
+                const realT res_im = std::copysign(realT(0), x * q_nan);
+                return resT{q_nan, res_im};
             }
 
             /*
@@ -125,8 +115,7 @@ template <typename argT, typename resT> struct CosFunctor
              * cosh(x + I NaN) = d(NaN) + I d(NaN).
              */
             if (xfinite && !yfinite) {
-                const realT y_m_y = (y - y);
-                return resT{y_m_y, x * y_m_y};
+                return resT{q_nan, x * q_nan};
             }
 
             /*
@@ -139,7 +128,7 @@ template <typename argT, typename resT> struct CosFunctor
              */
             if (std::isinf(x)) {
                 if (!yfinite) {
-                    return resT{x * x, std::copysign(q_nan, x)};
+                    return resT{x * x, x * q_nan};
                 }
                 return resT{(x * x) * std::cos(y), x * std::sin(y)};
             }
@@ -151,12 +140,12 @@ template <typename argT, typename resT> struct CosFunctor
              *
              * cosh(NaN + I y)    = d(NaN) + I d(NaN).
              */
-            return resT{(x * x) * q_nan, (x + x) * q_nan};
+            return resT{(x * x) * (y - y), (x + x) * (y - y)};
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::cos(in);
+            return std::cosh(in);
         }
     }
 };
@@ -165,104 +154,104 @@ template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-using CosContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, CosFunctor<argTy, resTy>, vec_sz, n_vecs>;
+using CoshContigFunctor = elementwise_common::
+    UnaryContigFunctor<argTy, resTy, CoshFunctor<argTy, resTy>, vec_sz, n_vecs>;
 
 template <typename argTy, typename resTy, typename IndexerT>
-using CosStridedFunctor = elementwise_common::
-    UnaryStridedFunctor<argTy, resTy, IndexerT, CosFunctor<argTy, resTy>>;
+using CoshStridedFunctor = elementwise_common::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, CoshFunctor<argTy, resTy>>;
 
-template <typename T> struct CosOutputType
+template <typename T> struct CoshOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
-        td_ns::TypeMapResultEntry<T, sycl::half, sycl::half>,
-        td_ns::TypeMapResultEntry<T, float, float>,
-        td_ns::TypeMapResultEntry<T, double, double>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>, std::complex<float>>,
-        td_ns::
-            TypeMapResultEntry<T, std::complex<double>, std::complex<double>>,
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
-class cos_contig_kernel;
+class cosh_contig_kernel;
 
 template <typename argTy>
-sycl::event cos_contig_impl(sycl::queue exec_q,
-                            size_t nelems,
-                            const char *arg_p,
-                            char *res_p,
-                            const std::vector<sycl::event> &depends = {})
+sycl::event cosh_contig_impl(sycl::queue exec_q,
+                             size_t nelems,
+                             const char *arg_p,
+                             char *res_p,
+                             const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::unary_contig_impl<
-        argTy, CosOutputType, CosContigFunctor, cos_contig_kernel>(
+        argTy, CoshOutputType, CoshContigFunctor, cosh_contig_kernel>(
         exec_q, nelems, arg_p, res_p, depends);
 }
 
-template <typename fnT, typename T> struct CosContigFactory
+template <typename fnT, typename T> struct CoshContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename CosOutputType<T>::value_type,
+        if constexpr (std::is_same_v<typename CoshOutputType<T>::value_type,
                                      void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = cos_contig_impl<T>;
+            fnT fn = cosh_contig_impl<T>;
             return fn;
         }
     }
 };
 
-template <typename fnT, typename T> struct CosTypeMapFactory
+template <typename fnT, typename T> struct CoshTypeMapFactory
 {
-    /*! @brief get typeid for output type of sycl::cos(T x) */
+    /*! @brief get typeid for output type of std::cosh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename CosOutputType<T>::value_type;
+        using rT = typename CoshOutputType<T>::value_type;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
-template <typename T1, typename T2, typename T3> class cos_strided_kernel;
+template <typename T1, typename T2, typename T3> class cosh_strided_kernel;
 
 template <typename argTy>
-sycl::event cos_strided_impl(sycl::queue exec_q,
-                             size_t nelems,
-                             int nd,
-                             const py::ssize_t *shape_and_strides,
-                             const char *arg_p,
-                             py::ssize_t arg_offset,
-                             char *res_p,
-                             py::ssize_t res_offset,
-                             const std::vector<sycl::event> &depends,
-                             const std::vector<sycl::event> &additional_depends)
+sycl::event
+cosh_strided_impl(sycl::queue exec_q,
+                  size_t nelems,
+                  int nd,
+                  const py::ssize_t *shape_and_strides,
+                  const char *arg_p,
+                  py::ssize_t arg_offset,
+                  char *res_p,
+                  py::ssize_t res_offset,
+                  const std::vector<sycl::event> &depends,
+                  const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::unary_strided_impl<
-        argTy, CosOutputType, CosStridedFunctor, cos_strided_kernel>(
+        argTy, CoshOutputType, CoshStridedFunctor, cosh_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
         res_offset, depends, additional_depends);
 }
 
-template <typename fnT, typename T> struct CosStridedFactory
+template <typename fnT, typename T> struct CoshStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename CosOutputType<T>::value_type,
+        if constexpr (std::is_same_v<typename CoshOutputType<T>::value_type,
                                      void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = cos_strided_impl<T>;
+            fnT fn = cosh_strided_impl<T>;
             return fn;
         }
     }
 };
 
-} // namespace cos
+} // namespace cosh
 } // namespace kernels
 } // namespace tensor
 } // namespace dpctl

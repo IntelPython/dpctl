@@ -1,4 +1,4 @@
-//=== sin.hpp -   Unary function SIN                     ------  *-C++-*--/===//
+//=== sinh.hpp -   Unary function SINH                  ------  *-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of SIN(x) function.
+/// This file defines kernels for elementwise evaluation of SINH(x) function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -42,7 +42,7 @@ namespace tensor
 {
 namespace kernels
 {
-namespace sin
+namespace sinh
 {
 
 namespace py = pybind11;
@@ -50,8 +50,9 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
 
-template <typename argT, typename resT> struct SinFunctor
+template <typename argT, typename resT> struct SinhFunctor
 {
+
     // is function constant for given argT
     using is_constant = typename std::false_type;
     // constant value, if constant
@@ -67,30 +68,19 @@ template <typename argT, typename resT> struct SinFunctor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            const realT x = std::real(in);
+            const realT y = std::imag(in);
 
-            realT const &in_re = std::real(in);
-            realT const &in_im = std::imag(in);
+            const bool xfinite = std::isfinite(x);
+            const bool yfinite = std::isfinite(y);
 
-            const bool in_re_finite = std::isfinite(in_re);
-            const bool in_im_finite = std::isfinite(in_im);
             /*
              * Handle the nearly-non-exceptional cases where
              * real and imaginary parts of input are finite.
              */
-            if (in_re_finite && in_im_finite) {
-                return std::sin(in);
+            if (xfinite && yfinite) {
+                return std::sinh(in);
             }
-
-            /*
-             * since sin(in) = -I * sinh(I * in), for special cases,
-             * we calculate real and imaginary parts of z = sinh(I * in) and
-             * then return { imag(z) , -real(z) } which is sin(in).
-             */
-            const realT x = -in_im;
-            const realT y = in_re;
-            const bool xfinite = in_im_finite;
-            const bool yfinite = in_re_finite;
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.
              * The sign of 0 in the result is unspecified.  Choice = normally
@@ -101,9 +91,8 @@ template <typename argT, typename resT> struct SinFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT sinh_im = q_nan;
-                const realT sinh_re = std::copysign(realT(0), x * sinh_im);
-                return resT{sinh_im, -sinh_re};
+                const realT res_re = std::copysign(realT(0), x * (y - y));
+                return resT{res_re, y - y};
             }
 
             /*
@@ -113,13 +102,10 @@ template <typename argT, typename resT> struct SinFunctor
              */
             if (y == realT(0) && !xfinite) {
                 if (std::isnan(x)) {
-                    const realT sinh_re = x;
-                    const realT sinh_im = y;
-                    return resT{sinh_im, -sinh_re};
+                    return resT{x, y};
                 }
-                const realT sinh_re = x;
-                const realT sinh_im = std::copysign(realT(0), y);
-                return resT{sinh_im, -sinh_re};
+                const realT res_im = std::copysign(realT(0), y);
+                return resT{x, res_im};
             }
 
             /*
@@ -128,9 +114,7 @@ template <typename argT, typename resT> struct SinFunctor
              * sinh(x + I NaN) = d(NaN) + I d(NaN).
              */
             if (xfinite && !yfinite) {
-                const realT sinh_re = q_nan;
-                const realT sinh_im = x * sinh_re;
-                return resT{sinh_im, -sinh_re};
+                return resT{y - y, x * (y - y)};
             }
 
             /*
@@ -139,22 +123,17 @@ template <typename argT, typename resT> struct SinFunctor
              * the same as d(NaN).
              *
              * sinh(+-Inf +- I Inf) = +Inf + I dNaN.
-             * The sign of Inf in the result is unspecified.
-             * Choice = always - here for sinh to have positive result for
-             * imaginary part of sin.
+             * The sign of Inf in the result is unspecified.  Choice = always +.
              *
              * sinh(+-Inf + I y)   = +-Inf cos(y) + I Inf sin(y)
              */
-            if (std::isinf(x)) {
+            if (!xfinite && !std::isnan(x)) {
                 if (!yfinite) {
-                    const realT sinh_re = -x * x;
-                    const realT sinh_im = x * (y - y);
-                    return resT{sinh_im, -sinh_re};
+                    return resT{x * x, x * (y - y)};
                 }
-                const realT sinh_re = x * std::cos(y);
-                const realT sinh_im =
-                    std::numeric_limits<realT>::infinity() * std::sin(y);
-                return resT{sinh_im, -sinh_re};
+                return resT{x * std::cos(y),
+                            std::numeric_limits<realT>::infinity() *
+                                std::sin(y)};
             }
 
             /*
@@ -164,15 +143,12 @@ template <typename argT, typename resT> struct SinFunctor
              *
              * sinh(NaN + I y)    = d(NaN) + I d(NaN).
              */
-            const realT y_m_y = (y - y);
-            const realT sinh_re = (x * x) * y_m_y;
-            const realT sinh_im = (x + x) * y_m_y;
-            return resT{sinh_im, -sinh_re};
+            return resT{(x * x) * (y - y), (x + x) * (y - y)};
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::sin(in);
+            return std::sinh(in);
         }
     }
 };
@@ -181,14 +157,14 @@ template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-using SinContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, SinFunctor<argTy, resTy>, vec_sz, n_vecs>;
+using SinhContigFunctor = elementwise_common::
+    UnaryContigFunctor<argTy, resTy, SinhFunctor<argTy, resTy>, vec_sz, n_vecs>;
 
 template <typename argTy, typename resTy, typename IndexerT>
-using SinStridedFunctor = elementwise_common::
-    UnaryStridedFunctor<argTy, resTy, IndexerT, SinFunctor<argTy, resTy>>;
+using SinhStridedFunctor = elementwise_common::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, SinhFunctor<argTy, resTy>>;
 
-template <typename T> struct SinOutputType
+template <typename T> struct SinhOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
                                                   // feature, supported by DPC++
@@ -201,83 +177,84 @@ template <typename T> struct SinOutputType
 };
 
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
-class sin_contig_kernel;
+class sinh_contig_kernel;
 
 template <typename argTy>
-sycl::event sin_contig_impl(sycl::queue exec_q,
-                            size_t nelems,
-                            const char *arg_p,
-                            char *res_p,
-                            const std::vector<sycl::event> &depends = {})
+sycl::event sinh_contig_impl(sycl::queue exec_q,
+                             size_t nelems,
+                             const char *arg_p,
+                             char *res_p,
+                             const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::unary_contig_impl<
-        argTy, SinOutputType, SinContigFunctor, sin_contig_kernel>(
+        argTy, SinhOutputType, SinhContigFunctor, sinh_contig_kernel>(
         exec_q, nelems, arg_p, res_p, depends);
 }
 
-template <typename fnT, typename T> struct SinContigFactory
+template <typename fnT, typename T> struct SinhContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename SinOutputType<T>::value_type,
+        if constexpr (std::is_same_v<typename SinhOutputType<T>::value_type,
                                      void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = sin_contig_impl<T>;
+            fnT fn = sinh_contig_impl<T>;
             return fn;
         }
     }
 };
 
-template <typename fnT, typename T> struct SinTypeMapFactory
+template <typename fnT, typename T> struct SinhTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::sin(T x) */
+    /*! @brief get typeid for output type of std::sinh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename SinOutputType<T>::value_type;
+        using rT = typename SinhOutputType<T>::value_type;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
-template <typename T1, typename T2, typename T3> class sin_strided_kernel;
+template <typename T1, typename T2, typename T3> class sinh_strided_kernel;
 
 template <typename argTy>
-sycl::event sin_strided_impl(sycl::queue exec_q,
-                             size_t nelems,
-                             int nd,
-                             const py::ssize_t *shape_and_strides,
-                             const char *arg_p,
-                             py::ssize_t arg_offset,
-                             char *res_p,
-                             py::ssize_t res_offset,
-                             const std::vector<sycl::event> &depends,
-                             const std::vector<sycl::event> &additional_depends)
+sycl::event
+sinh_strided_impl(sycl::queue exec_q,
+                  size_t nelems,
+                  int nd,
+                  const py::ssize_t *shape_and_strides,
+                  const char *arg_p,
+                  py::ssize_t arg_offset,
+                  char *res_p,
+                  py::ssize_t res_offset,
+                  const std::vector<sycl::event> &depends,
+                  const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::unary_strided_impl<
-        argTy, SinOutputType, SinStridedFunctor, sin_strided_kernel>(
+        argTy, SinhOutputType, SinhStridedFunctor, sinh_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
         res_offset, depends, additional_depends);
 }
 
-template <typename fnT, typename T> struct SinStridedFactory
+template <typename fnT, typename T> struct SinhStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename SinOutputType<T>::value_type,
+        if constexpr (std::is_same_v<typename SinhOutputType<T>::value_type,
                                      void>) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = sin_strided_impl<T>;
+            fnT fn = sinh_strided_impl<T>;
             return fn;
         }
     }
 };
 
-} // namespace sin
+} // namespace sinh
 } // namespace kernels
 } // namespace tensor
 } // namespace dpctl
