@@ -296,6 +296,7 @@ public:
         }
 
         indT i_ = i;
+#pragma unroll
         for (int dim = ndim; --dim > 0;) {
             indT si = shape[dim];
             indT q = i_ / si;
