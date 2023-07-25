@@ -1,0 +1,44 @@
+.. _dtype_api:
+
+###########
+numpy.dtype
+###########
+
+.. currentmodule:: numpy
+
+.. autoclass:: numpy.dtype
+
+    .. rubric:: Attributes:
+
+    .. autoautosummary:: numpy.dtype
+        :attributes:
+
+    .. rubric:: Public methods:
+
+    .. autoautosummary:: numpy.dtype
+        :methods:
+
+
+Attributes
+----------
+
+.. autoattribute:: numpy.dtype.base
+.. autoattribute:: numpy.dtype.descr
+.. autoattribute:: numpy.dtype.fields
+.. autoattribute:: numpy.dtype.hasobject
+.. autoattribute:: numpy.dtype.isalignedstruct
+.. autoattribute:: numpy.dtype.isbuiltin
+.. autoattribute:: numpy.dtype.isnative
+.. autoattribute:: numpy.dtype.metadata
+.. autoattribute:: numpy.dtype.name
+.. autoattribute:: numpy.dtype.names
+.. autoattribute:: numpy.dtype.ndim
+.. autoattribute:: numpy.dtype.shape
+.. autoattribute:: numpy.dtype.str
+.. autoattribute:: numpy.dtype.subdtype
+
+Public methods
+--------------
+
+.. autofunction:: numpy.dtype.newbyteorder
+
