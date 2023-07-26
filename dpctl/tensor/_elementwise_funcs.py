@@ -1152,7 +1152,30 @@ real = UnaryElementwiseFunc(
 # FIXME: implement B22
 
 # U28: ==== ROUND       (x)
-# FIXME: implement U28
+_round_docstring = """
+round(x, out=None, order='K')
+
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise rounded value. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+round = UnaryElementwiseFunc(
+    "round", ti._round_result_type, ti._round, _round_docstring
+)
 
 # U29: ==== SIGN        (x)
 # FIXME: implement U29
