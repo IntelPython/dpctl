@@ -965,6 +965,15 @@ public:
         return *(reinterpret_cast<sycl::queue *>(QRef));
     }
 
+    sycl::device get_device() const
+    {
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
+
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
+        return reinterpret_cast<sycl::queue *>(QRef)->get_device();
+    }
+
     int get_typenum() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
