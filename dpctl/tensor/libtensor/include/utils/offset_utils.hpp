@@ -664,6 +664,63 @@ private:
     py::ssize_t starting_offset2;
 };
 
+template <int nd> struct ThreeOffsets_FixedDimStridedIndexer
+{
+    ThreeOffsets_FixedDimStridedIndexer(
+        const std::array<py::ssize_t, nd> _shape,
+        const std::array<py::ssize_t, nd> _strides1,
+        const std::array<py::ssize_t, nd> _strides2,
+        const std::array<py::ssize_t, nd> _strides3,
+        py::ssize_t _offset1,
+        py::ssize_t _offset2,
+        py::ssize_t _offset3)
+        : _ind(_shape), strides1(_strides1), strides2(_strides2),
+          strides3(_strides3), starting_offset1(_offset1),
+          starting_offset2(_offset2), starting_offset3(_offset3)
+    {
+    }
+
+    ThreeOffsets<py::ssize_t> operator()(size_t gid) const
+    {
+        dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> local_indexer(
+            std::move(_ind));
+        local_indexer.set(gid);
+        auto mi = local_indexer.get();
+
+        py::ssize_t relative_offset1 = 0;
+#pragma unroll
+        for (int i = 0; i < nd; ++i) {
+            relative_offset1 += mi[i] * strides1[i];
+        }
+
+        py::ssize_t relative_offset2 = 0;
+#pragma unroll
+        for (int i = 0; i < nd; ++i) {
+            relative_offset2 += mi[i] * strides2[i];
+        }
+
+        py::ssize_t relative_offset3 = 0;
+#pragma unroll
+        for (int i = 0; i < nd; ++i) {
+            relative_offset3 += mi[i] * strides3[i];
+        }
+
+        return ThreeOffsets<py::ssize_t>(starting_offset1 + relative_offset1,
+                                         starting_offset2 + relative_offset2,
+                                         starting_offset3 + relative_offset3);
+    }
+
+private:
+    dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> _ind;
+
+    const std::array<py::ssize_t, nd> strides1;
+    const std::array<py::ssize_t, nd> strides2;
+    const std::array<py::ssize_t, nd> strides3;
+    py::ssize_t starting_offset1;
+    py::ssize_t starting_offset2;
+    py::ssize_t starting_offset3;
+};
+
 } // namespace offset_utils
 } // namespace tensor
 } // namespace dpctl
