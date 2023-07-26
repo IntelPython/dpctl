@@ -74,7 +74,9 @@
 #include "kernels/elementwise_functions/pow.hpp"
 #include "kernels/elementwise_functions/proj.hpp"
 #include "kernels/elementwise_functions/real.hpp"
+#include "kernels/elementwise_functions/remainder.hpp"
 #include "kernels/elementwise_functions/round.hpp"
+#include "kernels/elementwise_functions/sign.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
 #include "kernels/elementwise_functions/sinh.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
@@ -1872,7 +1874,41 @@ void populate_real_dispatch_vectors(void)
 // B22: ==== REMAINDER   (x1, x2)
 namespace impl
 {
-// FIXME: add code for B22
+
+namespace remainder_fn_ns = dpctl::tensor::kernels::remainder;
+
+static binary_contig_impl_fn_ptr_t
+    remainder_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int remainder_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    remainder_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_remainder_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = remainder_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::RemainderTypeMapFactory;
+    DispatchTableBuilder<int, RemainderTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(remainder_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::RemainderStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, RemainderStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(remainder_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::RemainderContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, RemainderContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(remainder_contig_dispatch_table);
+}
+
 } // namespace impl
 
 // U28: ==== ROUND       (x)
@@ -1914,7 +1950,36 @@ void populate_round_dispatch_vectors(void)
 // U29: ==== SIGN        (x)
 namespace impl
 {
-// FIXME: add code for U29
+
+namespace sign_fn_ns = dpctl::tensor::kernels::sign;
+
+static unary_contig_impl_fn_ptr_t sign_contig_dispatch_vector[td_ns::num_types];
+static int sign_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    sign_strided_dispatch_vector[td_ns::num_types];
+
+void populate_sign_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = sign_fn_ns;
+
+    using fn_ns::SignContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SignContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(sign_contig_dispatch_vector);
+
+    using fn_ns::SignStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SignStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(sign_strided_dispatch_vector);
+
+    using fn_ns::SignTypeMapFactory;
+    DispatchVectorBuilder<int, SignTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(sign_output_typeid_vector);
+}
+
 } // namespace impl
 
 // U30: ==== SIN         (x)
@@ -3526,7 +3591,6 @@ void init_elementwise_functions(py::module_ m)
 
     // B21: ==== POW         (x1, x2)
     {
-
         impl::populate_pow_dispatch_tables();
         using impl::pow_contig_dispatch_table;
         using impl::pow_output_id_table;
@@ -3608,7 +3672,45 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B22: ==== REMAINDER   (x1, x2)
-    // FIXME:
+    {
+        impl::populate_remainder_dispatch_tables();
+        using impl::remainder_contig_dispatch_table;
+        using impl::remainder_output_id_table;
+        using impl::remainder_strided_dispatch_table;
+
+        auto remainder_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                   dpctl::tensor::usm_ndarray src2,
+                                   dpctl::tensor::usm_ndarray dst,
+                                   sycl::queue exec_q,
+                                   const std::vector<sycl::event> &depends =
+                                       {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, remainder_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                remainder_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                remainder_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto remainder_result_type_pyapi = [&](py::dtype dtype1,
+                                               py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               remainder_output_id_table);
+        };
+        m.def("_remainder", remainder_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_remainder_result_type", remainder_result_type_pyapi, "");
+    }
 
     // U28: ==== ROUND       (x)
     {
@@ -3634,7 +3736,26 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // U29: ==== SIGN        (x)
-    // FIXME:
+    {
+        impl::populate_sign_dispatch_vectors();
+        using impl::sign_contig_dispatch_vector;
+        using impl::sign_output_typeid_vector;
+        using impl::sign_strided_dispatch_vector;
+
+        auto sign_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, sign_output_typeid_vector,
+                sign_contig_dispatch_vector, sign_strided_dispatch_vector);
+        };
+        m.def("_sign", sign_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto sign_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype, sign_output_typeid_vector);
+        };
+        m.def("_sign_result_type", sign_result_type_pyapi);
+    }
 
     // U30: ==== SIN         (x)
     {
