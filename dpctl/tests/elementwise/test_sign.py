@@ -105,6 +105,7 @@ def test_sign_complex(dtype):
             )
 
 
+# test for all signed real data types
 @pytest.mark.parametrize(
     "dt", _no_complex_dtypes[1:8:2] + _no_complex_dtypes[9:]
 )
