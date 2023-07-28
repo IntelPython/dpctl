@@ -134,12 +134,12 @@ public:
         InputOutputIterIndexerT arg_res_iter_indexer,
         InputRedIndexerT arg_reduced_dims_indexer,
         size_t reduction_size,
-        size_t iter_gws,
+        size_t iteration_size,
         size_t reduction_size_per_wi)
         : inp_(data), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          reduction_max_gid_(reduction_size), iter_gws_(iter_gws),
+          reduction_max_gid_(reduction_size), iter_gws_(iteration_size),
           reductions_per_wi(reduction_size_per_wi)
     {
     }
@@ -528,6 +528,7 @@ private:
     InputOutputIterIndexerT inp_out_iter_indexer_;
     InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
+    size_t iter_gws_ = 1;
     size_t reductions_per_wi = 16;
 
 public:
@@ -539,22 +540,25 @@ public:
         InputOutputIterIndexerT arg_res_iter_indexer,
         InputRedIndexerT arg_reduced_dims_indexer,
         size_t reduction_size,
+        size_t iteration_size,
         size_t reduction_size_per_wi)
         : inp_(data), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          reduction_max_gid_(reduction_size),
+          reduction_max_gid_(reduction_size), iter_gws_(iteration_size),
           reductions_per_wi(reduction_size_per_wi)
     {
     }
 
-    void operator()(sycl::nd_item<2> it) const
+    void operator()(sycl::nd_item<1> it) const
     {
 
-        size_t iter_gid = it.get_global_id(0);
-        size_t reduction_batch_id = it.get_group(1);
-        size_t reduction_lid = it.get_local_id(1);
-        size_t wg = it.get_local_range(1); //   0 <= reduction_lid < wg
+        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
+        const size_t iter_gid = it.get_global_id(0) / red_gws_;
+        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
+        const size_t reduction_lid = it.get_local_id(0);
+        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
 
         // work-items sums over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -590,7 +594,7 @@ public:
 
         if (work_group.leader()) {
             // each group writes to a different memory location
-            out_[out_iter_offset * it.get_group_range(1) + reduction_batch_id] =
+            out_[out_iter_offset * n_reduction_groups + reduction_batch_id] =
                 red_val_over_wg;
         }
     }
@@ -657,20 +661,20 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
             assert(reduction_groups == 1);
 
             auto globalRange =
-                sycl::range<2>{iter_nelems, reduction_groups * wg};
-            auto localRange = sycl::range<2>{1, wg};
+                sycl::range<1>{iter_nelems * reduction_groups * wg};
+            auto localRange = sycl::range<1>{wg};
 
             using KernelName = class sum_reduction_over_group_temps_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT>;
             cgh.parallel_for<KernelName>(
-                sycl::nd_range<2>(globalRange, localRange),
+                sycl::nd_range<1>(globalRange, localRange),
                 ReductionOverGroupNoAtomicFunctor<argTy, resTy, ReductionOpT,
                                                   InputOutputIterIndexerT,
                                                   ReductionIndexerT>(
                     arg_tp, res_tp, ReductionOpT(), identity_val,
                     in_out_iter_indexer, reduction_indexer, reduction_nelems,
-                    reductions_per_wi));
+                    iter_nelems, reductions_per_wi));
         });
 
         return comp_ev;
@@ -723,20 +727,20 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                                                 reduction_shape_stride};
 
             auto globalRange =
-                sycl::range<2>{iter_nelems, reduction_groups * wg};
-            auto localRange = sycl::range<2>{1, wg};
+                sycl::range<1>{iter_nelems * reduction_groups * wg};
+            auto localRange = sycl::range<1>{wg};
 
             using KernelName = class sum_reduction_over_group_temps_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT>;
             cgh.parallel_for<KernelName>(
-                sycl::nd_range<2>(globalRange, localRange),
+                sycl::nd_range<1>(globalRange, localRange),
                 ReductionOverGroupNoAtomicFunctor<argTy, resTy, ReductionOpT,
                                                   InputOutputIterIndexerT,
                                                   ReductionIndexerT>(
                     arg_tp, partially_reduced_tmp, ReductionOpT(), identity_val,
                     in_out_iter_indexer, reduction_indexer, reduction_nelems,
-                    preferrered_reductions_per_wi));
+                    iter_nelems, preferrered_reductions_per_wi));
         });
 
         size_t remaining_reduction_nelems = reduction_groups;
@@ -778,20 +782,20 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                     ReductionIndexerT reduction_indexer{};
 
                     auto globalRange =
-                        sycl::range<2>{iter_nelems, reduction_groups_ * wg};
-                    auto localRange = sycl::range<2>{1, wg};
+                        sycl::range<1>{iter_nelems * reduction_groups_ * wg};
+                    auto localRange = sycl::range<1>{wg};
 
                     using KernelName = class sum_reduction_over_group_temps_krn<
                         resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                         ReductionIndexerT>;
                     cgh.parallel_for<KernelName>(
-                        sycl::nd_range<2>(globalRange, localRange),
+                        sycl::nd_range<1>(globalRange, localRange),
                         ReductionOverGroupNoAtomicFunctor<
                             resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                             ReductionIndexerT>(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
-                            remaining_reduction_nelems,
+                            remaining_reduction_nelems, iter_nelems,
                             preferrered_reductions_per_wi));
                 });
 
@@ -834,20 +838,21 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
             assert(reduction_groups == 1);
 
             auto globalRange =
-                sycl::range<2>{iter_nelems, reduction_groups * wg};
-            auto localRange = sycl::range<2>{1, wg};
+                sycl::range<1>{iter_nelems * reduction_groups * wg};
+            auto localRange = sycl::range<1>{wg};
 
             using KernelName = class sum_reduction_over_group_temps_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT>;
             cgh.parallel_for<KernelName>(
-                sycl::nd_range<2>(globalRange, localRange),
+                sycl::nd_range<1>(globalRange, localRange),
                 ReductionOverGroupNoAtomicFunctor<resTy, resTy, ReductionOpT,
                                                   InputOutputIterIndexerT,
                                                   ReductionIndexerT>(
                     temp_arg, res_tp, ReductionOpT(), identity_val,
                     in_out_iter_indexer, reduction_indexer,
-                    remaining_reduction_nelems, reductions_per_wi));
+                    remaining_reduction_nelems, iter_nelems,
+                    reductions_per_wi));
         });
 
         sycl::event cleanup_host_task_event =
