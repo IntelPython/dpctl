@@ -31,8 +31,8 @@ def test_log_out_type(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
-    expected_dtype = np.log(np.array(0, dtype=dtype)).dtype
+    X = dpt.asarray(1, dtype=dtype, sycl_queue=q)
+    expected_dtype = np.log(np.array(1, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
     assert dpt.log(X).dtype == expected_dtype
 
@@ -44,7 +44,7 @@ def test_log_output_contig(dtype):
 
     n_seq = 1027
 
-    X = dpt.linspace(0, 13, num=n_seq, dtype=dtype, sycl_queue=q)
+    X = dpt.linspace(1, 13, num=n_seq, dtype=dtype, sycl_queue=q)
     Xnp = dpt.asnumpy(X)
 
     Y = dpt.log(X)
@@ -60,7 +60,7 @@ def test_log_output_strided(dtype):
 
     n_seq = 2 * 1027
 
-    X = dpt.linspace(0, 13, num=n_seq, dtype=dtype, sycl_queue=q)[::-2]
+    X = dpt.linspace(1, 13, num=n_seq, dtype=dtype, sycl_queue=q)[::-2]
     Xnp = dpt.asnumpy(X)
 
     Y = dpt.log(X)
@@ -119,11 +119,15 @@ def test_log_special_cases():
     q = get_queue_or_skip()
 
     X = dpt.asarray(
-        [dpt.nan, -1.0, 0.0, -0.0, dpt.inf, -dpt.inf], dtype="f4", sycl_queue=q
+        [dpt.nan, -dpt.inf, -1.0, -0.0, 0.0, dpt.inf], dtype="f4", sycl_queue=q
     )
-    Xnp = dpt.asnumpy(X)
+    Y = dpt.log(X)
 
-    assert_equal(dpt.asnumpy(dpt.log(X)), np.log(Xnp))
+    expected = np.array(
+        [np.nan, np.nan, np.nan, -np.inf, -np.inf, np.inf], dtype="f4"
+    )
+
+    assert_equal(dpt.asnumpy(Y), expected)
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
