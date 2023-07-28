@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 ### Changed
+
+* Removed `dpctl.tensor.numpy_usm_shared` obsolete class and associated tests which were being skipped
+
 ### Fixed
 
 ## [0.14.5] - 07/17/2023
