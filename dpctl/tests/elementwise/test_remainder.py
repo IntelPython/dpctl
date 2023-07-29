@@ -118,8 +118,8 @@ def test_remainder_negative_integers(dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt, q)
 
-    x = dpt.arange(-5, 5, 1, dtype=dt, sycl_queue=q)
-    x_np = np.arange(-5, 5, 1, dtype=dt)
+    x = dpt.arange(-5, -1, 1, dtype=dt, sycl_queue=q)
+    x_np = np.arange(-5, -1, 1, dtype=dt)
     val = 3
 
     r1 = dpt.remainder(x, val)
@@ -129,6 +129,21 @@ def test_remainder_negative_integers(dt):
     r2 = dpt.remainder(val, x)
     expected = np.remainder(val, x_np)
     assert (dpt.asnumpy(r2) == expected).all()
+
+
+def test_remainder_integer_zero():
+    get_queue_or_skip()
+
+    for dt in ["i4", "u4"]:
+        x = dpt.ones(1, dtype=dt)
+        y = dpt.zeros_like(x)
+
+        assert (dpt.asnumpy(dpt.remainder(x, y)) == np.zeros(1, dtype=dt)).all()
+
+        x = dpt.astype(x, dt)
+        y = dpt.zeros_like(x)
+
+        assert (dpt.asnumpy(dpt.remainder(x, y)) == np.zeros(1, dtype=dt)).all()
 
 
 @pytest.mark.parametrize("dt", _no_complex_dtypes[9:])

@@ -53,35 +53,30 @@ namespace tu_ns = dpctl::tensor::type_utils;
 template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
 {
     static_assert(std::is_same_v<argT1, argT2>);
-    using supports_sg_loadstore = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = std::conjunction<
-        std::is_same<argT1, argT2>,
-        std::negation<std::disjunction<tu_ns::is_complex<argT1>,
-                                       tu_ns::is_complex<argT2>>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
-            if (in2 == 0) {
-                return 0;
+            if (in2 == argT2(0)) {
+                return resT(0);
             }
-            if constexpr (std::is_unsigned_v<argT1> ||
-                          std::is_unsigned_v<argT2>) {
-                return (in1 % in2);
-            }
-            else {
+            if constexpr (std::is_signed_v<argT1> || std::is_signed_v<argT2>) {
                 auto out = (in1 % in2);
-                if (out != 0 && ((in1 < 0) != (in2 < 0))) {
+                if (out != 0 && l_xor(in1 < 0, in2 < 0)) {
                     out += in2;
                 }
                 return out;
+            }
+            else {
+                return (in1 % in2);
             }
         }
         else {
             auto rem = sycl::fmod(in1, in2);
             if (rem) {
-                if ((in2 < 0) != (rem < 0)) {
+                if (l_xor(in2 < 0, rem < 0)) {
                     rem += in2;
                 }
             }
@@ -97,41 +92,23 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
-            auto rem = (in1 % in2);
-            if constexpr (std::is_unsigned_v<argT1> ||
-                          std::is_unsigned_v<argT2>) {
-                if constexpr (std::is_same_v<resT, typename decltype(
-                                                       rem)::element_type>) {
-                    return rem;
-                }
-                else {
-                    using dpctl::tensor::type_utils::vec_cast;
-
-                    return vec_cast<resT, typename decltype(rem)::element_type,
-                                    vec_sz>(rem);
-                }
-            }
-            else {
+            sycl::vec<resT, vec_sz> rem;
 #pragma unroll
-                for (auto i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == 0) {
-                        rem[i] = 0;
-                    }
-                    if (rem[i] != 0 && ((in1[i] < 0) != (in2[i] < 0))) {
-                        rem[i] += in2[i];
-                    }
-                }
-                if constexpr (std::is_same_v<resT, typename decltype(
-                                                       rem)::element_type>) {
-                    return rem;
+            for (auto i = 0; i < vec_sz; ++i) {
+                if (in2[i] == argT2(0)) {
+                    rem[i] = resT(0);
                 }
                 else {
-                    using dpctl::tensor::type_utils::vec_cast;
-
-                    return vec_cast<resT, typename decltype(rem)::element_type,
-                                    vec_sz>(rem);
+                    rem[i] = in1[i] % in2[i];
+                    if constexpr (std::is_signed_v<argT1> ||
+                                  std::is_signed_v<argT2>) {
+                        if (rem[i] != 0 && l_xor(in1[i] < 0, in2[i] < 0)) {
+                            rem[i] += in2[i];
+                        }
+                    }
                 }
             }
+            return rem;
         }
         else {
             auto rem = sycl::fmod(in1, in2);
@@ -139,9 +116,8 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
 #pragma unroll
             for (auto i = 0; i < vec_sz; ++i) {
                 if (rem[i]) {
-                    if ((in2[i] < 0) != (rem[i] < 0)) {
-                        using tu_ns::convert_impl;
-                        rem[i] += convert_impl<remT, argT2>(in2[i]);
+                    if (l_xor(in2[i] < 0, rem[i] < 0)) {
+                        rem[i] += in2[i];
                     }
                 }
                 else {
@@ -157,6 +133,12 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
                 return vec_cast<resT, remT, vec_sz>(rem);
             }
         }
+    }
+
+private:
+    bool l_xor(bool b1, bool b2) const
+    {
+        return (b1 != b2);
     }
 };
 
