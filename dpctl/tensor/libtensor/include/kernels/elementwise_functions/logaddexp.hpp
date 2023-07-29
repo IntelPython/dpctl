@@ -173,7 +173,7 @@ template <typename fnT, typename T1, typename T2> struct LogAddExpTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class logaddexp_strided_strided_kernel;
+class logaddexp_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -188,13 +188,13 @@ logaddexp_strided_impl(sycl::queue exec_q,
                        char *res_p,
                        py::ssize_t res_offset,
                        const std::vector<sycl::event> &depends,
-                       const std::vector<sycl::event> &logaddexpitional_depends)
+                       const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
         argTy1, argTy2, LogAddExpOutputType, LogAddExpStridedFunctor,
-        logaddexp_strided_strided_kernel>(
-        exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
-        arg2_offset, res_p, res_offset, depends, logaddexpitional_depends);
+        logaddexp_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
+                                  arg1_offset, arg2_p, arg2_offset, res_p,
+                                  res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct LogAddExpStridedFactory
