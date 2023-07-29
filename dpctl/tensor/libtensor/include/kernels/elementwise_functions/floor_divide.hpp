@@ -52,33 +52,28 @@ namespace tu_ns = dpctl::tensor::type_utils;
 template <typename argT1, typename argT2, typename resT>
 struct FloorDivideFunctor
 {
-
-    using supports_sg_loadstore = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
-            static_assert(std::is_same_v<argT1, argT2>);
-            if (in2 == 0) {
+            if (in2 == argT2(0)) {
                 return resT(0);
             }
-            auto tmp = in1 / in2;
-            if constexpr (std::is_unsigned_v<argT1> ||
-                          std::is_unsigned_v<argT2>) {
-                return tmp;
+            if constexpr (std::is_signed_v<argT1> || std::is_signed_v<argT2>) {
+                auto div = in1 / in2;
+                auto mod = in1 % in2;
+                auto corr = (mod != 0 && l_xor(mod < 0, in2 < 0));
+                return (div - corr);
             }
             else {
-                auto rem = in1 % in2;
-                auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
-                return (tmp - corr);
+                return (in1 / in2);
             }
         }
         else {
-            auto tmp = in1 / in2;
-            return (tmp == 0) ? resT(tmp) : resT(std::floor(tmp));
+            auto div = in1 / in2;
+            return (div == resT(0)) ? div : resT(std::floor(div));
         }
     }
 
@@ -86,43 +81,30 @@ struct FloorDivideFunctor
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
-        auto tmp = in1 / in2;
-        using tmpT = typename decltype(tmp)::element_type;
-        if constexpr (std::is_integral_v<tmpT>) {
-            if constexpr (std::is_unsigned_v<tmpT>) {
-#pragma unroll
-                for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == argT2(0)) {
-                        tmp[i] = tmpT(0);
-                    }
-                }
-            }
-            else {
-                auto rem = in1 % in2;
-#pragma unroll
-                for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == 0) {
-                        tmp[i] = tmpT(0);
-                    }
-                    else {
-                        tmpT corr =
-                            (rem[i] != 0 && ((rem[i] < 0) != (in2[i] < 0)));
-                        tmp[i] -= corr;
-                    }
-                }
-            }
-            if constexpr (std::is_same_v<resT, tmpT>) {
-                return tmp;
-            }
-            else {
-                using dpctl::tensor::type_utils::vec_cast;
-                return vec_cast<resT, tmpT, vec_sz>(tmp);
-            }
-        }
-        else {
+        if constexpr (std::is_integral_v<resT>) {
+            sycl::vec<resT, vec_sz> res;
 #pragma unroll
             for (int i = 0; i < vec_sz; ++i) {
-                if (in2[i] != 0) {
+                if (in2[i] == argT2(0)) {
+                    res[i] = resT(0);
+                }
+                else {
+                    res[i] = in1[i] / in2[i];
+                    if constexpr (std::is_signed_v<resT>) {
+                        auto mod = in1[i] % in2[i];
+                        auto corr = (mod != 0 && l_xor(mod < 0, in2[i] < 0));
+                        res[i] -= corr;
+                    }
+                }
+            }
+            return res;
+        }
+        else {
+            auto tmp = in1 / in2;
+            using tmpT = typename decltype(tmp)::element_type;
+#pragma unroll
+            for (int i = 0; i < vec_sz; ++i) {
+                if (in2[i] != argT2(0)) {
                     tmp[i] = std::floor(tmp[i]);
                 }
             }
@@ -134,6 +116,12 @@ struct FloorDivideFunctor
                 return vec_cast<resT, tmpT, vec_sz>(tmp);
             }
         }
+    }
+
+private:
+    bool l_xor(bool b1, bool b2) const
+    {
+        return (b1 != b2);
     }
 };
 
