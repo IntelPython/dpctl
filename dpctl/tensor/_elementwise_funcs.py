@@ -838,9 +838,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a real-valued data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -1149,7 +1149,27 @@ real = UnaryElementwiseFunc(
 )
 
 # B22: ==== REMAINDER   (x1, x2)
-# FIXME: implement B22
+_remainder_docstring_ = """
+remainder(x1, x2, out=None, order='K')
+
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+This function is equivalent to the Python modulus operator.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued data type.
+Returns:
+    usm_ndarray:
+        an array containing the element-wise remainders. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+remainder = BinaryElementwiseFunc(
+    "remainder", ti._remainder_result_type, ti._remainder, _remainder_docstring_
+)
 
 # U28: ==== ROUND       (x)
 _round_docstring = """
@@ -1178,7 +1198,33 @@ round = UnaryElementwiseFunc(
 )
 
 # U29: ==== SIGN        (x)
-# FIXME: implement U29
+_sign_docstring = """
+sign(x, out=None, order='K')
+
+Computes an indication of the sign of each element `x_i` of input array `x`
+using the signum function.
+
+The signum function returns `-1` if `x_i` is less than `0`,
+`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+sign = UnaryElementwiseFunc(
+    "sign", ti._sign_result_type, ti._sign, _sign_docstring
+)
 
 # U30: ==== SIN         (x)
 _sin_docstring = """
