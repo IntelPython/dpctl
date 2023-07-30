@@ -169,7 +169,7 @@ def test_pickling(memory_ctor):
     mobj.copy_from_host(host_src_obj)
 
     mobj_reconstructed = pickle.loads(pickle.dumps(mobj))
-    assert type(mobj) == type(
+    assert type(mobj) is type(
         mobj_reconstructed
     ), "Pickling should preserve type"
     assert (

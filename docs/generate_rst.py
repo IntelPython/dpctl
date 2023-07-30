@@ -170,7 +170,7 @@ def _is_class_property(o):
     Returns:
         [type]: [description]
     """
-    return isinstance(o, property) or (type(o) == _getset_descriptor)
+    return isinstance(o, property) or (type(o) is _getset_descriptor)
 
 
 def _is_class_method(o):

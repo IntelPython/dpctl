@@ -275,4 +275,4 @@ def test_cpython_api_SyclEvent_Make():
     make_e_fn = callable_maker(make_e_fn_ptr)
 
     ev2 = make_e_fn(ev.addressof_ref())
-    assert type(ev) == type(ev2)
+    assert type(ev) is type(ev2)
