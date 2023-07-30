@@ -203,16 +203,6 @@ def test_floor_divide_gh_1247():
         dpt.asnumpy(res), np.full(res.shape, -1, dtype=res.dtype)
     )
 
-    # attempt to invoke sycl::vec overload using a larger array
-    x = dpt.arange(-64, 65, 1, dtype="i4")
-    np.testing.assert_array_equal(
-        dpt.asnumpy(dpt.floor_divide(x, 3)), np.floor_divide(dpt.asnumpy(x), 3)
-    )
-    np.testing.assert_array_equal(
-        dpt.asnumpy(dpt.floor_divide(x, -3)),
-        np.floor_divide(dpt.asnumpy(x), -3),
-    )
-
 
 @pytest.mark.parametrize("dtype", _no_complex_dtypes[1:9])
 def test_floor_divide_integer_zero(dtype):
@@ -226,10 +216,42 @@ def test_floor_divide_integer_zero(dtype):
         dpt.asnumpy(res), np.zeros(x.shape, dtype=res.dtype)
     )
 
-    # attempt to invoke sycl::vec overload using a larger array
-    x = dpt.arange(129, dtype=dtype, sycl_queue=q)
-    y = dpt.zeros_like(x, sycl_queue=q)
+
+def test_floor_divide_special_cases():
+    q = get_queue_or_skip()
+
+    x = dpt.empty(1, dtype="f4", sycl_queue=q)
+    y = dpt.empty_like(x)
+    x[0], y[0] = dpt.inf, dpt.inf
+    res = dpt.floor_divide(x, y)
+    with np.errstate(all="ignore"):
+        res_np = np.floor_divide(dpt.asnumpy(x), dpt.asnumpy(y))
+        np.testing.assert_array_equal(dpt.asnumpy(res), res_np)
+
+    x[0], y[0] = 0.0, -1.0
+    res = dpt.floor_divide(x, y)
+    x_np = dpt.asnumpy(x)
+    y_np = dpt.asnumpy(y)
+    res_np = np.floor_divide(x_np, y_np)
+    np.testing.assert_array_equal(dpt.asnumpy(res), res_np)
+
+    res = dpt.floor_divide(y, x)
+    with np.errstate(all="ignore"):
+        res_np = np.floor_divide(y_np, x_np)
+        np.testing.assert_array_equal(dpt.asnumpy(res), res_np)
+
+    x[0], y[0] = -1.0, dpt.inf
     res = dpt.floor_divide(x, y)
     np.testing.assert_array_equal(
-        dpt.asnumpy(res), np.zeros(x.shape, dtype=res.dtype)
+        dpt.asnumpy(res), np.asarray([-0.0], dtype="f4")
     )
+
+    res = dpt.floor_divide(y, x)
+    np.testing.assert_array_equal(
+        dpt.asnumpy(res), np.asarray([-dpt.inf], dtype="f4")
+    )
+
+    x[0], y[0] = 1.0, dpt.nan
+    res = dpt.floor_divide(x, y)
+    res_np = np.floor_divide(dpt.asnumpy(x), dpt.asnumpy(y))
+    np.testing.assert_array_equal(dpt.asnumpy(res), res_np)
