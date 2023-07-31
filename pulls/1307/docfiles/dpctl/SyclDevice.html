@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data Parallel Control (dpctl) 0.14.6dev0+54.gf98832228 documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data Parallel Control (dpctl) 0.14.6dev0+70.g28e1ddd28 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+54.gf98832228
+                0.14.6dev0+70.g28e1ddd28
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -141,10 +141,10 @@ constructor. The filter string needs to conform to the
 </dl>
 <ul>
 <li><p>by calling one of the device selector helper functions:</p>
-<p><a class="reference internal" href="dpctl_functions_api.html#dpctl.select_accelerator_device" title="dpctl.select_accelerator_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_accelerator_device()</span></code></a>,
-<a class="reference internal" href="dpctl_functions_api.html#dpctl.select_cpu_device" title="dpctl.select_cpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_cpu_device()</span></code></a>,
-<a class="reference internal" href="dpctl_functions_api.html#dpctl.select_default_device" title="dpctl.select_default_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_default_device()</span></code></a>,
-<a class="reference internal" href="dpctl_functions_api.html#dpctl.select_gpu_device" title="dpctl.select_gpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_gpu_device()</span></code></a>,</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_accelerator_device()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_cpu_device()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_default_device()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_gpu_device()</span></code>,</p>
 </li>
 </ul>
 <dl class="field-list">
@@ -255,136 +255,133 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_host_allocations</span></code></a></p></td>
 <td><p>Returns True if this device can access USM-host memory, False otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports USM memory allocated as restricted USM, False otherwise.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_shared_allocations</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_shared_allocations</span></code></a></p></td>
 <td><p>Returns True if this device supports USM-shared memory allocated on the same device, False otherwise.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="dpctl.SyclDevice.has_aspect_usm_system_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_system_allocations</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="dpctl.SyclDevice.has_aspect_usm_system_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_system_allocations</span></code></a></p></td>
 <td><p>Returns True if system allocator may be used instead of SYCL USM allocation mechanism for USM-shared allocations on this device, False otherwise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_height" title="dpctl.SyclDevice.image_2d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_height</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_height" title="dpctl.SyclDevice.image_2d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_height</span></code></a></p></td>
 <td><p>Returns the maximum height of a 2D image or 1D image in pixels.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_width" title="dpctl.SyclDevice.image_2d_max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_width</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_2d_max_width" title="dpctl.SyclDevice.image_2d_max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_width</span></code></a></p></td>
 <td><p>Returns the maximum width of a 2D image or 1D image in pixels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_depth" title="dpctl.SyclDevice.image_3d_max_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_depth</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_depth" title="dpctl.SyclDevice.image_3d_max_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_depth</span></code></a></p></td>
 <td><p>Returns the maximum depth of a 3D image in pixels.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_height" title="dpctl.SyclDevice.image_3d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_height</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_height" title="dpctl.SyclDevice.image_3d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_height</span></code></a></p></td>
 <td><p>Returns the maximum height of a 3D image in pixels.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_width" title="dpctl.SyclDevice.image_3d_max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_width</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.image_3d_max_width" title="dpctl.SyclDevice.image_3d_max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_3d_max_width</span></code></a></p></td>
 <td><p>Returns the maximum width of a 3D image in pixels.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_accelerator" title="dpctl.SyclDevice.is_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_accelerator</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_accelerator" title="dpctl.SyclDevice.is_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_accelerator</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL accelerator device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_cpu" title="dpctl.SyclDevice.is_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cpu</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_cpu" title="dpctl.SyclDevice.is_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cpu</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL CPU device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_gpu" title="dpctl.SyclDevice.is_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_gpu</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.is_gpu" title="dpctl.SyclDevice.is_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_gpu</span></code></a></p></td>
 <td><p>Returns True if the SyclDevice instance is a SYCL GPU device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.local_mem_size" title="dpctl.SyclDevice.local_mem_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_mem_size</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.local_mem_size" title="dpctl.SyclDevice.local_mem_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_mem_size</span></code></a></p></td>
 <td><p>Returns the size of local memory on this device in bytes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_compute_units" title="dpctl.SyclDevice.max_compute_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_compute_units</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_compute_units" title="dpctl.SyclDevice.max_compute_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_compute_units</span></code></a></p></td>
 <td><p>Returns the number of parallel compute units available to the device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_num_sub_groups" title="dpctl.SyclDevice.max_num_sub_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_num_sub_groups</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_num_sub_groups" title="dpctl.SyclDevice.max_num_sub_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_num_sub_groups</span></code></a></p></td>
 <td><p>Returns the maximum number of sub-groups in a work-group for any kernel executed on the device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_read_image_args" title="dpctl.SyclDevice.max_read_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_read_image_args</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_read_image_args" title="dpctl.SyclDevice.max_read_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_read_image_args</span></code></a></p></td>
 <td><p>Returns the maximum number of simultaneous image objects that can be read from by a kernel.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_group_size" title="dpctl.SyclDevice.max_work_group_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_group_size</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_group_size" title="dpctl.SyclDevice.max_work_group_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_group_size</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in a work-group executing a kernel on a single compute unit.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_dims" title="dpctl.SyclDevice.max_work_item_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_dims</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_dims" title="dpctl.SyclDevice.max_work_item_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_dims</span></code></a></p></td>
 <td><p>Returns the maximum dimensions that specify the global and local work-item IDs used by the data parallel execution model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes" title="dpctl.SyclDevice.max_work_item_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes" title="dpctl.SyclDevice.max_work_item_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes1d" title="dpctl.SyclDevice.max_work_item_sizes1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes1d</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes1d" title="dpctl.SyclDevice.max_work_item_sizes1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes1d</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range&lt;1&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes2d" title="dpctl.SyclDevice.max_work_item_sizes2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes2d</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes2d" title="dpctl.SyclDevice.max_work_item_sizes2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes2d</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range&lt;2&gt;.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="dpctl.SyclDevice.max_work_item_sizes3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes3d</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_work_item_sizes3d" title="dpctl.SyclDevice.max_work_item_sizes3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_work_item_sizes3d</span></code></a></p></td>
 <td><p>Returns the maximum number of work-items that are permitted in each dimension of the work-group of the nd_range&lt;3&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_write_image_args" title="dpctl.SyclDevice.max_write_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_write_image_args</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.max_write_image_args" title="dpctl.SyclDevice.max_write_image_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_write_image_args</span></code></a></p></td>
 <td><p>Returns the maximum number of simultaneous image objects that can be written to by a kernel.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.name" title="dpctl.SyclDevice.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.name" title="dpctl.SyclDevice.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>Returns the name of the device as a string</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_char" title="dpctl.SyclDevice.native_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_char</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_char" title="dpctl.SyclDevice.native_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_char</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_double" title="dpctl.SyclDevice.native_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_double</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_double" title="dpctl.SyclDevice.native_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_double</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_float" title="dpctl.SyclDevice.native_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_float</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_float" title="dpctl.SyclDevice.native_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_float</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_half" title="dpctl.SyclDevice.native_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_half</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_half" title="dpctl.SyclDevice.native_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_half</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_int" title="dpctl.SyclDevice.native_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_int</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_int" title="dpctl.SyclDevice.native_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_int</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_long" title="dpctl.SyclDevice.native_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_long</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_long" title="dpctl.SyclDevice.native_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_long</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_short" title="dpctl.SyclDevice.native_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_short</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.native_vector_width_short" title="dpctl.SyclDevice.native_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">native_vector_width_short</span></code></a></p></td>
 <td><p>Returns the native ISA vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.parent_device" title="dpctl.SyclDevice.parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.parent_device" title="dpctl.SyclDevice.parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent_device</span></code></a></p></td>
 <td><p>Parent device for a sub-device, or None for a root device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.partition_max_sub_devices" title="dpctl.SyclDevice.partition_max_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition_max_sub_devices</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.partition_max_sub_devices" title="dpctl.SyclDevice.partition_max_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition_max_sub_devices</span></code></a></p></td>
 <td><p>The maximum number of sub-devices this <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance can be partitioned into.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_char" title="dpctl.SyclDevice.preferred_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_char</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_char" title="dpctl.SyclDevice.preferred_vector_width_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_char</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_double" title="dpctl.SyclDevice.preferred_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_double</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_double" title="dpctl.SyclDevice.preferred_vector_width_double"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_double</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_float" title="dpctl.SyclDevice.preferred_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_float</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_float" title="dpctl.SyclDevice.preferred_vector_width_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_float</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_half" title="dpctl.SyclDevice.preferred_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_half</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_half" title="dpctl.SyclDevice.preferred_vector_width_half"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_half</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_int" title="dpctl.SyclDevice.preferred_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_int</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_int" title="dpctl.SyclDevice.preferred_vector_width_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_int</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_long" title="dpctl.SyclDevice.preferred_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_long</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_long" title="dpctl.SyclDevice.preferred_vector_width_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_long</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_short" title="dpctl.SyclDevice.preferred_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.preferred_vector_width_short" title="dpctl.SyclDevice.preferred_vector_width_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preferred_vector_width_short</span></code></a></p></td>
 <td><p>Returns the preferred native vector width size for built-in scalar types that can be put into vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.profiling_timer_resolution" title="dpctl.SyclDevice.profiling_timer_resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_timer_resolution</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.profiling_timer_resolution" title="dpctl.SyclDevice.profiling_timer_resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_timer_resolution</span></code></a></p></td>
 <td><p>Profiling timer resolution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
 <td><p>Returns True if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
 <td><p>Returns list of supported sub-group sizes for this device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
 <td><p>Returns the platform associated with this device.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.vendor" title="dpctl.SyclDevice.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the device vendor name as a string.</p></td>
 </tr>
 </tbody>
@@ -392,7 +389,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.addressof_ref" title="dpctl.SyclDevice.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.addressof_ref" title="dpctl.SyclDevice.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a>()</p></td>
 <td><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclDeviceRef</span></code> pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></a>([partition])</p></td>
@@ -401,7 +398,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.get_filter_string" title="dpctl.SyclDevice.get_filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filter_string</span></code></a>([include_backend, ...])</p></td>
 <td><p>For a parent device, returns a filter selector string that includes backend or device type based on the value of the given keyword arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.print_device_info" title="dpctl.SyclDevice.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.print_device_info" title="dpctl.SyclDevice.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
 <td><p>Print information about the SYCL device.</p></td>
 </tr>
 </tbody>
@@ -791,25 +788,6 @@ allocated using <code class="docutils literal notranslate"><span class="pre">syc
 <dd class="field-even"><p>bool</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_usm_restricted_shared_allocations</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_usm_restricted_shared_allocations" title="Permalink to this definition"></a></dt>
-<dd><p>Returns True if this device supports USM memory
-allocated as restricted USM, False otherwise.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Indicates that the device supports USM memory allocated using
-<code class="docutils literal notranslate"><span class="pre">sycl::malloc_shared</span></code> as restricted USM.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-<div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 0.14.</span></p>
-</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1311,7 +1289,7 @@ device.</p>
 <h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.addressof_ref" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclDeviceRef</span></code> pointer as a
 <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
@@ -1436,7 +1414,7 @@ in the filter string.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.print_device_info">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.print_device_info" title="Permalink to this definition"></a></dt>
 <dd><p>Print information about the SYCL device.</p>
 </dd></dl>
 

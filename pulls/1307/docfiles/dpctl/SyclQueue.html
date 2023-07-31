@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.14.6dev0+54.gf98832228 documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.14.6dev0+70.g28e1ddd28 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+54.gf98832228
+                0.14.6dev0+70.g28e1ddd28
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -260,34 +260,34 @@ The argument can be either “default”, “in_order”,
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.addressof_ref" title="dpctl.SyclQueue.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.addressof_ref" title="dpctl.SyclQueue.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a>()</p></td>
 <td><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.mem_advise" title="dpctl.SyclQueue.mem_advise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_advise</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.mem_advise" title="dpctl.SyclQueue.mem_advise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_advise</span></code></a>(mem, count, advice)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a>(dest, src, count)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.print_device_info" title="dpctl.SyclQueue.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.print_device_info" title="dpctl.SyclQueue.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
 <td><p>Print information about the SYCL device associated with this queue.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit_barrier" title="dpctl.SyclQueue.submit_barrier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit_barrier" title="dpctl.SyclQueue.submit_barrier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></a>([dependent_events])</p></td>
 <td><p>Submits a barrier to the queue.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -295,7 +295,7 @@ The argument can be either “default”, “in_order”,
 <p class="rubric">Private methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="dpctl.SyclQueue._get_capsule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="dpctl.SyclQueue._get_capsule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -378,7 +378,7 @@ associated with this queue.</p>
 <h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a
 <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
@@ -391,50 +391,50 @@ associated with this queue.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.get_sycl_context">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_context" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_context" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.get_sycl_device">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_device" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">get_sycl_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.get_sycl_device" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.mem_advise">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">mem_advise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.mem_advise" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">mem_advise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">advice</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.mem_advise" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.prefetch">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">prefetch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.prefetch" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">prefetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.prefetch" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.print_device_info">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.print_device_info" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">print_device_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.print_device_info" title="Permalink to this definition"></a></dt>
 <dd><p>Print information about the SYCL device
 associated with this queue.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit_barrier">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit_barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit_barrier" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit_barrier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependent_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit_barrier" title="Permalink to this definition"></a></dt>
 <dd><p>Submits a barrier to the queue.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.wait">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.wait" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.wait" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -442,7 +442,7 @@ associated with this queue.</p>
 <h2>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue._get_capsule">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue._get_capsule" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue._get_capsule" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

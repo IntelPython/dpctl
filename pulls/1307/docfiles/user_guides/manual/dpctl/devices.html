@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device &mdash; Data Parallel Control (dpctl) 0.14.6dev0+54.gf98832228 documentation</title>
+  <title>Device &mdash; Data Parallel Control (dpctl) 0.14.6dev0+70.g28e1ddd28 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+54.gf98832228
+                0.14.6dev0+70.g28e1ddd28
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -124,7 +124,7 @@ device.</p>
 </section>
 <section id="listing-devices">
 <h2>Listing Devices<a class="headerlink" href="#listing-devices" title="Permalink to this heading"></a></h2>
-<p><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides the <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> utility function to list
+<p><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides the <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code> utility function to list
 the available devices on a user’s system. The list of devices returned depends
 on the available hardware, installed drivers,
 <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md">environment variables</a> influencing SYCL runtime,
@@ -167,12 +167,12 @@ such as <code class="docutils literal notranslate"><span class="pre">SYCL_DEVICE
 Get a list of all devices:
 
     Name            Intel(R) FPGA Emulation Device
-    Driver version  2023.16.6.0.22_223734
+    Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:accelerator:0
 
-    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
-    Driver version  2023.16.6.0.22_223734
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
 
@@ -181,12 +181,12 @@ Get a list of all devices:
 Get the list of only OpenCL devices:
 
     Name            Intel(R) FPGA Emulation Device
-    Driver version  2023.16.6.0.22_223734
+    Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:accelerator:0
 
-    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
-    Driver version  2023.16.6.0.22_223734
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
 
@@ -194,8 +194,8 @@ Get the list of only OpenCL devices:
 
 Get all OpenCL CPU devices:
 
-    Name            Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
-    Driver version  2023.16.6.0.22_223734
+    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
 
@@ -205,10 +205,10 @@ INFO: ===========================
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="#fig-listing-devices"><span class="std std-ref">Listing Available Devices</span></a> example demonstrates the usage of
-<a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a>.</p>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code>.</p>
 <p>You can filter the list based on the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend</span></code> and <a class="reference internal" href="../../../dpctl/dpctl_enum_api.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>.</p>
-<p>The 0-based ordinal position of a device in the output of <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> corresponds to
+<p>The 0-based ordinal position of a device in the output of <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code> corresponds to
 the <code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">id</span></code> value in the filter selector string corresponding to the
 device. For example, <code class="docutils literal notranslate"><span class="pre">&quot;opencl:cpu:0&quot;</span></code> refers to the first device in the list
 returned by <code class="docutils literal notranslate"><span class="pre">dpctl.get_devices(backend=&quot;opencl&quot;,</span> <span class="pre">device_type=&quot;cpu&quot;)</span></code>. If such
@@ -217,7 +217,7 @@ raises a <code class="docutils literal notranslate"><span class="pre">ValueError
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Unless the system configuration changes, the list of devices returned by
-<a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> and the relative ordering of devices in the list
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code> and the relative ordering of devices in the list
 is stable for every call to the function, even across different runs of an
 application.</p>
 </div>

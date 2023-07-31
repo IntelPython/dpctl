@@ -75,14 +75,6 @@ Queue Management Functions
 
     * - :func:`device_context()`
       - Yields a SYCL queue corresponding to the input queue object, device object, or device filter selector string.
-    * - :func:`get_current_backend()`
-      - Returns the backend for the current queue as a `backend_type` enum.
-    * - :func:`get_current_device_type()`
-      - Returns current device type as a `device_type` enum.
-    * - :func:`get_current_queue()`
-      - Returns the currently activate SYCL queue as a new SyclQueue object.
-    * - :func:`get_device_cached_queue()`
-      - Returns a cached queue associated with given device.
 
 .. _dpctl_device_selection_functions:
 
@@ -92,16 +84,8 @@ Device Selection Functions
 .. list-table::
     :widths: 25,50
 
-    * - :func:`select_accelerator_device()`
-      - A wrapper for SYCL's ``accelerator_selector`` class.
-    * - :func:`select_cpu_device()`
-      - A wrapper for SYCL's ``cpu_selector`` class.
-    * - :func:`select_default_device()`
-      - A wrapper for SYCL's ``default_selector`` class.
     * - :func:`select_device_with_aspects()`
       - Selects the root :class:`dpctl.SyclDevice` that has the highest default selector score among devices that have all aspects in the `required_aspects` list, and do not have any aspects in `excluded_aspects` list.
-    * - :func:`select_gpu_device()`
-      - A wrapper for SYCL's ``gpu_selector`` class.
 
 .. _dpctl_other_functions:
 
@@ -111,28 +95,8 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
-    * - :func:`get_devices()`
-      - Returns a list of :class:`dpctl.SyclDevice` instances selected based on the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
     * - :func:`get_include()`
       - Return the directory that contains the dpctl \*.h header files.
-    * - :func:`get_num_activated_queues()`
-      - Returns the number of currently activated queues for this thread.
-    * - :func:`get_num_devices()`
-      - A helper function to return the number of SYCL devices of a given :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
-    * - :func:`get_platforms()`
-      - Returns a list of all available SYCL platforms on the system.
-    * - :func:`has_accelerator_devices()`
-      - A helper function to check if there are any SYCL Accelerator devices available.
-    * - :func:`has_cpu_devices()`
-      - A helper function to check if there are any SYCL CPU devices available.
-    * - :func:`has_gpu_devices()`
-      - A helper function to check if there are any SYCL GPU devices available.
-    * - :func:`is_in_device_context()`
-      - Checks if the control is inside a :func:`dpctl.device_context()` scope.
-    * - :func:`lsplatform()`
-      - Prints out the list of available SYCL platforms, and optionally extra metadata about each platform.
-    * - :func:`set_global_queue()`
-      - Sets the global queue to the SYCL queue specified explicitly, or created from given arguments.
 
 
 Enums

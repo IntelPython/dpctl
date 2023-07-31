@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.program.SyclKernel &mdash; Data Parallel Control (dpctl) 0.14.6dev0+54.gf98832228 documentation</title>
+  <title>dpctl.program.SyclKernel &mdash; Data Parallel Control (dpctl) 0.14.6dev0+70.g28e1ddd28 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+54.gf98832228
+                0.14.6dev0+70.g28e1ddd28
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -68,7 +68,6 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="dpctl.program_pyapi.html#classes">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.program_pyapi.html#functions">Functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.program_pyapi.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
@@ -150,13 +149,13 @@
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.addressof_ref" title="dpctl.program.SyclKernel.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.addressof_ref" title="dpctl.program.SyclKernel.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a>()</p></td>
 <td><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelRef</span></code> pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.get_function_name" title="dpctl.program.SyclKernel.get_function_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_function_name</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.get_function_name" title="dpctl.program.SyclKernel.get_function_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_function_name</span></code></a>()</p></td>
 <td><p>Returns the name of the <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code> function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.get_num_args" title="dpctl.program.SyclKernel.get_num_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_num_args</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.program.SyclKernel.get_num_args" title="dpctl.program.SyclKernel.get_num_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_num_args</span></code></a>()</p></td>
 <td><p>Returns the number of arguments for this kernel function.</p></td>
 </tr>
 </tbody>
@@ -223,7 +222,7 @@ be used to execute the kernel on device it was built for.</p>
 <h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.addressof_ref">
-<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.addressof_ref" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclKernelRef</span></code> pointer
 as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
@@ -236,13 +235,13 @@ this <code class="xref py py-class docutils literal notranslate"><span class="pr
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.get_function_name">
-<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_function_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_function_name" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_function_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_function_name" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the name of the <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code> function.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.SyclKernel.get_num_args">
-<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_num_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_num_args" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.SyclKernel.</span></span><span class="sig-name descname"><span class="pre">get_num_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.SyclKernel.get_num_args" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of arguments for this kernel function.</p>
 </dd></dl>
 
