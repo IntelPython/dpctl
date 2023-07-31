@@ -598,20 +598,6 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
-    def has_aspect_usm_restricted_shared_allocations(self):
-        """ Returns True if this device supports USM memory
-        allocated as restricted USM, False otherwise.
-
-        Returns:
-            bool: Indicates that the device supports USM memory allocated using
-            ``sycl::malloc_shared`` as restricted USM.
-
-        .. deprecated:: 0.14
-        """
-        cdef _aspect_type AT = _aspect_type._usm_restricted_shared_allocations
-        return DPCTLDevice_HasAspect(self._device_ref, AT)
-
-    @property
     def has_aspect_usm_system_allocations(self):
         """ Returns True if system allocator may be used instead of SYCL USM
         allocation mechanism for USM-shared allocations on this device,

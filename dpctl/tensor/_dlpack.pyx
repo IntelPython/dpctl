@@ -106,7 +106,7 @@ def get_build_dlpack_version():
     return str(DLPACK_VERSION)
 
 
-cdef void _pycapsule_deleter(object dlt_capsule):
+cdef void _pycapsule_deleter(object dlt_capsule) noexcept:
     cdef DLManagedTensor *dlm_tensor = NULL
     if cpython.PyCapsule_IsValid(dlt_capsule, 'dltensor'):
         dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
@@ -114,7 +114,7 @@ cdef void _pycapsule_deleter(object dlt_capsule):
         dlm_tensor.deleter(dlm_tensor)
 
 
-cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
+cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) noexcept with gil:
     if dlm_tensor is not NULL:
         stdlib.free(dlm_tensor.dl_tensor.shape)
         cpython.Py_DECREF(<usm_ndarray>dlm_tensor.manager_ctx)
@@ -122,7 +122,7 @@ cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
         stdlib.free(dlm_tensor)
 
 
-cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
+cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     """
     to_dlpack_capsule(usm_ary)
 
@@ -288,7 +288,7 @@ cdef class _DLManagedTensorOwner:
         return res
 
 
-cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
+cpdef usm_ndarray from_dlpack_capsule(object py_caps):
     """
     from_dlpack_capsule(caps)
 

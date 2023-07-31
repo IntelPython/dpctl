@@ -68,7 +68,7 @@ cdef class SyclContextCreationError(Exception):
     pass
 
 
-cdef void _context_capsule_deleter(object o):
+cdef void _context_capsule_deleter(object o) noexcept:
     cdef DPCTLSyclContextRef CRef = NULL
     if pycapsule.PyCapsule_IsValid(o, "SyclContextRef"):
         CRef = <DPCTLSyclContextRef> pycapsule.PyCapsule_GetPointer(
