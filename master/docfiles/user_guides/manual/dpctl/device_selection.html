@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device Selection &mdash; Data Parallel Control (dpctl) 0.14.6dev0+60.gf0bbafca2 documentation</title>
+  <title>Device Selection &mdash; Data Parallel Control (dpctl) 0.14.6dev0+65.gfedc71b6f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+60.gf0bbafca2
+                0.14.6dev0+65.gfedc71b6f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -127,7 +127,7 @@ use one of the helper functions included inside <cite>dpctl`</cite> directly. Dp
 selection of a specific device when multiple devices of the same type are
 available on a system are deferred to the underlying SYCL runtime.</p>
 <p>The example <a class="reference internal" href="#fig-gpu-device-selection"><span class="std std-ref">Selecting a GPU Device</span></a> shows the usage of the
-<a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.select_gpu_device" title="dpctl.select_gpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_gpu_device()</span></code></a> device selection function. In case when multiple
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.select_gpu_device()</span></code> device selection function. In case when multiple
 GPU devices are available, only one is returned based on the underlying scoring
 logic inside of the SYCL runtime. If the selection function is unable to select a
 device, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised.</p>
@@ -211,12 +211,12 @@ strings.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-filter-selection"><span class="std std-ref">Device Creation With Filter Strings</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example select_using_filter
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
     Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
 
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
     Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
@@ -333,7 +333,7 @@ Dpctl helps you to accomplish more advanced device selection.</p>
 <p>The <a class="reference internal" href="#fig-custom-device-selection"><span class="std std-ref">Custom Device Selection</span></a> example shows a way of selecting a device
 based on a specific hardware property. The process is the following:</p>
 <ol class="arabic simple">
-<li><p>The <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code></a> returns a list of all <em>root</em> devices on the system.</p></li>
+<li><p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_devices()</span></code> returns a list of all <em>root</em> devices on the system.</p></li>
 </ol>
 <p>2. Out of that list the devices that
 support half-precision floating-point arithmetic are selected.
@@ -373,7 +373,7 @@ supports double precision arithmetic and SYCL USM shared memory allocation.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-select-device-with-aspects"><span class="std std-ref">Device Selection Using Aspects</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_device_with_aspects
-    Name            Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
     Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
