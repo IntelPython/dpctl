@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev0+67.gdcca13601 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev0+70.g4339cf38 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+67.gdcca13601
+                0.14.6dev0+70.g4339cf38
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -122,6 +122,8 @@
     <span class="s2">&quot;Implementation module for copy- and cast- operations on &quot;</span>
     <span class="s2">&quot;:class:`dpctl.tensor.usm_ndarray`.&quot;</span>
 <span class="p">)</span>
+
+<span class="n">int32_t_max</span> <span class="o">=</span> <span class="mi">2147483648</span>
 
 
 <span class="k">def</span> <span class="nf">_copy_to_numpy</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
@@ -574,7 +576,8 @@
             <span class="s2">&quot;Parameter p is inconsistent with input array dimensions&quot;</span>
         <span class="p">)</span>
     <span class="n">mask_nelems</span> <span class="o">=</span> <span class="n">ary_mask</span><span class="o">.</span><span class="n">size</span>
-    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary_mask</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">cumsum_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span> <span class="k">if</span> <span class="n">mask_nelems</span> <span class="o">&lt;</span> <span class="n">int32_t_max</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span>
+    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum_dt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary_mask</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">cumsum</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">mask_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span><span class="n">ary_mask</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="n">dst_shape</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">pp</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">mask_count</span><span class="p">,)</span> <span class="o">+</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">pp</span> <span class="o">+</span> <span class="n">mask_nd</span> <span class="p">:]</span>
@@ -601,8 +604,9 @@
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">usm_type</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="n">mask_nelems</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">cumsum_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span> <span class="k">if</span> <span class="n">mask_nelems</span> <span class="o">&lt;</span> <span class="n">int32_t_max</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span>
     <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
+        <span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum_dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
     <span class="p">)</span>
     <span class="n">mask_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="n">indexes</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
@@ -696,7 +700,8 @@
             <span class="s2">&quot;Parameter p is inconsistent with input array dimensions&quot;</span>
         <span class="p">)</span>
     <span class="n">mask_nelems</span> <span class="o">=</span> <span class="n">ary_mask</span><span class="o">.</span><span class="n">size</span>
-    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary_mask</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">cumsum_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span> <span class="k">if</span> <span class="n">mask_nelems</span> <span class="o">&lt;</span> <span class="n">int32_t_max</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span>
+    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum_dt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary_mask</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">cumsum</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">mask_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span><span class="n">ary_mask</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="n">expected_vals_shape</span> <span class="o">=</span> <span class="p">(</span>
