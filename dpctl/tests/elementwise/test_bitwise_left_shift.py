@@ -85,3 +85,15 @@ def test_bitwise_left_shift_dtype_matrix_strided(op1_dtype, op2_dtype):
 
     assert r.dtype == r_np.dtype
     assert (dpt.asnumpy(r) == r_np).all()
+
+
+@pytest.mark.parametrize("op_dtype", _integral_dtypes)
+def test_bitwise_left_shift_range(op_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op_dtype, q)
+
+    x = dpt.ones(255, dtype=op_dtype)
+    y = dpt.asarray(64, dtype=op_dtype)
+
+    z = dpt.bitwise_left_shift(x, y)
+    assert dpt.all(dpt.equal(z, 0))
