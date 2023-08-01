@@ -31,6 +31,8 @@ __doc__ = (
     ":class:`dpctl.tensor.usm_ndarray`."
 )
 
+int32_t_max = 2147483648
+
 
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
@@ -482,7 +484,8 @@ def _extract_impl(ary, ary_mask, axis=0):
             "Parameter p is inconsistent with input array dimensions"
         )
     mask_nelems = ary_mask.size
-    cumsum = dpt.empty(mask_nelems, dtype=dpt.int64, device=ary_mask.device)
+    cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
+    cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
     mask_count = ti.mask_positions(ary_mask, cumsum, sycl_queue=exec_q)
     dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
@@ -509,8 +512,9 @@ def _nonzero_impl(ary):
     exec_q = ary.sycl_queue
     usm_type = ary.usm_type
     mask_nelems = ary.size
+    cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
     cumsum = dpt.empty(
-        mask_nelems, dtype=dpt.int64, sycl_queue=exec_q, order="C"
+        mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
     )
     mask_count = ti.mask_positions(ary, cumsum, sycl_queue=exec_q)
     indexes = dpt.empty(
@@ -604,7 +608,8 @@ def _place_impl(ary, ary_mask, vals, axis=0):
             "Parameter p is inconsistent with input array dimensions"
         )
     mask_nelems = ary_mask.size
-    cumsum = dpt.empty(mask_nelems, dtype=dpt.int64, device=ary_mask.device)
+    cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
+    cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
     mask_count = ti.mask_positions(ary_mask, cumsum, sycl_queue=exec_q)
     expected_vals_shape = (
