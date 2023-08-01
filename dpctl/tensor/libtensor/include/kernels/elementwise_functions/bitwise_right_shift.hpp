@@ -59,31 +59,41 @@ struct BitwiseRightShiftFunctor
     using supports_sg_loadstore = typename std::true_type;
     using supports_vec = typename std::true_type;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        if constexpr (std::is_unsigned_v<argT2>) {
-            return (in1 >> in2);
-        }
-        else {
-            return (in2 < argT2(0)) ? resT(0) : (in1 >> in2);
-        }
+        return impl(in1, in2);
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
-        if constexpr (std::is_same_v<argT1, argT2> && std::is_unsigned_v<argT2>)
-        {
-            return (in1 >> in2);
+        sycl::vec<resT, vec_sz> res;
+#pragma unroll
+        for (int i = 0; i < vec_sz; ++i) {
+            res[i] = impl(in1[i], in2[i]);
+        }
+        return res;
+    }
+
+private:
+    resT impl(const argT1 &in1, const argT2 &in2) const
+    {
+        constexpr argT2 in1_bitsize = static_cast<argT2>(sizeof(argT1) * 8);
+        constexpr resT zero = resT(0);
+
+        // bitshift op with second operand negative, or >= bitwidth(argT1) is UB
+        // array API spec mandates 0
+        if constexpr (std::is_unsigned_v<argT2>) {
+            return (in2 < in1_bitsize) ? (in1 >> in2) : zero;
         }
         else {
-            sycl::vec<resT, vec_sz> res;
-#pragma unroll
-            for (int i = 0; i < vec_sz; ++i) {
-                res[i] = (in2[i] < argT2(0)) ? resT(0) : (in1[i] >> in2[i]);
-            }
-            return res;
+            return (in2 < argT2(0))
+                       ? zero
+                       : ((in2 < in1_bitsize)
+                              ? (in1 >> in2)
+                              : (in1 < argT1(0) ? resT(-1) : zero));
         }
     }
 };
