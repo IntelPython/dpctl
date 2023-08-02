@@ -40,6 +40,12 @@
 #include "kernels/elementwise_functions/asinh.hpp"
 #include "kernels/elementwise_functions/atan.hpp"
 #include "kernels/elementwise_functions/atanh.hpp"
+#include "kernels/elementwise_functions/bitwise_and.hpp"
+#include "kernels/elementwise_functions/bitwise_invert.hpp"
+#include "kernels/elementwise_functions/bitwise_left_shift.hpp"
+#include "kernels/elementwise_functions/bitwise_or.hpp"
+#include "kernels/elementwise_functions/bitwise_right_shift.hpp"
+#include "kernels/elementwise_functions/bitwise_xor.hpp"
 #include "kernels/elementwise_functions/ceil.hpp"
 #include "kernels/elementwise_functions/conj.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
@@ -509,37 +515,237 @@ void populate_atanh_dispatch_vectors(void)
 // B03: ===== BITWISE_AND           (x1, x2)
 namespace impl
 {
-// FIXME: add code for B03
+namespace bitwise_and_fn_ns = dpctl::tensor::kernels::bitwise_and;
+
+static binary_contig_impl_fn_ptr_t
+    bitwise_and_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int bitwise_and_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    bitwise_and_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_bitwise_and_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = bitwise_and_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::BitwiseAndTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseAndTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(bitwise_and_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::BitwiseAndStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, BitwiseAndStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(bitwise_and_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::BitwiseAndContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, BitwiseAndContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(bitwise_and_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
 namespace impl
 {
-// FIXME: add code for B04
+namespace bitwise_left_shift_fn_ns = dpctl::tensor::kernels::bitwise_left_shift;
+
+static binary_contig_impl_fn_ptr_t
+    bitwise_left_shift_contig_dispatch_table[td_ns::num_types]
+                                            [td_ns::num_types];
+static int bitwise_left_shift_output_id_table[td_ns::num_types]
+                                             [td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    bitwise_left_shift_strided_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
+
+void populate_bitwise_left_shift_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = bitwise_left_shift_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::BitwiseLeftShiftTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseLeftShiftTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(bitwise_left_shift_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::BitwiseLeftShiftStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         BitwiseLeftShiftStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(bitwise_left_shift_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::BitwiseLeftShiftContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t,
+                         BitwiseLeftShiftContigFactory, num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(bitwise_left_shift_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // U08: ===== BITWISE_INVERT        (x)
 namespace impl
 {
-// FIXME: add code for U08
+
+namespace bitwise_invert_fn_ns = dpctl::tensor::kernels::bitwise_invert;
+
+static unary_contig_impl_fn_ptr_t
+    bitwise_invert_contig_dispatch_vector[td_ns::num_types];
+static int bitwise_invert_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    bitwise_invert_strided_dispatch_vector[td_ns::num_types];
+
+void populate_bitwise_invert_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = bitwise_invert_fn_ns;
+
+    using fn_ns::BitwiseInvertContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t,
+                          BitwiseInvertContigFactory, num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(bitwise_invert_contig_dispatch_vector);
+
+    using fn_ns::BitwiseInvertStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t,
+                          BitwiseInvertStridedFactory, num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(bitwise_invert_strided_dispatch_vector);
+
+    using fn_ns::BitwiseInvertTypeMapFactory;
+    DispatchVectorBuilder<int, BitwiseInvertTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(bitwise_invert_output_typeid_vector);
+};
+
 } // namespace impl
 
 // B05: ===== BITWISE_OR            (x1, x2)
 namespace impl
 {
-// FIXME: add code for B05
+namespace bitwise_or_fn_ns = dpctl::tensor::kernels::bitwise_or;
+
+static binary_contig_impl_fn_ptr_t
+    bitwise_or_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int bitwise_or_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    bitwise_or_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_bitwise_or_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = bitwise_or_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::BitwiseOrTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseOrTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(bitwise_or_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::BitwiseOrStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, BitwiseOrStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(bitwise_or_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::BitwiseOrContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, BitwiseOrContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(bitwise_or_contig_dispatch_table);
+};
 } // namespace impl
 
 // B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
 namespace impl
 {
-// FIXME: add code for B06
+namespace bitwise_right_shift_fn_ns =
+    dpctl::tensor::kernels::bitwise_right_shift;
+
+static binary_contig_impl_fn_ptr_t
+    bitwise_right_shift_contig_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
+static int bitwise_right_shift_output_id_table[td_ns::num_types]
+                                              [td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    bitwise_right_shift_strided_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+
+void populate_bitwise_right_shift_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = bitwise_right_shift_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::BitwiseRightShiftTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseRightShiftTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(bitwise_right_shift_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::BitwiseRightShiftStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         BitwiseRightShiftStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(bitwise_right_shift_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::BitwiseRightShiftContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t,
+                         BitwiseRightShiftContigFactory, num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(bitwise_right_shift_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // B07: ===== BITWISE_XOR           (x1, x2)
 namespace impl
 {
-// FIXME: add code for B07
+namespace bitwise_xor_fn_ns = dpctl::tensor::kernels::bitwise_xor;
+
+static binary_contig_impl_fn_ptr_t
+    bitwise_xor_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int bitwise_xor_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    bitwise_xor_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_bitwise_xor_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = bitwise_xor_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::BitwiseXorTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseXorTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(bitwise_xor_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::BitwiseXorStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, BitwiseXorStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(bitwise_xor_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::BitwiseXorContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, BitwiseXorContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(bitwise_xor_contig_dispatch_table);
+};
 } // namespace impl
 
 // U09: ==== CEIL          (x)
@@ -2602,22 +2808,239 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B03: ===== BITWISE_AND           (x1, x2)
-    // FIXME:
+    {
+        impl::populate_bitwise_and_dispatch_tables();
+        using impl::bitwise_and_contig_dispatch_table;
+        using impl::bitwise_and_output_id_table;
+        using impl::bitwise_and_strided_dispatch_table;
+
+        auto bitwise_and_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                     dpctl::tensor::usm_ndarray src2,
+                                     dpctl::tensor::usm_ndarray dst,
+                                     sycl::queue exec_q,
+                                     const std::vector<sycl::event> &depends =
+                                         {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, bitwise_and_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                bitwise_and_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                bitwise_and_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto bitwise_and_result_type_pyapi = [&](py::dtype dtype1,
+                                                 py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               bitwise_and_output_id_table);
+        };
+        m.def("_bitwise_and", bitwise_and_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_bitwise_and_result_type", bitwise_and_result_type_pyapi, "");
+    }
 
     // B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
-    // FIXME:
+    {
+        impl::populate_bitwise_left_shift_dispatch_tables();
+        using impl::bitwise_left_shift_contig_dispatch_table;
+        using impl::bitwise_left_shift_output_id_table;
+        using impl::bitwise_left_shift_strided_dispatch_table;
+
+        auto bitwise_left_shift_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                            dpctl::tensor::usm_ndarray src2,
+                                            dpctl::tensor::usm_ndarray dst,
+                                            sycl::queue exec_q,
+                                            const std::vector<sycl::event>
+                                                &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends,
+                bitwise_left_shift_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                bitwise_left_shift_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                bitwise_left_shift_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto bitwise_left_shift_result_type_pyapi = [&](py::dtype dtype1,
+                                                        py::dtype dtype2) {
+            return py_binary_ufunc_result_type(
+                dtype1, dtype2, bitwise_left_shift_output_id_table);
+        };
+        m.def("_bitwise_left_shift", bitwise_left_shift_pyapi, "",
+              py::arg("src1"), py::arg("src2"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_bitwise_left_shift_result_type",
+              bitwise_left_shift_result_type_pyapi, "");
+    }
 
     // U08: ===== BITWISE_INVERT        (x)
-    // FIXME:
+    {
+        impl::populate_bitwise_invert_dispatch_vectors();
+        using impl::bitwise_invert_contig_dispatch_vector;
+        using impl::bitwise_invert_output_typeid_vector;
+        using impl::bitwise_invert_strided_dispatch_vector;
+
+        auto bitwise_invert_pyapi = [&](arrayT src, arrayT dst,
+                                        sycl::queue exec_q,
+                                        const event_vecT &depends = {}) {
+            return py_unary_ufunc(src, dst, exec_q, depends,
+                                  bitwise_invert_output_typeid_vector,
+                                  bitwise_invert_contig_dispatch_vector,
+                                  bitwise_invert_strided_dispatch_vector);
+        };
+        m.def("_bitwise_invert", bitwise_invert_pyapi, "", py::arg("src"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+
+        auto bitwise_invert_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(
+                dtype, bitwise_invert_output_typeid_vector);
+        };
+        m.def("_bitwise_invert_result_type", bitwise_invert_result_type_pyapi);
+    }
 
     // B05: ===== BITWISE_OR            (x1, x2)
-    // FIXME:
+    {
+        impl::populate_bitwise_or_dispatch_tables();
+        using impl::bitwise_or_contig_dispatch_table;
+        using impl::bitwise_or_output_id_table;
+        using impl::bitwise_or_strided_dispatch_table;
+
+        auto bitwise_or_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                    dpctl::tensor::usm_ndarray src2,
+                                    dpctl::tensor::usm_ndarray dst,
+                                    sycl::queue exec_q,
+                                    const std::vector<sycl::event> &depends =
+                                        {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, bitwise_or_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                bitwise_or_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                bitwise_or_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto bitwise_or_result_type_pyapi = [&](py::dtype dtype1,
+                                                py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               bitwise_or_output_id_table);
+        };
+        m.def("_bitwise_or", bitwise_or_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_bitwise_or_result_type", bitwise_or_result_type_pyapi, "");
+    }
 
     // B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
-    // FIXME:
+    {
+        impl::populate_bitwise_right_shift_dispatch_tables();
+        using impl::bitwise_right_shift_contig_dispatch_table;
+        using impl::bitwise_right_shift_output_id_table;
+        using impl::bitwise_right_shift_strided_dispatch_table;
+
+        auto bitwise_right_shift_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                             dpctl::tensor::usm_ndarray src2,
+                                             dpctl::tensor::usm_ndarray dst,
+                                             sycl::queue exec_q,
+                                             const std::vector<sycl::event>
+                                                 &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends,
+                bitwise_right_shift_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                bitwise_right_shift_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                bitwise_right_shift_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto bitwise_right_shift_result_type_pyapi = [&](py::dtype dtype1,
+                                                         py::dtype dtype2) {
+            return py_binary_ufunc_result_type(
+                dtype1, dtype2, bitwise_right_shift_output_id_table);
+        };
+        m.def("_bitwise_right_shift", bitwise_right_shift_pyapi, "",
+              py::arg("src1"), py::arg("src2"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+        m.def("_bitwise_right_shift_result_type",
+              bitwise_right_shift_result_type_pyapi, "");
+    }
 
     // B07: ===== BITWISE_XOR           (x1, x2)
-    // FIXME:
+    {
+        impl::populate_bitwise_xor_dispatch_tables();
+        using impl::bitwise_xor_contig_dispatch_table;
+        using impl::bitwise_xor_output_id_table;
+        using impl::bitwise_xor_strided_dispatch_table;
+
+        auto bitwise_xor_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                     dpctl::tensor::usm_ndarray src2,
+                                     dpctl::tensor::usm_ndarray dst,
+                                     sycl::queue exec_q,
+                                     const std::vector<sycl::event> &depends =
+                                         {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, bitwise_xor_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                bitwise_xor_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                bitwise_xor_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto bitwise_xor_result_type_pyapi = [&](py::dtype dtype1,
+                                                 py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               bitwise_xor_output_id_table);
+        };
+        m.def("_bitwise_xor", bitwise_xor_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_bitwise_xor_result_type", bitwise_xor_result_type_pyapi, "");
+    }
 
     // U09: ==== CEIL          (x)
     {
