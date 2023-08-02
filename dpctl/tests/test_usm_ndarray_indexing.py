@@ -1345,3 +1345,15 @@ def test_nonzero_arg_validation():
         dpt.nonzero(list())
     with pytest.raises(ValueError):
         dpt.nonzero(dpt.asarray(1))
+
+
+def test_nonzero_dtype():
+    "See gh-1322"
+    get_queue_or_skip()
+    x = dpt.ones((3, 4))
+    idx, idy = dpt.nonzero(x)
+    # create array using device's
+    # default integral data type
+    ref = dpt.arange(8)
+    assert idx.dtype == ref.dtype
+    assert idy.dtype == ref.dtype
