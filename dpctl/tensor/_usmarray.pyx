@@ -1202,9 +1202,9 @@ cdef class usm_ndarray:
     def __truediv__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "true_divide", other)
+            return _dispatch_binary_elementwise(first, "divide", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "true_divide", other)
+            return _dispatch_binary_elementwise2(first, "divide", other)
         return NotImplemented
 
     def __xor__(first, other):
@@ -1249,7 +1249,7 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise2(other, "subtract", self)
 
     def __rtruediv__(self, other):
-        return _dispatch_binary_elementwise2(other, "true_divide", self)
+        return _dispatch_binary_elementwise2(other, "divide", self)
 
     def __rxor__(self, other):
         return _dispatch_binary_elementwise2(other, "logical_xor", self)
