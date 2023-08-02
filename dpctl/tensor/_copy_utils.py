@@ -517,9 +517,10 @@ def _nonzero_impl(ary):
         mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
     )
     mask_count = ti.mask_positions(ary, cumsum, sycl_queue=exec_q)
+    indexes_dt = ti.default_device_int_type(exec_q.sycl_device)
     indexes = dpt.empty(
         (ary.ndim, mask_count),
-        dtype=cumsum.dtype,
+        dtype=indexes_dt,
         usm_type=usm_type,
         sycl_queue=exec_q,
         order="C",
