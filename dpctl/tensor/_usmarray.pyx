@@ -884,7 +884,7 @@ cdef class usm_ndarray:
         Returns array namespace, member functions of which
         implement data API.
         """
-        return self.array_namespace_
+        return self.array_namespace_ if self.array_namespace_ is not None else dpctl.tensor
 
     def __bool__(self):
         if self.size == 1:
