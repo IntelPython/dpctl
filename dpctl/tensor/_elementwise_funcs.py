@@ -209,7 +209,36 @@ atan = UnaryElementwiseFunc(
 )
 
 # B02: ===== ATAN2 (x1, x2)
-# FIXME: implemetn B02
+_atan2_docstring_ = """
+atan2(x1, x2, out=None, order='K')
+
+Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the
+input array `x2`. Each element-wise result is expressed in radians.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the inverse tangent of the quotient `x1`/`x2`.
+        The returned array must have a real-valued floating-point data type
+        determined by Type Promotion Rules.
+"""
+
+atan2 = BinaryElementwiseFunc(
+    "atan2", ti._atan2_result_type, ti._atan2, _atan2_docstring_
+)
 
 # U07: ===== ATANH (x)
 _atanh_docstring = """
@@ -1402,6 +1431,32 @@ Returns:
 
 sign = UnaryElementwiseFunc(
     "sign", ti._sign_result_type, ti._sign, _sign_docstring
+)
+
+# ==== SIGNBIT        (x)
+_signbit_docstring = """
+signbit(x, out=None, order='K')
+
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The returned array
+        must have a data type of `bool`.
+"""
+
+signbit = UnaryElementwiseFunc(
+    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
 )
 
 # U30: ==== SIN         (x)

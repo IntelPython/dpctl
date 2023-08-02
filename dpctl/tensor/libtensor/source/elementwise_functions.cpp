@@ -39,6 +39,7 @@
 #include "kernels/elementwise_functions/asin.hpp"
 #include "kernels/elementwise_functions/asinh.hpp"
 #include "kernels/elementwise_functions/atan.hpp"
+#include "kernels/elementwise_functions/atan2.hpp"
 #include "kernels/elementwise_functions/atanh.hpp"
 #include "kernels/elementwise_functions/bitwise_and.hpp"
 #include "kernels/elementwise_functions/bitwise_invert.hpp"
@@ -83,6 +84,7 @@
 #include "kernels/elementwise_functions/remainder.hpp"
 #include "kernels/elementwise_functions/round.hpp"
 #include "kernels/elementwise_functions/sign.hpp"
+#include "kernels/elementwise_functions/signbit.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
 #include "kernels/elementwise_functions/sinh.hpp"
 #include "kernels/elementwise_functions/sqrt.hpp"
@@ -473,7 +475,40 @@ void populate_atan_dispatch_vectors(void)
 // B02: ===== ATAN2 (x1, x2)
 namespace impl
 {
-// FIXME: add code for B02
+namespace atan2_fn_ns = dpctl::tensor::kernels::atan2;
+
+static binary_contig_impl_fn_ptr_t
+    atan2_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int atan2_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    atan2_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_atan2_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = atan2_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::Atan2TypeMapFactory;
+    DispatchTableBuilder<int, Atan2TypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(atan2_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::Atan2StridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, Atan2StridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(atan2_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::Atan2ContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, Atan2ContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(atan2_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // U07: ===== ATANH (x)
@@ -2188,6 +2223,42 @@ void populate_sign_dispatch_vectors(void)
 
 } // namespace impl
 
+// ==== SIGNBIT        (x)
+namespace impl
+{
+
+namespace signbit_fn_ns = dpctl::tensor::kernels::signbit;
+
+static unary_contig_impl_fn_ptr_t
+    signbit_contig_dispatch_vector[td_ns::num_types];
+static int signbit_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    signbit_strided_dispatch_vector[td_ns::num_types];
+
+void populate_signbit_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = signbit_fn_ns;
+
+    using fn_ns::SignbitContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, SignbitContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(signbit_contig_dispatch_vector);
+
+    using fn_ns::SignbitStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, SignbitStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(signbit_strided_dispatch_vector);
+
+    using fn_ns::SignbitTypeMapFactory;
+    DispatchVectorBuilder<int, SignbitTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(signbit_output_typeid_vector);
+}
+
+} // namespace impl
+
 // U30: ==== SIN         (x)
 namespace impl
 {
@@ -2782,7 +2853,43 @@ void init_elementwise_functions(py::module_ m)
     }
 
     // B02: ===== ATAN2 (x1, x2)
-    // FIXME:
+    {
+        impl::populate_atan2_dispatch_tables();
+        using impl::atan2_contig_dispatch_table;
+        using impl::atan2_output_id_table;
+        using impl::atan2_strided_dispatch_table;
+
+        auto atan2_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                               dpctl::tensor::usm_ndarray src2,
+                               dpctl::tensor::usm_ndarray dst,
+                               sycl::queue exec_q,
+                               const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, atan2_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                atan2_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                atan2_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto atan2_result_type_pyapi = [&](py::dtype dtype1, py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               atan2_output_id_table);
+        };
+        m.def("_atan2", atan2_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_atan2_result_type", atan2_result_type_pyapi, "");
+    }
 
     // U07: ===== ATANH (x)
     {
@@ -4180,6 +4287,30 @@ void init_elementwise_functions(py::module_ m)
         m.def("_sign_result_type", sign_result_type_pyapi);
     }
 
+    // ==== SIGNBIT        (x)
+    {
+        impl::populate_signbit_dispatch_vectors();
+        using impl::signbit_contig_dispatch_vector;
+        using impl::signbit_output_typeid_vector;
+        using impl::signbit_strided_dispatch_vector;
+
+        auto signbit_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+                                 const event_vecT &depends = {}) {
+            return py_unary_ufunc(src, dst, exec_q, depends,
+                                  signbit_output_typeid_vector,
+                                  signbit_contig_dispatch_vector,
+                                  signbit_strided_dispatch_vector);
+        };
+        m.def("_signbit", signbit_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto signbit_result_type_pyapi = [&](py::dtype dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              signbit_output_typeid_vector);
+        };
+        m.def("_signbit_result_type", signbit_result_type_pyapi);
+    }
+
     // U30: ==== SIN         (x)
     {
         impl::populate_sin_dispatch_vectors();
@@ -4400,7 +4531,7 @@ void init_elementwise_functions(py::module_ m)
         m.def("_trunc_result_type", trunc_result_type_pyapi);
     }
 
-    // B24: ==== HYPOT       (x)
+    // B24: ==== HYPOT       (x1, x2)
     {
         impl::populate_hypot_dispatch_tables();
         using impl::hypot_contig_dispatch_table;
