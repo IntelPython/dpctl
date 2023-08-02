@@ -898,7 +898,7 @@ cdef class usm_ndarray:
 
         raise ValueError(
             "The truth value of an array with more than one element is "
-            "ambiguous. Use a.any() or a.all()"
+            "ambiguous. Use dpctl.tensor.any() or dpctl.tensor.all()"
         )
 
     def __float__(self):
