@@ -56,8 +56,6 @@ Array Construction
       - Returns an uninitialized :class:`dpctl.tensor.usm_ndarray` with the same `shape` as the input array `x`.
     * - :func:`eye()`
       - Creates :class:`dpctl.tensor.usm_ndarray` with ones on the `k`-th diagonal.
-    * - :func:`from_dlpack()`
-      - Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
       - Creates :class:`dpctl.tensor.usm_ndarray` from instance of :class:`numpy.ndarray`.
     * - :func:`full()`
