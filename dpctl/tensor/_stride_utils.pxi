@@ -64,6 +64,8 @@ cdef int _from_input_shape_strides(
     cdef int j
     cdef bint all_incr = 1
     cdef bint all_decr = 1
+    cdef bint all_incr_modified = 0
+    cdef bint all_decr_modified = 0
     cdef Py_ssize_t elem_count = 1
     cdef Py_ssize_t min_shift = 0
     cdef Py_ssize_t max_shift = 0
@@ -166,12 +168,14 @@ cdef int _from_input_shape_strides(
                     j = j + 1
                 if j < nd:
                     if all_incr:
+                        all_incr_modified = 1
                         all_incr = (
                             (strides_arr[i] > 0) and
                             (strides_arr[j] > 0) and
                             (strides_arr[i] <= strides_arr[j])
                         )
                     if all_decr:
+                        all_decr_modified = 1
                         all_decr = (
                             (strides_arr[i] > 0) and
                             (strides_arr[j] > 0) and
@@ -180,6 +184,10 @@ cdef int _from_input_shape_strides(
                     i = j
                 else:
                     break
+            # should only set contig flags on actually obtained
+            # values, rather than default values
+            all_incr = all_incr and all_incr_modified
+            all_decr = all_decr and all_decr_modified
             if all_incr and all_decr:
                 contig[0] = (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)
             elif all_incr:
