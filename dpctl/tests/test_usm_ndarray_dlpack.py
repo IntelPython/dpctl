@@ -178,3 +178,18 @@ def test_from_dlpack_input_validation():
 
     with pytest.raises(TypeError):
         dpt.from_dlpack(DummyWithMethod())
+
+
+def test_from_dlpack_fortran_contig_array_roundtripping():
+    """Based on examples from issue gh-1241"""
+    n0, n1 = 3, 5
+    try:
+        ar1d = dpt.arange(n0 * n1, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    ar2d_c = dpt.reshape(ar1d, (n0, n1), order="C")
+    ar2d_f = dpt.asarray(ar2d_c, order="F")
+    ar2d_r = dpt.from_dlpack(ar2d_f)
+
+    assert dpt.all(dpt.equal(ar2d_f, ar2d_r))
+    assert dpt.all(dpt.equal(ar2d_c, ar2d_r))
