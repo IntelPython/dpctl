@@ -225,6 +225,9 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 k_new = k + ellipses_count
                 new_shape.extend(shape[k:k_new])
                 new_strides.extend(strides[k:k_new])
+                if any(dim == 0 for dim in shape[k:k_new]):
+                    is_empty = True
+                    new_offset = offset
                 k = k_new
             elif ind_i is None:
                 new_shape.append(1)
