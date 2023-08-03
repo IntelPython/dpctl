@@ -47,7 +47,7 @@ class Dummy:
             return b
 
 
-@pytest.mark.parametrize("namespace", [None, Dummy()])
+@pytest.mark.parametrize("namespace", [dpt, Dummy()])
 def test_fp_ops(namespace):
     try:
         X = dpt.ones(1)
@@ -81,7 +81,7 @@ def test_fp_ops(namespace):
     X.__ifloordiv__(1.0)
 
 
-@pytest.mark.parametrize("namespace", [None, Dummy()])
+@pytest.mark.parametrize("namespace", [dpt, Dummy()])
 def test_int_ops(namespace):
     try:
         X = dpt.usm_ndarray(1, "i4")
@@ -113,7 +113,7 @@ def test_int_ops(namespace):
     X.__ipow__(2)
 
 
-@pytest.mark.parametrize("namespace", [None, Dummy()])
+@pytest.mark.parametrize("namespace", [dpt, Dummy()])
 def test_mat_ops(namespace):
     try:
         M = dpt.eye(3, 3)
