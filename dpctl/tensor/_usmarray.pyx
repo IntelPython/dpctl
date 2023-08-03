@@ -889,7 +889,9 @@ cdef class usm_ndarray:
     def __bool__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__bool__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__bool__()
 
         if self.size == 0:
             raise ValueError(
@@ -904,7 +906,9 @@ cdef class usm_ndarray:
     def __float__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__float__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__float__()
 
         raise ValueError(
             "only size-1 arrays can be converted to Python scalars"
@@ -913,7 +917,9 @@ cdef class usm_ndarray:
     def __complex__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__complex__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__complex__()
 
         raise ValueError(
             "only size-1 arrays can be converted to Python scalars"
@@ -922,7 +928,9 @@ cdef class usm_ndarray:
     def __int__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__int__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__int__()
 
         raise ValueError(
             "only size-1 arrays can be converted to Python scalars"
