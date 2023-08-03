@@ -957,9 +957,9 @@ cdef class usm_ndarray:
     def __and__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "logical_and", other)
+            return _dispatch_binary_elementwise(first, "bitwise_and", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "logical_and", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_and", other)
         return NotImplemented
 
     def __dlpack__(self, stream=None):
@@ -1037,9 +1037,9 @@ cdef class usm_ndarray:
     def __lshift__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "left_shift", other)
+            return _dispatch_binary_elementwise(first, "bitwise_left_shift", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "left_shift", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_left_shift", other)
         return NotImplemented
 
     def __lt__(self, other):
@@ -1056,9 +1056,9 @@ cdef class usm_ndarray:
     def __mod__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "mod", other)
+            return _dispatch_binary_elementwise(first, "remainder", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "mod", other)
+            return _dispatch_binary_elementwise2(first, "remainder", other)
         return NotImplemented
 
     def __mul__(first, other):
@@ -1078,9 +1078,9 @@ cdef class usm_ndarray:
     def __or__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "logical_or", other)
+            return _dispatch_binary_elementwise(first, "bitwise_or", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "logical_or", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_or", other)
         return NotImplemented
 
     def __pos__(self):
@@ -1090,17 +1090,17 @@ cdef class usm_ndarray:
         "See comment in __add__"
         if mod is None:
             if isinstance(first, usm_ndarray):
-                return _dispatch_binary_elementwise(first, "power", other)
+                return _dispatch_binary_elementwise(first, "pow", other)
             elif isinstance(other, usm_ndarray):
-                return _dispatch_binary_elementwise(first, "power", other)
+                return _dispatch_binary_elementwise(first, "pow", other)
         return NotImplemented
 
     def __rshift__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "right_shift", other)
+            return _dispatch_binary_elementwise(first, "bitwise_right_shift", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "right_shift", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_right_shift", other)
         return NotImplemented
 
     def __setitem__(self, key, rhs):
@@ -1210,40 +1210,40 @@ cdef class usm_ndarray:
     def __xor__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "logical_xor", other)
+            return _dispatch_binary_elementwise(first, "bitwise_xor", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "logical_xor", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_xor", other)
         return NotImplemented
 
     def __radd__(self, other):
         return _dispatch_binary_elementwise(self, "add", other)
 
     def __rand__(self, other):
-        return _dispatch_binary_elementwise(self, "logical_and", other)
+        return _dispatch_binary_elementwise(self, "bitwise_and", other)
 
     def __rfloordiv__(self, other):
         return _dispatch_binary_elementwise2(other, "floor_divide", self)
 
     def __rlshift__(self, other):
-        return _dispatch_binary_elementwise2(other, "left_shift", self)
+        return _dispatch_binary_elementwise2(other, "bitwise_left_shift", self)
 
     def __rmatmul__(self, other):
         return _dispatch_binary_elementwise2(other, "matmul", self)
 
     def __rmod__(self, other):
-        return _dispatch_binary_elementwise2(other, "mod", self)
+        return _dispatch_binary_elementwise2(other, "remainder", self)
 
     def __rmul__(self, other):
         return _dispatch_binary_elementwise(self, "multiply", other)
 
     def __ror__(self, other):
-        return _dispatch_binary_elementwise(self, "logical_or", other)
+        return _dispatch_binary_elementwise(self, "bitwise_or", other)
 
     def __rpow__(self, other):
-        return _dispatch_binary_elementwise2(other, "power", self)
+        return _dispatch_binary_elementwise2(other, "pow", self)
 
     def __rrshift__(self, other):
-        return _dispatch_binary_elementwise2(other, "right_shift", self)
+        return _dispatch_binary_elementwise2(other, "bitwise_right_shift", self)
 
     def __rsub__(self, other):
         return _dispatch_binary_elementwise2(other, "subtract", self)
@@ -1252,7 +1252,7 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise2(other, "divide", self)
 
     def __rxor__(self, other):
-        return _dispatch_binary_elementwise2(other, "logical_xor", self)
+        return _dispatch_binary_elementwise2(other, "bitwise_xor", self)
 
     def __iadd__(self, other):
         from ._elementwise_funcs import add
