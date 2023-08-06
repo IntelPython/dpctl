@@ -1046,7 +1046,7 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise(self, "greater", other)
 
     def __invert__(self):
-        return _dispatch_unary_elementwise(self, "invert")
+        return _dispatch_unary_elementwise(self, "bitwise_invert")
 
     def __le__(self, other):
         return _dispatch_binary_elementwise(self, "less_equal", other)
