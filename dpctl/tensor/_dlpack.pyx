@@ -32,7 +32,7 @@ from .._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclUSMRef,
 )
-from ._usmarray cimport usm_ndarray
+from ._usmarray cimport USM_ARRAY_C_CONTIGUOUS, usm_ndarray
 
 from platform import system as sys_platform
 
@@ -158,9 +158,11 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
+    cdef int flags = 0
     cdef char *base_ptr = NULL
     cdef Py_ssize_t element_offset = 0
     cdef Py_ssize_t byte_offset = 0
+    cdef Py_ssize_t si = 1
 
     ary_base = usm_ary.get_base()
     ary_sycl_queue = usm_ary.get_sycl_queue()
@@ -223,9 +225,17 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     for i in range(nd):
         shape_strides_ptr[i] = shape_ptr[i]
     strides_ptr = usm_ary.get_strides()
+    flags = usm_ary.flags_
     if strides_ptr:
         for i in range(nd):
             shape_strides_ptr[nd + i] = strides_ptr[i]
+    else:
+        if not (flags & USM_ARRAY_C_CONTIGUOUS):
+            si = 1
+            for i in range(0, nd):
+                shape_strides_ptr[nd + i] = si
+                si = si * shape_ptr[i]
+            strides_ptr = <Py_ssize_t *>&shape_strides_ptr[nd]
 
     ary_dt = usm_ary.dtype
     ary_dtk = ary_dt.kind
