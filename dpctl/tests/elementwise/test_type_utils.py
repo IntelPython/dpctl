@@ -18,6 +18,7 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._copy_utils as cu
 import dpctl.tensor._type_utils as tu
 
 from .utils import _all_dtypes, _map_to_device_dtype
@@ -73,15 +74,15 @@ def test_type_utils_empty_like_orderK():
         a = dpt.empty((10, 10), dtype=dpt.int32, order="F")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    X = tu._empty_like_orderK(a, dpt.int32, a.usm_type, a.device)
+    X = cu._empty_like_orderK(a, dpt.int32, a.usm_type, a.device)
     assert X.flags["F"]
 
 
 def test_type_utils_empty_like_orderK_invalid_args():
     with pytest.raises(TypeError):
-        tu._empty_like_orderK([1, 2, 3], dpt.int32, "device", None)
+        cu._empty_like_orderK([1, 2, 3], dpt.int32, "device", None)
     with pytest.raises(TypeError):
-        tu._empty_like_pair_orderK(
+        cu._empty_like_pair_orderK(
             [1, 2, 3],
             (
                 1,
@@ -98,7 +99,7 @@ def test_type_utils_empty_like_orderK_invalid_args():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     with pytest.raises(TypeError):
-        tu._empty_like_pair_orderK(
+        cu._empty_like_pair_orderK(
             a,
             (
                 1,
