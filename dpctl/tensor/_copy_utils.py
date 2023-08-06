@@ -492,6 +492,8 @@ def _extract_impl(ary, ary_mask, axis=0):
     dst = dpt.empty(
         dst_shape, dtype=ary.dtype, usm_type=ary.usm_type, device=ary.device
     )
+    if dst.size == 0:
+        return dst
     hev, _ = ti._extract(
         src=ary,
         cumsum=cumsum,

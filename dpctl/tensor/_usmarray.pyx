@@ -764,6 +764,8 @@ cdef class usm_ndarray:
             ind, (<object>self).shape, (<object> self).strides,
             self.get_offset())
         cdef usm_ndarray res
+        cdef int i = 0
+        cdef bint matching = 1
 
         if len(_meta) < 5:
             raise RuntimeError
@@ -787,7 +789,20 @@ cdef class usm_ndarray:
 
         from ._copy_utils import _extract_impl, _nonzero_impl, _take_multi_index
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
-            return _extract_impl(res, adv_ind[0], axis=adv_ind_start_p)
+            key_ = adv_ind[0]
+            adv_ind_end_p = key_.ndim + adv_ind_start_p
+            if adv_ind_end_p > res.ndim:
+                raise IndexError("too many indices for the array")
+            key_shape = key_.shape
+            arr_shape = res.shape[adv_ind_start_p:adv_ind_end_p]
+            for i in range(key_.ndim):
+                if matching:
+                    if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
+                        matching = 0
+            if not matching:
+                raise IndexError("boolean index did not match indexed array in dimensions")
+            res = _extract_impl(res, key_, axis=adv_ind_start_p)
+            return res
 
         if any(ind.dtype == dpt_bool for ind in adv_ind):
             adv_ind_int = list()
@@ -1152,6 +1167,8 @@ cdef class usm_ndarray:
         if adv_ind_start_p < 0:
             # basic slicing
             if isinstance(rhs, usm_ndarray):
+                if Xv.size == 0:
+                    return
                 _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs)
             else:
                 if hasattr(rhs, "__sycl_usm_array_interface__"):
