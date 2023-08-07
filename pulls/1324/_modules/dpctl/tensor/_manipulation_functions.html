@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev0+108.g599139ef1 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev0+109.gf670e4ae1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+108.g599139ef1
+                0.14.6dev0+109.gf670e4ae1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -116,6 +116,8 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dputils</span>
+
+<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_to_device_supported_dtype</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;Implementation module for array manipulation &quot;</span>
@@ -596,8 +598,10 @@
     <span class="n">_supported_dtype</span><span class="p">(</span><span class="n">Xi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">Xi</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">)</span>
 
     <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">X0</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">promote_types</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">check_ndim</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
