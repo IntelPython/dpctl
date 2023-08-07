@@ -872,7 +872,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags.flags
+            res.flags_ = self.flags_
             return res
         else:
             nbytes = self.usm_data.nbytes
@@ -887,7 +887,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags.flags
+            res.flags_ = self.flags_
             return res
 
     def _set_namespace(self, mod):
