@@ -554,8 +554,13 @@ def _concat_axis_None(arrays):
                 sycl_queue=exec_q,
             )
         else:
+            src_ = array
+            # _copy_usm_ndarray_for_reshape requires src and dst to have
+            # the same data type
+            if not array.dtype == res_dtype:
+                src_ = dpt.astype(src_, res_dtype)
             hev, _ = ti._copy_usm_ndarray_for_reshape(
-                src=array,
+                src=src_,
                 dst=res[fill_start:fill_end],
                 shift=0,
                 sycl_queue=exec_q,
