@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev0+106.g79444fa60 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev0+108.g599139ef1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+106.g79444fa60
+                0.14.6dev0+108.g599139ef1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -646,8 +646,13 @@
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">src_</span> <span class="o">=</span> <span class="n">array</span>
+            <span class="c1"># _copy_usm_ndarray_for_reshape requires src and dst to have</span>
+            <span class="c1"># the same data type</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">res_dtype</span><span class="p">:</span>
+                <span class="n">src_</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">src_</span><span class="p">,</span> <span class="n">res_dtype</span><span class="p">)</span>
             <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="n">array</span><span class="p">,</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">src_</span><span class="p">,</span>
                 <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="n">fill_start</span><span class="p">:</span><span class="n">fill_end</span><span class="p">],</span>
                 <span class="n">shift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
