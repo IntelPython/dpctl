@@ -28,6 +28,7 @@
 #include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -55,13 +56,14 @@ using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 {
-    using supports_sg_loadstore = typename std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = typename std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
+        if (std::isnan(in1) || std::isnan(in2)) {
+            return std::numeric_limits<resT>::quiet_NaN();
+        }
         resT max = std::max<resT>(in1, in2);
         resT min = std::min<resT>(in1, in2);
         return max + std::log1p(std::exp(min - max));
@@ -76,8 +78,13 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            resT max = std::max<resT>(in1[i], in2[i]);
-            res[i] = max + std::log1p(std::exp(std::abs(diff[i])));
+            if (std::isnan(in1[i]) || std::isnan(in2[i])) {
+                res[i] = std::numeric_limits<resT>::quiet_NaN();
+            }
+            else {
+                resT max = std::max<resT>(in1[i], in2[i]);
+                res[i] = max + std::log1p(std::exp(std::abs(diff[i])));
+            }
         }
 
         return res;
