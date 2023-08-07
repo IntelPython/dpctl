@@ -62,8 +62,13 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         resT max = std::max<resT>(in1, in2);
-        if (std::isnan(max) || std::isinf(max)) {
-            return max;
+        if (std::isnan(max)) {
+            return std::numeric_limits<resT>::quiet_NaN();
+        }
+        else {
+            if (std::isinf(max)) {
+                return std::numeric_limits<resT>::infinity();
+            }
         }
         resT min = std::min<resT>(in1, in2);
         return max + std::log1p(std::exp(min - max));
@@ -79,8 +84,11 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
             resT max = std::max<resT>(in1[i], in2[i]);
-            if (std::isnan(max) || std::isinf(max)) {
-                res[i] = max;
+            if (std::isnan(max)) {
+                res[i] = std::numeric_limits<resT>::quiet_NaN();
+            }
+            else if (std::isinf(max)) {
+                res[i] = std::numeric_limits<resT>::infinity();
             }
             else {
                 res[i] = max + std::log1p(std::exp(std::abs(diff[i])));
