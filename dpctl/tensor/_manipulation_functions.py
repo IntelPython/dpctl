@@ -25,6 +25,8 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dputils
 
+from ._type_utils import _to_device_supported_dtype
+
 __doc__ = (
     "Implementation module for array manipulation "
     "functions in :module:`dpctl.tensor`"
@@ -504,8 +506,10 @@ def _arrays_validation(arrays, check_ndim=True):
     _supported_dtype(Xi.dtype for Xi in arrays)
 
     res_dtype = X0.dtype
+    dev = exec_q.sycl_device
     for i in range(1, n):
         res_dtype = np.promote_types(res_dtype, arrays[i])
+        res_dtype = _to_device_supported_dtype(res_dtype, dev)
 
     if check_ndim:
         for i in range(1, n):
