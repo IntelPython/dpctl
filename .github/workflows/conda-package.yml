@@ -486,7 +486,7 @@ jobs:
           done
 
   array-api-conformity:
-    needs: test_linux
+    needs: build_linux
     runs-on:  ${{ matrix.runner }}
 
     strategy:
