@@ -1442,6 +1442,30 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=rdt).dtype, np.floating)
 
 
+@pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
+def test_full_special_fp(dt):
+    """See gh-1314"""
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    ar = dpt.full(10, fill_value=dpt.nan)
+    err_msg = f"Failed for fill_value=dpt.nan and dtype {dt}"
+    assert dpt.isnan(ar[0]), err_msg
+
+    ar = dpt.full(10, fill_value=dpt.inf)
+    err_msg = f"Failed for fill_value=dpt.inf and dtype {dt}"
+    assert dpt.isinf(ar[0]) and dpt.greater(ar[0], 0), err_msg
+
+    ar = dpt.full(10, fill_value=-dpt.inf)
+    err_msg = f"Failed for fill_value=-dpt.inf and dtype {dt}"
+    assert dpt.isinf(ar[0]) and dpt.less(ar[0], 0), err_msg
+
+    ar = dpt.full(10, fill_value=dpt.pi)
+    err_msg = f"Failed for fill_value=dpt.pi and dtype {dt}"
+    check = abs(float(ar[0]) - dpt.pi) < 16 * dpt.finfo(ar.dtype).eps
+    assert check, err_msg
+
+
 def test_full_fill_array():
     q = get_queue_or_skip()
 

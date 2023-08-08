@@ -27,6 +27,7 @@ from dpctl.tensor._usmarray import _is_object_with_buffer_protocol as _is_buffer
 from dpctl.utils import ExecutionPlacementError
 
 from ._type_utils import (
+    _acceptance_fn_default,
     _empty_like_orderK,
     _empty_like_pair_orderK,
     _find_buf_dtype,
@@ -48,6 +49,12 @@ class UnaryElementwiseFunc:
         self.unary_fn_ = unary_dp_impl_fn
         self.__doc__ = docs
 
+    def __str__(self):
+        return f"<{self.__name__} '{self.name_}'>"
+
+    def __repr__(self):
+        return f"<{self.__name__} '{self.name_}'>"
+
     def __call__(self, x, out=None, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
             raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
@@ -58,7 +65,12 @@ class UnaryElementwiseFunc:
             x.dtype, self.result_type_resolver_fn_, x.sycl_device
         )
         if res_dt is None:
-            raise RuntimeError
+            raise TypeError(
+                f"function '{self.name_}' does not support input type "
+                f"({x.dtype}), "
+                "and the input could not be safely coerced to any "
+                "supported types according to the casting rule ''safe''."
+            )
 
         orig_out = out
         if out is not None:
@@ -352,6 +364,7 @@ class BinaryElementwiseFunc:
         binary_dp_impl_fn,
         docs,
         binary_inplace_fn=None,
+        acceptance_fn=None,
     ):
         self.__name__ = "BinaryElementwiseFunc"
         self.name_ = name
@@ -359,20 +372,25 @@ class BinaryElementwiseFunc:
         self.binary_fn_ = binary_dp_impl_fn
         self.binary_inplace_fn_ = binary_inplace_fn
         self.__doc__ = docs
+        if callable(acceptance_fn):
+            self.acceptance_fn_ = acceptance_fn
+        else:
+            self.acceptance_fn_ = _acceptance_fn_default
 
     def __str__(self):
-        return f"<BinaryElementwiseFunc '{self.name_}'>"
+        return f"<{self.__name__} '{self.name_}'>"
 
     def __repr__(self):
-        return f"<BinaryElementwiseFunc '{self.name_}'>"
+        return f"<{self.__name__} '{self.name_}'>"
 
     def __call__(self, o1, o2, out=None, order="K"):
         # FIXME: replace with check against base array
         # when views can be identified
-        if o1 is out:
-            return self._inplace(o1, o2)
-        elif o2 is out:
-            return self._inplace(o2, o1)
+        if self.binary_inplace_fn_:
+            if o1 is out:
+                return self._inplace(o1, o2)
+            elif o2 is out:
+                return self._inplace(o2, o1)
 
         if order not in ["K", "C", "F", "A"]:
             order = "K"
@@ -440,7 +458,11 @@ class BinaryElementwiseFunc:
         o1_dtype, o2_dtype = _resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
 
         buf1_dt, buf2_dt, res_dt = _find_buf_dtype2(
-            o1_dtype, o2_dtype, self.result_type_resolver_fn_, sycl_dev
+            o1_dtype,
+            o2_dtype,
+            self.result_type_resolver_fn_,
+            sycl_dev,
+            acceptance_fn=self.acceptance_fn_,
         )
 
         if res_dt is None:

@@ -97,25 +97,45 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::indexing::mask_positions_contig_impl_fn_ptr_t;
 static mask_positions_contig_impl_fn_ptr_t
-    mask_positions_contig_dispatch_vector[td_ns::num_types];
+    mask_positions_contig_i64_dispatch_vector[td_ns::num_types];
+static mask_positions_contig_impl_fn_ptr_t
+    mask_positions_contig_i32_dispatch_vector[td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::mask_positions_strided_impl_fn_ptr_t;
 static mask_positions_strided_impl_fn_ptr_t
-    mask_positions_strided_dispatch_vector[td_ns::num_types];
+    mask_positions_strided_i64_dispatch_vector[td_ns::num_types];
+static mask_positions_strided_impl_fn_ptr_t
+    mask_positions_strided_i32_dispatch_vector[td_ns::num_types];
 
 void populate_mask_positions_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::indexing::MaskPositionsContigFactory;
+    using dpctl::tensor::kernels::indexing::MaskPositionsContigFactoryForInt64;
     td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
-                                 MaskPositionsContigFactory, td_ns::num_types>
+                                 MaskPositionsContigFactoryForInt64,
+                                 td_ns::num_types>
         dvb1;
-    dvb1.populate_dispatch_vector(mask_positions_contig_dispatch_vector);
+    dvb1.populate_dispatch_vector(mask_positions_contig_i64_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::MaskPositionsStridedFactory;
-    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
-                                 MaskPositionsStridedFactory, td_ns::num_types>
+    using dpctl::tensor::kernels::indexing::MaskPositionsContigFactoryForInt32;
+    td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
+                                 MaskPositionsContigFactoryForInt32,
+                                 td_ns::num_types>
         dvb2;
-    dvb2.populate_dispatch_vector(mask_positions_strided_dispatch_vector);
+    dvb2.populate_dispatch_vector(mask_positions_contig_i32_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::MaskPositionsStridedFactoryForInt64;
+    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
+                                 MaskPositionsStridedFactoryForInt64,
+                                 td_ns::num_types>
+        dvb3;
+    dvb3.populate_dispatch_vector(mask_positions_strided_i64_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::MaskPositionsStridedFactoryForInt32;
+    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
+                                 MaskPositionsStridedFactoryForInt32,
+                                 td_ns::num_types>
+        dvb4;
+    dvb4.populate_dispatch_vector(mask_positions_strided_i32_dispatch_vector);
 
     return;
 }
@@ -163,15 +183,20 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     int mask_typeid = array_types.typenum_to_lookup_id(mask_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
-    // cumsum must be int64_t only
+    // cumsum must be int32_t/int64_t only
+    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
     constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
-    if (cumsum_typeid != int64_typeid) {
+    if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
         throw py::value_error(
-            "Cumulative sum array must have int64 data-type.");
+            "Cumulative sum array must have int32 or int64 data-type.");
     }
 
+    const bool use_i32 = (cumsum_typeid == int32_typeid);
+
     if (mask.is_c_contiguous()) {
-        auto fn = mask_positions_contig_dispatch_vector[mask_typeid];
+        auto fn = (use_i32)
+                      ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
+                      : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
         return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
     }
@@ -192,13 +217,17 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
         offset);
 
     if (nd == 1 && simplified_strides[0] == 1) {
-        auto fn = mask_positions_contig_dispatch_vector[mask_typeid];
+        auto fn = (use_i32)
+                      ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
+                      : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
         return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
     }
 
     // Strided implementation
-    auto strided_fn = mask_positions_strided_dispatch_vector[mask_typeid];
+    auto strided_fn =
+        (use_i32) ? mask_positions_strided_i32_dispatch_vector[mask_typeid]
+                  : mask_positions_strided_i64_dispatch_vector[mask_typeid];
     std::vector<sycl::event> host_task_events;
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
@@ -239,31 +268,59 @@ using dpctl::tensor::kernels::indexing::
     masked_extract_all_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_all_slices_strided_impl_fn_ptr_t
-    masked_extract_all_slices_strided_impl_dispatch_vector[td_ns::num_types];
+    masked_extract_all_slices_strided_i32_impl_dispatch_vector
+        [td_ns::num_types];
+static masked_extract_all_slices_strided_impl_fn_ptr_t
+    masked_extract_all_slices_strided_i64_impl_dispatch_vector
+        [td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::
     masked_extract_some_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_some_slices_strided_impl_fn_ptr_t
-    masked_extract_some_slices_strided_impl_dispatch_vector[td_ns::num_types];
+    masked_extract_some_slices_strided_i32_impl_dispatch_vector
+        [td_ns::num_types];
+static masked_extract_some_slices_strided_impl_fn_ptr_t
+    masked_extract_some_slices_strided_i64_impl_dispatch_vector
+        [td_ns::num_types];
 
 void populate_masked_extract_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::indexing::MaskExtractAllSlicesStridedFactory;
+    using dpctl::tensor::kernels::indexing::
+        MaskExtractAllSlicesStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<
         masked_extract_all_slices_strided_impl_fn_ptr_t,
-        MaskExtractAllSlicesStridedFactory, td_ns::num_types>
+        MaskExtractAllSlicesStridedFactoryForInt32, td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(
-        masked_extract_all_slices_strided_impl_dispatch_vector);
+        masked_extract_all_slices_strided_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::MaskExtractSomeSlicesStridedFactory;
+    using dpctl::tensor::kernels::indexing::
+        MaskExtractAllSlicesStridedFactoryForInt64;
     td_ns::DispatchVectorBuilder<
-        masked_extract_some_slices_strided_impl_fn_ptr_t,
-        MaskExtractSomeSlicesStridedFactory, td_ns::num_types>
+        masked_extract_all_slices_strided_impl_fn_ptr_t,
+        MaskExtractAllSlicesStridedFactoryForInt64, td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(
-        masked_extract_some_slices_strided_impl_dispatch_vector);
+        masked_extract_all_slices_strided_i64_impl_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::
+        MaskExtractSomeSlicesStridedFactoryForInt32;
+    td_ns::DispatchVectorBuilder<
+        masked_extract_some_slices_strided_impl_fn_ptr_t,
+        MaskExtractSomeSlicesStridedFactoryForInt32, td_ns::num_types>
+        dvb3;
+    dvb3.populate_dispatch_vector(
+        masked_extract_some_slices_strided_i32_impl_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::
+        MaskExtractSomeSlicesStridedFactoryForInt64;
+    td_ns::DispatchVectorBuilder<
+        masked_extract_some_slices_strided_impl_fn_ptr_t,
+        MaskExtractSomeSlicesStridedFactoryForInt64, td_ns::num_types>
+        dvb4;
+    dvb4.populate_dispatch_vector(
+        masked_extract_some_slices_strided_i64_impl_dispatch_vector);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -357,11 +414,14 @@ py_extract(dpctl::tensor::usm_ndarray src,
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
+    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
     constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
-    if (cumsum_typeid != int64_typeid) {
-        throw py::value_error(
-            "Unexact data type of cumsum array, expecting 'int64'");
+    if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
+        throw py::value_error("Unexpected data type of cumsum array, expecting "
+                              "'int32' or 'int64'");
     }
+
+    const bool use_i32 = (cumsum_typeid == int32_typeid);
 
     if (src_typeid != dst_typeid) {
         throw py::value_error(
@@ -383,7 +443,11 @@ py_extract(dpctl::tensor::usm_ndarray src,
     if (axis_start == 0 && axis_end == src_nd) {
         // empty orthogonal directions
         auto fn =
-            masked_extract_all_slices_strided_impl_dispatch_vector[src_typeid];
+            (use_i32)
+                ? masked_extract_all_slices_strided_i32_impl_dispatch_vector
+                      [src_typeid]
+                : masked_extract_all_slices_strided_i64_impl_dispatch_vector
+                      [src_typeid];
 
         assert(dst_shape_vec.size() == 1);
         assert(dst_strides_vec.size() == 1);
@@ -424,7 +488,11 @@ py_extract(dpctl::tensor::usm_ndarray src,
     else {
         // non-empty othogonal directions
         auto fn =
-            masked_extract_some_slices_strided_impl_dispatch_vector[src_typeid];
+            (use_i32)
+                ? masked_extract_some_slices_strided_i32_impl_dispatch_vector
+                      [src_typeid]
+                : masked_extract_some_slices_strided_i64_impl_dispatch_vector
+                      [src_typeid];
 
         int masked_src_nd = mask_span_sz;
         int ortho_nd = src_nd - masked_src_nd;
@@ -532,31 +600,55 @@ using dpctl::tensor::kernels::indexing::
     masked_place_all_slices_strided_impl_fn_ptr_t;
 
 static masked_place_all_slices_strided_impl_fn_ptr_t
-    masked_place_all_slices_strided_impl_dispatch_vector[td_ns::num_types];
+    masked_place_all_slices_strided_i32_impl_dispatch_vector[td_ns::num_types];
+static masked_place_all_slices_strided_impl_fn_ptr_t
+    masked_place_all_slices_strided_i64_impl_dispatch_vector[td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::
     masked_place_some_slices_strided_impl_fn_ptr_t;
 
 static masked_place_some_slices_strided_impl_fn_ptr_t
-    masked_place_some_slices_strided_impl_dispatch_vector[td_ns::num_types];
+    masked_place_some_slices_strided_i32_impl_dispatch_vector[td_ns::num_types];
+static masked_place_some_slices_strided_impl_fn_ptr_t
+    masked_place_some_slices_strided_i64_impl_dispatch_vector[td_ns::num_types];
 
 void populate_masked_place_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::indexing::MaskPlaceAllSlicesStridedFactory;
+    using dpctl::tensor::kernels::indexing::
+        MaskPlaceAllSlicesStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<masked_place_all_slices_strided_impl_fn_ptr_t,
-                                 MaskPlaceAllSlicesStridedFactory,
+                                 MaskPlaceAllSlicesStridedFactoryForInt32,
                                  td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(
-        masked_place_all_slices_strided_impl_dispatch_vector);
+        masked_place_all_slices_strided_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::MaskPlaceSomeSlicesStridedFactory;
-    td_ns::DispatchVectorBuilder<masked_place_some_slices_strided_impl_fn_ptr_t,
-                                 MaskPlaceSomeSlicesStridedFactory,
+    using dpctl::tensor::kernels::indexing::
+        MaskPlaceAllSlicesStridedFactoryForInt64;
+    td_ns::DispatchVectorBuilder<masked_place_all_slices_strided_impl_fn_ptr_t,
+                                 MaskPlaceAllSlicesStridedFactoryForInt64,
                                  td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(
-        masked_place_some_slices_strided_impl_dispatch_vector);
+        masked_place_all_slices_strided_i64_impl_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::
+        MaskPlaceSomeSlicesStridedFactoryForInt32;
+    td_ns::DispatchVectorBuilder<masked_place_some_slices_strided_impl_fn_ptr_t,
+                                 MaskPlaceSomeSlicesStridedFactoryForInt32,
+                                 td_ns::num_types>
+        dvb3;
+    dvb3.populate_dispatch_vector(
+        masked_place_some_slices_strided_i32_impl_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::
+        MaskPlaceSomeSlicesStridedFactoryForInt64;
+    td_ns::DispatchVectorBuilder<masked_place_some_slices_strided_impl_fn_ptr_t,
+                                 MaskPlaceSomeSlicesStridedFactoryForInt64,
+                                 td_ns::num_types>
+        dvb4;
+    dvb4.populate_dispatch_vector(
+        masked_place_some_slices_strided_i64_impl_dispatch_vector);
 }
 
 /*
@@ -651,13 +743,15 @@ py_place(dpctl::tensor::usm_ndarray dst,
     int rhs_typeid = array_types.typenum_to_lookup_id(rhs_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
+    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
     constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
-    if (cumsum_typeid != int64_typeid) {
-        throw py::value_error(
-            "Unexact data type of cumsum array, expecting 'int64'");
+    if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
+        throw py::value_error("Unexpected data type of cumsum array, expecting "
+                              "'int32' or 'int64'");
     }
 
-    // FIXME: should types be the same?
+    const bool use_i32 = (cumsum_typeid == int32_typeid);
+
     if (dst_typeid != rhs_typeid) {
         throw py::value_error(
             "Destination array must have the same elemental data types");
@@ -677,8 +771,11 @@ py_place(dpctl::tensor::usm_ndarray dst,
     std::vector<sycl::event> host_task_events{};
     if (axis_start == 0 && axis_end == dst_nd) {
         // empty orthogonal directions
-        auto fn =
-            masked_place_all_slices_strided_impl_dispatch_vector[dst_typeid];
+        auto fn = (use_i32)
+                      ? masked_place_all_slices_strided_i32_impl_dispatch_vector
+                            [dst_typeid]
+                      : masked_place_all_slices_strided_i64_impl_dispatch_vector
+                            [dst_typeid];
 
         assert(rhs_shape_vec.size() == 1);
         assert(rhs_strides_vec.size() == 1);
@@ -719,7 +816,11 @@ py_place(dpctl::tensor::usm_ndarray dst,
     else {
         // non-empty othogonal directions
         auto fn =
-            masked_place_some_slices_strided_impl_dispatch_vector[dst_typeid];
+            (use_i32)
+                ? masked_place_some_slices_strided_i32_impl_dispatch_vector
+                      [dst_typeid]
+                : masked_place_some_slices_strided_i64_impl_dispatch_vector
+                      [dst_typeid];
 
         int masked_dst_nd = mask_span_sz;
         int ortho_nd = dst_nd - masked_dst_nd;
@@ -820,13 +921,15 @@ py_place(dpctl::tensor::usm_ndarray dst,
 
 // Non-zero
 
-std::pair<sycl::event, sycl::event> py_nonzero(
-    dpctl::tensor::usm_ndarray cumsum,  // int64 input array, 1D, C-contiguous
-    dpctl::tensor::usm_ndarray indexes, // int64 2D output array, C-contiguous
-    std::vector<py::ssize_t>
-        mask_shape, // shape of array from which cumsum was computed
-    sycl::queue exec_q,
-    std::vector<sycl::event> const &depends)
+std::pair<sycl::event, sycl::event>
+py_nonzero(dpctl::tensor::usm_ndarray
+               cumsum, // int32/int64 input array, 1D, C-contiguous
+           dpctl::tensor::usm_ndarray
+               indexes, // int32/int64 2D output array, C-contiguous
+           std::vector<py::ssize_t>
+               mask_shape, // shape of array from which cumsum was computed
+           sycl::queue exec_q,
+           std::vector<sycl::event> const &depends)
 {
     if (!dpctl::utils::queues_are_compatible(exec_q, {cumsum, indexes})) {
         throw py::value_error(
@@ -874,11 +977,15 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     int cumsum_typenum = cumsum.get_typenum();
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
-    // cumsum must be int64_t only
+    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
     constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
-    if (cumsum_typeid != int64_typeid || indexes_typeid != int64_typeid) {
-        throw py::value_error(
-            "Cumulative sum array and index array must have int64 data-type");
+
+    // cumsum must be int32_t or int64_t only
+    if ((cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) ||
+        (indexes_typeid != int32_typeid && indexes_typeid != int64_typeid))
+    {
+        throw py::value_error("Cumulative sum array and index array must have "
+                              "int32 or int64 data-type");
     }
 
     if (cumsum_sz == 0) {
@@ -923,12 +1030,21 @@ std::pair<sycl::event, sycl::event> py_nonzero(
     all_deps.insert(all_deps.end(), depends.begin(), depends.end());
     all_deps.push_back(copy_ev);
 
+    using dpctl::tensor::kernels::indexing::non_zero_indexes_fn_ptr_t;
     using dpctl::tensor::kernels::indexing::non_zero_indexes_impl;
 
+    int fn_index = ((cumsum_typeid == int64_typeid) ? 1 : 0) +
+                   ((indexes_typeid == int64_typeid) ? 2 : 0);
+    std::array<non_zero_indexes_fn_ptr_t, 4> fn_impls = {
+        non_zero_indexes_impl<std::int32_t, std::int32_t>,
+        non_zero_indexes_impl<std::int64_t, std::int32_t>,
+        non_zero_indexes_impl<std::int32_t, std::int64_t>,
+        non_zero_indexes_impl<std::int64_t, std::int64_t>};
+    auto fn = fn_impls[fn_index];
+
     sycl::event non_zero_indexes_ev =
-        non_zero_indexes_impl<std::int64_t, std::int64_t>(
-            exec_q, cumsum_sz, nz_elems, ndim, cumsum.get_data(),
-            indexes.get_data(), src_shape_device_ptr, all_deps);
+        fn(exec_q, cumsum_sz, nz_elems, ndim, cumsum.get_data(),
+           indexes.get_data(), src_shape_device_ptr, all_deps);
 
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(non_zero_indexes_ev);

@@ -235,7 +235,8 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
         std::get<2>(iter_red_metadata_packing_triple_);
 
     py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
-    py::ssize_t *red_shape_stride = packed_shapes_and_strides + (3 * iter_nd);
+    py::ssize_t *red_shape_stride =
+        packed_shapes_and_strides + 3 * simplified_iter_shape.size();
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + 1);
@@ -244,7 +245,7 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
     all_deps.push_back(copy_metadata_ev);
 
     auto red_ev =
-        fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, dst_nd,
+        fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, iter_nd,
            iter_shape_and_strides, iter_src_offset, iter_dst_offset,
            simplified_red_nd, red_shape_stride, red_src_offset, all_deps);
 

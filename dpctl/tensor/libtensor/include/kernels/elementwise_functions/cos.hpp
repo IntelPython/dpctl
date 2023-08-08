@@ -65,7 +65,99 @@ template <typename argT, typename resT> struct CosFunctor
 
     resT operator()(const argT &in)
     {
-        return std::cos(in);
+        if constexpr (is_complex<argT>::value) {
+            using realT = typename argT::value_type;
+
+            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
+            realT const &in_re = std::real(in);
+            realT const &in_im = std::imag(in);
+
+            const bool in_re_finite = std::isfinite(in_re);
+            const bool in_im_finite = std::isfinite(in_im);
+
+            /*
+             * Handle the nearly-non-exceptional cases where
+             * real and imaginary parts of input are finite.
+             */
+            if (in_re_finite && in_im_finite) {
+                return std::cos(in);
+            }
+
+            /*
+             * since cos(in) = cosh(I * in), for special cases,
+             * we return cosh(I * in).
+             */
+            const realT x = -in_im;
+            const realT y = in_re;
+
+            const bool xfinite = in_im_finite;
+            const bool yfinite = in_re_finite;
+            /*
+             * cosh(+-0 +- I Inf) = dNaN + I sign(d(+-0, dNaN))0.
+             * The sign of 0 in the result is unspecified.  Choice = normally
+             * the same as dNaN.
+             *
+             * cosh(+-0 +- I NaN) = d(NaN) + I sign(d(+-0, NaN))0.
+             * The sign of 0 in the result is unspecified.  Choice = normally
+             * the same as d(NaN).
+             */
+            if (x == realT(0) && !yfinite) {
+                const realT y_m_y = (y - y);
+                const realT res_im = std::copysign(realT(0), x * y_m_y);
+                return resT{y_m_y, res_im};
+            }
+
+            /*
+             * cosh(+-Inf +- I 0) = +Inf + I (+-)(+-)0.
+             *
+             * cosh(NaN +- I 0)   = d(NaN) + I sign(d(NaN, +-0))0.
+             * The sign of 0 in the result is unspecified.
+             */
+            if (y == realT(0) && !xfinite) {
+                const realT res_im = std::copysign(realT(0), x) * y;
+                return resT{x * x, res_im};
+            }
+
+            /*
+             * cosh(x +- I Inf) = dNaN + I dNaN.
+             *
+             * cosh(x + I NaN) = d(NaN) + I d(NaN).
+             */
+            if (xfinite && !yfinite) {
+                const realT y_m_y = (y - y);
+                return resT{y_m_y, x * y_m_y};
+            }
+
+            /*
+             * cosh(+-Inf + I NaN)  = +Inf + I d(NaN).
+             *
+             * cosh(+-Inf +- I Inf) = +Inf + I dNaN.
+             * The sign of Inf in the result is unspecified.  Choice = always +.
+             *
+             * cosh(+-Inf + I y)   = +Inf cos(y) +- I Inf sin(y)
+             */
+            if (std::isinf(x)) {
+                if (!yfinite) {
+                    return resT{x * x, std::copysign(q_nan, x)};
+                }
+                return resT{(x * x) * std::cos(y), x * std::sin(y)};
+            }
+
+            /*
+             * cosh(NaN + I NaN)  = d(NaN) + I d(NaN).
+             *
+             * cosh(NaN +- I Inf) = d(NaN) + I d(NaN).
+             *
+             * cosh(NaN + I y)    = d(NaN) + I d(NaN).
+             */
+            return resT{(x * x) * q_nan, (x + x) * q_nan};
+        }
+        else {
+            static_assert(std::is_floating_point_v<argT> ||
+                          std::is_same_v<argT, sycl::half>);
+            return std::cos(in);
+        }
     }
 };
 

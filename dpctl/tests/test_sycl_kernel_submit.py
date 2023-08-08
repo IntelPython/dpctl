@@ -167,46 +167,54 @@ def test_async_submit():
     assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
 
     status_complete = dpctl.event_status_type.complete
-    n = 1024 * 1024 * 4
-    X = dpt.empty((3, n), dtype="u4", usm_type="device", sycl_queue=q)
+
+    # choose input size based on capability of the device
+    f = q.sycl_device.max_work_group_size
+    n = f * 1024
+    n_alloc = 4 * n
+
+    X = dpt.empty((3, n_alloc), dtype="u4", usm_type="device", sycl_queue=q)
     first_row = dpctl_mem.as_usm_memory(X[0])
     second_row = dpctl_mem.as_usm_memory(X[1])
     third_row = dpctl_mem.as_usm_memory(X[2])
 
-    e1 = q.submit(
-        kern1Kernel,
-        [
-            first_row,
-            ctypes.c_uint(17),
-        ],
-        [
-            n,
-        ],
-    )
-    e2 = q.submit(
-        kern2Kernel,
-        [
-            second_row,
-            ctypes.c_uint(27),
-        ],
-        [
-            n,
-        ],
-    )
-    e3 = q.submit(
-        kern3Kernel,
-        [third_row, first_row, second_row],
-        [
-            n,
-        ],
-        None,
-        [e1, e2],
-    )
-    e3_st = e3.execution_status
-    e2_st = e2.execution_status
-    e1_st = e1.execution_status
-    assert not all(
-        [
+    p1, p2 = 17, 27
+
+    async_detected = False
+    for attempt in range(5):
+        e1 = q.submit(
+            kern1Kernel,
+            [
+                first_row,
+                ctypes.c_uint(p1),
+            ],
+            [
+                n,
+            ],
+        )
+        e2 = q.submit(
+            kern2Kernel,
+            [
+                second_row,
+                ctypes.c_uint(p2),
+            ],
+            [
+                n,
+            ],
+        )
+        e3 = q.submit(
+            kern3Kernel,
+            [third_row, first_row, second_row],
+            [
+                n,
+            ],
+            None,
+            [e1, e2],
+        )
+        e3_st = e3.execution_status
+        e2_st = e2.execution_status
+        e1_st = e1.execution_status
+        are_complete = [
             e == status_complete
             for e in (
                 e1_st,
@@ -214,14 +222,21 @@ def test_async_submit():
                 e3_st,
             )
         ]
-    )
+        e3.wait()
+        if not all(are_complete):
+            async_detected = True
+            break
+        else:
+            n = n * (1 if attempt % 2 == 0 else 2)
+            if n > n_alloc:
+                break
 
-    e3.wait()
+    assert async_detected, "No evidence of async submission detected, unlucky?"
     Xnp = dpt.asnumpy(X)
     Xref = np.empty((3, n), dtype="u4")
     for i in range(n):
-        Xref[0, i] = (i * i) % 17
-        Xref[1, i] = (i * i * i) % 27
+        Xref[0, i] = (i * i) % p1
+        Xref[1, i] = (i * i * i) % p2
         Xref[2, i] = min(Xref[0, i], Xref[1, i])
 
-    assert np.array_equal(Xnp, Xref)
+    assert np.array_equal(Xnp[:, :n], Xref[:, :n])

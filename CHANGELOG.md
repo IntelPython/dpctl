@@ -4,6 +4,100 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [dev]
+
+### Added
+### Changed
+
+* Removed `dpctl.tensor.numpy_usm_shared` obsolete class and associated tests which were being skipped
+
+### Fixed
+
+## [0.14.5] - 07/17/2023
+
+### Added
+
+* Added `dpctl.tensor.log2` and `dpctl.tensor.log10`: [#1267](https://github.com/IntelPython/dpctl/pull/1267)
+* Added `dpctl.tensor.negative`, `dpctl.tensor.positive`, `dpctl.tensor.square` [#1268](https://github.com/IntelPython/dpctl/pull/1268)
+* Added `dpctl.tensor.logical_not`, `dpctl.tensor.logical_and`, `dpctl.tensor.logical_or`, `dpctl.tensor.logical_xor` [#1270](https://github.com/IntelPython/dpctl/pull/1270)
+
+### Changed
+
+* `dpctl.tensor.astype` behavior for `newdtype=None` changes [#1261](https://github.com/IntelPython/dpctl/pull/1262)
+* `dpctl.tensor.usm_ndaray` constructor default value of `dtype` keyword argument changed to `None`: [#1265](https://github.com/IntelPython/dpctl/pull/1265)
+* Support for `out` arguments that overlap with inputs for unary elementwise functions[#1281](https://github.com/IntelPython/dpctl/pull/1281)
+* Copying from one array to another a no-op if both arrays view into the same memory [#1284](https://github.com/IntelPython/dpctl/pull/1284)
+
+## [0.14.4] - 06/14/2023
+
+### Added
+
+* Added `dpctl.tensor.less_equal`, `dpctl.tensor.greater`, `dpctl.tensor.greater_equal`: [#1239](https://github.com/IntelPython/dpctl/pull/1239)
+
+### Changed
+
+* Optimized in-place arithmetic operations for updating matrix with rows/columns via broadcasting: [#1244](https://github.com/IntelPython/dpctl/pull/1244)
+
+### Fixed
+
+* Fixed handling of 0d arrays in `dpctl.tensor.sum`: [#1238](https://github.com/IntelPython/dpctl/pull/1238)
+
+## [0.14.3] - 06/13/2023
+
+### Added
+
+* Added support of `axis=None` in `dpctl.tensor.concat` [#1125](https://github.com/IntelPython/dpctl/pull/1125)
+* Added caching for `dpctl.SyclDevice.filter_string` property [#1127](https://github.com/IntelPython/dpctl/pull/1127)
+* Added `dpctl.tensor.isdtype` from array API [#1133](https://github.com/IntelPython/dpctl/pull/1133)
+* Added `dpctl.tensor.unstack`, `dpctl.tensor.moveaxis`, `dpctl.tensor.swapaxes` [#1137](https://github.com/IntelPython/dpctl/pull/1137), [#1174](https://github.com/IntelPython/dpctl/pull/1174)
+* Allow for mutation of `dpctl.tensor.usm_ndarray.flags.writable` [#1141](https://github.com/IntelPython/dpctl/pull/1141)
+* Added `dpctl.tensor.where` from array API [#1147](https://github.com/IntelPython/dpctl/pull/1147)
+* Include libtensor headers in `dpctl` installation layout [#1185](https://github.com/IntelPython/dpctl/pull/1185)
+* Added new properties of `dpctl.tensor.usm_ndarray` object [#1199](https://github.com/IntelPython/dpctl/pull/1199)
+* Added a list of unary and binary elementwise functions from array API:
+   - [#1203](https://github.com/IntelPython/dpctl/pull/1203): `dpctl.tensor.add`, `dpctl.tensor.divide`, `dpctl.tensor.isnan`, `dpctl.tensor.isinf`, `dpctl.tensor.isfinite`, `dpctl.tensor.cos`, `dpctl.tensor.abs`, `dpctl.tensor.equal`
+   - [#1205](https://github.com/IntelPython/dpctl/pull/1205): `dpctl.tensor.sqrt`
+   - [#1209](https://github.com/IntelPython/dpctl/pull/1209): implements `out` keyword argument
+   - [#1211](https://github.com/IntelPython/dpctl/pull/1211): `dpctl.tensor.multiply`, `dpctl.tensor.subtract`
+   - [#1214](https://github.com/IntelPython/dpctl/pull/1214): `dpctl.tensor.not_equal`
+   - [#1216](https://github.com/IntelPython/dpctl/pull/1216): `dpctl.tensor.exp`, `dpctl.tensor.sin`
+   - [#1217](https://github.com/IntelPython/dpctl/pull/1217): `dpctl.tensor.real`, `dpctl.tensor.imag`, `dpctl.tensor.proj`
+   - [#1218](https://github.com/IntelPython/dpctl/pull/1218): `dpctl.tensor.log`, `dpctl.tensor.log1p`, `dpctl.tensor.expm1`
+   - [#1221](https://github.com/IntelPython/dpctl/pull/1221): `dpctl.tensor.floor_divide`
+   - [#1235](https://github.com/IntelPython/dpctl/pull/1235): `dpctl.tensor.less`
+   - [#1237](https://github.com/IntelPython/dpctl/pull/1237): in-place support for addition, multiplication and subtraction
+* Added `dpctl.tensor.all` and `dpctl.tensor.any` [#1204](https://github.com/IntelPython/dpctl/pull/1204)
+* Added `dpctl.tensor.sum` [#1210](https://github.com/IntelPython/dpctl/pull/1210)
+
+### Changed
+
+* Updated examples of native Python extensions built using `dpctl` [#1108](https://github.com/IntelPython/dpctl/pull/1108)
+* Used security flags to compile and link native extensions of `dpctl` [#1109](https://github.com/IntelPython/dpctl/pull/1109)
+* Changed types of `dpctl.tensor.finfo` and `dpctl.tensor.iinfo` output structure per array API spec [#1110](https://github.com/IntelPython/dpctl/pull/1110)
+* Consolidated multiple USM temporaries life-time management `host_task`s to improve test suite stability [#1111](https://github.com/IntelPython/dpctl/pull/1111)
+* MAINT: Improved cmake target dependency tracking [#1112](https://github.com/IntelPython/dpctl/pull/1112)
+* MAINT: Improved docstrings for existing `dpctl.tensor` functions [#1123](https://github.com/IntelPython/dpctl/pull/1123)
+* Changed default value of `mode` keyword in `dpctl.tensor.take` and `dpctl.take.put` from `clip` to `wrap` [#1132](https://github.com/IntelPython/dpctl/pull/1132)
+* Added support for (nested) sequence of `dpctl.tensor.usm_ndarray` objects in `dpctl.tensor.asarray` [#1139](https://github.com/IntelPython/dpctl/pull/1139)
+* Improved exception handling in `dpctl.tensor.usm_ndarray.__setitem__` special method [#1146](https://github.com/IntelPython/dpctl/pull/1146)
+* Simplified implementation of copy-and-cast kernels and removed special casing for 2D arrays to conserve binary size [#1165](https://github.com/IntelPython/dpctl/pull/1165)
+* Improved speed of `dpctl.tensor.usm_ndarray` printing functionality [#1187](https://github.com/IntelPython/dpctl/pull/1187)
+* Require DPC++ RT 2023.1 to build and run `dpctl` [#1195](ttps://github.com/IntelPython/dpctl/pull/1195)
+* Compile offloading native extensions with `-fno-sycl-id-queries-fit-in-int` fixing [gh-1184](https://github.com/IntelPython/dpctl/issues/1184), [#1200](https://github.com/IntelPython/dpctl/pull/1200)
+* Transition to conda-forge ecosystem [#1213](https://github.com/IntelPython/dpctl/pull/1213)
+
+
+
+### Fixed
+
+* Fix to add empty values check for `dpctl.tensor.place` [#1105](https://github.com/IntelPython/dpctl/pull/1105), [#1106](https://github.com/IntelPython/dpctl/pull/1106)
+* Fixed [gh-1089](https://github.com/IntelPython/dpctl/issues/1089) by improving `dpctl.tensor.asarray` handling of NumPy arrays viewing into host-accessible USM allocation objects.
+* MAINT: Fixed build break with newer GCC and SYCLOS [#1118](https://github.com/IntelPython/dpctl/pull/1118)
+* Fixed a bug in basic indexing of `dpctl.tensor.usm_ndarray` [#1136](https://github.com/IntelPython/dpctl/pull/1136)
+
+
+
+
 ## [0.14.2] - 03/07/2023
 
 ### Fixed

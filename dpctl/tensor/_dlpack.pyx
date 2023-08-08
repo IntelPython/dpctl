@@ -32,7 +32,7 @@ from .._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclUSMRef,
 )
-from ._usmarray cimport usm_ndarray
+from ._usmarray cimport USM_ARRAY_C_CONTIGUOUS, usm_ndarray
 
 from platform import system as sys_platform
 
@@ -106,7 +106,7 @@ def get_build_dlpack_version():
     return str(DLPACK_VERSION)
 
 
-cdef void _pycapsule_deleter(object dlt_capsule):
+cdef void _pycapsule_deleter(object dlt_capsule) noexcept:
     cdef DLManagedTensor *dlm_tensor = NULL
     if cpython.PyCapsule_IsValid(dlt_capsule, 'dltensor'):
         dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
@@ -114,7 +114,7 @@ cdef void _pycapsule_deleter(object dlt_capsule):
         dlm_tensor.deleter(dlm_tensor)
 
 
-cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
+cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) noexcept with gil:
     if dlm_tensor is not NULL:
         stdlib.free(dlm_tensor.dl_tensor.shape)
         cpython.Py_DECREF(<usm_ndarray>dlm_tensor.manager_ctx)
@@ -122,7 +122,7 @@ cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) with gil:
         stdlib.free(dlm_tensor)
 
 
-cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
+cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     """
     to_dlpack_capsule(usm_ary)
 
@@ -158,9 +158,11 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
+    cdef int flags = 0
     cdef char *base_ptr = NULL
     cdef Py_ssize_t element_offset = 0
     cdef Py_ssize_t byte_offset = 0
+    cdef Py_ssize_t si = 1
 
     ary_base = usm_ary.get_base()
     ary_sycl_queue = usm_ary.get_sycl_queue()
@@ -223,9 +225,17 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary) except+:
     for i in range(nd):
         shape_strides_ptr[i] = shape_ptr[i]
     strides_ptr = usm_ary.get_strides()
+    flags = usm_ary.flags_
     if strides_ptr:
         for i in range(nd):
             shape_strides_ptr[nd + i] = strides_ptr[i]
+    else:
+        if not (flags & USM_ARRAY_C_CONTIGUOUS):
+            si = 1
+            for i in range(0, nd):
+                shape_strides_ptr[nd + i] = si
+                si = si * shape_ptr[i]
+            strides_ptr = <Py_ssize_t *>&shape_strides_ptr[nd]
 
     ary_dt = usm_ary.dtype
     ary_dtk = ary_dt.kind
@@ -288,7 +298,7 @@ cdef class _DLManagedTensorOwner:
         return res
 
 
-cpdef usm_ndarray from_dlpack_capsule(object py_caps) except +:
+cpdef usm_ndarray from_dlpack_capsule(object py_caps):
     """
     from_dlpack_capsule(caps)
 
