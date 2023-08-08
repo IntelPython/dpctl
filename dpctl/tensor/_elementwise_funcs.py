@@ -1196,7 +1196,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise products. The data type of
+        An array containing the element-wise maxima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
 maximum = BinaryElementwiseFunc(
@@ -1429,6 +1429,12 @@ Args:
         First input array, expected to have a real-valued data type.
     x2 (usm_ndarray):
         Second input array, also expected to have a real-valued data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_ndarray:
         an array containing the element-wise remainders. The data type of

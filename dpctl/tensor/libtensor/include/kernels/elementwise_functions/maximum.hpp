@@ -71,18 +71,16 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
             realT imag1 = std::imag(in1);
             realT imag2 = std::imag(in2);
 
-            if (std::isnan(real1) || std::isnan(imag1))
-                return in1;
-            else if (std::isnan(real2) || std::isnan(imag2))
-                return in2;
-            else if (real1 == real2)
-                return imag1 > imag2 ? in1 : in2;
-            else
-                return real1 > real2 ? in1 : in2;
+            bool gt = (real1 == real2) ? (imag1 > imag2)
+                                       : (real1 > real2 && !std::isnan(imag1) &&
+                                          !std::isnan(imag2));
+            return (std::isnan(real1) || std::isnan(imag1) || gt) ? in1 : in2;
         }
-        else {
-            return (in1 != in1 || in1 > in2) ? in1 : in2;
-        }
+        else if constexpr (std::is_floating_point_v<argT1> ||
+                           std::is_same_v<argT1, sycl::half>)
+            return (std::isnan(in1) || in1 > in2) ? in1 : in2;
+        else
+            return (in1 > in2) ? in1 : in2;
     }
 
     template <int vec_sz>
@@ -92,7 +90,11 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
         sycl::vec<resT, vec_sz> res;
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            res[i] = (in1[i] != in1[i] || in1[i] > in2[i]) ? in1[i] : in2[i];
+            if constexpr (std::is_floating_point_v<argT1>)
+                res[i] =
+                    (sycl::isnan(in1[i]) || in1[i] > in2[i]) ? in1[i] : in2[i];
+            else
+                res[i] = (in1[i] > in2[i]) ? in1[i] : in2[i];
         }
         return res;
     }
