@@ -28,6 +28,7 @@
 #include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -55,16 +56,12 @@ using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 {
-    using supports_sg_loadstore = typename std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = typename std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        resT max = std::max<resT>(in1, in2);
-        resT min = std::min<resT>(in1, in2);
-        return max + std::log1p(std::exp(min - max));
+        return impl<resT>(in1, in2);
     }
 
     template <int vec_sz>
@@ -76,11 +73,28 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            resT max = std::max<resT>(in1[i], in2[i]);
-            res[i] = max + std::log1p(std::exp(std::abs(diff[i])));
+            res[i] = impl<resT>(in1[i], in2[i]);
         }
 
         return res;
+    }
+
+private:
+    template <typename T> T impl(T const &in1, T const &in2)
+    {
+        T max = std::max<T>(in1, in2);
+        if (std::isnan(max)) {
+            return std::numeric_limits<T>::quiet_NaN();
+        }
+        else {
+            if (std::isinf(max)) {
+                // if both args are -inf, and hence max is -inf
+                // the result is -inf as well
+                return max;
+            }
+        }
+        T min = std::min<T>(in1, in2);
+        return max + std::log1p(std::exp(min - max));
     }
 };
 

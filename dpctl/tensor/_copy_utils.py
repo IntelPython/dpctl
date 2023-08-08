@@ -290,78 +290,6 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     _copy_same_shape(dst, src_same_shape)
 
 
-def copy(usm_ary, order="K"):
-    """copy(ary, order="K")
-
-    Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.
-
-    Args:
-        ary (usm_ndarray):
-            Input array.
-        order ({"C", "F", "A", "K"}, optional):
-            Controls the memory layout of the output array.
-    Returns:
-        usm_ndarray:
-            A copy of the input array.
-
-    Memory layout of the copy is controlled by `order` keyword,
-    following NumPy's conventions. The `order` keywords can be
-    one of the following:
-
-       - "C": C-contiguous memory layout
-       - "F": Fortran-contiguous memory layout
-       - "A": Fortran-contiguous if the input array is also Fortran-contiguous,
-         otherwise C-contiguous
-       - "K": match the layout of `usm_ary` as closely as possible.
-
-    """
-    if not isinstance(usm_ary, dpt.usm_ndarray):
-        return TypeError(
-            f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
-        )
-    copy_order = "C"
-    if order == "C":
-        pass
-    elif order == "F":
-        copy_order = order
-    elif order == "A":
-        if usm_ary.flags.f_contiguous:
-            copy_order = "F"
-    elif order == "K":
-        if usm_ary.flags.f_contiguous:
-            copy_order = "F"
-    else:
-        raise ValueError(
-            "Unrecognized value of the order keyword. "
-            "Recognized values are 'A', 'C', 'F', or 'K'"
-        )
-    c_contig = usm_ary.flags.c_contiguous
-    f_contig = usm_ary.flags.f_contiguous
-    R = dpt.usm_ndarray(
-        usm_ary.shape,
-        dtype=usm_ary.dtype,
-        buffer=usm_ary.usm_type,
-        order=copy_order,
-        buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
-    )
-    if order == "K" and (not c_contig and not f_contig):
-        original_strides = usm_ary.strides
-        ind = sorted(
-            range(usm_ary.ndim),
-            key=lambda i: abs(original_strides[i]),
-            reverse=True,
-        )
-        new_strides = tuple(R.strides[ind[i]] for i in ind)
-        R = dpt.usm_ndarray(
-            usm_ary.shape,
-            dtype=usm_ary.dtype,
-            buffer=R.usm_data,
-            strides=new_strides,
-        )
-    _copy_same_shape(R, usm_ary)
-    return R
-
-
 def _empty_like_orderK(X, dt, usm_type=None, dev=None):
     """Returns empty array like `x`, using order='K'
 
@@ -450,6 +378,65 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
         )
         R = R[sl]
     return dpt.permute_dims(R, inv_perm)
+
+
+def copy(usm_ary, order="K"):
+    """copy(ary, order="K")
+
+    Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.
+
+    Args:
+        ary (usm_ndarray):
+            Input array.
+        order ({"C", "F", "A", "K"}, optional):
+            Controls the memory layout of the output array.
+    Returns:
+        usm_ndarray:
+            A copy of the input array.
+
+    Memory layout of the copy is controlled by `order` keyword,
+    following NumPy's conventions. The `order` keywords can be
+    one of the following:
+
+       - "C": C-contiguous memory layout
+       - "F": Fortran-contiguous memory layout
+       - "A": Fortran-contiguous if the input array is also Fortran-contiguous,
+         otherwise C-contiguous
+       - "K": match the layout of `usm_ary` as closely as possible.
+
+    """
+    if not isinstance(usm_ary, dpt.usm_ndarray):
+        return TypeError(
+            f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
+        )
+    copy_order = "C"
+    if order == "C":
+        pass
+    elif order == "F":
+        copy_order = order
+    elif order == "A":
+        if usm_ary.flags.f_contiguous:
+            copy_order = "F"
+    elif order == "K":
+        if usm_ary.flags.f_contiguous:
+            copy_order = "F"
+    else:
+        raise ValueError(
+            "Unrecognized value of the order keyword. "
+            "Recognized values are 'A', 'C', 'F', or 'K'"
+        )
+    if order == "K":
+        R = _empty_like_orderK(usm_ary, usm_ary.dtype)
+    else:
+        R = dpt.usm_ndarray(
+            usm_ary.shape,
+            dtype=usm_ary.dtype,
+            buffer=usm_ary.usm_type,
+            order=copy_order,
+            buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
+        )
+    _copy_same_shape(R, usm_ary)
+    return R
 
 
 def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
