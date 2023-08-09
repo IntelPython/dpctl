@@ -1012,13 +1012,31 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
     Zusm_empty[Ellipsis] = Zusm_3d[0, 0, 0:0]
 
 
-def test_setitem_boradcasting():
+def test_setitem_broadcasting():
     get_queue_or_skip()
     dst = dpt.ones((2, 3, 4), dtype="u4")
     src = dpt.zeros((3, 1), dtype=dst.dtype)
     dst[...] = src
     expected = np.zeros(dst.shape, dtype=dst.dtype)
     assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_empty_dst_validation():
+    "Broadcasting rules apply, except exception"
+    get_queue_or_skip()
+    dst = dpt.ones((2, 0, 5, 4), dtype="i8")
+    src = dpt.ones((2, 0, 3, 4), dtype="i8")
+    with pytest.raises(ValueError):
+        dst[...] = src
+
+
+def test_setitem_broadcasting_empty_dst_edge_case():
+    """RHS is shunken to empty array by
+    broadasting rule, hence no exception"""
+    get_queue_or_skip()
+    dst = dpt.ones(1, dtype="i8")[0:0]
+    src = dpt.ones(tuple(), dtype="i8")
+    dst[...] = src
 
 
 @pytest.mark.parametrize(
