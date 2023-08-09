@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev0+79.g9421a85c6 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev1+2.g43a76888f documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+79.g9421a85c6
+                0.14.6dev1+2.g43a76888f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -609,9 +609,10 @@
         <span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum_dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
     <span class="p">)</span>
     <span class="n">mask_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">indexes</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">mask_count</span><span class="p">),</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">indexes_dt</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
