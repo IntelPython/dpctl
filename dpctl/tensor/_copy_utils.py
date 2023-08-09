@@ -279,7 +279,10 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         common_shape = common_shape[ones_count:]
 
     if src.ndim < len(common_shape):
-        new_src_strides = (0,) * (len(common_shape) - src.ndim) + src.strides
+        pad_count = len(common_shape) - src.ndim
+        new_src_strides = (0,) * pad_count + tuple(
+            s if d > 1 else 0 for s, d in zip(src.strides, src.shape)
+        )
         src_same_shape = dpt.usm_ndarray(
             common_shape, dtype=src.dtype, buffer=src, strides=new_src_strides
         )

@@ -1012,6 +1012,15 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
     Zusm_empty[Ellipsis] = Zusm_3d[0, 0, 0:0]
 
 
+def test_setitem_boradcasting():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="u4")
+    src = dpt.zeros((3, 1), dtype=dst.dtype)
+    dst[...] = src
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
 @pytest.mark.parametrize(
     "dtype",
     _all_dtypes,
