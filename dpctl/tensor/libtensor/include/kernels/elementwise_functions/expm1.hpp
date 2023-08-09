@@ -85,19 +85,19 @@ template <typename argT, typename resT> struct Expm1Functor
                         return in;
                     }
                     else {
-                        return (std::numeric_limits<realT>::infinity() *
-                                    resT{std::cos(y), std::sin(y)} -
-                                realT(1));
+                        return (x * resT{std::cos(y), std::sin(y)});
                     }
                 }
                 else {
                     // negative infinity cases
                     if (!std::isfinite(y)) {
-                        return resT{-1, 0};
+                        // copy sign of y to guarantee
+                        // conj(expm1(x)) == expm1(conj(x))
+                        return resT{realT(-1), std::copysign(realT(0), y)};
                     }
                     else {
-                        return (realT(0) * resT{std::cos(y), std::sin(y)} -
-                                realT(1));
+                        return resT{realT(-1),
+                                    std::copysign(realT(0), std::sin(y))};
                     }
                 }
             }
