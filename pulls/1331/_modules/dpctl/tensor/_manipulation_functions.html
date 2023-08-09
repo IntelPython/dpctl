@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev0+122.g1ab0bf55 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev1+35.g5379d9342 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+122.g1ab0bf55
+                0.14.6dev1+35.g5379d9342
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -117,6 +117,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dputils</span>
 
+<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_broadcast_strides</span>
 <span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_to_device_supported_dtype</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
@@ -210,23 +211,6 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
-
-
-<span class="k">def</span> <span class="nf">_broadcast_strides</span><span class="p">(</span><span class="n">X_shape</span><span class="p">,</span> <span class="n">X_strides</span><span class="p">,</span> <span class="n">res_ndim</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Broadcasts strides to match the given dimensions;</span>
-<span class="sd">    returns tuple type strides.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">out_strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">res_ndim</span>
-    <span class="n">X_shape_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_shape</span><span class="p">)</span>
-    <span class="n">str_dim</span> <span class="o">=</span> <span class="o">-</span><span class="n">X_shape_len</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_shape_len</span><span class="p">):</span>
-        <span class="n">shape_value</span> <span class="o">=</span> <span class="n">X_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">shape_value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">out_strides</span><span class="p">[</span><span class="n">str_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">str_dim</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out_strides</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_broadcast_shape_impl</span><span class="p">(</span><span class="n">shapes</span><span class="p">):</span>
