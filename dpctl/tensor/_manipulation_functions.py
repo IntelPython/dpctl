@@ -25,6 +25,8 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dputils
 
+from ._type_utils import _to_device_supported_dtype
+
 __doc__ = (
     "Implementation module for array manipulation "
     "functions in :module:`dpctl.tensor`"
@@ -504,8 +506,10 @@ def _arrays_validation(arrays, check_ndim=True):
     _supported_dtype(Xi.dtype for Xi in arrays)
 
     res_dtype = X0.dtype
+    dev = exec_q.sycl_device
     for i in range(1, n):
         res_dtype = np.promote_types(res_dtype, arrays[i])
+        res_dtype = _to_device_supported_dtype(res_dtype, dev)
 
     if check_ndim:
         for i in range(1, n):
@@ -554,8 +558,13 @@ def _concat_axis_None(arrays):
                 sycl_queue=exec_q,
             )
         else:
+            src_ = array
+            # _copy_usm_ndarray_for_reshape requires src and dst to have
+            # the same data type
+            if not array.dtype == res_dtype:
+                src_ = dpt.astype(src_, res_dtype)
             hev, _ = ti._copy_usm_ndarray_for_reshape(
-                src=array,
+                src=src_,
                 dst=res[fill_start:fill_end],
                 shift=0,
                 sycl_queue=exec_q,

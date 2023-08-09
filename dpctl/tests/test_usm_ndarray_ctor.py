@@ -84,7 +84,7 @@ def test_usm_ndarray_flags():
     assert f.forc
     assert f.fnc
 
-    f = dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags
+    f = dpt.usm_ndarray((5, 0, 1), dtype="i4", strides=(1, 0, 1)).flags
     assert f.fc
     assert f.forc
     assert not dpt.usm_ndarray(

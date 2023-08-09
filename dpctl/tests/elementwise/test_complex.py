@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import warnings
 
 import numpy as np
 import pytest
@@ -203,12 +204,18 @@ def test_complex_special_cases(dtype):
     Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
 
     tol = 8 * dpt.finfo(dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.real(Xc)), np.real(Xc_np), atol=tol, rtol=tol
-    )
-    assert_allclose(
-        dpt.asnumpy(dpt.imag(Xc)), np.imag(Xc_np), atol=tol, rtol=tol
-    )
-    assert_allclose(
-        dpt.asnumpy(dpt.conj(Xc)), np.conj(Xc_np), atol=tol, rtol=tol
-    )
+
+    actual = dpt.real(Xc)
+    expected = np.real(Xc_np)
+    assert_allclose(dpt.asnumpy(actual), expected, atol=tol, rtol=tol)
+
+    actual = dpt.imag(Xc)
+    expected = np.imag(Xc_np)
+    assert_allclose(dpt.asnumpy(actual), expected, atol=tol, rtol=tol)
+
+    actual = dpt.conj(Xc)
+    expected = np.conj(Xc_np)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        assert_allclose(dpt.asnumpy(actual), expected, atol=tol, rtol=tol)

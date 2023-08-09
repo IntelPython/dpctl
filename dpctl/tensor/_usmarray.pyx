@@ -764,6 +764,8 @@ cdef class usm_ndarray:
             ind, (<object>self).shape, (<object> self).strides,
             self.get_offset())
         cdef usm_ndarray res
+        cdef int i = 0
+        cdef bint matching = 1
 
         if len(_meta) < 5:
             raise RuntimeError
@@ -787,7 +789,20 @@ cdef class usm_ndarray:
 
         from ._copy_utils import _extract_impl, _nonzero_impl, _take_multi_index
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
-            return _extract_impl(res, adv_ind[0], axis=adv_ind_start_p)
+            key_ = adv_ind[0]
+            adv_ind_end_p = key_.ndim + adv_ind_start_p
+            if adv_ind_end_p > res.ndim:
+                raise IndexError("too many indices for the array")
+            key_shape = key_.shape
+            arr_shape = res.shape[adv_ind_start_p:adv_ind_end_p]
+            for i in range(key_.ndim):
+                if matching:
+                    if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
+                        matching = 0
+            if not matching:
+                raise IndexError("boolean index did not match indexed array in dimensions")
+            res = _extract_impl(res, key_, axis=adv_ind_start_p)
+            return res
 
         if any(ind.dtype == dpt_bool for ind in adv_ind):
             adv_ind_int = list()
@@ -857,7 +872,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags.flags
+            res.flags_ = self.flags_
             return res
         else:
             nbytes = self.usm_data.nbytes
@@ -872,7 +887,7 @@ cdef class usm_ndarray:
                 strides=self.strides,
                 offset=self.get_offset()
             )
-            res.flags_ = self.flags.flags
+            res.flags_ = self.flags_
             return res
 
     def _set_namespace(self, mod):
@@ -884,12 +899,14 @@ cdef class usm_ndarray:
         Returns array namespace, member functions of which
         implement data API.
         """
-        return self.array_namespace_
+        return self.array_namespace_ if self.array_namespace_ is not None else dpctl.tensor
 
     def __bool__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__bool__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__bool__()
 
         if self.size == 0:
             raise ValueError(
@@ -898,13 +915,15 @@ cdef class usm_ndarray:
 
         raise ValueError(
             "The truth value of an array with more than one element is "
-            "ambiguous. Use a.any() or a.all()"
+            "ambiguous. Use dpctl.tensor.any() or dpctl.tensor.all()"
         )
 
     def __float__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__float__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__float__()
 
         raise ValueError(
             "only size-1 arrays can be converted to Python scalars"
@@ -913,7 +932,9 @@ cdef class usm_ndarray:
     def __complex__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__complex__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__complex__()
 
         raise ValueError(
             "only size-1 arrays can be converted to Python scalars"
@@ -922,7 +943,9 @@ cdef class usm_ndarray:
     def __int__(self):
         if self.size == 1:
             mem_view = dpmem.as_usm_memory(self)
-            return mem_view.copy_to_host().view(self.dtype).__int__()
+            host_buf = mem_view.copy_to_host()
+            view = host_buf.view(self.dtype)
+            return view.__int__()
 
         raise ValueError(
             "only size-1 arrays can be converted to Python scalars"
@@ -957,9 +980,9 @@ cdef class usm_ndarray:
     def __and__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "logical_and", other)
+            return _dispatch_binary_elementwise(first, "bitwise_and", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "logical_and", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_and", other)
         return NotImplemented
 
     def __dlpack__(self, stream=None):
@@ -1023,7 +1046,7 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise(self, "greater", other)
 
     def __invert__(self):
-        return _dispatch_unary_elementwise(self, "invert")
+        return _dispatch_unary_elementwise(self, "bitwise_invert")
 
     def __le__(self, other):
         return _dispatch_binary_elementwise(self, "less_equal", other)
@@ -1037,9 +1060,9 @@ cdef class usm_ndarray:
     def __lshift__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "left_shift", other)
+            return _dispatch_binary_elementwise(first, "bitwise_left_shift", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "left_shift", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_left_shift", other)
         return NotImplemented
 
     def __lt__(self, other):
@@ -1056,9 +1079,9 @@ cdef class usm_ndarray:
     def __mod__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "mod", other)
+            return _dispatch_binary_elementwise(first, "remainder", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "mod", other)
+            return _dispatch_binary_elementwise2(first, "remainder", other)
         return NotImplemented
 
     def __mul__(first, other):
@@ -1078,9 +1101,9 @@ cdef class usm_ndarray:
     def __or__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "logical_or", other)
+            return _dispatch_binary_elementwise(first, "bitwise_or", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "logical_or", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_or", other)
         return NotImplemented
 
     def __pos__(self):
@@ -1090,17 +1113,17 @@ cdef class usm_ndarray:
         "See comment in __add__"
         if mod is None:
             if isinstance(first, usm_ndarray):
-                return _dispatch_binary_elementwise(first, "power", other)
+                return _dispatch_binary_elementwise(first, "pow", other)
             elif isinstance(other, usm_ndarray):
-                return _dispatch_binary_elementwise(first, "power", other)
+                return _dispatch_binary_elementwise(first, "pow", other)
         return NotImplemented
 
     def __rshift__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "right_shift", other)
+            return _dispatch_binary_elementwise(first, "bitwise_right_shift", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "right_shift", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_right_shift", other)
         return NotImplemented
 
     def __setitem__(self, key, rhs):
@@ -1144,6 +1167,8 @@ cdef class usm_ndarray:
         if adv_ind_start_p < 0:
             # basic slicing
             if isinstance(rhs, usm_ndarray):
+                if Xv.size == 0:
+                    return
                 _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs)
             else:
                 if hasattr(rhs, "__sycl_usm_array_interface__"):
@@ -1202,57 +1227,57 @@ cdef class usm_ndarray:
     def __truediv__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "true_divide", other)
+            return _dispatch_binary_elementwise(first, "divide", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "true_divide", other)
+            return _dispatch_binary_elementwise2(first, "divide", other)
         return NotImplemented
 
     def __xor__(first, other):
         "See comment in __add__"
         if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "logical_xor", other)
+            return _dispatch_binary_elementwise(first, "bitwise_xor", other)
         elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "logical_xor", other)
+            return _dispatch_binary_elementwise2(first, "bitwise_xor", other)
         return NotImplemented
 
     def __radd__(self, other):
         return _dispatch_binary_elementwise(self, "add", other)
 
     def __rand__(self, other):
-        return _dispatch_binary_elementwise(self, "logical_and", other)
+        return _dispatch_binary_elementwise(self, "bitwise_and", other)
 
     def __rfloordiv__(self, other):
         return _dispatch_binary_elementwise2(other, "floor_divide", self)
 
     def __rlshift__(self, other):
-        return _dispatch_binary_elementwise2(other, "left_shift", self)
+        return _dispatch_binary_elementwise2(other, "bitwise_left_shift", self)
 
     def __rmatmul__(self, other):
         return _dispatch_binary_elementwise2(other, "matmul", self)
 
     def __rmod__(self, other):
-        return _dispatch_binary_elementwise2(other, "mod", self)
+        return _dispatch_binary_elementwise2(other, "remainder", self)
 
     def __rmul__(self, other):
         return _dispatch_binary_elementwise(self, "multiply", other)
 
     def __ror__(self, other):
-        return _dispatch_binary_elementwise(self, "logical_or", other)
+        return _dispatch_binary_elementwise(self, "bitwise_or", other)
 
     def __rpow__(self, other):
-        return _dispatch_binary_elementwise2(other, "power", self)
+        return _dispatch_binary_elementwise2(other, "pow", self)
 
     def __rrshift__(self, other):
-        return _dispatch_binary_elementwise2(other, "right_shift", self)
+        return _dispatch_binary_elementwise2(other, "bitwise_right_shift", self)
 
     def __rsub__(self, other):
         return _dispatch_binary_elementwise2(other, "subtract", self)
 
     def __rtruediv__(self, other):
-        return _dispatch_binary_elementwise2(other, "true_divide", self)
+        return _dispatch_binary_elementwise2(other, "divide", self)
 
     def __rxor__(self, other):
-        return _dispatch_binary_elementwise2(other, "logical_xor", self)
+        return _dispatch_binary_elementwise2(other, "bitwise_xor", self)
 
     def __iadd__(self, other):
         from ._elementwise_funcs import add
