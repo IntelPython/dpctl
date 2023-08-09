@@ -1175,8 +1175,6 @@ cdef class usm_ndarray:
         if adv_ind_start_p < 0:
             # basic slicing
             if isinstance(rhs, usm_ndarray):
-                if Xv.size == 0:
-                    return
                 _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs)
             else:
                 if hasattr(rhs, "__sycl_usm_array_interface__"):
