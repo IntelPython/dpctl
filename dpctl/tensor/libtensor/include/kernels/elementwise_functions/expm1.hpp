@@ -28,6 +28,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -73,6 +74,45 @@ template <typename argT, typename resT> struct Expm1Functor
             const realT x = std::real(in);
             const realT y = std::imag(in);
 
+            // special cases
+            if (std::isinf(x)) {
+                if (x > realT(0)) {
+                    // positive infinity cases
+                    if (!std::isfinite(y)) {
+                        return resT{x, std::numeric_limits<realT>::quiet_NaN()};
+                    }
+                    else if (y == realT(0)) {
+                        return in;
+                    }
+                    else {
+                        return (std::numeric_limits<realT>::infinity() *
+                                    resT{std::cos(y), std::sin(y)} -
+                                realT(1));
+                    }
+                }
+                else {
+                    // negative infinity cases
+                    if (!std::isfinite(y)) {
+                        return resT{-1, 0};
+                    }
+                    else {
+                        return (realT(0) * resT{std::cos(y), std::sin(y)} -
+                                realT(1));
+                    }
+                }
+            }
+
+            if (std::isnan(x)) {
+                if (y == realT(0)) {
+                    return in;
+                }
+                else {
+                    return resT{std::numeric_limits<realT>::quiet_NaN(),
+                                std::numeric_limits<realT>::quiet_NaN()};
+                }
+            }
+
+            // x, y finite numbers
             realT cosY_val;
             const realT sinY_val = sycl::sincos(y, &cosY_val);
             const realT sinhalfY_val = std::sin(y / 2);
