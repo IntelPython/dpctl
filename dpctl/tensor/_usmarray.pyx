@@ -816,7 +816,7 @@ cdef class usm_ndarray:
         return _take_multi_index(res, adv_ind, adv_ind_start_p)
 
 
-    def to_device(self, target):
+    def to_device(self, target, stream=None):
         """ to_device(target_device)
 
         Transfers this array to specified target device.
@@ -856,6 +856,14 @@ cdef class usm_ndarray:
         cdef c_dpctl.DPCTLSyclQueueRef QRef = NULL
         cdef c_dpmem._Memory arr_buf
         d = Device.create_device(target)
+
+        if (stream is None or type(stream) is not dpctl.SyclQueue or
+            stream == self.sycl_queue):
+            pass
+        else:
+            ev = self.sycl_queue.submit_barrier()
+            stream.submit_barrier(dependent_events=[ev])
+
         if (d.sycl_context == self.sycl_context):
             arr_buf = <c_dpmem._Memory> self.usm_data
             QRef = (<c_dpctl.SyclQueue> d.sycl_queue).get_queue_ref()
