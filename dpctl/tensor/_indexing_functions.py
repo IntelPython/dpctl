@@ -343,5 +343,5 @@ def nonzero(arr):
             "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
         )
     if arr.ndim == 0:
-        raise ValueError("Array of positive rank is exepcted")
+        raise ValueError("Array of positive rank is expected")
     return _nonzero_impl(arr)
