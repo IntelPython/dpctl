@@ -299,6 +299,7 @@ cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
+    cdef bool DPCTLPlatform_AreEq(const DPCTLSyclPlatformRef, const DPCTLSyclPlatformRef)
     cdef DPCTLSyclPlatformRef DPCTLPlatform_Copy(const DPCTLSyclPlatformRef)
     cdef DPCTLSyclPlatformRef DPCTLPlatform_Create()
     cdef DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
@@ -308,6 +309,7 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
     cdef const char *DPCTLPlatform_GetName(const DPCTLSyclPlatformRef)
     cdef const char *DPCTLPlatform_GetVendor(const DPCTLSyclPlatformRef)
     cdef const char *DPCTLPlatform_GetVersion(const DPCTLSyclPlatformRef)
+    cdef size_t DPCTLPlatform_Hash(const DPCTLSyclPlatformRef)
     cdef DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
     cdef DPCTLSyclContextRef DPCTLPlatform_GetDefaultContext(
         const DPCTLSyclPlatformRef)
