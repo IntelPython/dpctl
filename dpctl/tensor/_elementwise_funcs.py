@@ -35,7 +35,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -62,7 +62,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -88,7 +88,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -118,7 +118,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -146,7 +146,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -172,7 +172,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -198,7 +198,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -230,7 +230,7 @@ Args:
         floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -256,7 +256,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -287,7 +287,7 @@ Args:
         type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -321,7 +321,7 @@ Args:
         Each element must be greater than or equal to 0.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -351,7 +351,7 @@ Args:
         Input array, expected to have integer or boolean data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -385,7 +385,7 @@ Args:
         type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -418,7 +418,7 @@ Args:
         Each element must be greater than or equal to 0.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -453,7 +453,7 @@ Args:
         type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -484,7 +484,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -509,7 +509,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -534,7 +534,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -557,7 +557,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -585,7 +585,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -618,7 +618,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -643,7 +643,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -692,7 +692,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -746,7 +746,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -772,7 +772,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -801,7 +801,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -829,7 +829,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -855,7 +855,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -880,7 +880,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -908,7 +908,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -934,7 +934,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1007,7 +1007,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1033,7 +1033,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1062,7 +1062,7 @@ Args:
         Second input array, also expected to have real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1090,7 +1090,7 @@ Args:
         Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1144,7 +1144,7 @@ Args:
         Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1173,7 +1173,7 @@ Args:
         Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1202,7 +1202,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1232,7 +1232,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1262,7 +1262,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1320,7 +1320,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1393,7 +1393,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1418,7 +1418,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1451,7 +1451,7 @@ Args:
         Second input array, also expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1480,7 +1480,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1509,7 +1509,7 @@ Args:
         Input array, expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1535,7 +1535,7 @@ Args:
         Input array, expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1560,7 +1560,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1583,7 +1583,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1607,7 +1607,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1633,7 +1633,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1662,7 +1662,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1692,7 +1692,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1715,7 +1715,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1743,7 +1743,7 @@ Args:
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
@@ -1771,7 +1771,7 @@ Args:
         Second input array, also expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
