@@ -1039,6 +1039,26 @@ def test_setitem_broadcasting_empty_dst_edge_case():
     dst[...] = src
 
 
+def test_setitem_broadcasting_src_ndim_equal_dst_ndim():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="i4")
+    src = dpt.zeros((2, 1, 4), dtype="i4")
+    dst[...] = src
+
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_src_ndim_greater_than_dst_ndim():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="i4")
+    src = dpt.zeros((1, 2, 1, 4), dtype="i4")
+    dst[...] = src
+
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
 @pytest.mark.parametrize(
     "dtype",
     _all_dtypes,
