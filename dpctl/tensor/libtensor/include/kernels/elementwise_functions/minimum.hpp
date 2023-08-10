@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -65,16 +66,8 @@ template <typename argT1, typename argT2, typename resT> struct MinimumFunctor
                       tu_ns::is_complex<argT2>::value)
         {
             static_assert(std::is_same_v<argT1, argT2>);
-            using realT = typename argT1::value_type;
-            realT real1 = std::real(in1);
-            realT real2 = std::real(in2);
-            realT imag1 = std::imag(in1);
-            realT imag2 = std::imag(in2);
-
-            bool lt = (real1 == real2) ? (imag1 < imag2)
-                                       : (real1 < real2 && !std::isnan(imag1) &&
-                                          !std::isnan(imag2));
-            return (std::isnan(real1) || std::isnan(imag1) || lt) ? in1 : in2;
+            using dpctl::tensor::math_utils::min_complex;
+            return min_complex<argT1>(in1, in2);
         }
         else if constexpr (std::is_floating_point_v<argT1> ||
                            std::is_same_v<argT1, sycl::half>)
