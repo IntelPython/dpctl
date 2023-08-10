@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev1+35.g5379d9342 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev1+39.g608a2549f documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev1+35.g5379d9342
+                0.14.6dev1+39.g608a2549f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -394,9 +394,27 @@
         <span class="n">src_same_shape</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="n">common_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">new_src_strides</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">src</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">common_shape</span><span class="p">):</span>
+        <span class="n">new_src_strides</span> <span class="o">=</span> <span class="n">_broadcast_strides</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">common_shape</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">src_same_shape</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+            <span class="n">common_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">new_src_strides</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">src_same_shape</span> <span class="o">=</span> <span class="n">src</span>
-        <span class="n">src_same_shape</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">common_shape</span>
+        <span class="c1"># since broadcasting succeeded, src.ndim is greater because of</span>
+        <span class="c1"># leading sequence of ones, so we trim it</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">common_shape</span><span class="p">)</span>
+        <span class="n">new_src_strides</span> <span class="o">=</span> <span class="n">_broadcast_strides</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:],</span> <span class="n">src</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:],</span> <span class="n">n</span>
+        <span class="p">)</span>
+        <span class="n">src_same_shape</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+            <span class="n">common_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">buffer</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">usm_data</span><span class="p">,</span>
+            <span class="n">strides</span><span class="o">=</span><span class="n">new_src_strides</span><span class="p">,</span>
+            <span class="n">offset</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">_element_offset</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">_copy_same_shape</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src_same_shape</span><span class="p">)</span>
 
