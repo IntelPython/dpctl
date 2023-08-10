@@ -59,7 +59,7 @@ Computes inverse cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -85,7 +85,7 @@ Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -143,7 +143,7 @@ Computes inverse sine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -169,7 +169,7 @@ Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -195,7 +195,7 @@ Computes inverse tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -253,7 +253,7 @@ Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -531,7 +531,7 @@ Computes cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -554,7 +554,7 @@ Computes hyperbolic cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1557,7 +1557,7 @@ Computes sine for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1580,7 +1580,7 @@ Computes hyperbolic sine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1689,7 +1689,7 @@ Computes tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1712,7 +1712,7 @@ Computes hyperbolic tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
