@@ -506,7 +506,7 @@ Computes conjugate of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -516,7 +516,6 @@ Args:
 Returns:
     usm_narray:
         An array containing the element-wise conjugate values.
-        The returned array has the same data type as `x`.
 """
 
 conj = UnaryElementwiseFunc(
@@ -798,7 +797,7 @@ Computes imaginary part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -809,7 +808,7 @@ Returns:
     usm_narray:
         An array containing the element-wise imaginary component of input.
         If the input is a real-valued data type, the returned array has
-        the same datat type. If the input is a complex floating-point
+        the same data type. If the input is a complex floating-point
         data type, the returned array has a floating-point data type
         with the same floating-point precision as complex input.
 """
@@ -1390,7 +1389,7 @@ Computes projection of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a complex data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1400,7 +1399,6 @@ Args:
 Returns:
     usm_narray:
         An array containing the element-wise projection.
-        The returned array has the same data type as `x`.
 """
 
 proj = UnaryElementwiseFunc(
@@ -1415,7 +1413,7 @@ Computes real part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1426,7 +1424,7 @@ Returns:
     usm_narray:
         An array containing the element-wise real component of input.
         If the input is a real-valued data type, the returned array has
-        the same datat type. If the input is a complex floating-point
+        the same data type. If the input is a complex floating-point
         data type, the returned array has a floating-point data type
         with the same floating-point precision as complex input.
 """
