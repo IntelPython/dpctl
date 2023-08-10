@@ -113,9 +113,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
