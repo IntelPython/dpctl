@@ -159,6 +159,6 @@ void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef);
  * @ingroup ContextInterface
  */
 DPCTL_API
-size_t DPCTLContext_Hash(__dpctl_take DPCTLSyclContextRef CtxRef);
+size_t DPCTLContext_Hash(__dpctl_keep DPCTLSyclContextRef CtxRef);
 
 DPCTL_C_EXTERN_C_END
