@@ -264,6 +264,25 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkPrintInfoNullArg)
     EXPECT_NO_FATAL_FAILURE(DPCTLPlatformMgr_PrintInfo(Null_PRef, 0));
 }
 
+TEST_P(TestDPCTLSyclPlatformInterface, ChkAreEq)
+{
+    DPCTLSyclPlatformRef PRef_Copy = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(PRef_Copy = DPCTLPlatform_Copy(PRef));
+
+    ASSERT_TRUE(DPCTLPlatform_AreEq(PRef, PRef_Copy));
+    EXPECT_TRUE(DPCTLPlatform_Hash(PRef) == DPCTLPlatform_Hash(PRef_Copy));
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef_Copy));
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, ChkAreEqNullArg)
+{
+    DPCTLSyclPlatformRef Null_PRef = nullptr;
+    ASSERT_FALSE(DPCTLPlatform_AreEq(PRef, Null_PRef));
+    ASSERT_TRUE(DPCTLPlatform_Hash(Null_PRef) == 0);
+}
+
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName)
 {
     check_platform_name(PRef);
