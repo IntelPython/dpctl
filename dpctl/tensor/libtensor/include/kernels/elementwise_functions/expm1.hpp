@@ -85,7 +85,8 @@ template <typename argT, typename resT> struct Expm1Functor
                         return in;
                     }
                     else {
-                        return (x * resT{std::cos(y), std::sin(y)});
+                        return (resT{std::copysign(x, std::cos(y)),
+                                     std::copysign(x, std::sin(y))});
                     }
                 }
                 else {
