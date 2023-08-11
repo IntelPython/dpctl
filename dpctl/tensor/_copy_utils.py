@@ -246,6 +246,23 @@ else:
         ).shape
 
 
+def _broadcast_strides(X_shape, X_strides, res_ndim):
+    """
+    Broadcasts strides to match the given dimensions;
+    returns tuple type strides.
+    """
+    out_strides = [0] * res_ndim
+    X_shape_len = len(X_shape)
+    str_dim = -X_shape_len
+    for i in range(X_shape_len):
+        shape_value = X_shape[i]
+        if not shape_value == 1:
+            out_strides[str_dim] = X_strides[i]
+        str_dim += 1
+
+    return tuple(out_strides)
+
+
 def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     if any(
         not isinstance(arg, dpt.usm_ndarray)
@@ -268,7 +285,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     except ValueError as exc:
         raise ValueError("Shapes of two arrays are not compatible") from exc
 
-    if dst.size < src.size:
+    if dst.size < src.size and dst.size < np.prod(common_shape):
         raise ValueError("Destination is smaller ")
 
     if len(common_shape) > dst.ndim:
@@ -279,13 +296,33 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         common_shape = common_shape[ones_count:]
 
     if src.ndim < len(common_shape):
-        new_src_strides = (0,) * (len(common_shape) - src.ndim) + src.strides
+        new_src_strides = _broadcast_strides(
+            src.shape, src.strides, len(common_shape)
+        )
+        src_same_shape = dpt.usm_ndarray(
+            common_shape, dtype=src.dtype, buffer=src, strides=new_src_strides
+        )
+    elif src.ndim == len(common_shape):
+        new_src_strides = _broadcast_strides(
+            src.shape, src.strides, len(common_shape)
+        )
         src_same_shape = dpt.usm_ndarray(
             common_shape, dtype=src.dtype, buffer=src, strides=new_src_strides
         )
     else:
-        src_same_shape = src
-        src_same_shape.shape = common_shape
+        # since broadcasting succeeded, src.ndim is greater because of
+        # leading sequence of ones, so we trim it
+        n = len(common_shape)
+        new_src_strides = _broadcast_strides(
+            src.shape[-n:], src.strides[-n:], n
+        )
+        src_same_shape = dpt.usm_ndarray(
+            common_shape,
+            dtype=src.dtype,
+            buffer=src.usm_data,
+            strides=new_src_strides,
+            offset=src._element_offset,
+        )
 
     _copy_same_shape(dst, src_same_shape)
 

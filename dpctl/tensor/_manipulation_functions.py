@@ -25,6 +25,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dputils
 
+from ._copy_utils import _broadcast_strides
 from ._type_utils import _to_device_supported_dtype
 
 __doc__ = (
@@ -118,23 +119,6 @@ class finfo_object:
 
     def __repr__(self):
         return self._finfo.__repr__()
-
-
-def _broadcast_strides(X_shape, X_strides, res_ndim):
-    """
-    Broadcasts strides to match the given dimensions;
-    returns tuple type strides.
-    """
-    out_strides = [0] * res_ndim
-    X_shape_len = len(X_shape)
-    str_dim = -X_shape_len
-    for i in range(X_shape_len):
-        shape_value = X_shape[i]
-        if not shape_value == 1:
-            out_strides[str_dim] = X_strides[i]
-        str_dim += 1
-
-    return tuple(out_strides)
 
 
 def _broadcast_shape_impl(shapes):

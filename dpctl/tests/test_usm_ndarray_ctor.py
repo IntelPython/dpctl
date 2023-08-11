@@ -109,6 +109,25 @@ def test_usm_ndarray_flags():
         x.flags["C"] = False
 
 
+def test_usm_ndarray_flags_bug_gh_1334():
+    get_queue_or_skip()
+    a = dpt.ones((2, 3), dtype="u4")
+    r = dpt.reshape(a, (1, 6, 1))
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 3), dtype="u4", order="F")
+    r = dpt.reshape(a, (1, 6, 1), order="F")
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 3, 4), dtype="i8")
+    r = dpt.sum(a, axis=(1, 2), keepdims=True)
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 1), dtype="?")
+    r = a[:, 1::-1]
+    assert r.flags["F"] and r.flags["C"]
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
@@ -1010,6 +1029,53 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
     assert np.allclose(R1, R2)
     Zusm_empty = Zusm_1d[0:0]
     Zusm_empty[Ellipsis] = Zusm_3d[0, 0, 0:0]
+
+
+def test_setitem_broadcasting():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="u4")
+    src = dpt.zeros((3, 1), dtype=dst.dtype)
+    dst[...] = src
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_empty_dst_validation():
+    "Broadcasting rules apply, except exception"
+    get_queue_or_skip()
+    dst = dpt.ones((2, 0, 5, 4), dtype="i8")
+    src = dpt.ones((2, 0, 3, 4), dtype="i8")
+    with pytest.raises(ValueError):
+        dst[...] = src
+
+
+def test_setitem_broadcasting_empty_dst_edge_case():
+    """RHS is shunken to empty array by
+    broadasting rule, hence no exception"""
+    get_queue_or_skip()
+    dst = dpt.ones(1, dtype="i8")[0:0]
+    src = dpt.ones(tuple(), dtype="i8")
+    dst[...] = src
+
+
+def test_setitem_broadcasting_src_ndim_equal_dst_ndim():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="i4")
+    src = dpt.zeros((2, 1, 4), dtype="i4")
+    dst[...] = src
+
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_src_ndim_greater_than_dst_ndim():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="i4")
+    src = dpt.zeros((1, 2, 1, 4), dtype="i4")
+    dst[...] = src
+
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
 
 
 @pytest.mark.parametrize(
