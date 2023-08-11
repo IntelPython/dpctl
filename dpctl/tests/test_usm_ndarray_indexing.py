@@ -22,6 +22,7 @@ from numpy.testing import assert_array_equal
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
 from dpctl.utils import ExecutionPlacementError
 
 _all_dtypes = [
@@ -1353,7 +1354,7 @@ def test_nonzero_dtype():
     x = dpt.ones((3, 4))
     idx, idy = dpt.nonzero(x)
     # create array using device's
-    # default integral data type
-    ref = dpt.arange(8)
-    assert idx.dtype == ref.dtype
-    assert idy.dtype == ref.dtype
+    # default index data type
+    index_dt = dpt.dtype(ti.default_device_index_type(x.sycl_queue))
+    assert idx.dtype == index_dt
+    assert idy.dtype == index_dt
