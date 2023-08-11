@@ -109,6 +109,25 @@ def test_usm_ndarray_flags():
         x.flags["C"] = False
 
 
+def test_usm_ndarray_flags_bug_gh_1334():
+    get_queue_or_skip()
+    a = dpt.ones((2, 3), dtype="u4")
+    r = dpt.reshape(a, (1, 6, 1))
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 3), dtype="u4", order="F")
+    r = dpt.reshape(a, (1, 6, 1), order="F")
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 3, 4), dtype="i8")
+    r = dpt.sum(a, axis=(1, 2), keepdims=True)
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 1), dtype="?")
+    r = a[:, 1::-1]
+    assert r.flags["F"] and r.flags["C"]
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
