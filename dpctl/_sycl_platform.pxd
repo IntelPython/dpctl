@@ -21,6 +21,8 @@
     SYCL platform-related helper functions.
 """
 
+from libcpp cimport bool
+
 from ._backend cimport DPCTLSyclDeviceSelectorRef, DPCTLSyclPlatformRef
 
 
@@ -40,6 +42,7 @@ cdef class SyclPlatform(_SyclPlatform):
     cdef int _init_from_selector(self, DPCTLSyclDeviceSelectorRef DSRef)
     cdef int _init_from__SyclPlatform(self, _SyclPlatform other)
     cdef DPCTLSyclPlatformRef get_platform_ref(self)
+    cdef bool equals(self, SyclPlatform)
 
 
 cpdef list get_platforms()

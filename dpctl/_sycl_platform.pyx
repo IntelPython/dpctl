@@ -21,10 +21,13 @@
 """ Implements SyclPlatform Cython extension type.
 """
 
+from libcpp cimport bool
+
 from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDeviceSelector_Delete,
     DPCTLFilterSelector_Create,
+    DPCTLPlatform_AreEq,
     DPCTLPlatform_Copy,
     DPCTLPlatform_Create,
     DPCTLPlatform_CreateFromSelector,
@@ -35,6 +38,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatform_GetPlatforms,
     DPCTLPlatform_GetVendor,
     DPCTLPlatform_GetVersion,
+    DPCTLPlatform_Hash,
     DPCTLPlatformMgr_GetInfo,
     DPCTLPlatformMgr_PrintInfo,
     DPCTLPlatformVector_Delete,
@@ -273,6 +277,42 @@ cdef class SyclPlatform(_SyclPlatform):
             raise RuntimeError("Getting default error ran into a problem")
         else:
             return SyclContext._create(CRef)
+
+    cdef bool equals(self, SyclPlatform other):
+        """
+        Returns true if the :class:`dpctl.SyclPlatform` argument has the
+        same underlying ``DPCTLSyclPlatformRef`` object as this
+        :class:`dpctl.SyclPlatform` instance.
+
+        Returns:
+            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclPlatform` objects
+            point to the same ``DPCTLSyclPlatformRef`` object, otherwise
+            ``False``.
+        """
+        return DPCTLPlatform_AreEq(self._platform_ref, other.get_platform_ref())
+
+    def __eq__(self, other):
+        """
+        Returns True if the :class:`dpctl.SyclPlatform` argument has the
+        same underlying ``DPCTLSyclPlatformRef`` object as this
+        :class:`dpctl.SyclPlatform` instance.
+
+        Returns:
+            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclPlatform` objects
+            point to the same ``DPCTLSyclPlatformRef`` object, otherwise
+            ``False``.
+        """
+        if isinstance(other, SyclPlatform):
+            return self.equals(<SyclPlatform> other)
+        else:
+            return False
+
+    def __hash__(self):
+        """
+        Returns a hash value by hashing the underlying ``sycl::platform`` object.
+
+        """
+        return DPCTLPlatform_Hash(self._platform_ref)
 
 
 def lsplatform(verbosity=0):

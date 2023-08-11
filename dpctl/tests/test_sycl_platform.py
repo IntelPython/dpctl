@@ -17,6 +17,8 @@
 """Defines unit test cases for the SyclPlatform class.
 """
 
+import sys
+
 import pytest
 from helper import has_sycl_platforms
 
@@ -88,8 +90,25 @@ def check_repr(platform):
 
 
 def check_default_context(platform):
+    if "linux" not in sys.platform:
+        return
     r = platform.default_context
     assert type(r) is dpctl.SyclContext
+
+
+def check_equal_and_hash(platform):
+    assert platform == platform
+    if "linux" not in sys.platform:
+        return
+    default_ctx = platform.default_context
+    for d in default_ctx.get_devices():
+        assert platform == d.sycl_platform
+        assert hash(platform) == hash(d.sycl_platform)
+
+
+def check_hash_in_dict(platform):
+    map = {platform: 0}
+    assert map[platform] == 0
 
 
 list_of_checks = [
@@ -99,6 +118,9 @@ list_of_checks = [
     check_backend,
     check_print_info,
     check_repr,
+    check_default_context,
+    check_equal_and_hash,
+    check_hash_in_dict,
 ]
 
 

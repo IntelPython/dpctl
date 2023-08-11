@@ -40,6 +40,19 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 
 /*!
+ * @brief Checks if two DPCTLSyclPlatformRef objects point to the same
+ * sycl::platform.
+ *
+ * @param    PRef1         First opaque pointer to a ``sycl::platform``.
+ * @param    PRef2         Second opaque pointer to a ``sycl::platform``.
+ * @return   True if the underlying sycl::platform are same, false otherwise.
+ * @ingroup PlatformInterface
+ */
+DPCTL_API
+bool DPCTLPlatform_AreEq(__dpctl_keep const DPCTLSyclPlatformRef PRef1,
+                         __dpctl_keep const DPCTLSyclPlatformRef PRef2);
+
+/*!
  * @brief Returns a copy of the DPCTLSyclPlatformRef object.
  *
  * @param    PRef           DPCTLSyclPlatformRef object to be copied.
@@ -154,5 +167,15 @@ __dpctl_give DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms(void);
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
 DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef);
+
+/*!
+ * @brief Wrapper over std::hash<sycl::platform>'s operator()
+ *
+ * @param    PRef        The DPCTLSyclPlatformRef pointer.
+ * @return   Hash value of the underlying ``sycl::platform`` instance.
+ * @ingroup PlatformInterface
+ */
+DPCTL_API
+size_t DPCTLPlatform_Hash(__dpctl_keep DPCTLSyclPlatformRef CtxRef);
 
 DPCTL_C_EXTERN_C_END
