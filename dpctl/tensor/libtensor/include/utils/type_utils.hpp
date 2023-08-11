@@ -113,7 +113,13 @@ template <typename dstT,
           typename Indices = std::make_index_sequence<N>>
 auto vec_cast(const sycl::vec<srcT, N> &s)
 {
-    return vec_cast_impl<sycl::vec<dstT, N>, sycl::vec<srcT, N>>(s, Indices{});
+    if constexpr (std::is_same_v<srcT, dstT>) {
+        return s;
+    }
+    else {
+        return vec_cast_impl<sycl::vec<dstT, N>, sycl::vec<srcT, N>>(s,
+                                                                     Indices{});
+    }
 }
 
 } // namespace type_utils

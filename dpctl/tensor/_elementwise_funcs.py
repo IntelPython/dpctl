@@ -47,10 +47,56 @@ Returns:
 abs = UnaryElementwiseFunc("abs", ti._abs_result_type, ti._abs, _abs_docstring_)
 
 # U02: ==== ACOS   (x)
-# FIXME: implement U02
+_acos_docstring = """
+acos(x, out=None, order='K')
+
+Computes inverse cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse cosine, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+acos = UnaryElementwiseFunc(
+    "acos", ti._acos_result_type, ti._acos, _acos_docstring
+)
 
 # U03: ===== ACOSH (x)
-# FIXME: implement U03
+_acosh_docstring = """
+acosh(x, out=None, order='K')
+
+Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse hyperbolic cosine.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+acosh = UnaryElementwiseFunc(
+    "acosh", ti._acosh_result_type, ti._acosh, _acosh_docstring
+)
 
 # B01: ===== ADD   (x1, x2)
 
@@ -85,37 +131,336 @@ add = BinaryElementwiseFunc(
 )
 
 # U04: ===== ASIN  (x)
-# FIXME: implement U04
+_asin_docstring = """
+asin(x, out=None, order='K')
+
+Computes inverse sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse sine, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+asin = UnaryElementwiseFunc(
+    "asin", ti._asin_result_type, ti._asin, _asin_docstring
+)
 
 # U05: ===== ASINH (x)
-# FIXME: implement U05
+_asinh_docstring = """
+asinh(x, out=None, order='K')
+
+Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse hyperbolic sine.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+asinh = UnaryElementwiseFunc(
+    "asinh", ti._asinh_result_type, ti._asinh, _asinh_docstring
+)
 
 # U06: ===== ATAN  (x)
-# FIXME: implement U06
+_atan_docstring = """
+atan(x, out=None, order='K')
+
+Computes inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise inverse tangent, in radians
+        and in the closed interval `[-pi/2, pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+atan = UnaryElementwiseFunc(
+    "atan", ti._atan_result_type, ti._atan, _atan_docstring
+)
 
 # B02: ===== ATAN2 (x1, x2)
-# FIXME: implemetn B02
+_atan2_docstring_ = """
+atan2(x1, x2, out=None, order='K')
+
+Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the
+input array `x2`. Each element-wise result is expressed in radians.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the inverse tangent of the quotient `x1`/`x2`.
+        The returned array must have a real-valued floating-point data type
+        determined by Type Promotion Rules.
+"""
+
+atan2 = BinaryElementwiseFunc(
+    "atan2", ti._atan2_result_type, ti._atan2, _atan2_docstring_
+)
 
 # U07: ===== ATANH (x)
-# FIXME: implemetn U07
+_atanh_docstring = """
+atanh(x, out=None, order='K')
+
+Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic inverse tangent.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+atanh = UnaryElementwiseFunc(
+    "atanh", ti._atanh_result_type, ti._atanh, _atanh_docstring
+)
 
 # B03: ===== BITWISE_AND           (x1, x2)
-# FIXME: implemetn B03
+_bitwise_and_docstring_ = """
+bitwise_and(x1, x2, out=None, order='K')
+
+Computes the bitwise AND of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_and = BinaryElementwiseFunc(
+    "bitwise_and",
+    ti._bitwise_and_result_type,
+    ti._bitwise_and,
+    _bitwise_and_docstring_,
+)
 
 # B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
-# FIXME: implement B04
+_bitwise_left_shift_docstring_ = """
+bitwise_left_shift(x1, x2, out=None, order='K')
+
+Shifts the bits of each element `x1_i` of the input array x1 to the left by
+appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to
+the right of `x1_i`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer data type.
+        Each element must be greater than or equal to 0.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_left_shift = BinaryElementwiseFunc(
+    "bitwise_left_shift",
+    ti._bitwise_left_shift_result_type,
+    ti._bitwise_left_shift,
+    _bitwise_left_shift_docstring_,
+)
+
 
 # U08: ===== BITWISE_INVERT        (x)
-# FIXME: implement U08
+_bitwise_invert_docstring = """
+bitwise_invert(x, out=None, order='K')
+
+Inverts (flips) each bit for each element `x_i` of the input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have integer or boolean data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results.
+        The data type of the returned array is same as the data type of the
+        input array.
+"""
+
+bitwise_invert = UnaryElementwiseFunc(
+    "bitwise_invert",
+    ti._bitwise_invert_result_type,
+    ti._bitwise_invert,
+    _bitwise_invert_docstring,
+)
 
 # B05: ===== BITWISE_OR            (x1, x2)
-# FIXME: implement B05
+_bitwise_or_docstring_ = """
+bitwise_or(x1, x2, out=None, order='K')
+
+Computes the bitwise OR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_or = BinaryElementwiseFunc(
+    "bitwise_or",
+    ti._bitwise_or_result_type,
+    ti._bitwise_or,
+    _bitwise_or_docstring_,
+)
 
 # B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
-# FIXME: implement B06
+_bitwise_right_shift_docstring_ = """
+bitwise_right_shift(x1, x2, out=None, order='K')
+
+Shifts the bits of each element `x1_i` of the input array `x1` to the right
+according to the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer data type.
+        Each element must be greater than or equal to 0.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_right_shift = BinaryElementwiseFunc(
+    "bitwise_right_shift",
+    ti._bitwise_right_shift_result_type,
+    ti._bitwise_right_shift,
+    _bitwise_right_shift_docstring_,
+)
+
 
 # B07: ===== BITWISE_XOR           (x1, x2)
-# FIXME: implement B07
+_bitwise_xor_docstring_ = """
+bitwise_xor(x1, x2, out=None, order='K')
+
+Computes the bitwise XOR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_xor = BinaryElementwiseFunc(
+    "bitwise_xor",
+    ti._bitwise_xor_result_type,
+    ti._bitwise_xor,
+    _bitwise_xor_docstring_,
+)
+
 
 # U09: ==== CEIL          (x)
 _ceil_docstring = """
@@ -192,7 +537,29 @@ Returns:
 cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
 
 # U12: ==== COSH          (x)
-# FIXME: implement U12
+_cosh_docstring = """
+cosh(x, out=None, order='K')
+
+Computes hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+cosh = UnaryElementwiseFunc(
+    "cosh", ti._cosh_result_type, ti._cosh, _cosh_docstring
+)
 
 # B08: ==== DIVIDE        (x1, x2)
 _divide_docstring_ = """
@@ -678,9 +1045,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a real-valued data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -807,6 +1174,66 @@ logical_xor = BinaryElementwiseFunc(
     ti._logical_xor_result_type,
     ti._logical_xor,
     _logical_xor_docstring_,
+)
+
+# B??: ==== MAXIMUM    (x1, x2)
+_maximum_docstring_ = """
+maximum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise maxima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise maxima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+maximum = BinaryElementwiseFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _maximum_docstring_,
+)
+
+# B??: ==== MINIMUM    (x1, x2)
+_minimum_docstring_ = """
+minimum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise minima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise minima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+minimum = BinaryElementwiseFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _minimum_docstring_,
 )
 
 # B19: ==== MULTIPLY    (x1, x2)
@@ -989,13 +1416,114 @@ real = UnaryElementwiseFunc(
 )
 
 # B22: ==== REMAINDER   (x1, x2)
-# FIXME: implement B22
+_remainder_docstring_ = """
+remainder(x1, x2, out=None, order='K')
+
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+This function is equivalent to the Python modulus operator.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_ndarray:
+        an array containing the element-wise remainders. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+remainder = BinaryElementwiseFunc(
+    "remainder", ti._remainder_result_type, ti._remainder, _remainder_docstring_
+)
 
 # U28: ==== ROUND       (x)
-# FIXME: implement U28
+_round_docstring = """
+round(x, out=None, order='K')
+
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise rounded value. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+round = UnaryElementwiseFunc(
+    "round", ti._round_result_type, ti._round, _round_docstring
+)
 
 # U29: ==== SIGN        (x)
-# FIXME: implement U29
+_sign_docstring = """
+sign(x, out=None, order='K')
+
+Computes an indication of the sign of each element `x_i` of input array `x`
+using the signum function.
+
+The signum function returns `-1` if `x_i` is less than `0`,
+`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+sign = UnaryElementwiseFunc(
+    "sign", ti._sign_result_type, ti._sign, _sign_docstring
+)
+
+# ==== SIGNBIT        (x)
+_signbit_docstring = """
+signbit(x, out=None, order='K')
+
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The returned array
+        must have a data type of `bool`.
+"""
+
+signbit = UnaryElementwiseFunc(
+    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
+)
 
 # U30: ==== SIN         (x)
 _sin_docstring = """
@@ -1021,7 +1549,29 @@ Returns:
 sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
 
 # U31: ==== SINH        (x)
-# FIXME: implement U31
+_sinh_docstring = """
+sinh(x, out=None, order='K')
+
+Computes hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic sine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+sinh = UnaryElementwiseFunc(
+    "sinh", ti._sinh_result_type, ti._sinh, _sinh_docstring
+)
 
 # U32: ==== SQUARE      (x)
 _square_docstring_ = """
@@ -1107,10 +1657,52 @@ subtract = BinaryElementwiseFunc(
 
 
 # U34: ==== TAN         (x)
-# FIXME: implement U34
+_tan_docstring = """
+tan(x, out=None, order='K')
+
+Computes tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tan = UnaryElementwiseFunc("tan", ti._tan_result_type, ti._tan, _tan_docstring)
 
 # U35: ==== TANH        (x)
-# FIXME: implement U35
+_tanh_docstring = """
+tanh(x, out=None, order='K')
+
+Computes hyperbolic tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise hyperbolic tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tanh = UnaryElementwiseFunc(
+    "tanh", ti._tanh_result_type, ti._tanh, _tanh_docstring
+)
 
 # U36: ==== TRUNC       (x)
 _trunc_docstring = """

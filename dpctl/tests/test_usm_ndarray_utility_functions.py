@@ -148,3 +148,20 @@ def test_arg_validation_boolean_reductions(func):
         func(d)
     with pytest.raises(AxisError):
         func(x, axis=-3)
+
+
+def test_boolean_reductions_3d_gh_1327():
+    get_queue_or_skip()
+
+    size = 24
+    x = dpt.reshape(dpt.arange(-10, size - 10, 1, dtype="i4"), (2, 3, 4))
+    res = dpt.all(x, axis=0)
+    res_np = np.full(res.shape, True, dtype="?")
+    res_np[2, 2] = False
+
+    assert (dpt.asnumpy(res) == res_np).all()
+
+    x = dpt.ones((2, 3, 4, 5), dtype="i4")
+    res = dpt.any(x, axis=0)
+
+    assert (dpt.asnumpy(res) == np.full(res.shape, True, dtype="?")).all()

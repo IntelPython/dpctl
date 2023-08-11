@@ -84,7 +84,7 @@ def test_usm_ndarray_flags():
     assert f.forc
     assert f.fnc
 
-    f = dpt.usm_ndarray((5, 1, 1), dtype="i4", strides=(1, 0, 1)).flags
+    f = dpt.usm_ndarray((5, 0, 1), dtype="i4", strides=(1, 0, 1)).flags
     assert f.fc
     assert f.forc
     assert not dpt.usm_ndarray(
@@ -107,6 +107,25 @@ def test_usm_ndarray_flags():
         x.flags.writable = dict()
     with pytest.raises(ValueError):
         x.flags["C"] = False
+
+
+def test_usm_ndarray_flags_bug_gh_1334():
+    get_queue_or_skip()
+    a = dpt.ones((2, 3), dtype="u4")
+    r = dpt.reshape(a, (1, 6, 1))
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 3), dtype="u4", order="F")
+    r = dpt.reshape(a, (1, 6, 1), order="F")
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 3, 4), dtype="i8")
+    r = dpt.sum(a, axis=(1, 2), keepdims=True)
+    assert r.flags["C"] and r.flags["F"]
+
+    a = dpt.ones((2, 1), dtype="?")
+    r = a[:, 1::-1]
+    assert r.flags["F"] and r.flags["C"]
 
 
 @pytest.mark.parametrize(
@@ -1012,6 +1031,53 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
     Zusm_empty[Ellipsis] = Zusm_3d[0, 0, 0:0]
 
 
+def test_setitem_broadcasting():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="u4")
+    src = dpt.zeros((3, 1), dtype=dst.dtype)
+    dst[...] = src
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_empty_dst_validation():
+    "Broadcasting rules apply, except exception"
+    get_queue_or_skip()
+    dst = dpt.ones((2, 0, 5, 4), dtype="i8")
+    src = dpt.ones((2, 0, 3, 4), dtype="i8")
+    with pytest.raises(ValueError):
+        dst[...] = src
+
+
+def test_setitem_broadcasting_empty_dst_edge_case():
+    """RHS is shunken to empty array by
+    broadasting rule, hence no exception"""
+    get_queue_or_skip()
+    dst = dpt.ones(1, dtype="i8")[0:0]
+    src = dpt.ones(tuple(), dtype="i8")
+    dst[...] = src
+
+
+def test_setitem_broadcasting_src_ndim_equal_dst_ndim():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="i4")
+    src = dpt.zeros((2, 1, 4), dtype="i4")
+    dst[...] = src
+
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_src_ndim_greater_than_dst_ndim():
+    get_queue_or_skip()
+    dst = dpt.ones((2, 3, 4), dtype="i4")
+    src = dpt.zeros((1, 2, 1, 4), dtype="i4")
+    dst[...] = src
+
+    expected = np.zeros(dst.shape, dtype=dst.dtype)
+    assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
 @pytest.mark.parametrize(
     "dtype",
     _all_dtypes,
@@ -1440,6 +1506,30 @@ def test_full_dtype_inference():
     assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=int).dtype, np.integer)
     rdt = np.finfo(cdt).dtype
     assert np.issubdtype(dpt.full(10, 0.3 - 2j, dtype=rdt).dtype, np.floating)
+
+
+@pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
+def test_full_special_fp(dt):
+    """See gh-1314"""
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    ar = dpt.full(10, fill_value=dpt.nan)
+    err_msg = f"Failed for fill_value=dpt.nan and dtype {dt}"
+    assert dpt.isnan(ar[0]), err_msg
+
+    ar = dpt.full(10, fill_value=dpt.inf)
+    err_msg = f"Failed for fill_value=dpt.inf and dtype {dt}"
+    assert dpt.isinf(ar[0]) and dpt.greater(ar[0], 0), err_msg
+
+    ar = dpt.full(10, fill_value=-dpt.inf)
+    err_msg = f"Failed for fill_value=-dpt.inf and dtype {dt}"
+    assert dpt.isinf(ar[0]) and dpt.less(ar[0], 0), err_msg
+
+    ar = dpt.full(10, fill_value=dpt.pi)
+    err_msg = f"Failed for fill_value=dpt.pi and dtype {dt}"
+    check = abs(float(ar[0]) - dpt.pi) < 16 * dpt.finfo(ar.dtype).eps
+    assert check, err_msg
 
 
 def test_full_fill_array():

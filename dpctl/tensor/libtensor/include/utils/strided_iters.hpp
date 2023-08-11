@@ -296,6 +296,7 @@ public:
         }
 
         indT i_ = i;
+#pragma unroll
         for (int dim = ndim; --dim > 0;) {
             indT si = shape[dim];
             indT q = i_ / si;
@@ -444,10 +445,10 @@ int simplify_iteration_two_strides(const int nd,
                 (strides2[i1] < 0) ? -strides2[i1] : strides2[i1];
             auto abs_str2_i2 =
                 (strides2[i2] < 0) ? -strides2[i2] : strides2[i2];
-            return (abs_str1_i1 > abs_str1_i2) ||
-                   (abs_str1_i1 == abs_str1_i2 &&
-                    (abs_str2_i1 > abs_str2_i2 ||
-                     (abs_str2_i1 == abs_str2_i2 && shape[i1] > shape[i2])));
+            return (abs_str2_i1 > abs_str2_i2) ||
+                   (abs_str2_i1 == abs_str2_i2 &&
+                    (abs_str1_i1 > abs_str1_i2 ||
+                     (abs_str1_i1 == abs_str1_i2 && shape[i1] > shape[i2])));
         });
 
     std::vector<ShapeTy> shape_w;
@@ -600,12 +601,12 @@ int simplify_iteration_three_strides(const int nd,
                              (strides3[i1] < 0) ? -strides3[i1] : strides3[i1];
                          auto abs_str3_i2 =
                              (strides3[i2] < 0) ? -strides3[i2] : strides3[i2];
-                         return (abs_str1_i1 > abs_str1_i2) ||
-                                ((abs_str1_i1 == abs_str1_i2) &&
+                         return (abs_str3_i1 > abs_str3_i2) ||
+                                ((abs_str3_i1 == abs_str3_i2) &&
                                  ((abs_str2_i1 > abs_str2_i2) ||
                                   ((abs_str2_i1 == abs_str2_i2) &&
-                                   ((abs_str3_i1 > abs_str3_i2) ||
-                                    ((abs_str3_i1 == abs_str3_i2) &&
+                                   ((abs_str1_i1 > abs_str1_i2) ||
+                                    ((abs_str1_i1 == abs_str1_i2) &&
                                      (shape[i1] > shape[i2]))))));
                      });
 
@@ -768,14 +769,14 @@ int simplify_iteration_four_strides(const int nd,
                 (strides4[i1] < 0) ? -strides4[i1] : strides4[i1];
             auto abs_str4_i2 =
                 (strides4[i2] < 0) ? -strides4[i2] : strides4[i2];
-            return (abs_str1_i1 > abs_str1_i2) ||
-                   ((abs_str1_i1 == abs_str1_i2) &&
-                    ((abs_str2_i1 > abs_str2_i2) ||
-                     ((abs_str2_i1 == abs_str2_i2) &&
-                      ((abs_str3_i1 > abs_str3_i2) ||
-                       ((abs_str3_i1 == abs_str3_i2) &&
-                        ((abs_str4_i1 > abs_str4_i2) ||
-                         ((abs_str4_i1 == abs_str4_i2) &&
+            return (abs_str4_i1 > abs_str4_i2) ||
+                   ((abs_str4_i1 == abs_str4_i2) &&
+                    ((abs_str3_i1 > abs_str3_i2) ||
+                     ((abs_str3_i1 == abs_str3_i2) &&
+                      ((abs_str2_i1 > abs_str2_i2) ||
+                       ((abs_str2_i1 == abs_str2_i2) &&
+                        ((abs_str1_i1 > abs_str1_i2) ||
+                         ((abs_str1_i1 == abs_str1_i2) &&
                           (shape[i1] > shape[i2]))))))));
         });
 

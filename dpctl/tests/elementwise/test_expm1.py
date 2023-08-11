@@ -116,29 +116,53 @@ def test_expm1_order(dtype):
 
 
 def test_expm1_special_cases():
-    q = get_queue_or_skip()
+    get_queue_or_skip()
 
-    X = dpt.asarray(
-        [dpt.nan, 0.0, -0.0, dpt.inf, -dpt.inf], dtype="f4", sycl_queue=q
-    )
-    Xnp = dpt.asnumpy(X)
+    X = dpt.asarray([dpt.nan, 0.0, -0.0, dpt.inf, -dpt.inf], dtype="f4")
+    res = np.asarray([np.nan, 0.0, -0.0, np.inf, -1.0], dtype="f4")
 
     tol = dpt.finfo(X.dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.expm1(X)), np.expm1(Xnp), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(dpt.expm1(X)), res, atol=tol, rtol=tol)
 
     # special cases for complex variant
+    num_finite = 1.0
     vals = [
-        complex(*val)
-        for val in itertools.permutations(
-            [dpt.nan, dpt.inf, -dpt.inf, 0.0, -0.0, 1.0], 2
-        )
+        complex(0.0, 0.0),
+        complex(num_finite, dpt.inf),
+        complex(num_finite, dpt.nan),
+        complex(dpt.inf, 0.0),
+        complex(-dpt.inf, num_finite),
+        complex(dpt.inf, num_finite),
+        complex(-dpt.inf, dpt.inf),
+        complex(dpt.inf, dpt.inf),
+        complex(-dpt.inf, dpt.nan),
+        complex(dpt.inf, dpt.nan),
+        complex(dpt.nan, 0.0),
+        complex(dpt.nan, num_finite),
+        complex(dpt.nan, dpt.nan),
     ]
     X = dpt.asarray(vals, dtype=dpt.complex64)
-    Xnp = dpt.asnumpy(X)
+    cis_1 = complex(np.cos(num_finite), np.sin(num_finite))
+    c_nan = complex(np.nan, np.nan)
+    res = np.asarray(
+        [
+            complex(0.0, 0.0),
+            c_nan,
+            c_nan,
+            complex(np.inf, 0.0),
+            0.0 * cis_1 - 1.0,
+            np.inf * cis_1 - 1.0,
+            complex(-1.0, 0.0),
+            complex(np.inf, np.nan),
+            complex(-1.0, 0.0),
+            complex(np.inf, np.nan),
+            complex(np.nan, 0.0),
+            c_nan,
+            c_nan,
+        ],
+        dtype=np.complex64,
+    )
 
     tol = dpt.finfo(X.dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.expm1(X)), np.expm1(Xnp), atol=tol, rtol=tol
-    )
+    with np.errstate(invalid="ignore"):
+        assert_allclose(dpt.asnumpy(dpt.expm1(X)), res, atol=tol, rtol=tol)

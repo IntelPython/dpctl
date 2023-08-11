@@ -117,8 +117,6 @@ auto build_params()
                            sycl::aspect::usm_host_allocations),
             std::make_pair("usm_shared_allocations",
                            sycl::aspect::usm_shared_allocations),
-            std::make_pair("usm_restricted_shared_allocations",
-                           sycl::aspect::usm_restricted_shared_allocations),
             std::make_pair("usm_system_allocations",
                            sycl::aspect::usm_system_allocations),
             std::make_pair("usm_atomic_host_allocations",

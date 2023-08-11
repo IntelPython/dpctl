@@ -26,10 +26,9 @@ from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
 from dpctl.tensor._usmarray import _is_object_with_buffer_protocol as _is_buffer
 from dpctl.utils import ExecutionPlacementError
 
+from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._type_utils import (
     _acceptance_fn_default,
-    _empty_like_orderK,
-    _empty_like_pair_orderK,
     _find_buf_dtype,
     _find_buf_dtype2,
     _find_inplace_dtype,

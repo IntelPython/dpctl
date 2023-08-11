@@ -247,7 +247,7 @@ template <typename fnT, typename T1, typename T2> struct PowTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class pow_strided_strided_kernel;
+class pow_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event pow_strided_impl(sycl::queue exec_q,
@@ -264,8 +264,7 @@ sycl::event pow_strided_impl(sycl::queue exec_q,
                              const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
-        argTy1, argTy2, PowOutputType, PowStridedFunctor,
-        pow_strided_strided_kernel>(
+        argTy1, argTy2, PowOutputType, PowStridedFunctor, pow_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
         arg2_offset, res_p, res_offset, depends, additional_depends);
 }

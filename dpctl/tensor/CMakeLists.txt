@@ -54,6 +54,8 @@ if (WIN32)
   set(_clang_prefix "/clang:")
 endif()
 set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
   PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math")
 target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)

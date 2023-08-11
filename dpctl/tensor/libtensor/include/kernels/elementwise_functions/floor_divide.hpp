@@ -52,32 +52,28 @@ namespace tu_ns = dpctl::tensor::type_utils;
 template <typename argT1, typename argT2, typename resT>
 struct FloorDivideFunctor
 {
-
-    using supports_sg_loadstore = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        auto tmp = in1 / in2;
-        if constexpr (std::is_integral_v<decltype(tmp)>) {
-            if constexpr (std::is_unsigned_v<decltype(tmp)>) {
-                return (in2 == argT2(0)) ? resT(0) : tmp;
+        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+            if (in2 == argT2(0)) {
+                return resT(0);
+            }
+            if constexpr (std::is_signed_v<argT1> || std::is_signed_v<argT2>) {
+                auto div = in1 / in2;
+                auto mod = in1 % in2;
+                auto corr = (mod != 0 && l_xor(mod < 0, in2 < 0));
+                return (div - corr);
             }
             else {
-                if (in2 == argT2(0)) {
-                    return resT(0);
-                }
-                else {
-                    auto rem = in1 % in2;
-                    auto corr = (rem != 0 && ((rem < 0) != (in2 < 0)));
-                    return (tmp - corr);
-                }
+                return (in1 / in2);
             }
         }
         else {
-            return sycl::floor(tmp);
+            auto div = in1 / in2;
+            return (div == resT(0)) ? div : resT(std::floor(div));
         }
     }
 
@@ -85,29 +81,31 @@ struct FloorDivideFunctor
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
-        auto tmp = in1 / in2;
-        using tmpT = typename decltype(tmp)::element_type;
-        if constexpr (std::is_integral_v<tmpT>) {
-            if constexpr (std::is_signed_v<tmpT>) {
-                auto rem_tmp = in1 % in2;
+        if constexpr (std::is_integral_v<resT>) {
+            sycl::vec<resT, vec_sz> res;
 #pragma unroll
-                for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == argT2(0)) {
-                        tmp[i] = tmpT(0);
-                    }
-                    else {
-                        tmpT corr = (rem_tmp[i] != 0 &&
-                                     ((rem_tmp[i] < 0) != (in2[i] < 0)));
-                        tmp[i] -= corr;
+            for (int i = 0; i < vec_sz; ++i) {
+                if (in2[i] == argT2(0)) {
+                    res[i] = resT(0);
+                }
+                else {
+                    res[i] = in1[i] / in2[i];
+                    if constexpr (std::is_signed_v<resT>) {
+                        auto mod = in1[i] % in2[i];
+                        auto corr = (mod != 0 && l_xor(mod < 0, in2[i] < 0));
+                        res[i] -= corr;
                     }
                 }
             }
-            else {
+            return res;
+        }
+        else {
+            auto tmp = in1 / in2;
+            using tmpT = typename decltype(tmp)::element_type;
 #pragma unroll
-                for (int i = 0; i < vec_sz; ++i) {
-                    if (in2[i] == argT2(0)) {
-                        tmp[i] = tmpT(0);
-                    }
+            for (int i = 0; i < vec_sz; ++i) {
+                if (in2[i] != argT2(0)) {
+                    tmp[i] = std::floor(tmp[i]);
                 }
             }
             if constexpr (std::is_same_v<resT, tmpT>) {
@@ -118,19 +116,12 @@ struct FloorDivideFunctor
                 return vec_cast<resT, tmpT, vec_sz>(tmp);
             }
         }
-        else {
-            sycl::vec<resT, vec_sz> res = sycl::floor(tmp);
-            if constexpr (std::is_same_v<resT,
-                                         typename decltype(res)::element_type>)
-            {
-                return res;
-            }
-            else {
-                using dpctl::tensor::type_utils::vec_cast;
-                return vec_cast<resT, typename decltype(res)::element_type,
-                                vec_sz>(res);
-            }
-        }
+    }
+
+private:
+    bool l_xor(bool b1, bool b2) const
+    {
+        return (b1 != b2);
     }
 };
 

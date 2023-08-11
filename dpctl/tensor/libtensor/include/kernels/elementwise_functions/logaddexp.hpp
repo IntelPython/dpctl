@@ -28,6 +28,7 @@
 #include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -55,16 +56,12 @@ using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 {
-    using supports_sg_loadstore = typename std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec = typename std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        resT max = std::max<resT>(in1, in2);
-        resT min = std::min<resT>(in1, in2);
-        return max + std::log1p(std::exp(min - max));
+        return impl<resT>(in1, in2);
     }
 
     template <int vec_sz>
@@ -72,15 +69,47 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
                                        const sycl::vec<argT2, vec_sz> &in2)
     {
         sycl::vec<resT, vec_sz> res;
-        auto diff = in1 - in2;
+        auto diff = in1 - in2; // take advantange of faster vec arithmetic
 
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            resT max = std::max<resT>(in1[i], in2[i]);
-            res[i] = max + std::log1p(std::exp(std::abs(diff[i])));
+            if (std::isfinite(diff[i])) {
+                res[i] = std::max<resT>(in1[i], in2[i]) +
+                         impl_finite<resT>(-std::abs(diff[i]));
+            }
+            else {
+                res[i] = impl<resT>(in1[i], in2[i]);
+            }
         }
 
         return res;
+    }
+
+private:
+    template <typename T> T impl(T const &in1, T const &in2)
+    {
+        if (in1 == in2) { // handle signed infinities
+            const T log2 = std::log(T(2));
+            return in1 + log2;
+        }
+        else {
+            const T tmp = in1 - in2;
+            if (tmp > 0) {
+                return in1 + std::log1p(std::exp(-tmp));
+            }
+            else if (tmp <= 0) {
+                return in2 + std::log1p(std::exp(tmp));
+            }
+            else {
+                return std::numeric_limits<T>::quiet_NaN();
+            }
+        }
+    }
+
+    template <typename T> T impl_finite(T const &in)
+    {
+        return (in > 0) ? (in + std::log1p(std::exp(-in)))
+                        : std::log1p(std::exp(in));
     }
 };
 
@@ -173,7 +202,7 @@ template <typename fnT, typename T1, typename T2> struct LogAddExpTypeMapFactory
 };
 
 template <typename T1, typename T2, typename resT, typename IndexerT>
-class logaddexp_strided_strided_kernel;
+class logaddexp_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
@@ -188,13 +217,13 @@ logaddexp_strided_impl(sycl::queue exec_q,
                        char *res_p,
                        py::ssize_t res_offset,
                        const std::vector<sycl::event> &depends,
-                       const std::vector<sycl::event> &logaddexpitional_depends)
+                       const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::binary_strided_impl<
         argTy1, argTy2, LogAddExpOutputType, LogAddExpStridedFunctor,
-        logaddexp_strided_strided_kernel>(
-        exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset, arg2_p,
-        arg2_offset, res_p, res_offset, depends, logaddexpitional_depends);
+        logaddexp_strided_kernel>(exec_q, nelems, nd, shape_and_strides, arg1_p,
+                                  arg1_offset, arg2_p, arg2_offset, res_p,
+                                  res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct LogAddExpStridedFactory

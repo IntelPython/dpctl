@@ -168,7 +168,7 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.test_tensor_elementwise::test_cos_order -vv || true
+          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
       - name: Run tests
         env:
           SYCL_QUEUE_THREAD_POOL_SIZE: 6
@@ -486,7 +486,7 @@ jobs:
           done
 
   array-api-conformity:
-    needs: test_linux
+    needs: build_linux
     runs-on:  ${{ matrix.runner }}
 
     strategy:

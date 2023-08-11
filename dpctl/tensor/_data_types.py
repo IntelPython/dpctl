@@ -44,7 +44,7 @@ def isdtype(dtype_, kind):
     """
 
     if not isinstance(dtype_, dtype):
-        raise TypeError("Expected instance of `dpt.dtype`, got {dtype_}")
+        raise TypeError(f"Expected instance of `dpt.dtype`, got {dtype_}")
 
     if isinstance(kind, dtype):
         return dtype_ == kind

@@ -71,6 +71,11 @@ std::string _default_device_bool_type(sycl::device)
     return "b1";
 }
 
+std::string _default_device_index_type(sycl::device)
+{
+    return "i8";
+}
+
 sycl::device _extract_device(py::object arg)
 {
     auto const &api = dpctl::detail::dpctl_capi::get();
@@ -113,6 +118,12 @@ std::string default_device_complex_type(py::object arg)
 {
     sycl::device d = _extract_device(arg);
     return _default_device_complex_type(d);
+}
+
+std::string default_device_index_type(py::object arg)
+{
+    sycl::device d = _extract_device(arg);
+    return _default_device_index_type(d);
 }
 
 } // namespace py_internal

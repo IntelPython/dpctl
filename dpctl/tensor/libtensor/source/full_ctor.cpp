@@ -46,7 +46,6 @@ namespace tensor
 namespace py_internal
 {
 
-using dpctl::tensor::kernels::constructors::lin_space_step_fn_ptr_t;
 using dpctl::utils::keep_args_alive;
 
 using dpctl::tensor::kernels::constructors::full_contig_fn_ptr_t;
