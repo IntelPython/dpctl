@@ -18,6 +18,7 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._copy_utils as cu
 import dpctl.tensor._type_utils as tu
 
 from .utils import _all_dtypes, _map_to_device_dtype
@@ -73,15 +74,15 @@ def test_type_utils_empty_like_orderK():
         a = dpt.empty((10, 10), dtype=dpt.int32, order="F")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    X = tu._empty_like_orderK(a, dpt.int32, a.usm_type, a.device)
+    X = cu._empty_like_orderK(a, dpt.int32, a.usm_type, a.device)
     assert X.flags["F"]
 
 
 def test_type_utils_empty_like_orderK_invalid_args():
     with pytest.raises(TypeError):
-        tu._empty_like_orderK([1, 2, 3], dpt.int32, "device", None)
+        cu._empty_like_orderK([1, 2, 3], dpt.int32, "device", None)
     with pytest.raises(TypeError):
-        tu._empty_like_pair_orderK(
+        cu._empty_like_pair_orderK(
             [1, 2, 3],
             (
                 1,
@@ -98,7 +99,7 @@ def test_type_utils_empty_like_orderK_invalid_args():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     with pytest.raises(TypeError):
-        tu._empty_like_pair_orderK(
+        cu._empty_like_pair_orderK(
             a,
             (
                 1,
@@ -185,3 +186,47 @@ def test_binary_func_arg_validation():
     with pytest.raises(ValueError):
         dpt.add(a, Ellipsis)
     dpt.add(a, a, order="invalid")
+
+
+def test_all_data_types():
+    fp16_fp64_types = set([dpt.float16, dpt.float64, dpt.complex128])
+    fp64_types = set([dpt.float64, dpt.complex128])
+
+    all_dts = tu._all_data_types(True, True)
+    assert fp16_fp64_types.issubset(all_dts)
+
+    all_dts = tu._all_data_types(True, False)
+    assert dpt.float16 in all_dts
+    assert not fp64_types.issubset(all_dts)
+
+    all_dts = tu._all_data_types(False, True)
+    assert dpt.float16 not in all_dts
+    assert fp64_types.issubset(all_dts)
+
+    all_dts = tu._all_data_types(False, False)
+    assert not fp16_fp64_types.issubset(all_dts)
+
+
+@pytest.mark.parametrize("fp16", [True, False])
+@pytest.mark.parametrize("fp64", [True, False])
+def test_maximal_inexact_types(fp16, fp64):
+    assert not tu._is_maximal_inexact_type(dpt.int32, fp16, fp64)
+    assert fp64 == tu._is_maximal_inexact_type(dpt.float64, fp16, fp64)
+    assert fp64 == tu._is_maximal_inexact_type(dpt.complex128, fp16, fp64)
+    assert fp64 != tu._is_maximal_inexact_type(dpt.float32, fp16, fp64)
+    assert fp64 != tu._is_maximal_inexact_type(dpt.complex64, fp16, fp64)
+
+
+def test_can_cast_device():
+    assert tu._can_cast(dpt.int64, dpt.float64, True, True)
+    # if f8 is available, can't cast i8 to f4
+    assert not tu._can_cast(dpt.int64, dpt.float32, True, True)
+    assert not tu._can_cast(dpt.int64, dpt.float32, False, True)
+    # should be able to cast to f8 when f2 unavailable
+    assert tu._can_cast(dpt.int64, dpt.float64, False, True)
+    # casting to f4 acceptable when f8 unavailable
+    assert tu._can_cast(dpt.int64, dpt.float32, True, False)
+    assert tu._can_cast(dpt.int64, dpt.float32, False, False)
+    # can't safely cast inexact type to inexact type of lesser precision
+    assert not tu._can_cast(dpt.float32, dpt.float16, True, False)
+    assert not tu._can_cast(dpt.float64, dpt.float32, False, True)

@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -68,12 +69,8 @@ struct GreaterEqualFunctor
                       tu_ns::is_complex<argT2>::value)
         {
             static_assert(std::is_same_v<argT1, argT2>);
-            using realT = typename argT1::value_type;
-            realT real1 = std::real(in1);
-            realT real2 = std::real(in2);
-
-            return (real1 == real2) ? (std::imag(in1) >= std::imag(in2))
-                                    : real1 >= real2;
+            using dpctl::tensor::math_utils::greater_equal_complex;
+            return greater_equal_complex<argT1>(in1, in2);
         }
         else {
             return (in1 >= in2);

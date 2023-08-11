@@ -1176,6 +1176,66 @@ logical_xor = BinaryElementwiseFunc(
     _logical_xor_docstring_,
 )
 
+# B??: ==== MAXIMUM    (x1, x2)
+_maximum_docstring_ = """
+maximum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise maxima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise maxima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+maximum = BinaryElementwiseFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _maximum_docstring_,
+)
+
+# B??: ==== MINIMUM    (x1, x2)
+_minimum_docstring_ = """
+minimum(x1, x2, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise minima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have numeric data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise minima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+minimum = BinaryElementwiseFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _minimum_docstring_,
+)
+
 # B19: ==== MULTIPLY    (x1, x2)
 _multiply_docstring_ = """
 multiply(x1, x2, out=None, order='K')
@@ -1369,6 +1429,12 @@ Args:
         First input array, expected to have a real-valued data type.
     x2 (usm_ndarray):
         Second input array, also expected to have a real-valued data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 Returns:
     usm_ndarray:
         an array containing the element-wise remainders. The data type of

@@ -33,9 +33,13 @@ cdef Py_ssize_t _slice_len(
     if sl_start == sl_stop:
         return 0
     if sl_step > 0:
+        if sl_start > sl_stop:
+            return 0
         # 1 + argmax k such htat sl_start + sl_step*k < sl_stop
         return 1 + ((sl_stop - sl_start - 1) // sl_step)
     else:
+        if sl_start < sl_stop:
+            return 0
         return 1 + ((sl_stop - sl_start + 1) // sl_step)
 
 
@@ -221,6 +225,9 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 k_new = k + ellipses_count
                 new_shape.extend(shape[k:k_new])
                 new_strides.extend(strides[k:k_new])
+                if any(dim == 0 for dim in shape[k:k_new]):
+                    is_empty = True
+                    new_offset = offset
                 k = k_new
             elif ind_i is None:
                 new_shape.append(1)
@@ -236,6 +243,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                     new_offset = new_offset + sl_start * strides[k]
                 if sh_i == 0:
                     is_empty = True
+                    new_offset = offset
                 k = k_new
             elif _is_boolean(ind_i):
                 new_shape.append(1 if ind_i else 0)

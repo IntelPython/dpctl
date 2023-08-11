@@ -234,3 +234,27 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         return nullptr;
     }
 }
+
+bool DPCTLPlatform_AreEq(__dpctl_keep const DPCTLSyclPlatformRef PRef1,
+                         __dpctl_keep const DPCTLSyclPlatformRef PRef2)
+{
+    auto P1 = unwrap<platform>(PRef1);
+    auto P2 = unwrap<platform>(PRef2);
+    if (P1 && P2)
+        return *P1 == *P2;
+    else
+        return false;
+}
+
+size_t DPCTLPlatform_Hash(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    if (PRef) {
+        auto P = unwrap<platform>(PRef);
+        std::hash<platform> hash_fn;
+        return hash_fn(*P);
+    }
+    else {
+        error_handler("Argument PRef is null.", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}

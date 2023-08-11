@@ -74,6 +74,8 @@
 #include "kernels/elementwise_functions/logical_not.hpp"
 #include "kernels/elementwise_functions/logical_or.hpp"
 #include "kernels/elementwise_functions/logical_xor.hpp"
+#include "kernels/elementwise_functions/maximum.hpp"
+#include "kernels/elementwise_functions/minimum.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
 #include "kernels/elementwise_functions/negative.hpp"
 #include "kernels/elementwise_functions/not_equal.hpp"
@@ -1792,6 +1794,86 @@ void populate_logical_xor_dispatch_tables(void)
         dtb3;
     dtb3.populate_dispatch_table(logical_xor_contig_dispatch_table);
 };
+} // namespace impl
+
+// B??: ==== MAXIMUM    (x1, x2)
+namespace impl
+{
+
+namespace maximum_fn_ns = dpctl::tensor::kernels::maximum;
+
+static binary_contig_impl_fn_ptr_t
+    maximum_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int maximum_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    maximum_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_maximum_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = maximum_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::MaximumTypeMapFactory;
+    DispatchTableBuilder<int, MaximumTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(maximum_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::MaximumStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, MaximumStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(maximum_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::MaximumContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, MaximumContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(maximum_contig_dispatch_table);
+};
+
+} // namespace impl
+
+// B??: ==== MINIMUM    (x1, x2)
+namespace impl
+{
+
+namespace minimum_fn_ns = dpctl::tensor::kernels::minimum;
+
+static binary_contig_impl_fn_ptr_t
+    minimum_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int minimum_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    minimum_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_minimum_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = minimum_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::MinimumTypeMapFactory;
+    DispatchTableBuilder<int, MinimumTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(minimum_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::MinimumStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, MinimumStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(minimum_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::MinimumContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, MinimumContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(minimum_contig_dispatch_table);
+};
+
 } // namespace impl
 
 // B19: ==== MULTIPLY    (x1, x2)
@@ -3963,6 +4045,86 @@ void init_elementwise_functions(py::module_ m)
               py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_logical_xor_result_type", logical_xor_result_type_pyapi, "");
+    }
+
+    // B??: ==== MAXIMUM    (x1, x2)
+    {
+        impl::populate_maximum_dispatch_tables();
+        using impl::maximum_contig_dispatch_table;
+        using impl::maximum_output_id_table;
+        using impl::maximum_strided_dispatch_table;
+
+        auto maximum_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                 dpctl::tensor::usm_ndarray src2,
+                                 dpctl::tensor::usm_ndarray dst,
+                                 sycl::queue exec_q,
+                                 const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, maximum_output_id_table,
+                // function pointers to handle operation on contiguous
+                // arrays (pointers may be nullptr)
+                maximum_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays
+                // (most general case)
+                maximum_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix
+                // and c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix
+                // and c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto maximum_result_type_pyapi = [&](py::dtype dtype1,
+                                             py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               maximum_output_id_table);
+        };
+        m.def("_maximum", maximum_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_maximum_result_type", maximum_result_type_pyapi, "");
+    }
+
+    // B??: ==== MINIMUM    (x1, x2)
+    {
+        impl::populate_minimum_dispatch_tables();
+        using impl::minimum_contig_dispatch_table;
+        using impl::minimum_output_id_table;
+        using impl::minimum_strided_dispatch_table;
+
+        auto minimum_pyapi = [&](dpctl::tensor::usm_ndarray src1,
+                                 dpctl::tensor::usm_ndarray src2,
+                                 dpctl::tensor::usm_ndarray dst,
+                                 sycl::queue exec_q,
+                                 const std::vector<sycl::event> &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, minimum_output_id_table,
+                // function pointers to handle operation on contiguous
+                // arrays (pointers may be nullptr)
+                minimum_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays
+                // (most general case)
+                minimum_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix
+                // and c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto minimum_result_type_pyapi = [&](py::dtype dtype1,
+                                             py::dtype dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               minimum_output_id_table);
+        };
+        m.def("_minimum", minimum_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_minimum_result_type", minimum_result_type_pyapi, "");
     }
 
     // B19: ==== MULTIPLY    (x1, x2)

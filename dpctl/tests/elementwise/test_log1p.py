@@ -119,28 +119,49 @@ def test_log1p_special_cases():
     q = get_queue_or_skip()
 
     X = dpt.asarray(
-        [dpt.nan, -1.0, -2.0, 0.0, -0.0, dpt.inf, -dpt.inf],
+        [dpt.nan, -2.0, -1.0, -0.0, 0.0, dpt.inf],
         dtype="f4",
         sycl_queue=q,
     )
-    Xnp = dpt.asnumpy(X)
+    res = np.asarray([np.nan, np.nan, -np.inf, -0.0, 0.0, np.inf])
 
     tol = dpt.finfo(X.dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.log1p(X)), np.log1p(Xnp), atol=tol, rtol=tol
-    )
+    with np.errstate(divide="ignore", invalid="ignore"):
+        assert_allclose(dpt.asnumpy(dpt.log1p(X)), res, atol=tol, rtol=tol)
 
     # special cases for complex
     vals = [
-        complex(*val)
-        for val in itertools.permutations(
-            [dpt.nan, dpt.inf, -dpt.inf, 0.0, -0.0, 1.0, -1.0, -2.0], 2
-        )
+        complex(-1.0, 0.0),
+        complex(2.0, dpt.inf),
+        complex(2.0, dpt.nan),
+        complex(-dpt.inf, 1.0),
+        complex(dpt.inf, 1.0),
+        complex(-dpt.inf, dpt.inf),
+        complex(dpt.inf, dpt.inf),
+        complex(dpt.inf, dpt.nan),
+        complex(dpt.nan, 1.0),
+        complex(dpt.nan, dpt.inf),
+        complex(dpt.nan, dpt.nan),
     ]
     X = dpt.asarray(vals, dtype=dpt.complex64)
-    Xnp = dpt.asnumpy(X)
+    c_nan = complex(np.nan, np.nan)
+    res = np.asarray(
+        [
+            complex(-np.inf, 0.0),
+            complex(np.inf, np.pi / 2),
+            c_nan,
+            complex(np.inf, np.pi),
+            complex(np.inf, 0.0),
+            complex(np.inf, 3 * np.pi / 4),
+            complex(np.inf, np.pi / 4),
+            complex(np.inf, np.nan),
+            c_nan,
+            complex(np.inf, np.nan),
+            c_nan,
+        ],
+        dtype=np.complex64,
+    )
 
     tol = dpt.finfo(X.dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.log1p(X)), np.log1p(Xnp), atol=tol, rtol=tol
-    )
+    with np.errstate(invalid="ignore"):
+        assert_allclose(dpt.asnumpy(dpt.log1p(X)), res, atol=tol, rtol=tol)
