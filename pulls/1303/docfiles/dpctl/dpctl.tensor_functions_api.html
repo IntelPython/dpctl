@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.14.6dev0+62.g0ce4063cf documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.14.6dev2+7.g8f2b53543 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+62.g0ce4063cf
+                0.14.6dev2+7.g8f2b53543
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -921,56 +921,6 @@ and copying. Default: <cite>None</cite>.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.from_dlpack">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">from_dlpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.from_dlpack" title="Permalink to this definition"></a></dt>
-<dd><p>Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python
-object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output
-array is always a zero-copy view of the input.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>obj</strong> – A Python object representing an array that supports <cite>__dlpack__</cite>
-protocol.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array with a view into the tensor underlying the input <cite>obj</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – if <cite>obj</cite> does not implement <cite>__dlpack__</cite> method.</p></li>
-<li><p><strong>ValueError</strong> – if zero copy view can not be constructed because
-    the input array resides on an unsupported device.</p></li>
-</ul>
-</dd>
-</dl>
-<p>See <a class="reference external" href="https://dmlc.github.io/dlpack/latest/">https://dmlc.github.io/dlpack/latest/</a> for more details.</p>
-<dl class="field-list">
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-
-<span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
-    <span class="s2">&quot;Helper class implementing `__dlpack__` protocol&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">=</span> <span class="n">array</span>
-
-    <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
-
-<span class="n">C</span> <span class="o">=</span> <span class="n">Container</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int16&quot;</span><span class="p">))</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd>
 </dl>
 </dd></dl>

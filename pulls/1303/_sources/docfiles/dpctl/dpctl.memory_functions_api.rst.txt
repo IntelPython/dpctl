@@ -7,8 +7,3 @@ dpctl.memory Functions
 
 .. currentmodule:: dpctl.memory
 
-
-Functions
----------
-
-.. autofunction:: as_usm_memory

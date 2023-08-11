@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.14.6dev0+62.g0ce4063cf documentation</title>
+  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.14.6dev2+7.g8f2b53543 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+62.g0ce4063cf
+                0.14.6dev2+7.g8f2b53543
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -172,43 +172,40 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.eye" title="dpctl.tensor.eye"><code class="xref py py-func docutils literal notranslate"><span class="pre">eye()</span></code></a></p></td>
 <td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with ones on the <cite>k</cite>-th diagonal.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_dlpack" title="dpctl.tensor.from_dlpack"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_dlpack()</span></code></a></p></td>
-<td><p>Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output array is always a zero-copy view of the input.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.from_numpy" title="dpctl.tensor.from_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_numpy()</span></code></a></p></td>
 <td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a></p></td>
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> having a specified shape and filled with <cite>fill_value</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full_like" title="dpctl.tensor.full_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">full_like()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.full_like" title="dpctl.tensor.full_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">full_like()</span></code></a></p></td>
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> filled with <cite>fill_value</cite> and having the same <cite>shape</cite> as the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.linspace" title="dpctl.tensor.linspace"><code class="xref py py-func docutils literal notranslate"><span class="pre">linspace()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.linspace" title="dpctl.tensor.linspace"><code class="xref py py-func docutils literal notranslate"><span class="pre">linspace()</span></code></a></p></td>
 <td><p>Returns <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> array populated with evenly spaced numbers of specified interval.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.meshgrid" title="dpctl.tensor.meshgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshgrid()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.meshgrid" title="dpctl.tensor.meshgrid"><code class="xref py py-func docutils literal notranslate"><span class="pre">meshgrid()</span></code></a></p></td>
 <td><p>Creates list of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> coordinate matrices from vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones" title="dpctl.tensor.ones"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones" title="dpctl.tensor.ones"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones()</span></code></a></p></td>
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> having a specified shape and filled with ones.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones_like" title="dpctl.tensor.ones_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones_like()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.ones_like" title="dpctl.tensor.ones_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">ones_like()</span></code></a></p></td>
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> filled with ones and having the same <cite>shape</cite> as the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.to_numpy" title="dpctl.tensor.to_numpy"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_numpy()</span></code></a></p></td>
 <td><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite> into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tril" title="dpctl.tensor.tril"><code class="xref py py-func docutils literal notranslate"><span class="pre">tril()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tril" title="dpctl.tensor.tril"><code class="xref py py-func docutils literal notranslate"><span class="pre">tril()</span></code></a></p></td>
 <td><p>Returns the lower triangular part of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.triu" title="dpctl.tensor.triu"><code class="xref py py-func docutils literal notranslate"><span class="pre">triu()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.triu" title="dpctl.tensor.triu"><code class="xref py py-func docutils literal notranslate"><span class="pre">triu()</span></code></a></p></td>
 <td><p>Returns the upper triangular part of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros" title="dpctl.tensor.zeros"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros()</span></code></a></p></td>
 <td><p>Returns a new <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> having a specified shape and filled with zeros.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like" title="dpctl.tensor.zeros_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros_like()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.zeros_like" title="dpctl.tensor.zeros_like"><code class="xref py py-func docutils literal notranslate"><span class="pre">zeros_like()</span></code></a></p></td>
 <td><p>Creates <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> from USM allocation initialized with zeros.</p></td>
 </tr>
 </tbody>
