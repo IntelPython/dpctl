@@ -297,8 +297,12 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     m.def("default_device_complex_type",
           dpctl::tensor::py_internal::default_device_complex_type,
-          "Gives default complex floating point type support by device.",
+          "Gives default complex floating point type supported by device.",
           py::arg("dev"));
+
+    m.def("default_device_index_type",
+          dpctl::tensor::py_internal::default_device_index_type,
+          "Gives default index type supported by device.", py::arg("dev"));
 
     auto tril_fn = [](dpctl::tensor::usm_ndarray src,
                       dpctl::tensor::usm_ndarray dst, py::ssize_t k,
