@@ -49,7 +49,7 @@ Distribution for
 Python](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
 (IDP).
 
-## Inte(R) oneAPI
+## Intel(R) oneAPI
 
 You can find the most recent release of `dpctl` every quarter as part of the Intel(R) oneAPI releases.
 
