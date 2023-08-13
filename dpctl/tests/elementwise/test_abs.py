@@ -135,3 +135,11 @@ def test_abs_out_overlap(dtype):
     assert Y is not X
     assert np.allclose(dpt.asnumpy(X), Xnp)
     assert np.allclose(dpt.asnumpy(Y), Ynp)
+
+
+def test_abs_signed_zero():
+    get_queue_or_skip()
+
+    x = dpt.abs(dpt.asarray(-0.0, dtype="f4"))
+
+    assert bool(dpt.signbit(x)) is False
