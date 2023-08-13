@@ -65,14 +65,15 @@ template <typename argT, typename resT> struct AbsFunctor
     {
 
         if constexpr (std::is_same_v<argT, bool> ||
-                      (std::is_integral<argT>::value &&
-                       std::is_unsigned<argT>::value))
-        {
+                      std::is_unsigned<argT>::value) {
             static_assert(std::is_same_v<resT, argT>);
             return x;
         }
-        else {
+        else if (std::is_integral<argT>::value || is_complex<argT>::value) {
             return std::abs(x);
+        }
+        else {
+            return (x == argT(0)) ? resT(0) : resT(std::abs(x));
         }
     }
 };
