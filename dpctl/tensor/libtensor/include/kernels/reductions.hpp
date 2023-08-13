@@ -232,6 +232,9 @@ typedef sycl::event (*sum_reduction_strided_impl_fn_ptr)(
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class sum_reduction_over_group_with_atomics_krn;
 
+template <typename T1, typename T2>
+class sum_reduction_over_group_with_atomics_init_krn;
+
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class sum_reduction_seq_strided_krn;
 
@@ -305,13 +308,16 @@ sycl::event sum_reduction_over_group_with_atomics_strided_impl(
                 iter_shape_and_strides + 2 * iter_nd;
             IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
                                  res_strides);
-
+            using InitKernelName =
+                class sum_reduction_over_group_with_atomics_init_krn<resTy,
+                                                                     argTy>;
             cgh.depends_on(depends);
 
-            cgh.parallel_for(sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
-                auto res_offset = res_indexer(id[0]);
-                res_tp[res_offset] = identity_val;
-            });
+            cgh.parallel_for<InitKernelName>(
+                sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
+                    auto res_offset = res_indexer(id[0]);
+                    res_tp[res_offset] = identity_val;
+                });
         });
 
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
