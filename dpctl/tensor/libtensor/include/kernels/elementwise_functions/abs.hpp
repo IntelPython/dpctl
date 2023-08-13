@@ -25,8 +25,10 @@
 #pragma once
 #include <CL/sycl.hpp>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -35,8 +37,6 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 #include <pybind11/pybind11.h>
-
-#include <iostream>
 
 namespace dpctl
 {
@@ -72,7 +72,58 @@ template <typename argT, typename resT> struct AbsFunctor
             return x;
         }
         else {
-            return std::abs(x);
+            if constexpr (is_complex<argT>::value) {
+                return cabs(x);
+            }
+            else if constexpr (std::is_same_v<argT, sycl::half> ||
+                               std::is_floating_point_v<argT>)
+            {
+                return (std::signbit(x) ? -x : x);
+            }
+            else {
+                return std::abs(x);
+            }
+        }
+    }
+
+private:
+    template <typename realT> realT cabs(std::complex<realT> const &z) const
+    {
+        // Special values for cabs( x + y * 1j):
+        //   * If x is either +infinity or -infinity and y is any value
+        //   (including NaN), the result is +infinity.
+        //   * If x is any value (including NaN) and y is either +infinity or
+        //   -infinity, the result is +infinity.
+        //   * If x is either +0 or -0, the result is equal to abs(y).
+        //   * If y is either +0 or -0, the result is equal to abs(x).
+        //   * If x is NaN and y is a finite number, the result is NaN.
+        //   * If x is a finite number and y is NaN, the result is NaN.
+        //   * If x is NaN and y is NaN, the result is NaN.
+
+        const realT x = std::real(z);
+        const realT y = std::imag(z);
+
+        constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+        constexpr realT p_inf = std::numeric_limits<realT>::infinity();
+
+        if (std::isinf(x)) {
+            return p_inf;
+        }
+        else if (std::isinf(y)) {
+            return p_inf;
+        }
+        else if (std::isnan(x)) {
+            return q_nan;
+        }
+        else if (std::isnan(y)) {
+            return q_nan;
+        }
+        else {
+#ifdef USE_STD_ABS_FOR_COMPLEX_TYPES
+            return std::abs(z);
+#else
+            return std::hypot(std::real(z), std::imag(z));
+#endif
         }
     }
 };
