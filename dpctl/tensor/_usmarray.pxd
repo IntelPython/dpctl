@@ -58,7 +58,6 @@ cdef api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:
 
     cdef void _reset(usm_ndarray self)
     cdef void _cleanup(usm_ndarray self)
-    cdef usm_ndarray _clone(usm_ndarray self)
     cdef Py_ssize_t get_offset(usm_ndarray self) except *
 
     cdef char* get_data(self)
