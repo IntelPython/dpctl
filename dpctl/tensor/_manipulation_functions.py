@@ -426,6 +426,9 @@ def roll(X, shift, axis=None):
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     if axis is None:
+        # get the combined shift value for all axes
+        if type(shift) is tuple:
+            shift = sum(shift)
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )

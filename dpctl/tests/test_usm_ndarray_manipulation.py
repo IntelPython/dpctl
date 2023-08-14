@@ -590,6 +590,8 @@ def test_roll_empty():
     "data",
     [
         [2, None],
+        [(0, 1), None],
+        [(-1, 0), None],
         [-2, None],
         [2, 0],
         [-2, 0],
@@ -617,6 +619,8 @@ def test_roll_1d(data):
     "data",
     [
         [1, None],
+        [(2, 1), None],
+        [(-1, 2), None],
         [1, 0],
         [1, 1],
         [1, ()],
