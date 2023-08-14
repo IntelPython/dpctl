@@ -417,6 +417,67 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     return dpt.permute_dims(R, inv_perm)
 
 
+def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
+    if not isinstance(X1, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X1)}")
+    if not isinstance(X2, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X2)}")
+    if not isinstance(X3, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X3)}")
+    nd1 = X1.ndim
+    nd2 = X2.ndim
+    nd3 = X3.ndim
+    if nd1 > nd2 and nd1 > nd3 and X1.shape == res_shape:
+        return _empty_like_orderK(X1, dt, usm_type, dev)
+    elif nd1 < nd2 and nd3 < nd2 and X2.shape == res_shape:
+        return _empty_like_orderK(X2, dt, usm_type, dev)
+    elif nd1 < nd3 and nd2 < nd3 and X3.shape == res_shape:
+        return _empty_like_orderK(X3, dt, usm_type, dev)
+    fl1 = X1.flags
+    fl2 = X2.flags
+    fl3 = X3.flags
+    if fl1["C"] or fl2["C"] or fl3["C"]:
+        return dpt.empty(
+            res_shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
+        )
+    if fl1["F"] and fl2["F"] and fl3["F"]:
+        return dpt.empty(
+            res_shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
+        )
+    st1 = list(X1.strides)
+    st2 = list(X2.strides)
+    st3 = list(X3.strides)
+    max_ndim = max(nd1, nd2, nd3)
+    st1 += [0] * (max_ndim - len(st1))
+    st2 += [0] * (max_ndim - len(st2))
+    st3 += [0] * (max_ndim - len(st3))
+    perm = sorted(
+        range(max_ndim),
+        key=lambda d: (
+            builtins.abs(st1[d]),
+            builtins.abs(st2[d]),
+            builtins.abs(st3[d]),
+        ),
+        reverse=True,
+    )
+    inv_perm = sorted(range(max_ndim), key=lambda i: perm[i])
+    st1_sorted = [st1[i] for i in perm]
+    st2_sorted = [st2[i] for i in perm]
+    st3_sorted = [st3[i] for i in perm]
+    sh = res_shape
+    sh_sorted = tuple(sh[i] for i in perm)
+    R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
+    if max(min(st1_sorted), min(st2_sorted), min(st3_sorted)) < 0:
+        sl = tuple(
+            slice(None, None, -1)
+            if (st1_sorted[i] < 0 and st2_sorted[i] < 0 and st3_sorted[i] < 0)
+            else slice(None, None, None)
+            for i in range(nd1)
+        )
+        R = R[sl]
+    return dpt.permute_dims(R, inv_perm)
+
+
 def copy(usm_ary, order="K"):
     """copy(ary, order="K")
 
