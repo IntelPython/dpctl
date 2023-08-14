@@ -370,3 +370,39 @@ def test_where_compute_follows_data():
         dpt.where(dpt.empty((1,), dtype="i4", sycl_queue=q3), x1, x2)
     with pytest.raises(ExecutionPlacementError):
         dpt.where(x1, x1, x2)
+
+
+def test_where_order():
+    get_queue_or_skip()
+
+    test_sh = (
+        20,
+        20,
+    )
+    test_sh2 = tuple(2 * dim for dim in test_sh)
+    n = test_sh[-1]
+
+    for dt1, dt2 in zip(["i4", "i4", "f4"], ["i4", "f4", "i4"]):
+        ar1 = dpt.zeros(test_sh, dtype=dt1, order="C")
+        ar2 = dpt.ones(test_sh, dtype=dt2, order="C")
+        condition = dpt.zeros(test_sh, dtype="?", order="C")
+        res = dpt.where(condition, ar1, ar2)
+        assert res.flags.c_contiguous
+
+        ar1 = dpt.ones(test_sh, dtype=dt1, order="F")
+        ar2 = dpt.ones(test_sh, dtype=dt2, order="F")
+        condition = dpt.zeros(test_sh, dtype="?", order="F")
+        res = dpt.where(condition, ar1, ar2)
+        assert res.flags.f_contiguous
+
+        ar1 = dpt.ones(test_sh2, dtype=dt1, order="C")[:20, ::-2]
+        ar2 = dpt.ones(test_sh2, dtype=dt2, order="C")[:20, ::-2]
+        condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2]
+        res = dpt.where(condition, ar1, ar2)
+        assert res.strides == (n, -1)
+
+        ar1 = dpt.ones(test_sh2, dtype=dt1, order="C")[:20, ::-2].mT
+        ar2 = dpt.ones(test_sh2, dtype=dt2, order="C")[:20, ::-2].mT
+        condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2].mT
+        res = dpt.where(condition, ar1, ar2)
+        assert res.strides == (-1, n)
