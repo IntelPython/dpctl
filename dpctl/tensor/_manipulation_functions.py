@@ -885,6 +885,9 @@ def moveaxis(X, source, destination):
             "the same number of elements"
         )
 
+    if source == destination:
+        return X
+
     ind = [n for n in range(X.ndim) if n not in source]
 
     for src, dst in sorted(zip(destination, source)):
