@@ -91,6 +91,7 @@ jobs:
               [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
               [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
               [ -d ${TBB_INSTALL_DIR}/lib ] || tar xf ${TBB_FN}
+              cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
           fi
 
       - name: Install system components
