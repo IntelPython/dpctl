@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import warnings
 
 import numpy as np
 import pytest
@@ -23,7 +24,13 @@ from numpy.testing import assert_allclose, assert_equal
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _map_to_device_dtype, _usm_types
+from .utils import (
+    _all_dtypes,
+    _complex_fp_dtypes,
+    _map_to_device_dtype,
+    _real_fp_dtypes,
+    _usm_types,
+)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -115,18 +122,6 @@ def test_sqrt_order(dtype):
             assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
-@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-def test_sqrt_special_cases():
-    q = get_queue_or_skip()
-
-    X = dpt.asarray(
-        [dpt.nan, -1.0, 0.0, -0.0, dpt.inf, -dpt.inf], dtype="f4", sycl_queue=q
-    )
-    Xnp = dpt.asnumpy(X)
-
-    assert_equal(dpt.asnumpy(dpt.sqrt(X)), np.sqrt(Xnp))
-
-
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
 def test_sqrt_out_overlap(dtype):
     q = get_queue_or_skip()
@@ -149,3 +144,62 @@ def test_sqrt_out_overlap(dtype):
     assert Y is not X
     assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
     assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)
+
+
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+def test_sqrt_special_cases():
+    q = get_queue_or_skip()
+
+    X = dpt.asarray(
+        [dpt.nan, -1.0, 0.0, -0.0, dpt.inf, -dpt.inf], dtype="f4", sycl_queue=q
+    )
+    Xnp = dpt.asnumpy(X)
+
+    assert_equal(dpt.asnumpy(dpt.sqrt(X)), np.sqrt(Xnp))
+
+
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
+def test_sqrt_real_fp_special_values(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    nans_ = [dpt.nan, -dpt.nan]
+    infs_ = [dpt.inf, -dpt.inf]
+    finites_ = [-1.0, -0.0, 0.0, 1.0]
+    inps_ = nans_ + infs_ + finites_
+
+    x = dpt.asarray(inps_, dtype=dtype)
+    r = dpt.sqrt(x)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        expected_np = np.sqrt(np.asarray(inps_, dtype=dtype))
+
+    expected = dpt.asarray(expected_np, dtype=dtype)
+    tol = dpt.finfo(r.dtype).resolution
+
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
+
+
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
+def test_sqrt_complex_fp_special_values(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    nans_ = [dpt.nan, -dpt.nan]
+    infs_ = [dpt.inf, -dpt.inf]
+    finites_ = [-1.0, -0.0, 0.0, 1.0]
+    inps_ = nans_ + infs_ + finites_
+    c_ = [complex(*v) for v in itertools.product(inps_, repeat=2)]
+
+    z = dpt.asarray(c_, dtype=dtype)
+    r = dpt.sqrt(z)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        expected_np = np.sqrt(np.asarray(c_, dtype=dtype))
+
+    expected = dpt.asarray(expected_np, dtype=dtype)
+    tol = dpt.finfo(r.dtype).resolution
+
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
