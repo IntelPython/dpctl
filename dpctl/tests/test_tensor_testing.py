@@ -84,3 +84,12 @@ def test_allclose_validation():
     x = dpt.asarray(True)
     with pytest.raises(TypeError):
         dpt.allclose(x, False)
+
+
+def test_all_close_promotion():
+    get_queue_or_skip()
+
+    x1 = dpt.ones(10, dtype="i4")
+    x2 = dpt.ones(10, dtype="i8")
+
+    assert dpt.allclose(x1, x2)
