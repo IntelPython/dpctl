@@ -38,16 +38,17 @@ jobs:
 
       - name: Download and install nightly and components
         env:
-          USE_LATEST_SYCLOS: 0
+          ARTIFACT_NAME: sycl_linux
+          USE_LATEST_SYCLOS: 1
         shell: bash -l {0}
         run: |
           cd /home/runner/work
           mkdir -p sycl_bundle
           cd sycl_bundle
           if [[ "${USE_LATEST_SYCLOS:-0}" -eq "1" ]]; then
-              # get list of shas and tags from remote, filter sycl-nightly tags and reverse order
+              # get list of shas and tags from remote, filter nightly tags and reverse order
               export LLVM_TAGS=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | \
-                          grep sycl-nightly | awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }')
+                          grep 'refs/tags/nightly-' | awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }')
               # initialize
               unset DEPLOY_NIGHTLY_TAG
               unset DEPLOY_NIGHTLY_TAG_SHA
@@ -57,7 +58,7 @@ jobs:
                   export NEXT_LLVM_TAG_SHA=$(echo ${NEXT_LLVM_TAG} | awk '{print $1}')
                   export NEXT_NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
                                               $(echo ${NEXT_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
-                  if [[ `wget -S --spider ${DOWNLOAD_URL_PREFIX}/${NEXT_NIGHTLY_TAG}/dpcpp-compiler.tar.gz  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
+                  if [[ `wget -S --spider ${DOWNLOAD_URL_PREFIX}/${NEXT_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
                   then
                       export DEPLOY_NIGHTLY_TAG=${NEXT_NIGHTLY_TAG}
                       export DEPLOY_LLVM_TAG_SHA=${NEXT_LLVM_TAG_SHA}
@@ -77,21 +78,19 @@ jobs:
           if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${DEPLOY_LLVM_TAG_SHA}" ) ]]; then
               echo "Using cached download of ${DEPLOY_LLVM_TAG_SHA}"
           else
-              rm -rf dpcpp-compiler.tar.gz
-              wget ${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/dpcpp-compiler.tar.gz && echo ${DEPLOY_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
+              rm -rf ${ARTIFACT_NAME}.tar.gz
+              wget ${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz && echo ${DEPLOY_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
               [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
               [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${FPGAEMU_FN} || rm -rf bundle_id.txt
               [ -f ${TBB_FN} ] || wget ${TBB_URL}/${TBB_FN} || rm -rf bundle_id.txt
               rm -rf dpcpp_compiler
-              tar xf dpcpp-compiler.tar.gz
+              mkdir -p dpcpp_compiler
+              tar xf ${ARTIFACT_NAME}.tar.gz -C dpcpp_compiler
               mkdir -p oclcpuexp
               mkdir -p fpgaemu
               [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
               [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
               [ -d ${TBB_INSTALL_DIR}/lib ] || tar xf ${TBB_FN}
-              mkdir -p dpcpp_compiler/lib
-              mkdir -p dpcpp_compiler/lib/oclfpga
-              touch dpcpp_compiler/lib/oclfpga/fpgavars.sh
           fi
 
       - name: Install system components
@@ -121,7 +120,8 @@ jobs:
           cat << 'EOF' > set_allvars.sh
           #!/usr/bin/bash
           export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
-          source ${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/startup.sh
+          export PATH=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin:${PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/lib:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
