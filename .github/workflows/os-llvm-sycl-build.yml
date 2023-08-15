@@ -7,7 +7,7 @@ on:
 jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     env:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
