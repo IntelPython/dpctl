@@ -24,7 +24,7 @@ import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
-from dpctl.tensor._ctors import _get_dtype
+from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 
 __doc__ = (
@@ -354,11 +354,11 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
         range(X.ndim), key=lambda d: builtins.abs(st[d]), reverse=True
     )
     inv_perm = sorted(range(X.ndim), key=lambda i: perm[i])
-    st_sorted = [st[i] for i in perm]
     sh = X.shape
     sh_sorted = tuple(sh[i] for i in perm)
     R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
-    if min(st_sorted) < 0:
+    if min(st) < 0:
+        st_sorted = [st[i] for i in perm]
         sl = tuple(
             slice(None, None, -1)
             if st_sorted[i] < 0
