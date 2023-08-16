@@ -56,7 +56,7 @@ def _allclose_complex_fp(z1, z2, atol, rtol, equal_nan):
     mv2 = z2r[mr]
     check4 = dpt.all(
         dpt.abs(mv1 - mv2)
-        < atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
+        < dpt.maximum(atol, rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2)))
     )
     if not check4:
         return check4
@@ -64,7 +64,7 @@ def _allclose_complex_fp(z1, z2, atol, rtol, equal_nan):
     mv2 = z2i[mi]
     check5 = dpt.all(
         dpt.abs(mv1 - mv2)
-        <= atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
+        <= dpt.maximum(atol, rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2)))
     )
     return check5
 
@@ -90,7 +90,7 @@ def _allclose_real_fp(r1, r2, atol, rtol, equal_nan):
     mv2 = r2[m]
     check4 = dpt.all(
         dpt.abs(mv1 - mv2)
-        <= atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
+        <= dpt.maximum(atol, rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2)))
     )
     return check4
 
@@ -103,6 +103,10 @@ def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
     """allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False)
 
     Returns True if two arrays are element-wise equal within tolerances.
+
+    The testing is based on the following elementwise comparison:
+
+           abs(a - b) <= max(atol, rtol * max(abs(a), abs(b)))
     """
     if not isinstance(a1, dpt.usm_ndarray):
         raise TypeError(
@@ -114,6 +118,10 @@ def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
         )
     atol = float(atol)
     rtol = float(rtol)
+    if atol < 0.0 or rtol < 0.0:
+        raise ValueError(
+            "Absolute and relative tolerances must be non-negative"
+        )
     equal_nan = bool(equal_nan)
     exec_q = du.get_execution_queue(tuple(a.sycl_queue for a in (a1, a2)))
     if exec_q is None:
