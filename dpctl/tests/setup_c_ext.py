@@ -15,20 +15,18 @@
 # limitations under the License.
 
 import setuptools
-from Cython.Build import build_ext
 
 import dpctl
 
 ext = setuptools.Extension(
-    "_cython_api",
-    ["_cython_api.pyx"],
+    "_c_ext",
+    ["_c_ext.c"],
     include_dirs=[dpctl.get_include()],
-    language="c++",
+    language="c",
 )
 
 setuptools.setup(
-    name="test_cython_api",
+    name="test_c_ext",
     version="0.0.0",
     ext_modules=[ext],
-    cmdclass={"build_ext": build_ext},
 )
