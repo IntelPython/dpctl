@@ -387,14 +387,14 @@ py_extract(dpctl::tensor::usm_ndarray src,
 
     // ensure that dst is sufficiently ample
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < static_cast<size_t>(ortho_nelems * masked_dst_nelems)) {
             throw py::value_error(
                 "Memory addressed by the destination array can not "
-                "accomodate all the "
+                "accommodate all the "
                 "array elements.");
         }
     }
@@ -716,14 +716,14 @@ py_place(dpctl::tensor::usm_ndarray dst,
 
     // ensure that dst is sufficiently ample
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < static_cast<size_t>(ortho_nelems * masked_dst_nelems)) {
             throw py::value_error(
                 "Memory addressed by the destination array can not "
-                "accomodate all the "
+                "accommodate all the "
                 "array elements.");
         }
     }
@@ -999,14 +999,14 @@ py_nonzero(dpctl::tensor::usm_ndarray
 
     // ensure that dst is sufficiently ample
     auto indexes_offsets = indexes.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(indexes_offsets.second - indexes_offsets.first);
         if (range + 1 < static_cast<size_t>(nz_elems * _ndim)) {
             throw py::value_error(
                 "Memory addressed by the destination array can not "
-                "accomodate all the array elements.");
+                "accommodate all the array elements.");
         }
     }
 

@@ -325,7 +325,7 @@ cdef class usm_ndarray:
         if (_offset + ary_min_displacement < 0 or
            (_offset + ary_max_displacement + 1) * itemsize > _buffer.nbytes):
             self._cleanup()
-            raise ValueError(("buffer='{}' can not accomodate "
+            raise ValueError(("buffer='{}' can not accommodate "
                               "the requested array.").format(buffer))
         is_fp64 = (typenum == UAR_DOUBLE or typenum == UAR_CDOUBLE)
         is_fp16 = (typenum == UAR_HALF)
