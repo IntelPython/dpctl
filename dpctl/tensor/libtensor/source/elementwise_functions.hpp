@@ -113,15 +113,15 @@ py_unary_ufunc(dpctl::tensor::usm_ndarray src,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }
@@ -366,15 +366,15 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }
@@ -664,15 +664,15 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accomodate all elements
+    // ensure that output is ample enough to accommodate all elements
     auto lhs_offsets = lhs.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(lhs_offsets.second - lhs_offsets.first);
         if (range + 1 < rhs_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }

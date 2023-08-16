@@ -142,14 +142,14 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         auto dst_offsets = dst.get_minmax_offsets();
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < dst_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }

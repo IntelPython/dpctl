@@ -1602,7 +1602,7 @@ def test_arange(dt):
     elif np.issubdtype(dt, np.complexfloating):
         assert complex(X[47]) == 47.0 + 0.0j
 
-    # choose size larger than maximal value that u1/u2 can accomodate
+    # choose size larger than maximal value that u1/u2 can accommodate
     sz = int(dpt.iinfo(dpt.int8).max)
     X1 = dpt.arange(sz + 1, dtype=dt, sycl_queue=q)
     assert X1.shape == (sz + 1,)
