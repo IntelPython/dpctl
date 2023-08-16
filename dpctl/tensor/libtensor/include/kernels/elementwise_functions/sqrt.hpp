@@ -148,16 +148,26 @@ private:
         constexpr realT half = realT(0x1.0p-1f); // 1/2
         constexpr realT zero = realT(0);
 
-        if (std::signbit(x)) {
-            realT m = std::hypot(x, y);
-            realT d = std::sqrt((m - x) * half);
-            return {(d == zero ? zero : std::abs(y) / d * half),
-                    std::copysign(d, y)};
+        const int exp_x = sycl::ilogb(x);
+        const int exp_y = sycl::ilogb(y);
+
+        int sc = std::max<int>(exp_x, exp_y) / 2;
+        const realT xx = sycl::ldexp(x, -sc * 2);
+        const realT yy = sycl::ldexp(y, -sc * 2);
+
+        if (std::signbit(xx)) {
+            const realT m = std::hypot(xx, yy);
+            const realT d = std::sqrt((m - xx) * half);
+            const realT res_re = (d == zero ? zero : std::abs(yy) / d * half);
+            const realT res_im = std::copysign(d, yy);
+            return {sycl::ldexp(res_re, sc), sycl::ldexp(res_im, sc)};
         }
         else {
-            realT m = std::hypot(x, y);
-            realT d = std::sqrt((m + x) * half);
-            return {d, (d == zero) ? std::copysign(zero, y) : y * half / d};
+            const realT m = std::hypot(xx, yy);
+            const realT d = std::sqrt((m + xx) * half);
+            const realT res_im =
+                (d == zero) ? std::copysign(zero, yy) : yy * half / d;
+            return {sycl::ldexp(d, sc), sycl::ldexp(res_im, sc)};
         }
     }
 };
