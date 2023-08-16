@@ -135,7 +135,7 @@ Other Functions
     * - :func:`all()`
       - Tests whether all input array elements evaluate to True along a given axis.
     * - :func:`allclose()`
-      - Returns True if two arrays are element-wise equal within tolerance.
+      - Returns True if two arrays are element-wise equal within tolerances.
     * - :func:`any()`
       - Tests whether any input array elements evaluate to True along a given axis.
     * - :func:`extract()`
