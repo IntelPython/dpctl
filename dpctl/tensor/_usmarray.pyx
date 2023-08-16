@@ -1286,8 +1286,7 @@ cdef class usm_ndarray:
         return _dispatch_binary_elementwise2(other, "bitwise_xor", self)
 
     def __iadd__(self, other):
-        from ._elementwise_funcs import add
-        return add._inplace(self, other)
+        return dpctl.tensor.add(self, other, out=self)
 
     def __iand__(self, other):
         res = self.__and__(other)
@@ -1325,8 +1324,7 @@ cdef class usm_ndarray:
         return self
 
     def __imul__(self, other):
-        from ._elementwise_funcs import multiply
-        return multiply._inplace(self, other)
+        return dpctl.tensor.multiply(self, other, out=self)
 
     def __ior__(self, other):
         res = self.__or__(other)
@@ -1350,8 +1348,7 @@ cdef class usm_ndarray:
         return self
 
     def __isub__(self, other):
-        from ._elementwise_funcs import subtract
-        return subtract._inplace(self, other)
+        return dpctl.tensor.subtract(self, other, out=self)
 
     def __itruediv__(self, other):
         res = self.__truediv__(other)
