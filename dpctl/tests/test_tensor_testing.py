@@ -86,10 +86,64 @@ def test_allclose_validation():
         dpt.allclose(x, False)
 
 
-def test_all_close_promotion():
+def test_allclose_type_promotion():
     get_queue_or_skip()
 
     x1 = dpt.ones(10, dtype="i4")
     x2 = dpt.ones(10, dtype="i8")
 
     assert dpt.allclose(x1, x2)
+
+
+def test_allclose_tolerance():
+    get_queue_or_skip()
+
+    x = dpt.zeros(10, dtype="f4")
+    atol = 1e-5
+    y = dpt.full_like(x, atol)
+    assert dpt.allclose(x, y, atol=atol, rtol=0)
+
+    # about 8e-6
+    tol = float.fromhex("0x1.0p-17")
+    x = dpt.ones(10, dtype="f4")
+    y = x - tol
+    assert dpt.allclose(x, y, atol=0, rtol=tol)
+
+
+def test_allclose_real_fp_early_exists():
+    get_queue_or_skip()
+
+    x1 = dpt.asarray([0.0, dpt.inf, -dpt.inf], dtype="f4")
+    x2 = dpt.asarray([dpt.inf, 0.0, -dpt.inf], dtype="f4")
+
+    # early exists, inf positions are different
+    assert not dpt.allclose(x1, x2)
+
+    x2 = dpt.asarray([0.0, -dpt.inf, dpt.inf], dtype="f4")
+
+    # early exists, inf positions are the same, but signs differ
+    assert not dpt.allclose(x1, x2)
+
+
+def test_allclose_complex_fp_early_exists():
+    get_queue_or_skip()
+
+    x1 = dpt.asarray([0.0, dpt.inf, -dpt.inf], dtype="c8")
+    x2 = dpt.asarray([dpt.inf, 0.0, -dpt.inf], dtype="c8")
+
+    # early exists, inf positions of real parts are different
+    assert not dpt.allclose(x1, x2)
+
+    x2 = dpt.asarray([0.0, -dpt.inf, dpt.inf], dtype="c8")
+
+    # early exists, inf positions of real parts are the same, but signs differ
+    assert not dpt.allclose(x1, x2)
+
+    x1 = dpt.asarray([0.0, dpt.inf * 1j, -dpt.inf * 1j], dtype="c8")
+    x2 = dpt.asarray([dpt.inf * 1j, 0.0, -dpt.inf * 1j], dtype="c8")
+
+    # early exists, inf positions of imag parts are different
+    assert not dpt.allclose(x1, x2)
+
+    x2 = dpt.asarray([0.0, -dpt.inf * 1j, dpt.inf * 1j], dtype="c8")
+    assert not dpt.allclose(x1, x2)
