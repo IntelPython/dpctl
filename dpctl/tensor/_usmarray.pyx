@@ -182,7 +182,10 @@ cdef class usm_ndarray:
                 raise TypeError("Argument shape must be a list or a tuple.")
         nd = len(shape)
         if dtype is None:
-            q = buffer_ctor_kwargs.get("queue")
+            if isinstance(buffer, (dpmem._memory._Memory, usm_ndarray)):
+                q = buffer.sycl_queue
+            else:
+                q = buffer_ctor_kwargs.get("queue")
             if q is not None:
                 dtype = default_device_fp_type(q)
             else:
