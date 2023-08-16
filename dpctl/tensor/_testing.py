@@ -64,7 +64,7 @@ def _allclose_complex_fp(z1, z2, atol, rtol, equal_nan):
     mv2 = z2i[mi]
     check5 = dpt.all(
         dpt.abs(mv1 - mv2)
-        < atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
+        <= atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
     )
     return check5
 
@@ -90,7 +90,7 @@ def _allclose_real_fp(r1, r2, atol, rtol, equal_nan):
     mv2 = r2[m]
     check4 = dpt.all(
         dpt.abs(mv1 - mv2)
-        < atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
+        <= atol + rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2))
     )
     return check4
 
@@ -99,10 +99,10 @@ def _allclose_others(r1, r2):
     return dpt.all(r1 == r2)
 
 
-def allclose(a1, a2, atol=1e-5, rtol=1e-8, equal_nan=False):
-    """allclose(a1, a2, atol=1e-5, rtol=1e-8)
+def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
+    """allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False)
 
-    Returns True if two arrays are element-wise equal within tolerance.
+    Returns True if two arrays are element-wise equal within tolerances.
     """
     if not isinstance(a1, dpt.usm_ndarray):
         raise TypeError(
