@@ -427,12 +427,16 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
     nd1 = X1.ndim
     nd2 = X2.ndim
     nd3 = X3.ndim
-    if nd1 > nd2 and nd1 > nd3 and X1.shape == res_shape:
-        return _empty_like_orderK(X1, dt, usm_type, dev)
-    elif nd1 < nd2 and nd3 < nd2 and X2.shape == res_shape:
-        return _empty_like_orderK(X2, dt, usm_type, dev)
-    elif nd1 < nd3 and nd2 < nd3 and X3.shape == res_shape:
-        return _empty_like_orderK(X3, dt, usm_type, dev)
+    if X1.shape == res_shape and X2.shape == res_shape and len(res_shape) > nd3:
+        return _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev)
+    elif (
+        X2.shape == res_shape and X3.shape == res_shape and len(res_shape) > nd1
+    ):
+        return _empty_like_pair_orderK(X2, X3, dt, res_shape, usm_type, dev)
+    elif (
+        X1.shape == res_shape and X3.shape == res_shape and len(res_shape) > nd2
+    ):
+        return _empty_like_pair_orderK(X1, X3, dt, res_shape, usm_type, dev)
     fl1 = X1.flags
     fl2 = X2.flags
     fl3 = X3.flags

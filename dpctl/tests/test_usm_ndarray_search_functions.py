@@ -406,3 +406,9 @@ def test_where_order():
         condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2].mT
         res = dpt.where(condition, ar1, ar2)
         assert res.strides == (-1, n)
+
+        ar1 = dpt.ones(n, dtype=dt1, order="C")
+        ar2 = dpt.broadcast_to(dpt.ones(n, dtype=dt2, order="C"), test_sh)
+        condition = dpt.zeros(n, dtype="?", order="C")
+        res = dpt.where(condition, ar1, ar2)
+        assert res.strides == (20, 1)

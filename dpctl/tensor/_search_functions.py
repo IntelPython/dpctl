@@ -139,13 +139,13 @@ def where(condition, x1, x2):
         deps.append(copy2_ev)
         wait_list.append(ht_copy2_ev)
 
-    condition = dpt.broadcast_to(condition, res_shape)
-    x1 = dpt.broadcast_to(x1, res_shape)
-    x2 = dpt.broadcast_to(x2, res_shape)
-
     dst = _empty_like_triple_orderK(
         condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
     )
+
+    condition = dpt.broadcast_to(condition, res_shape)
+    x1 = dpt.broadcast_to(x1, res_shape)
+    x2 = dpt.broadcast_to(x2, res_shape)
 
     hev, _ = ti._where(
         condition=condition,
