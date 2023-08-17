@@ -78,8 +78,8 @@ class UnaryElementwiseFunc:
                 )
 
             if out.shape != x.shape:
-                raise TypeError(
-                    "The shape of input and output arrays are inconsistent."
+                raise ValueError(
+                    "The shape of input and output arrays are inconsistent. "
                     f"Expected output shape is {x.shape}, got {out.shape}"
                 )
 
@@ -103,7 +103,7 @@ class UnaryElementwiseFunc:
                 dpctl.utils.get_execution_queue((x.sycl_queue, out.sycl_queue))
                 is None
             ):
-                raise TypeError(
+                raise ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
 
@@ -471,8 +471,8 @@ class BinaryElementwiseFunc:
                 )
 
             if out.shape != res_shape:
-                raise TypeError(
-                    "The shape of input and output arrays are inconsistent."
+                raise ValueError(
+                    "The shape of input and output arrays are inconsistent. "
                     f"Expected output shape is {o1_shape}, got {out.shape}"
                 )
 
@@ -486,7 +486,7 @@ class BinaryElementwiseFunc:
                 dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
                 is None
             ):
-                raise TypeError(
+                raise ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
 
