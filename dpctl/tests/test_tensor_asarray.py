@@ -383,3 +383,15 @@ def test_ulonglong_gh_1167():
     assert x.dtype == dpt.uint64
     x = dpt.asarray(9223372036854775808, dtype="u8")
     assert x.dtype == dpt.uint64
+
+
+def test_orderK_gh_1350():
+    get_queue_or_skip()
+    a = dpt.empty((2, 3, 4), dtype="u1")
+    b = dpt.permute_dims(a, (2, 0, 1))
+    c = dpt.asarray(b, copy=True, order="K")
+
+    assert c.shape == b.shape
+    assert c.strides == b.strides
+    assert c._element_offset == 0
+    assert not c._pointer == b._pointer
