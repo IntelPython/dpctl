@@ -510,7 +510,8 @@ class BinaryElementwiseFunc:
                                 o2, dtype=o2_dtype, sycl_queue=exec_q
                             )
                         if buf2_dt is None:
-                            src2 = dpt.broadcast_to(src2, res_shape)
+                            if src2.shape != res_shape:
+                                src2 = dpt.broadcast_to(src2, res_shape)
                             ht_, _ = self.binary_inplace_fn_(
                                 lhs=o1, rhs=src2, sycl_queue=exec_q
                             )
@@ -581,9 +582,10 @@ class BinaryElementwiseFunc:
                         sycl_queue=exec_q,
                         order=order,
                     )
-
-            src1 = dpt.broadcast_to(src1, res_shape)
-            src2 = dpt.broadcast_to(src2, res_shape)
+            if src1.shape != res_shape:
+                src1 = dpt.broadcast_to(src1, res_shape)
+            if src2.shape != res_shape:
+                src2 = dpt.broadcast_to(src2, res_shape)
             ht_binary_ev, binary_ev = self.binary_fn_(
                 src1=src1, src2=src2, dst=out, sycl_queue=exec_q
             )
@@ -628,8 +630,8 @@ class BinaryElementwiseFunc:
                         f"Output array of type {res_dt} is needed,"
                         f"got {out.dtype}"
                     )
-
-            src1 = dpt.broadcast_to(src1, res_shape)
+            if src1.shape != res_shape:
+                src1 = dpt.broadcast_to(src1, res_shape)
             buf2 = dpt.broadcast_to(buf2, res_shape)
             ht_binary_ev, binary_ev = self.binary_fn_(
                 src1=src1,
@@ -676,7 +678,8 @@ class BinaryElementwiseFunc:
                     )
 
             buf1 = dpt.broadcast_to(buf1, res_shape)
-            src2 = dpt.broadcast_to(src2, res_shape)
+            if src2.shape != res_shape:
+                src2 = dpt.broadcast_to(src2, res_shape)
             ht_binary_ev, binary_ev = self.binary_fn_(
                 src1=buf1,
                 src2=src2,
