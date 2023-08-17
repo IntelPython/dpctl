@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._ctors &mdash; Data Parallel Control (dpctl) 0.14.6dev3+23.gc23b2f487 documentation</title>
+  <title>dpctl.tensor._ctors &mdash; Data Parallel Control (dpctl) 0.14.6dev3+26.gd34234213 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev3+23.gc23b2f487
+                0.14.6dev3+26.gd34234213
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -115,6 +115,8 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._copy_utils</span> <span class="kn">import</span> <span class="n">_empty_like_orderK</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._data_types</span> <span class="kn">import</span> <span class="n">_get_dtype</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._usmarray</span> <span class="kn">import</span> <span class="n">_is_object_with_buffer_protocol</span>
 
@@ -122,24 +124,6 @@
 
 <span class="n">_empty_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
 <span class="n">_host_set</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span>
-
-
-<span class="k">def</span> <span class="nf">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_obj</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]:</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_bool_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">is</span> <span class="nb">complex</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_complex_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference type </span><span class="si">{</span><span class="n">ref_type</span><span class="si">}</span><span class="s2"> not recognized.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_array_info_dispatch</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -254,28 +238,7 @@
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="n">c_contig</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
         <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-        <span class="c1"># new USM allocation</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-            <span class="n">usm_ndary</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">buffer</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
-            <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">copy_q</span><span class="p">},</span>
-        <span class="p">)</span>
-        <span class="n">original_strides</span> <span class="o">=</span> <span class="n">usm_ndary</span><span class="o">.</span><span class="n">strides</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="nb">range</span><span class="p">(</span><span class="n">usm_ndary</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span>
-            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">original_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
-            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">)</span>
-        <span class="c1"># reuse previously made USM allocation</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-            <span class="n">usm_ndary</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">buffer</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">usm_data</span><span class="p">,</span>
-            <span class="n">strides</span><span class="o">=</span><span class="n">new_strides</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">usm_ndary</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
