@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev2+5.gda3342ae documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev3+22.g90bf0dc86 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev2+5.gda3342ae
+                0.14.6dev3+22.g90bf0dc86
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -231,13 +231,13 @@
         <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy2_ev</span><span class="p">)</span>
         <span class="n">wait_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_copy2_ev</span><span class="p">)</span>
 
-    <span class="n">condition</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
-    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
-    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
-
     <span class="n">dst</span> <span class="o">=</span> <span class="n">_empty_like_triple_orderK</span><span class="p">(</span>
         <span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dst_dtype</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">exec_q</span>
     <span class="p">)</span>
+
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
 
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_where</span><span class="p">(</span>
         <span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span>

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev2+5.gda3342ae documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev3+22.g90bf0dc86 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev2+5.gda3342ae
+                0.14.6dev3+22.g90bf0dc86
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -116,7 +116,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._ctors</span> <span class="kn">import</span> <span class="n">_get_dtype</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._data_types</span> <span class="kn">import</span> <span class="n">_get_dtype</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
@@ -446,11 +446,11 @@
         <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">builtins</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">st</span><span class="p">[</span><span class="n">d</span><span class="p">]),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">st_sorted</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">perm</span><span class="p">]</span>
     <span class="n">sh</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">sh_sorted</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">perm</span><span class="p">)</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">sh_sorted</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">dev</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">st_sorted</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">st_sorted</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">perm</span><span class="p">]</span>
         <span class="n">sl</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">st_sorted</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
@@ -519,12 +519,16 @@
     <span class="n">nd1</span> <span class="o">=</span> <span class="n">X1</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">nd2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">nd3</span> <span class="o">=</span> <span class="n">X3</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="k">if</span> <span class="n">nd1</span> <span class="o">&gt;</span> <span class="n">nd2</span> <span class="ow">and</span> <span class="n">nd1</span> <span class="o">&gt;</span> <span class="n">nd3</span> <span class="ow">and</span> <span class="n">X1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">nd1</span> <span class="o">&lt;</span> <span class="n">nd2</span> <span class="ow">and</span> <span class="n">nd3</span> <span class="o">&lt;</span> <span class="n">nd2</span> <span class="ow">and</span> <span class="n">X2</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">nd1</span> <span class="o">&lt;</span> <span class="n">nd3</span> <span class="ow">and</span> <span class="n">nd2</span> <span class="o">&lt;</span> <span class="n">nd3</span> <span class="ow">and</span> <span class="n">X3</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">X3</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">X1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span> <span class="ow">and</span> <span class="n">X2</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">nd3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_empty_like_pair_orderK</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">X2</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">X2</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span> <span class="ow">and</span> <span class="n">X3</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">nd1</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_empty_like_pair_orderK</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">X3</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">X1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span> <span class="ow">and</span> <span class="n">X3</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">res_shape</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">nd2</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_empty_like_pair_orderK</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">X3</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
     <span class="n">fl1</span> <span class="o">=</span> <span class="n">X1</span><span class="o">.</span><span class="n">flags</span>
     <span class="n">fl2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">.</span><span class="n">flags</span>
     <span class="n">fl3</span> <span class="o">=</span> <span class="n">X3</span><span class="o">.</span><span class="n">flags</span>
