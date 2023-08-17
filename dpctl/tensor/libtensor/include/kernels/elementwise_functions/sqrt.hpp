@@ -137,8 +137,42 @@ private:
         }
     }
 
+    int get_normal_scale_float(const float &v) const
+    {
+        constexpr int float_significant_bits = 23;
+        constexpr std::uint32_t exponent_mask = 0xff;
+        constexpr int exponent_bias = 127;
+        const int scale = static_cast<int>(
+            (sycl::bit_cast<std::uint32_t>(v) >> float_significant_bits) &
+            exponent_mask);
+        return scale - exponent_bias;
+    }
+
+    int get_normal_scale_double(const double &v) const
+    {
+        constexpr int float_significant_bits = 53;
+        constexpr std::uint64_t exponent_mask = 0x7ff;
+        constexpr int exponent_bias = 1023;
+        const int scale = static_cast<int>(
+            (sycl::bit_cast<std::uint64_t>(v) >> float_significant_bits) &
+            exponent_mask);
+        return scale - exponent_bias;
+    }
+
+    template <typename T> int get_normal_scale(const T &v) const
+    {
+        static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>);
+
+        if constexpr (std::is_same_v<T, float>) {
+            return get_normal_scale_float(v);
+        }
+        else {
+            return get_normal_scale_double(v);
+        }
+    }
+
     template <typename T>
-    std::complex<T> csqrt_finite(T const &x, T const &y) const
+    std::complex<T> csqrt_finite_scaled(T const &x, T const &y) const
     {
         // csqrt(x + y*1j) =
         //     sqrt((cabs(x, y) + x) / 2) +
@@ -148,8 +182,8 @@ private:
         constexpr realT half = realT(0x1.0p-1f); // 1/2
         constexpr realT zero = realT(0);
 
-        const int exp_x = sycl::ilogb(x);
-        const int exp_y = sycl::ilogb(y);
+        const int exp_x = get_normal_scale<realT>(x);
+        const int exp_y = get_normal_scale<realT>(y);
 
         int sc = std::max<int>(exp_x, exp_y) / 2;
         const realT xx = sycl::ldexp(x, -sc * 2);
@@ -169,6 +203,51 @@ private:
                 (d == zero) ? std::copysign(zero, yy) : yy * half / d;
             return {sycl::ldexp(d, sc), sycl::ldexp(res_im, sc)};
         }
+    }
+
+    template <typename T>
+    std::complex<T> csqrt_finite_unscaled(T const &x, T const &y) const
+    {
+        // csqrt(x + y*1j) =
+        //     sqrt((cabs(x, y) + x) / 2) +
+        //     1j * copysign(sqrt((cabs(x, y) - x) / 2), y)
+
+        using realT = T;
+        constexpr realT half = realT(0x1.0p-1f); // 1/2
+        constexpr realT zero = realT(0);
+
+        if (std::signbit(x)) {
+            const realT m = std::hypot(x, y);
+            const realT d = std::sqrt((m - x) * half);
+            const realT res_re = (d == zero ? zero : std::abs(y) / d * half);
+            const realT res_im = std::copysign(d, y);
+            return {res_re, res_im};
+        }
+        else {
+            const realT m = std::hypot(x, y);
+            const realT d = std::sqrt((m + x) * half);
+            const realT res_im =
+                (d == zero) ? std::copysign(zero, y) : y * half / d;
+            return {d, res_im};
+        }
+    }
+
+    template <typename T> T scaling_threshold() const
+    {
+        if constexpr (std::is_same_v<T, float>) {
+            return T(0x1.0p+126f);
+        }
+        else {
+            return T(0x1.0p+1022);
+        }
+    }
+
+    template <typename T>
+    std::complex<T> csqrt_finite(T const &x, T const &y) const
+    {
+        return (std::max<T>(std::abs(x), std::abs(y)) < scaling_threshold<T>())
+                   ? csqrt_finite_unscaled(x, y)
+                   : csqrt_finite_scaled(x, y);
     }
 };
 
