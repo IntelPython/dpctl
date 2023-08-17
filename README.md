@@ -70,7 +70,7 @@ cloud, use the following command:
 conda install dpctl -c intel
 ```
 
-## Wheel
+## Pip
 
 The `dpctl` can be installed using `pip` obtaining wheel packages either from PyPi or from Intel(R) channel on Anaconda.
 To install `dpctl` wheel package from Intel(R) channel on Anaconda, run the following command:
