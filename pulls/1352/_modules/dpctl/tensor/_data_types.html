@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._data_types &mdash; Data Parallel Control (dpctl) 0.14.6dev3+14.gb78153b9f documentation</title>
+  <title>dpctl.tensor._data_types &mdash; Data Parallel Control (dpctl) 0.14.6dev3+24.ge48c85211 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev3+14.gb78153b9f
+                0.14.6dev3+24.ge48c85211
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -106,7 +106,25 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">np_bool_</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">complexfloating</span> <span class="k">as</span> <span class="n">np_complexfloating</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">dtype</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">floating</span> <span class="k">as</span> <span class="n">np_floating</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">integer</span> <span class="k">as</span> <span class="n">np_integer</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">issubdtype</span> <span class="k">as</span> <span class="n">np_issubdtype</span>
+
+<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">default_device_bool_type</span> <span class="k">as</span> <span class="n">ti_default_device_bool_type</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">default_device_complex_type</span> <span class="k">as</span> <span class="n">ti_default_device_complex_type</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">default_device_fp_type</span> <span class="k">as</span> <span class="n">ti_default_device_fp_type</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">default_device_int_type</span> <span class="k">as</span> <span class="n">ti_default_device_int_type</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="nb">bool</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;bool&quot;</span><span class="p">)</span>
 <span class="n">int8</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;int8&quot;</span><span class="p">)</span>
@@ -164,6 +182,32 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported data type kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_dtype</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">sycl_obj</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type inference utility to construct data type</span>
+<span class="sd">    object with defaults based on reference type.</span>
+
+<span class="sd">    _get_dtype is used by dpctl.tensor.asarray</span>
+<span class="sd">    to infer data type of the output array from the</span>
+<span class="sd">    input sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">inp_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="ow">or</span> <span class="n">np_issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np_floating</span><span class="p">):</span>
+            <span class="n">fp_dt</span> <span class="o">=</span> <span class="n">ti_default_device_fp_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">fp_dt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np_bool_</span><span class="p">]:</span>
+            <span class="n">bool_dt</span> <span class="o">=</span> <span class="n">ti_default_device_bool_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">bool_dt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">np_issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np_integer</span><span class="p">):</span>
+            <span class="n">int_dt</span> <span class="o">=</span> <span class="n">ti_default_device_int_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">int_dt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ref_type</span> <span class="ow">is</span> <span class="nb">complex</span> <span class="ow">or</span> <span class="n">np_issubdtype</span><span class="p">(</span><span class="n">ref_type</span><span class="p">,</span> <span class="n">np_complexfloating</span><span class="p">):</span>
+            <span class="n">cfp_dt</span> <span class="o">=</span> <span class="n">ti_default_device_complex_type</span><span class="p">(</span><span class="n">sycl_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">cfp_dt</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference type </span><span class="si">{</span><span class="n">ref_type</span><span class="si">}</span><span class="s2"> not recognized.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">)</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
