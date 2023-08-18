@@ -12,6 +12,7 @@ Other Functions
 ---------------
 
 .. autofunction:: all
+.. autofunction:: allclose
 .. autofunction:: any
 .. autofunction:: extract
 .. autofunction:: get_print_options
