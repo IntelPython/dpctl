@@ -352,7 +352,7 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
     st = list(X.strides)
     perm = sorted(
         range(X.ndim),
-        key=lambda d: builtins.abs(st[d] if X.shape[d] > 1 else 0),
+        key=lambda d: builtins.abs(st[d]) if X.shape[d] > 1 else 0,
         reverse=True,
     )
     inv_perm = sorted(range(X.ndim), key=lambda i: perm[i])
