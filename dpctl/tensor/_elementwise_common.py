@@ -301,8 +301,6 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         o1_kind_num = _weak_type_num_kind(o1_dtype)
         o2_kind_num = _strong_dtype_num_kind(o2_dtype)
         if o1_kind_num > o2_kind_num:
-            if isinstance(o1_dtype, WeakBooleanType):
-                return dpt.bool, o2_dtype
             if isinstance(o1_dtype, WeakIntegralType):
                 return dpt.int64, o2_dtype
             if isinstance(o1_dtype, WeakComplexType):
@@ -322,8 +320,6 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         o1_kind_num = _strong_dtype_num_kind(o1_dtype)
         o2_kind_num = _weak_type_num_kind(o2_dtype)
         if o2_kind_num > o1_kind_num:
-            if isinstance(o2_dtype, WeakBooleanType):
-                return o1_dtype, dpt.bool
             if isinstance(o2_dtype, WeakIntegralType):
                 return o1_dtype, dpt.int64
             if isinstance(o2_dtype, WeakComplexType):
