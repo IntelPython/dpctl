@@ -132,14 +132,14 @@ py_where(dpctl::tensor::usm_ndarray condition,
 
     // ensure that dst is sufficiently ample
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements
+    // destination must be ample enough to accommodate all elements
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < static_cast<size_t>(nelems)) {
             throw py::value_error(
                 "Memory addressed by the destination array can not "
-                "accomodate all the "
+                "accommodate all the "
                 "array elements.");
         }
     }

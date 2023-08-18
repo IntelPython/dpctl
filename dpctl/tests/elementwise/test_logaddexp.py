@@ -23,7 +23,6 @@ from numpy.testing import assert_allclose, assert_raises_regex
 import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
-from dpctl.utils import ExecutionPlacementError
 
 from .utils import _compare_dtypes, _no_complex_dtypes, _usm_types
 
@@ -176,111 +175,6 @@ def test_logaddexp_python_scalar(arr_dt):
         assert isinstance(R, dpt.usm_ndarray)
         R = dpt.logaddexp(sc, X)
         assert isinstance(R, dpt.usm_ndarray)
-
-
-class MockArray:
-    def __init__(self, arr):
-        self.data_ = arr
-
-    @property
-    def __sycl_usm_array_interface__(self):
-        return self.data_.__sycl_usm_array_interface__
-
-
-def test_logaddexp_mock_array():
-    get_queue_or_skip()
-    a = dpt.arange(10)
-    b = dpt.ones(10)
-    c = MockArray(b)
-    r = dpt.logaddexp(a, c)
-    assert isinstance(r, dpt.usm_ndarray)
-
-
-def test_logaddexp_canary_mock_array():
-    get_queue_or_skip()
-    a = dpt.arange(10)
-
-    class Canary:
-        def __init__(self):
-            pass
-
-        @property
-        def __sycl_usm_array_interface__(self):
-            return None
-
-    c = Canary()
-    with pytest.raises(ValueError):
-        dpt.logaddexp(a, c)
-
-
-def test_logaddexp_errors():
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
-
-    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
-    ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
-    y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
-    assert_raises_regex(
-        TypeError,
-        "Input and output allocation queues are not compatible",
-        dpt.logaddexp,
-        ar1,
-        ar2,
-        y,
-    )
-
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = dpt.empty(3)
-    assert_raises_regex(
-        TypeError,
-        "The shape of input and output arrays are inconsistent",
-        dpt.logaddexp,
-        ar1,
-        ar2,
-        y,
-    )
-
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = ar1
-    assert_raises_regex(
-        TypeError,
-        "Input and output arrays have memory overlap",
-        dpt.logaddexp,
-        ar1,
-        ar2,
-        y,
-    )
-
-    ar1 = np.ones(2, dtype="float32")
-    ar2 = np.ones_like(ar1, dtype="int32")
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Execution placement can not be unambiguously inferred.*",
-        dpt.logaddexp,
-        ar1,
-        ar2,
-    )
-
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = np.empty_like(ar1)
-    assert_raises_regex(
-        TypeError,
-        "output array must be of usm_ndarray type",
-        dpt.logaddexp,
-        ar1,
-        ar2,
-        y,
-    )
 
 
 @pytest.mark.parametrize("dtype", _no_complex_dtypes)

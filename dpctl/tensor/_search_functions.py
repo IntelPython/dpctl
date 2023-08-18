@@ -19,6 +19,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._manipulation_functions import _broadcast_shapes
 
+from ._copy_utils import _empty_like_orderK, _empty_like_triple_orderK
 from ._type_utils import _all_data_types, _can_cast
 
 
@@ -121,7 +122,7 @@ def where(condition, x1, x2):
     deps = []
     wait_list = []
     if x1_dtype != dst_dtype:
-        _x1 = dpt.empty_like(x1, dtype=dst_dtype)
+        _x1 = _empty_like_orderK(x1, dst_dtype)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x1, dst=_x1, sycl_queue=exec_q
         )
@@ -130,7 +131,7 @@ def where(condition, x1, x2):
         wait_list.append(ht_copy1_ev)
 
     if x2_dtype != dst_dtype:
-        _x2 = dpt.empty_like(x2, dtype=dst_dtype)
+        _x2 = _empty_like_orderK(x2, dst_dtype)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=_x2, sycl_queue=exec_q
         )
@@ -138,30 +139,13 @@ def where(condition, x1, x2):
         deps.append(copy2_ev)
         wait_list.append(ht_copy2_ev)
 
+    dst = _empty_like_triple_orderK(
+        condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
+    )
+
     condition = dpt.broadcast_to(condition, res_shape)
     x1 = dpt.broadcast_to(x1, res_shape)
     x2 = dpt.broadcast_to(x2, res_shape)
-
-    # dst is F-contiguous when all inputs are F contiguous
-    # otherwise, defaults to C-contiguous
-    if all(
-        (
-            condition.flags.fnc,
-            x1.flags.fnc,
-            x2.flags.fnc,
-        )
-    ):
-        order = "F"
-    else:
-        order = "C"
-
-    dst = dpt.empty(
-        res_shape,
-        dtype=dst_dtype,
-        order=order,
-        usm_type=dst_usm_type,
-        sycl_queue=exec_q,
-    )
 
     hev, _ = ti._where(
         condition=condition,

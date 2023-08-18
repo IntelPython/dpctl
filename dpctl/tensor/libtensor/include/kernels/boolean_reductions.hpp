@@ -55,15 +55,12 @@ template <typename T> struct boolean_predicate
     }
 };
 
-template <typename inpT,
-          typename outT,
-          typename PredicateT,
-          std::uint8_t wg_dim = 2>
+template <typename inpT, typename outT, typename PredicateT>
 struct all_reduce_wg_contig
 {
-    void operator()(sycl::nd_item<wg_dim> &ndit,
+    void operator()(sycl::nd_item<1> &ndit,
                     outT *out,
-                    size_t &out_idx,
+                    const size_t &out_idx,
                     const inpT *start,
                     const inpT *end) const
     {
@@ -82,15 +79,12 @@ struct all_reduce_wg_contig
     }
 };
 
-template <typename inpT,
-          typename outT,
-          typename PredicateT,
-          std::uint8_t wg_dim = 2>
+template <typename inpT, typename outT, typename PredicateT>
 struct any_reduce_wg_contig
 {
-    void operator()(sycl::nd_item<wg_dim> &ndit,
+    void operator()(sycl::nd_item<1> &ndit,
                     outT *out,
-                    size_t &out_idx,
+                    const size_t &out_idx,
                     const inpT *start,
                     const inpT *end) const
     {
@@ -109,9 +103,9 @@ struct any_reduce_wg_contig
     }
 };
 
-template <typename T, std::uint8_t wg_dim = 2> struct all_reduce_wg_strided
+template <typename T> struct all_reduce_wg_strided
 {
-    void operator()(sycl::nd_item<wg_dim> &ndit,
+    void operator()(sycl::nd_item<1> &ndit,
                     T *out,
                     const size_t &out_idx,
                     const T &local_val) const
@@ -129,9 +123,9 @@ template <typename T, std::uint8_t wg_dim = 2> struct all_reduce_wg_strided
     }
 };
 
-template <typename T, std::uint8_t wg_dim = 2> struct any_reduce_wg_strided
+template <typename T> struct any_reduce_wg_strided
 {
-    void operator()(sycl::nd_item<wg_dim> &ndit,
+    void operator()(sycl::nd_item<1> &ndit,
                     T *out,
                     const size_t &out_idx,
                     const T &local_val) const
@@ -215,6 +209,7 @@ private:
     outT *out_ = nullptr;
     GroupOp group_op_;
     size_t reduction_max_gid_ = 0;
+    size_t iter_gws_ = 1;
     size_t reductions_per_wi = 16;
 
 public:
@@ -222,27 +217,37 @@ public:
                            outT *res,
                            GroupOp group_op,
                            size_t reduction_size,
+                           size_t iteration_size,
                            size_t reduction_size_per_wi)
         : inp_(inp), out_(res), group_op_(group_op),
-          reduction_max_gid_(reduction_size),
+          reduction_max_gid_(reduction_size), iter_gws_(iteration_size),
           reductions_per_wi(reduction_size_per_wi)
     {
     }
 
-    void operator()(sycl::nd_item<2> it) const
+    void operator()(sycl::nd_item<1> it) const
     {
+        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
+        const size_t reduction_id = it.get_global_id(0) / red_gws_;
+        const size_t reduction_batch_id = get_reduction_batch_id(it);
+        const size_t wg_size = it.get_local_range(0);
 
-        size_t reduction_id = it.get_group(0);
-        size_t reduction_batch_id = it.get_group(1);
-        size_t wg_size = it.get_local_range(1);
-
-        size_t base = reduction_id * reduction_max_gid_;
-        size_t start = base + reduction_batch_id * wg_size * reductions_per_wi;
-        size_t end = std::min((start + (reductions_per_wi * wg_size)),
-                              base + reduction_max_gid_);
+        const size_t base = reduction_id * reduction_max_gid_;
+        const size_t start =
+            base + reduction_batch_id * wg_size * reductions_per_wi;
+        const size_t end = std::min((start + (reductions_per_wi * wg_size)),
+                                    base + reduction_max_gid_);
         // reduction and atomic operations are performed
         // in group_op_
         group_op_(it, out_, reduction_id, inp_ + start, inp_ + end);
+    }
+
+private:
+    size_t get_reduction_batch_id(sycl::nd_item<1> const &it) const
+    {
+        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
+        return reduction_batch_id;
     }
 };
 
@@ -332,7 +337,7 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(init_ev);
 
-            constexpr std::uint8_t group_dim = 2;
+            constexpr std::uint8_t dim = 1;
 
             constexpr size_t preferred_reductions_per_wi = 4;
             size_t reductions_per_wi =
@@ -344,15 +349,14 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
                 (reduction_nelems + reductions_per_wi * wg - 1) /
                 (reductions_per_wi * wg);
 
-            auto gws =
-                sycl::range<group_dim>{iter_nelems, reduction_groups * wg};
-            auto lws = sycl::range<group_dim>{1, wg};
+            auto gws = sycl::range<dim>{iter_nelems * reduction_groups * wg};
+            auto lws = sycl::range<dim>{wg};
 
             cgh.parallel_for<
                 class boolean_reduction_contig_krn<argTy, resTy, GroupOpT>>(
-                sycl::nd_range<group_dim>(gws, lws),
+                sycl::nd_range<dim>(gws, lws),
                 ContigBooleanReduction<argTy, resTy, GroupOpT>(
-                    arg_tp, res_tp, GroupOpT(), reduction_nelems,
+                    arg_tp, res_tp, GroupOpT(), reduction_nelems, iter_nelems,
                     reductions_per_wi));
         });
     }
@@ -404,6 +408,7 @@ private:
     InputOutputIterIndexerT inp_out_iter_indexer_;
     InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
+    size_t iter_gws_ = 1;
     size_t reductions_per_wi = 16;
 
 public:
@@ -415,23 +420,24 @@ public:
                             InputOutputIterIndexerT arg_res_iter_indexer,
                             InputRedIndexerT arg_reduced_dims_indexer,
                             size_t reduction_size,
+                            size_t iteration_size,
                             size_t reduction_size_per_wi)
         : inp_(inp), out_(res), reduction_op_(reduction_op),
           group_op_(group_op), identity_(identity_val),
           inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          reduction_max_gid_(reduction_size),
+          reduction_max_gid_(reduction_size), iter_gws_(iteration_size),
           reductions_per_wi(reduction_size_per_wi)
     {
     }
 
-    void operator()(sycl::nd_item<2> it) const
+    void operator()(sycl::nd_item<1> it) const
     {
-
-        size_t reduction_id = it.get_group(0);
-        size_t reduction_batch_id = it.get_group(1);
-        size_t reduction_lid = it.get_local_id(1);
-        size_t wg_size = it.get_local_range(1);
+        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
+        const size_t reduction_id = it.get_global_id(0) / red_gws_;
+        const size_t reduction_batch_id = get_reduction_batch_id(it);
+        const size_t reduction_lid = it.get_local_id(0);
+        const size_t wg_size = it.get_local_range(0);
 
         auto inp_out_iter_offsets_ = inp_out_iter_indexer_(reduction_id);
         const py::ssize_t &inp_iter_offset =
@@ -442,25 +448,33 @@ public:
         outT local_red_val(identity_);
         size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg_size * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg_size;
+        size_t arg_reduce_gid_max = std::min(
+            reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg_size);
+        for (size_t arg_reduce_gid = arg_reduce_gid0;
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg_size)
+        {
+            py::ssize_t inp_reduction_offset = static_cast<py::ssize_t>(
+                inp_reduced_dims_indexer_(arg_reduce_gid));
+            py::ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
-            if (arg_reduce_gid < reduction_max_gid_) {
-                py::ssize_t inp_reduction_offset = static_cast<py::ssize_t>(
-                    inp_reduced_dims_indexer_(arg_reduce_gid));
-                py::ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
+            // must convert to boolean first to handle nans
+            using dpctl::tensor::type_utils::convert_impl;
+            bool val = convert_impl<bool, argT>(inp_[inp_offset]);
+            ReductionOp op = reduction_op_;
 
-                // must convert to boolean first to handle nans
-                using dpctl::tensor::type_utils::convert_impl;
-                bool val = convert_impl<bool, argT>(inp_[inp_offset]);
-                ReductionOp op = reduction_op_;
-
-                local_red_val = op(local_red_val, static_cast<outT>(val));
-            }
+            local_red_val = op(local_red_val, static_cast<outT>(val));
         }
         // reduction and atomic operations are performed
         // in group_op_
         group_op_(it, out_, out_iter_offset, local_red_val);
+    }
+
+private:
+    size_t get_reduction_batch_id(sycl::nd_item<1> const &it) const
+    {
+        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
+        return reduction_batch_id;
     }
 };
 
@@ -564,7 +578,7 @@ boolean_reduction_strided_impl(sycl::queue exec_q,
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(res_init_ev);
 
-            constexpr std::uint8_t group_dim = 2;
+            constexpr std::uint8_t dim = 1;
 
             using InputOutputIterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
@@ -587,20 +601,19 @@ boolean_reduction_strided_impl(sycl::queue exec_q,
                 (reduction_nelems + reductions_per_wi * wg - 1) /
                 (reductions_per_wi * wg);
 
-            auto gws =
-                sycl::range<group_dim>{iter_nelems, reduction_groups * wg};
-            auto lws = sycl::range<group_dim>{1, wg};
+            auto gws = sycl::range<dim>{iter_nelems * reduction_groups * wg};
+            auto lws = sycl::range<dim>{wg};
 
             cgh.parallel_for<class boolean_reduction_strided_krn<
                 argTy, resTy, RedOpT, GroupOpT, InputOutputIterIndexerT,
                 ReductionIndexerT>>(
-                sycl::nd_range<group_dim>(gws, lws),
+                sycl::nd_range<dim>(gws, lws),
                 StridedBooleanReduction<argTy, resTy, RedOpT, GroupOpT,
                                         InputOutputIterIndexerT,
                                         ReductionIndexerT>(
                     arg_tp, res_tp, RedOpT(), GroupOpT(), identity_val,
                     in_out_iter_indexer, reduction_indexer, reduction_nelems,
-                    reductions_per_wi));
+                    iter_nelems, reductions_per_wi));
         });
     }
     return red_ev;

@@ -20,7 +20,6 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_raises_regex
 
-import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -176,45 +175,6 @@ def test_hyper_order(np_call, dpt_call, dtype):
                 np.finfo(expected_Y.dtype).resolution,
             )
             assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("callable", _dpt_funcs)
-def test_hyper_errors(callable):
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
-
-    x = dpt.ones(2, sycl_queue=gpu_queue)
-    y = dpt.empty_like(x, sycl_queue=cpu_queue)
-    assert_raises_regex(
-        TypeError,
-        "Input and output allocation queues are not compatible",
-        callable,
-        x,
-        y,
-    )
-
-    x = dpt.ones(2)
-    y = dpt.empty(3)
-    assert_raises_regex(
-        TypeError,
-        "The shape of input and output arrays are inconsistent",
-        callable,
-        x,
-        y,
-    )
-
-    x = dpt.ones(2, dtype="float32")
-    y = np.empty_like(x)
-    assert_raises_regex(
-        TypeError, "output array must be of usm_ndarray type", callable, x, y
-    )
 
 
 @pytest.mark.parametrize("callable", _dpt_funcs)

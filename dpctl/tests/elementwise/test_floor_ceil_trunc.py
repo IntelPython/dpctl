@@ -24,7 +24,6 @@ from numpy.testing import (
     assert_raises_regex,
 )
 
-import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -90,45 +89,6 @@ def test_floor_ceil_trunc_order(np_call, dpt_call, dtype):
         for ord in ["C", "F", "A", "K"]:
             Y = dpt_call(U, order=ord)
             assert_allclose(dpt.asnumpy(Y), expected_Y)
-
-
-@pytest.mark.parametrize("dpt_call", [dpt.floor, dpt.ceil, dpt.trunc])
-def test_floor_ceil_trunc_errors(dpt_call):
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
-
-    x = dpt.zeros(2, sycl_queue=gpu_queue)
-    y = dpt.empty_like(x, sycl_queue=cpu_queue)
-    assert_raises_regex(
-        TypeError,
-        "Input and output allocation queues are not compatible",
-        dpt_call,
-        x,
-        y,
-    )
-
-    x = dpt.zeros(2)
-    y = dpt.empty(3)
-    assert_raises_regex(
-        TypeError,
-        "The shape of input and output arrays are inconsistent",
-        dpt_call,
-        x,
-        y,
-    )
-
-    x = dpt.zeros(2, dtype="float32")
-    y = np.empty_like(x)
-    assert_raises_regex(
-        TypeError, "output array must be of usm_ndarray type", dpt_call, x, y
-    )
 
 
 @pytest.mark.parametrize("dpt_call", [dpt.floor, dpt.ceil, dpt.trunc])

@@ -24,7 +24,7 @@ import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
-from dpctl.tensor._ctors import _get_dtype
+from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 
 __doc__ = (
@@ -351,14 +351,16 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
         )
     st = list(X.strides)
     perm = sorted(
-        range(X.ndim), key=lambda d: builtins.abs(st[d]), reverse=True
+        range(X.ndim),
+        key=lambda d: builtins.abs(st[d]) if X.shape[d] > 1 else 0,
+        reverse=True,
     )
     inv_perm = sorted(range(X.ndim), key=lambda i: perm[i])
-    st_sorted = [st[i] for i in perm]
     sh = X.shape
     sh_sorted = tuple(sh[i] for i in perm)
     R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
-    if min(st_sorted) < 0:
+    if min(st) < 0:
+        st_sorted = [st[i] for i in perm]
         sl = tuple(
             slice(None, None, -1)
             if st_sorted[i] < 0
@@ -395,9 +397,14 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     max_ndim = max(nd1, nd2)
     st1 += [0] * (max_ndim - len(st1))
     st2 += [0] * (max_ndim - len(st2))
+    sh1 = list(X1.shape) + [0] * (max_ndim - nd1)
+    sh2 = list(X2.shape) + [0] * (max_ndim - nd2)
     perm = sorted(
         range(max_ndim),
-        key=lambda d: (builtins.abs(st1[d]), builtins.abs(st2[d])),
+        key=lambda d: (
+            builtins.abs(st1[d]) if sh1[d] > 1 else 0,
+            builtins.abs(st2[d]) if sh2[d] > 1 else 0,
+        ),
         reverse=True,
     )
     inv_perm = sorted(range(max_ndim), key=lambda i: perm[i])
@@ -410,6 +417,74 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
         sl = tuple(
             slice(None, None, -1)
             if (st1_sorted[i] < 0 and st2_sorted[i] < 0)
+            else slice(None, None, None)
+            for i in range(nd1)
+        )
+        R = R[sl]
+    return dpt.permute_dims(R, inv_perm)
+
+
+def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
+    if not isinstance(X1, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X1)}")
+    if not isinstance(X2, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X2)}")
+    if not isinstance(X3, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X3)}")
+    nd1 = X1.ndim
+    nd2 = X2.ndim
+    nd3 = X3.ndim
+    if X1.shape == res_shape and X2.shape == res_shape and len(res_shape) > nd3:
+        return _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev)
+    elif (
+        X2.shape == res_shape and X3.shape == res_shape and len(res_shape) > nd1
+    ):
+        return _empty_like_pair_orderK(X2, X3, dt, res_shape, usm_type, dev)
+    elif (
+        X1.shape == res_shape and X3.shape == res_shape and len(res_shape) > nd2
+    ):
+        return _empty_like_pair_orderK(X1, X3, dt, res_shape, usm_type, dev)
+    fl1 = X1.flags
+    fl2 = X2.flags
+    fl3 = X3.flags
+    if fl1["C"] or fl2["C"] or fl3["C"]:
+        return dpt.empty(
+            res_shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
+        )
+    if fl1["F"] and fl2["F"] and fl3["F"]:
+        return dpt.empty(
+            res_shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
+        )
+    st1 = list(X1.strides)
+    st2 = list(X2.strides)
+    st3 = list(X3.strides)
+    max_ndim = max(nd1, nd2, nd3)
+    st1 += [0] * (max_ndim - len(st1))
+    st2 += [0] * (max_ndim - len(st2))
+    st3 += [0] * (max_ndim - len(st3))
+    sh1 = list(X1.shape) + [0] * (max_ndim - nd1)
+    sh2 = list(X2.shape) + [0] * (max_ndim - nd2)
+    sh3 = list(X3.shape) + [0] * (max_ndim - nd3)
+    perm = sorted(
+        range(max_ndim),
+        key=lambda d: (
+            builtins.abs(st1[d]) if sh1[d] > 1 else 0,
+            builtins.abs(st2[d]) if sh2[d] > 1 else 0,
+            builtins.abs(st3[d]) if sh3[d] > 1 else 0,
+        ),
+        reverse=True,
+    )
+    inv_perm = sorted(range(max_ndim), key=lambda i: perm[i])
+    st1_sorted = [st1[i] for i in perm]
+    st2_sorted = [st2[i] for i in perm]
+    st3_sorted = [st3[i] for i in perm]
+    sh = res_shape
+    sh_sorted = tuple(sh[i] for i in perm)
+    R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
+    if max(min(st1_sorted), min(st2_sorted), min(st3_sorted)) < 0:
+        sl = tuple(
+            slice(None, None, -1)
+            if (st1_sorted[i] < 0 and st2_sorted[i] < 0 and st3_sorted[i] < 0)
             else slice(None, None, None)
             for i in range(nd1)
         )

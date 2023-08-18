@@ -44,58 +44,6 @@ include "_types.pxi"
 include "_slicing.pxi"
 
 
-def _dispatch_unary_elementwise(ary, name):
-    try:
-        mod = ary.__array_namespace__()
-    except AttributeError:
-        return NotImplemented
-    if mod is None and "dpnp" in sys.modules:
-        fn = getattr(sys.modules["dpnp"], name)
-        if callable(fn):
-            return fn(ary)
-    elif hasattr(mod, name):
-        fn = getattr(mod, name)
-        if callable(fn):
-            return fn(ary)
-
-    return NotImplemented
-
-
-def _dispatch_binary_elementwise(ary, name, other):
-    try:
-        mod = ary.__array_namespace__()
-    except AttributeError:
-        return NotImplemented
-    if mod is None and "dpnp" in sys.modules:
-        fn = getattr(sys.modules["dpnp"], name)
-        if callable(fn):
-            return fn(ary, other)
-    elif hasattr(mod, name):
-        fn = getattr(mod, name)
-        if callable(fn):
-            return fn(ary, other)
-
-    return NotImplemented
-
-
-def _dispatch_binary_elementwise2(other, name, ary):
-    try:
-        mod = ary.__array_namespace__()
-    except AttributeError:
-        return NotImplemented
-    mod = ary.__array_namespace__()
-    if mod is None and "dpnp" in sys.modules:
-        fn = getattr(sys.modules["dpnp"], name)
-        if callable(fn):
-            return fn(other, ary)
-    elif hasattr(mod, name):
-        fn = getattr(mod, name)
-        if callable(fn):
-            return fn(other, ary)
-
-    return NotImplemented
-
-
 cdef class InternalUSMArrayError(Exception):
     """
     A InternalError exception is raised when internal
@@ -200,28 +148,6 @@ cdef class usm_ndarray:
             PyMem_Free(self.strides_)
         self._reset()
 
-    cdef usm_ndarray _clone(usm_ndarray self):
-        """
-        Provides a copy of Python object pointing to the same data
-        """
-        cdef Py_ssize_t offset_elems = self.get_offset()
-        cdef usm_ndarray res = usm_ndarray.__new__(
-            usm_ndarray, _make_int_tuple(self.nd_, self.shape_),
-            dtype=_make_typestr(self.typenum_),
-            strides=(
-                _make_int_tuple(self.nd_, self.strides_) if (self.strides_)
-                else None),
-            buffer=self.base_,
-            offset=offset_elems,
-            order=('C' if (self.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
-        )
-        res.flags_ = self.flags_
-        res.array_namespace_ = self.array_namespace_
-        if (res.data_ != self.data_):
-            raise InternalUSMArrayError(
-                "Data pointers of cloned and original objects are different.")
-        return res
-
     def __cinit__(self, shape, dtype=None, strides=None, buffer='device',
                   Py_ssize_t offset=0, order='C',
                   buffer_ctor_kwargs=dict(),
@@ -256,7 +182,10 @@ cdef class usm_ndarray:
                 raise TypeError("Argument shape must be a list or a tuple.")
         nd = len(shape)
         if dtype is None:
-            q = buffer_ctor_kwargs.get("queue")
+            if isinstance(buffer, (dpmem._memory._Memory, usm_ndarray)):
+                q = buffer.sycl_queue
+            else:
+                q = buffer_ctor_kwargs.get("queue")
             if q is not None:
                 dtype = default_device_fp_type(q)
             else:
@@ -325,7 +254,7 @@ cdef class usm_ndarray:
         if (_offset + ary_min_displacement < 0 or
            (_offset + ary_max_displacement + 1) * itemsize > _buffer.nbytes):
             self._cleanup()
-            raise ValueError(("buffer='{}' can not accomodate "
+            raise ValueError(("buffer='{}' can not accommodate "
                               "the requested array.").format(buffer))
         is_fp64 = (typenum == UAR_DOUBLE or typenum == UAR_CDOUBLE)
         is_fp16 = (typenum == UAR_HALF)
@@ -966,32 +895,17 @@ cdef class usm_ndarray:
         raise IndexError("only integer arrays are valid indices")
 
     def __abs__(self):
-        return _dispatch_unary_elementwise(self, "abs")
+        return dpctl.tensor.abs(self)
 
     def __add__(first, other):
         """
-        Cython 0.* never calls `__radd__`, always calls `__add__`
-        but first argument need not be an instance of this class,
-        so dispatching is needed.
-
-        This changes in Cython 3.0, where first is guaranteed to
-        be `self`.
-
-        [1] http://docs.cython.org/en/latest/src/userguide/special_methods.html
+        Implementation for operator.add
         """
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "add", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "add", other)
-        return NotImplemented
+        return dpctl.tensor.add(first, other)
 
     def __and__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "bitwise_and", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "bitwise_and", other)
-        return NotImplemented
+        "Implementation for operator.and"
+        return dpctl.tensor.bitwise_and(first, other)
 
     def __dlpack__(self, stream=None):
         """
@@ -1037,27 +951,22 @@ cdef class usm_ndarray:
             )
 
     def __eq__(self, other):
-        return _dispatch_binary_elementwise(self, "equal", other)
+        return dpctl.tensor.equal(self, other)
 
     def __floordiv__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "floor_divide", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "floor_divide", other)
-        return NotImplemented
+        return dpctl.tensor.floor_divide(first, other)
 
     def __ge__(self, other):
-        return _dispatch_binary_elementwise(self, "greater_equal", other)
+        return dpctl.tensor.greater_equal(self, other)
 
     def __gt__(self, other):
-        return _dispatch_binary_elementwise(self, "greater", other)
+        return dpctl.tensor.greater(self, other)
 
     def __invert__(self):
-        return _dispatch_unary_elementwise(self, "bitwise_invert")
+        return dpctl.tensor.bitwise_invert(self)
 
     def __le__(self, other):
-        return _dispatch_binary_elementwise(self, "less_equal", other)
+        return dpctl.tensor.less_equal(self, other)
 
     def __len__(self):
         if (self.nd_):
@@ -1067,72 +976,40 @@ cdef class usm_ndarray:
 
     def __lshift__(first, other):
         "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "bitwise_left_shift", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "bitwise_left_shift", other)
-        return NotImplemented
+        return dpctl.tensor.bitwise_left_shift(first, other)
 
     def __lt__(self, other):
-        return _dispatch_binary_elementwise(self, "less", other)
+        return dpctl.tensor.less(self, other)
 
     def __matmul__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "matmul", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "matmul", other)
         return NotImplemented
 
     def __mod__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "remainder", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "remainder", other)
-        return NotImplemented
+        return dpctl.tensor.remainder(first, other)
 
     def __mul__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "multiply", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "multiply", other)
-        return NotImplemented
+        return dpctl.tensor.multiply(first, other)
 
     def __ne__(self, other):
-        return _dispatch_binary_elementwise(self, "not_equal", other)
+        return dpctl.tensor.not_equal(self, other)
 
     def __neg__(self):
-        return _dispatch_unary_elementwise(self, "negative")
+        return dpctl.tensor.negative(self)
 
     def __or__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "bitwise_or", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "bitwise_or", other)
-        return NotImplemented
+        return dpctl.tensor.bitwise_or(first, other)
 
     def __pos__(self):
-        return self  # _dispatch_unary_elementwise(self, "positive")
+        return dpctl.tensor.positive(self)
 
     def __pow__(first, other, mod):
-        "See comment in __add__"
         if mod is None:
-            if isinstance(first, usm_ndarray):
-                return _dispatch_binary_elementwise(first, "pow", other)
-            elif isinstance(other, usm_ndarray):
-                return _dispatch_binary_elementwise(first, "pow", other)
-        return NotImplemented
+            return dpctl.tensor.pow(first, other)
+        else:
+            return NotImplemented
 
     def __rshift__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "bitwise_right_shift", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "bitwise_right_shift", other)
-        return NotImplemented
+        return dpctl.tensor.bitwise_right_shift(first, other)
 
     def __setitem__(self, key, rhs):
         cdef tuple _meta
@@ -1223,92 +1100,64 @@ cdef class usm_ndarray:
 
 
     def __sub__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "subtract", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "subtract", other)
-        return NotImplemented
+        return dpctl.tensor.subtract(first, other)
 
     def __truediv__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "divide", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "divide", other)
-        return NotImplemented
+        return dpctl.tensor.divide(first, other)
 
     def __xor__(first, other):
-        "See comment in __add__"
-        if isinstance(first, usm_ndarray):
-            return _dispatch_binary_elementwise(first, "bitwise_xor", other)
-        elif isinstance(other, usm_ndarray):
-            return _dispatch_binary_elementwise2(first, "bitwise_xor", other)
-        return NotImplemented
+        return dpctl.tensor.bitwise_xor(first, other)
 
     def __radd__(self, other):
-        return _dispatch_binary_elementwise(self, "add", other)
+        return dpctl.tensor.add(other, self)
 
     def __rand__(self, other):
-        return _dispatch_binary_elementwise(self, "bitwise_and", other)
+        return dpctl.tensor.bitwise_and(other, self)
 
     def __rfloordiv__(self, other):
-        return _dispatch_binary_elementwise2(other, "floor_divide", self)
+        return dpctl.tensor.floor_divide(other, self)
 
     def __rlshift__(self, other):
-        return _dispatch_binary_elementwise2(other, "bitwise_left_shift", self)
+        return dpctl.tensor.bitwise_left_shift(other, self)
 
     def __rmatmul__(self, other):
-        return _dispatch_binary_elementwise2(other, "matmul", self)
+        return NotImplemented
 
     def __rmod__(self, other):
-        return _dispatch_binary_elementwise2(other, "remainder", self)
+        return dpctl.tensor.remainder(other, self)
 
     def __rmul__(self, other):
-        return _dispatch_binary_elementwise(self, "multiply", other)
+        return dpctl.tensor.multiply(other, self)
 
     def __ror__(self, other):
-        return _dispatch_binary_elementwise(self, "bitwise_or", other)
+        return dpctl.tensor.bitwise_or(other, self)
 
     def __rpow__(self, other):
-        return _dispatch_binary_elementwise2(other, "pow", self)
+        return dpctl.tensor.pow(other, self)
 
     def __rrshift__(self, other):
-        return _dispatch_binary_elementwise2(other, "bitwise_right_shift", self)
+        return dpctl.tensor.bitwise_right_shift(other, self)
 
     def __rsub__(self, other):
-        return _dispatch_binary_elementwise2(other, "subtract", self)
+        return dpctl.tensor.subtract(other, self)
 
     def __rtruediv__(self, other):
-        return _dispatch_binary_elementwise2(other, "divide", self)
+        return dpctl.tensor.divide(other, self)
 
     def __rxor__(self, other):
-        return _dispatch_binary_elementwise2(other, "bitwise_xor", self)
+        return dpctl.tensor.bitwise_xor(other, self)
 
     def __iadd__(self, other):
-        from ._elementwise_funcs import add
-        return add._inplace(self, other)
+        return dpctl.tensor.add(self, other, out=self)
 
     def __iand__(self, other):
-        res = self.__and__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_and(self, other, out=self)
 
     def __ifloordiv__(self, other):
-        res = self.__floordiv__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.floor_divide(self, other, out=self)
 
     def __ilshift__(self, other):
-        res = self.__lshift__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_left_shift(self, other, out=self)
 
     def __imatmul__(self, other):
         res = self.__matmul__(other)
@@ -1318,54 +1167,28 @@ cdef class usm_ndarray:
         return self
 
     def __imod__(self, other):
-        res = self.__mod__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.remainder(self, other, out=self)
 
     def __imul__(self, other):
-        from ._elementwise_funcs import multiply
-        return multiply._inplace(self, other)
+        return dpctl.tensor.multiply(self, other, out=self)
 
     def __ior__(self, other):
-        res = self.__or__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_or(self, other, out=self)
 
     def __ipow__(self, other):
-        res = self.__pow__(other, None)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.pow(self, other, out=self)
 
     def __irshift__(self, other):
-        res = self.__rshift__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_right_shift(self, other, out=self)
 
     def __isub__(self, other):
-        from ._elementwise_funcs import subtract
-        return subtract._inplace(self, other)
+        return dpctl.tensor.subtract(self, other, out=self)
 
     def __itruediv__(self, other):
-        res = self.__truediv__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.divide(self, other, out=self)
 
     def __ixor__(self, other):
-        res = self.__xor__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_xor(self, other, out=self)
 
     def __str__(self):
         return usm_ndarray_str(self)

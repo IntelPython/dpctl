@@ -23,6 +23,8 @@ import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
+from dpctl.tensor._copy_utils import _empty_like_orderK
+from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 
@@ -30,24 +32,6 @@ __doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
 
 _empty_tuple = tuple()
 _host_set = frozenset([None])
-
-
-def _get_dtype(dtype, sycl_obj, ref_type=None):
-    if dtype is None:
-        if ref_type in [None, float] or np.issubdtype(ref_type, np.floating):
-            dtype = ti.default_device_fp_type(sycl_obj)
-            return dpt.dtype(dtype)
-        if ref_type in [bool, np.bool_]:
-            dtype = ti.default_device_bool_type(sycl_obj)
-            return dpt.dtype(dtype)
-        if ref_type is int or np.issubdtype(ref_type, np.integer):
-            dtype = ti.default_device_int_type(sycl_obj)
-            return dpt.dtype(dtype)
-        if ref_type is complex or np.issubdtype(ref_type, np.complexfloating):
-            dtype = ti.default_device_complex_type(sycl_obj)
-            return dpt.dtype(dtype)
-        raise TypeError(f"Reference type {ref_type} not recognized.")
-    return dpt.dtype(dtype)
 
 
 def _array_info_dispatch(obj):
@@ -162,28 +146,7 @@ def _asarray_from_usm_ndarray(
         order = "C" if c_contig else "F"
     if order == "K":
         _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
-        # new USM allocation
-        res = dpt.usm_ndarray(
-            usm_ndary.shape,
-            dtype=dtype,
-            buffer=usm_type,
-            order="C",
-            buffer_ctor_kwargs={"queue": copy_q},
-        )
-        original_strides = usm_ndary.strides
-        ind = sorted(
-            range(usm_ndary.ndim),
-            key=lambda i: abs(original_strides[i]),
-            reverse=True,
-        )
-        new_strides = tuple(res.strides[ind[i]] for i in ind)
-        # reuse previously made USM allocation
-        res = dpt.usm_ndarray(
-            usm_ndary.shape,
-            dtype=res.dtype,
-            buffer=res.usm_data,
-            strides=new_strides,
-        )
+        res = _empty_like_orderK(usm_ndary, dtype, usm_type, copy_q)
     else:
         _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = dpt.usm_ndarray(

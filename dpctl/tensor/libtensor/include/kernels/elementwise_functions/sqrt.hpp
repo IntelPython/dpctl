@@ -26,8 +26,10 @@
 #pragma once
 #include <CL/sycl.hpp>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -66,7 +68,186 @@ template <typename argT, typename resT> struct SqrtFunctor
 
     resT operator()(const argT &in)
     {
-        return std::sqrt(in);
+        if constexpr (is_complex<argT>::value) {
+            // #ifdef _WINDOWS
+            //             return csqrt(in);
+            // #else
+            //             return std::sqrt(in);
+            // #endif
+            return csqrt(in);
+        }
+        else {
+            return std::sqrt(in);
+        }
+    }
+
+private:
+    template <typename T> std::complex<T> csqrt(std::complex<T> const &z) const
+    {
+        // csqrt(x + y*1j)
+        //  * csqrt(x - y * 1j) = conj(csqrt(x + y * 1j))
+        //  * If x is either +0 or -0 and y is +0, the result is +0 + 0j.
+        //  * If x is any value (including NaN) and y is +infinity, the result
+        //  is +infinity + infinity j.
+        //  * If x is a finite number and y is NaN, the result is NaN + NaN j.
+
+        //  * If x -infinity and y is a positive (i.e., greater than 0) finite
+        //  number, the result is NaN + NaN j.
+        //  * If x is +infinity and y is a positive (i.e., greater than 0)
+        //  finite number, the result is +0 + infinity j.
+        //  * If x is -infinity and y is NaN, the result is NaN + infinity j
+        //  (sign of the imaginary component is unspecified).
+        //  * If x is +infinity and y is NaN, the result is +infinity + NaN j.
+        //  * If x is NaN and y is any value, the result is NaN + NaN j.
+
+        using realT = T;
+        constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+        constexpr realT p_inf = std::numeric_limits<realT>::infinity();
+        constexpr realT zero = realT(0);
+
+        realT x = std::real(z);
+        realT y = std::imag(z);
+
+        if (std::isinf(y)) {
+            return {p_inf, y};
+        }
+        else if (std::isnan(x)) {
+            return {x, q_nan};
+        }
+        else if (std::isinf(x)) { // x is an infinity
+            // y is either finite, or nan
+            if (std::signbit(x)) { // x == -inf
+                return {(std::isfinite(y) ? zero : y), std::copysign(p_inf, y)};
+            }
+            else {
+                return {p_inf, (std::isfinite(y) ? std::copysign(zero, y) : y)};
+            }
+        }
+        else { // x is finite
+            if (std::isfinite(y)) {
+#ifdef USE_STD_SQRT_FOR_COMPLEX_TYPES
+                return std::sqrt(z);
+#else
+                return csqrt_finite(x, y);
+#endif
+            }
+            else {
+                return {q_nan, y};
+            }
+        }
+    }
+
+    int get_normal_scale_float(const float &v) const
+    {
+        constexpr int float_significant_bits = 23;
+        constexpr std::uint32_t exponent_mask = 0xff;
+        constexpr int exponent_bias = 127;
+        const int scale = static_cast<int>(
+            (sycl::bit_cast<std::uint32_t>(v) >> float_significant_bits) &
+            exponent_mask);
+        return scale - exponent_bias;
+    }
+
+    int get_normal_scale_double(const double &v) const
+    {
+        constexpr int float_significant_bits = 53;
+        constexpr std::uint64_t exponent_mask = 0x7ff;
+        constexpr int exponent_bias = 1023;
+        const int scale = static_cast<int>(
+            (sycl::bit_cast<std::uint64_t>(v) >> float_significant_bits) &
+            exponent_mask);
+        return scale - exponent_bias;
+    }
+
+    template <typename T> int get_normal_scale(const T &v) const
+    {
+        static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>);
+
+        if constexpr (std::is_same_v<T, float>) {
+            return get_normal_scale_float(v);
+        }
+        else {
+            return get_normal_scale_double(v);
+        }
+    }
+
+    template <typename T>
+    std::complex<T> csqrt_finite_scaled(T const &x, T const &y) const
+    {
+        // csqrt(x + y*1j) =
+        //     sqrt((cabs(x, y) + x) / 2) +
+        //     1j * copysign(sqrt((cabs(x, y) - x) / 2), y)
+
+        using realT = T;
+        constexpr realT half = realT(0x1.0p-1f); // 1/2
+        constexpr realT zero = realT(0);
+
+        const int exp_x = get_normal_scale<realT>(x);
+        const int exp_y = get_normal_scale<realT>(y);
+
+        int sc = std::max<int>(exp_x, exp_y) / 2;
+        const realT xx = sycl::ldexp(x, -sc * 2);
+        const realT yy = sycl::ldexp(y, -sc * 2);
+
+        if (std::signbit(xx)) {
+            const realT m = std::hypot(xx, yy);
+            const realT d = std::sqrt((m - xx) * half);
+            const realT res_re = (d == zero ? zero : std::abs(yy) / d * half);
+            const realT res_im = std::copysign(d, yy);
+            return {sycl::ldexp(res_re, sc), sycl::ldexp(res_im, sc)};
+        }
+        else {
+            const realT m = std::hypot(xx, yy);
+            const realT d = std::sqrt((m + xx) * half);
+            const realT res_im =
+                (d == zero) ? std::copysign(zero, yy) : yy * half / d;
+            return {sycl::ldexp(d, sc), sycl::ldexp(res_im, sc)};
+        }
+    }
+
+    template <typename T>
+    std::complex<T> csqrt_finite_unscaled(T const &x, T const &y) const
+    {
+        // csqrt(x + y*1j) =
+        //     sqrt((cabs(x, y) + x) / 2) +
+        //     1j * copysign(sqrt((cabs(x, y) - x) / 2), y)
+
+        using realT = T;
+        constexpr realT half = realT(0x1.0p-1f); // 1/2
+        constexpr realT zero = realT(0);
+
+        if (std::signbit(x)) {
+            const realT m = std::hypot(x, y);
+            const realT d = std::sqrt((m - x) * half);
+            const realT res_re = (d == zero ? zero : std::abs(y) / d * half);
+            const realT res_im = std::copysign(d, y);
+            return {res_re, res_im};
+        }
+        else {
+            const realT m = std::hypot(x, y);
+            const realT d = std::sqrt((m + x) * half);
+            const realT res_im =
+                (d == zero) ? std::copysign(zero, y) : y * half / d;
+            return {d, res_im};
+        }
+    }
+
+    template <typename T> T scaling_threshold() const
+    {
+        if constexpr (std::is_same_v<T, float>) {
+            return T(0x1.0p+126f);
+        }
+        else {
+            return T(0x1.0p+1022);
+        }
+    }
+
+    template <typename T>
+    std::complex<T> csqrt_finite(T const &x, T const &y) const
+    {
+        return (std::max<T>(std::abs(x), std::abs(y)) < scaling_threshold<T>())
+                   ? csqrt_finite_unscaled(x, y)
+                   : csqrt_finite_scaled(x, y);
     }
 };
 

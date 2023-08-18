@@ -175,7 +175,7 @@ def test_add_broadcasting_new_shape():
     ).all()
 
     r3 = dpt.empty_like(ar1)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.add(ar1, ar2, out=r3)
 
     ar3 = dpt.ones((6, 1), dtype="i4")
@@ -273,7 +273,7 @@ def test_add_errors():
     ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
     y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
     assert_raises_regex(
-        TypeError,
+        ExecutionPlacementError,
         "Input and output allocation queues are not compatible",
         dpt.add,
         ar1,
@@ -285,21 +285,8 @@ def test_add_errors():
     ar2 = dpt.ones_like(ar1, dtype="int32")
     y = dpt.empty(3)
     assert_raises_regex(
-        TypeError,
+        ValueError,
         "The shape of input and output arrays are inconsistent",
-        dpt.add,
-        ar1,
-        ar2,
-        y,
-    )
-
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = dpt.ones_like(ar1, dtype="int32")
-    # identical view but a different object
-    y = ar1[:]
-    assert_raises_regex(
-        TypeError,
-        "Input and output arrays have memory overlap",
         dpt.add,
         ar1,
         ar2,
@@ -381,17 +368,35 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
             dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype=ar1.dtype)
         ).all()
 
-        ar3 = dpt.ones(sz, dtype=op1_dtype)
-        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
-
-        ar3[::-1] += ar4[::2]
+        ar3 = dpt.ones(sz, dtype=op1_dtype)[::-1]
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)[::2]
+        ar3 += ar4
         assert (
             dpt.asnumpy(ar3) == np.full(ar3.shape, 2, dtype=ar3.dtype)
         ).all()
-
     else:
         with pytest.raises(TypeError):
             ar1 += ar2
+            dpt.add(ar1, ar2, out=ar1)
+
+    # out is second arg
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+    if _can_cast(ar1.dtype, ar2.dtype, _fp16, _fp64):
+        dpt.add(ar1, ar2, out=ar2)
+        assert (
+            dpt.asnumpy(ar2) == np.full(ar2.shape, 2, dtype=ar2.dtype)
+        ).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)[::-1]
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)[::2]
+        dpt.add(ar3, ar4, out=ar4)
+        assert (
+            dpt.asnumpy(ar4) == np.full(ar4.shape, 2, dtype=ar4.dtype)
+        ).all()
+    else:
+        with pytest.raises(TypeError):
+            dpt.add(ar1, ar2, out=ar2)
 
 
 def test_add_inplace_broadcasting():
@@ -402,6 +407,12 @@ def test_add_inplace_broadcasting():
 
     m += v
     assert (dpt.asnumpy(m) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
+
+    # check case where second arg is out
+    dpt.add(v, m, out=m)
+    assert (
+        dpt.asnumpy(m) == np.arange(10, dtype="i4")[np.newaxis, 1:10:2]
+    ).all()
 
 
 def test_add_inplace_errors():
@@ -441,7 +452,7 @@ def test_add_inplace_errors():
         ar1 += ar2
 
 
-def test_add_inplace_overlap():
+def test_add_inplace_same_tensors():
     get_queue_or_skip()
 
     ar1 = dpt.ones(10, dtype="i4")
@@ -451,7 +462,58 @@ def test_add_inplace_overlap():
     ar1 = dpt.ones(10, dtype="i4")
     ar2 = dpt.ones(10, dtype="i4")
     dpt.add(ar1, ar2, out=ar1)
+    # all ar1 vals should be 2
     assert (dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype="i4")).all()
 
     dpt.add(ar2, ar1, out=ar2)
+    # all ar2 vals should be 3
     assert (dpt.asnumpy(ar2) == np.full(ar2.shape, 3, dtype="i4")).all()
+
+    dpt.add(ar1, ar2, out=ar2)
+    # all ar2 vals should be 5
+    assert (dpt.asnumpy(ar2) == np.full(ar2.shape, 5, dtype="i4")).all()
+
+
+def test_add_str_repr():
+    add_s = str(dpt.add)
+    assert isinstance(add_s, str)
+    assert "add" in add_s
+
+    add_r = repr(dpt.add)
+    assert isinstance(add_r, str)
+    assert "add" in add_r
+
+
+def test_add_cfd():
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue(q1.sycl_device)
+
+    x1 = dpt.ones(10, sycl_queue=q1)
+    x2 = dpt.ones(10, sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.add(x1, x2)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.add(x1, x1, out=x2)
+
+
+def test_add_out_type_check():
+    get_queue_or_skip()
+
+    x1 = dpt.ones(10)
+    x2 = dpt.ones(10)
+
+    out = range(10)
+
+    with pytest.raises(TypeError):
+        dpt.add(x1, x2, out=out)
+
+
+def test_add_out_need_temporary():
+    get_queue_or_skip()
+
+    x = dpt.ones(10, dtype="u4")
+
+    dpt.add(x[:6], 1, out=x[-6:])
+
+    assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)

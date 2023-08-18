@@ -226,27 +226,9 @@ def _find_buf_dtype2(arg1_dtype, arg2_dtype, query_fn, sycl_dev, acceptance_fn):
     return None, None, None
 
 
-def _find_inplace_dtype(lhs_dtype, rhs_dtype, query_fn, sycl_dev):
-    res_dt = query_fn(lhs_dtype, rhs_dtype)
-    if res_dt and res_dt == lhs_dtype:
-        return rhs_dtype
-
-    _fp16 = sycl_dev.has_aspect_fp16
-    _fp64 = sycl_dev.has_aspect_fp64
-    all_dts = _all_data_types(_fp16, _fp64)
-    for buf_dt in all_dts:
-        if _can_cast(rhs_dtype, buf_dt, _fp16, _fp64):
-            res_dt = query_fn(lhs_dtype, buf_dt)
-            if res_dt and res_dt == lhs_dtype:
-                return buf_dt
-
-    return None
-
-
 __all__ = [
     "_find_buf_dtype",
     "_find_buf_dtype2",
-    "_find_inplace_dtype",
     "_to_device_supported_dtype",
     "_acceptance_fn_default",
     "_acceptance_fn_divide",

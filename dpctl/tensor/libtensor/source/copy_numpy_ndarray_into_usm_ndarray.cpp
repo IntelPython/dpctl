@@ -89,14 +89,14 @@ void copy_numpy_ndarray_into_usm_ndarray(
     }
 
     auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accomodate all elements of source
+    // destination must be ample enough to accommodate all elements of source
     // array
     {
         size_t range =
             static_cast<size_t>(dst_offsets.second - dst_offsets.first);
         if (range + 1 < src_nelems) {
             throw py::value_error(
-                "Destination array can not accomodate all the "
+                "Destination array can not accommodate all the "
                 "elements of source array.");
         }
     }
