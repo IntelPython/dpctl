@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.14.6dev3+26.g6be3f20ba documentation</title>
+  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.14.6dev3+43.ge96b0ea93 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev3+26.g6be3f20ba
+                0.14.6dev3+43.ge96b0ea93
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -284,46 +284,49 @@ implementations that implement Python data API
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.all" title="dpctl.tensor.all"><code class="xref py py-func docutils literal notranslate"><span class="pre">all()</span></code></a></p></td>
 <td><p>Tests whether all input array elements evaluate to True along a given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.any" title="dpctl.tensor.any"><code class="xref py py-func docutils literal notranslate"><span class="pre">any()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.allclose" title="dpctl.tensor.allclose"><code class="xref py py-func docutils literal notranslate"><span class="pre">allclose()</span></code></a></p></td>
+<td><p>Returns True if two arrays are element-wise equal within tolerances.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.any" title="dpctl.tensor.any"><code class="xref py py-func docutils literal notranslate"><span class="pre">any()</span></code></a></p></td>
 <td><p>Tests whether any input array elements evaluate to True along a given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.extract" title="dpctl.tensor.extract"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.extract" title="dpctl.tensor.extract"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract()</span></code></a></p></td>
 <td><p>Returns the elements of an array that satisfies the condition.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.get_print_options" title="dpctl.tensor.get_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_print_options()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.get_print_options" title="dpctl.tensor.get_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_print_options()</span></code></a></p></td>
 <td><p>Returns a copy of current options for printing <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.isdtype" title="dpctl.tensor.isdtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">isdtype()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.isdtype" title="dpctl.tensor.isdtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">isdtype()</span></code></a></p></td>
 <td><p>Returns a boolean indicating whether a provided <cite>dtype</cite> is of a specified data type <cite>kind</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.nonzero" title="dpctl.tensor.nonzero"><code class="xref py py-func docutils literal notranslate"><span class="pre">nonzero()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.nonzero" title="dpctl.tensor.nonzero"><code class="xref py py-func docutils literal notranslate"><span class="pre">nonzero()</span></code></a></p></td>
 <td><p>Return the indices of non-zero elements.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.place" title="dpctl.tensor.place"><code class="xref py py-func docutils literal notranslate"><span class="pre">place()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.place" title="dpctl.tensor.place"><code class="xref py py-func docutils literal notranslate"><span class="pre">place()</span></code></a></p></td>
 <td><p>Change elements of an array based on conditional and input values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.print_options" title="dpctl.tensor.print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_options()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.print_options" title="dpctl.tensor.print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_options()</span></code></a></p></td>
 <td><p>Context manager for print options.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.put" title="dpctl.tensor.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.put" title="dpctl.tensor.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code></a></p></td>
 <td><p>Puts values of an array into another array along a given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.set_print_options" title="dpctl.tensor.set_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_print_options()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.set_print_options" title="dpctl.tensor.set_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_print_options()</span></code></a></p></td>
 <td><p>Set options for printing <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.sum" title="dpctl.tensor.sum"><code class="xref py py-func docutils literal notranslate"><span class="pre">sum()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.sum" title="dpctl.tensor.sum"><code class="xref py py-func docutils literal notranslate"><span class="pre">sum()</span></code></a></p></td>
 <td><p>Calculates the sum of the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.take" title="dpctl.tensor.take"><code class="xref py py-func docutils literal notranslate"><span class="pre">take()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.take" title="dpctl.tensor.take"><code class="xref py py-func docutils literal notranslate"><span class="pre">take()</span></code></a></p></td>
 <td><p>Takes elements from array along a given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_repr" title="dpctl.tensor.usm_ndarray_repr"><code class="xref py py-func docutils literal notranslate"><span class="pre">usm_ndarray_repr()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_repr" title="dpctl.tensor.usm_ndarray_repr"><code class="xref py py-func docutils literal notranslate"><span class="pre">usm_ndarray_repr()</span></code></a></p></td>
 <td><p>Returns a formatted string representing the elements of a <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> and its data type, if not a default type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_str" title="dpctl.tensor.usm_ndarray_str"><code class="xref py py-func docutils literal notranslate"><span class="pre">usm_ndarray_str()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.usm_ndarray_str" title="dpctl.tensor.usm_ndarray_str"><code class="xref py py-func docutils literal notranslate"><span class="pre">usm_ndarray_str()</span></code></a></p></td>
 <td><p>Returns a string representing the elements of a <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.where" title="dpctl.tensor.where"><code class="xref py py-func docutils literal notranslate"><span class="pre">where()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.where" title="dpctl.tensor.where"><code class="xref py py-func docutils literal notranslate"><span class="pre">where()</span></code></a></p></td>
 <td><p>Returns <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with elements chosen from <cite>x1</cite> or <cite>x2</cite> depending on <cite>condition</cite>.</p></td>
 </tr>
 </tbody>
