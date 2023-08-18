@@ -351,7 +351,9 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
         )
     st = list(X.strides)
     perm = sorted(
-        range(X.ndim), key=lambda d: builtins.abs(st[d]), reverse=True
+        range(X.ndim),
+        key=lambda d: builtins.abs(st[d] if X.shape[d] > 1 else 0),
+        reverse=True,
     )
     inv_perm = sorted(range(X.ndim), key=lambda i: perm[i])
     sh = X.shape
@@ -395,9 +397,14 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     max_ndim = max(nd1, nd2)
     st1 += [0] * (max_ndim - len(st1))
     st2 += [0] * (max_ndim - len(st2))
+    sh1 = list(X1.shape) + [0] * (max_ndim - nd1)
+    sh2 = list(X2.shape) + [0] * (max_ndim - nd2)
     perm = sorted(
         range(max_ndim),
-        key=lambda d: (builtins.abs(st1[d]), builtins.abs(st2[d])),
+        key=lambda d: (
+            builtins.abs(st1[d]) if sh1[d] > 1 else 0,
+            builtins.abs(st2[d]) if sh2[d] > 1 else 0,
+        ),
         reverse=True,
     )
     inv_perm = sorted(range(max_ndim), key=lambda i: perm[i])
@@ -455,12 +462,15 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
     st1 += [0] * (max_ndim - len(st1))
     st2 += [0] * (max_ndim - len(st2))
     st3 += [0] * (max_ndim - len(st3))
+    sh1 = list(X1.shape) + [0] * (max_ndim - nd1)
+    sh2 = list(X2.shape) + [0] * (max_ndim - nd2)
+    sh3 = list(X3.shape) + [0] * (max_ndim - nd3)
     perm = sorted(
         range(max_ndim),
         key=lambda d: (
-            builtins.abs(st1[d]),
-            builtins.abs(st2[d]),
-            builtins.abs(st3[d]),
+            builtins.abs(st1[d]) if sh1[d] > 1 else 0,
+            builtins.abs(st2[d]) if sh2[d] > 1 else 0,
+            builtins.abs(st3[d]) if sh3[d] > 1 else 0,
         ),
         reverse=True,
     )
