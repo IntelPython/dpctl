@@ -37,8 +37,6 @@
 #include "utils/type_utils.hpp"
 #include <pybind11/pybind11.h>
 
-#include <iostream>
-
 namespace dpctl
 {
 namespace tensor

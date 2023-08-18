@@ -58,10 +58,15 @@ set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
   PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math")
+if (UNIX)
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+    PROPERTIES COMPILE_DEFINITIONS "USE_STD_ABS_FOR_COMPLEX_TYPES;USE_STD_SQRT_FOR_COMPLEX_TYPES")
+endif()
 target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
 target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 if(UNIX)
-    # this option is support on Linux only
+    # this option is supported on Linux only
     target_link_options(${python_module_name} PRIVATE -fsycl-link-huge-device-code)
 endif()
 target_include_directories(${python_module_name}

@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import warnings
 
 import numpy as np
 import pytest
@@ -22,7 +23,13 @@ import pytest
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _no_complex_dtypes, _usm_types
+from .utils import (
+    _all_dtypes,
+    _complex_fp_dtypes,
+    _no_complex_dtypes,
+    _real_fp_dtypes,
+    _usm_types,
+)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -135,3 +142,50 @@ def test_abs_out_overlap(dtype):
     assert Y is not X
     assert np.allclose(dpt.asnumpy(X), Xnp)
     assert np.allclose(dpt.asnumpy(Y), Ynp)
+
+
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
+def test_abs_real_fp_special_values(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    nans_ = [dpt.nan, -dpt.nan]
+    infs_ = [dpt.inf, -dpt.inf]
+    finites_ = [-1.0, -0.0, 0.0, 1.0]
+    inps_ = nans_ + infs_ + finites_
+
+    x = dpt.asarray(inps_, dtype=dtype)
+    r = dpt.abs(x)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        expected_np = np.abs(np.asarray(inps_, dtype=dtype))
+
+    expected = dpt.asarray(expected_np, dtype=dtype)
+    tol = dpt.finfo(r.dtype).resolution
+
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
+
+
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
+def test_abs_complex_fp_special_values(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    nans_ = [dpt.nan, -dpt.nan]
+    infs_ = [dpt.inf, -dpt.inf]
+    finites_ = [-1.0, -0.0, 0.0, 1.0]
+    inps_ = nans_ + infs_ + finites_
+    c_ = [complex(*v) for v in itertools.product(inps_, repeat=2)]
+
+    z = dpt.asarray(c_, dtype=dtype)
+    r = dpt.abs(z)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        expected_np = np.abs(np.asarray(c_, dtype=dtype))
+
+    expected = dpt.asarray(expected_np, dtype=dtype)
+    tol = dpt.finfo(r.dtype).resolution
+
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)

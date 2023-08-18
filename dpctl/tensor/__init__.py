@@ -158,6 +158,7 @@ from ._elementwise_funcs import (
     trunc,
 )
 from ._reduction import sum
+from ._testing import allclose
 
 __all__ = [
     "Device",
@@ -301,4 +302,5 @@ __all__ = [
     "tan",
     "tanh",
     "trunc",
+    "allclose",
 ]
