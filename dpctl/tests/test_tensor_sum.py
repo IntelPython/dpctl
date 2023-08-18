@@ -156,3 +156,19 @@ def test_sum_keepdims_zero_size():
     a0 = a[0]
     s5 = dpt.sum(a0, keepdims=True)
     assert s5.shape == (1, 1)
+
+
+@pytest.mark.parametrize("arg_dtype", ["i8", "f4", "c8"])
+@pytest.mark.parametrize("n", [1023, 1024, 1025])
+def test_largish_reduction(arg_dtype, n):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    m = 5
+    x = dpt.ones((m, n, m), dtype=arg_dtype)
+
+    y1 = dpt.sum(x, axis=(0, 1))
+    y2 = dpt.sum(x, axis=(1, 2))
+
+    assert dpt.all(dpt.equal(y1, y2))
+    assert dpt.all(dpt.equal(y1, n * m))
