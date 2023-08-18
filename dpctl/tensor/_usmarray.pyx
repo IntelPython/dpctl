@@ -1148,29 +1148,16 @@ cdef class usm_ndarray:
         return dpctl.tensor.bitwise_xor(other, self)
 
     def __iadd__(self, other):
-        from ._elementwise_funcs import add
-        return add._inplace(self, other)
+        return dpctl.tensor.add(self, other, out=self)
 
     def __iand__(self, other):
-        res = self.__and__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_and(self, other, out=self)
 
     def __ifloordiv__(self, other):
-        res = self.__floordiv__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.floor_divide(self, other, out=self)
 
     def __ilshift__(self, other):
-        res = self.__lshift__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_left_shift(self, other, out=self)
 
     def __imatmul__(self, other):
         res = self.__matmul__(other)
@@ -1180,54 +1167,28 @@ cdef class usm_ndarray:
         return self
 
     def __imod__(self, other):
-        res = self.__mod__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.remainder(self, other, out=self)
 
     def __imul__(self, other):
-        from ._elementwise_funcs import multiply
-        return multiply._inplace(self, other)
+        return dpctl.tensor.multiply(self, other, out=self)
 
     def __ior__(self, other):
-        res = self.__or__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_or(self, other, out=self)
 
     def __ipow__(self, other):
-        res = self.__pow__(other, None)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.pow(self, other, out=self)
 
     def __irshift__(self, other):
-        res = self.__rshift__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_right_shift(self, other, out=self)
 
     def __isub__(self, other):
-        from ._elementwise_funcs import subtract
-        return subtract._inplace(self, other)
+        return dpctl.tensor.subtract(self, other, out=self)
 
     def __itruediv__(self, other):
-        res = self.__truediv__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.divide(self, other, out=self)
 
     def __ixor__(self, other):
-        res = self.__xor__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.bitwise_xor(self, other, out=self)
 
     def __str__(self):
         return usm_ndarray_str(self)

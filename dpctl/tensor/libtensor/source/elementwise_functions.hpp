@@ -379,9 +379,12 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         }
     }
 
-    // check memory overlap
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(src1, dst) || overlap(src2, dst)) {
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if ((overlap(src1, dst) && !same_logical_tensors(src1, dst)) ||
+        (overlap(src2, dst) && !same_logical_tensors(src2, dst)))
+    {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
     // check memory overlap
@@ -678,8 +681,10 @@ py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
     }
 
     // check memory overlap
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(rhs, lhs)) {
+    if (overlap(rhs, lhs) && !same_logical_tensors(rhs, lhs)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
     // check memory overlap
