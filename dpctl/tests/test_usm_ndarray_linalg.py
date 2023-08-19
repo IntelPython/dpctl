@@ -20,14 +20,29 @@ import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip
 
 
+def test_matrix_transpose():
+    get_queue_or_skip()
+
+    X = dpt.reshape(dpt.arange(2 * 3, dtype="i4"), (2, 3))
+    res = dpt.matrix_transpose(X)
+    expected_res = X.mT
+
+    assert expected_res.shape == res.shape
+    assert expected_res.flags["C"] == res.flags["C"]
+    assert expected_res.flags["F"] == res.flags["F"]
+    assert dpt.all(X.mT == res)
+
+
 def test_matrix_transpose_arg_validation():
     get_queue_or_skip()
 
-    X = dpt.ones(5, dtype="i4")
-
+    X = dpt.empty(5, dtype="i4")
     with pytest.raises(ValueError):
         dpt.matrix_transpose(X)
 
     X = dict()
     with pytest.raises(TypeError):
         dpt.matrix_transpose(X)
+
+    X = dpt.empty((5, 5), dtype="i4")
+    assert isinstance(dpt.matrix_transpose(X), dpt.usm_ndarray)
