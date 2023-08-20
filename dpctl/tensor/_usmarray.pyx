@@ -662,7 +662,7 @@ cdef class usm_ndarray:
         """
         if self.nd_ < 2:
             raise ValueError(
-                "array.mT requires array to have at least 2-dimensons."
+                "array.mT requires array to have at least 2 dimensions."
             )
         return _m_transpose(self)
 
@@ -1216,14 +1216,14 @@ cdef usm_ndarray _real_view(usm_ndarray ary):
     offset_elems = ary.get_offset() * 2
     r = usm_ndarray.__new__(
         usm_ndarray,
-        _make_int_tuple(ary.nd_, ary.shape_),
+        _make_int_tuple(ary.nd_, ary.shape_) if ary.nd_ > 0 else tuple(),
         dtype=_make_typestr(r_typenum_),
         strides=tuple(2 * si for si in ary.strides),
         buffer=ary.base_,
         offset=offset_elems,
         order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
     )
-    r.flags_ = ary.flags_
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
     r.array_namespace_ = ary.array_namespace_
     return r
 
@@ -1248,14 +1248,14 @@ cdef usm_ndarray _imag_view(usm_ndarray ary):
     offset_elems = 2 * ary.get_offset() + 1
     r = usm_ndarray.__new__(
         usm_ndarray,
-        _make_int_tuple(ary.nd_, ary.shape_),
+        _make_int_tuple(ary.nd_, ary.shape_) if ary.nd_ > 0 else tuple(),
         dtype=_make_typestr(r_typenum_),
         strides=tuple(2 * si for si in ary.strides),
         buffer=ary.base_,
         offset=offset_elems,
         order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
     )
-    r.flags_ = ary.flags_
+    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
     r.array_namespace_ = ary.array_namespace_
     return r
 

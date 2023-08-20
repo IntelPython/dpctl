@@ -1438,16 +1438,25 @@ def test_real_imag_views():
     n, m = 2, 3
     try:
         X = dpt.usm_ndarray((n, m), "c8")
+        X_scalar = dpt.usm_ndarray((), dtype="c8")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     Xnp_r = np.arange(n * m, dtype="f4").reshape((n, m))
     Xnp_i = np.arange(n * m, 2 * n * m, dtype="f4").reshape((n, m))
     Xnp = Xnp_r + 1j * Xnp_i
     X[:] = Xnp
-    assert np.array_equal(dpt.to_numpy(X.real), Xnp.real)
+    X_real = X.real
+    X_imag = X.imag
+    assert np.array_equal(dpt.to_numpy(X_real), Xnp.real)
     assert np.array_equal(dpt.to_numpy(X.imag), Xnp.imag)
+    assert not X_real.flags["C"] and not X_real.flags["F"]
+    assert not X_imag.flags["C"] and not X_imag.flags["F"]
+    assert X_real.strides == X_imag.strides
     assert np.array_equal(dpt.to_numpy(X[1:].real), Xnp[1:].real)
     assert np.array_equal(dpt.to_numpy(X[1:].imag), Xnp[1:].imag)
+
+    X_scalar[...] = complex(n * m, 2 * n * m)
+    assert X_scalar.real and X_scalar.imag
 
 
 @pytest.mark.parametrize(
