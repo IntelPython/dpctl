@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.14.6dev3+44.g96293fdeb documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.14.6dev4+1.g83858f05b documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -45,7 +45,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev3+44.g96293fdeb
+                0.14.6dev4+1.g83858f05b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -232,6 +232,26 @@ of <cite>arr</cite> to extract.</p></li>
 of a specified data type <cite>kind</cite>.</p>
 <p>See [array API](array_api) for more information.</p>
 <p>[array_api]: <a class="reference external" href="https://data-apis.org/array-api/latest/">https://data-apis.org/array-api/latest/</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.matrix_transpose">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">matrix_transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_linear_algebra_functions.html#matrix_transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.matrix_transpose" title="Permalink to this definition"></a></dt>
+<dd><p>Transposes the innermost two dimensions of <cite>x</cite>, where <cite>x</cite> is a
+2-dimensional matrix or a stack of 2-dimensional matrices.</p>
+<p>To convert from a 1-dimensional array to a 2-dimensional column
+vector, use x[:, dpt.newaxis].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array with shape (…, m, n).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array with shape (…, n, m).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
