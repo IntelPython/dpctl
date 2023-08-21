@@ -635,11 +635,11 @@ equal = BinaryElementwiseFunc(
 _exp_docstring = """
 exp(x, out=None, order='K')
 
-Computes exponential for each element `x_i` of input array `x`.
+Computes the exponential for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -658,10 +658,14 @@ exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
 # U14: ==== EXPM1         (x)
 _expm1_docstring = """
 expm1(x, out=None, order='K')
-Computes an approximation of exp(x)-1 element-wise.
+
+Computes the exponential minus 1 for each element `x_i` of input array `x`.
+
+This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -670,7 +674,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise exp(x)-1 values.
+        An array containing the element-wise `exp(x) - 1` results.
         The data type of the returned array is determined by the Type
         Promotion Rules.
 """
@@ -959,10 +963,12 @@ less_equal = BinaryElementwiseFunc(
 # U20: ==== LOG         (x)
 _log_docstring = """
 log(x, out=None, order='K')
-Computes the natural logarithm element-wise.
+
+Computes the natural logarithm for each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -981,10 +987,15 @@ log = UnaryElementwiseFunc("log", ti._log_result_type, ti._log, _log_docstring)
 # U21: ==== LOG1P       (x)
 _log1p_docstring = """
 log1p(x, out=None, order='K')
-Computes an approximation of log(1+x) element-wise.
+
+Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
+array `x`.
+
+This function calculates `log(1 + x)` more accurately for small values of `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -993,7 +1004,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise log(1+x) values. The data type
+        An array containing the element-wise `log(1 + x)` results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
@@ -1009,7 +1020,7 @@ Computes the base-2 logarithm for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1018,7 +1029,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the base-2 logarithm of `x`.
+        An array containing the element-wise base-2 logarithm of `x`.
         The data type of the returned array is determined by the
         Type Promotion Rules.
 """
@@ -1035,7 +1046,7 @@ Computes the base-10 logarithm for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1044,7 +1055,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the base-1- logarithm of `x`.
+        An array containing the element-wise base-10 logarithm of `x`.
         The data type of the returned array is determined by the
         Type Promotion Rules.
 """
@@ -1057,14 +1068,20 @@ log10 = UnaryElementwiseFunc(
 _logaddexp_docstring_ = """
 logaddexp(x1, x2, out=None, order='K')
 
-Calculates the ratio for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
+Calculates the natural logarithm of the sum of exponentiations for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a real-valued data type.
+        First input array, expected to have a real-valued floating-point data
+        type.
     x2 (usm_ndarray):
-        Second input array, also expected to have real-valued data type.
+        Second input array, also expected to have a real-valued floating-point
+        data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
