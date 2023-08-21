@@ -76,6 +76,15 @@ def test_abs_usm_type(usm_type):
     assert np.allclose(dpt.asnumpy(Y), expected_Y)
 
 
+def test_abs_types_prop():
+    types = dpt.abs.types_
+    assert types is None
+    types = dpt.abs.types
+    assert isinstance(types, list)
+    assert len(types) > 0
+    assert types == dpt.abs.types_
+
+
 @pytest.mark.parametrize("dtype", _all_dtypes[1:])
 def test_abs_order(dtype):
     q = get_queue_or_skip()
