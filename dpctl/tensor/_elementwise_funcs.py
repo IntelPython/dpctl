@@ -719,12 +719,13 @@ integer-value number that is not greater than the division result.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a real-valued or boolean data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a real-valued or boolean data
+        type.
 Returns:
     usm_narray:
-        an array containing the result of element-wise floor division.
+        An array containing the result of element-wise floor of division.
         The data type of the returned array is determined by the Type
         Promotion Rules.
 """
@@ -1281,9 +1282,9 @@ respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1351,7 +1352,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        an array containing the result of element-wise inequality comparison.
+        An array containing the result of element-wise inequality comparison.
         The returned array has a data type of `bool`.
 """
 
@@ -1396,8 +1397,9 @@ Args:
         Second input array, also expected to have a numeric data type.
 Returns:
     usm_ndarray:
-        an array containing the element-wise result. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the bases in `x1` raised to the exponents in `x2`
+        element-wise. The data type of the returned array is determined by the
+        Type Promotion Rules.
 """
 pow = BinaryElementwiseFunc(
     "pow",
@@ -1481,8 +1483,9 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        an array containing the element-wise remainders. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise remainders. Each remainder has the
+        same sign as respective element `x2_i`. The data type of the returned
+        array is determined by the Type Promotion Rules.
 """
 remainder = BinaryElementwiseFunc(
     "remainder",
@@ -1541,8 +1544,9 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise results. The data type of the
-        returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise result of the signum function. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
 """
 
 sign = UnaryElementwiseFunc(
@@ -1558,7 +1562,7 @@ input array `x` is set.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a numeric data type.
+        Input array, expected to have a real-valued floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1567,7 +1571,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise results. The returned array
+        An array containing the element-wise signbit results. The returned array
         must have a data type of `bool`.
 """
 
@@ -1683,9 +1687,9 @@ array `x1` and the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a numeric data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
