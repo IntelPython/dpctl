@@ -579,9 +579,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a floating-point data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -612,9 +612,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -736,13 +736,15 @@ floor_divide = BinaryElementwiseFunc(
 # B11: ==== GREATER       (x1, x2)
 _greater_docstring_ = """
 greater(x1, x2, out=None, order='K')
+
 Computes the greater-than test results for each element `x1_i` of
 the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -762,13 +764,15 @@ greater = BinaryElementwiseFunc(
 # B12: ==== GREATER_EQUAL (x1, x2)
 _greater_equal_docstring_ = """
 greater_equal(x1, x2, out=None, order='K')
+
 Computes the greater-than or equal-to test results for each element `x1_i` of
 the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -902,9 +906,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -924,13 +928,15 @@ less = BinaryElementwiseFunc(
 # B14: ==== LESS_EQUAL  (x1, x2)
 _less_equal_docstring_ = """
 less_equal(x1, x2, out=None, order='K')
+
 Computes the less-than or equal-to test results for each element `x1_i` of
 the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1314,9 +1320,9 @@ input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
