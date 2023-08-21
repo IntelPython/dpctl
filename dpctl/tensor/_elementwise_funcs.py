@@ -829,11 +829,11 @@ imag = UnaryElementwiseFunc(
 _isfinite_docstring_ = """
 isfinite(x, out=None, order='K')
 
-Checks if each element of input array is a finite number.
+Test if each element of input array is a finite number.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -855,11 +855,11 @@ isfinite = UnaryElementwiseFunc(
 _isinf_docstring_ = """
 isinf(x, out=None, order='K')
 
-Checks if each element of input array is an infinity.
+Test if each element of input array is an infinity.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -880,11 +880,11 @@ isinf = UnaryElementwiseFunc(
 _isnan_docstring_ = """
 isnan(x, out=None, order='K')
 
-Checks if each element of an input array is a NaN.
+Test if each element of an input array is a NaN.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
