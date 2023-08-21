@@ -1102,8 +1102,8 @@ logaddexp = BinaryElementwiseFunc(
 _logical_and_docstring_ = """
 logical_and(x1, x2, out=None, order='K')
 
-Computes the logical AND for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Computes the logical AND for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
@@ -1130,7 +1130,9 @@ logical_and = BinaryElementwiseFunc(
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = """
 logical_not(x, out=None, order='K')
+
 Computes the logical NOT for each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
         Input array.
@@ -1214,14 +1216,14 @@ logical_xor = BinaryElementwiseFunc(
 _maximum_docstring_ = """
 maximum(x1, x2, out=None, order='K')
 
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise maxima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1244,14 +1246,14 @@ maximum = BinaryElementwiseFunc(
 _minimum_docstring_ = """
 minimum(x1, x2, out=None, order='K')
 
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise minima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1274,8 +1276,8 @@ minimum = BinaryElementwiseFunc(
 _multiply_docstring_ = """
 multiply(x1, x2, out=None, order='K')
 
-Calculates the product for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
@@ -1306,9 +1308,10 @@ _negative_docstring_ = """
 negative(x, out=None, order='K')
 
 Computes the numerical negative for each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -1363,7 +1366,7 @@ positive(x, out=None, order='K')
 Computes the numerical positive for each element `x_i` of input array `x`.
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -1372,7 +1375,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the values of `x`.
+        An array containing the positive of `x`.
 """
 
 positive = UnaryElementwiseFunc(
@@ -1702,7 +1705,6 @@ subtract = BinaryElementwiseFunc(
     binary_inplace_fn=ti._subtract_inplace,
     acceptance_fn=_acceptance_fn_subtract,
 )
-
 
 # U34: ==== TAN         (x)
 _tan_docstring = """
