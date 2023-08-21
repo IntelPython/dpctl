@@ -1631,7 +1631,8 @@ sinh = UnaryElementwiseFunc(
 _square_docstring_ = """
 square(x, out=None, order='K')
 
-Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Squares each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
         Input array, expected to have numeric data type.
@@ -1643,9 +1644,8 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the square `x`.
-        The data type of the returned array is determined by
-        the Type Promotion Rules.
+        An array containing the element-wise squares of `x`. The data type of
+        the returned array is determined by the Type Promotion Rules.
 """
 
 square = UnaryElementwiseFunc(
@@ -1656,11 +1656,11 @@ square = UnaryElementwiseFunc(
 _sqrt_docstring_ = """
 sqrt(x, out=None, order='K')
 
-Computes positive square-root for each element `x_i` for input array `x`.
+Computes the positive square-root for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1669,9 +1669,9 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise positive square-root.
-        The data type of the returned array is determined by
-        the Type Promotion Rules.
+        An array containing the element-wise positive square-roots of `x`. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
 """
 
 sqrt = UnaryElementwiseFunc(
@@ -1791,14 +1791,16 @@ trunc = UnaryElementwiseFunc(
 _hypot_docstring_ = """
 hypot(x1, x2, out=None, order='K')
 
-Calculates the ratio for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
+Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
+input arrays `x1` and `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a real-valued floating-point data
+        type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a real-valued floating-point
+        data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1807,8 +1809,8 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise truncated value of input array.
-        The returned array has the same data type as `x`.
+        An array containing the element-wise hypotenuse. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 hypot = BinaryElementwiseFunc(
