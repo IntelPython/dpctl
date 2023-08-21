@@ -477,11 +477,12 @@ _ceil_docstring = """
 ceil(x, out=None, order='K')
 
 Returns the ceiling for each element `x_i` for input array `x`.
-The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+
+The ceil of `x_i` is the smallest integer `n`, such that `n >= x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -490,8 +491,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise ceiling of input array.
-        The returned array has the same data type as `x`.
+        An array containing the element-wise ceiling results.
 """
 
 ceil = UnaryElementwiseFunc(
@@ -684,11 +684,12 @@ _floor_docstring = """
 floor(x, out=None, order='K')
 
 Returns the floor for each element `x_i` for input array `x`.
-The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -697,8 +698,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise floor of input array.
-        The returned array has the same data type as `x`.
+        An array containing the element-wise floor results.
 """
 
 floor = UnaryElementwiseFunc(
@@ -1473,9 +1473,12 @@ round(x, out=None, order='K')
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
 
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1484,8 +1487,7 @@ Args:
         Default: "K".
 Returns:
     usm_narray:
-        An array containing the element-wise rounded value. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise rounded results.
 """
 
 round = UnaryElementwiseFunc(
@@ -1732,9 +1734,10 @@ _trunc_docstring = """
 trunc(x, out=None, order='K')
 
 Returns the truncated value for each element `x_i` for input array `x`.
+
 The truncated value of the scalar `x` is the nearest integer i which is
- closer to zero than `x` is. In short, the fractional part of the
- signed number `x` is discarded.
+closer to zero than `x` is. In short, the fractional part of the
+signed number `x` is discarded.
 
 Args:
     x (usm_ndarray):
