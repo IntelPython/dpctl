@@ -146,9 +146,9 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
-        const size_t iter_gid = it.get_global_id(0) / red_gws_;
-        const size_t reduction_batch_id = get_reduction_batch_id(it);
+        const size_t iter_gid = it.get_group(0) % iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+
         const size_t reduction_lid = it.get_local_id(0);
         const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
 
@@ -204,14 +204,6 @@ public:
             }
         }
     }
-
-private:
-    size_t get_reduction_batch_id(sycl::nd_item<1> const &it) const
-    {
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
-        return reduction_batch_id;
-    }
 };
 
 typedef sycl::event (*sum_reduction_strided_impl_fn_ptr)(
@@ -240,6 +232,9 @@ class sum_reduction_seq_strided_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class sum_reduction_seq_contig_krn;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class sum_reduction_over_group_with_atomics_contig_krn;
 
 using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
@@ -417,7 +412,7 @@ sycl::event sum_reduction_over_group_with_atomics_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<2>(reduction_nelems, sg_sizes);
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -499,9 +494,10 @@ sycl::event sum_reduction_over_group_with_atomics_contig_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            using KernelName = class sum_reduction_over_group_with_atomics_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>;
+            using KernelName =
+                class sum_reduction_over_group_with_atomics_contig_krn<
+                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>;
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(globalRange, localRange),
