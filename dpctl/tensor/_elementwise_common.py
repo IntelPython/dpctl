@@ -468,7 +468,7 @@ class BinaryElementwiseFunc:
         o1_dtype = _get_dtype(o1, sycl_dev)
         o2_dtype = _get_dtype(o2, sycl_dev)
         if not all(_validate_dtype(o) for o in (o1_dtype, o2_dtype)):
-            raise ValueError("Operands of unsupported types")
+            raise ValueError("Operands have unsupported data types")
 
         o1_dtype, o2_dtype = _resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
 
@@ -498,7 +498,7 @@ class BinaryElementwiseFunc:
             if out.shape != res_shape:
                 raise ValueError(
                     "The shape of input and output arrays are inconsistent. "
-                    f"Expected output shape is {o1_shape}, got {out.shape}"
+                    f"Expected output shape is {res_shape}, got {out.shape}"
                 )
 
             if res_dt != out.dtype:
