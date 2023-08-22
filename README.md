@@ -43,8 +43,8 @@ to program on XPUs.
 
 # Installing
 
-You can install the library with [conda](https://anaconda.org/intel/dpctl) and
-[pip](https://pypi.org/project/dpctl/). It is also available in the [Intel(R)
+You can install the library using [conda](https://anaconda.org/intel/dpctl) or
+[pip](https://pypi.org/project/dpctl/) package managers. It is also available in the [Intel(R)
 Distribution for
 Python](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
 (IDP).
@@ -70,12 +70,13 @@ cloud, use the following command:
 conda install dpctl -c intel
 ```
 
-## PyPi
+## Pip
 
-To install `dpctl` from PyPi, run the following command:
+The `dpctl` can be installed using `pip` obtaining wheel packages either from PyPi or from Intel(R) channel on Anaconda.
+To install `dpctl` wheel package from Intel(R) channel on Anaconda, run the following command:
 
 ```bash
-pip3 install dpctl
+python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
 ```
 
 Installing the bleeding edge
