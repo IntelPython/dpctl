@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
         with:
@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
@@ -102,7 +102,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
         experimental: [false]
         runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -185,7 +185,7 @@ jobs:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -300,7 +300,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -324,7 +324,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
