@@ -234,7 +234,10 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class sum_reduction_seq_contig_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class sum_reduction_over_group_with_atomics_contig_krn;
+class sum_reduction_axis0_over_group_with_atomics_contig_krn;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class sum_reduction_axis1_over_group_with_atomics_contig_krn;
 
 using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
@@ -390,7 +393,7 @@ typedef sycl::event (*sum_reduction_contig_impl_fn_ptr)(
 
 /* @brief Reduce rows in a matrix */
 template <typename argTy, typename resTy>
-sycl::event sum_reduction_over_group_with_atomics_contig_impl(
+sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
     sycl::queue exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
@@ -458,11 +461,11 @@ sycl::event sum_reduction_over_group_with_atomics_contig_impl(
                     RowsIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
-            RowsIndexerT columns_indexer{
+            RowsIndexerT rows_indexer{
                 0, static_cast<py::ssize_t>(iter_nelems),
                 static_cast<py::ssize_t>(reduction_nelems)};
             NoOpIndexerT result_indexer{};
-            InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+            InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{};
 
@@ -495,7 +498,102 @@ sycl::event sum_reduction_over_group_with_atomics_contig_impl(
             auto localRange = sycl::range<1>{wg};
 
             using KernelName =
-                class sum_reduction_over_group_with_atomics_contig_krn<
+                class sum_reduction_axis1_over_group_with_atomics_contig_krn<
+                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupWithAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
+        });
+
+        return comp_ev;
+    }
+}
+
+/* @brief Reduce rows in a matrix */
+template <typename argTy, typename resTy>
+sycl::event sum_reduction_axis0_over_group_with_atomics_contig_impl(
+    sycl::queue exec_q,
+    size_t iter_nelems, // number of reductions    (num. of cols in a matrix
+                        // when reducing over cols)
+    size_t reduction_nelems, // size of each reduction  (length of cols, i.e.
+                             // number of rows)
+    const char *arg_cp,
+    char *res_cp,
+    py::ssize_t iter_arg_offset,
+    py::ssize_t iter_res_offset,
+    py::ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
+
+    using ReductionOpT = sycl::plus<resTy>;
+    constexpr resTy identity_val = resTy{0};
+
+    const sycl::device &d = exec_q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(identity_val), iter_nelems, depends);
+
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(res_init_ev);
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT = ColsIndexerT;
+
+            NoOpIndexerT columns_indexer{};
+            NoOpIndexerT result_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                        result_indexer};
+            ReductionIndexerT reduction_indexer{
+                0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
+                /* step */ static_cast<py::ssize_t>(iter_nelems)};
+
+            constexpr size_t preferrered_reductions_per_wi = 8;
+            size_t reductions_per_wi =
+                (reduction_nelems < preferrered_reductions_per_wi * wg)
+                    ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                    : preferrered_reductions_per_wi;
+
+            size_t reduction_groups =
+                (reduction_nelems + reductions_per_wi * wg - 1) /
+                (reductions_per_wi * wg);
+
+            if (reduction_groups > 1) {
+                const size_t &max_wg =
+                    d.get_info<sycl::info::device::max_work_group_size>();
+
+                if (reduction_nelems < preferrered_reductions_per_wi * max_wg) {
+                    wg = max_wg;
+                    reductions_per_wi =
+                        std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+                    reduction_groups =
+                        (reduction_nelems + reductions_per_wi * wg - 1) /
+                        (reductions_per_wi * wg);
+                }
+            }
+
+            auto globalRange =
+                sycl::range<1>{iter_nelems * reduction_groups * wg};
+            auto localRange = sycl::range<1>{wg};
+
+            using KernelName =
+                class sum_reduction_axis0_over_group_with_atomics_contig_krn<
                     argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                     ReductionIndexerT>;
 
@@ -1075,7 +1173,7 @@ struct SumOverAxisTempsStridedFactory
 };
 
 template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxisAtomicContigFactory
+struct SumOverAxis1AtomicContigFactory
 {
     fnT get() const
     {
@@ -1083,7 +1181,26 @@ struct SumOverAxisAtomicContigFactory
                           srcTy, dstTy>::is_defined)
         {
             return dpctl::tensor::kernels::
-                sum_reduction_over_group_with_atomics_contig_impl<srcTy, dstTy>;
+                sum_reduction_axis1_over_group_with_atomics_contig_impl<srcTy,
+                                                                        dstTy>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct SumOverAxis0AtomicContigFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
+                          srcTy, dstTy>::is_defined)
+        {
+            return dpctl::tensor::kernels::
+                sum_reduction_axis0_over_group_with_atomics_contig_impl<srcTy,
+                                                                        dstTy>;
         }
         else {
             return nullptr;
