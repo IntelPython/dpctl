@@ -165,7 +165,7 @@ def reshape(X, shape, order="C", copy=None):
         )
         if order == "C":
             hev, _ = _copy_usm_ndarray_for_reshape(
-                src=X, dst=flat_res, shift=0, sycl_queue=X.sycl_queue
+                src=X, dst=flat_res, sycl_queue=X.sycl_queue
             )
             hev.wait()
         else:

@@ -429,7 +429,7 @@ def roll(X, shift, axis=None):
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )
-        hev, _ = ti._copy_usm_ndarray_for_reshape(
+        hev, _ = ti._copy_usm_ndarray_for_roll(
             src=X, dst=res, shift=shift, sycl_queue=X.sycl_queue
         )
         hev.wait()
@@ -550,7 +550,6 @@ def _concat_axis_None(arrays):
             hev, _ = ti._copy_usm_ndarray_for_reshape(
                 src=src_,
                 dst=res[fill_start:fill_end],
-                shift=0,
                 sycl_queue=exec_q,
             )
         fill_start = fill_end
