@@ -38,12 +38,13 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
-                             dpctl::tensor::usm_ndarray dst,
-                             sycl::queue exec_q,
-                             const std::vector<sycl::event> &depends = {});
+copy_usm_ndarray_for_roll(dpctl::tensor::usm_ndarray src,
+                          dpctl::tensor::usm_ndarray dst,
+                          py::ssize_t shift,
+                          sycl::queue exec_q,
+                          const std::vector<sycl::event> &depends = {});
 
-extern void init_copy_for_reshape_dispatch_vectors();
+extern void init_copy_for_roll_dispatch_vectors();
 
 } // namespace py_internal
 } // namespace tensor
