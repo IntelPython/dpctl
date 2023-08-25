@@ -52,6 +52,15 @@ cdef class InternalUSMArrayError(Exception):
     pass
 
 
+cdef object _as_zero_dim_ndarray(object usm_ary):
+    "Convert size-1 array to NumPy 0d array"
+    mem_view = dpmem.as_usm_memory(usm_ary)
+    host_buf = mem_view.copy_to_host()
+    view = host_buf.view(usm_ary.dtype)
+    view.shape = tuple()
+    return view
+
+
 cdef class usm_ndarray:
     """ usm_ndarray(shape, dtype=None, strides=None, buffer="device", \
            offset=0, order="C", buffer_ctor_kwargs=dict(), \
@@ -840,9 +849,7 @@ cdef class usm_ndarray:
 
     def __bool__(self):
         if self.size == 1:
-            mem_view = dpmem.as_usm_memory(self)
-            host_buf = mem_view.copy_to_host()
-            view = host_buf.view(self.dtype)
+            view = _as_zero_dim_ndarray(self)
             return view.__bool__()
 
         if self.size == 0:
@@ -857,9 +864,7 @@ cdef class usm_ndarray:
 
     def __float__(self):
         if self.size == 1:
-            mem_view = dpmem.as_usm_memory(self)
-            host_buf = mem_view.copy_to_host()
-            view = host_buf.view(self.dtype)
+            view = _as_zero_dim_ndarray(self)
             return view.__float__()
 
         raise ValueError(
@@ -868,9 +873,7 @@ cdef class usm_ndarray:
 
     def __complex__(self):
         if self.size == 1:
-            mem_view = dpmem.as_usm_memory(self)
-            host_buf = mem_view.copy_to_host()
-            view = host_buf.view(self.dtype)
+            view = _as_zero_dim_ndarray(self)
             return view.__complex__()
 
         raise ValueError(
@@ -879,9 +882,7 @@ cdef class usm_ndarray:
 
     def __int__(self):
         if self.size == 1:
-            mem_view = dpmem.as_usm_memory(self)
-            host_buf = mem_view.copy_to_host()
-            view = host_buf.view(self.dtype)
+            view = _as_zero_dim_ndarray(self)
             return view.__int__()
 
         raise ValueError(
