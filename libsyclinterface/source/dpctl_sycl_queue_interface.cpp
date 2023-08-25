@@ -121,7 +121,7 @@ bool set_kernel_arg(handler &cgh,
     return arg_set;
 }
 
-std::unique_ptr<property_list> create_property_list(int properties)
+static std::unique_ptr<property_list> create_property_list(int properties)
 {
     std::unique_ptr<property_list> propList;
     int _prop = properties;
@@ -142,6 +142,9 @@ std::unique_ptr<property_list> create_property_list(int properties)
         _prop = _prop ^ DPCTL_IN_ORDER;
         propList =
             std::make_unique<property_list>(sycl::property::queue::in_order());
+    }
+    else {
+        propList = std::make_unique<property_list>();
     }
 
     if (_prop) {
@@ -185,7 +188,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     }
     auto propList = create_property_list(properties);
 
-    if (propList && handler) {
+    if (handler) {
         try {
             auto Queue = new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler),
                                    *propList);
@@ -194,26 +197,9 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
             error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
-    else if (properties) {
-        try {
-            auto Queue = new queue(*ctx, *dev, *propList);
-            q = wrap<queue>(Queue);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    else if (handler) {
-        try {
-            auto Queue =
-                new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler));
-            q = wrap<queue>(Queue);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
     else {
         try {
-            auto Queue = new queue(*ctx, *dev);
+            auto Queue = new queue(*ctx, *dev, *propList);
             q = wrap<queue>(Queue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
