@@ -342,20 +342,6 @@ sycl::event sum_reduction_over_group_with_atomics_strided_impl(
                 (reduction_nelems + reductions_per_wi * wg - 1) /
                 (reductions_per_wi * wg);
 
-            if (reduction_groups > 1) {
-                const size_t &max_wg =
-                    d.get_info<sycl::info::device::max_work_group_size>();
-
-                if (reduction_nelems < preferrered_reductions_per_wi * max_wg) {
-                    wg = max_wg;
-                    reductions_per_wi =
-                        std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
-                    reduction_groups =
-                        (reduction_nelems + reductions_per_wi * wg - 1) /
-                        (reductions_per_wi * wg);
-                }
-            }
-
             auto globalRange =
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
@@ -479,20 +465,6 @@ sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
                 (reduction_nelems + reductions_per_wi * wg - 1) /
                 (reductions_per_wi * wg);
 
-            if (reduction_groups > 1) {
-                const size_t &max_wg =
-                    d.get_info<sycl::info::device::max_work_group_size>();
-
-                if (reduction_nelems < preferrered_reductions_per_wi * max_wg) {
-                    wg = max_wg;
-                    reductions_per_wi =
-                        std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
-                    reduction_groups =
-                        (reduction_nelems + reductions_per_wi * wg - 1) /
-                        (reductions_per_wi * wg);
-                }
-            }
-
             auto globalRange =
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
@@ -573,20 +545,6 @@ sycl::event sum_reduction_axis0_over_group_with_atomics_contig_impl(
             size_t reduction_groups =
                 (reduction_nelems + reductions_per_wi * wg - 1) /
                 (reductions_per_wi * wg);
-
-            if (reduction_groups > 1) {
-                const size_t &max_wg =
-                    d.get_info<sycl::info::device::max_work_group_size>();
-
-                if (reduction_nelems < preferrered_reductions_per_wi * max_wg) {
-                    wg = max_wg;
-                    reductions_per_wi =
-                        std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
-                    reduction_groups =
-                        (reduction_nelems + reductions_per_wi * wg - 1) /
-                        (reductions_per_wi * wg);
-                }
-            }
 
             auto globalRange =
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
