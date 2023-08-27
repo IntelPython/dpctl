@@ -517,6 +517,7 @@ def copy(usm_ary, order="K"):
        - "K": match the layout of `usm_ary` as closely as possible.
 
     """
+    order = order.upper()
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
@@ -581,6 +582,7 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
 
     A view can be returned, if possible, when `copy=False` is used.
     """
+    order = order.upper()
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
