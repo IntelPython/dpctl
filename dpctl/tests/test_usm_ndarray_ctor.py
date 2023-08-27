@@ -2136,6 +2136,8 @@ def test_flags():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     f = x.flags
+    # check comparison with generic types
+    assert f != Ellipsis
     f.__repr__()
     assert f.c_contiguous == f["C"]
     assert f.f_contiguous == f["F"]
@@ -2144,8 +2146,6 @@ def test_flags():
     assert f.forc == f["FORC"]
     assert f.fnc == f["FNC"]
     assert f.writable == f["W"]
-    # check comparison with generic types
-    f == Ellipsis
 
 
 def test_asarray_uint64():
