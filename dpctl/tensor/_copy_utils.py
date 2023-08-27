@@ -517,7 +517,11 @@ def copy(usm_ary, order="K"):
        - "K": match the layout of `usm_ary` as closely as possible.
 
     """
-    order = order.upper()
+    if len(order) == 0 or order[0] not in "KkAaCcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'K', 'A', 'F', or 'C'."
+        )
+    order = order[0].upper()
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
@@ -582,16 +586,15 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
 
     A view can be returned, if possible, when `copy=False` is used.
     """
-    order = order.upper()
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
         )
-    if not isinstance(order, str) or order not in ["A", "C", "F", "K"]:
+    if len(order) == 0 or order[0] not in "KkAaCcFf":
         raise ValueError(
-            "Unrecognized value of the order keyword. "
-            "Recognized values are 'A', 'C', 'F', or 'K'"
+            "Unrecognized order keyword value, expecting 'K', 'A', 'F', or 'C'."
         )
+    order = order[0].upper()
     ary_dtype = usm_ary.dtype
     target_dtype = _get_dtype(newdtype, usm_ary.sycl_queue)
     if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
