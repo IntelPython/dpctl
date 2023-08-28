@@ -38,13 +38,6 @@ namespace tensor
 namespace py_internal
 {
 
-extern void populate_mask_positions_dispatch_vectors(void);
-
-extern size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
-                                dpctl::tensor::usm_ndarray cumsum,
-                                sycl::queue exec_q,
-                                std::vector<sycl::event> const &depends = {});
-
 extern std::pair<sycl::event, sycl::event>
 py_extract(dpctl::tensor::usm_ndarray src,
            dpctl::tensor::usm_ndarray cumsum,

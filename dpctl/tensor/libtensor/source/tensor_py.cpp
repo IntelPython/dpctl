@@ -33,6 +33,7 @@
 
 #include "dpctl4pybind11.hpp"
 
+#include "accumulators.hpp"
 #include "boolean_advanced_indexing.hpp"
 #include "boolean_reductions.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
