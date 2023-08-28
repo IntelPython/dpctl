@@ -910,16 +910,13 @@ contract_iter4(vecT shape,
 }
 
 /*
-    For purposes of iterating over pairs of elements of two arrays
-    with  `shape` and strides `strides1`, `strides2` given as pointers
-    `simplify_iteration_two_strides(nd, shape_ptr, strides1_ptr,
-    strides2_ptr, disp1, disp2)`
-    may modify memory and returns new length of these arrays.
+    For purposes of iterating over elements of an array with  `shape` and
+    strides `strides` given as pointers `compact_iteration(nd, shape, strides)`
+    may modify memory and returns the new length of the array.
 
-    The new shape and new strides, as well as the offset
-    `(new_shape, new_strides1, disp1, new_stride2, disp2)` are such that
-    iterating over them will traverse the same set of pairs of elements,
-    possibly in a different order.
+    The new shape and new strides `(new_shape, new_strides)` are such that
+    iterating over them will traverse the same elements in the same order,
+    possibly with reduced dimensionality.
  */
 template <class ShapeTy, class StridesTy>
 int compact_iteration(const int nd, ShapeTy *shape, StridesTy *strides)
