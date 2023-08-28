@@ -1301,6 +1301,7 @@ def test_nonzero():
 
 
 def test_nonzero_f_contig():
+    "See gh-1370"
     get_queue_or_skip
 
     mask = dpt.zeros((5, 5), dtype="?", order="F")
@@ -1311,6 +1312,24 @@ def test_nonzero_f_contig():
 
     assert expected_res == res
     assert mask[res]
+
+
+def test_nonzero_compacting():
+    """See gh-1370.
+    Test with input where dimensionality
+    of iteration space is compacted from 3d to 2d
+    """
+    get_queue_or_skip
+
+    mask = dpt.zeros((5, 5, 5), dtype="?", order="F")
+    mask[3, 2, 1] = True
+    mask_view = mask[..., :3]
+
+    expected_res = (3, 2, 1)
+    res = dpt.nonzero(mask_view)
+
+    assert expected_res == res
+    assert mask_view[res]
 
 
 def test_assign_scalar():
