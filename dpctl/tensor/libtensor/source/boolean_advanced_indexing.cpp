@@ -205,22 +205,19 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     auto const &strides_vector = mask.get_strides_vector();
 
     using shT = std::vector<py::ssize_t>;
-    shT simplified_shape;
-    shT simplified_strides;
-    py::ssize_t offset(0);
+    shT compact_shape;
+    shT compact_strides;
 
     int mask_nd = mask.get_ndim();
     int nd = mask_nd;
 
-    dpctl::tensor::py_internal::simplify_iteration_space_1(
-        nd, shape, strides_vector, simplified_shape, simplified_strides,
-        offset);
+    dpctl::tensor::py_internal::compact_iteration_space(
+        nd, shape, strides_vector, compact_shape, compact_strides);
 
-    if (nd == 1 && simplified_strides[0] == 1) {
+    if (nd == 1 && compact_strides[0] == 1) {
         auto fn = (use_i32)
                       ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
                       : mask_positions_contig_i64_dispatch_vector[mask_typeid];
-
         return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
     }
 
@@ -232,7 +229,7 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
     const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
-        exec_q, host_task_events, simplified_shape, simplified_strides);
+        exec_q, host_task_events, compact_shape, compact_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
     if (shape_strides == nullptr) {
         sycl::event::wait(host_task_events);
@@ -253,7 +250,7 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     dependent_events.insert(dependent_events.end(), depends.begin(),
                             depends.end());
 
-    size_t total_set = strided_fn(exec_q, mask_size, mask_data, nd, offset,
+    size_t total_set = strided_fn(exec_q, mask_size, mask_data, nd,
                                   shape_strides, cumsum_data, dependent_events);
 
     sycl::event::wait(host_task_events);

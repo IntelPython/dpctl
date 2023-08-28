@@ -909,6 +909,58 @@ contract_iter4(vecT shape,
                            out_strides3, disp3, out_strides4, disp4);
 }
 
+/*
+    For purposes of iterating over pairs of elements of two arrays
+    with  `shape` and strides `strides1`, `strides2` given as pointers
+    `simplify_iteration_two_strides(nd, shape_ptr, strides1_ptr,
+    strides2_ptr, disp1, disp2)`
+    may modify memory and returns new length of these arrays.
+
+    The new shape and new strides, as well as the offset
+    `(new_shape, new_strides1, disp1, new_stride2, disp2)` are such that
+    iterating over them will traverse the same set of pairs of elements,
+    possibly in a different order.
+ */
+template <class ShapeTy, class StridesTy>
+int compact_iteration(const int nd, ShapeTy *shape, StridesTy *strides)
+{
+    if (nd < 2)
+        return nd;
+
+    bool contractable = true;
+    for (int i = 0; i < nd; ++i) {
+        if (strides[i] < 0) {
+            contractable = false;
+        }
+    }
+
+    int nd_ = nd;
+    while (contractable) {
+        bool changed = false;
+        for (int i = 0; i + 1 < nd_; ++i) {
+            StridesTy str = strides[i + 1];
+            StridesTy jump = strides[i] - (shape[i + 1] - 1) * str;
+
+            if (jump == str) {
+                changed = true;
+                shape[i] *= shape[i + 1];
+                for (int j = i; j < nd_; ++j) {
+                    strides[j] = strides[j + 1];
+                }
+                for (int j = i + 1; j + 1 < nd_; ++j) {
+                    shape[j] = shape[j + 1];
+                }
+                --nd_;
+                break;
+            }
+        }
+        if (!changed)
+            break;
+    }
+
+    return nd_;
+}
+
 } // namespace strides
 } // namespace tensor
 } // namespace dpctl
