@@ -1044,6 +1044,19 @@ def test_extract_all_1d():
     res2 = dpt.extract(sel, x)
     assert (dpt.asnumpy(res2) == expected_res).all()
 
+    # test strided case
+    x = dpt.arange(15, dtype="i4")
+    sel_np = np.zeros(15, dtype="?")
+    np.put(sel_np, np.random.choice(sel_np.size, size=7), True)
+    sel = dpt.asarray(sel_np)
+
+    res = x[sel[::-1]]
+    expected_res = dpt.asnumpy(x)[sel_np[::-1]]
+    assert (dpt.asnumpy(res) == expected_res).all()
+
+    res2 = dpt.extract(sel[::-1], x)
+    assert (dpt.asnumpy(res2) == expected_res).all()
+
 
 def test_extract_all_2d():
     get_queue_or_skip()
@@ -1285,6 +1298,19 @@ def test_nonzero():
     x = dpt.concat((dpt.zeros(3), dpt.ones(4), dpt.zeros(3)))
     (i,) = dpt.nonzero(x)
     assert (dpt.asnumpy(i) == np.array([3, 4, 5, 6])).all()
+
+
+def test_nonzero_f_contig():
+    get_queue_or_skip
+
+    mask = dpt.zeros((5, 5), dtype="?", order="F")
+    mask[2, 3] = True
+
+    expected_res = (2, 3)
+    res = dpt.nonzero(mask)
+
+    assert expected_res == res
+    assert mask[res]
 
 
 def test_assign_scalar():
