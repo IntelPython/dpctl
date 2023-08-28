@@ -214,13 +214,6 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     dpctl::tensor::py_internal::compact_iteration_space(
         nd, shape, strides_vector, compact_shape, compact_strides);
 
-    if (nd == 1 && compact_strides[0] == 1) {
-        auto fn = (use_i32)
-                      ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
-                      : mask_positions_contig_i64_dispatch_vector[mask_typeid];
-        return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
-    }
-
     // Strided implementation
     auto strided_fn =
         (use_i32) ? mask_positions_strided_i32_dispatch_vector[mask_typeid]
