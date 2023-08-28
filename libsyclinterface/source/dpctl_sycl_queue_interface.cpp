@@ -121,7 +121,7 @@ bool set_kernel_arg(handler &cgh,
     return arg_set;
 }
 
-static std::unique_ptr<property_list> create_property_list(int properties)
+std::unique_ptr<property_list> create_property_list(int properties)
 {
     std::unique_ptr<property_list> propList;
     int _prop = properties;
