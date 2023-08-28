@@ -369,6 +369,45 @@ void simplify_iteration_space_4(
     }
 }
 
+void compact_iteration_space(int &nd,
+                             const py::ssize_t *const &shape,
+                             std::vector<py::ssize_t> const &strides,
+                             // output
+                             std::vector<py::ssize_t> &compact_shape,
+                             std::vector<py::ssize_t> &compact_strides)
+{
+    using dpctl::tensor::strides::compact_iteration;
+    if (nd > 1) {
+        // Compact iteration space to reduce dimensionality
+        // and improve access pattern
+        compact_shape.reserve(nd);
+        compact_shape.insert(std::begin(compact_shape), shape, shape + nd);
+        assert(compact_shape.size() == static_cast<size_t>(nd));
+
+        compact_strides.reserve(nd);
+        compact_strides.insert(std::end(compact_strides), std::begin(strides),
+                               std::end(strides));
+        assert(compact_strides.size() == static_cast<size_t>(nd));
+
+        int contracted_nd =
+            compact_iteration(nd, compact_shape.data(), compact_strides.data());
+        compact_shape.resize(contracted_nd);
+        compact_strides.resize(contracted_nd);
+
+        nd = contracted_nd;
+    }
+    else if (nd == 1) {
+        // Populate vectors
+        compact_shape.reserve(nd);
+        compact_shape.push_back(shape[0]);
+        assert(compact_shape.size() == static_cast<size_t>(nd));
+
+        compact_strides.reserve(nd);
+        compact_strides.push_back(strides[0]);
+        assert(compact_strides.size() == static_cast<size_t>(nd));
+    }
+}
+
 py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &mi,
                                  std::vector<py::ssize_t> const &shape)
 {

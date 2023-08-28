@@ -424,7 +424,6 @@ typedef size_t (*mask_positions_strided_impl_fn_ptr_t)(
     size_t,
     const char *,
     int,
-    py::ssize_t,
     const py::ssize_t *,
     char *,
     std::vector<sycl::event> const &);
@@ -434,7 +433,6 @@ size_t mask_positions_strided_impl(sycl::queue q,
                                    size_t n_elems,
                                    const char *mask,
                                    int nd,
-                                   py::ssize_t input_offset,
                                    const py::ssize_t *shape_strides,
                                    char *cumsum,
                                    std::vector<sycl::event> const &depends = {})
@@ -444,7 +442,7 @@ size_t mask_positions_strided_impl(sycl::queue q,
     cumsumT *cumsum_data_ptr = reinterpret_cast<cumsumT *>(cumsum);
     size_t wg_size = 128;
 
-    StridedIndexer strided_indexer{nd, input_offset, shape_strides};
+    StridedIndexer strided_indexer{nd, 0, shape_strides};
     NonZeroIndicator<maskT, cumsumT> non_zero_indicator{};
 
     sycl::event comp_ev =

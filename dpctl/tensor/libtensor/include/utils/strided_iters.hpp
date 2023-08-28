@@ -909,6 +909,55 @@ contract_iter4(vecT shape,
                            out_strides3, disp3, out_strides4, disp4);
 }
 
+/*
+    For purposes of iterating over elements of an array with  `shape` and
+    strides `strides` given as pointers `compact_iteration(nd, shape, strides)`
+    may modify memory and returns the new length of the array.
+
+    The new shape and new strides `(new_shape, new_strides)` are such that
+    iterating over them will traverse the same elements in the same order,
+    possibly with reduced dimensionality.
+ */
+template <class ShapeTy, class StridesTy>
+int compact_iteration(const int nd, ShapeTy *shape, StridesTy *strides)
+{
+    if (nd < 2)
+        return nd;
+
+    bool contractable = true;
+    for (int i = 0; i < nd; ++i) {
+        if (strides[i] < 0) {
+            contractable = false;
+        }
+    }
+
+    int nd_ = nd;
+    while (contractable) {
+        bool changed = false;
+        for (int i = 0; i + 1 < nd_; ++i) {
+            StridesTy str = strides[i + 1];
+            StridesTy jump = strides[i] - (shape[i + 1] - 1) * str;
+
+            if (jump == str) {
+                changed = true;
+                shape[i] *= shape[i + 1];
+                for (int j = i; j < nd_; ++j) {
+                    strides[j] = strides[j + 1];
+                }
+                for (int j = i + 1; j + 1 < nd_; ++j) {
+                    shape[j] = shape[j + 1];
+                }
+                --nd_;
+                break;
+            }
+        }
+        if (!changed)
+            break;
+    }
+
+    return nd_;
+}
+
 } // namespace strides
 } // namespace tensor
 } // namespace dpctl
