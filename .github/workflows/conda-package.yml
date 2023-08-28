@@ -608,7 +608,11 @@ jobs:
             echo "Array API standard conformance tests failed to run for dpctl=$PACKAGE_VERSION."
             exit 1
           fi
+      - name: Output API summary
+        shell: bash -l {0}
+        run: echo "::notice ${{ env.MESSAGE }}"
       - name: Post result to PR
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
         uses: mshick/add-pr-comment@v1
         with:
           message: |
