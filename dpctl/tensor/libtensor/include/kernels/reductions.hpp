@@ -610,13 +610,12 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-
-        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
-        const size_t iter_gid = it.get_global_id(0) / red_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
         const size_t reduction_lid = it.get_local_id(0);
         const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+
+        const size_t iter_gid = it.get_group(0) % iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
 
         // work-items sums over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
