@@ -144,12 +144,12 @@ struct StridedIndexer
     {
     }
 
-    size_t operator()(py::ssize_t gid) const
+    py::ssize_t operator()(py::ssize_t gid) const
     {
         return compute_offset(gid);
     }
 
-    size_t operator()(size_t gid) const
+    py::ssize_t operator()(size_t gid) const
     {
         return compute_offset(static_cast<py::ssize_t>(gid));
     }
@@ -159,7 +159,7 @@ private:
     py::ssize_t starting_offset;
     py::ssize_t const *shape_strides;
 
-    size_t compute_offset(py::ssize_t gid) const
+    py::ssize_t compute_offset(py::ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
@@ -185,12 +185,12 @@ struct UnpackedStridedIndexer
     {
     }
 
-    size_t operator()(py::ssize_t gid) const
+    py::ssize_t operator()(py::ssize_t gid) const
     {
         return compute_offset(gid);
     }
 
-    size_t operator()(size_t gid) const
+    py::ssize_t operator()(size_t gid) const
     {
         return compute_offset(static_cast<py::ssize_t>(gid));
     }
@@ -201,7 +201,7 @@ private:
     py::ssize_t const *shape;
     py::ssize_t const *strides;
 
-    size_t compute_offset(py::ssize_t gid) const
+    py::ssize_t compute_offset(py::ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
@@ -223,11 +223,10 @@ struct Strided1DIndexer
     {
     }
 
-    size_t operator()(size_t gid) const
+    py::ssize_t operator()(size_t gid) const
     {
         // ensure 0 <= gid < size
-        return static_cast<size_t>(offset +
-                                   std::min<size_t>(gid, size - 1) * step);
+        return offset + std::min<size_t>(gid, size - 1) * step;
     }
 
 private:
@@ -245,9 +244,9 @@ struct Strided1DCyclicIndexer
     {
     }
 
-    size_t operator()(size_t gid) const
+    py::ssize_t operator()(size_t gid) const
     {
-        return static_cast<size_t>(offset + (gid % size) * step);
+        return offset + (gid % size) * step;
     }
 
 private:
