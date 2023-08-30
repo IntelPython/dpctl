@@ -429,7 +429,7 @@ def roll(X, shift, axis=None):
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )
-        hev, _ = ti._copy_usm_ndarray_for_roll(
+        hev, _ = ti._copy_usm_ndarray_for_roll_1d(
             src=X, dst=res, shift=shift, sycl_queue=X.sycl_queue
         )
         hev.wait()
