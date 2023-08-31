@@ -46,51 +46,6 @@ namespace tensor
 namespace py_internal
 {
 
-/* @brief Split shape/strides into dir1 (complementary to axis_start <= i <
- * axis_end) and dir2 (along given set of axes)
- */
-template <typename shT>
-void _split_iteration_space(const shT &shape_vec,
-                            const shT &strides_vec,
-                            int axis_start,
-                            int axis_end,
-                            shT &dir1_shape_vec,
-                            shT &dir2_shape_vec,
-                            shT &dir1_strides_vec,
-                            shT &dir2_strides_vec)
-{
-    int nd = static_cast<int>(shape_vec.size());
-    int dir2_sz = axis_end - axis_start;
-    int dir1_sz = nd - dir2_sz;
-
-    assert(dir1_sz > 0);
-    assert(dir2_sz > 0);
-
-    dir1_shape_vec.resize(dir1_sz);
-    dir2_shape_vec.resize(dir2_sz);
-
-    std::copy(shape_vec.begin(), shape_vec.begin() + axis_start,
-              dir1_shape_vec.begin());
-    std::copy(shape_vec.begin() + axis_end, shape_vec.end(),
-              dir1_shape_vec.begin() + axis_start);
-
-    std::copy(shape_vec.begin() + axis_start, shape_vec.begin() + axis_end,
-              dir2_shape_vec.begin());
-
-    dir1_strides_vec.resize(dir1_sz);
-    dir2_strides_vec.resize(dir2_sz);
-
-    std::copy(strides_vec.begin(), strides_vec.begin() + axis_start,
-              dir1_strides_vec.begin());
-    std::copy(strides_vec.begin() + axis_end, strides_vec.end(),
-              dir1_strides_vec.begin() + axis_start);
-
-    std::copy(strides_vec.begin() + axis_start, strides_vec.begin() + axis_end,
-              dir2_strides_vec.begin());
-
-    return;
-}
-
 // Masked extraction
 
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -334,19 +289,21 @@ py_extract(dpctl::tensor::usm_ndarray src,
         shT masked_src_shape;
         shT ortho_src_strides;
         shT masked_src_strides;
-        _split_iteration_space(src_shape_vec, src_strides_vec, axis_start,
-                               axis_end, ortho_src_shape,
-                               masked_src_shape, // 4 vectors modified
-                               ortho_src_strides, masked_src_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            src_shape_vec, src_strides_vec, axis_start, axis_end,
+            ortho_src_shape,
+            masked_src_shape, // 4 vectors modified
+            ortho_src_strides, masked_src_strides);
 
         shT ortho_dst_shape;
         shT masked_dst_shape;
         shT ortho_dst_strides;
         shT masked_dst_strides;
-        _split_iteration_space(dst_shape_vec, dst_strides_vec, axis_start,
-                               axis_start + 1, ortho_dst_shape,
-                               masked_dst_shape, // 4 vectors modified
-                               ortho_dst_strides, masked_dst_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            dst_shape_vec, dst_strides_vec, axis_start, axis_start + 1,
+            ortho_dst_shape,
+            masked_dst_shape, // 4 vectors modified
+            ortho_dst_strides, masked_dst_strides);
 
         assert(ortho_src_shape.size() == static_cast<size_t>(ortho_nd));
         assert(ortho_dst_shape.size() == static_cast<size_t>(ortho_nd));
@@ -662,19 +619,21 @@ py_place(dpctl::tensor::usm_ndarray dst,
         shT masked_dst_shape;
         shT ortho_dst_strides;
         shT masked_dst_strides;
-        _split_iteration_space(dst_shape_vec, dst_strides_vec, axis_start,
-                               axis_end, ortho_dst_shape,
-                               masked_dst_shape, // 4 vectors modified
-                               ortho_dst_strides, masked_dst_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            dst_shape_vec, dst_strides_vec, axis_start, axis_end,
+            ortho_dst_shape,
+            masked_dst_shape, // 4 vectors modified
+            ortho_dst_strides, masked_dst_strides);
 
         shT ortho_rhs_shape;
         shT masked_rhs_shape;
         shT ortho_rhs_strides;
         shT masked_rhs_strides;
-        _split_iteration_space(rhs_shape_vec, rhs_strides_vec, axis_start,
-                               axis_start + 1, ortho_rhs_shape,
-                               masked_rhs_shape, // 4 vectors modified
-                               ortho_rhs_strides, masked_rhs_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            rhs_shape_vec, rhs_strides_vec, axis_start, axis_start + 1,
+            ortho_rhs_shape,
+            masked_rhs_shape, // 4 vectors modified
+            ortho_rhs_strides, masked_rhs_strides);
 
         assert(ortho_dst_shape.size() == static_cast<size_t>(ortho_nd));
         assert(ortho_rhs_shape.size() == static_cast<size_t>(ortho_nd));
