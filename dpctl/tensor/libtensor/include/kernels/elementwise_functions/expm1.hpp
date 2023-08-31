@@ -33,6 +33,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -49,6 +50,7 @@ namespace expm1
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -78,7 +80,7 @@ template <typename argT, typename resT> struct Expm1Functor
             if (std::isinf(x)) {
                 if (x > realT(0)) {
                     // positive infinity cases
-                    if (!std::isfinite(y)) {
+                    if (!mu_ns::isfinite(y)) {
                         return resT{x, std::numeric_limits<realT>::quiet_NaN()};
                     }
                     else if (y == realT(0)) {
@@ -91,7 +93,7 @@ template <typename argT, typename resT> struct Expm1Functor
                 }
                 else {
                     // negative infinity cases
-                    if (!std::isfinite(y)) {
+                    if (!mu_ns::isfinite(y)) {
                         // copy sign of y to guarantee
                         // conj(expm1(x)) == expm1(conj(x))
                         return resT{realT(-1), std::copysign(realT(0), y)};
@@ -119,6 +121,7 @@ template <typename argT, typename resT> struct Expm1Functor
                 sycl::access::address_space::private_space,
                 sycl::access::decorated::yes>(&cosY_val);
             const realT sinY_val = sycl::sincos(y, cosY_val_multi_ptr);
+
             const realT sinhalfY_val = std::sin(y / 2);
 
             const realT res_re =

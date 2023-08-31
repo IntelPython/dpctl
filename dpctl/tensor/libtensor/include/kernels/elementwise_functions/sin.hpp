@@ -31,6 +31,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -46,6 +47,7 @@ namespace sin
 {
 
 namespace py = pybind11;
+namespace mu_ns = dpctl::tensor::math_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -72,8 +74,8 @@ template <typename argT, typename resT> struct SinFunctor
             realT const &in_re = std::real(in);
             realT const &in_im = std::imag(in);
 
-            const bool in_re_finite = std::isfinite(in_re);
-            const bool in_im_finite = std::isfinite(in_im);
+            const bool in_re_finite = mu_ns::isfinite(in_re);
+            const bool in_im_finite = mu_ns::isfinite(in_im);
             /*
              * Handle the nearly-non-exceptional cases where
              * real and imaginary parts of input are finite.

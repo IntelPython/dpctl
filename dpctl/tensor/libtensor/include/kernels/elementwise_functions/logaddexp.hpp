@@ -31,6 +31,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -48,6 +49,7 @@ namespace logaddexp
 {
 
 namespace py = pybind11;
+namespace mu_ns = dpctl::tensor::math_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
@@ -73,7 +75,7 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            if (std::isfinite(diff[i])) {
+            if (mu_ns::isfinite(diff[i])) {
                 res[i] = std::max<resT>(in1[i], in2[i]) +
                          impl_finite<resT>(-std::abs(diff[i]));
             }

@@ -34,6 +34,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -49,6 +50,7 @@ namespace sqrt
 {
 
 namespace py = pybind11;
+namespace mu_ns = dpctl::tensor::math_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -117,14 +119,16 @@ private:
         else if (std::isinf(x)) { // x is an infinity
             // y is either finite, or nan
             if (std::signbit(x)) { // x == -inf
-                return {(std::isfinite(y) ? zero : y), std::copysign(p_inf, y)};
+                return {(mu_ns::isfinite(y) ? zero : y),
+                        std::copysign(p_inf, y)};
             }
             else {
-                return {p_inf, (std::isfinite(y) ? std::copysign(zero, y) : y)};
+                return {p_inf,
+                        (mu_ns::isfinite(y) ? std::copysign(zero, y) : y)};
             }
         }
         else { // x is finite
-            if (std::isfinite(y)) {
+            if (mu_ns::isfinite(y)) {
 #ifdef USE_STD_SQRT_FOR_COMPLEX_TYPES
                 return std::sqrt(z);
 #else

@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -48,6 +49,7 @@ namespace atan2
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 template <typename argT1, typename argT2, typename resT> struct Atan2Functor
 {
@@ -58,7 +60,7 @@ template <typename argT1, typename argT2, typename resT> struct Atan2Functor
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
         if (std::isinf(in2) && !std::signbit(in2)) {
-            if (std::isfinite(in1)) {
+            if (mu_ns::isfinite(in1)) {
                 return std::copysign(resT(0), in1);
             }
         }

@@ -31,6 +31,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -47,6 +48,7 @@ namespace cosh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -73,8 +75,8 @@ template <typename argT, typename resT> struct CoshFunctor
             const realT x = std::real(in);
             const realT y = std::imag(in);
 
-            const bool xfinite = std::isfinite(x);
-            const bool yfinite = std::isfinite(y);
+            const bool xfinite = mu_ns::isfinite(x);
+            const bool yfinite = mu_ns::isfinite(y);
 
             /*
              * Handle the nearly-non-exceptional cases where

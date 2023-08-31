@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -46,6 +47,7 @@ namespace isfinite
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -68,8 +70,8 @@ template <typename argT, typename resT> struct IsFiniteFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            const bool real_isfinite = std::isfinite(std::real(in));
-            const bool imag_isfinite = std::isfinite(std::imag(in));
+            const bool real_isfinite = mu_ns::isfinite(std::real(in));
+            const bool imag_isfinite = mu_ns::isfinite(std::imag(in));
             return (real_isfinite && imag_isfinite);
         }
         else if constexpr (std::is_same<argT, bool>::value ||
@@ -77,23 +79,9 @@ template <typename argT, typename resT> struct IsFiniteFunctor
         {
             return constant_value;
         }
-        else if constexpr (std::is_same_v<argT, sycl::half>) {
-            return sycl::isfinite(in);
-        }
         else {
-            return std::isfinite(in);
+            return mu_ns::isfinite(in);
         }
-    }
-
-    template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
-    {
-        auto const &res_vec = sycl::isfinite(in);
-
-        using deducedT = typename std::remove_cv_t<
-            std::remove_reference_t<decltype(res_vec)>>::element_type;
-
-        return vec_cast<bool, deducedT, vec_sz>(res_vec);
     }
 };
 
