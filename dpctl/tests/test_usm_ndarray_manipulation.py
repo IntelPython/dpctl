@@ -17,11 +17,11 @@
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tests.helper import get_queue_or_skip
 
 
 def test_permute_dims_incorrect_type():
@@ -1116,3 +1116,144 @@ def test_finfo_object():
     assert isinstance(fi.dtype, dpt.dtype)
     assert isinstance(str(fi), str)
     assert isinstance(repr(fi), str)
+
+
+def test_repeat_scalar_sequence_agreement():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    expected_res = dpt.empty(10, dtype="i4")
+    expected_res[1::2], expected_res[::2] = x, x
+
+    # scalar case
+    reps = 2
+    res = dpt.repeat(x, reps)
+    assert dpt.all(res == expected_res)
+
+    # tuple
+    reps = (2, 2, 2, 2, 2)
+    res = dpt.repeat(x, reps)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_as_broadcasting():
+    get_queue_or_skip()
+
+    reps = 5
+    x = dpt.arange(reps, dtype="i4")
+    x1 = x[:, dpt.newaxis]
+    expected_res = dpt.broadcast_to(x1, (reps, reps))
+
+    res = dpt.repeat(x1, reps, axis=1)
+    assert dpt.all(res == expected_res)
+
+    x2 = x[dpt.newaxis, :]
+    expected_res = dpt.broadcast_to(x2, (reps, reps))
+
+    res = dpt.repeat(x2, reps, axis=0)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_axes():
+    get_queue_or_skip()
+
+    reps = 2
+    x = dpt.reshape(dpt.arange(5 * 10, dtype="i4"), (5, 10))
+    expected_res = dpt.empty((x.shape[0] * 2, x.shape[1]), x.dtype)
+    expected_res[::2, :], expected_res[1::2] = x, x
+    res = dpt.repeat(x, reps, axis=0)
+    assert dpt.all(res == expected_res)
+
+    expected_res = dpt.empty((x.shape[0], x.shape[1] * 2), x.dtype)
+    expected_res[:, ::2], expected_res[:, 1::2] = x, x
+    res = dpt.repeat(x, reps, axis=1)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_size_0_outputs():
+    get_queue_or_skip()
+
+    x = dpt.ones((3, 0, 5), dtype="i4")
+    reps = 10
+    res = dpt.repeat(x, reps, axis=0)
+    assert res.size == 0
+    assert res.shape == (30, 0, 5)
+
+    res = dpt.repeat(x, reps, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    res = dpt.repeat(x, (2, 2, 2), axis=0)
+    assert res.size == 0
+    assert res.shape == (6, 0, 5)
+
+    x = dpt.ones((3, 2, 5))
+    res = dpt.repeat(x, 0, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    x = dpt.ones((3, 2, 5))
+    res = dpt.repeat(x, (0, 0), axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+
+def test_repeat_strides():
+    get_queue_or_skip()
+
+    reps = 2
+    x = dpt.reshape(dpt.arange(10 * 10, dtype="i4"), (10, 10))
+    x1 = x[:, ::-2]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[:, ::2], expected_res[:, 1::2] = x1, x1
+    res = dpt.repeat(x1, reps, axis=1)
+    assert dpt.all(res == expected_res)
+    res = dpt.repeat(x1, (reps,) * x1.shape[1], axis=1)
+    assert dpt.all(res == expected_res)
+
+    x1 = x[::-2, :]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[::2, :], expected_res[1::2, :] = x1, x1
+    res = dpt.repeat(x1, reps, axis=0)
+    assert dpt.all(res == expected_res)
+    res = dpt.repeat(x1, (reps,) * x1.shape[0], axis=0)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_arg_validation():
+    get_queue_or_skip()
+
+    x = dict()
+    with pytest.raises(TypeError):
+        dpt.repeat(x, 2)
+
+    # axis must be 0 for scalar
+    x = dpt.empty(())
+    with pytest.raises(ValueError):
+        dpt.repeat(x, 2, axis=1)
+
+    # x.ndim must be 1 for axis=None
+    x = dpt.empty((5, 10))
+    with pytest.raises(ValueError):
+        dpt.repeat(x, 2, axis=None)
+
+    # repeats must be positive
+    x = dpt.empty(1)
+    with pytest.raises(ValueError):
+        dpt.repeat(x, -2)
+
+    # repeats must be integers
+    with pytest.raises(TypeError):
+        dpt.repeat(x, 2.0)
+
+    # repeats tuple must be the same length as axis
+    with pytest.raises(ValueError):
+        dpt.repeat(x, (1, 2))
+
+    # repeats tuple elements must be positive
+    with pytest.raises(ValueError):
+        dpt.repeat(x, (-1,))
+
+    # repeats must be int or tuple
+    with pytest.raises(TypeError):
+        dpt.repeat(x, dict())
