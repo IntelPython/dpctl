@@ -72,6 +72,7 @@ from dpctl.tensor._manipulation_functions import (
     iinfo,
     moveaxis,
     permute_dims,
+    repeat,
     result_type,
     roll,
     squeeze,
@@ -305,4 +306,5 @@ __all__ = [
     "tanh",
     "trunc",
     "allclose",
+    "repeat",
 ]

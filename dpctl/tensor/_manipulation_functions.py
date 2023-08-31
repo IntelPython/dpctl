@@ -15,10 +15,12 @@
 #  limitations under the License.
 
 
+import itertools
 import operator
-from itertools import chain, repeat
+from itertools import chain, product
 
 import numpy as np
+from numpy import AxisError
 from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
 
 import dpctl
@@ -133,7 +135,7 @@ def _broadcast_shape_impl(shapes):
         diff = biggest - nds[i]
         if diff > 0:
             ty = type(shapes[i])
-            shapes[i] = ty(chain(repeat(1, diff), shapes[i]))
+            shapes[i] = ty(chain(itertools.repeat(1, diff), shapes[i]))
     common_shape = []
     for axis in range(biggest):
         lengths = [s[axis] for s in shapes]
@@ -916,6 +918,94 @@ def swapaxes(X, axis1, axis2):
     ind[axis1] = axis2
     ind[axis2] = axis1
     return dpt.permute_dims(X, tuple(ind))
+
+
+def repeat(x, repeats, axis=None):
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
+
+    x_ndim = x.ndim
+    if axis is None:
+        if x_ndim != 1:
+            raise ValueError(
+                f"`axis` cannot be `None` for array of dimension {x_ndim}"
+            )
+        axis = 0
+
+    x_shape = x.shape
+    if x_ndim > 0:
+        axis = normalize_axis_index(operator.index(axis), x_ndim)
+        axis_size = x_shape[axis]
+    else:
+        if axis != 0:
+            AxisError("`axis` must be `0` for input of dimension `0`")
+        axis_size = x.size
+
+    scalar = False
+    if isinstance(repeats, int):
+        scalar = True
+        if repeats < 0:
+            raise ValueError("`repeats` must be a positive integer")
+    elif isinstance(repeats, tuple):
+        len_reps = len(repeats)
+        if len_reps != axis_size:
+            raise ValueError(
+                "`repeats` tuple must have the same length as the repeated axis"
+            )
+        elif len_reps == 1:
+            repeats = repeats[0]
+            if repeats < 0:
+                raise ValueError("`repeats` elements must be positive")
+            scalar = True
+    else:
+        raise TypeError(
+            f"Expected int or tuple for second argument, got {type(repeats)}"
+        )
+
+    usm_type = x.usm_type
+    exec_q = x.sycl_queue
+
+    if axis_size == 0:
+        return dpt.empty(x_shape, dtype=x.dtype, sycl_queue=exec_q)
+
+    if scalar:
+        res_axis_size = repeats * axis_size
+        res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+        res = dpt.empty(
+            res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+        )
+        if res_axis_size > 0:
+            hev, _ = ti._repeat_by_scalar(
+                src=x,
+                dst=res,
+                reps=repeats,
+                axis=axis,
+                sycl_queue=exec_q,
+            )
+            hev.wait()
+    else:
+        repeats = dpt.asarray(repeats, dtype="i8", sycl_queue=exec_q)
+        if not dpt.all(repeats >= 0):
+            raise ValueError("`repeats` elements must be positive")
+        cumsum = dpt.empty(
+            (axis_size,), dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
+        )
+        res_axis_size = ti._cumsum_1d(repeats, cumsum, sycl_queue=exec_q)
+        res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+        res = dpt.empty(
+            res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+        )
+        if res_axis_size > 0:
+            hev, _ = ti._repeat_by_sequence(
+                src=x,
+                dst=res,
+                reps=repeats,
+                cumsum=cumsum,
+                axis=axis,
+                sycl_queue=exec_q,
+            )
+            hev.wait()
+    return res
 
 
 def _supported_dtype(dtypes):

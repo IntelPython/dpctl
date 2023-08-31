@@ -46,6 +46,7 @@
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
+#include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 #include "sum_reductions.hpp"
 #include "triul_ctor.hpp"
@@ -99,6 +100,8 @@ using dpctl::tensor::py_internal::py_place;
 
 /* ================= Repeat ====================*/
 using dpctl::tensor::py_internal::py_cumsum_1d;
+using dpctl::tensor::py_internal::py_repeat_by_scalar;
+using dpctl::tensor::py_internal::py_repeat_by_sequence;
 
 /* ================ Eye ================== */
 
@@ -140,7 +143,9 @@ void init_dispatch_vectors(void)
     populate_masked_place_dispatch_vectors();
 
     populate_mask_positions_dispatch_vectors();
+
     populate_cumsum_1d_dispatch_vectors();
+    init_repeat_dispatch_vectors();
 
     return;
 }
@@ -395,6 +400,14 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
           py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
+
+    m.def("_repeat_by_sequence", &py_repeat_by_sequence, "", py::arg("src"),
+          py::arg("dst"), py::arg("reps"), py::arg("cumsum"), py::arg("axis"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_repeat_by_scalar", &py_repeat_by_scalar, "", py::arg("src"),
+          py::arg("dst"), py::arg("reps"), py::arg("axis"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     dpctl::tensor::py_internal::init_elementwise_functions(m);
     dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
