@@ -150,11 +150,11 @@ private:
 
     int get_normal_scale_double(const double &v) const
     {
-        constexpr int float_significant_bits = 53;
+        constexpr int double_significant_bits = 52;
         constexpr std::uint64_t exponent_mask = 0x7ff;
         constexpr int exponent_bias = 1023;
         const int scale = static_cast<int>(
-            (sycl::bit_cast<std::uint64_t>(v) >> float_significant_bits) &
+            (sycl::bit_cast<std::uint64_t>(v) >> double_significant_bits) &
             exponent_mask);
         return scale - exponent_bias;
     }
