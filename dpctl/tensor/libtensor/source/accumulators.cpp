@@ -48,24 +48,23 @@ namespace py_internal
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::accumulators::mask_positions_contig_impl_fn_ptr_t;
-static mask_positions_contig_impl_fn_ptr_t
+using dpctl::tensor::kernels::accumulators::accumulate_contig_impl_fn_ptr_t;
+static accumulate_contig_impl_fn_ptr_t
     mask_positions_contig_i64_dispatch_vector[td_ns::num_types];
-static mask_positions_contig_impl_fn_ptr_t
+static accumulate_contig_impl_fn_ptr_t
     mask_positions_contig_i32_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::accumulators::
-    mask_positions_strided_impl_fn_ptr_t;
-static mask_positions_strided_impl_fn_ptr_t
+using dpctl::tensor::kernels::accumulators::accumulate_strided_impl_fn_ptr_t;
+static accumulate_strided_impl_fn_ptr_t
     mask_positions_strided_i64_dispatch_vector[td_ns::num_types];
-static mask_positions_strided_impl_fn_ptr_t
+static accumulate_strided_impl_fn_ptr_t
     mask_positions_strided_i32_dispatch_vector[td_ns::num_types];
 
 void populate_mask_positions_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsContigFactoryForInt64;
-    td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<accumulate_contig_impl_fn_ptr_t,
                                  MaskPositionsContigFactoryForInt64,
                                  td_ns::num_types>
         dvb1;
@@ -73,7 +72,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsContigFactoryForInt32;
-    td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<accumulate_contig_impl_fn_ptr_t,
                                  MaskPositionsContigFactoryForInt32,
                                  td_ns::num_types>
         dvb2;
@@ -81,7 +80,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsStridedFactoryForInt64;
-    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<accumulate_strided_impl_fn_ptr_t,
                                  MaskPositionsStridedFactoryForInt64,
                                  td_ns::num_types>
         dvb3;
@@ -89,7 +88,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsStridedFactoryForInt32;
-    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<accumulate_strided_impl_fn_ptr_t,
                                  MaskPositionsStridedFactoryForInt32,
                                  td_ns::num_types>
         dvb4;
@@ -208,6 +207,144 @@ size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
     sycl::free(shape_strides, exec_q);
 
     return total_set;
+}
+
+using dpctl::tensor::kernels::accumulators::accumulate_strided_impl_fn_ptr_t;
+static accumulate_strided_impl_fn_ptr_t
+    cumsum_1d_strided_dispatch_vector[td_ns::num_types];
+using dpctl::tensor::kernels::accumulators::accumulate_contig_impl_fn_ptr_t;
+static accumulate_contig_impl_fn_ptr_t
+    cumsum_1d_contig_dispatch_vector[td_ns::num_types];
+
+void populate_cumsum_1d_dispatch_vectors(void)
+{
+    using dpctl::tensor::kernels::accumulators::Cumsum1DContigFactory;
+    td_ns::DispatchVectorBuilder<accumulate_contig_impl_fn_ptr_t,
+                                 Cumsum1DContigFactory, td_ns::num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(cumsum_1d_contig_dispatch_vector);
+
+    using dpctl::tensor::kernels::accumulators::Cumsum1DStridedFactory;
+    td_ns::DispatchVectorBuilder<accumulate_strided_impl_fn_ptr_t,
+                                 Cumsum1DStridedFactory, td_ns::num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(cumsum_1d_strided_dispatch_vector);
+
+    return;
+}
+
+size_t py_cumsum_1d(dpctl::tensor::usm_ndarray src,
+                    dpctl::tensor::usm_ndarray cumsum,
+                    sycl::queue exec_q,
+                    std::vector<sycl::event> const &depends)
+{
+    // cumsum is 1D
+    if (cumsum.get_ndim() != 1) {
+        throw py::value_error("cumsum array must be one-dimensional.");
+    }
+
+    if (!cumsum.is_c_contiguous()) {
+        throw py::value_error("Expecting `cumsum` array to be C-contiguous.");
+    }
+
+    // cumsum.shape == (src.size,)
+    auto src_size = src.get_size();
+    auto cumsum_size = cumsum.get_shape(0);
+    if (cumsum_size != src_size) {
+        throw py::value_error("Inconsistent dimensions");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, cumsum})) {
+        // FIXME: use ExecutionPlacementError
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    if (src_size == 0) {
+        return 0;
+    }
+
+    int src_typenum = src.get_typenum();
+    int cumsum_typenum = cumsum.get_typenum();
+
+    // src can be any type
+    const char *src_data = src.get_data();
+    char *cumsum_data = cumsum.get_data();
+
+    auto const &array_types = td_ns::usm_ndarray_types();
+
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
+
+    // this cumsum must be int64_t only
+    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    if (cumsum_typeid != int64_typeid) {
+        throw py::value_error(
+            "Cumulative sum array must have int64 data-type.");
+    }
+
+    if (src.is_c_contiguous()) {
+        auto fn = cumsum_1d_contig_dispatch_vector[src_typeid];
+        if (fn == nullptr) {
+            throw std::runtime_error(
+                "this cumsum requires integer type, got src_typeid=" +
+                std::to_string(src_typeid));
+        }
+        return fn(exec_q, src_size, src_data, cumsum_data, depends);
+    }
+
+    const py::ssize_t *shape = src.get_shape_raw();
+    auto const &strides_vector = src.get_strides_vector();
+
+    using shT = std::vector<py::ssize_t>;
+    shT compact_shape;
+    shT compact_strides;
+
+    int src_nd = src.get_ndim();
+    int nd = src_nd;
+
+    dpctl::tensor::py_internal::compact_iteration_space(
+        nd, shape, strides_vector, compact_shape, compact_strides);
+
+    // Strided implementation
+    auto strided_fn = cumsum_1d_strided_dispatch_vector[src_typeid];
+    if (strided_fn == nullptr) {
+        throw std::runtime_error(
+            "this cumsum requires integer type, got src_typeid=" +
+            std::to_string(src_typeid));
+    }
+    std::vector<sycl::event> host_task_events;
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, compact_shape, compact_strides);
+    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (shape_strides == nullptr) {
+        sycl::event::wait(host_task_events);
+        throw std::runtime_error("Unexpected error");
+    }
+    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+
+    if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
+        copy_shape_ev.wait();
+        sycl::event::wait(host_task_events);
+        sycl::free(shape_strides, exec_q);
+        throw std::runtime_error("Unexpected error");
+    }
+
+    std::vector<sycl::event> dependent_events;
+    dependent_events.reserve(depends.size() + 1);
+    dependent_events.insert(dependent_events.end(), copy_shape_ev);
+    dependent_events.insert(dependent_events.end(), depends.begin(),
+                            depends.end());
+
+    size_t total = strided_fn(exec_q, src_size, src_data, nd, shape_strides,
+                              cumsum_data, dependent_events);
+
+    sycl::event::wait(host_task_events);
+    sycl::free(shape_strides, exec_q);
+
+    return total;
 }
 
 } // namespace py_internal

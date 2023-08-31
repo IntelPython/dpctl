@@ -213,21 +213,19 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
     return out_event;
 }
 
-// mask positions
-
-typedef size_t (*mask_positions_contig_impl_fn_ptr_t)(
+typedef size_t (*accumulate_contig_impl_fn_ptr_t)(
     sycl::queue,
     size_t,
     const char *,
     char *,
     std::vector<sycl::event> const &);
 
-template <typename maskT, typename cumsumT>
-size_t mask_positions_contig_impl(sycl::queue q,
-                                  size_t n_elems,
-                                  const char *mask,
-                                  char *cumsum,
-                                  std::vector<sycl::event> const &depends = {})
+template <typename maskT, typename cumsumT, typename transformerT>
+size_t accumulate_contig_impl(sycl::queue q,
+                              size_t n_elems,
+                              const char *mask,
+                              char *cumsum,
+                              std::vector<sycl::event> const &depends = {})
 {
     constexpr int n_wi = 8;
     const maskT *mask_data_ptr = reinterpret_cast<const maskT *>(mask);
@@ -235,7 +233,7 @@ size_t mask_positions_contig_impl(sycl::queue q,
     size_t wg_size = 128;
 
     NoOpIndexer flat_indexer{};
-    NonZeroIndicator<maskT, cumsumT> non_zero_indicator{};
+    transformerT non_zero_indicator{};
 
     sycl::event comp_ev =
         inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(flat_indexer),
@@ -263,7 +261,9 @@ template <typename fnT, typename T> struct MaskPositionsContigFactoryForInt32
 {
     fnT get()
     {
-        fnT fn = mask_positions_contig_impl<T, std::int32_t>;
+        using cumsumT = std::int32_t;
+        fnT fn =
+            accumulate_contig_impl<T, cumsumT, NonZeroIndicator<T, cumsumT>>;
         return fn;
     }
 };
@@ -272,12 +272,30 @@ template <typename fnT, typename T> struct MaskPositionsContigFactoryForInt64
 {
     fnT get()
     {
-        fnT fn = mask_positions_contig_impl<T, std::int64_t>;
+        using cumsumT = std::int64_t;
+        fnT fn =
+            accumulate_contig_impl<T, cumsumT, NonZeroIndicator<T, cumsumT>>;
         return fn;
     }
 };
 
-typedef size_t (*mask_positions_strided_impl_fn_ptr_t)(
+template <typename fnT, typename T> struct Cumsum1DContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_integral_v<T>) {
+            using cumsumT = std::int64_t;
+            fnT fn =
+                accumulate_contig_impl<T, cumsumT, NoOpTransformer<cumsumT>>;
+            return fn;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
     sycl::queue,
     size_t,
     const char *,
@@ -286,14 +304,14 @@ typedef size_t (*mask_positions_strided_impl_fn_ptr_t)(
     char *,
     std::vector<sycl::event> const &);
 
-template <typename maskT, typename cumsumT>
-size_t mask_positions_strided_impl(sycl::queue q,
-                                   size_t n_elems,
-                                   const char *mask,
-                                   int nd,
-                                   const py::ssize_t *shape_strides,
-                                   char *cumsum,
-                                   std::vector<sycl::event> const &depends = {})
+template <typename maskT, typename cumsumT, typename transformerT>
+size_t accumulate_strided_impl(sycl::queue q,
+                               size_t n_elems,
+                               const char *mask,
+                               int nd,
+                               const py::ssize_t *shape_strides,
+                               char *cumsum,
+                               std::vector<sycl::event> const &depends = {})
 {
     constexpr int n_wi = 8;
     const maskT *mask_data_ptr = reinterpret_cast<const maskT *>(mask);
@@ -301,7 +319,7 @@ size_t mask_positions_strided_impl(sycl::queue q,
     size_t wg_size = 128;
 
     StridedIndexer strided_indexer{nd, 0, shape_strides};
-    NonZeroIndicator<maskT, cumsumT> non_zero_indicator{};
+    transformerT non_zero_indicator{};
 
     sycl::event comp_ev =
         inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(strided_indexer),
@@ -329,7 +347,9 @@ template <typename fnT, typename T> struct MaskPositionsStridedFactoryForInt32
 {
     fnT get()
     {
-        fnT fn = mask_positions_strided_impl<T, std::int32_t>;
+        using cumsumT = std::int32_t;
+        fnT fn =
+            accumulate_strided_impl<T, cumsumT, NonZeroIndicator<T, cumsumT>>;
         return fn;
     }
 };
@@ -338,8 +358,26 @@ template <typename fnT, typename T> struct MaskPositionsStridedFactoryForInt64
 {
     fnT get()
     {
-        fnT fn = mask_positions_strided_impl<T, std::int64_t>;
+        using cumsumT = std::int64_t;
+        fnT fn =
+            accumulate_strided_impl<T, cumsumT, NonZeroIndicator<T, cumsumT>>;
         return fn;
+    }
+};
+
+template <typename fnT, typename T> struct Cumsum1DStridedFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_integral_v<T>) {
+            using cumsumT = std::int64_t;
+            fnT fn =
+                accumulate_strided_impl<T, cumsumT, NoOpTransformer<cumsumT>>;
+            return fn;
+        }
+        else {
+            return nullptr;
+        }
     }
 };
 

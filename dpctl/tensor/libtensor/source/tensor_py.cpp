@@ -97,6 +97,9 @@ using dpctl::tensor::py_internal::py_mask_positions;
 using dpctl::tensor::py_internal::py_nonzero;
 using dpctl::tensor::py_internal::py_place;
 
+/* ================= Repeat ====================*/
+using dpctl::tensor::py_internal::py_cumsum_1d;
+
 /* ================ Eye ================== */
 
 using dpctl::tensor::py_internal::usm_ndarray_eye;
@@ -133,9 +136,11 @@ void init_dispatch_vectors(void)
     init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
-    populate_mask_positions_dispatch_vectors();
     populate_masked_extract_dispatch_vectors();
     populate_masked_place_dispatch_vectors();
+
+    populate_mask_positions_dispatch_vectors();
+    populate_cumsum_1d_dispatch_vectors();
 
     return;
 }
@@ -353,6 +358,9 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
           py::arg("cumsum"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
+
+    m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
           py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
