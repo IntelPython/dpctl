@@ -79,7 +79,7 @@ template <typename argT, typename resT> struct IsNanFunctor
             return constant_value;
         }
         else {
-            return sycl::isnan(in);
+            return mu_ns::isnan(in);
         }
     }
 
