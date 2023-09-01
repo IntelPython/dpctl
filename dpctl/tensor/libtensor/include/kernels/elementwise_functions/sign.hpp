@@ -32,6 +32,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -48,6 +49,7 @@ namespace sign
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -81,7 +83,7 @@ template <typename argT, typename resT> struct SignFunctor
                 }
             }
             else {
-                if (std::isnan(x)) {
+                if (mu_ns::isnan(x)) {
                     return std::numeric_limits<resT>::quiet_NaN();
                 }
                 else {

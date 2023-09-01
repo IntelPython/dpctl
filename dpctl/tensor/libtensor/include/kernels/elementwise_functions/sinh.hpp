@@ -103,7 +103,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * sinh(NaN +- I 0)   = d(NaN) + I +-0.
              */
             if (y == realT(0) && !xfinite) {
-                if (std::isnan(x)) {
+                if (mu_ns::isnan(x)) {
                     return resT{x, y};
                 }
                 const realT res_im = std::copysign(realT(0), y);
@@ -129,7 +129,7 @@ template <typename argT, typename resT> struct SinhFunctor
              *
              * sinh(+-Inf + I y)   = +-Inf cos(y) + I Inf sin(y)
              */
-            if (!xfinite && !std::isnan(x)) {
+            if (!xfinite && !mu_ns::isnan(x)) {
                 if (!yfinite) {
                     return resT{x * x, x * (y - y)};
                 }

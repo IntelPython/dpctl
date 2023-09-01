@@ -59,7 +59,7 @@ template <typename argT1, typename argT2, typename resT> struct Atan2Functor
 
     resT operator()(const argT1 &in1, const argT2 &in2)
     {
-        if (std::isinf(in2) && !std::signbit(in2)) {
+        if (mu_ns::isinf(in2) && !std::signbit(in2)) {
             if (mu_ns::isfinite(in1)) {
                 return std::copysign(resT(0), in1);
             }

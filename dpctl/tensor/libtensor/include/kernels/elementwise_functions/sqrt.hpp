@@ -110,13 +110,13 @@ private:
         realT x = std::real(z);
         realT y = std::imag(z);
 
-        if (std::isinf(y)) {
+        if (mu_ns::isinf(y)) {
             return {p_inf, y};
         }
-        else if (std::isnan(x)) {
+        else if (mu_ns::isnan(x)) {
             return {x, q_nan};
         }
-        else if (std::isinf(x)) { // x is an infinity
+        else if (mu_ns::isinf(x)) { // x is an infinity
             // y is either finite, or nan
             if (std::signbit(x)) { // x == -inf
                 return {(mu_ns::isfinite(y) ? zero : y),

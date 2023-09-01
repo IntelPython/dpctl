@@ -49,6 +49,7 @@ namespace minimum
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 template <typename argT1, typename argT2, typename resT> struct MinimumFunctor
 {
@@ -66,12 +67,11 @@ template <typename argT1, typename argT2, typename resT> struct MinimumFunctor
                       tu_ns::is_complex<argT2>::value)
         {
             static_assert(std::is_same_v<argT1, argT2>);
-            using dpctl::tensor::math_utils::min_complex;
-            return min_complex<argT1>(in1, in2);
+            return mu_ns::min_complex<argT1>(in1, in2);
         }
         else if constexpr (std::is_floating_point_v<argT1> ||
                            std::is_same_v<argT1, sycl::half>)
-            return (std::isnan(in1) || in1 < in2) ? in1 : in2;
+            return (mu_ns::isnan(in1) || in1 < in2) ? in1 : in2;
         else
             return (in1 < in2) ? in1 : in2;
     }

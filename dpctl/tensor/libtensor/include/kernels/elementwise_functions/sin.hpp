@@ -114,7 +114,7 @@ template <typename argT, typename resT> struct SinFunctor
              * sinh(NaN +- I 0)   = d(NaN) + I +-0.
              */
             if (y == realT(0) && !xfinite) {
-                if (std::isnan(x)) {
+                if (mu_ns::isnan(x)) {
                     const realT sinh_re = x;
                     const realT sinh_im = y;
                     return resT{sinh_im, -sinh_re};
@@ -147,7 +147,7 @@ template <typename argT, typename resT> struct SinFunctor
              *
              * sinh(+-Inf + I y)   = +-Inf cos(y) + I Inf sin(y)
              */
-            if (std::isinf(x)) {
+            if (mu_ns::isinf(x)) {
                 if (!yfinite) {
                     const realT sinh_re = -x * x;
                     const realT sinh_im = x * (y - y);

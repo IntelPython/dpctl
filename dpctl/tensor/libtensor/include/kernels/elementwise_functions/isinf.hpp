@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -46,6 +47,7 @@ namespace isinf
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -66,8 +68,8 @@ template <typename argT, typename resT> struct IsInfFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            const bool real_isinf = std::isinf(std::real(in));
-            const bool imag_isinf = std::isinf(std::imag(in));
+            const bool real_isinf = mu_ns::isinf(std::real(in));
+            const bool imag_isinf = mu_ns::isinf(std::imag(in));
             return (real_isinf || imag_isinf);
         }
         else if constexpr (std::is_same<argT, bool>::value ||
@@ -79,7 +81,7 @@ template <typename argT, typename resT> struct IsInfFunctor
             return sycl::isinf(in);
         }
         else {
-            return std::isinf(in);
+            return mu_ns::isinf(in);
         }
     }
 

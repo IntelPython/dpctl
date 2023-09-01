@@ -81,7 +81,7 @@ template <typename argT, typename resT> struct ExpFunctor
                     return resT{q_nan, q_nan};
                 }
             }
-            else if (std::isnan(x)) {
+            else if (mu_ns::isnan(x)) {
                 /* x is nan */
                 if (y == realT(0)) {
                     return resT{in};

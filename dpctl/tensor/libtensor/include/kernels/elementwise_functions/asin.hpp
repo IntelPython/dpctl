@@ -31,6 +31,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -47,6 +48,7 @@ namespace asin
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -80,9 +82,9 @@ template <typename argT, typename resT> struct AsinFunctor
             const realT x = std::imag(in);
             const realT y = std::real(in);
 
-            if (std::isnan(x)) {
+            if (mu_ns::isnan(x)) {
                 /* asinh(NaN + I*+-Inf) = opt(+-)Inf + I*NaN */
-                if (std::isinf(y)) {
+                if (mu_ns::isinf(y)) {
                     const realT asinh_re = y;
                     const realT asinh_im = q_nan;
                     return resT{asinh_im, asinh_re};
@@ -96,9 +98,9 @@ template <typename argT, typename resT> struct AsinFunctor
                 /* All other cases involving NaN return NaN + I*NaN. */
                 return resT{q_nan, q_nan};
             }
-            else if (std::isnan(y)) {
+            else if (mu_ns::isnan(y)) {
                 /* asinh(+-Inf + I*NaN) = +-Inf + I*NaN */
-                if (std::isinf(x)) {
+                if (mu_ns::isinf(x)) {
                     const realT asinh_re = x;
                     const realT asinh_im = q_nan;
                     return resT{asinh_im, asinh_re};

@@ -32,6 +32,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -48,6 +49,7 @@ namespace atan
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -79,9 +81,9 @@ template <typename argT, typename resT> struct AtanFunctor
              */
             const realT x = std::imag(in);
             const realT y = std::real(in);
-            if (std::isnan(x)) {
+            if (mu_ns::isnan(x)) {
                 /* atanh(NaN + I*+-Inf) = sign(NaN)*0 + I*+-Pi/2 */
-                if (std::isinf(y)) {
+                if (mu_ns::isinf(y)) {
                     const realT pi_half = std::atan(realT(1)) * 2;
 
                     const realT atanh_re = std::copysign(realT(0), x);
@@ -93,9 +95,9 @@ template <typename argT, typename resT> struct AtanFunctor
                  */
                 return resT{q_nan, q_nan};
             }
-            else if (std::isnan(y)) {
+            else if (mu_ns::isnan(y)) {
                 /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
-                if (std::isinf(x)) {
+                if (mu_ns::isinf(x)) {
                     const realT atanh_re = std::copysign(realT(0), x);
                     const realT atanh_im = q_nan;
                     return resT{atanh_im, atanh_re};

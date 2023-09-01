@@ -31,6 +31,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -47,6 +48,7 @@ namespace acos
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -73,18 +75,18 @@ template <typename argT, typename resT> struct AcosFunctor
             const realT x = std::real(in);
             const realT y = std::imag(in);
 
-            if (std::isnan(x)) {
+            if (mu_ns::isnan(x)) {
                 /* acos(NaN + I*+-Inf) = NaN + I*-+Inf */
-                if (std::isinf(y)) {
+                if (mu_ns::isinf(y)) {
                     return resT{q_nan, -y};
                 }
 
                 /* all other cases involving NaN return NaN + I*NaN. */
                 return resT{q_nan, q_nan};
             }
-            if (std::isnan(y)) {
+            if (mu_ns::isnan(y)) {
                 /* acos(+-Inf + I*NaN) = NaN + I*opt(-)Inf */
-                if (std::isinf(x)) {
+                if (mu_ns::isinf(x)) {
                     return resT{q_nan, -std::numeric_limits<realT>::infinity()};
                 }
                 /* acos(0 + I*NaN) = PI/2 + I*NaN with inexact */

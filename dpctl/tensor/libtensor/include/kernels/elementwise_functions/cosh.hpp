@@ -128,7 +128,7 @@ template <typename argT, typename resT> struct CoshFunctor
              *
              * cosh(+-Inf + I y)   = +Inf cos(y) +- I Inf sin(y)
              */
-            if (std::isinf(x)) {
+            if (mu_ns::isinf(x)) {
                 if (!yfinite) {
                     return resT{x * x, x * q_nan};
                 }

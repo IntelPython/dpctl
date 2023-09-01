@@ -93,12 +93,12 @@ template <typename argT, typename resT> struct TanhFunctor
              * y is infinite.
              */
             if (!mu_ns::isfinite(x)) {
-                if (std::isnan(x)) {
+                if (mu_ns::isnan(x)) {
                     return resT{q_nan, (y == realT(0) ? y : q_nan)};
                 }
                 const realT res_re = std::copysign(realT(1), x);
                 const realT res_im = std::copysign(
-                    realT(0), std::isinf(y) ? y : std::sin(y) * std::cos(y));
+                    realT(0), mu_ns::isinf(y) ? y : std::sin(y) * std::cos(y));
                 return resT{res_re, res_im};
             }
             /*

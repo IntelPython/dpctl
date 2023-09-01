@@ -77,7 +77,7 @@ template <typename argT, typename resT> struct Expm1Functor
             const realT y = std::imag(in);
 
             // special cases
-            if (std::isinf(x)) {
+            if (mu_ns::isinf(x)) {
                 if (x > realT(0)) {
                     // positive infinity cases
                     if (!mu_ns::isfinite(y)) {
@@ -105,7 +105,7 @@ template <typename argT, typename resT> struct Expm1Functor
                 }
             }
 
-            if (std::isnan(x)) {
+            if (mu_ns::isnan(x)) {
                 if (y == realT(0)) {
                     return in;
                 }
