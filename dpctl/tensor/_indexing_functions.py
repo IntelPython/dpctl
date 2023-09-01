@@ -175,6 +175,13 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
                 indices.dtype
             )
         )
+
+    indices = dpt.flip(indices)
+    _, local_indices = np.unique(indices, return_index=True)
+    local_indices = dpt.asarray(local_indices)
+    indices = dpt.take(indices, local_indices)
+    indices = dpt.flip(indices)
+
     queues_.append(indices.sycl_queue)
     usm_types_.append(indices.usm_type)
     exec_q = dpctl.utils.get_execution_queue(queues_)
@@ -207,7 +214,9 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         vals = dpt.asarray(
             vals, dtype=x.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
-
+    vals = dpt.flip(vals)
+    vals = dpt.take(vals, local_indices)
+    vals = dpt.flip(vals)
     vals = dpt.broadcast_to(vals, val_shape)
 
     hev, _ = ti._put(x, (indices,), vals, axis, mode, sycl_queue=exec_q)
