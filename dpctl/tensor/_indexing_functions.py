@@ -120,7 +120,7 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
     return res
 
 
-def put(x, indices, vals, /, *, axis=None, mode="wrap"):
+def put(x, indices, vals, /, *, axis=None, mode="wrap", unique_only=False):
     """put(x, indices, vals, axis=None, mode="wrap")
 
     Puts values of an array into another array
@@ -144,6 +144,10 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
           negative indices.
           "clip" - clips indices to (0 <= i < n)
           Default: `"wrap"`.
+       unique_only:
+          If True, only unique indices will be used.
+          This will prevent a race condition when indices repeat,
+          but may negatively impact performance.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -176,9 +180,12 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
             )
         )
 
-    indices = dpt.flip(indices)
-    _, local_indices = np.unique(indices, return_index=True)
-    not_unique = len(indices) != len(local_indices)
+    not_unique = False
+    if unique_only:
+        indices = dpt.flip(indices)
+        _, local_indices = np.unique(indices, return_index=True)
+        not_unique = len(indices) != len(local_indices)
+
     if not_unique:
         local_indices = dpt.asarray(local_indices)
         indices = dpt.take(indices, local_indices)
