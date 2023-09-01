@@ -146,7 +146,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap", unique_only=False):
           Default: `"wrap"`.
        unique_only:
           If True, only unique indices will be used.
-          This will prevent a race condition when indices repeat,
+          This will prevent a undefined behavior when indices repeat,
           but may negatively impact performance.
     """
     if not isinstance(x, dpt.usm_ndarray):
@@ -179,6 +179,10 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap", unique_only=False):
                 indices.dtype
             )
         )
+    if not isinstance(unique_only, bool):
+        raise TypeError("`unique_only` expected `bool`, got `{}`".format(
+            type(unique_only)
+        ))
 
     not_unique = False
     if unique_only:
