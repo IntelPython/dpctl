@@ -110,7 +110,7 @@ Array Manipulation
     * - :func:`permute_dims()`
       - Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`repeat()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Repeat elements of an array.
     * - :func:`reshape()`
       - Reshapes array `x` into new shape.
     * - :func:`result_type()`
