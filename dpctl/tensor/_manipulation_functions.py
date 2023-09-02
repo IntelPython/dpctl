@@ -921,6 +921,31 @@ def swapaxes(X, axis1, axis2):
 
 
 def repeat(x, repeats, axis=None):
+    """repeat(x, repeats, axis=None)
+
+    Repeat elements of an array.
+
+    Args:
+        x (usm_ndarray): input array
+
+        repeat (Union[int, Tuple[int, ...]]):
+            The number of repetitions for each element.
+            `repeats` is broadcasted to fit the shape of the given axis.
+
+        axis (Optional[int]):
+            The axis along which to repeat values. The `axis` is required
+            if input array has more than one dimension.
+
+    Returns:
+        usm_narray:
+            Array with repeated elements.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same USM
+            allocation type as `x`.
+
+    Raises:
+        AxisError: if `axis` value is invalid.
+    """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
 
