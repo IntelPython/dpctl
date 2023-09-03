@@ -837,25 +837,36 @@ private:
     Ty *dst_p = nullptr;
     SrcIndexerT src_indexer_;
     DstIndexerT dst_indexer_;
+    size_t nelems_;
+    size_t n_per_wi_;
 
 public:
     StridedCopyForRollFunctor(const Ty *src_ptr,
                               Ty *dst_ptr,
                               SrcIndexerT src_indexer,
-                              DstIndexerT dst_indexer)
+                              DstIndexerT dst_indexer,
+                              size_t nelems,
+                              size_t n_per_wi)
         : src_p(src_ptr), dst_p(dst_ptr), src_indexer_(src_indexer),
-          dst_indexer_(dst_indexer)
+          dst_indexer_(dst_indexer), nelems_(nelems), n_per_wi_(n_per_wi)
     {
     }
 
-    void operator()(sycl::id<1> wiid) const
+    void operator()(sycl::nd_item<1> it) const
     {
-        const size_t gid = wiid.get(0);
+        const size_t wg = it.get_local_range(0);
 
-        const py::ssize_t src_offset = src_indexer_(gid);
-        const py::ssize_t dst_offset = dst_indexer_(gid);
+        const size_t elem_id0 = wg * n_per_wi_ * it.get_group_linear_id() +
+                                it.get_local_linear_id();
+        const size_t max_elem_id =
+            std::min<size_t>(nelems_, elem_id0 + wg * n_per_wi_);
 
-        dst_p[dst_offset] = src_p[src_offset];
+        for (size_t elem_id = elem_id0; elem_id < max_elem_id; elem_id += wg) {
+            const py::ssize_t src_offset = src_indexer_(elem_id);
+            const py::ssize_t dst_offset = dst_indexer_(elem_id);
+
+            dst_p[dst_offset] = src_p[src_offset];
+        }
     }
 };
 
@@ -937,11 +948,17 @@ copy_for_roll_strided_impl(sycl::queue q,
         const Ty *src_tp = reinterpret_cast<const Ty *>(src_p);
         Ty *dst_tp = reinterpret_cast<Ty *>(dst_p);
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(nelems),
-            StridedCopyForRollFunctor<Ty, CompositeIndexerT,
-                                      UnpackedStridedIndexer>(
-                src_tp, dst_tp, rolled_src_indexer, dst_indexer));
+        size_t copies_per_wi = 2;
+        auto krn = StridedCopyForRollFunctor<Ty, CompositeIndexerT,
+                                             UnpackedStridedIndexer>(
+            src_tp, dst_tp, rolled_src_indexer, dst_indexer, nelems,
+            copies_per_wi);
+
+        size_t wg = 64;
+        size_t n_groups =
+            (nelems + copies_per_wi * wg - 1) / (copies_per_wi * wg);
+
+        cgh.parallel_for<KernelName>(sycl::nd_range<1>(n_groups * wg, wg), krn);
     });
 
     return copy_for_roll_ev;
@@ -1008,12 +1025,18 @@ sycl::event copy_for_roll_contig_impl(sycl::queue q,
         const Ty *src_tp = reinterpret_cast<const Ty *>(src_p) + src_offset;
         Ty *dst_tp = reinterpret_cast<Ty *>(dst_p) + dst_offset;
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(nelems),
-            StridedCopyForRollFunctor<
-                Ty, CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>,
-                NoOpIndexer>(src_tp, dst_tp, left_rolled_src_indexer,
-                             dst_indexer));
+        size_t copies_per_wi = 2;
+
+        auto krn = StridedCopyForRollFunctor<
+            Ty, CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>,
+            NoOpIndexer>(src_tp, dst_tp, left_rolled_src_indexer, dst_indexer,
+                         nelems, copies_per_wi);
+
+        size_t wg = 64;
+        size_t n_groups =
+            (nelems + copies_per_wi * wg - 1) / (copies_per_wi * wg);
+
+        cgh.parallel_for<KernelName>(sycl::nd_range<1>(n_groups * wg, wg), krn);
     });
 
     return copy_for_roll_ev;
@@ -1103,11 +1126,17 @@ sycl::event copy_for_roll_ndshift_strided_impl(
         const Ty *src_tp = reinterpret_cast<const Ty *>(src_p);
         Ty *dst_tp = reinterpret_cast<Ty *>(dst_p);
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(nelems),
-            StridedCopyForRollFunctor<Ty, RolledNDIndexer,
-                                      UnpackedStridedIndexer>(
-                src_tp, dst_tp, src_indexer, dst_indexer));
+        size_t copies_per_wi = 2;
+
+        auto krn = StridedCopyForRollFunctor<Ty, RolledNDIndexer,
+                                             UnpackedStridedIndexer>(
+            src_tp, dst_tp, src_indexer, dst_indexer, nelems, copies_per_wi);
+
+        size_t wg = 64;
+        size_t n_groups =
+            (nelems + copies_per_wi * wg - 1) / (copies_per_wi * wg);
+
+        cgh.parallel_for<KernelName>(sycl::nd_range<1>(n_groups * wg, wg), krn);
     });
 
     return copy_for_roll_ev;
