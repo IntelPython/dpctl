@@ -53,7 +53,7 @@
         "__STDC_CONSTANT_MACROS before #including llvm-c/DataTypes.h"
 #endif
 
-/* Note thatt <inttypes.h> includes <stdint.h>, if this is a C99 system. */
+/* Note that <inttypes.h> includes <stdint.h>, if this is a C99 system. */
 #include <sys/types.h>
 
 #ifdef _AIX
