@@ -4,4 +4,4 @@ The header `dlpack.h` downloaded from `https://github.com/dmlc/dlpack.git` remot
 
 The file can also be viewed using github web interface at https://github.com/dmlc/dlpack/blob/e2bdd3bee8cb6501558042633fa59144cc8b7f5f/include/dlpack/dlpack.h
 
-License file was retrived from https://github.com/dmlc/dlpack/blob/main/LICENSE
+License file was retrieved from https://github.com/dmlc/dlpack/blob/main/LICENSE

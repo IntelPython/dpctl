@@ -425,7 +425,7 @@ cdef class usm_ndarray:
         cdef char *ary_ptr = NULL
         if (not isinstance(self.base_, dpmem._memory._Memory)):
             raise InternalUSMArrayError(
-                "Invalid instance of usm_ndarray ecountered. "
+                "Invalid instance of usm_ndarray encountered. "
                 "Private field base_ has an unexpected type {}.".format(
                     type(self.base_)
                 )
@@ -566,7 +566,7 @@ cdef class usm_ndarray:
             elif (self.flags_ & USM_ARRAY_F_CONTIGUOUS):
                 return _f_contig_strides(self.nd_, self.shape_)
             else:
-                raise ValueError("Inconsitent usm_ndarray data")
+                raise ValueError("Inconsistent usm_ndarray data")
 
     @property
     def flags(self):
@@ -653,7 +653,7 @@ cdef class usm_ndarray:
 
     @property
     def T(self):
-        """ Returns tranposed array for 2D array, raises `ValueError`
+        """ Returns transposed array for 2D array, raises `ValueError`
         otherwise.
         """
         if self.nd_ == 2:
@@ -1376,8 +1376,8 @@ cdef api object UsmNDArray_MakeSimpleFromMemory(
         QRef: DPCTLSyclQueueRef associated with the allocation
         offset: distance between element with zero multi-index and the
                 start of allocation
-        oder: Memory layout of the array. Use 'C' for C-contiguous or
-              row-major layout; 'F' for F-contiguous or column-major layout
+        order: Memory layout of the array. Use 'C' for C-contiguous or
+               row-major layout; 'F' for F-contiguous or column-major layout
     Returns:
         Created usm_ndarray instance
     """

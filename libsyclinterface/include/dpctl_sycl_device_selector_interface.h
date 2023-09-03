@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares C contructors for the various SYCL device_selector
+/// This header declares C constructors for the various SYCL device_selector
 /// classes.
 ///
 //===----------------------------------------------------------------------===//

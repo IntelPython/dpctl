@@ -118,7 +118,7 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
  * @brief Generic function to copy `nelems` elements from `src` usm_ndarray to
  `dst` usm_ndarray while casting from `srcTy` to `dstTy`.
 
-   Both arrays have array dimensionality specied via argument `nd`. The
+   Both arrays have array dimensionality specified via argument `nd`. The
  `shape_and_strides` is kernel accessible USM array of length `3*nd`, where the
  first `nd` elements encode common shape, second `nd` elements contain strides
  of `src` array, and the trailing `nd` elements contain strides of `dst` array.
@@ -696,7 +696,7 @@ typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
  * @param  src_nd Array dimension of the source array
  * @param  dst_nd Array dimension of the destination array
  * @param  packed_shapes_and_strides Kernel accessible USM array of size
- * `2*src_nd + 2*dst_nd` with contant `[src_shape, src_strides, dst_shape,
+ * `2*src_nd + 2*dst_nd` with content `[src_shape, src_strides, dst_shape,
  * dst_strides]`.
  * @param  src_p  Typeless USM pointer to the buffer of the source array
  * @param  dst_p  Typeless USM pointer to the buffer of the destination array
