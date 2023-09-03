@@ -83,8 +83,8 @@ DPCTL_C_EXTERN_C_BEGIN
     /*!                                                                        \
        @brief Returns the element at the specified index.                      \
        @param VRef Opaque pointer to a vector.                                 \
-       @param index The index postion of the element to be returned.           \
-       @return The element at the specified postion, if the index position is  \
+       @param index The index position of the element to be returned.          \
+       @return The element at the specified position, if the index position is \
                out of bounds then a nullptr is returned.                       \
      */                                                                        \
     DPCTL_API                                                                  \

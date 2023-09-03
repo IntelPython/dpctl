@@ -56,7 +56,7 @@ def _copy_to_numpy(ary):
 
 def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     "Copies numpy array `np_ary` into a new usm_ndarray"
-    # This may peform a copy to meet stated requirements
+    # This may perform a copy to meet stated requirements
     Xnp = np.require(np_ary, requirements=["A", "E"])
     alloc_q = normalize_queue_device(sycl_queue=sycl_queue, device=None)
     dt = Xnp.dtype

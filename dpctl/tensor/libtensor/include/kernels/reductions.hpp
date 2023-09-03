@@ -642,7 +642,7 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+        // reduction only requires 1 work-group, can output directly to res
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 

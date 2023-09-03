@@ -42,8 +42,8 @@ DPCTL_C_EXTERN_C_BEGIN
  */
 
 /*!
- * @brief A wrapper for sycl::queue contructor to construct a new queue from the
- * provided context, device, async handler and propertis bit flags.
+ * @brief A wrapper for sycl::queue constructor to construct a new queue from
+ * the provided context, device, async handler and propertis bit flags.
  *
  * @param    CRef           An opaque pointer to a sycl::context.
  * @param    DRef           An opaque pointer to a sycl::device
@@ -362,7 +362,7 @@ DPCTL_API
 size_t DPCTLQueue_Hash(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief C-API wraper for ``sycl::queue::submit_barrier()``.
+ * @brief C-API wrapper for ``sycl::queue::submit_barrier()``.
  *
  * @param    QRef    An opaque pointer to the ``sycl::queue``.
  * @return   An opaque pointer to the ``sycl::event`` returned by the
@@ -373,7 +373,7 @@ __dpctl_give DPCTLSyclEventRef
 DPCTLQueue_SubmitBarrier(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief C-API wraper for ``sycl::queue::submit_barrier(event_vector)``.
+ * @brief C-API wrapper for ``sycl::queue::submit_barrier(event_vector)``.
  *
  * @param    QRef    An opaque pointer to the ``sycl::queue``.
  * @param    DepEvents     List of dependent DPCTLSyclEventRef objects (events)

@@ -92,7 +92,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
                         void *src_ptr, SyclQueue src_queue, size_t nbytes):
     """
     Copies `nbytes` bytes from `src_ptr` USM memory to
-    `dest_ptr` USM memory using host as the intemediary.
+    `dest_ptr` USM memory using host as the intermediary.
 
     This is useful when `src_ptr` and `dest_ptr` are bound to incompatible
     SYCL contexts.

@@ -96,7 +96,7 @@ class Device:
     @property
     def sycl_device(self):
         """
-        :class:`dpctl.SyclDevice` targed by this :class:`.Device`.
+        :class:`dpctl.SyclDevice` targeted by this :class:`.Device`.
         """
         return self.sycl_queue_.sycl_device
 

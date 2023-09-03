@@ -37,14 +37,14 @@ class SyclTimer:
             q = dpctl.SyclQueue(property='enable_profiling')
 
             # create the timer
-            miliseconds_sc = 1e-3
-            timer = dpctl.SyclTimer(time_scale = miliseconds_sc)
+            milliseconds_sc = 1e-3
+            timer = dpctl.SyclTimer(time_scale = milliseconds_sc)
 
             # use the timer
             with timer(queue=q):
                 code_block
 
-            # retrieve elapsed times in miliseconds
+            # retrieve elapsed times in milliseconds
             sycl_dt, wall_dt = timer.dt
 
     Remark:

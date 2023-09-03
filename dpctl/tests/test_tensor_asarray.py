@@ -71,7 +71,7 @@ def test_asarray_from_numpy():
     assert type(Y) is dpt.usm_ndarray
     assert Y.shape == Xnp.shape
     assert Y.dtype == Xnp.dtype
-    # Fortan contiguous case
+    # Fortran contiguous case
     Xnp = np.array([[1, 2, 3], [4, 5, 6]], dtype="f4", order="F")
     Y = dpt.asarray(Xnp, usm_type="shared")
     assert type(Y) is dpt.usm_ndarray

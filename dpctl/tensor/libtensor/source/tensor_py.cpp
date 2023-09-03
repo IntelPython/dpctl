@@ -245,7 +245,7 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     m.def("_copy_numpy_ndarray_into_usm_ndarray",
           &copy_numpy_ndarray_into_usm_ndarray,
-          "Copy fom numpy array `src` into usm_ndarray `dst` synchronously.",
+          "Copy from numpy array `src` into usm_ndarray `dst` synchronously.",
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
