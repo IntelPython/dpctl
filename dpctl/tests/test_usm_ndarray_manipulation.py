@@ -1232,7 +1232,7 @@ def test_repeat_arg_validation():
     with pytest.raises(ValueError):
         dpt.repeat(x, 2, axis=1)
 
-    # x.ndim must be 1 for axis=None
+    # x.ndim cannot be > 1 for axis=None
     x = dpt.empty((5, 10))
     with pytest.raises(ValueError):
         dpt.repeat(x, 2, axis=None)
@@ -1245,6 +1245,10 @@ def test_repeat_arg_validation():
     # repeats must be integers
     with pytest.raises(TypeError):
         dpt.repeat(x, 2.0)
+
+    # repeats tuple elements must be integers
+    with pytest.raises(TypeError):
+        dpt.repeat(x, (2.0,))
 
     # repeats tuple must be the same length as axis
     with pytest.raises(ValueError):

@@ -951,7 +951,7 @@ def repeat(x, repeats, axis=None):
 
     x_ndim = x.ndim
     if axis is None:
-        if x_ndim != 1:
+        if x_ndim > 1:
             raise ValueError(
                 f"`axis` cannot be `None` for array of dimension {x_ndim}"
             )
@@ -979,6 +979,8 @@ def repeat(x, repeats, axis=None):
             )
         elif len_reps == 1:
             repeats = repeats[0]
+            if not isinstance(repeats, int):
+                raise TypeError("`repeats` elements must be integers")
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
             scalar = True
