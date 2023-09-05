@@ -17,15 +17,8 @@
 #
 
 if(NOT Dpctl_FOUND)
-  set(_find_extra_args)
-  if(Dpctl_FIND_REQUIRED)
-    list(APPEND _find_extra_args REQUIRED)
-  endif()
-  if(Dpctl_FIND_QUIET)
-    list(APPEND _find_extra_args QUIET)
-  endif()
-  find_package(PythonInterp ${_find_extra_args})
-  find_package(PythonLibs ${_find_extra_args})
+  find_package(Python 3.9 REQUIRED
+    COMPONENTS Interpreter Development.Module)
 
   if(PYTHON_EXECUTABLE)
     execute_process(COMMAND "${PYTHON_EXECUTABLE}"
