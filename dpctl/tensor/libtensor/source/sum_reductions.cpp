@@ -88,8 +88,11 @@ static sum_reduction_strided_impl_fn_ptr
 
 using dpctl::tensor::kernels::sum_reduction_contig_impl_fn_ptr;
 static sum_reduction_contig_impl_fn_ptr
-    sum_over_axis_contig_atomic_dispatch_table[td_ns::num_types]
-                                              [td_ns::num_types];
+    sum_over_axis1_contig_atomic_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+static sum_reduction_contig_impl_fn_ptr
+    sum_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
 
 std::pair<sycl::event, sycl::event> py_sum_over_axis(
     dpctl::tensor::usm_ndarray src,
@@ -194,8 +197,30 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
         if ((is_src_c_contig && is_dst_c_contig) ||
             (is_src_f_contig && dst_nelems == 1))
         {
-            auto fn = sum_over_axis_contig_atomic_dispatch_table[src_typeid]
-                                                                [dst_typeid];
+            auto fn = sum_over_axis1_contig_atomic_dispatch_table[src_typeid]
+                                                                 [dst_typeid];
+            if (fn != nullptr) {
+                size_t iter_nelems = dst_nelems;
+
+                constexpr py::ssize_t zero_offset = 0;
+
+                sycl::event sum_over_axis_contig_ev =
+                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                       dst.get_data(),
+                       zero_offset, // iteration_src_offset
+                       zero_offset, // iteration_dst_offset
+                       zero_offset, // reduction_src_offset
+                       depends);
+
+                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                    exec_q, {src, dst}, {sum_over_axis_contig_ev});
+
+                return std::make_pair(keep_args_event, sum_over_axis_contig_ev);
+            }
+        }
+        else if (is_src_f_contig & is_dst_c_contig) {
+            auto fn = sum_over_axis0_contig_atomic_dispatch_table[src_typeid]
+                                                                 [dst_typeid];
             if (fn != nullptr) {
                 size_t iter_nelems = dst_nelems;
 
@@ -271,27 +296,58 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
                                  iteration_src_offset, iteration_dst_offset);
     }
 
-    if (supports_atomics && (reduction_nd == 1) &&
-        (simplified_reduction_src_strides[0] == 1) && (iteration_nd == 1) &&
-        ((simplified_iteration_shape[0] == 1) ||
-         ((simplified_iteration_dst_strides[0] == 1) &&
-          (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
-           reduction_nelems))))
-    {
-        auto fn =
-            sum_over_axis_contig_atomic_dispatch_table[src_typeid][dst_typeid];
-        if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+    if (supports_atomics && (reduction_nd == 1) && (iteration_nd == 1)) {
+        bool mat_reduce_over_axis1 = false;
+        bool mat_reduce_over_axis0 = false;
+        bool array_reduce_all_elems = false;
+        size_t iter_nelems = dst_nelems;
 
-            sycl::event sum_over_axis_contig_ev =
-                fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
-                   dst.get_data(), iteration_src_offset, iteration_dst_offset,
-                   reduction_src_offset, depends);
+        if (simplified_reduction_src_strides[0] == 1) {
+            array_reduce_all_elems = (simplified_iteration_shape[0] == 1);
+            mat_reduce_over_axis1 =
+                (simplified_iteration_dst_strides[0] == 1) &&
+                (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
+                 reduction_nelems);
+        }
+        else if (static_cast<size_t>(simplified_reduction_src_strides[0]) ==
+                 iter_nelems)
+        {
+            mat_reduce_over_axis0 =
+                (simplified_iteration_dst_strides[0] == 1) &&
+                (simplified_iteration_src_strides[0] == 1);
+        }
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
-                exec_q, {src, dst}, {sum_over_axis_contig_ev});
+        if (mat_reduce_over_axis1 || array_reduce_all_elems) {
+            auto fn = sum_over_axis1_contig_atomic_dispatch_table[src_typeid]
+                                                                 [dst_typeid];
+            if (fn != nullptr) {
+                sycl::event sum_over_axis1_contig_ev =
+                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                       dst.get_data(), iteration_src_offset,
+                       iteration_dst_offset, reduction_src_offset, depends);
 
-            return std::make_pair(keep_args_event, sum_over_axis_contig_ev);
+                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                    exec_q, {src, dst}, {sum_over_axis1_contig_ev});
+
+                return std::make_pair(keep_args_event,
+                                      sum_over_axis1_contig_ev);
+            }
+        }
+        else if (mat_reduce_over_axis0) {
+            auto fn = sum_over_axis0_contig_atomic_dispatch_table[src_typeid]
+                                                                 [dst_typeid];
+            if (fn != nullptr) {
+                sycl::event sum_over_axis0_contig_ev =
+                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                       dst.get_data(), iteration_src_offset,
+                       iteration_dst_offset, reduction_src_offset, depends);
+
+                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                    exec_q, {src, dst}, {sum_over_axis0_contig_ev});
+
+                return std::make_pair(keep_args_event,
+                                      sum_over_axis0_contig_ev);
+            }
         }
     }
 
@@ -451,11 +507,17 @@ void populate_sum_over_axis_dispatch_table(void)
         dtb2;
     dtb2.populate_dispatch_table(sum_over_axis_strided_temps_dispatch_table);
 
-    using dpctl::tensor::kernels::SumOverAxisAtomicContigFactory;
+    using dpctl::tensor::kernels::SumOverAxis1AtomicContigFactory;
     DispatchTableBuilder<sum_reduction_contig_impl_fn_ptr,
-                         SumOverAxisAtomicContigFactory, num_types>
+                         SumOverAxis1AtomicContigFactory, num_types>
         dtb3;
-    dtb3.populate_dispatch_table(sum_over_axis_contig_atomic_dispatch_table);
+    dtb3.populate_dispatch_table(sum_over_axis1_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::SumOverAxis0AtomicContigFactory;
+    DispatchTableBuilder<sum_reduction_contig_impl_fn_ptr,
+                         SumOverAxis0AtomicContigFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(sum_over_axis0_contig_atomic_dispatch_table);
 }
 
 namespace py = pybind11;
