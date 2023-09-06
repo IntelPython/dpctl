@@ -70,7 +70,7 @@ def test_is_in_device_context_inside_nested_device_ctxt_cpu():
     n_half = n // 2
     try:
         d0, d1 = cpu.create_sub_devices(partition=[n_half, n - n_half])
-    except Exception:
+    except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Could not create subdevices")
     assert 0 == dpctl.get_num_activated_queues()
     with dpctl.device_context(d0):
