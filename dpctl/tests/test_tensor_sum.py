@@ -172,3 +172,18 @@ def test_largish_reduction(arg_dtype, n):
 
     assert dpt.all(dpt.equal(y1, y2))
     assert dpt.all(dpt.equal(y1, n * m))
+
+
+def test_axis0_bug():
+    "gh-1391"
+    get_queue_or_skip()
+
+    sh = (1, 2, 3)
+    a = dpt.arange(sh[0] * sh[1] * sh[2], dtype="i4")
+    a = dpt.reshape(a, sh)
+    aT = dpt.permute_dims(a, (2, 1, 0))
+
+    s = dpt.sum(aT, axis=2)
+    expected = dpt.asarray([[0, 3], [1, 4], [2, 5]])
+
+    assert dpt.all(s == expected)
