@@ -218,7 +218,9 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
                 return std::make_pair(keep_args_event, sum_over_axis_contig_ev);
             }
         }
-        else if (is_src_f_contig & is_dst_c_contig) {
+        else if (is_src_f_contig &&
+                 ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
+        {
             auto fn = sum_over_axis0_contig_atomic_dispatch_table[src_typeid]
                                                                  [dst_typeid];
             if (fn != nullptr) {
