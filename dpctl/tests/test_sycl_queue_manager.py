@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2022 Intel Corporation
+# Copyright 2020-2023 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ def test_is_in_device_context_inside_nested_device_ctxt_cpu():
     n = cpu.max_compute_units
     n_half = n // 2
     try:
-        d0, d1 = cpu.create_subdevices(partition=[n_half, n - n_half])
+        d0, d1 = cpu.create_sub_devices(partition=[n_half, n - n_half])
     except Exception:
         pytest.skip("Could not create subdevices")
     assert 0 == dpctl.get_num_activated_queues()
