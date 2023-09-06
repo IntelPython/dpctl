@@ -116,7 +116,7 @@ template <typename argT, typename resT> struct Expm1Functor
             // x, y finite numbers
             realT cosY_val;
             auto cosY_val_multi_ptr = sycl::address_space_cast<
-                sycl::access::address_space::global_space,
+                sycl::access::address_space::private_space,
                 sycl::access::decorated::yes>(&cosY_val);
             const realT sinY_val = sycl::sincos(y, cosY_val_multi_ptr);
             const realT sinhalfY_val = std::sin(y / 2);
