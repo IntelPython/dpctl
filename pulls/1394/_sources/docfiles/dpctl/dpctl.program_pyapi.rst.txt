@@ -1,0 +1,44 @@
+.. _dpctl.program_pyapi:
+
+#############
+dpctl.program
+#############
+
+.. currentmodule:: dpctl.program
+
+.. automodule:: dpctl.program
+
+
+.. _dpctl.program_classes:
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   SyclKernel
+   SyclProgram
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclKernel`
+      - [FIXME]: <class 'type'> has a docstring with no summary
+    * - :class:`SyclProgram`
+      - Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object created using SYCL interoperability layer with underlying backends. Only the OpenCL and Level-Zero backends are currently supported.
+
+
+
+
+
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclProgramCompilationError`
+      - This exception is raised when a ``sycl::kernel_bundle`` could not be built from either a SPIR-V binary file or a string source.
+
+
