@@ -255,7 +255,7 @@ A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef objec
 		int properties
 		)
 
-A wrapper for sycl::queue contructor to construct a new queue from the provided context, device, async handler and propertis bit flags.
+A wrapper for sycl::queue constructor to construct a new queue from the provided context, device, async handler and propertis bit flags.
 
 
 

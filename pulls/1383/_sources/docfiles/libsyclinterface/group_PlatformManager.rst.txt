@@ -274,13 +274,13 @@ Returns the element at the specified index.
 	*
 		- index
 
-		- The index postion of the element to be returned.
+		- The index position of the element to be returned.
 
 
 
 .. rubric:: Returns:
 
-The element at the specified postion, if the index position is out of bounds then a nullptr is returned.
+The element at the specified position, if the index position is out of bounds then a nullptr is returned.
 
 .. index:: pair: function; DPCTLPlatformVector_Size
 .. _doxid-d5/dcf/group___platform_manager_1ga713c99c0d385de070ae32d4d7657401e:
