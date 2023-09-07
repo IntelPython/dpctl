@@ -1472,13 +1472,13 @@ Returns the element at the specified index.
 	*
 		- index
 
-		- The index postion of the element to be returned.
+		- The index position of the element to be returned.
 
 
 
 .. rubric:: Returns:
 
-The element at the specified postion, if the index position is out of bounds then a nullptr is returned.
+The element at the specified position, if the index position is out of bounds then a nullptr is returned.
 
 .. index:: pair: function; DPCTLEventVector_Size
 .. _doxid-d5/d12/dpctl__sycl__event__interface_8h_1a65819357fd48d2ed7452b65f9c92ef27:
@@ -1518,7 +1518,7 @@ The current size of the vector.
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	DPCTLQueue_SubmitBarrier(__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef)
 
-C-API wraper for ``sycl::queue::submit_barrier()``.
+C-API wrapper for ``sycl::queue::submit_barrier()``.
 
 
 
@@ -1551,7 +1551,7 @@ An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::submit_b
 		size_t NDepEvents
 		)
 
-C-API wraper for ``sycl::queue::submit_barrier(event_vector)``.
+C-API wrapper for ``sycl::queue::submit_barrier(event_vector)``.
 
 
 

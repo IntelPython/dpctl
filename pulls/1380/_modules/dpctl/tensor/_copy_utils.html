@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev4+42.g980ed8843 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.14.6dev4+62.gd756d6b44 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=81da09b4"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=6206a9e9"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev4+42.g980ed8843
+                0.14.6dev4+62.gd756d6b44
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -148,7 +148,7 @@
 
 <span class="k">def</span> <span class="nf">_copy_from_numpy</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="s2">&quot;Copies numpy array `np_ary` into a new usm_ndarray&quot;</span>
-    <span class="c1"># This may peform a copy to meet stated requirements</span>
+    <span class="c1"># This may perform a copy to meet stated requirements</span>
     <span class="n">Xnp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">np_ary</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">])</span>
     <span class="n">alloc_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">Xnp</span><span class="o">.</span><span class="n">dtype</span>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data Parallel Control (dpctl) 0.14.6dev4+42.g980ed8843 documentation</title>
+  <title>Global Namespace &mdash; Data Parallel Control (dpctl) 0.14.6dev4+62.gd756d6b44 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=81da09b4"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6206a9e9"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev4+42.g980ed8843
+                0.14.6dev4+62.gd756d6b44
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1269,12 +1269,12 @@
 <td><p>Opaque pointer to a vector.</p></td>
 </tr>
 <tr class="row-even"><td><p>index</p></td>
-<td><p>The index postion of the element to be returned.</p></td>
+<td><p>The index position of the element to be returned.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Returns:</p>
-<p>The element at the specified postion, if the index position is out of bounds then a nullptr is returned.</p>
+<p>The element at the specified position, if the index position is out of bounds then a nullptr is returned.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a65819357fd48d2ed7452b65f9c92ef27"><span id="index-30"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLEventVector_Size</span><span class="p">(</span><span class="n">__dpctl_keep</span> <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Returns the number of elements in the vector.</p>
@@ -1294,7 +1294,7 @@
 <p>The current size of the vector.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a2453786e50a7d7e51a0d240b2ce52f53"><span id="index-31"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLQueue_SubmitBarrier</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
-<p>C-API wraper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code>.</p>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code>.</p>
 <p class="rubric">Parameters:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1315,7 +1315,7 @@
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">NDepEvents</span>
     <span class="p">)</span></pre>
-<p>C-API wraper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier(event_vector)</span></code>.</p>
+<p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier(event_vector)</span></code>.</p>
 <p class="rubric">Parameters:</p>
 <table class="docutils align-default">
 <colgroup>

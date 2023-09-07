@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev4+42.g980ed8843 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev4+62.gd756d6b44 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=81da09b4"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=6206a9e9"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev4+42.g980ed8843
+                0.14.6dev4+62.gd756d6b44
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -408,7 +408,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Use numpy.broadcast_to to check the validity of the input</span>
-    <span class="c1"># parametr &#39;shape&#39;. Raise ValueError if &#39;X&#39; is not compatible</span>
+    <span class="c1"># parameter &#39;shape&#39;. Raise ValueError if &#39;X&#39; is not compatible</span>
     <span class="c1"># with &#39;shape&#39; according to NumPy&#39;s broadcasting rules.</span>
     <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;u1&quot;</span><span class="p">),</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">shape</span>
@@ -839,7 +839,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        iinfo_object:</span>
-<span class="sd">            An object with the followign attributes</span>
+<span class="sd">            An object with the following attributes</span>
 <span class="sd">            * bits: int</span>
 <span class="sd">                number of bits occupied by the data type</span>
 <span class="sd">            * max: int</span>
