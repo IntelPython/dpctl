@@ -72,7 +72,7 @@ import logging
 
 
 cdef extern from "_host_task_util.hpp":
-    int async_dec_ref(DPCTLSyclQueueRef, PyObject **, size_t, DPCTLSyclEventRef *, size_t) nogil
+    DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef, PyObject **, size_t, DPCTLSyclEventRef *, size_t, int *) nogil
 
 
 __all__ = [
@@ -703,6 +703,79 @@ cdef class SyclQueue(_SyclQueue):
         """
         return <size_t>self._queue_ref
 
+
+    cpdef SyclEvent _submit_keep_args_alive(
+        self,
+        object args,
+        list dEvents
+    ):
+        """ SyclQueue._submit_keep_args_alive(args, events)
+
+        Keeps objects in `args` alive until tasks associated with events
+        complete.
+
+        Args:
+            args(object): Python object to keep alive.
+               Typically a tuple with arguments to offloaded tasks
+            events(Tuple[dpctl.SyclEvent]): Gating events
+               The list or tuple of events associated with tasks
+               working on Python objects collected in `args`.
+        Returns:
+            dpctl.SyclEvent
+               The event associated with the submission of host task.
+
+        Increments reference count of `args` and schedules asynchronous
+        ``host_task`` to decrement the count once dependent events are
+        complete.
+
+        N.B.: The `host_task` attempts to acquire Python GIL, and it is
+        known to be unsafe during interpreter shudown sequence. It is
+        thus strongly advised to ensure that all submitted `host_task`
+        complete before the end of the Python script.
+        """
+        cdef size_t nDE = len(dEvents)
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef PyObject *args_raw = NULL
+        cdef DPCTLSyclEventRef htERef = NULL
+        cdef int status = -1
+
+        # Create the array of dependent events if any
+        if nDE > 0:
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if not depEvents:
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dEvents):
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        free(depEvents)
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
+
+        # increment reference counts to list of arguments
+        Py_INCREF(args)
+
+        # schedule decrement
+        args_raw = <PyObject *>args
+
+        htERef = async_dec_ref(
+            self.get_queue_ref(),
+            &args_raw, 1,
+            depEvents, nDE, &status
+        )
+
+        free(depEvents)
+        if (status != 0):
+            with nogil: DPCTLEvent_Wait(htERef)
+            raise RuntimeError("Could not submit keep_args_alive host_task")
+
+        return SyclEvent._create(htERef)
+
+
     cpdef SyclEvent submit(
         self,
         SyclKernel kernel,
@@ -715,13 +788,14 @@ cdef class SyclQueue(_SyclQueue):
         cdef _arg_data_type *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef Eref = NULL
+        cdef DPCTLSyclEventRef htEref = NULL
         cdef int ret = 0
         cdef size_t gRange[3]
         cdef size_t lRange[3]
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
-        cdef PyObject **arg_objects = NULL
+        cdef PyObject *args_raw = NULL
         cdef ssize_t i = 0
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
@@ -745,7 +819,15 @@ cdef class SyclQueue(_SyclQueue):
                 raise MemoryError()
             else:
                 for idx, de in enumerate(dEvents):
-                    depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        free(kargs)
+                        free(kargty)
+                        free(depEvents)
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
 
         # populate the args and argstype arrays
         ret = self._populate_args(args, kargs, kargty)
@@ -823,22 +905,23 @@ cdef class SyclQueue(_SyclQueue):
             raise SyclKernelSubmitError(
                 "Kernel submission to Sycl queue failed."
             )
-        # increment reference counts to each argument
-        arg_objects = <PyObject **>malloc(len(args) * sizeof(PyObject *))
-        for i in range(len(args)):
-            arg_objects[i] = <PyObject *>(args[i])
-            Py_INCREF(<object> arg_objects[i])
+        # increment reference counts to list of arguments
+        Py_INCREF(args)
 
         # schedule decrement
-        if async_dec_ref(self.get_queue_ref(), arg_objects, len(args), &Eref, 1):
-            # async task submission failed, decrement ref counts and wait
-            for i in range(len(args)):
-                arg_objects[i] = <PyObject *>(args[i])
-                Py_DECREF(<object> arg_objects[i])
-            with nogil: DPCTLEvent_Wait(Eref)
+        args_raw = <PyObject *>args
 
-        # free memory
-        free(arg_objects)
+        ret = -1
+        htERef = async_dec_ref(self.get_queue_ref(), &args_raw, 1, &Eref, 1, &ret)
+        if ret:
+            # async task submission failed, decrement ref counts and wait
+            Py_DECREF(args)
+            with nogil:
+                 DPCTLEvent_Wait(Eref)
+                 DPCTLEvent_Wait(htERef)
+
+        # we are not returning host-task event at the moment
+        DPCTLEvent_Delete(htERef)
 
         return SyclEvent._create(Eref)
 
