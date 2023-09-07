@@ -148,7 +148,7 @@ def set_print_options(
         suppress (bool, optional): If `True,` numbers equal to zero
             in the current precision will print as zero.
             Default: `False`.
-        nanstr (str, optional): String used to repesent nan.
+        nanstr (str, optional): String used to represent nan.
             Raises `TypeError` if nanstr is not a string.
             Default: `"nan"`.
         infstr (str, optional): String used to represent infinity.

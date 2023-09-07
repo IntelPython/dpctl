@@ -114,7 +114,7 @@ cdef class SyclContext(_SyclContext):
                 ctx = dpctl.SyclContext()
                 print(ctx.get_devices())
 
-        - Invoking the constuctor with a specific filter string that creates a
+        - Invoking the constructor with a specific filter string that creates a
           context for the device corresponding to the filter string.
 
         :Example:
@@ -127,7 +127,7 @@ cdef class SyclContext(_SyclContext):
                 d = ctx.get_devices()[0]
                 assert(d.is_gpu)
 
-        - Invoking the constuctor with a :class:`dpctl.SyclDevice` object
+        - Invoking the constructor with a :class:`dpctl.SyclDevice` object
           creates a context for that device.
 
         :Example:
@@ -141,7 +141,7 @@ cdef class SyclContext(_SyclContext):
                 d = ctx.get_devices()[0]
                 assert(d.is_gpu)
 
-        - Invoking the constuctor with a list of :class:`dpctl.SyclDevice`
+        - Invoking the constructor with a list of :class:`dpctl.SyclDevice`
           objects creates a common context for all the devices. This
           constructor call is especially useful when creation a context for
           multiple sub-devices.
@@ -159,7 +159,7 @@ cdef class SyclContext(_SyclContext):
                 ctx = dpctl.SyclContext(sub_devices)
                 assert(len(ctx.get_devices) == len(sub_devices))
 
-        - Invoking the constuctor with a named ``PyCapsule`` with name
+        - Invoking the constructor with a named ``PyCapsule`` with name
           **"SyclContextRef"** that carries a pointer to a ``sycl::context``
           object. The capsule will be renamed upon successful consumption
           to ensure one-time use. A new named capsule can be constructed by
@@ -430,7 +430,7 @@ cdef class SyclContext(_SyclContext):
             return num_devs
         else:
             raise ValueError(
-                "An error was encountered quering the number of devices "
+                "An error was encountered querying the number of devices "
                 "associated with this context"
             )
 

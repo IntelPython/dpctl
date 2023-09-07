@@ -76,7 +76,7 @@ jobs:
           mv ../cmake-install/docs/docs ~/docs
           git clean -dfx
       - name: Publish docs
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' }}
         shell: bash -l {0}
         run: |
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
@@ -91,8 +91,15 @@ jobs:
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
           git commit -m "Latest docs."
           git push tokened_docs gh-pages
+      - name: Save built docs as an artifact
+        if: ${{ github.event.pull_request && github.event.pull_request.head.repo.fork && github.event.action != 'closed'}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }} rendered documentation
+          path: ~/docs
+
       - name: Publish pull-request docs
-        if: ${{ github.event.pull_request && github.event.action != 'closed' }}
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
         shell: bash -l {0}
@@ -111,7 +118,7 @@ jobs:
           git commit -m "Docs for pull request ${PR_NUM}"
           git push tokened_docs gh-pages
       - name: Unpublish pull-request docs
-        if: ${{ github.event.pull_request && github.event.action == 'closed' }}
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
         shell: bash -l {0}
@@ -128,7 +135,7 @@ jobs:
           git commit -m "Removing docs for closed pull request ${PR_NUM}"
           git push tokened_docs gh-pages
       - name: Comment with URL to published pull-request docs
-        if: ${{ github.event.pull_request && github.event.action != 'closed' }}
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@v1
@@ -138,7 +145,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]'
       - name: Comment with URL about removal of PR docs
-        if: ${{ github.event.pull_request && github.event.action == 'closed' }}
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@v1

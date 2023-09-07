@@ -316,7 +316,7 @@ def broadcast_to(X, shape):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
     # Use numpy.broadcast_to to check the validity of the input
-    # parametr 'shape'. Raise ValueError if 'X' is not compatible
+    # parameter 'shape'. Raise ValueError if 'X' is not compatible
     # with 'shape' according to NumPy's broadcasting rules.
     new_array = np.broadcast_to(
         np.broadcast_to(np.empty(tuple(), dtype="u1"), X.shape), shape
@@ -747,7 +747,7 @@ def iinfo(dtype):
 
     Returns:
         iinfo_object:
-            An object with the followign attributes
+            An object with the following attributes
             * bits: int
                 number of bits occupied by the data type
             * max: int

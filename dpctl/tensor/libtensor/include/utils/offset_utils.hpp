@@ -91,7 +91,7 @@ device_allocate_and_pack(sycl::queue q,
 {
 
     // memory transfer optimization, use USM-host for temporary speeds up
-    // tranfer to device, especially on dGPUs
+    // transfer to device, especially on dGPUs
     using usm_host_allocatorT =
         sycl::usm_allocator<indT, sycl::usm::alloc::host>;
     using shT = std::vector<indT, usm_host_allocatorT>;

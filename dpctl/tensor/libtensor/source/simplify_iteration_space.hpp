@@ -90,6 +90,13 @@ void simplify_iteration_space_4(int &,
                                 py::ssize_t &,
                                 py::ssize_t &);
 
+void compact_iteration_space(int &,
+                             const py::ssize_t *const &,
+                             std::vector<py::ssize_t> const &,
+                             // output
+                             std::vector<py::ssize_t> &,
+                             std::vector<py::ssize_t> &);
+
 py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &,
                                  std::vector<py::ssize_t> const &);
 py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &,

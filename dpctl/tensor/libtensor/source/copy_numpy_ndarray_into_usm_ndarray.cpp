@@ -210,7 +210,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         simplified_dst_strides.push_back(1);
     }
 
-    // Minumum and maximum element offsets for source np.ndarray
+    // Minimum and maximum element offsets for source np.ndarray
     py::ssize_t npy_src_min_nelem_offset(src_offset);
     py::ssize_t npy_src_max_nelem_offset(src_offset);
     for (int i = 0; i < nd; ++i) {

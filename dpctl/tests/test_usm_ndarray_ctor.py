@@ -239,8 +239,9 @@ def test_copy_scalar_with_func(func, shape, dtype):
         X = dpt.usm_ndarray(shape, dtype=dtype)
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
-    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
+    Y = np.arange(1, X.size + 1, dtype=dtype)
+    X.usm_data.copy_from_host(Y.view("|u1"))
+    Y.shape = tuple()
     assert func(X) == func(Y)
 
 
@@ -254,8 +255,9 @@ def test_copy_scalar_with_method(method, shape, dtype):
         X = dpt.usm_ndarray(shape, dtype=dtype)
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
-    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
+    Y = np.arange(1, X.size + 1, dtype=dtype)
+    X.usm_data.copy_from_host(Y.view("|u1"))
+    Y.shape = tuple()
     assert getattr(X, method)() == getattr(Y, method)()
 
 
@@ -2134,6 +2136,8 @@ def test_flags():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     f = x.flags
+    # check comparison with generic types
+    assert f != Ellipsis
     f.__repr__()
     assert f.c_contiguous == f["C"]
     assert f.f_contiguous == f["F"]
@@ -2142,8 +2146,6 @@ def test_flags():
     assert f.forc == f["FORC"]
     assert f.fnc == f["FNC"]
     assert f.writable == f["W"]
-    # check comparison with generic types
-    f == Ellipsis
 
 
 def test_asarray_uint64():

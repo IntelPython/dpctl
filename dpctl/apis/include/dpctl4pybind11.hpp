@@ -742,12 +742,12 @@ protected:
             return nullptr;
         }
 
-        auto convertor =
+        auto converter =
             ::dpctl::detail::dpctl_capi::get().as_usm_memory_pyobj();
 
         py::object res;
         try {
-            res = convertor(py::handle(o));
+            res = converter(py::handle(o));
         } catch (const py::error_already_set &e) {
             return nullptr;
         }

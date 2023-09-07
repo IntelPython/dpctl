@@ -1628,7 +1628,7 @@ sqrt = UnaryElementwiseFunc(
 _subtract_docstring_ = """
 subtract(x1, x2, out=None, order='K')
 
-Calculates the difference bewteen each element `x1_i` of the input
+Calculates the difference between each element `x1_i` of the input
 array `x1` and the respective element `x2_i` of the input array `x2`.
 
 Args:

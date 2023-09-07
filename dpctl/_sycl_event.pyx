@@ -119,7 +119,7 @@ cdef class SyclEvent(_SyclEvent):
                 # Create a default SyclEvent
                 e = dpctl.SyclEvent()
 
-        - Invoking the constuctor with a named ``PyCapsule`` with name
+        - Invoking the constructor with a named ``PyCapsule`` with name
           **"SyclEventRef"** that carries a pointer to a ``sycl::event``
           object. The capsule will be renamed upon successful consumption
           to ensure one-time use. A new named capsule can be constructed by

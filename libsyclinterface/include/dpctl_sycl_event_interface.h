@@ -44,7 +44,7 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_DECLARE_VECTOR(Event)
 
 /*!
- * @brief A wrapper for ``sycl::event`` contructor to construct a new event.
+ * @brief A wrapper for ``sycl::event`` constructor to construct a new event.
  *
  * @return   An opaque DPCTLSyclEventRef pointer wrapping a ``sycl::event``.
  * @ingroup EventInterface

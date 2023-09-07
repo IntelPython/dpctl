@@ -1163,7 +1163,7 @@ cdef class SyclDevice(_SyclDevice):
     def create_sub_devices(self, **kwargs):
         """create_sub_devices(partition=parition_spec)
         Creates a list of sub-devices by partitioning a root device based on the
-        provided partion specifier.
+        provided partition specifier.
 
         A partition specifier must be provided using a "partition"
         keyword argument. Possible values for the specifier are: an int, a

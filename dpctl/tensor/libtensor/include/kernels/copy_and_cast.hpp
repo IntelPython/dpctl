@@ -115,7 +115,7 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
  * @brief Generic function to copy `nelems` elements from `src` usm_ndarray to
  `dst` usm_ndarray while casting from `srcTy` to `dstTy`.
 
-   Both arrays have array dimensionality specied via argument `nd`. The
+   Both arrays have array dimensionality specified via argument `nd`. The
  `shape_and_strides` is kernel accessible USM array of length `3*nd`, where the
  first `nd` elements encode common shape, second `nd` elements contain strides
  of `src` array, and the trailing `nd` elements contain strides of `dst` array.
@@ -241,25 +241,26 @@ public:
 
             if (base + n_vecs * vec_sz * sgSize < nelems &&
                 sgSize == max_sgSize) {
-                using src_ptrT =
-                    sycl::multi_ptr<const srcT,
-                                    sycl::access::address_space::global_space>;
-                using dst_ptrT =
-                    sycl::multi_ptr<dstT,
-                                    sycl::access::address_space::global_space>;
                 sycl::vec<srcT, vec_sz> src_vec;
                 sycl::vec<dstT, vec_sz> dst_vec;
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    src_vec =
-                        sg.load<vec_sz>(src_ptrT(&src_p[base + it * sgSize]));
+                    auto src_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(
+                        &src_p[base + it * sgSize]);
+                    auto dst_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(
+                        &dst_p[base + it * sgSize]);
+
+                    src_vec = sg.load<vec_sz>(src_multi_ptr);
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; k++) {
                         dst_vec[k] = fn(src_vec[k]);
                     }
-                    sg.store<vec_sz>(dst_ptrT(&dst_p[base + it * sgSize]),
-                                     dst_vec);
+                    sg.store<vec_sz>(dst_multi_ptr, dst_vec);
                 }
             }
             else {
@@ -680,7 +681,7 @@ typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
  * @param  src_nd Array dimension of the source array
  * @param  dst_nd Array dimension of the destination array
  * @param  packed_shapes_and_strides Kernel accessible USM array of size
- * `2*src_nd + 2*dst_nd` with contant `[src_shape, src_strides, dst_shape,
+ * `2*src_nd + 2*dst_nd` with content `[src_shape, src_strides, dst_shape,
  * dst_strides]`.
  * @param  src_p  Typeless USM pointer to the buffer of the source array
  * @param  dst_p  Typeless USM pointer to the buffer of the destination array

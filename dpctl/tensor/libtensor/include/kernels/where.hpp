@@ -100,15 +100,6 @@ public:
 
             if (base + n_vecs * vec_sz * sgSize < nelems &&
                 sgSize == max_sgSize) {
-                using dst_ptrT =
-                    sycl::multi_ptr<T,
-                                    sycl::access::address_space::global_space>;
-                using x_ptrT =
-                    sycl::multi_ptr<const T,
-                                    sycl::access::address_space::global_space>;
-                using cond_ptrT =
-                    sycl::multi_ptr<const condT,
-                                    sycl::access::address_space::global_space>;
                 sycl::vec<T, vec_sz> dst_vec;
                 sycl::vec<T, vec_sz> x1_vec;
                 sycl::vec<T, vec_sz> x2_vec;
@@ -117,14 +108,27 @@ public:
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
                     auto idx = base + it * sgSize;
-                    x1_vec = sg.load<vec_sz>(x_ptrT(&x1_p[idx]));
-                    x2_vec = sg.load<vec_sz>(x_ptrT(&x2_p[idx]));
-                    cond_vec = sg.load<vec_sz>(cond_ptrT(&cond_p[idx]));
+                    auto x1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&x1_p[idx]);
+                    auto x2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&x2_p[idx]);
+                    auto cond_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&cond_p[idx]);
+                    auto dst_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&dst_p[idx]);
+
+                    x1_vec = sg.load<vec_sz>(x1_multi_ptr);
+                    x2_vec = sg.load<vec_sz>(x2_multi_ptr);
+                    cond_vec = sg.load<vec_sz>(cond_multi_ptr);
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; ++k) {
                         dst_vec[k] = cond_vec[k] ? x1_vec[k] : x2_vec[k];
                     }
-                    sg.store<vec_sz>(dst_ptrT(&dst_p[idx]), dst_vec);
+                    sg.store<vec_sz>(dst_multi_ptr, dst_vec);
                 }
             }
             else {
