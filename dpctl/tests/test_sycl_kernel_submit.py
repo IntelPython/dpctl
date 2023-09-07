@@ -214,6 +214,9 @@ def test_async_submit():
         e3_st = e3.execution_status
         e2_st = e2.execution_status
         e1_st = e1.execution_status
+        ht_e = q._submit_keep_args_alive(
+            [first_row, second_row, third_row], [e1, e2, e3]
+        )
         are_complete = [
             e == status_complete
             for e in (
@@ -223,6 +226,7 @@ def test_async_submit():
             )
         ]
         e3.wait()
+        ht_e.wait()
         if not all(are_complete):
             async_detected = True
             break
