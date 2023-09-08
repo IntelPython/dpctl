@@ -60,7 +60,6 @@ static copy_for_reshape_fn_ptr_t
 std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
                              dpctl::tensor::usm_ndarray dst,
-                             py::ssize_t shift,
                              sycl::queue exec_q,
                              const std::vector<sycl::event> &depends)
 {
@@ -109,7 +108,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     if (src_nelems == 1) {
         // handle special case of 1-element array
         int src_elemsize = src.get_elemsize();
-        char *src_data = src.get_data();
+        const char *src_data = src.get_data();
         char *dst_data = dst.get_data();
         sycl::event copy_ev =
             exec_q.copy<char>(src_data, dst_data, src_elemsize);
@@ -146,7 +145,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
-    char *src_data = src.get_data();
+    const char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
     std::vector<sycl::event> all_deps(depends.size() + 1);
@@ -154,7 +153,7 @@ copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
     sycl::event copy_for_reshape_event =
-        fn(exec_q, shift, src_nelems, src_nd, dst_nd, shape_strides, src_data,
+        fn(exec_q, src_nelems, src_nd, dst_nd, shape_strides, src_data,
            dst_data, all_deps);
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {

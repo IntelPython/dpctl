@@ -238,6 +238,30 @@ public:
         }
         return;
     }
+
+    template <class ShapeTy, class StridesTy>
+    void get_left_rolled_displacement(indT i,
+                                      ShapeTy shape,
+                                      StridesTy stride,
+                                      StridesTy shifts,
+                                      indT &disp) const
+    {
+        indT i_ = i;
+        indT d = 0;
+        for (int dim = nd; --dim > 0;) {
+            const indT si = shape[dim];
+            const indT q = i_ / si;
+            const indT r = (i_ - q * si);
+            // assumes si > shifts[dim] >= 0
+            const indT shifted_r =
+                (r < shifts[dim] ? r + si - shifts[dim] : r - shifts[dim]);
+            d += shifted_r * stride[dim];
+            i_ = q;
+        }
+        const indT shifted_r =
+            (i_ < shifts[0] ? i_ + shape[0] - shifts[0] : i_ - shifts[0]);
+        disp = d + shifted_r * stride[0];
+    }
 };
 
 /*

@@ -56,9 +56,6 @@ class copy_cast_contig_kernel;
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_from_host_kernel;
 
-template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
-class copy_for_reshape_generic_kernel;
-
 template <typename srcTy, typename dstTy> class Caster
 {
 public:
@@ -631,26 +628,23 @@ struct CopyAndCastFromHostFactory
 // =============== Copying for reshape ================== //
 
 template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
+class copy_for_reshape_generic_kernel;
+
+template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
 class GenericCopyForReshapeFunctor
 {
 private:
-    py::ssize_t offset = 0;
-    py::ssize_t size = 1;
-    // USM array of size 2*(src_nd + dst_nd)
-    //   [ src_shape; src_strides; dst_shape; dst_strides ]
-    Ty *src_p = nullptr;
+    const Ty *src_p = nullptr;
     Ty *dst_p = nullptr;
     SrcIndexerT src_indexer_;
     DstIndexerT dst_indexer_;
 
 public:
-    GenericCopyForReshapeFunctor(py::ssize_t shift,
-                                 py::ssize_t nelems,
-                                 char *src_ptr,
+    GenericCopyForReshapeFunctor(const char *src_ptr,
                                  char *dst_ptr,
                                  SrcIndexerT src_indexer,
                                  DstIndexerT dst_indexer)
-        : offset(shift), size(nelems), src_p(reinterpret_cast<Ty *>(src_ptr)),
+        : src_p(reinterpret_cast<const Ty *>(src_ptr)),
           dst_p(reinterpret_cast<Ty *>(dst_ptr)), src_indexer_(src_indexer),
           dst_indexer_(dst_indexer)
     {
@@ -658,40 +652,31 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        py::ssize_t this_src_offset = src_indexer_(wiid.get(0));
-        const Ty *in = src_p + this_src_offset;
+        const py::ssize_t src_offset = src_indexer_(wiid.get(0));
+        const py::ssize_t dst_offset = dst_indexer_(wiid.get(0));
 
-        py::ssize_t shifted_wiid =
-            (static_cast<py::ssize_t>(wiid.get(0)) + offset) % size;
-        shifted_wiid = (shifted_wiid >= 0) ? shifted_wiid : shifted_wiid + size;
-
-        py::ssize_t this_dst_offset = dst_indexer_(shifted_wiid);
-
-        Ty *out = dst_p + this_dst_offset;
-        *out = *in;
+        dst_p[dst_offset] = src_p[src_offset];
     }
 };
 
 // define function type
 typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
     sycl::queue,
-    py::ssize_t, // shift
-    size_t,      // num_elements
-    int,
-    int,           // src_nd, dst_nd
+    size_t,        // num_elements
+    int,           // src_nd
+    int,           // dst_nd
     py::ssize_t *, // packed shapes and strides
-    char *,        // src_data_ptr
+    const char *,  // src_data_ptr
     char *,        // dst_data_ptr
     const std::vector<sycl::event> &);
 
 /*!
  * @brief Function to copy content of array while reshaping.
  *
- * Submits a kernel to perform a copy `dst[unravel_index((i + shift) % nelems ,
+ * Submits a kernel to perform a copy `dst[unravel_index(i,
  * dst.shape)] = src[unravel_undex(i, src.shape)]`.
  *
  * @param  q      The execution queue where kernel is submitted.
- * @param  shift  The shift in flat indexing.
  * @param  nelems The number of elements to copy
  * @param  src_nd Array dimension of the source array
  * @param  dst_nd Array dimension of the destination array
@@ -709,31 +694,40 @@ typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
 template <typename Ty>
 sycl::event
 copy_for_reshape_generic_impl(sycl::queue q,
-                              py::ssize_t shift,
                               size_t nelems,
                               int src_nd,
                               int dst_nd,
                               py::ssize_t *packed_shapes_and_strides,
-                              char *src_p,
+                              const char *src_p,
                               char *dst_p,
                               const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event copy_for_reshape_ev = q.submit([&](sycl::handler &cgh) {
-        StridedIndexer src_indexer{
-            src_nd, 0,
-            const_cast<const py::ssize_t *>(packed_shapes_and_strides)};
-        StridedIndexer dst_indexer{
-            dst_nd, 0,
-            const_cast<const py::ssize_t *>(packed_shapes_and_strides +
-                                            (2 * src_nd))};
         cgh.depends_on(depends);
-        cgh.parallel_for<copy_for_reshape_generic_kernel<Ty, StridedIndexer,
-                                                         StridedIndexer>>(
+
+        // packed_shapes_and_strides:
+        //   USM array of size 2*(src_nd + dst_nd)
+        //   [ src_shape; src_strides; dst_shape; dst_strides ]
+
+        const py::ssize_t *src_shape_and_strides =
+            const_cast<const py::ssize_t *>(packed_shapes_and_strides);
+
+        const py::ssize_t *dst_shape_and_strides =
+            const_cast<const py::ssize_t *>(packed_shapes_and_strides +
+                                            (2 * src_nd));
+
+        StridedIndexer src_indexer{src_nd, 0, src_shape_and_strides};
+        StridedIndexer dst_indexer{dst_nd, 0, dst_shape_and_strides};
+
+        using KernelName =
+            copy_for_reshape_generic_kernel<Ty, StridedIndexer, StridedIndexer>;
+
+        cgh.parallel_for<KernelName>(
             sycl::range<1>(nelems),
             GenericCopyForReshapeFunctor<Ty, StridedIndexer, StridedIndexer>(
-                shift, nelems, src_p, dst_p, src_indexer, dst_indexer));
+                src_p, dst_p, src_indexer, dst_indexer));
     });
 
     return copy_for_reshape_ev;
@@ -749,6 +743,387 @@ template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
     fnT get()
     {
         fnT f = copy_for_reshape_generic_impl<Ty>;
+        return f;
+    }
+};
+
+// ================== Copying for roll ================== //
+
+/*! @brief Functor to cyclically roll global_id to the left */
+struct LeftRolled1DTransformer
+{
+    LeftRolled1DTransformer(size_t offset, size_t size)
+        : offset_(offset), size_(size)
+    {
+    }
+
+    size_t operator()(size_t gid) const
+    {
+        const size_t shifted_gid =
+            ((gid < offset_) ? gid + size_ - offset_ : gid - offset_);
+        return shifted_gid;
+    }
+
+private:
+    size_t offset_ = 0;
+    size_t size_ = 1;
+};
+
+/*! @brief Indexer functor to compose indexer and transformer */
+template <typename IndexerT, typename TransformerT> struct CompositionIndexer
+{
+    CompositionIndexer(IndexerT f, TransformerT t) : f_(f), t_(t) {}
+
+    auto operator()(size_t gid) const
+    {
+        return f_(t_(gid));
+    }
+
+private:
+    IndexerT f_;
+    TransformerT t_;
+};
+
+/*! @brief Indexer functor to find offset for nd-shifted indices lifted from
+ * iteration id */
+struct RolledNDIndexer
+{
+    RolledNDIndexer(int nd,
+                    const py::ssize_t *shape,
+                    const py::ssize_t *strides,
+                    const py::ssize_t *ndshifts,
+                    py::ssize_t starting_offset)
+        : nd_(nd), shape_(shape), strides_(strides), ndshifts_(ndshifts),
+          starting_offset_(starting_offset)
+    {
+    }
+
+    py::ssize_t operator()(size_t gid) const
+    {
+        return compute_offset(gid);
+    }
+
+private:
+    int nd_ = -1;
+    const py::ssize_t *shape_ = nullptr;
+    const py::ssize_t *strides_ = nullptr;
+    const py::ssize_t *ndshifts_ = nullptr;
+    py::ssize_t starting_offset_ = 0;
+
+    py::ssize_t compute_offset(py::ssize_t gid) const
+    {
+        using dpctl::tensor::strides::CIndexer_vector;
+
+        CIndexer_vector _ind(nd_);
+        py::ssize_t relative_offset_(0);
+        _ind.get_left_rolled_displacement<const py::ssize_t *,
+                                          const py::ssize_t *>(
+            gid,
+            shape_,    // shape ptr
+            strides_,  // strides ptr
+            ndshifts_, // shifts ptr
+            relative_offset_);
+        return starting_offset_ + relative_offset_;
+    }
+};
+
+template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
+class copy_for_roll_strided_kernel;
+
+template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
+class StridedCopyForRollFunctor
+{
+private:
+    const Ty *src_p = nullptr;
+    Ty *dst_p = nullptr;
+    SrcIndexerT src_indexer_;
+    DstIndexerT dst_indexer_;
+
+public:
+    StridedCopyForRollFunctor(const Ty *src_ptr,
+                              Ty *dst_ptr,
+                              SrcIndexerT src_indexer,
+                              DstIndexerT dst_indexer)
+        : src_p(src_ptr), dst_p(dst_ptr), src_indexer_(src_indexer),
+          dst_indexer_(dst_indexer)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        const size_t gid = wiid.get(0);
+
+        const py::ssize_t src_offset = src_indexer_(gid);
+        const py::ssize_t dst_offset = dst_indexer_(gid);
+
+        dst_p[dst_offset] = src_p[src_offset];
+    }
+};
+
+// define function type
+typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
+    sycl::queue,
+    size_t,              // shift
+    size_t,              // num_elements
+    int,                 // common_nd
+    const py::ssize_t *, // packed shapes and strides
+    const char *,        // src_data_ptr
+    py::ssize_t,         // src_offset
+    char *,              // dst_data_ptr
+    py::ssize_t,         // dst_offset
+    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to copy content of array with a shift.
+ *
+ * Submits a kernel to perform a copy `dst[unravel_index((i + shift) % nelems ,
+ * dst.shape)] = src[unravel_undex(i, src.shape)]`.
+ *
+ * @param  q      The execution queue where kernel is submitted.
+ * @param  shift  The shift in flat indexing, must be non-negative.
+ * @param  nelems The number of elements to copy
+ * @param  nd     Array dimensionality of the destination and source arrays
+ * @param  packed_shapes_and_strides Kernel accessible USM array
+ * of size `3*nd` with content `[common_shape, src_strides, dst_strides]`.
+ * @param  src_p  Typeless USM pointer to the buffer of the source array
+ * @param  src_offset Displacement of first element of src relative src_p in
+ * elements
+ * @param  dst_p  Typeless USM pointer to the buffer of the destination array
+ * @param  dst_offset Displacement of first element of dst relative dst_p in
+ * elements
+ * @param  depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @ingroup CopyAndCastKernels
+ */
+template <typename Ty>
+sycl::event
+copy_for_roll_strided_impl(sycl::queue q,
+                           size_t shift,
+                           size_t nelems,
+                           int nd,
+                           const py::ssize_t *packed_shapes_and_strides,
+                           const char *src_p,
+                           py::ssize_t src_offset,
+                           char *dst_p,
+                           py::ssize_t dst_offset,
+                           const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+
+    sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        // packed_shapes_and_strides:
+        //   USM array of size 3 * nd
+        //   [ common_shape; src_strides; dst_strides ]
+
+        StridedIndexer src_indexer{nd, src_offset, packed_shapes_and_strides};
+        LeftRolled1DTransformer left_roll_transformer{shift, nelems};
+
+        using CompositeIndexerT =
+            CompositionIndexer<StridedIndexer, LeftRolled1DTransformer>;
+
+        CompositeIndexerT rolled_src_indexer(src_indexer,
+                                             left_roll_transformer);
+
+        UnpackedStridedIndexer dst_indexer{nd, dst_offset,
+                                           packed_shapes_and_strides,
+                                           packed_shapes_and_strides + 2 * nd};
+
+        using KernelName = copy_for_roll_strided_kernel<Ty, CompositeIndexerT,
+                                                        UnpackedStridedIndexer>;
+
+        const Ty *src_tp = reinterpret_cast<const Ty *>(src_p);
+        Ty *dst_tp = reinterpret_cast<Ty *>(dst_p);
+
+        cgh.parallel_for<KernelName>(
+            sycl::range<1>(nelems),
+            StridedCopyForRollFunctor<Ty, CompositeIndexerT,
+                                      UnpackedStridedIndexer>(
+                src_tp, dst_tp, rolled_src_indexer, dst_indexer));
+    });
+
+    return copy_for_roll_ev;
+}
+
+// define function type
+typedef sycl::event (*copy_for_roll_contig_fn_ptr_t)(
+    sycl::queue,
+    size_t,       // shift
+    size_t,       // num_elements
+    const char *, // src_data_ptr
+    py::ssize_t,  // src_offset
+    char *,       // dst_data_ptr
+    py::ssize_t,  // dst_offset
+    const std::vector<sycl::event> &);
+
+template <typename Ty> class copy_for_roll_contig_kernel;
+
+/*!
+ * @brief Function to copy content of array with a shift.
+ *
+ * Submits a kernel to perform a copy `dst[unravel_index((i + shift) % nelems ,
+ * dst.shape)] = src[unravel_undex(i, src.shape)]`.
+ *
+ * @param  q      The execution queue where kernel is submitted.
+ * @param  shift  The shift in flat indexing, must be non-negative.
+ * @param  nelems The number of elements to copy
+ * @param  src_p  Typeless USM pointer to the buffer of the source array
+ * @param  src_offset Displacement of the start of array src relative src_p in
+ * elements
+ * @param  dst_p  Typeless USM pointer to the buffer of the destination array
+ * @param  dst_offset Displacement of the start of array dst relative dst_p in
+ * elements
+ * @param  depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @ingroup CopyAndCastKernels
+ */
+template <typename Ty>
+sycl::event copy_for_roll_contig_impl(sycl::queue q,
+                                      size_t shift,
+                                      size_t nelems,
+                                      const char *src_p,
+                                      py::ssize_t src_offset,
+                                      char *dst_p,
+                                      py::ssize_t dst_offset,
+                                      const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+
+    sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        NoOpIndexer src_indexer{};
+        LeftRolled1DTransformer roller{shift, nelems};
+
+        CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>
+            left_rolled_src_indexer{src_indexer, roller};
+        NoOpIndexer dst_indexer{};
+
+        using KernelName = copy_for_roll_contig_kernel<Ty>;
+
+        const Ty *src_tp = reinterpret_cast<const Ty *>(src_p) + src_offset;
+        Ty *dst_tp = reinterpret_cast<Ty *>(dst_p) + dst_offset;
+
+        cgh.parallel_for<KernelName>(
+            sycl::range<1>(nelems),
+            StridedCopyForRollFunctor<
+                Ty, CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>,
+                NoOpIndexer>(src_tp, dst_tp, left_rolled_src_indexer,
+                             dst_indexer));
+    });
+
+    return copy_for_roll_ev;
+}
+
+/*!
+ * @brief Factory to get function pointer of type `fnT` for given array data
+ * type `Ty`.
+ * @ingroup CopyAndCastKernels
+ */
+template <typename fnT, typename Ty> struct CopyForRollStridedFactory
+{
+    fnT get()
+    {
+        fnT f = copy_for_roll_strided_impl<Ty>;
+        return f;
+    }
+};
+
+/*!
+ * @brief Factory to get function pointer of type `fnT` for given array data
+ * type `Ty`.
+ * @ingroup CopyAndCastKernels
+ */
+template <typename fnT, typename Ty> struct CopyForRollContigFactory
+{
+    fnT get()
+    {
+        fnT f = copy_for_roll_contig_impl<Ty>;
+        return f;
+    }
+};
+
+template <typename Ty, typename SrcIndexerT, typename DstIndexerT>
+class copy_for_roll_ndshift_strided_kernel;
+
+// define function type
+typedef sycl::event (*copy_for_roll_ndshift_strided_fn_ptr_t)(
+    sycl::queue,
+    size_t,              // num_elements
+    int,                 // common_nd
+    const py::ssize_t *, // packed shape, strides, shifts
+    const char *,        // src_data_ptr
+    py::ssize_t,         // src_offset
+    char *,              // dst_data_ptr
+    py::ssize_t,         // dst_offset
+    const std::vector<sycl::event> &);
+
+template <typename Ty>
+sycl::event copy_for_roll_ndshift_strided_impl(
+    sycl::queue q,
+    size_t nelems,
+    int nd,
+    const py::ssize_t *packed_shapes_and_strides_and_shifts,
+    const char *src_p,
+    py::ssize_t src_offset,
+    char *dst_p,
+    py::ssize_t dst_offset,
+    const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+
+    sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        // packed_shapes_and_strides_and_shifts:
+        //   USM array of size 4 * nd
+        //   [ common_shape; src_strides; dst_strides; shifts ]
+
+        const py::ssize_t *shape_ptr = packed_shapes_and_strides_and_shifts;
+        const py::ssize_t *src_strides_ptr =
+            packed_shapes_and_strides_and_shifts + nd;
+        const py::ssize_t *dst_strides_ptr =
+            packed_shapes_and_strides_and_shifts + 2 * nd;
+        const py::ssize_t *shifts_ptr =
+            packed_shapes_and_strides_and_shifts + 3 * nd;
+
+        RolledNDIndexer src_indexer{nd, shape_ptr, src_strides_ptr, shifts_ptr,
+                                    src_offset};
+
+        UnpackedStridedIndexer dst_indexer{nd, dst_offset, shape_ptr,
+                                           dst_strides_ptr};
+
+        using KernelName = copy_for_roll_strided_kernel<Ty, RolledNDIndexer,
+                                                        UnpackedStridedIndexer>;
+
+        const Ty *src_tp = reinterpret_cast<const Ty *>(src_p);
+        Ty *dst_tp = reinterpret_cast<Ty *>(dst_p);
+
+        cgh.parallel_for<KernelName>(
+            sycl::range<1>(nelems),
+            StridedCopyForRollFunctor<Ty, RolledNDIndexer,
+                                      UnpackedStridedIndexer>(
+                src_tp, dst_tp, src_indexer, dst_indexer));
+    });
+
+    return copy_for_roll_ev;
+}
+
+/*!
+ * @brief Factory to get function pointer of type `fnT` for given array data
+ * type `Ty`.
+ * @ingroup CopyAndCastKernels
+ */
+template <typename fnT, typename Ty> struct CopyForRollNDShiftFactory
+{
+    fnT get()
+    {
+        fnT f = copy_for_roll_ndshift_strided_impl<Ty>;
         return f;
     }
 };

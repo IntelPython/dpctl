@@ -648,6 +648,19 @@ def test_roll_2d(data):
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
+def test_roll_validation():
+    get_queue_or_skip()
+
+    X = dict()
+    with pytest.raises(TypeError):
+        dpt.roll(X)
+
+    X = dpt.empty((1, 2, 3))
+    shift = ((2, 3, 1), (1, 2, 3))
+    with pytest.raises(ValueError):
+        dpt.roll(X, shift=shift, axis=(0, 1, 2))
+
+
 def test_concat_incorrect_type():
     Xnp = np.ones((2, 2))
     pytest.raises(TypeError, dpt.concat)
