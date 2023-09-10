@@ -934,6 +934,29 @@ cdef class SyclQueue(_SyclQueue):
         with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
+    cpdef SyclEvent memcpy_async(self, dest, src, size_t count):
+        cdef void *c_dest
+        cdef void *c_src
+        cdef DPCTLSyclEventRef ERef = NULL
+
+        if isinstance(dest, _Memory):
+            c_dest = <void*>(<_Memory>dest).memory_ptr
+        else:
+            raise TypeError("Parameter `dest` should have type _Memory.")
+
+        if isinstance(src, _Memory):
+            c_src = <void*>(<_Memory>src).memory_ptr
+        else:
+            raise TypeError("Parameter `src` should have type _Memory.")
+
+        ERef = DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.memcpy operation encountered an error"
+            )
+
+        return SyclEvent._create(ERef)
+
     cpdef prefetch(self, mem, size_t count=0):
         cdef void *ptr
         cdef DPCTLSyclEventRef ERef = NULL
