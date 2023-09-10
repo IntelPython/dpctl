@@ -905,23 +905,6 @@ cdef class SyclQueue(_SyclQueue):
             raise SyclKernelSubmitError(
                 "Kernel submission to Sycl queue failed."
             )
-        # increment reference counts to list of arguments
-        Py_INCREF(args)
-
-        # schedule decrement
-        args_raw = <PyObject *>args
-
-        ret = -1
-        htERef = async_dec_ref(self.get_queue_ref(), &args_raw, 1, &Eref, 1, &ret)
-        if ret:
-            # async task submission failed, decrement ref counts and wait
-            Py_DECREF(args)
-            with nogil:
-                 DPCTLEvent_Wait(Eref)
-                 DPCTLEvent_Wait(htERef)
-
-        # we are not returning host-task event at the moment
-        DPCTLEvent_Delete(htERef)
 
         return SyclEvent._create(Eref)
 
