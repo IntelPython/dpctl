@@ -56,7 +56,7 @@ def _copy_to_numpy(ary):
 
 def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
     "Copies numpy array `np_ary` into a new usm_ndarray"
-    # This may peform a copy to meet stated requirements
+    # This may perform a copy to meet stated requirements
     Xnp = np.require(np_ary, requirements=["A", "E"])
     alloc_q = normalize_queue_device(sycl_queue=sycl_queue, device=None)
     dt = Xnp.dtype
@@ -517,6 +517,11 @@ def copy(usm_ary, order="K"):
        - "K": match the layout of `usm_ary` as closely as possible.
 
     """
+    if len(order) == 0 or order[0] not in "KkAaCcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'K', 'A', 'F', or 'C'."
+        )
+    order = order[0].upper()
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
@@ -585,11 +590,11 @@ def astype(usm_ary, newdtype, order="K", casting="unsafe", copy=True):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
         )
-    if not isinstance(order, str) or order not in ["A", "C", "F", "K"]:
+    if len(order) == 0 or order[0] not in "KkAaCcFf":
         raise ValueError(
-            "Unrecognized value of the order keyword. "
-            "Recognized values are 'A', 'C', 'F', or 'K'"
+            "Unrecognized order keyword value, expecting 'K', 'A', 'F', or 'C'."
         )
+    order = order[0].upper()
     ary_dtype = usm_ary.dtype
     target_dtype = _get_dtype(newdtype, usm_ary.sycl_queue)
     if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):

@@ -258,6 +258,15 @@ def test_add_canary_mock_array():
         dpt.add(a, c)
 
 
+def test_add_types_property():
+    types = dpt.add.types_
+    assert types is None
+    types = dpt.add.types
+    assert isinstance(types, list)
+    assert len(types) > 0
+    assert types == dpt.add.types_
+
+
 def test_add_errors():
     get_queue_or_skip()
     try:

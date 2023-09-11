@@ -29,6 +29,7 @@ from dpctl.utils import ExecutionPlacementError
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._type_utils import (
     _acceptance_fn_default,
+    _all_data_types,
     _find_buf_dtype,
     _find_buf_dtype2,
     _to_device_supported_dtype,
@@ -44,6 +45,7 @@ class UnaryElementwiseFunc:
         self.__name__ = "UnaryElementwiseFunc"
         self.name_ = name
         self.result_type_resolver_fn_ = result_type_resolver_fn
+        self.types_ = None
         self.unary_fn_ = unary_dp_impl_fn
         self.__doc__ = docs
 
@@ -52,6 +54,18 @@ class UnaryElementwiseFunc:
 
     def __repr__(self):
         return f"<{self.__name__} '{self.name_}'>"
+
+    @property
+    def types(self):
+        types = self.types_
+        if not types:
+            types = []
+            for dt1 in _all_data_types(True, True):
+                dt2 = self.result_type_resolver_fn_(dt1)
+                if dt2:
+                    types.append(f"{dt1.char}->{dt2.char}")
+            self.types_ = types
+        return types
 
     def __call__(self, x, out=None, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
@@ -363,6 +377,7 @@ class BinaryElementwiseFunc:
         self.__name__ = "BinaryElementwiseFunc"
         self.name_ = name
         self.result_type_resolver_fn_ = result_type_resolver_fn
+        self.types_ = None
         self.binary_fn_ = binary_dp_impl_fn
         self.binary_inplace_fn_ = binary_inplace_fn
         self.__doc__ = docs
@@ -376,6 +391,20 @@ class BinaryElementwiseFunc:
 
     def __repr__(self):
         return f"<{self.__name__} '{self.name_}'>"
+
+    @property
+    def types(self):
+        types = self.types_
+        if not types:
+            types = []
+            _all_dtypes = _all_data_types(True, True)
+            for dt1 in _all_dtypes:
+                for dt2 in _all_dtypes:
+                    dt3 = self.result_type_resolver_fn_(dt1, dt2)
+                    if dt3:
+                        types.append(f"{dt1.char}{dt2.char}->{dt3.char}")
+            self.types_ = types
+        return types
 
     def __call__(self, o1, o2, out=None, order="K"):
         if order not in ["K", "C", "F", "A"]:
@@ -439,7 +468,7 @@ class BinaryElementwiseFunc:
         o1_dtype = _get_dtype(o1, sycl_dev)
         o2_dtype = _get_dtype(o2, sycl_dev)
         if not all(_validate_dtype(o) for o in (o1_dtype, o2_dtype)):
-            raise ValueError("Operands of unsupported types")
+            raise ValueError("Operands have unsupported data types")
 
         o1_dtype, o2_dtype = _resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
 
@@ -469,7 +498,7 @@ class BinaryElementwiseFunc:
             if out.shape != res_shape:
                 raise ValueError(
                     "The shape of input and output arrays are inconsistent. "
-                    f"Expected output shape is {o1_shape}, got {out.shape}"
+                    f"Expected output shape is {res_shape}, got {out.shape}"
                 )
 
             if res_dt != out.dtype:

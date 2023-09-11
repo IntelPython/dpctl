@@ -104,7 +104,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
     Give basic slicing index `ind` and array layout information produce
     a 5-tuple (resulting_shape, resulting_strides, resulting_offset,
        advanced_ind, resulting_advanced_ind_pos)
-    used to contruct a view into underlying array over which advanced
+    used to construct a view into underlying array over which advanced
     indexing, if any, is to be performed.
 
     Raises IndexError for invalid index `ind`.
@@ -201,7 +201,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 raise TypeError
         if ellipses_count > 1:
             raise IndexError(
-                "an index can only have a sinlge ellipsis ('...')")
+                "an index can only have a single ellipsis ('...')")
         if axes_referenced > len(shape):
             raise IndexError(
                 "too many indices for an array, array is "

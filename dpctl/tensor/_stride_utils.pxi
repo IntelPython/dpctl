@@ -55,7 +55,7 @@ cdef int _from_input_shape_strides(
         nelems - Number of elements in array
         min_disp = min( dot(strides, index), index for shape)
         max_disp = max( dor(strides, index), index for shape)
-        contig = enumation for array contiguity
+        contig = enumeration for array contiguity
     Returns: 0 on success, error code otherwise.
         On success pointers point to allocated arrays,
         Otherwise they are set to NULL

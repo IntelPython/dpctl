@@ -175,14 +175,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes3d)
     EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkItemSizes)
-{
-    size_t *sizes = nullptr;
-    EXPECT_NO_FATAL_FAILURE(sizes = DPCTLDevice_GetMaxWorkItemSizes(DRef));
-    EXPECT_TRUE(sizes != nullptr);
-    EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sizes));
-}
-
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkGroupSize)
 {
     size_t n = 0;
@@ -625,10 +617,24 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemDims)
     ASSERT_TRUE(md == 0);
 }
 
-TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemSizes)
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemSizes1d)
 {
     size_t *sz = nullptr;
-    EXPECT_NO_FATAL_FAILURE(sz = DPCTLDevice_GetMaxWorkItemSizes(Null_DRef));
+    EXPECT_NO_FATAL_FAILURE(sz = DPCTLDevice_GetMaxWorkItemSizes1d(Null_DRef));
+    ASSERT_TRUE(sz == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemSizes2d)
+{
+    size_t *sz = nullptr;
+    EXPECT_NO_FATAL_FAILURE(sz = DPCTLDevice_GetMaxWorkItemSizes2d(Null_DRef));
+    ASSERT_TRUE(sz == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxWorkItemSizes3d)
+{
+    size_t *sz = nullptr;
+    EXPECT_NO_FATAL_FAILURE(sz = DPCTLDevice_GetMaxWorkItemSizes3d(Null_DRef));
     ASSERT_TRUE(sz == nullptr);
 }
 

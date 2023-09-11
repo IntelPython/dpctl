@@ -59,7 +59,7 @@ def run(
         cmake_args.append("-DDPCTL_ENABLE_DOXYREST=ON")
         cmake_args.append("-DDoxyrest_DIR=" + doxyrest_dir)
 
-    env = None
+    env = dict()
     if bin_llvm:
         env = {
             "PATH": ":".join((os.environ.get("PATH", ""), bin_llvm)),

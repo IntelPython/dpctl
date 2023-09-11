@@ -266,12 +266,6 @@ DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
 }
 
-__dpctl_keep size_t *
-DPCTLDevice_GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
-}
-
 size_t
 DPCTLDevice_GetMaxWorkGroupSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {

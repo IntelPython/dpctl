@@ -76,24 +76,24 @@ public:
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
                 (sgSize == maxsgSize)) {
-                using rhs_ptrT =
-                    sycl::multi_ptr<const argT,
-                                    sycl::access::address_space::global_space>;
-                using lhs_ptrT =
-                    sycl::multi_ptr<resT,
-                                    sycl::access::address_space::global_space>;
+
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    arg_vec =
-                        sg.load<vec_sz>(rhs_ptrT(&rhs[base + it * sgSize]));
-                    res_vec =
-                        sg.load<vec_sz>(lhs_ptrT(&lhs[base + it * sgSize]));
+                    auto rhs_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&rhs[base + it * sgSize]);
+                    auto lhs_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&lhs[base + it * sgSize]);
+
+                    arg_vec = sg.load<vec_sz>(rhs_multi_ptr);
+                    res_vec = sg.load<vec_sz>(lhs_multi_ptr);
                     op(res_vec, arg_vec);
-                    sg.store<vec_sz>(lhs_ptrT(&lhs[base + it * sgSize]),
-                                     res_vec);
+
+                    sg.store<vec_sz>(lhs_multi_ptr, res_vec);
                 }
             }
             else {
@@ -115,27 +115,25 @@ public:
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
                 (sgSize == maxsgSize)) {
-                using rhs_ptrT =
-                    sycl::multi_ptr<const argT,
-                                    sycl::access::address_space::global_space>;
-                using lhs_ptrT =
-                    sycl::multi_ptr<resT,
-                                    sycl::access::address_space::global_space>;
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    arg_vec =
-                        sg.load<vec_sz>(rhs_ptrT(&rhs[base + it * sgSize]));
-                    res_vec =
-                        sg.load<vec_sz>(lhs_ptT(&lhs[base + it * sgSize]));
+                    auto rhs_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&rhs[base + it * sgSize]);
+                    auto lhs_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&lhs[base + it * sgSize]);
+
+                    arg_vec = sg.load<vec_sz>(rhs_multi_ptr);
+                    res_vec = sg.load<vec_sz>(lhs_multi_ptr);
 #pragma unroll
                     for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
                         op(res_vec[vec_id], arg_vec[vec_id]);
                     }
-                    sg.store<vec_sz>(lhs_ptrT(&lhs[base + it * sgSize]),
-                                     res_vec);
+                    sg.store<vec_sz>(lhs_multi_ptr, res_vec);
                 }
             }
             else {
@@ -223,19 +221,20 @@ public:
         size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
-            using in_ptrT =
-                sycl::multi_ptr<const argT,
-                                sycl::access::address_space::global_space>;
-            using res_ptrT =
-                sycl::multi_ptr<resT,
-                                sycl::access::address_space::global_space>;
+            auto in_multi_ptr = sycl::address_space_cast<
+                sycl::access::address_space::global_space,
+                sycl::access::decorated::yes>(&padded_vec[base % n1]);
 
-            const argT vec_el = sg.load(in_ptrT(&padded_vec[base % n1]));
-            resT mat_el = sg.load(res_ptrT(&mat[base]));
+            auto out_multi_ptr = sycl::address_space_cast<
+                sycl::access::address_space::global_space,
+                sycl::access::decorated::yes>(&mat[base]);
+
+            const argT vec_el = sg.load(in_multi_ptr);
+            resT mat_el = sg.load(out_multi_ptr);
 
             op(mat_el, vec_el);
 
-            sg.store(res_ptrT(&mat[base]), mat_el);
+            sg.store(out_multi_ptr, mat_el);
         }
         else {
             for (size_t k = base + sg.get_local_id()[0]; k < n_elems;

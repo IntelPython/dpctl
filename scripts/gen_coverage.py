@@ -57,7 +57,7 @@ def run(
         "-DDPCTL_BUILD_CAPI_TESTS=ON",
         "-DDPCTL_COVERAGE_REPORT_OUTPUT_DIR=" + setup_dir,
     ]
-    env = None
+    env = dict()
     if bin_llvm:
         env = {
             "PATH": ":".join((os.environ.get("PATH", ""), bin_llvm)),

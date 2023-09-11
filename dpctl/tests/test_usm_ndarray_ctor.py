@@ -239,8 +239,9 @@ def test_copy_scalar_with_func(func, shape, dtype):
         X = dpt.usm_ndarray(shape, dtype=dtype)
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
-    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
+    Y = np.arange(1, X.size + 1, dtype=dtype)
+    X.usm_data.copy_from_host(Y.view("|u1"))
+    Y.shape = tuple()
     assert func(X) == func(Y)
 
 
@@ -254,8 +255,9 @@ def test_copy_scalar_with_method(method, shape, dtype):
         X = dpt.usm_ndarray(shape, dtype=dtype)
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    Y = np.arange(1, X.size + 1, dtype=dtype).reshape(shape)
-    X.usm_data.copy_from_host(Y.reshape(-1).view("|u1"))
+    Y = np.arange(1, X.size + 1, dtype=dtype)
+    X.usm_data.copy_from_host(Y.view("|u1"))
+    Y.shape = tuple()
     assert getattr(X, method)() == getattr(Y, method)()
 
 
@@ -1438,16 +1440,25 @@ def test_real_imag_views():
     n, m = 2, 3
     try:
         X = dpt.usm_ndarray((n, m), "c8")
+        X_scalar = dpt.usm_ndarray((), dtype="c8")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     Xnp_r = np.arange(n * m, dtype="f4").reshape((n, m))
     Xnp_i = np.arange(n * m, 2 * n * m, dtype="f4").reshape((n, m))
     Xnp = Xnp_r + 1j * Xnp_i
     X[:] = Xnp
-    assert np.array_equal(dpt.to_numpy(X.real), Xnp.real)
+    X_real = X.real
+    X_imag = X.imag
+    assert np.array_equal(dpt.to_numpy(X_real), Xnp.real)
     assert np.array_equal(dpt.to_numpy(X.imag), Xnp.imag)
+    assert not X_real.flags["C"] and not X_real.flags["F"]
+    assert not X_imag.flags["C"] and not X_imag.flags["F"]
+    assert X_real.strides == X_imag.strides
     assert np.array_equal(dpt.to_numpy(X[1:].real), Xnp[1:].real)
     assert np.array_equal(dpt.to_numpy(X[1:].imag), Xnp[1:].imag)
+
+    X_scalar[...] = complex(n * m, 2 * n * m)
+    assert X_scalar.real and X_scalar.imag
 
 
 @pytest.mark.parametrize(
@@ -2125,6 +2136,8 @@ def test_flags():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     f = x.flags
+    # check comparison with generic types
+    assert f != Ellipsis
     f.__repr__()
     assert f.c_contiguous == f["C"]
     assert f.f_contiguous == f["F"]
@@ -2133,8 +2146,6 @@ def test_flags():
     assert f.forc == f["FORC"]
     assert f.fnc == f["FNC"]
     assert f.writable == f["W"]
-    # check comparison with generic types
-    f == Ellipsis
 
 
 def test_asarray_uint64():

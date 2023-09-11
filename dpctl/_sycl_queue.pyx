@@ -246,7 +246,7 @@ cdef class SyclQueue(_SyclQueue):
                 # create a queue for each sub-device using the common context
                 queues = [dpctl.SyclQueue(ctx, sub_d) for sub_d in sub_devices]
 
-        - Invoking the constuctor with a named ``PyCapsule`` with the name
+        - Invoking the constructor with a named ``PyCapsule`` with the name
           **"SyclQueueRef"** that carries a pointer to a ``sycl::queue``
           object. The capsule will be renamed upon successful consumption
           to ensure one-time use. A new named capsule can be constructed by
