@@ -51,6 +51,7 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sum_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
 )
 set(_clang_prefix "")
 if (WIN32)
@@ -60,6 +61,7 @@ set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
   PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math")
 if (UNIX)
   set_source_files_properties(

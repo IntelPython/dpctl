@@ -160,7 +160,7 @@ from ._elementwise_funcs import (
     tanh,
     trunc,
 )
-from ._reduction import sum
+from ._reduction import max, min, sum
 from ._testing import allclose
 
 __all__ = [
@@ -309,4 +309,6 @@ __all__ = [
     "allclose",
     "repeat",
     "tile",
+    "max",
+    "min",
 ]

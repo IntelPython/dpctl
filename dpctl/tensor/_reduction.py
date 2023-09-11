@@ -171,3 +171,62 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
     dpctl.SyclEvent.wait_for(host_tasks_list)
 
     return res
+
+
+def _same_dtype_reduction(x, axis, keepdims, func):
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+
+    nd = x.ndim
+    if axis is None:
+        red_nd = nd
+        # case of a scalar
+        if red_nd == 0:
+            return dpt.copy(x)
+        x_tmp = x
+        res_shape = tuple()
+        perm = list(range(nd))
+    else:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, nd, "axis")
+
+        red_nd = len(axis)
+        # check for axis=()
+        if red_nd == 0:
+            return dpt.copy(x)
+        perm = [i for i in range(nd) if i not in axis] + list(axis)
+        x_tmp = dpt.permute_dims(x, perm)
+        res_shape = x_tmp.shape[: nd - red_nd]
+
+    exec_q = x.sycl_queue
+    res_usm_type = x.usm_type
+    res_dtype = x.dtype
+
+    res = dpt.empty(
+        res_shape,
+        dtype=res_dtype,
+        usm_type=res_usm_type,
+        sycl_queue=exec_q,
+    )
+    hev, _ = func(
+        src=x_tmp,
+        trailing_dims_to_reduce=red_nd,
+        dst=res,
+        sycl_queue=exec_q,
+    )
+
+    if keepdims:
+        res_shape = res_shape + (1,) * red_nd
+        inv_perm = sorted(range(nd), key=lambda d: perm[d])
+        res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
+    hev.wait()
+    return res
+
+
+def max(x, axis=None, keepdims=False):
+    return _same_dtype_reduction(x, axis, keepdims, ti._max_over_axis)
+
+
+def min(x, axis=None, keepdims=False):
+    return _same_dtype_reduction(x, axis, keepdims, ti._min_over_axis)

@@ -1,4 +1,4 @@
-//=== reductions.hpp - Implementation of reduction kernels ------- *-C++-*/===//
+//=== sum_reductions.hpp - Implementation of sum kernels ------- *-C++-*/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,7 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for tensor reduction along axis.
+/// This file defines kernels for summing tensors along axis.
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -32,7 +32,6 @@
 #include <vector>
 
 #include "pybind11/pybind11.h"
-#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -40,7 +39,6 @@
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace su_ns = dpctl::tensor::sycl_utils;
 
 namespace dpctl
 {
@@ -155,7 +153,7 @@ public:
         const size_t reduction_lid = it.get_local_id(0);
         const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        // work-items operate over input with indices
+        // work-items sums over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
@@ -193,14 +191,10 @@ public:
                              sycl::memory_scope::device,
                              sycl::access::address_space::global_space>
                 res_ref(out_[out_iter_offset]);
-            if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
+            if constexpr (std::is_same_v<ReductionOp, std::plus<outT>> ||
+                          std::is_same_v<ReductionOp, sycl::plus<outT>>)
+            {
                 res_ref += red_val_over_wg;
-            }
-            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
-                res_ref.fetch_max(red_val_over_wg);
-            }
-            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
-                res_ref.fetch_min(red_val_over_wg);
             }
             else {
                 outT read_val = res_ref.load();
@@ -213,114 +207,7 @@ public:
     }
 };
 
-/* === Reduction, using custom_reduce_over_group, and sycl::atomic_ref === */
-
-template <typename argT,
-          typename outT,
-          typename ReductionOp,
-          typename InputOutputIterIndexerT,
-          typename InputRedIndexerT,
-          typename SlmT>
-struct CustomReductionOverGroupWithAtomicFunctor
-{
-private:
-    const argT *inp_ = nullptr;
-    outT *out_ = nullptr;
-    ReductionOp reduction_op_;
-    outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
-    SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
-
-public:
-    CustomReductionOverGroupWithAtomicFunctor(
-        const argT *data,
-        outT *res,
-        ReductionOp reduction_op,
-        const outT &identity_val,
-        InputOutputIterIndexerT arg_res_iter_indexer,
-        InputRedIndexerT arg_reduced_dims_indexer,
-        SlmT local_mem,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
-        : inp_(data), out_(res), reduction_op_(reduction_op),
-          identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
-          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          local_mem_(local_mem), reduction_max_gid_(reduction_size),
-          iter_gws_(iteration_size), reductions_per_wi(reduction_size_per_wi)
-    {
-    }
-
-    void operator()(sycl::nd_item<1> it) const
-    {
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
-
-        // work-items operate over input with indices
-        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
-        //   + reduction_lid
-        // for 0 <= m < reductions_per_wi
-
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
-        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
-        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
-
-        outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
-            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
-            reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
-
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
-            auto inp_reduction_offset =
-                inp_reduced_dims_indexer_(arg_reduce_gid);
-            auto inp_offset = inp_iter_offset + inp_reduction_offset;
-
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
-
-            local_red_val = reduction_op_(local_red_val, val);
-        }
-
-        auto work_group = it.get_group();
-        outT red_val_over_wg = su_ns::custom_reduce_over_group(
-            work_group, local_mem_, local_red_val, reduction_op_);
-
-        if (work_group.leader()) {
-            sycl::atomic_ref<outT, sycl::memory_order::relaxed,
-                             sycl::memory_scope::device,
-                             sycl::access::address_space::global_space>
-                res_ref(out_[out_iter_offset]);
-            if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
-                res_ref += red_val_over_wg;
-            }
-            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
-                res_ref.fetch_max(red_val_over_wg);
-            }
-            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
-                res_ref.fetch_min(red_val_over_wg);
-            }
-            else {
-                outT read_val = res_ref.load();
-                outT new_val{};
-                do {
-                    new_val = reduction_op_(read_val, red_val_over_wg);
-                } while (!res_ref.compare_exchange_strong(read_val, new_val));
-            }
-        }
-    }
-};
-
-typedef sycl::event (*reduction_strided_impl_fn_ptr)(
+typedef sycl::event (*sum_reduction_strided_impl_fn_ptr)(
     sycl::queue &,
     size_t,
     size_t,
@@ -336,51 +223,27 @@ typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     const std::vector<sycl::event> &);
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_over_group_with_atomics_krn;
+class sum_reduction_over_group_with_atomics_krn;
 
-template <typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5,
-          typename T6>
-class custom_reduction_over_group_with_atomics_krn;
-
-template <typename T1, typename T2, typename T3>
-class reduction_over_group_with_atomics_init_krn;
+template <typename T1, typename T2>
+class sum_reduction_over_group_with_atomics_init_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_seq_strided_krn;
+class sum_reduction_seq_strided_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_seq_contig_krn;
+class sum_reduction_seq_contig_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_axis0_over_group_with_atomics_contig_krn;
-
-template <typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5,
-          typename T6>
-class custom_reduction_axis0_over_group_with_atomics_contig_krn;
+class sum_reduction_axis0_over_group_with_atomics_contig_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_axis1_over_group_with_atomics_contig_krn;
-
-template <typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5,
-          typename T6>
-class custom_reduction_axis1_over_group_with_atomics_contig_krn;
+class sum_reduction_axis1_over_group_with_atomics_contig_krn;
 
 using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_over_group_with_atomics_strided_impl(
+template <typename argTy, typename resTy>
+sycl::event sum_reduction_over_group_with_atomics_strided_impl(
     sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
@@ -400,7 +263,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+    using ReductionOpT = sycl::plus<resTy>;
+    constexpr resTy identity_val = resTy{0};
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
@@ -421,7 +285,7 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                 reduction_shape_stride};
 
-            cgh.parallel_for<class reduction_seq_strided_krn<
+            cgh.parallel_for<class sum_reduction_seq_strided_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT>>(
                 sycl::range<1>(iter_nelems),
@@ -444,8 +308,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
                                  res_strides);
             using InitKernelName =
-                class reduction_over_group_with_atomics_init_krn<resTy, argTy,
-                                                                 ReductionOpT>;
+                class sum_reduction_over_group_with_atomics_init_krn<resTy,
+                                                                     argTy>;
             cgh.depends_on(depends);
 
             cgh.parallel_for<InitKernelName>(
@@ -483,37 +347,18 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                using KernelName = class reduction_over_group_with_atomics_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT>;
+            using KernelName = class sum_reduction_over_group_with_atomics_krn<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>;
 
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    ReductionOverGroupWithAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>(arg_tp, res_tp, ReductionOpT(),
-                                           identity_val, in_out_iter_indexer,
-                                           reduction_indexer, reduction_nelems,
-                                           iter_nelems, reductions_per_wi));
-            }
-            else {
-                using SlmT = sycl::local_accessor<resTy, 1>;
-                SlmT local_memory = SlmT(localRange, cgh);
-                using KernelName =
-                    class custom_reduction_over_group_with_atomics_krn<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>;
-
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    CustomReductionOverGroupWithAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>(
-                        arg_tp, res_tp, ReductionOpT(), identity_val,
-                        in_out_iter_indexer, reduction_indexer, local_memory,
-                        reduction_nelems, iter_nelems, reductions_per_wi));
-            }
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupWithAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
         });
 
         return comp_ev;
@@ -522,7 +367,7 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
 
 // Contig
 
-typedef sycl::event (*reduction_contig_impl_fn_ptr)(
+typedef sycl::event (*sum_reduction_contig_impl_fn_ptr)(
     sycl::queue &,
     size_t,
     size_t,
@@ -534,8 +379,8 @@ typedef sycl::event (*reduction_contig_impl_fn_ptr)(
     const std::vector<sycl::event> &);
 
 /* @brief Reduce rows in a matrix */
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
+template <typename argTy, typename resTy>
+sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
     sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
@@ -552,7 +397,8 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                           iter_arg_offset + reduction_arg_offset;
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
 
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+    using ReductionOpT = sycl::plus<resTy>;
+    constexpr resTy identity_val = resTy{0};
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
@@ -576,7 +422,7 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
-            cgh.parallel_for<class reduction_seq_contig_krn<
+            cgh.parallel_for<class sum_reduction_seq_contig_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT>>(
                 sycl::range<1>(iter_nelems),
@@ -624,46 +470,28 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                using KernelName =
-                    class reduction_axis1_over_group_with_atomics_contig_krn<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>;
+            using KernelName =
+                class sum_reduction_axis1_over_group_with_atomics_contig_krn<
+                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>;
 
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    ReductionOverGroupWithAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>(arg_tp, res_tp, ReductionOpT(),
-                                           identity_val, in_out_iter_indexer,
-                                           reduction_indexer, reduction_nelems,
-                                           iter_nelems, reductions_per_wi));
-            }
-            else {
-                using SlmT = sycl::local_accessor<resTy, 1>;
-                SlmT local_memory = SlmT(localRange, cgh);
-                using KernelName = class
-                    custom_reduction_axis1_over_group_with_atomics_contig_krn<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>;
-
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    CustomReductionOverGroupWithAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>(
-                        arg_tp, res_tp, ReductionOpT(), identity_val,
-                        in_out_iter_indexer, reduction_indexer, local_memory,
-                        reduction_nelems, iter_nelems, reductions_per_wi));
-            }
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupWithAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
         });
+
         return comp_ev;
     }
 }
 
 /* @brief Reduce rows in a matrix */
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
+template <typename argTy, typename resTy>
+sycl::event sum_reduction_axis0_over_group_with_atomics_contig_impl(
     sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of cols in a matrix
                         // when reducing over cols)
@@ -680,8 +508,8 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
                           iter_arg_offset + reduction_arg_offset;
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
 
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
-    ;
+    using ReductionOpT = sycl::plus<resTy>;
+    constexpr resTy identity_val = resTy{0};
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
@@ -723,39 +551,21 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                using KernelName =
-                    class reduction_axis0_over_group_with_atomics_contig_krn<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>;
+            using KernelName =
+                class sum_reduction_axis0_over_group_with_atomics_contig_krn<
+                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>;
 
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    ReductionOverGroupWithAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>(arg_tp, res_tp, ReductionOpT(),
-                                           identity_val, in_out_iter_indexer,
-                                           reduction_indexer, reduction_nelems,
-                                           iter_nelems, reductions_per_wi));
-            }
-            else {
-                using SlmT = sycl::local_accessor<resTy, 1>;
-                SlmT local_memory = SlmT(localRange, cgh);
-                using KernelName = class
-                    custom_reduction_axis0_over_group_with_atomics_contig_krn<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>;
-
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    CustomReductionOverGroupWithAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>(
-                        arg_tp, res_tp, ReductionOpT(), identity_val,
-                        in_out_iter_indexer, reduction_indexer, local_memory,
-                        reduction_nelems, iter_nelems, reductions_per_wi));
-            }
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupWithAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
         });
+
         return comp_ev;
     }
 }
@@ -808,7 +618,7 @@ public:
         const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
         const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
 
-        // work-items operates over input with indices
+        // work-items sums over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
@@ -848,110 +658,11 @@ public:
     }
 };
 
-/* = Reduction, using custom_reduce_over_group and not using atomic_ref*/
-
-template <typename argT,
-          typename outT,
-          typename ReductionOp,
-          typename InputOutputIterIndexerT,
-          typename InputRedIndexerT,
-          typename SlmT>
-struct CustomReductionOverGroupNoAtomicFunctor
-{
-private:
-    const argT *inp_ = nullptr;
-    outT *out_ = nullptr;
-    ReductionOp reduction_op_;
-    outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
-    SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
-
-public:
-    CustomReductionOverGroupNoAtomicFunctor(
-        const argT *data,
-        outT *res,
-        ReductionOp reduction_op,
-        const outT &identity_val,
-        InputOutputIterIndexerT arg_res_iter_indexer,
-        InputRedIndexerT arg_reduced_dims_indexer,
-        SlmT local_mem,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
-        : inp_(data), out_(res), reduction_op_(reduction_op),
-          identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
-          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          local_mem_(local_mem), reduction_max_gid_(reduction_size),
-          iter_gws_(iteration_size), reductions_per_wi(reduction_size_per_wi)
-    {
-    }
-
-    void operator()(sycl::nd_item<1> it) const
-    {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
-
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-
-        // work-items operates over input with indices
-        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
-        //   + reduction_lid
-        // for 0 <= m < reductions_per_wi
-
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
-        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
-        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
-
-        outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
-            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
-
-            if (arg_reduce_gid < reduction_max_gid_) {
-                auto inp_reduction_offset =
-                    inp_reduced_dims_indexer_(arg_reduce_gid);
-                auto inp_offset = inp_iter_offset + inp_reduction_offset;
-
-                using dpctl::tensor::type_utils::convert_impl;
-                outT val = convert_impl<outT, argT>(inp_[inp_offset]);
-
-                local_red_val = reduction_op_(local_red_val, val);
-            }
-        }
-
-        auto work_group = it.get_group();
-        // This only works if reduction_op_ is from small set of operators
-        outT red_val_over_wg = su_ns::custom_reduce_over_group(
-            work_group, local_mem_, local_red_val, reduction_op_);
-
-        if (work_group.leader()) {
-            // each group writes to a different memory location
-            out_[out_iter_offset * n_reduction_groups + reduction_batch_id] =
-                red_val_over_wg;
-        }
-    }
-};
-
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_over_group_temps_krn;
+class sum_reduction_over_group_temps_krn;
 
-template <typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5,
-          typename T6>
-class custom_reduction_over_group_temps_krn;
-
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_over_group_temps_strided_impl(
+template <typename argTy, typename resTy>
+sycl::event sum_reduction_over_group_temps_strided_impl(
     sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
@@ -971,7 +682,8 @@ sycl::event reduction_over_group_temps_strided_impl(
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+    using ReductionOpT = sycl::plus<resTy>;
+    constexpr resTy identity_val = resTy{0};
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
@@ -982,7 +694,7 @@ sycl::event reduction_over_group_temps_strided_impl(
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+        // reduction only requires 1 work-group, can output directly to res
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -1010,35 +722,19 @@ sycl::event reduction_over_group_temps_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                using KernelName = class reduction_over_group_temps_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT>;
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    ReductionOverGroupNoAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>(arg_tp, res_tp, ReductionOpT(),
-                                           identity_val, in_out_iter_indexer,
-                                           reduction_indexer, reduction_nelems,
-                                           iter_nelems, reductions_per_wi));
-            }
-            else {
-                using SlmT = sycl::local_accessor<resTy, 1>;
-                SlmT local_memory = SlmT(localRange, cgh);
-                using KernelName = class custom_reduction_over_group_temps_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, SlmT>;
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    CustomReductionOverGroupNoAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>(
-                        arg_tp, res_tp, ReductionOpT(), identity_val,
-                        in_out_iter_indexer, reduction_indexer, local_memory,
-                        reduction_nelems, iter_nelems, reductions_per_wi));
-            }
+            using KernelName = class sum_reduction_over_group_temps_krn<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupNoAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                  InputOutputIterIndexerT,
+                                                  ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
         });
+
         return comp_ev;
     }
     else {
@@ -1093,36 +789,17 @@ sycl::event reduction_over_group_temps_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                using KernelName = class reduction_over_group_temps_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT>;
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    ReductionOverGroupNoAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>(
-                        arg_tp, partially_reduced_tmp, ReductionOpT(),
-                        identity_val, in_out_iter_indexer, reduction_indexer,
-                        reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
-            }
-            else {
-                using SlmT = sycl::local_accessor<resTy, 1>;
-                SlmT local_memory = SlmT(localRange, cgh);
-                using KernelName = class custom_reduction_over_group_temps_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, SlmT>;
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    CustomReductionOverGroupNoAtomicFunctor<
-                        argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>(
-                        arg_tp, partially_reduced_tmp, ReductionOpT(),
-                        identity_val, in_out_iter_indexer, reduction_indexer,
-                        local_memory, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
-            }
+            using KernelName = class sum_reduction_over_group_temps_krn<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupNoAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                  InputOutputIterIndexerT,
+                                                  ReductionIndexerT>(
+                    arg_tp, partially_reduced_tmp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, preferrered_reductions_per_wi));
         });
 
         size_t remaining_reduction_nelems = reduction_groups;
@@ -1140,33 +817,34 @@ sycl::event reduction_over_group_temps_strided_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            sycl::event partial_reduction_ev = exec_q.submit([&](sycl::handler
-                                                                     &cgh) {
-                cgh.depends_on(dependent_ev);
+            sycl::event partial_reduction_ev =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(dependent_ev);
 
-                using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-                using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                        InputIndexerT, ResIndexerT>;
-                using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+                    using InputIndexerT =
+                        dpctl::tensor::offset_utils::Strided1DIndexer;
+                    using ResIndexerT =
+                        dpctl::tensor::offset_utils::NoOpIndexer;
+                    using InputOutputIterIndexerT =
+                        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                            InputIndexerT, ResIndexerT>;
+                    using ReductionIndexerT =
+                        dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+                    InputIndexerT inp_indexer{
+                        0, static_cast<py::ssize_t>(iter_nelems),
+                        static_cast<py::ssize_t>(reduction_groups_)};
+                    ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+                    InputOutputIterIndexerT in_out_iter_indexer{
+                        inp_indexer, res_iter_indexer};
+                    ReductionIndexerT reduction_indexer{};
 
-                auto globalRange =
-                    sycl::range<1>{iter_nelems * reduction_groups_ * wg};
-                auto localRange = sycl::range<1>{wg};
-                if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                    using KernelName = class reduction_over_group_temps_krn<
+                    auto globalRange =
+                        sycl::range<1>{iter_nelems * reduction_groups_ * wg};
+                    auto localRange = sycl::range<1>{wg};
+
+                    using KernelName = class sum_reduction_over_group_temps_krn<
                         resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                         ReductionIndexerT>;
                     cgh.parallel_for<KernelName>(
@@ -1178,25 +856,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                             in_out_iter_indexer, reduction_indexer,
                             remaining_reduction_nelems, iter_nelems,
                             preferrered_reductions_per_wi));
-                }
-                else {
-                    using SlmT = sycl::local_accessor<resTy, 1>;
-                    SlmT local_memory = SlmT(localRange, cgh);
-                    using KernelName =
-                        class custom_reduction_over_group_temps_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT, SlmT>;
-                    cgh.parallel_for<KernelName>(
-                        sycl::nd_range<1>(globalRange, localRange),
-                        CustomReductionOverGroupNoAtomicFunctor<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT, SlmT>(
-                            temp_arg, temp2_arg, ReductionOpT(), identity_val,
-                            in_out_iter_indexer, reduction_indexer,
-                            local_memory, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
-                }
-            });
+                });
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
@@ -1240,36 +900,18 @@ sycl::event reduction_over_group_temps_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
-                using KernelName = class reduction_over_group_temps_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT>;
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    ReductionOverGroupNoAtomicFunctor<
-                        resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT>(temp_arg, res_tp, ReductionOpT(),
-                                           identity_val, in_out_iter_indexer,
-                                           reduction_indexer,
-                                           remaining_reduction_nelems,
-                                           iter_nelems, reductions_per_wi));
-            }
-            else {
-                using SlmT = sycl::local_accessor<resTy, 1>;
-                SlmT local_memory = SlmT(localRange, cgh);
-                using KernelName = class custom_reduction_over_group_temps_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, SlmT>;
-                cgh.parallel_for<KernelName>(
-                    sycl::nd_range<1>(globalRange, localRange),
-                    CustomReductionOverGroupNoAtomicFunctor<
-                        resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                        ReductionIndexerT, SlmT>(
-                        temp_arg, res_tp, ReductionOpT(), identity_val,
-                        in_out_iter_indexer, reduction_indexer, local_memory,
-                        remaining_reduction_nelems, iter_nelems,
-                        reductions_per_wi));
-            }
+            using KernelName = class sum_reduction_over_group_temps_krn<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(globalRange, localRange),
+                ReductionOverGroupNoAtomicFunctor<resTy, resTy, ReductionOpT,
+                                                  InputOutputIterIndexerT,
+                                                  ReductionIndexerT>(
+                    temp_arg, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer,
+                    remaining_reduction_nelems, iter_nelems,
+                    reductions_per_wi));
         });
 
         sycl::event cleanup_host_task_event =
@@ -1289,26 +931,69 @@ sycl::event reduction_over_group_temps_strided_impl(
     }
 }
 
-/* @brief Types supported by comparison-reduction code based on atomic_ref */
+/* @brief Types supported by plus-reduction code based on atomic_ref */
 template <typename argTy, typename outTy>
-struct TypePairSupportDataForCompReductionAtomic
+struct TypePairSupportDataForSumReductionAtomic
 {
 
     /* value if true a kernel for <argTy, outTy> must be instantiated, false
      * otherwise */
     static constexpr bool is_defined = std::disjunction< // disjunction is C++17
                                                          // feature, supported
-                                                         // by DPC++
+                                                         // by DPC++ input bool
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
+        // input int8
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
+        // input uint8
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
+        // input int16
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
+        // input uint16
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
         // input int32
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
         // input uint32
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
         // input int64
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
         // input uint64
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
+        // input half
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
         // input float
         td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
         // input double
         td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
         // fall-through
@@ -1316,29 +1001,55 @@ struct TypePairSupportDataForCompReductionAtomic
 };
 
 template <typename argTy, typename outTy>
-struct TypePairSupportDataForCompReductionTemps
+struct TypePairSupportDataForSumReductionTemps
 {
 
     static constexpr bool is_defined = std::disjunction< // disjunction is C++17
                                                          // feature, supported
                                                          // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, bool>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
+
         // input int8_t
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
 
         // input uint8_t
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
 
         // input int16_t
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
 
         // input uint16_t
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
 
         // input int32_t
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+
         // input uint32_t
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
 
         // input int64_t
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
@@ -1348,48 +1059,55 @@ struct TypePairSupportDataForCompReductionTemps
 
         // input half
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
+        td_ns::
+            TypePairDefinedEntry<argTy, sycl::half, outTy, std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    sycl::half,
+                                    outTy,
+                                    std::complex<double>>,
 
         // input float
         td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<double>>,
 
         // input double
         td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::complex<double>>,
 
         // input std::complex
         td_ns::TypePairDefinedEntry<argTy,
                                     std::complex<float>,
                                     outTy,
                                     std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<float>,
+                                    outTy,
+                                    std::complex<double>>,
 
         td_ns::TypePairDefinedEntry<argTy,
                                     std::complex<double>,
                                     outTy,
                                     std::complex<double>>,
 
-        // fall-through
+        // fall-throug
         td_ns::NotDefinedEntry>::is_defined;
 };
 
 template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxisAtomicStridedFactory
+struct SumOverAxisAtomicStridedFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
                           srcTy, dstTy>::is_defined)
         {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
+            return dpctl::tensor::kernels::
+                sum_reduction_over_group_with_atomics_strided_impl<srcTy,
+                                                                   dstTy>;
         }
         else {
             return nullptr;
@@ -1398,27 +1116,14 @@ struct MaxOverAxisAtomicStridedFactory
 };
 
 template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxisTempsStridedFactory
+struct SumOverAxisTempsStridedFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
+        if constexpr (TypePairSupportDataForSumReductionTemps<
+                          srcTy, dstTy>::is_defined) {
+            return dpctl::tensor::kernels::
+                sum_reduction_over_group_temps_strided_impl<srcTy, dstTy>;
         }
         else {
             return nullptr;
@@ -1427,25 +1132,16 @@ struct MaxOverAxisTempsStridedFactory
 };
 
 template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxis1AtomicContigFactory
+struct SumOverAxis1AtomicContigFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
                           srcTy, dstTy>::is_defined)
         {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
+            return dpctl::tensor::kernels::
+                sum_reduction_axis1_over_group_with_atomics_contig_impl<srcTy,
+                                                                        dstTy>;
         }
         else {
             return nullptr;
@@ -1454,135 +1150,16 @@ struct MaxOverAxis1AtomicContigFactory
 };
 
 template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxis0AtomicContigFactory
+struct SumOverAxis0AtomicContigFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
                           srcTy, dstTy>::is_defined)
         {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxisAtomicStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxis1AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxis0AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
+            return dpctl::tensor::kernels::
+                sum_reduction_axis0_over_group_with_atomics_contig_impl<srcTy,
+                                                                        dstTy>;
         }
         else {
             return nullptr;
