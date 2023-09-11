@@ -28,12 +28,111 @@
 #include <cstddef>
 #include <vector>
 
+#include "math_utils.hpp"
+
 namespace dpctl
 {
 namespace tensor
 {
 namespace sycl_utils
 {
+namespace detail
+{
+
+template <typename...> struct TypeList;
+
+template <typename Head, typename... Tail> struct TypeList<Head, Tail...>
+{
+    using head = Head;
+    using tail = TypeList<Tail...>;
+};
+
+using NullTypeList = TypeList<>;
+template <typename T>
+struct IsNullTypeList : std::conditional_t<std::is_same_v<T, NullTypeList>,
+                                           std::true_type,
+                                           std::false_type>
+{
+};
+
+// recursively check if type is contained in given TypeList
+template <typename T, typename TList>
+struct IsContained
+    : std::conditional_t<
+          std::is_same_v<typename TList::head, std::remove_cv_t<T>>,
+          std::true_type,
+          IsContained<T, typename TList::tail>>
+{
+};
+
+template <> struct TypeList<>
+{
+};
+
+// std::false_type when last case has been checked for membership
+template <typename T> struct IsContained<T, NullTypeList> : std::false_type
+{
+};
+
+template <class T> struct IsComplex : std::false_type
+{
+};
+template <class T> struct IsComplex<std::complex<T>> : std::true_type
+{
+};
+
+} // namespace detail
+
+template <typename T>
+using sycl_ops = detail::TypeList<sycl::plus<T>,
+                                  sycl::bit_or<T>,
+                                  sycl::bit_xor<T>,
+                                  sycl::bit_and<T>,
+                                  sycl::maximum<T>,
+                                  sycl::minimum<T>,
+                                  sycl::multiplies<T>>;
+
+template <typename T, typename Op> struct IsSyclOp
+{
+    static constexpr bool value =
+        detail::IsContained<Op, sycl_ops<std::remove_const_t<T>>>::value ||
+        detail::IsContained<Op, sycl_ops<std::add_const_t<T>>>::value ||
+        detail::IsContained<Op, sycl_ops<void>>::value;
+};
+
+struct AtomicSupport
+{
+    bool operator()(const sycl::queue &exec_q,
+                    sycl::usm::alloc usm_alloc_type,
+                    bool require_atomic64 = false) const
+    {
+        bool supports_atomics = false;
+
+        const sycl::device &dev = exec_q.get_device();
+        if (require_atomic64) {
+            if (!dev.has(sycl::aspect::atomic64))
+                return false;
+        }
+
+        switch (usm_alloc_type) {
+        case sycl::usm::alloc::shared:
+            supports_atomics =
+                dev.has(sycl::aspect::usm_atomic_shared_allocations);
+            break;
+        case sycl::usm::alloc::host:
+            supports_atomics =
+                dev.has(sycl::aspect::usm_atomic_host_allocations);
+            break;
+        case sycl::usm::alloc::device:
+            supports_atomics = true;
+            break;
+        default:
+            supports_atomics = false;
+        }
+
+        return supports_atomics;
+    }
+};
 
 /*! @brief Find the smallest multiple of supported sub-group size larger than
  * nelems */
@@ -65,6 +164,172 @@ size_t choose_workgroup_size(const size_t nelems,
 
     return wg;
 }
+
+template <typename T, typename GroupT, typename LocAccT, typename OpT>
+T custom_reduce_over_group(GroupT wg,
+                           LocAccT local_mem_acc,
+                           T local_val,
+                           OpT op)
+{
+    size_t wgs = wg.get_local_linear_range();
+    local_mem_acc[wg.get_local_linear_id()] = local_val;
+
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    T red_val_over_wg = local_mem_acc[0];
+    if (wg.leader()) {
+        for (size_t i = 1; i < wgs; ++i) {
+            red_val_over_wg = op(red_val_over_wg, local_mem_acc[i]);
+        }
+    }
+
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    return sycl::group_broadcast(wg, red_val_over_wg);
+}
+
+// Reduction functors
+
+// Maximum
+
+template <typename T> struct Maximum
+{
+    T operator()(const T &x, const T &y) const
+    {
+        if constexpr (detail::IsComplex<T>::value) {
+            using dpctl::tensor::math_utils::max_complex;
+            return max_complex<T>(x, y);
+        }
+        else if constexpr (std::is_floating_point_v<T> ||
+                           std::is_same_v<T, sycl::half>) {
+            return (std::isnan(x) || x > y) ? x : y;
+        }
+        else if constexpr (std::is_same_v<T, bool>) {
+            return x || y;
+        }
+        else {
+            return (x > y) ? x : y;
+        }
+    }
+};
+
+// Minimum
+
+template <typename T> struct Minimum
+{
+    T operator()(const T &x, const T &y) const
+    {
+        if constexpr (detail::IsComplex<T>::value) {
+            using dpctl::tensor::math_utils::min_complex;
+            return min_complex<T>(x, y);
+        }
+        else if constexpr (std::is_floating_point_v<T> ||
+                           std::is_same_v<T, sycl::half>) {
+            return (std::isnan(x) || x < y) ? x : y;
+        }
+        else if constexpr (std::is_same_v<T, bool>) {
+            return x && y;
+        }
+        else {
+            return (x < y) ? x : y;
+        }
+    }
+};
+
+// Define identities and operator checking structs
+
+template <typename Op, typename T, typename = void> struct GetIdentity
+{
+};
+
+// Maximum
+
+template <typename T, class Op>
+using IsMaximum = std::bool_constant<std::is_same_v<Op, sycl::maximum<T>> ||
+                                     std::is_same_v<Op, sycl::maximum<void>> ||
+                                     std::is_same_v<Op, Maximum<T>> ||
+                                     std::is_same_v<Op, Maximum<void>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsMaximum<T, Op>::value>>
+{
+    static constexpr T value =
+        static_cast<T>(std::numeric_limits<T>::has_infinity
+                           ? static_cast<T>(-std::numeric_limits<T>::infinity())
+                           : std::numeric_limits<T>::lowest());
+};
+
+template <typename Op>
+struct GetIdentity<Op, bool, std::enable_if_t<IsMaximum<bool, Op>::value>>
+{
+    static constexpr bool value = false;
+};
+
+template <typename Op, typename T>
+struct GetIdentity<Op,
+                   std::complex<T>,
+                   std::enable_if_t<IsMaximum<std::complex<T>, Op>::value>>
+{
+    static constexpr std::complex<T> value{-std::numeric_limits<T>::infinity(),
+                                           -std::numeric_limits<T>::infinity()};
+};
+
+// Minimum
+
+template <typename T, class Op>
+using IsMinimum = std::bool_constant<std::is_same_v<Op, sycl::minimum<T>> ||
+                                     std::is_same_v<Op, sycl::minimum<void>> ||
+                                     std::is_same_v<Op, Minimum<T>> ||
+                                     std::is_same_v<Op, Minimum<void>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsMinimum<T, Op>::value>>
+{
+    static constexpr T value =
+        static_cast<T>(std::numeric_limits<T>::has_infinity
+                           ? static_cast<T>(std::numeric_limits<T>::infinity())
+                           : std::numeric_limits<T>::max());
+};
+
+template <typename Op>
+struct GetIdentity<Op, bool, std::enable_if_t<IsMinimum<bool, Op>::value>>
+{
+    static constexpr bool value = true;
+};
+
+template <typename Op, typename T>
+struct GetIdentity<Op,
+                   std::complex<T>,
+                   std::enable_if_t<IsMinimum<std::complex<T>, Op>::value>>
+{
+    static constexpr std::complex<T> value{std::numeric_limits<T>::infinity(),
+                                           std::numeric_limits<T>::infinity()};
+};
+
+// Plus
+
+template <typename T, class Op>
+using IsPlus = std::bool_constant<
+    std::is_same_v<Op, sycl::plus<T>> || std::is_same_v<Op, sycl::plus<void>> ||
+    std::is_same_v<Op, std::plus<T>> || std::is_same_v<Op, std::plus<T>>>;
+
+// Identity
+
+template <typename Op, typename T, typename = void> struct Identity
+{
+};
+
+template <typename Op, typename T>
+struct Identity<Op, T, std::enable_if_t<!IsSyclOp<T, Op>::value>>
+{
+    static constexpr T value = GetIdentity<Op, T>::value;
+};
+
+template <typename Op, typename T>
+struct Identity<Op, T, std::enable_if_t<IsSyclOp<T, Op>::value>>
+{
+    static constexpr T value = sycl::known_identity<Op, T>::value;
+};
 
 } // namespace sycl_utils
 } // namespace tensor
