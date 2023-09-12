@@ -137,10 +137,15 @@ add_custom_target(
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 function(build_dpctl_ext _trgt _src _dest)
+    set(options SYCL)
+    cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     set(_cythonize_trgt "${_trgt}_cythonize_pyx")
     add_custom_target(${_cythonize_trgt} DEPENDS ${_src})
     python_add_library(${_trgt} MODULE ${_generated_src})
+    if (BUILD_DPCTL_EXT_SYCL)
+      add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
+    endif()
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})
     if (DPCTL_GENERATE_COVERAGE)
@@ -193,6 +198,7 @@ endforeach()
 
 # _sycl_queue include _host_task_util.hpp
 target_include_directories(_sycl_queue PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+add_sycl_to_target(TARGET _sycl_queue SOURCES _sycl_queue.cxx)
 
 add_subdirectory(program)
 add_subdirectory(memory)

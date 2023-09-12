@@ -11,8 +11,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 
 find_package(Git REQUIRED)
 
-if(NOT DEFINED IntelDPCPP_FOUND OR NOT IntelDPCPP_FOUND)
-   find_package(IntelDPCPP REQUIRED)
+if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
+   find_package(IntelSYCL REQUIRED)
 endif()
 
 # Option to turn on support for creating Level Zero interoperability programs
@@ -43,11 +43,10 @@ option(DPCTL_ENABLE_GLOG
 )
 
 # Minimum version requirement only when oneAPI dpcpp is used.
-find_package(IntelDPCPP REQUIRED)
 if(DPCTL_DPCPP_FROM_ONEAPI)
-    find_package(IntelSycl 2021.3.0 REQUIRED)
+    find_package(IntelSyclCompiler 2021.3.0 REQUIRED)
 else()
-    find_package(IntelSycl REQUIRED)
+    find_package(IntelSyclCompiler REQUIRED)
 endif()
 
 if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
@@ -57,7 +56,7 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     if (UNIX)
         find_library(PI_LEVEL_ZERO_LIB
             NAMES pi_level_zero
-            HINTS ${IntelSycl_LIBRARY_DIR}
+            HINTS ${IntelSyclCompiler_LIBRARY_DIR}
         )
         find_program(READELF_PROG readelf)
         find_program(GREP_PROG grep)
@@ -77,7 +76,7 @@ endif()
 if (UNIX)
   find_library(PI_OPENCL_LIB
       NAMES pi_opencl
-      HINTS ${IntelSycl_LIBRARY_DIR}
+      HINTS ${IntelSyclCompiler_LIBRARY_DIR}
   )
   find_program(READELF_PROG readelf)
   find_program(GREP_PROG grep)
@@ -157,7 +156,6 @@ elseif(UNIX)
     string(CONCAT CXXFLAGS
         "${WARNING_FLAGS}"
         "${SDL_FLAGS}"
-        "-fsycl "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXXFLAGS}")
@@ -206,6 +204,7 @@ add_library(DPCTLSyclInterface
     ${sources}
     ${helper_sources}
 )
+add_sycl_to_target(TARGET DPCTLSyclInterface SOURCES ${sources} ${helper_sources})
 
 if(DPCTL_GENERATE_COVERAGE)
     target_link_options(DPCTLSyclInterface
@@ -221,9 +220,6 @@ target_include_directories(DPCTLSyclInterface
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
     ${SYCL_INCLUDE_DIR}
-)
-target_link_libraries(DPCTLSyclInterface
-  PRIVATE ${IntelSycl_SYCL_LIBRARY}
 )
 
 if(DPCTL_ENABLE_GLOG)

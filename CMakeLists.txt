@@ -18,7 +18,7 @@ option(DPCTL_GENERATE_COVERAGE
     OFF
 )
 
-find_package(IntelDPCPP REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
+find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 
 add_subdirectory(libsyclinterface)
 
@@ -39,6 +39,8 @@ FetchContent_Declare(
     URL_HASH SHA256=d475978da0cdc2d43b73f30910786759d593a9d8ee05b1b6846d1eb16c6d2e0c
 )
 FetchContent_MakeAvailable(pybind11)
+
+set(SKBUILD_LINK_LIBRARIES_KEYWORD PUBLIC)
 
 add_subdirectory(dpctl)
 

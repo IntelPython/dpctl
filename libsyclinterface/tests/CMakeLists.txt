@@ -40,7 +40,7 @@ if(DPCTL_GENERATE_COVERAGE)
         ${CMAKE_THREAD_LIBS_INIT}
         GTest::GTest
         DPCTLSyclInterface
-        ${IntelSycl_OPENCL_LIBRARY}
+        ${IntelSyclCompiler_OPENCL_LIBRARY}
         ${CMAKE_DL_LIBS}
     )
     set(object_arg "-object;")
@@ -96,7 +96,7 @@ else()
         ${CMAKE_THREAD_LIBS_INIT}
         GTest::GTest
         DPCTLSyclInterface
-        ${IntelSycl_OPENCL_LIBRARY}
+        ${IntelSyclCompiler_OPENCL_LIBRARY}
     )
 endif()
 

@@ -30,8 +30,7 @@ if(WIN32)
     endif()
 endif()
 
-set(python_module_name _tensor_impl)
-pybind11_add_module(${python_module_name} MODULE
+set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
@@ -52,6 +51,10 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
 )
+
+set(python_module_name _tensor_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
 set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
