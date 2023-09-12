@@ -21,17 +21,38 @@ foreach(tf ${spirv-test-files})
     file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
-if(DPCTL_GENERATE_COVERAGE)
-    file(GLOB_RECURSE
-        sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-    )
+file(GLOB_RECURSE
+    sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+)
 
-    # Add all dpctl sources into a single executable so that we can run coverage
-    # analysis and generate a report.
-    add_executable(dpctl_c_api_tests
-        EXCLUDE_FROM_ALL
-        ${sources}
-    )
+# Add all dpctl sources into a single executable so that we can run coverage
+# analysis and generate a report.
+add_executable(dpctl_c_api_tests
+    EXCLUDE_FROM_ALL
+    ${sources}
+)
+add_sycl_to_target(
+  TARGET dpctl_c_api_tests
+  SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_helper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_context_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_aspects.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_event_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_bundle_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_invalid_filters.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_subdevices.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_selector_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_interface.cpp
+)
+
+if(DPCTL_GENERATE_COVERAGE)
     target_include_directories(dpctl_c_api_tests
         PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../helper/include"
         PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include"
@@ -90,8 +111,6 @@ if(DPCTL_GENERATE_COVERAGE)
         DEPENDS dpctl_c_api_tests
     )
 else()
-    file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-    add_executable(dpctl_c_api_tests EXCLUDE_FROM_ALL ${sources})
     target_link_libraries(dpctl_c_api_tests
         ${CMAKE_THREAD_LIBS_INIT}
         GTest::GTest
