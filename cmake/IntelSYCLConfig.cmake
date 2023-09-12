@@ -353,7 +353,7 @@ Adding sycl to all sources but that may effect compilation times")
 
     get_target_property(__sycl_link_options
         IntelSYCL::SYCL_CXX INTERFACE_LINK_OPTIONS)
-    target_link_options(${SYCL_TARGET} PUBLIC "${__sycl_link_options}")
+    target_link_options(${SYCL_TARGET} PRIVATE "${__sycl_link_options}")
     get_target_property(__sycl_link_directories
         IntelSYCL::SYCL_CXX INTERFACE_LINK_DIRECTORIES)
     target_link_directories(${SYCL_TARGET} PUBLIC "${__sycl_link_directories}")
