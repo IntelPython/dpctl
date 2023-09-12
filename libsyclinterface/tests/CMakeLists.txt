@@ -35,21 +35,22 @@ add_sycl_to_target(
   TARGET dpctl_c_api_tests
   SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/test_helper.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_context_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_aspects.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_event_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_bundle_interface.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_invalid_filters.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_subdevices.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_manager.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_selector_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_aspects.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_event_interface.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_bundle_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
 )
 
 if(DPCTL_GENERATE_COVERAGE)
