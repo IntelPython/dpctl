@@ -59,12 +59,20 @@ set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
 endif()
-set_source_files_properties(
+
+set(_no_fast_math_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
-  PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math")
+)
+foreach(_src_fn ${_no_fast_math_sources})
+  get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
+  set(_combined_options_prop ${_cmpl_options_prop} "${_clang_prefix}-fno-fast-math")
+  set_source_files_properties(
+     ${_src_fn}
+     PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
+  )
+endforeach()
 if (UNIX)
   set_source_files_properties(
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp

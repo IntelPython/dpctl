@@ -58,7 +58,6 @@ elseif(UNIX)
     string(CONCAT CXXFLAGS
         "${WARNING_FLAGS}"
         "${SDL_FLAGS}"
-        "-fsycl "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
@@ -190,15 +189,18 @@ function(build_dpctl_ext _trgt _src _dest)
     install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
-file(GLOB _cython_sources *.pyx)
+file(GLOB _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.pyx)
+list(REMOVE_ITEM _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpctl_ext(${_trgt} ${_cy_file} "dpctl")
 endforeach()
 
+set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
+get_filename_component(_trgt ${_cy_file} NAME_WLE)
+build_dpctl_ext(${_trgt} ${_cy_file} "dpctl" SYCL)
 # _sycl_queue include _host_task_util.hpp
-target_include_directories(_sycl_queue PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-add_sycl_to_target(TARGET _sycl_queue SOURCES _sycl_queue.cxx)
+target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(program)
 add_subdirectory(memory)
