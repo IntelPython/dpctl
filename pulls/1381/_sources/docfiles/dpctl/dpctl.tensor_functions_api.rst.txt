@@ -73,4 +73,5 @@ Array Manipulation
 .. autofunction:: squeeze
 .. autofunction:: stack
 .. autofunction:: swapaxes
+.. autofunction:: tile
 .. autofunction:: unstack

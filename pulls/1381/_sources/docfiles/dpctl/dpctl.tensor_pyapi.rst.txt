@@ -123,6 +123,8 @@ Array Manipulation
       - Joins a sequence of arrays along a new axis.
     * - :func:`swapaxes()`
       - Interchanges two axes of an array.
+    * - :func:`tile()`
+      - Repeat an input array `x` along each axis a number of times given by `repetitions`.
     * - :func:`unstack()`
       - Splits an array in a sequence of arrays along the given axis.
 

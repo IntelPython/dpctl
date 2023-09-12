@@ -100,7 +100,7 @@ A new DPCTLSyclEventRef created by copying the passed in DPCTLSyclEventRef objec
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	DPCTLEvent_Create(void)
 
-A wrapper for ``sycl::event`` contructor to construct a new event.
+A wrapper for ``sycl::event`` constructor to construct a new event.
 
 
 

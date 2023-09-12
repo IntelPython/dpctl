@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclDevice &mdash; Data Parallel Control (dpctl) 0.14.6dev4+44.g5f889594c documentation</title>
+  <title>dpctl.SyclDevice &mdash; Data Parallel Control (dpctl) 0.14.6dev5+10.g9abd4c6df documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a650f3a9"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a1ab173b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev4+44.g5f889594c
+                0.14.6dev5+10.g9abd4c6df
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -393,7 +393,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclDeviceRef</span></code> pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></a>([partition])</p></td>
-<td><p>Creates a list of sub-devices by partitioning a root device based on the provided partion specifier.</p></td>
+<td><p>Creates a list of sub-devices by partitioning a root device based on the provided partition specifier.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclDevice.get_filter_string" title="dpctl.SyclDevice.get_filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filter_string</span></code></a>([include_backend, ...])</p></td>
 <td><p>For a parent device, returns a filter selector string that includes backend or device type based on the value of the given keyword arguments.</p></td>
@@ -1307,7 +1307,7 @@ this <a class="reference internal" href="#dpctl.SyclDevice" title="dpctl.SyclDev
 <dt class="sig sig-object py" id="dpctl.SyclDevice.create_sub_devices">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclDevice.</span></span><span class="sig-name descname"><span class="pre">create_sub_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">parition_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.create_sub_devices" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a list of sub-devices by partitioning a root device based on the
-provided partion specifier.</p>
+provided partition specifier.</p>
 <p>A partition specifier must be provided using a “partition”
 keyword argument. Possible values for the specifier are: an int, a
 string specifying the affinity domain, or a collection of ints.</p>

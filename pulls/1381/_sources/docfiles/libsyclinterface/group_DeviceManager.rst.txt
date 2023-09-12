@@ -443,13 +443,13 @@ Returns the element at the specified index.
 	*
 		- index
 
-		- The index postion of the element to be returned.
+		- The index position of the element to be returned.
 
 
 
 .. rubric:: Returns:
 
-The element at the specified postion, if the index position is out of bounds then a nullptr is returned.
+The element at the specified position, if the index position is out of bounds then a nullptr is returned.
 
 .. index:: pair: function; DPCTLDeviceVector_Size
 .. _doxid-dc/ddc/group___device_manager_1ga792de109fa69610d378487cdaf23cf7a:
