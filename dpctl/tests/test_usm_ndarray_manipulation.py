@@ -1308,3 +1308,123 @@ def test_repeat_arg_validation():
     reps = dpt.arange(10, dtype="i8")
     with pytest.raises(ValueError):
         dpt.repeat(x, reps)
+
+
+def test_tile_basic():
+    get_queue_or_skip()
+
+    reps = 2
+    x = dpt.arange(5, dtype="i4")
+    res = dpt.tile(x, reps)
+    assert res.shape == (x.shape[0] * reps,)
+    assert dpt.all(res[: x.size] == res[x.size :])
+
+    reps = (2, 1)
+    expected_sh = (2, x.shape[0])
+    expected_res = dpt.broadcast_to(x, expected_sh)
+    res = dpt.tile(x, reps)
+    assert res.shape == expected_sh
+    assert dpt.all(expected_res == res)
+
+
+def test_tile_size_1():
+    get_queue_or_skip()
+
+    reps = 5
+    # test for 0d array
+    x = dpt.asarray(2, dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == dpt.full(reps, 2, dtype="i4"))
+
+    # test for 1d array with single element
+    x = dpt.asarray([2], dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == dpt.full(reps, 2, dtype="i4"))
+
+    # test empty reps returns copy of input
+    reps = ()
+    res = dpt.tile(x, reps)
+    assert x.shape == res.shape
+    assert x == res
+
+
+def test_tile_prepends_axes():
+    get_queue_or_skip()
+
+    reps = (2,)
+    x = dpt.ones((5, 10), dtype="i4")
+    expected_res = dpt.ones((5, 20), dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == expected_res)
+
+    reps = (3, 2, 2)
+    expected_res = dpt.ones((3, 10, 20), dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == expected_res)
+
+
+def test_tile_empty_outputs():
+    get_queue_or_skip()
+
+    x = dpt.asarray((), dtype="i4")
+    reps = 10
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (0,)
+
+    x = dpt.ones((3, 0, 5), dtype="i4")
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (3, 0, 50)
+
+    reps = (2, 1, 2)
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (6, 0, 10)
+
+    x = dpt.ones((2, 3, 4), dtype="i4")
+    reps = (0, 1, 1)
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (0, 3, 4)
+
+
+def test_tile_strides():
+    get_queue_or_skip()
+
+    reps = (1, 2)
+    x = dpt.reshape(dpt.arange(10 * 10, dtype="i4"), (10, 10))
+    x1 = x[:, ::-2]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[:, : x1.shape[1]], expected_res[:, x1.shape[1] :] = x1, x1
+    res = dpt.tile(x1, reps)
+    assert dpt.all(res == expected_res)
+
+    reps = (2, 1)
+    x1 = x[::-2, :]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[: x1.shape[0], :], expected_res[x1.shape[0] :, :] = x1, x1
+    res = dpt.tile(x1, reps)
+    assert dpt.all(res == expected_res)
+
+
+def test_tile_size_1_axes():
+    get_queue_or_skip()
+
+    reps = (1, 2, 1)
+    x = dpt.ones((2, 1, 3), dtype="i4")
+    res = dpt.tile(x, reps)
+    expected_res = dpt.broadcast_to(x, (2, 2, 3))
+    assert dpt.all(res == expected_res)
+
+
+def test_tile_arg_validation():
+    get_queue_or_skip()
+
+    with pytest.raises(TypeError):
+        dpt.tile(dict(), 2)
+
+    # repetitions must be int or tuple
+    x = dpt.empty(())
+    with pytest.raises(TypeError):
+        dpt.tile(x, dict())

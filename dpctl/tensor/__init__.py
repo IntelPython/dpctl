@@ -78,6 +78,7 @@ from dpctl.tensor._manipulation_functions import (
     squeeze,
     stack,
     swapaxes,
+    tile,
     unstack,
 )
 from dpctl.tensor._print import (
@@ -307,4 +308,5 @@ __all__ = [
     "trunc",
     "allclose",
     "repeat",
+    "tile",
 ]

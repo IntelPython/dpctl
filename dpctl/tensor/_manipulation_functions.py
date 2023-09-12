@@ -1122,6 +1122,101 @@ def repeat(x, repeats, axis=None):
     return res
 
 
+def tile(x, repetitions):
+    """tile(x, repetitions)
+
+    Repeat an input array `x` along each axis a number of times given by
+    `repetitions`.
+
+    For `N` = len(`repetitions`) and `M` = len(`x.shape`):
+    - if `M < N`, `x` will have `N - M` new axes prepended to its shape
+    - if `M > N`, `repetitions` will have `M - N` new axes 1 prepended to it
+
+    Args:
+        x (usm_ndarray): input array
+
+        repetitions (Union[int, Tuple[int, ...]]):
+            The number of repetitions for each dimension.
+
+    Returns:
+        usm_narray:
+            Array with tiled elements.
+            The returned array must have the same data type as `x`,
+            is created on the same device as `x` and has the same USM
+            allocation type as `x`.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
+
+    if not isinstance(repetitions, tuple):
+        if isinstance(repetitions, int):
+            repetitions = (repetitions,)
+        else:
+            raise TypeError(
+                f"Expected tuple or integer type, got {type(repetitions)}."
+            )
+
+    # case of scalar
+    if x.size == 1:
+        if not repetitions:
+            # handle empty tuple
+            repetitions = (1,)
+        return dpt.full(
+            repetitions,
+            x,
+            dtype=x.dtype,
+            usm_type=x.usm_type,
+            sycl_queue=x.sycl_queue,
+        )
+    rep_dims = len(repetitions)
+    x_dims = x.ndim
+    if rep_dims < x_dims:
+        repetitions = (x_dims - rep_dims) * (1,) + repetitions
+    elif x_dims < rep_dims:
+        x = dpt.reshape(x, (rep_dims - x_dims) * (1,) + x.shape)
+    res_shape = tuple(map(lambda sh, rep: sh * rep, x.shape, repetitions))
+    # case of empty input
+    if x.size == 0:
+        return dpt.empty(
+            res_shape, x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+        )
+    in_sh = x.shape
+    if res_shape == in_sh:
+        return dpt.copy(x)
+    expanded_sh = []
+    broadcast_sh = []
+    out_sz = 1
+    for i in range(len(res_shape)):
+        out_sz *= res_shape[i]
+        reps, sh = repetitions[i], in_sh[i]
+        if reps == 1:
+            # dimension will be unchanged
+            broadcast_sh.append(sh)
+            expanded_sh.append(sh)
+        elif sh == 1:
+            # dimension will be broadcast
+            broadcast_sh.append(reps)
+            expanded_sh.append(sh)
+        else:
+            broadcast_sh.extend([reps, sh])
+            expanded_sh.extend([1, sh])
+    exec_q = x.sycl_queue
+    res = dpt.empty((out_sz,), x.dtype, usm_type=x.usm_type, sycl_queue=exec_q)
+    # no need to copy data for empty output
+    if out_sz > 0:
+        x = dpt.broadcast_to(
+            # this reshape should never copy
+            dpt.reshape(x, expanded_sh),
+            broadcast_sh,
+        )
+        # copy broadcast input into flat array
+        hev, _ = ti._copy_usm_ndarray_for_reshape(
+            src=x, dst=res, sycl_queue=exec_q
+        )
+        hev.wait()
+    return dpt.reshape(res, res_shape)
+
+
 def _supported_dtype(dtypes):
     for dtype in dtypes:
         if dtype.char not in "?bBhHiIlLqQefdFD":
