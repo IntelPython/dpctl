@@ -51,7 +51,7 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
 extern std::pair<sycl::event, sycl::event>
 py_repeat_by_scalar(dpctl::tensor::usm_ndarray src,
                     dpctl::tensor::usm_ndarray dst,
-                    py::ssize_t reps,
+                    const py::ssize_t reps,
                     int axis,
                     sycl::queue exec_q,
                     std::vector<sycl::event> const &depends);

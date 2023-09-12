@@ -22,6 +22,7 @@ from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip
+from dpctl.utils import ExecutionPlacementError
 
 
 def test_permute_dims_incorrect_type():
@@ -1220,6 +1221,29 @@ def test_repeat_strides():
     assert dpt.all(res == expected_res)
 
 
+def test_repeat_casting():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    # i4 is cast to i8
+    reps = dpt.ones(5, dtype="i4")
+    res = dpt.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpt.all(res == x)
+
+
+def test_repeat_strided_repeats():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    reps = dpt.ones(10, dtype="i8")
+    reps[::2] = 0
+    reps = reps[::-2]
+    res = dpt.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpt.all(res == x)
+
+
 def test_repeat_arg_validation():
     get_queue_or_skip()
 
@@ -1238,17 +1262,13 @@ def test_repeat_arg_validation():
         dpt.repeat(x, 2, axis=None)
 
     # repeats must be positive
-    x = dpt.empty(1)
+    x = dpt.empty(5)
     with pytest.raises(ValueError):
         dpt.repeat(x, -2)
 
     # repeats must be integers
     with pytest.raises(TypeError):
         dpt.repeat(x, 2.0)
-
-    # repeats tuple elements must be integers
-    with pytest.raises(TypeError):
-        dpt.repeat(x, (2.0,))
 
     # repeats tuple must be the same length as axis
     with pytest.raises(ValueError):
@@ -1261,3 +1281,30 @@ def test_repeat_arg_validation():
     # repeats must be int or tuple
     with pytest.raises(TypeError):
         dpt.repeat(x, dict())
+
+    # repeats array must be 0d or 1d
+    with pytest.raises(ValueError):
+        dpt.repeat(x, dpt.ones((1, 1), dtype="i8"))
+
+    # repeats must be castable to i8
+    with pytest.raises(TypeError):
+        dpt.repeat(x, dpt.asarray(2.0, dtype="f4"))
+
+    # compute follows data
+    q2 = dpctl.SyclQueue()
+    reps = dpt.asarray(1, dtype="i8", sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.repeat(x, reps)
+
+    # repeats array must not contain negative elements
+    reps = dpt.asarray(-1, dtype="i8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+    reps = dpt.asarray([1, 1, 1, 1, -1], dtype="i8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+
+    # repeats must broadcastable to axis size
+    reps = dpt.arange(10, dtype="i8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)

@@ -47,12 +47,14 @@ using namespace dpctl::tensor::offset_utils;
 
 template <typename OrthogIndexer,
           typename AxisIndexer,
+          typename RepIndexer,
           typename T,
           typename repT>
 class repeat_by_sequence_kernel;
 
 template <typename OrthogIndexer,
           typename AxisIndexer,
+          typename RepIndexer,
           typename T,
           typename repT>
 class RepeatSequenceFunctor
@@ -60,26 +62,28 @@ class RepeatSequenceFunctor
 private:
     const T *src = nullptr;
     T *dst = nullptr;
-    const repT *rep = nullptr;
+    const repT *reps = nullptr;
     const repT *cumsum = nullptr;
     size_t src_axis_nelems = 1;
     OrthogIndexer orthog_strider;
     AxisIndexer src_axis_strider;
     AxisIndexer dst_axis_strider;
+    RepIndexer reps_strider;
 
 public:
     RepeatSequenceFunctor(const T *src_,
                           T *dst_,
-                          const repT *rep_,
+                          const repT *reps_,
                           const repT *cumsum_,
                           size_t src_axis_nelems_,
                           OrthogIndexer orthog_strider_,
                           AxisIndexer src_axis_strider_,
-                          AxisIndexer dst_axis_strider_)
-        : src(src_), dst(dst_), rep(rep_), cumsum(cumsum_),
+                          AxisIndexer dst_axis_strider_,
+                          RepIndexer reps_strider_)
+        : src(src_), dst(dst_), reps(reps_), cumsum(cumsum_),
           src_axis_nelems(src_axis_nelems_), orthog_strider(orthog_strider_),
           src_axis_strider(src_axis_strider_),
-          dst_axis_strider(dst_axis_strider_)
+          dst_axis_strider(dst_axis_strider_), reps_strider(reps_strider_)
     {
     }
 
@@ -95,7 +99,7 @@ public:
 
         auto val = src[src_offset + src_axis_strider(i_along)];
         auto last = cumsum[i_along];
-        auto first = last - rep[i_along];
+        auto first = last - reps[reps_strider(i_along)];
         for (auto i = first; i < last; ++i) {
             dst[dst_offset + dst_axis_strider(i)] = val;
         }
@@ -118,6 +122,8 @@ typedef sycl::event (*repeat_by_sequence_fn_ptr_t)(
     py::ssize_t,
     py::ssize_t,
     py::ssize_t,
+    py::ssize_t,
+    py::ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T, typename repT>
@@ -127,7 +133,7 @@ repeat_by_sequence_impl(sycl::queue q,
                         size_t src_axis_nelems,
                         const char *src_cp,
                         char *dst_cp,
-                        const char *rep_cp,
+                        const char *reps_cp,
                         const char *cumsum_cp,
                         int orthog_nd,
                         const py::ssize_t *orthog_src_dst_shape_and_strides,
@@ -137,13 +143,15 @@ repeat_by_sequence_impl(sycl::queue q,
                         py::ssize_t src_axis_stride,
                         py::ssize_t dst_axis_shape,
                         py::ssize_t dst_axis_stride,
+                        py::ssize_t reps_shape,
+                        py::ssize_t reps_stride,
                         const std::vector<sycl::event> &depends)
 {
     sycl::event repeat_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         const T *src_tp = reinterpret_cast<const T *>(src_cp);
-        const repT *rep_tp = reinterpret_cast<const repT *>(rep_cp);
+        const repT *reps_tp = reinterpret_cast<const repT *>(reps_cp);
         const repT *cumsum_tp = reinterpret_cast<const repT *>(cumsum_cp);
         T *dst_tp = reinterpret_cast<T *>(dst_cp);
 
@@ -154,16 +162,20 @@ repeat_by_sequence_impl(sycl::queue q,
         // indexers along repeated axis
         Strided1DIndexer src_axis_indexer{0, src_axis_shape, src_axis_stride};
         Strided1DIndexer dst_axis_indexer{0, dst_axis_shape, dst_axis_stride};
+        // indexer along reps array
+        Strided1DIndexer reps_indexer{0, reps_shape, reps_stride};
 
         const size_t gws = orthog_nelems * src_axis_nelems;
 
         cgh.parallel_for<repeat_by_sequence_kernel<TwoOffsets_StridedIndexer,
+                                                   Strided1DIndexer,
                                                    Strided1DIndexer, T, repT>>(
             sycl::range<1>(gws),
             RepeatSequenceFunctor<TwoOffsets_StridedIndexer, Strided1DIndexer,
-                                  T, repT>(src_tp, dst_tp, rep_tp, cumsum_tp,
-                                           src_axis_nelems, orthog_indexer,
-                                           src_axis_indexer, dst_axis_indexer));
+                                  Strided1DIndexer, T, repT>(
+                src_tp, dst_tp, reps_tp, cumsum_tp, src_axis_nelems,
+                orthog_indexer, src_axis_indexer, dst_axis_indexer,
+                reps_indexer));
     });
 
     return repeat_ev;
@@ -189,6 +201,8 @@ typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
     py::ssize_t,
     py::ssize_t,
     py::ssize_t,
+    py::ssize_t,
+    py::ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T, typename repT>
@@ -196,19 +210,21 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue q,
                                        size_t src_nelems,
                                        const char *src_cp,
                                        char *dst_cp,
-                                       const char *rep_cp,
+                                       const char *reps_cp,
                                        const char *cumsum_cp,
                                        py::ssize_t src_shape,
                                        py::ssize_t src_stride,
                                        py::ssize_t dst_shape,
                                        py::ssize_t dst_stride,
+                                       py::ssize_t reps_shape,
+                                       py::ssize_t reps_stride,
                                        const std::vector<sycl::event> &depends)
 {
     sycl::event repeat_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         const T *src_tp = reinterpret_cast<const T *>(src_cp);
-        const repT *rep_tp = reinterpret_cast<const repT *>(rep_cp);
+        const repT *reps_tp = reinterpret_cast<const repT *>(reps_cp);
         const repT *cumsum_tp = reinterpret_cast<const repT *>(cumsum_cp);
         T *dst_tp = reinterpret_cast<T *>(dst_cp);
 
@@ -217,16 +233,19 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue q,
         // indexers along repeated axis
         Strided1DIndexer src_indexer{0, src_shape, src_stride};
         Strided1DIndexer dst_indexer{0, dst_shape, dst_stride};
+        // indexer along reps array
+        Strided1DIndexer reps_indexer{0, reps_shape, reps_stride};
 
         const size_t gws = src_nelems;
 
-        cgh.parallel_for<repeat_by_sequence_kernel<TwoZeroOffsets_Indexer,
-                                                   Strided1DIndexer, T, repT>>(
+        cgh.parallel_for<
+            repeat_by_sequence_kernel<TwoZeroOffsets_Indexer, Strided1DIndexer,
+                                      Strided1DIndexer, T, repT>>(
             sycl::range<1>(gws),
-            RepeatSequenceFunctor<TwoZeroOffsets_Indexer, Strided1DIndexer, T,
-                                  repT>(src_tp, dst_tp, rep_tp, cumsum_tp,
-                                        src_nelems, orthog_indexer, src_indexer,
-                                        dst_indexer));
+            RepeatSequenceFunctor<TwoZeroOffsets_Indexer, Strided1DIndexer,
+                                  Strided1DIndexer, T, repT>(
+                src_tp, dst_tp, reps_tp, cumsum_tp, src_nelems, orthog_indexer,
+                src_indexer, dst_indexer, reps_indexer));
     });
 
     return repeat_ev;

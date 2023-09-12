@@ -115,10 +115,6 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
         throw py::value_error("`reps` array must be 1-dimensional");
     }
 
-    if (!reps.is_c_contiguous()) {
-        throw py::value_error("Expecting `reps` array to be C-contiguous.");
-    }
-
     if (cumsum.get_ndim() != 1) {
         throw py::value_error("`cumsum` array must be 1-dimensional.");
     }
@@ -228,6 +224,9 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
     auto dst_shape_vec = dst.get_shape_vector();
     auto dst_strides_vec = dst.get_strides_vector();
 
+    auto reps_shape_vec = reps.get_shape_vector();
+    auto reps_strides_vec = reps.get_strides_vector();
+
     sycl::event repeat_ev;
     std::vector<sycl::event> host_task_events{};
     if (axis == 0 && src_nd < 2) {
@@ -248,7 +247,8 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
         sycl::event repeat_ev =
             fn(exec_q, src_axis_nelems, src_data_p, dst_data_p, reps_data_p,
                cumsum_data_p, src_shape, src_stride, dst_shape_vec[0],
-               dst_strides_vec[0], depends);
+               dst_strides_vec[0], reps_shape_vec[0], reps_strides_vec[0],
+               depends);
     }
     else {
         // non-empty othogonal directions
@@ -320,7 +320,9 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
                        // data to build indexers along repeated axis in src
                        axis_src_shape[0], axis_src_stride[0],
                        // data to build indexer along repeated axis in dst
-                       axis_dst_shape[0], axis_dst_stride[0], all_deps);
+                       axis_dst_shape[0], axis_dst_stride[0],
+                       // data to build indexer for reps array
+                       reps_shape_vec[0], reps_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {

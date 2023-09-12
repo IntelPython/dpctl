@@ -17,7 +17,6 @@
 
 import itertools
 import operator
-from itertools import chain, product
 
 import numpy as np
 from numpy import AxisError
@@ -135,7 +134,9 @@ def _broadcast_shape_impl(shapes):
         diff = biggest - nds[i]
         if diff > 0:
             ty = type(shapes[i])
-            shapes[i] = ty(chain(itertools.repeat(1, diff), shapes[i]))
+            shapes[i] = ty(
+                itertools.chain(itertools.repeat(1, diff), shapes[i])
+            )
     common_shape = []
     for axis in range(biggest):
         lengths = [s[axis] for s in shapes]
@@ -939,7 +940,7 @@ def repeat(x, repeats, axis=None):
     Returns:
         usm_narray:
             Array with repeated elements.
-            The returned array must has the same data type as `x`,
+            The returned array must have the same data type as `x`,
             is created on the same device as `x` and has the same USM
             allocation type as `x`.
 
@@ -968,29 +969,78 @@ def repeat(x, repeats, axis=None):
 
     scalar = False
     if isinstance(repeats, int):
-        scalar = True
         if repeats < 0:
             raise ValueError("`repeats` must be a positive integer")
+        usm_type = x.usm_type
+        exec_q = x.sycl_queue
+        scalar = True
+    elif isinstance(repeats, dpt.usm_ndarray):
+        if repeats.ndim > 1:
+            raise ValueError(
+                "`repeats` array must be 0- or 1-dimensional, got"
+                "{repeats.ndim}"
+            )
+        exec_q = dpctl.utils.get_execution_queue(
+            (x.sycl_queue, repeats.sycl_queue)
+        )
+        if exec_q is None:
+            raise dputils.ExecutionPlacementError(
+                "Execution placement can not be unambiguously inferred "
+                "from input arguments."
+            )
+        usm_type = dpctl.utils.get_coerced_usm_type(
+            (
+                x.usm_type,
+                repeats.usm_type,
+            )
+        )
+        dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+        if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
+            raise TypeError(
+                f"`repeats` data type `{repeats.dtype}` cannot be cast to "
+                "`int64` according to the casting rule ''safe.''"
+            )
+        if repeats.size == 1:
+            scalar = True
+            # bring the single element to the host
+            repeats = int(repeats)
+            if repeats < 0:
+                raise ValueError("`repeats` elements must be positive")
+        else:
+            if repeats.size != axis_size:
+                raise ValueError(
+                    "`repeats` array must be broadcastable to the size of "
+                    "the repeated axis"
+                )
+            if not dpt.all(repeats >= 0):
+                raise ValueError("`repeats` elements must be positive")
+
     elif isinstance(repeats, tuple):
+        usm_type = x.usm_type
+        exec_q = x.sycl_queue
+
         len_reps = len(repeats)
         if len_reps != axis_size:
             raise ValueError(
-                "`repeats` tuple must have the same length as the repeated axis"
+                "`repeats` tuple must have the same length as the repeated "
+                "axis"
             )
         elif len_reps == 1:
             repeats = repeats[0]
-            if not isinstance(repeats, int):
-                raise TypeError("`repeats` elements must be integers")
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
             scalar = True
+        else:
+            repeats = dpt.asarray(
+                repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
+            )
+            if not dpt.all(repeats >= 0):
+                raise ValueError("`repeats` elements must be positive")
     else:
         raise TypeError(
-            f"Expected int or tuple for second argument, got {type(repeats)}"
+            "Expected int, tuple, or `usm_ndarray` for second argument,"
+            f"got {type(repeats)}"
         )
-
-    usm_type = x.usm_type
-    exec_q = x.sycl_queue
 
     if axis_size == 0:
         return dpt.empty(x_shape, dtype=x.dtype, sycl_queue=exec_q)
@@ -1002,36 +1052,73 @@ def repeat(x, repeats, axis=None):
             res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
         )
         if res_axis_size > 0:
-            hev, _ = ti._repeat_by_scalar(
+            ht_rep_ev, _ = ti._repeat_by_scalar(
                 src=x,
                 dst=res,
                 reps=repeats,
                 axis=axis,
                 sycl_queue=exec_q,
             )
-            hev.wait()
+            ht_rep_ev.wait()
     else:
-        repeats = dpt.asarray(repeats, dtype="i8", sycl_queue=exec_q)
-        if not dpt.all(repeats >= 0):
-            raise ValueError("`repeats` elements must be positive")
-        cumsum = dpt.empty(
-            (axis_size,), dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
-        )
-        res_axis_size = ti._cumsum_1d(repeats, cumsum, sycl_queue=exec_q)
-        res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
-        res = dpt.empty(
-            res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
-        )
-        if res_axis_size > 0:
-            hev, _ = ti._repeat_by_sequence(
-                src=x,
-                dst=res,
-                reps=repeats,
-                cumsum=cumsum,
-                axis=axis,
+        if repeats.dtype != dpt.int64:
+            rep_buf = dpt.empty(
+                repeats.shape,
+                dtype=dpt.int64,
+                usm_type=usm_type,
                 sycl_queue=exec_q,
             )
-            hev.wait()
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=repeats, dst=rep_buf, sycl_queue=exec_q
+            )
+            cumsum = dpt.empty(
+                (axis_size,),
+                dtype=dpt.int64,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
+            )
+            # _cumsum_1d synchronizes so `depends` ends here safely
+            res_axis_size = ti._cumsum_1d(
+                rep_buf, cumsum, sycl_queue=exec_q, depends=[copy_ev]
+            )
+            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+            res = dpt.empty(
+                res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+            )
+            if res_axis_size > 0:
+                ht_rep_ev, _ = ti._repeat_by_sequence(
+                    src=x,
+                    dst=res,
+                    reps=rep_buf,
+                    cumsum=cumsum,
+                    axis=axis,
+                    sycl_queue=exec_q,
+                )
+                ht_rep_ev.wait()
+            ht_copy_ev.wait()
+        else:
+            cumsum = dpt.empty(
+                (axis_size,),
+                dtype=dpt.int64,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
+            )
+            # _cumsum_1d synchronizes so `depends` ends here safely
+            res_axis_size = ti._cumsum_1d(repeats, cumsum, sycl_queue=exec_q)
+            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+            res = dpt.empty(
+                res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+            )
+            if res_axis_size > 0:
+                ht_rep_ev, _ = ti._repeat_by_sequence(
+                    src=x,
+                    dst=res,
+                    reps=repeats,
+                    cumsum=cumsum,
+                    axis=axis,
+                    sycl_queue=exec_q,
+                )
+                ht_rep_ev.wait()
     return res
 
 
