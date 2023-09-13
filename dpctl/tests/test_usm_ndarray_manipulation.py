@@ -17,11 +17,12 @@
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tests.helper import get_queue_or_skip
+from dpctl.utils import ExecutionPlacementError
 
 
 def test_permute_dims_incorrect_type():
@@ -1116,3 +1117,314 @@ def test_finfo_object():
     assert isinstance(fi.dtype, dpt.dtype)
     assert isinstance(str(fi), str)
     assert isinstance(repr(fi), str)
+
+
+def test_repeat_scalar_sequence_agreement():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    expected_res = dpt.empty(10, dtype="i4")
+    expected_res[1::2], expected_res[::2] = x, x
+
+    # scalar case
+    reps = 2
+    res = dpt.repeat(x, reps)
+    assert dpt.all(res == expected_res)
+
+    # tuple
+    reps = (2, 2, 2, 2, 2)
+    res = dpt.repeat(x, reps)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_as_broadcasting():
+    get_queue_or_skip()
+
+    reps = 5
+    x = dpt.arange(reps, dtype="i4")
+    x1 = x[:, dpt.newaxis]
+    expected_res = dpt.broadcast_to(x1, (reps, reps))
+
+    res = dpt.repeat(x1, reps, axis=1)
+    assert dpt.all(res == expected_res)
+
+    x2 = x[dpt.newaxis, :]
+    expected_res = dpt.broadcast_to(x2, (reps, reps))
+
+    res = dpt.repeat(x2, reps, axis=0)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_axes():
+    get_queue_or_skip()
+
+    reps = 2
+    x = dpt.reshape(dpt.arange(5 * 10, dtype="i4"), (5, 10))
+    expected_res = dpt.empty((x.shape[0] * 2, x.shape[1]), x.dtype)
+    expected_res[::2, :], expected_res[1::2] = x, x
+    res = dpt.repeat(x, reps, axis=0)
+    assert dpt.all(res == expected_res)
+
+    expected_res = dpt.empty((x.shape[0], x.shape[1] * 2), x.dtype)
+    expected_res[:, ::2], expected_res[:, 1::2] = x, x
+    res = dpt.repeat(x, reps, axis=1)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_size_0_outputs():
+    get_queue_or_skip()
+
+    x = dpt.ones((3, 0, 5), dtype="i4")
+    reps = 10
+    res = dpt.repeat(x, reps, axis=0)
+    assert res.size == 0
+    assert res.shape == (30, 0, 5)
+
+    res = dpt.repeat(x, reps, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    res = dpt.repeat(x, (2, 2, 2), axis=0)
+    assert res.size == 0
+    assert res.shape == (6, 0, 5)
+
+    x = dpt.ones((3, 2, 5))
+    res = dpt.repeat(x, 0, axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+    x = dpt.ones((3, 2, 5))
+    res = dpt.repeat(x, (0, 0), axis=1)
+    assert res.size == 0
+    assert res.shape == (3, 0, 5)
+
+
+def test_repeat_strides():
+    get_queue_or_skip()
+
+    reps = 2
+    x = dpt.reshape(dpt.arange(10 * 10, dtype="i4"), (10, 10))
+    x1 = x[:, ::-2]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[:, ::2], expected_res[:, 1::2] = x1, x1
+    res = dpt.repeat(x1, reps, axis=1)
+    assert dpt.all(res == expected_res)
+    res = dpt.repeat(x1, (reps,) * x1.shape[1], axis=1)
+    assert dpt.all(res == expected_res)
+
+    x1 = x[::-2, :]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[::2, :], expected_res[1::2, :] = x1, x1
+    res = dpt.repeat(x1, reps, axis=0)
+    assert dpt.all(res == expected_res)
+    res = dpt.repeat(x1, (reps,) * x1.shape[0], axis=0)
+    assert dpt.all(res == expected_res)
+
+
+def test_repeat_casting():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    # i4 is cast to i8
+    reps = dpt.ones(5, dtype="i4")
+    res = dpt.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpt.all(res == x)
+
+
+def test_repeat_strided_repeats():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    reps = dpt.ones(10, dtype="i8")
+    reps[::2] = 0
+    reps = reps[::-2]
+    res = dpt.repeat(x, reps)
+    assert res.shape == x.shape
+    assert dpt.all(res == x)
+
+
+def test_repeat_arg_validation():
+    get_queue_or_skip()
+
+    x = dict()
+    with pytest.raises(TypeError):
+        dpt.repeat(x, 2)
+
+    # axis must be 0 for scalar
+    x = dpt.empty(())
+    with pytest.raises(ValueError):
+        dpt.repeat(x, 2, axis=1)
+
+    # x.ndim cannot be > 1 for axis=None
+    x = dpt.empty((5, 10))
+    with pytest.raises(ValueError):
+        dpt.repeat(x, 2, axis=None)
+
+    # repeats must be positive
+    x = dpt.empty(5)
+    with pytest.raises(ValueError):
+        dpt.repeat(x, -2)
+
+    # repeats must be integers
+    with pytest.raises(TypeError):
+        dpt.repeat(x, 2.0)
+
+    # repeats tuple must be the same length as axis
+    with pytest.raises(ValueError):
+        dpt.repeat(x, (1, 2))
+
+    # repeats tuple elements must be positive
+    with pytest.raises(ValueError):
+        dpt.repeat(x, (-1,))
+
+    # repeats must be int or tuple
+    with pytest.raises(TypeError):
+        dpt.repeat(x, dict())
+
+    # repeats array must be 0d or 1d
+    with pytest.raises(ValueError):
+        dpt.repeat(x, dpt.ones((1, 1), dtype="i8"))
+
+    # repeats must be castable to i8
+    with pytest.raises(TypeError):
+        dpt.repeat(x, dpt.asarray(2.0, dtype="f4"))
+
+    # compute follows data
+    q2 = dpctl.SyclQueue()
+    reps = dpt.asarray(1, dtype="i8", sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.repeat(x, reps)
+
+    # repeats array must not contain negative elements
+    reps = dpt.asarray(-1, dtype="i8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+    reps = dpt.asarray([1, 1, 1, 1, -1], dtype="i8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+
+    # repeats must broadcastable to axis size
+    reps = dpt.arange(10, dtype="i8")
+    with pytest.raises(ValueError):
+        dpt.repeat(x, reps)
+
+
+def test_tile_basic():
+    get_queue_or_skip()
+
+    reps = 2
+    x = dpt.arange(5, dtype="i4")
+    res = dpt.tile(x, reps)
+    assert res.shape == (x.shape[0] * reps,)
+    assert dpt.all(res[: x.size] == res[x.size :])
+
+    reps = (2, 1)
+    expected_sh = (2, x.shape[0])
+    expected_res = dpt.broadcast_to(x, expected_sh)
+    res = dpt.tile(x, reps)
+    assert res.shape == expected_sh
+    assert dpt.all(expected_res == res)
+
+
+def test_tile_size_1():
+    get_queue_or_skip()
+
+    reps = 5
+    # test for 0d array
+    x = dpt.asarray(2, dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == dpt.full(reps, 2, dtype="i4"))
+
+    # test for 1d array with single element
+    x = dpt.asarray([2], dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == dpt.full(reps, 2, dtype="i4"))
+
+    # test empty reps returns copy of input
+    reps = ()
+    res = dpt.tile(x, reps)
+    assert x.shape == res.shape
+    assert x == res
+
+
+def test_tile_prepends_axes():
+    get_queue_or_skip()
+
+    reps = (2,)
+    x = dpt.ones((5, 10), dtype="i4")
+    expected_res = dpt.ones((5, 20), dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == expected_res)
+
+    reps = (3, 2, 2)
+    expected_res = dpt.ones((3, 10, 20), dtype="i4")
+    res = dpt.tile(x, reps)
+    assert dpt.all(res == expected_res)
+
+
+def test_tile_empty_outputs():
+    get_queue_or_skip()
+
+    x = dpt.asarray((), dtype="i4")
+    reps = 10
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (0,)
+
+    x = dpt.ones((3, 0, 5), dtype="i4")
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (3, 0, 50)
+
+    reps = (2, 1, 2)
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (6, 0, 10)
+
+    x = dpt.ones((2, 3, 4), dtype="i4")
+    reps = (0, 1, 1)
+    res = dpt.tile(x, reps)
+    assert res.size == 0
+    assert res.shape == (0, 3, 4)
+
+
+def test_tile_strides():
+    get_queue_or_skip()
+
+    reps = (1, 2)
+    x = dpt.reshape(dpt.arange(10 * 10, dtype="i4"), (10, 10))
+    x1 = x[:, ::-2]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[:, : x1.shape[1]], expected_res[:, x1.shape[1] :] = x1, x1
+    res = dpt.tile(x1, reps)
+    assert dpt.all(res == expected_res)
+
+    reps = (2, 1)
+    x1 = x[::-2, :]
+    expected_res = dpt.empty((10, 10), dtype="i4")
+    expected_res[: x1.shape[0], :], expected_res[x1.shape[0] :, :] = x1, x1
+    res = dpt.tile(x1, reps)
+    assert dpt.all(res == expected_res)
+
+
+def test_tile_size_1_axes():
+    get_queue_or_skip()
+
+    reps = (1, 2, 1)
+    x = dpt.ones((2, 1, 3), dtype="i4")
+    res = dpt.tile(x, reps)
+    expected_res = dpt.broadcast_to(x, (2, 2, 3))
+    assert dpt.all(res == expected_res)
+
+
+def test_tile_arg_validation():
+    get_queue_or_skip()
+
+    with pytest.raises(TypeError):
+        dpt.tile(dict(), 2)
+
+    # repetitions must be int or tuple
+    x = dpt.empty(())
+    with pytest.raises(TypeError):
+        dpt.tile(x, dict())

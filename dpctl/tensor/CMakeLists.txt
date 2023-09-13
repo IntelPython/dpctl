@@ -33,6 +33,7 @@ endif()
 set(python_module_name _tensor_impl)
 pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_numpy_ndarray_into_usm_ndarray.cpp
@@ -49,6 +50,7 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sum_reductions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
 )
 set(_clang_prefix "")
 if (WIN32)

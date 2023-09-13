@@ -46,213 +46,9 @@ namespace tensor
 namespace py_internal
 {
 
-/* @brief Split shape/strides into dir1 (complementary to axis_start <= i <
- * axis_end) and dir2 (along given set of axes)
- */
-template <typename shT>
-void _split_iteration_space(const shT &shape_vec,
-                            const shT &strides_vec,
-                            int axis_start,
-                            int axis_end,
-                            shT &dir1_shape_vec,
-                            shT &dir2_shape_vec,
-                            shT &dir1_strides_vec,
-                            shT &dir2_strides_vec)
-{
-    int nd = static_cast<int>(shape_vec.size());
-    int dir2_sz = axis_end - axis_start;
-    int dir1_sz = nd - dir2_sz;
-
-    assert(dir1_sz > 0);
-    assert(dir2_sz > 0);
-
-    dir1_shape_vec.resize(dir1_sz);
-    dir2_shape_vec.resize(dir2_sz);
-
-    std::copy(shape_vec.begin(), shape_vec.begin() + axis_start,
-              dir1_shape_vec.begin());
-    std::copy(shape_vec.begin() + axis_end, shape_vec.end(),
-              dir1_shape_vec.begin() + axis_start);
-
-    std::copy(shape_vec.begin() + axis_start, shape_vec.begin() + axis_end,
-              dir2_shape_vec.begin());
-
-    dir1_strides_vec.resize(dir1_sz);
-    dir2_strides_vec.resize(dir2_sz);
-
-    std::copy(strides_vec.begin(), strides_vec.begin() + axis_start,
-              dir1_strides_vec.begin());
-    std::copy(strides_vec.begin() + axis_end, strides_vec.end(),
-              dir1_strides_vec.begin() + axis_start);
-
-    std::copy(strides_vec.begin() + axis_start, strides_vec.begin() + axis_end,
-              dir2_strides_vec.begin());
-
-    return;
-}
-
-// Computation of positions of masked elements
+// Masked extraction
 
 namespace td_ns = dpctl::tensor::type_dispatch;
-
-using dpctl::tensor::kernels::indexing::mask_positions_contig_impl_fn_ptr_t;
-static mask_positions_contig_impl_fn_ptr_t
-    mask_positions_contig_i64_dispatch_vector[td_ns::num_types];
-static mask_positions_contig_impl_fn_ptr_t
-    mask_positions_contig_i32_dispatch_vector[td_ns::num_types];
-
-using dpctl::tensor::kernels::indexing::mask_positions_strided_impl_fn_ptr_t;
-static mask_positions_strided_impl_fn_ptr_t
-    mask_positions_strided_i64_dispatch_vector[td_ns::num_types];
-static mask_positions_strided_impl_fn_ptr_t
-    mask_positions_strided_i32_dispatch_vector[td_ns::num_types];
-
-void populate_mask_positions_dispatch_vectors(void)
-{
-    using dpctl::tensor::kernels::indexing::MaskPositionsContigFactoryForInt64;
-    td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
-                                 MaskPositionsContigFactoryForInt64,
-                                 td_ns::num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(mask_positions_contig_i64_dispatch_vector);
-
-    using dpctl::tensor::kernels::indexing::MaskPositionsContigFactoryForInt32;
-    td_ns::DispatchVectorBuilder<mask_positions_contig_impl_fn_ptr_t,
-                                 MaskPositionsContigFactoryForInt32,
-                                 td_ns::num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(mask_positions_contig_i32_dispatch_vector);
-
-    using dpctl::tensor::kernels::indexing::MaskPositionsStridedFactoryForInt64;
-    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
-                                 MaskPositionsStridedFactoryForInt64,
-                                 td_ns::num_types>
-        dvb3;
-    dvb3.populate_dispatch_vector(mask_positions_strided_i64_dispatch_vector);
-
-    using dpctl::tensor::kernels::indexing::MaskPositionsStridedFactoryForInt32;
-    td_ns::DispatchVectorBuilder<mask_positions_strided_impl_fn_ptr_t,
-                                 MaskPositionsStridedFactoryForInt32,
-                                 td_ns::num_types>
-        dvb4;
-    dvb4.populate_dispatch_vector(mask_positions_strided_i32_dispatch_vector);
-
-    return;
-}
-
-size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
-                         dpctl::tensor::usm_ndarray cumsum,
-                         sycl::queue exec_q,
-                         std::vector<sycl::event> const &depends)
-{
-    // cumsum is 1D
-    if (cumsum.get_ndim() != 1) {
-        throw py::value_error("Result array must be one-dimensional.");
-    }
-
-    if (!cumsum.is_c_contiguous()) {
-        throw py::value_error("Expecting `cumsum` array must be C-contiguous.");
-    }
-
-    // cumsum.shape == (mask.size,)
-    auto mask_size = mask.get_size();
-    auto cumsum_size = cumsum.get_shape(0);
-    if (cumsum_size != mask_size) {
-        throw py::value_error("Inconsistent dimensions");
-    }
-
-    if (!dpctl::utils::queues_are_compatible(exec_q, {mask, cumsum})) {
-        // FIXME: use ExecutionPlacementError
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
-    }
-
-    if (mask_size == 0) {
-        return 0;
-    }
-
-    int mask_typenum = mask.get_typenum();
-    int cumsum_typenum = cumsum.get_typenum();
-
-    // mask can be any type
-    const char *mask_data = mask.get_data();
-    char *cumsum_data = cumsum.get_data();
-
-    auto const &array_types = td_ns::usm_ndarray_types();
-
-    int mask_typeid = array_types.typenum_to_lookup_id(mask_typenum);
-    int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
-
-    // cumsum must be int32_t/int64_t only
-    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
-    if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
-        throw py::value_error(
-            "Cumulative sum array must have int32 or int64 data-type.");
-    }
-
-    const bool use_i32 = (cumsum_typeid == int32_typeid);
-
-    if (mask.is_c_contiguous()) {
-        auto fn = (use_i32)
-                      ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
-                      : mask_positions_contig_i64_dispatch_vector[mask_typeid];
-
-        return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
-    }
-
-    const py::ssize_t *shape = mask.get_shape_raw();
-    auto const &strides_vector = mask.get_strides_vector();
-
-    using shT = std::vector<py::ssize_t>;
-    shT compact_shape;
-    shT compact_strides;
-
-    int mask_nd = mask.get_ndim();
-    int nd = mask_nd;
-
-    dpctl::tensor::py_internal::compact_iteration_space(
-        nd, shape, strides_vector, compact_shape, compact_strides);
-
-    // Strided implementation
-    auto strided_fn =
-        (use_i32) ? mask_positions_strided_i32_dispatch_vector[mask_typeid]
-                  : mask_positions_strided_i64_dispatch_vector[mask_typeid];
-    std::vector<sycl::event> host_task_events;
-
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
-        exec_q, host_task_events, compact_shape, compact_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (shape_strides == nullptr) {
-        sycl::event::wait(host_task_events);
-        throw std::runtime_error("Unexpected error");
-    }
-    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
-
-    if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
-        copy_shape_ev.wait();
-        sycl::event::wait(host_task_events);
-        sycl::free(shape_strides, exec_q);
-        throw std::runtime_error("Unexpected error");
-    }
-
-    std::vector<sycl::event> dependent_events;
-    dependent_events.reserve(depends.size() + 1);
-    dependent_events.insert(dependent_events.end(), copy_shape_ev);
-    dependent_events.insert(dependent_events.end(), depends.begin(),
-                            depends.end());
-
-    size_t total_set = strided_fn(exec_q, mask_size, mask_data, nd,
-                                  shape_strides, cumsum_data, dependent_events);
-
-    sycl::event::wait(host_task_events);
-    sycl::free(shape_strides, exec_q);
-
-    return total_set;
-}
-
-// Masked extraction
 
 using dpctl::tensor::kernels::indexing::
     masked_extract_all_slices_strided_impl_fn_ptr_t;
@@ -493,19 +289,21 @@ py_extract(dpctl::tensor::usm_ndarray src,
         shT masked_src_shape;
         shT ortho_src_strides;
         shT masked_src_strides;
-        _split_iteration_space(src_shape_vec, src_strides_vec, axis_start,
-                               axis_end, ortho_src_shape,
-                               masked_src_shape, // 4 vectors modified
-                               ortho_src_strides, masked_src_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            src_shape_vec, src_strides_vec, axis_start, axis_end,
+            ortho_src_shape,
+            masked_src_shape, // 4 vectors modified
+            ortho_src_strides, masked_src_strides);
 
         shT ortho_dst_shape;
         shT masked_dst_shape;
         shT ortho_dst_strides;
         shT masked_dst_strides;
-        _split_iteration_space(dst_shape_vec, dst_strides_vec, axis_start,
-                               axis_start + 1, ortho_dst_shape,
-                               masked_dst_shape, // 4 vectors modified
-                               ortho_dst_strides, masked_dst_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            dst_shape_vec, dst_strides_vec, axis_start, axis_start + 1,
+            ortho_dst_shape,
+            masked_dst_shape, // 4 vectors modified
+            ortho_dst_strides, masked_dst_strides);
 
         assert(ortho_src_shape.size() == static_cast<size_t>(ortho_nd));
         assert(ortho_dst_shape.size() == static_cast<size_t>(ortho_nd));
@@ -821,19 +619,21 @@ py_place(dpctl::tensor::usm_ndarray dst,
         shT masked_dst_shape;
         shT ortho_dst_strides;
         shT masked_dst_strides;
-        _split_iteration_space(dst_shape_vec, dst_strides_vec, axis_start,
-                               axis_end, ortho_dst_shape,
-                               masked_dst_shape, // 4 vectors modified
-                               ortho_dst_strides, masked_dst_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            dst_shape_vec, dst_strides_vec, axis_start, axis_end,
+            ortho_dst_shape,
+            masked_dst_shape, // 4 vectors modified
+            ortho_dst_strides, masked_dst_strides);
 
         shT ortho_rhs_shape;
         shT masked_rhs_shape;
         shT ortho_rhs_strides;
         shT masked_rhs_strides;
-        _split_iteration_space(rhs_shape_vec, rhs_strides_vec, axis_start,
-                               axis_start + 1, ortho_rhs_shape,
-                               masked_rhs_shape, // 4 vectors modified
-                               ortho_rhs_strides, masked_rhs_strides);
+        dpctl::tensor::py_internal::split_iteration_space(
+            rhs_shape_vec, rhs_strides_vec, axis_start, axis_start + 1,
+            ortho_rhs_shape,
+            masked_rhs_shape, // 4 vectors modified
+            ortho_rhs_strides, masked_rhs_strides);
 
         assert(ortho_dst_shape.size() == static_cast<size_t>(ortho_nd));
         assert(ortho_rhs_shape.size() == static_cast<size_t>(ortho_nd));
