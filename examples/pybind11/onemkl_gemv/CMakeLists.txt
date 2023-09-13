@@ -52,11 +52,14 @@ target_link_libraries(${py_module_name}
 install(TARGETS ${py_module_name} DESTINATION sycl_gemm)
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 
-get_target_property(_sycl_gemm_sources ${py_module_name} SOURCES)
-set_source_files_properties(${_sycl_gemm_sources}
-  PROPERTIES
-  COMPILE_OPTIONS "-O3"
-)
+foreach(_src_fn ${_sources})
+    get_source_file_property(_compile_options ${_src_fn} COMPILE_OPTIONS)
+    set(_combined_options ${_compile_options} "-O3")
+    set_source_files_properties(${_src_fn}
+        PROPERTIES
+        COMPILE_OPTIONS "${_combined_options}"
+    )
+endforeach()
 target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 
 add_executable(standalone_cpp
