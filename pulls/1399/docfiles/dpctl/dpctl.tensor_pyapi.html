@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.14.6dev5+3.ga21bfb4f4 documentation</title>
+  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.14.6dev5+6.g543b7192e documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d8d649d8"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=347af410"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev5+3.ga21bfb4f4
+                0.14.6dev5+6.g543b7192e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -249,23 +249,29 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
 <td><p>Permute the axes (dimensions) of an array; returns the permuted array as a view.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.repeat" title="dpctl.tensor.repeat"><code class="xref py py-func docutils literal notranslate"><span class="pre">repeat()</span></code></a></p></td>
+<td><p>Repeat elements of an array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
 <td><p>Reshapes array <cite>x</cite> into new shape.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
 <td><p>Returns the dtype that results from applying the Type Promotion Rules to the arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
 <td><p>Rolls array elements along a specified axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">squeeze()</span></code></a></p></td>
 <td><p>Removes singleton dimensions (axes) from array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">stack()</span></code></a></p></td>
 <td><p>Joins a sequence of arrays along a new axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.swapaxes" title="dpctl.tensor.swapaxes"><code class="xref py py-func docutils literal notranslate"><span class="pre">swapaxes()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.swapaxes" title="dpctl.tensor.swapaxes"><code class="xref py py-func docutils literal notranslate"><span class="pre">swapaxes()</span></code></a></p></td>
 <td><p>Interchanges two axes of an array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.tile" title="dpctl.tensor.tile"><code class="xref py py-func docutils literal notranslate"><span class="pre">tile()</span></code></a></p></td>
+<td><p>Repeat an input array <cite>x</cite> along each axis a number of times given by <cite>repetitions</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.unstack" title="dpctl.tensor.unstack"><code class="xref py py-func docutils literal notranslate"><span class="pre">unstack()</span></code></a></p></td>
 <td><p>Splits an array in a sequence of arrays along the given axis.</p></td>
