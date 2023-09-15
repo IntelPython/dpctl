@@ -196,10 +196,12 @@ public:
             if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
                 res_ref += red_val_over_wg;
             }
-            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
+            else if constexpr (std::is_same_v<ReductionOp, sycl::maximum<outT>>)
+            {
                 res_ref.fetch_max(red_val_over_wg);
             }
-            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
+            else if constexpr (std::is_same_v<ReductionOp, sycl::minimum<outT>>)
+            {
                 res_ref.fetch_min(red_val_over_wg);
             }
             else {
@@ -300,22 +302,11 @@ public:
                              sycl::memory_scope::device,
                              sycl::access::address_space::global_space>
                 res_ref(out_[out_iter_offset]);
-            if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
-                res_ref += red_val_over_wg;
-            }
-            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
-                res_ref.fetch_max(red_val_over_wg);
-            }
-            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
-                res_ref.fetch_min(red_val_over_wg);
-            }
-            else {
-                outT read_val = res_ref.load();
-                outT new_val{};
-                do {
-                    new_val = reduction_op_(read_val, red_val_over_wg);
-                } while (!res_ref.compare_exchange_strong(read_val, new_val));
-            }
+            outT read_val = res_ref.load();
+            outT new_val{};
+            do {
+                new_val = reduction_op_(read_val, red_val_over_wg);
+            } while (!res_ref.compare_exchange_strong(read_val, new_val));
         }
     }
 };
