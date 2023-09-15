@@ -64,7 +64,9 @@ def test_reduction_kernels(arg_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arg_dtype, q)
 
-    x = dpt.reshape(dpt.arange(24 * 1025, dtype=arg_dtype), (24, 1025))
+    x = dpt.reshape(
+        dpt.arange(24 * 1025, dtype=arg_dtype, sycl_queue=q), (24, 1025)
+    )
 
     m = dpt.max(x)
     assert m == x[-1, -1]
