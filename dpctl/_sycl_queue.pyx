@@ -771,6 +771,7 @@ cdef class SyclQueue(_SyclQueue):
         free(depEvents)
         if (status != 0):
             with nogil: DPCTLEvent_Wait(htERef)
+            DPCTLEvent_Delete(htERef)
             raise RuntimeError("Could not submit keep_args_alive host_task")
 
         return SyclEvent._create(htERef)
