@@ -75,6 +75,14 @@ cdef public api class SyclQueue (_SyclQueue) [
         object args,
         list dEvents
     )
+    cpdef SyclEvent submit_async(
+        self,
+        SyclKernel kernel,
+        list args,
+        list gS,
+        list lS=*,
+        list dEvents=*
+    )
     cpdef SyclEvent submit(
         self,
         SyclKernel kernel,

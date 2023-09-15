@@ -776,7 +776,7 @@ cdef class SyclQueue(_SyclQueue):
         return SyclEvent._create(htERef)
 
 
-    cpdef SyclEvent submit(
+    cpdef SyclEvent submit_async(
         self,
         SyclKernel kernel,
         list args,
@@ -907,6 +907,18 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         return SyclEvent._create(Eref)
+
+    cpdef SyclEvent submit(
+        self,
+        SyclKernel kernel,
+        list args,
+        list gS,
+        list lS=None,
+        list dEvents=None
+    ):
+        cdef SyclEvent e = self.submit_async(kernel, args, gS, lS, dEvents)
+        e.wait()
+        return e
 
     cpdef void wait(self):
         with nogil: DPCTLQueue_Wait(self._queue_ref)

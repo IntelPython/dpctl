@@ -114,7 +114,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         )
 
 
-def test_async_submit():
+def test_submit_async():
     try:
         q = dpctl.SyclQueue("opencl")
     except dpctl.SyclQueueCreationError:
@@ -182,7 +182,7 @@ def test_async_submit():
 
     async_detected = False
     for attempt in range(5):
-        e1 = q.submit(
+        e1 = q.submit_async(
             kern1Kernel,
             [
                 first_row,
@@ -192,7 +192,7 @@ def test_async_submit():
                 n,
             ],
         )
-        e2 = q.submit(
+        e2 = q.submit_async(
             kern2Kernel,
             [
                 second_row,
@@ -202,7 +202,7 @@ def test_async_submit():
                 n,
             ],
         )
-        e3 = q.submit(
+        e3 = q.submit_async(
             kern3Kernel,
             [third_row, first_row, second_row],
             [
