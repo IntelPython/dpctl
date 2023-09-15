@@ -29,6 +29,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#pragma once
 #include "Python.h"
 #include "syclinterface/dpctl_data_types.h"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
