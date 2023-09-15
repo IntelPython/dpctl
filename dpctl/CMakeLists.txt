@@ -86,7 +86,7 @@ add_custom_target(_build_time_create_dpctl_include ALL
 )
 
 set(_copied_header_files)
-file(GLOB _syclinterface_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/*.h)
+file(GLOB _syclinterface_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/*.h*)
 foreach(hf ${_syclinterface_h})
     get_filename_component(_header_name ${hf} NAME)
     set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/${_header_name})

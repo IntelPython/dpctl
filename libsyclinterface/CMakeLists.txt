@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10...3.22 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21...3.22 FATAL_ERROR)
 
 project(
     "libDPCTLSYCLInterface"
+    LANGUAGES C CXX
     DESCRIPTION "A C API for a subset of SYCL"
 )
 
@@ -259,8 +260,7 @@ endif()
 
 # Install all headers
 
-file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
-file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
+file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 file(GLOB SUPPORT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
 file(GLOB CONFIG_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
 
