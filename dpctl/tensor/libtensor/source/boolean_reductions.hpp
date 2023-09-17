@@ -54,7 +54,8 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
                      dpctl::tensor::usm_ndarray dst,
                      sycl::queue exec_q,
                      const std::vector<sycl::event> &depends,
-                     const contig_dispatchT &contig_dispatch_vector,
+                     const contig_dispatchT &axis1_contig_dispatch_vector,
+                     const contig_dispatchT &axis0_contig_dispatch_vector,
                      const strided_dispatchT &strided_dispatch_vector)
 {
     int src_nd = src.get_ndim();
@@ -131,16 +132,32 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
 
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_src_f_contig = src.is_f_contiguous();
-
     bool is_dst_c_contig = dst.is_c_contiguous();
 
     if ((is_src_c_contig && is_dst_c_contig) ||
-        (is_src_f_contig && dst_nd == 0)) {
-        auto fn = contig_dispatch_vector[src_typeid];
+        (is_src_f_contig && dst_nelems == 0))
+    {
+        auto fn = axis1_contig_dispatch_vector[src_typeid];
         constexpr py::ssize_t zero_offset = 0;
 
-        auto red_ev = fn(exec_q, dst_nelems, red_nelems, src_data, dst_data,
-                         zero_offset, zero_offset, zero_offset, depends);
+        sycl::event red_ev =
+            fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, zero_offset,
+               zero_offset, zero_offset, depends);
+
+        sycl::event keep_args_event =
+            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+
+        return std::make_pair(keep_args_event, red_ev);
+    }
+    else if (is_src_f_contig &&
+             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
+    {
+        auto fn = axis0_contig_dispatch_vector[src_typeid];
+        constexpr py::ssize_t zero_offset = 0;
+
+        sycl::event red_ev =
+            fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, zero_offset,
+               zero_offset, zero_offset, depends);
 
         sycl::event keep_args_event =
             dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
@@ -196,24 +213,48 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
             simplified_iter_dst_strides, iter_src_offset, iter_dst_offset);
     }
 
-    if ((simplified_red_nd == 1) && (simplified_red_src_strides[0] == 1) &&
-        (iter_nd == 1) &&
-        ((simplified_iter_shape[0] == 1) ||
-         ((simplified_iter_dst_strides[0] == 1) &&
-          (simplified_iter_src_strides[0] ==
-           static_cast<py::ssize_t>(red_nelems)))))
-    {
-        auto fn = contig_dispatch_vector[src_typeid];
+    if (simplified_red_nd == 1 && iter_nd == 1) {
+        bool mat_reduce_over_axis1 = false;
+        bool mat_reduce_over_axis0 = false;
+        bool array_reduce_all_elems = false;
         size_t iter_nelems = dst_nelems;
 
-        sycl::event red_ev =
-            fn(exec_q, iter_nelems, red_nelems, src.get_data(), dst.get_data(),
-               iter_src_offset, iter_dst_offset, red_src_offset, depends);
+        if (simplified_red_src_strides[0] == 1) {
+            array_reduce_all_elems = (simplified_iter_shape[0] == 1);
+            mat_reduce_over_axis1 =
+                (simplified_iter_dst_strides[0] == 1) &&
+                (static_cast<size_t>(simplified_iter_src_strides[0]) ==
+                 red_nelems);
+        }
+        else if (static_cast<size_t>(simplified_red_src_strides[0]) ==
+                 iter_nelems) {
+            mat_reduce_over_axis0 = (simplified_iter_dst_strides[0] == 1) &&
+                                    (simplified_iter_src_strides[0] == 1);
+        }
+        if (mat_reduce_over_axis1 || array_reduce_all_elems) {
+            auto fn = axis1_contig_dispatch_vector[src_typeid];
 
-        sycl::event keep_args_event =
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+            sycl::event red_ev =
+                fn(exec_q, iter_nelems, red_nelems, src_data, dst_data,
+                   iter_src_offset, iter_dst_offset, red_src_offset, depends);
 
-        return std::make_pair(keep_args_event, red_ev);
+            sycl::event keep_args_event =
+                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+
+            return std::make_pair(keep_args_event, red_ev);
+        }
+        else if (mat_reduce_over_axis0) {
+            auto fn = axis0_contig_dispatch_vector[src_typeid];
+
+            sycl::event red_ev =
+                fn(exec_q, iter_nelems, red_nelems, src_data, dst_data,
+                   iter_src_offset, iter_dst_offset, red_src_offset, depends);
+
+            sycl::event keep_args_event =
+                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+
+            return std::make_pair(keep_args_event, red_ev);
+        }
     }
 
     auto fn = strided_dispatch_vector[src_typeid];

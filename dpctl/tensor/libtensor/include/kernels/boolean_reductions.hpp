@@ -264,15 +264,15 @@ using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
 sycl::event
-boolean_reduction_contig_impl(sycl::queue exec_q,
-                              size_t iter_nelems,
-                              size_t reduction_nelems,
-                              const char *arg_cp,
-                              char *res_cp,
-                              py::ssize_t iter_arg_offset,
-                              py::ssize_t iter_res_offset,
-                              py::ssize_t red_arg_offset,
-                              const std::vector<sycl::event> &depends)
+boolean_reduction_axis1_contig_impl(sycl::queue exec_q,
+                                    size_t iter_nelems,
+                                    size_t reduction_nelems,
+                                    const char *arg_cp,
+                                    char *res_cp,
+                                    py::ssize_t iter_arg_offset,
+                                    py::ssize_t iter_res_offset,
+                                    py::ssize_t red_arg_offset,
+                                    const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
                           iter_arg_offset + red_arg_offset;
@@ -315,18 +315,8 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
         });
     }
     else {
-        sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
-            using IndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-
-            IndexerT res_indexer{};
-
-            cgh.depends_on(depends);
-
-            cgh.parallel_for(sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
-                auto res_offset = res_indexer(id[0]);
-                res_tp[res_offset] = identity_val;
-            });
-        });
+        sycl::event init_ev = exec_q.fill<resTy>(res_tp, resTy(identity_val),
+                                                 iter_nelems, depends);
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(init_ev);
 
@@ -356,7 +346,7 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
     return red_ev;
 }
 
-template <typename fnT, typename srcTy> struct AllContigFactory
+template <typename fnT, typename srcTy> struct AllAxis1ContigFactory
 {
     fnT get() const
     {
@@ -365,12 +355,12 @@ template <typename fnT, typename srcTy> struct AllContigFactory
         using GroupOpT =
             all_reduce_wg_contig<srcTy, resTy, boolean_predicate<srcTy>>;
 
-        return dpctl::tensor::kernels::boolean_reduction_contig_impl<
+        return dpctl::tensor::kernels::boolean_reduction_axis1_contig_impl<
             srcTy, resTy, RedOpT, GroupOpT>;
     }
 };
 
-template <typename fnT, typename srcTy> struct AnyContigFactory
+template <typename fnT, typename srcTy> struct AnyAxis1ContigFactory
 {
     fnT get() const
     {
@@ -379,7 +369,7 @@ template <typename fnT, typename srcTy> struct AnyContigFactory
         using GroupOpT =
             any_reduce_wg_contig<srcTy, resTy, boolean_predicate<srcTy>>;
 
-        return dpctl::tensor::kernels::boolean_reduction_contig_impl<
+        return dpctl::tensor::kernels::boolean_reduction_axis1_contig_impl<
             srcTy, resTy, RedOpT, GroupOpT>;
     }
 };
@@ -469,6 +459,113 @@ template <typename T1,
           typename T4,
           typename T5,
           typename T6>
+class boolean_reduction_axis0_contig_krn;
+
+template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
+sycl::event
+boolean_reduction_axis0_contig_impl(sycl::queue exec_q,
+                                    size_t iter_nelems,
+                                    size_t reduction_nelems,
+                                    const char *arg_cp,
+                                    char *res_cp,
+                                    py::ssize_t iter_arg_offset,
+                                    py::ssize_t iter_res_offset,
+                                    py::ssize_t red_arg_offset,
+                                    const std::vector<sycl::event> &depends)
+{
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + red_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
+
+    constexpr resTy identity_val = sycl::known_identity<RedOpT, resTy>::value;
+
+    const sycl::device &d = exec_q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    {
+        sycl::event init_ev = exec_q.fill<resTy>(res_tp, resTy(identity_val),
+                                                 iter_nelems, depends);
+        sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(init_ev);
+
+            constexpr std::uint8_t dim = 1;
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT = ColsIndexerT;
+
+            NoOpIndexerT columns_indexer{};
+            NoOpIndexerT result_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                        result_indexer};
+            ReductionIndexerT reduction_indexer{
+                0, static_cast<py::ssize_t>(reduction_nelems),
+                static_cast<py::ssize_t>(iter_nelems)};
+
+            constexpr size_t preferred_reductions_per_wi = 4;
+            size_t reductions_per_wi =
+                (reduction_nelems < preferred_reductions_per_wi * wg)
+                    ? ((reduction_nelems + wg - 1) / wg)
+                    : preferred_reductions_per_wi;
+
+            size_t reduction_groups =
+                (reduction_nelems + reductions_per_wi * wg - 1) /
+                (reductions_per_wi * wg);
+
+            auto gws = sycl::range<dim>{iter_nelems * reduction_groups * wg};
+            auto lws = sycl::range<dim>{wg};
+
+            cgh.parallel_for<class boolean_reduction_axis0_contig_krn<
+                argTy, resTy, RedOpT, GroupOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>>(
+                sycl::nd_range<dim>(gws, lws),
+                StridedBooleanReduction<argTy, resTy, RedOpT, GroupOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT>(
+                    arg_tp, res_tp, RedOpT(), GroupOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
+        });
+        return red_ev;
+    }
+}
+
+template <typename fnT, typename srcTy> struct AllAxis0ContigFactory
+{
+    fnT get() const
+    {
+        using resTy = std::int32_t;
+        using RedOpT = sycl::logical_and<resTy>;
+        using GroupOpT = all_reduce_wg_strided<resTy>;
+
+        return dpctl::tensor::kernels::boolean_reduction_axis0_contig_impl<
+            srcTy, resTy, RedOpT, GroupOpT>;
+    }
+};
+
+template <typename fnT, typename srcTy> struct AnyAxis0ContigFactory
+{
+    fnT get() const
+    {
+        using resTy = std::int32_t;
+        using RedOpT = sycl::logical_or<resTy>;
+        using GroupOpT = any_reduce_wg_strided<resTy>;
+
+        return dpctl::tensor::kernels::boolean_reduction_axis0_contig_impl<
+            srcTy, resTy, RedOpT, GroupOpT>;
+    }
+};
+
+template <typename T1,
+          typename T2,
+          typename T3,
+          typename T4,
+          typename T5,
+          typename T6>
 class boolean_reduction_strided_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -542,7 +639,7 @@ boolean_reduction_strided_impl(sycl::queue exec_q,
         });
     }
     else {
-        sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
+        sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
             using IndexerT =
                 dpctl::tensor::offset_utils::UnpackedStridedIndexer;
 
@@ -560,7 +657,7 @@ boolean_reduction_strided_impl(sycl::queue exec_q,
             });
         });
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(res_init_ev);
+            cgh.depends_on(init_ev);
 
             constexpr std::uint8_t dim = 1;
 
