@@ -34,6 +34,7 @@
 #include "pybind11/pybind11.h"
 
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -227,9 +228,8 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
-        const size_t reduction_id = it.get_global_id(0) / red_gws_;
-        const size_t reduction_batch_id = get_reduction_batch_id(it);
+        const size_t reduction_id = it.get_group(0) % iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
         const size_t wg_size = it.get_local_range(0);
 
         const size_t base = reduction_id * reduction_max_gid_;
@@ -240,14 +240,6 @@ public:
         // reduction and atomic operations are performed
         // in group_op_
         group_op_(it, out_, reduction_id, inp_ + start, inp_ + end);
-    }
-
-private:
-    size_t get_reduction_batch_id(sycl::nd_item<1> const &it) const
-    {
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
-        return reduction_batch_id;
     }
 };
 
@@ -267,6 +259,8 @@ class boolean_reduction_contig_krn;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class boolean_reduction_seq_contig_krn;
+
+using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
 sycl::event
@@ -288,8 +282,7 @@ boolean_reduction_contig_impl(sycl::queue exec_q,
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg =
-        4 * (*std::max_element(std::begin(sg_sizes), std::end(sg_sizes)));
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     sycl::event red_ev;
     if (reduction_nelems < wg) {
@@ -433,9 +426,9 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t red_gws_ = it.get_global_range(0) / iter_gws_;
-        const size_t reduction_id = it.get_global_id(0) / red_gws_;
-        const size_t reduction_batch_id = get_reduction_batch_id(it);
+        const size_t reduction_id = it.get_group(0) % iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+
         const size_t reduction_lid = it.get_local_id(0);
         const size_t wg_size = it.get_local_range(0);
 
@@ -467,14 +460,6 @@ public:
         // reduction and atomic operations are performed
         // in group_op_
         group_op_(it, out_, out_iter_offset, local_red_val);
-    }
-
-private:
-    size_t get_reduction_batch_id(sycl::nd_item<1> const &it) const
-    {
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) % n_reduction_groups;
-        return reduction_batch_id;
     }
 };
 
@@ -527,8 +512,7 @@ boolean_reduction_strided_impl(sycl::queue exec_q,
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg =
-        4 * (*std::max_element(std::begin(sg_sizes), std::end(sg_sizes)));
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     sycl::event red_ev;
     if (reduction_nelems < wg) {
