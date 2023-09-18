@@ -109,10 +109,10 @@ def test_memcpy_async():
     dst_buf2 = bytearray(n)
 
     e = q.memcpy_async(dst_buf, src_buf, n)
-    e2 = q.memcpy_async(dst_buf2, src_buf, n)
+    e2 = q.memcpy_async(dst_buf2, src_buf, n, [e])
 
-    e2.wait()
     e.wait()
+    e2.wait()
     assert dst_buf == src_buf
     assert dst_buf2 == src_buf
 
