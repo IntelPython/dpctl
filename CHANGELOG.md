@@ -4,14 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev]
+## [0.15.0]
 
 ### Added
+
+* Added `dpctl.tensor.floor`, `dpctl.tensor.ceil`, `dpctl.tensor.trunc` elementwise functions.
+* Added `dpctl.tensor.hypot`, `dpctl.tensor.logaddexp` elementwise functions.
+* Added trigonometric (`dpctl.tensor.sin`, `dpctl.tensor.cos`, `dpctl.tensor.tan`) and hyperbolic (`dpctl.tensor.sinh`, `dpctl.tensor.cosh`, `dpctl.tensor.tanh`) elementwise functions and their inverses (`dpctl.tensor.asin`, `dpctl.tensor.asinh`, `dpctl.tensor.acos`, `dpctl.tensor.acosh`, `dpctl.tensor.atan`, `dpctl.tensor.atanh`).
+* Added `dpctl.tensor.round` function.
+* Added `dpctl.tensor.sign` and `dpctl.tensor.remainder` elementwise functions.
+* Added bitwise elementwsie functions `dpctl.tensor.bitwise_and`, `dpctl.tensor.bitwise_xor`, `dpctl.tensor.bitwise_or`, `dpctl.tensor.bitwise_invert`
+* Added bitwise shift functions `dpctl.tensor.bitwise_left_shift` and `dpctl.tensor.bitwise_right_shift`.
+* Added `dpctl.tensor.atan2` and `dpctl.tensor.singbit` elementwise functions.
+* Added `dpctl.tensor.minumum` and `dpctl.tensor.maximum` binary elementwise functions.
+* Supported equality checking and hashing for `dpctl.SyclPlatform`.
+* Implemented `types` property for all unary and binary elementwise functions  [#1361](https://github.com/IntelPython/dpctl/pull/1361)
+* Added `dpctl.tensor.repeat` and `dpctl.tensor.tile` functions.
+* Added `dpctl.tensor.matrix_transpose ` function.
+
 ### Changed
 
-* Removed `dpctl.tensor.numpy_usm_shared` obsolete class and associated tests which were being skipped
+* Enabled support for Python arithmetic, in-place arithmetic, reflexive arithmetic, comparison, and bitwise operators for `dpctl.tensor.usm_ndarray` type [#1324](https://github.com/IntelPython/dpctl/pull/1324).
+* Removed `dpctl.tensor.numpy_usm_shared` obsolete class and associated tests which were being skipped [#1310](https://github.com/IntelPython/dpctl/pull/1310)
+* Transitioned `dpctl` codebase to Cython 3.
+* Improved performance of boolean reduction functions `dpctl.tensor.all` and `dpctl.tensor.any`.
+* Improved performance of summation function `dpctl.tensor.sum`.
+* Improved in-place arithmetic operations for addition, subtraction and multiplication.
+* Updated codebase per SYCL-2020 intel/llvm compiler deprecation warnings.
+* Improved performance of advanced boolean indexing for arrays whose size fits in 32-bit signed integer type.
+* Removed deprecated `DPCTLDevice_GetMaxWorkItemSizes` function from the SyclInterface library.
 
 ### Fixed
+
+* Fixed issues identified by Coverity security scans.
+* Fixed issues [#1279](https://github.com/IntelPython/dpctl/issues/1279), [#1350](https://github.com/IntelPython/dpctl/issues/1350), [#1344](https://github.com/IntelPython/dpctl/issues/1344), [#1327](https://github.com/IntelPython/dpctl/issues/1327), [#1241](https://github.com/IntelPython/dpctl/issues/1241), [#1250](https://github.com/IntelPython/dpctl/issues/1250), [#1293](https://github.com/IntelPython/dpctl/issues/1293).
 
 ## [0.14.5] - 07/17/2023
 
