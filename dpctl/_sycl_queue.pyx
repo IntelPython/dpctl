@@ -45,6 +45,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_IsInOrder,
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
+    DPCTLQueue_MemcpyWithEvents,
     DPCTLQueue_Prefetch,
     DPCTLQueue_SubmitBarrierForEvents,
     DPCTLQueue_SubmitNDRange,
@@ -64,6 +65,7 @@ import ctypes
 from .enum_types import backend_type
 
 from cpython cimport pycapsule
+from cpython.buffer cimport PyObject_CheckBuffer
 from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc
 
@@ -158,6 +160,62 @@ cdef void _queue_capsule_deleter(object o) noexcept:
             o, "used_SyclQueueRef"
         )
         DPCTLQueue_Delete(QRef)
+
+
+cdef bint _is_buffer(object o):
+    return PyObject_CheckBuffer(o)
+
+
+cdef DPCTLSyclEventRef _memcpy_impl(
+     SyclQueue q,
+     object dst,
+     object src,
+     size_t byte_count,
+     DPCTLSyclEventRef *dep_events,
+     size_t dep_events_count
+):
+    cdef void *c_dst_ptr = NULL
+    cdef void *c_src_ptr = NULL
+    cdef DPCTLSyclEventRef ERef = NULL
+    cdef const unsigned char[::1] src_host_buf = None
+    cdef unsigned char[::1] dst_host_buf = None
+
+    if isinstance(src, _Memory):
+        c_src_ptr = <void*>(<_Memory>src).memory_ptr
+    elif _is_buffer(src):
+        src_host_buf = src
+        c_src_ptr = <void *>&src_host_buf[0]
+    else:
+        raise TypeError(
+             "Parameter `src` should have either type "
+             "`dpctl.memory._Memory` or a type that "
+             "supports Python buffer protocol"
+       )
+
+    if isinstance(dst, _Memory):
+        c_dst_ptr = <void*>(<_Memory>dst).memory_ptr
+    elif _is_buffer(dst):
+        dst_host_buf = dst
+        c_dst_ptr = <void *>&dst_host_buf[0]
+    else:
+        raise TypeError(
+             "Parameter `dst` should have either type "
+             "`dpctl.memory._Memory` or a type that "
+             "supports Python buffer protocol"
+       )
+
+    if dep_events_count == 0 or dep_events is NULL:
+        ERef = DPCTLQueue_Memcpy(q._queue_ref, c_dst_ptr, c_src_ptr, byte_count)
+    else:
+        ERef = DPCTLQueue_MemcpyWithEvents(
+            q._queue_ref,
+            c_dst_ptr,
+            c_src_ptr,
+            byte_count,
+            dep_events,
+            dep_events_count
+        )
+    return ERef
 
 
 cdef class _SyclQueue:
@@ -925,21 +983,10 @@ cdef class SyclQueue(_SyclQueue):
         with nogil: DPCTLQueue_Wait(self._queue_ref)
 
     cpdef memcpy(self, dest, src, size_t count):
-        cdef void *c_dest
-        cdef void *c_src
+        """Copy memory from `src` to `dst`"""
         cdef DPCTLSyclEventRef ERef = NULL
 
-        if isinstance(dest, _Memory):
-            c_dest = <void*>(<_Memory>dest).memory_ptr
-        else:
-            raise TypeError("Parameter `dest` should have type _Memory.")
-
-        if isinstance(src, _Memory):
-            c_src = <void*>(<_Memory>src).memory_ptr
-        else:
-            raise TypeError("Parameter `src` should have type _Memory.")
-
-        ERef = DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+        ERef = _memcpy_impl(<SyclQueue>self, dest, src, count, NULL, 0)
         if (ERef is NULL):
             raise RuntimeError(
                 "SyclQueue.memcpy operation encountered an error"
@@ -947,22 +994,33 @@ cdef class SyclQueue(_SyclQueue):
         with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
-    cpdef SyclEvent memcpy_async(self, dest, src, size_t count):
-        cdef void *c_dest
-        cdef void *c_src
+    cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=None):
+        """Copy memory from `src` to `dst`"""
         cdef DPCTLSyclEventRef ERef = NULL
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef size_t nDE = 0
 
-        if isinstance(dest, _Memory):
-            c_dest = <void*>(<_Memory>dest).memory_ptr
+        if dEvents is None:
+            ERef = _memcpy_impl(<SyclQueue>self, dest, src, count, NULL, 0)
         else:
-            raise TypeError("Parameter `dest` should have type _Memory.")
+            nDE = len(dEvents)
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if depEvents is NULL:
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dEvents):
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        free(depEvents)
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
+            ERef = _memcpy_impl(self, dest, src, count, depEvents, nDE)
+            free(depEvents)
 
-        if isinstance(src, _Memory):
-            c_src = <void*>(<_Memory>src).memory_ptr
-        else:
-            raise TypeError("Parameter `src` should have type _Memory.")
-
-        ERef = DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
         if (ERef is NULL):
             raise RuntimeError(
                 "SyclQueue.memcpy operation encountered an error"
