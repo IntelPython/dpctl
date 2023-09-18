@@ -49,7 +49,8 @@ elseif(UNIX)
         "-D_FORTIFY_SOURCE=2 "
         "-Wformat "
         "-Wformat-security "
-#       "-fno-strict-overflow "    # no-strict-overflow is implied by -fwrapv
+
+        # "-fno-strict-overflow "    # no-strict-overflow is implied by -fwrapv
         "-fno-delete-null-pointer-checks "
         "-fwrapv "
     )
@@ -82,11 +83,12 @@ add_custom_target(_build_time_create_dpctl_include ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface/Support
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface/Config
-    DEPENDS DPCTLSyclInterface
+    DEPENDS DPCTLSyclInterface DPCTLTensorInterface
 )
 
 set(_copied_header_files)
 file(GLOB _syclinterface_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/*.h)
+
 foreach(hf ${_syclinterface_h})
     get_filename_component(_header_name ${hf} NAME)
     set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/${_header_name})
@@ -94,11 +96,12 @@ foreach(hf ${_syclinterface_h})
     add_custom_command(OUTPUT ${_target_header_file}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
         DEPENDS ${hf} _build_time_create_dpctl_include
-	VERBATIM
+        VERBATIM
     )
 endforeach()
 
 file(GLOB _syclinterface_Support_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Support/*.h)
+
 foreach(hf ${_syclinterface_Support_h})
     get_filename_component(_header_name ${hf} NAME)
     set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/Support/${_header_name})
@@ -110,6 +113,7 @@ foreach(hf ${_syclinterface_Support_h})
 endforeach()
 
 file(GLOB _syclinterface_Config_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Config/*.h)
+
 foreach(hf ${_syclinterface_Config_h})
     get_filename_component(_header_name ${hf} NAME)
     set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/Config/${_header_name})
@@ -121,6 +125,7 @@ foreach(hf ${_syclinterface_Config_h})
 endforeach()
 
 file(GLOB _apis_h ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/*)
+
 foreach(hf ${_apis_h})
     get_filename_component(_header_name ${hf} NAME)
     set(_target_header_file ${DPCTL_INCLUDE_DIR}/${_header_name})
@@ -145,10 +150,12 @@ function(build_dpctl_ext _trgt _src _dest)
     add_library(${_trgt} MODULE ${_generated_src})
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})
-    if (DPCTL_GENERATE_COVERAGE)
+
+    if(DPCTL_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
         target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
     endif()
+
     target_link_libraries(${_trgt} DPCTLSyclInterface)
     set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
     target_link_options(${_trgt} PRIVATE ${_linker_options})
@@ -159,36 +166,39 @@ function(build_dpctl_ext _trgt _src _dest)
     set(_generated_api_h "${_generated_src_dir}/${_name_wle}_api.h")
     set(_copy_trgt "${_trgt}_copy_capi_include")
     add_custom_target(
-         ${_copy_trgt} ALL
-         COMMAND ${CMAKE_COMMAND}
-	     -DSOURCE_FILE=${_generated_public_h}
-	     -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
-         COMMAND ${CMAKE_COMMAND}
-	     -DSOURCE_FILE=${_generated_api_h}
-	     -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
-	 DEPENDS ${_trgt}
-	 VERBATIM
-         COMMENT "Copying Cython-generated headers to dpctl"
+        ${_copy_trgt} ALL
+        COMMAND ${CMAKE_COMMAND}
+        -DSOURCE_FILE=${_generated_public_h}
+        -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
+        -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
+        COMMAND ${CMAKE_COMMAND}
+        -DSOURCE_FILE=${_generated_api_h}
+        -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
+        -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
+        DEPENDS ${_trgt}
+        VERBATIM
+        COMMENT "Copying Cython-generated headers to dpctl"
     )
-    if (DPCTL_GENERATE_COVERAGE)
-         set(_copy_cxx_trgt "${_trgt}_copy_cxx")
-         add_custom_target(
-             ${_copy_cxx_trgt} ALL
-             COMMAND ${CMAKE_COMMAND}
-	         -DSOURCE_FILE=${_generated_src}
-	         -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	         -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
-	     DEPENDS ${_trgt}
-	     VERBATIM
-             COMMENT "Copying Cython-generated source to dpctl"
-         )
+
+    if(DPCTL_GENERATE_COVERAGE)
+        set(_copy_cxx_trgt "${_trgt}_copy_cxx")
+        add_custom_target(
+            ${_copy_cxx_trgt} ALL
+            COMMAND ${CMAKE_COMMAND}
+            -DSOURCE_FILE=${_generated_src}
+            -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
+            -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
+            DEPENDS ${_trgt}
+            VERBATIM
+            COMMENT "Copying Cython-generated source to dpctl"
+        )
     endif()
+
     install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
 file(GLOB _cython_sources *.pyx)
+
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpctl_ext(${_trgt} ${_cy_file} "dpctl")

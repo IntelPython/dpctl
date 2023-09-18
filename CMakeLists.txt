@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.22 FATAL_ERROR)
 
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
-  cmake_policy(SET CMP0135 NEW)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW)
 endif()
 
 project(dpctl
@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+
 # set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 
 # Option to generate code coverage report using llvm-cov and lcov.
@@ -50,6 +51,8 @@ install(FILES ${_cmake_scripts}
     DESTINATION dpctl/resources/cmake
 )
 
-if (DPCTL_GENERATE_DOCS)
+add_subdirectory(libtensorinterface)
+
+if(DPCTL_GENERATE_DOCS)
     add_subdirectory(docs)
 endif()
