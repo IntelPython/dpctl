@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.14.6dev5+10.g3e8d3f8c4 documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.14.6dev5+13.g9f8f25f37 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6e44c616"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=23c7b122"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev5+10.g3e8d3f8c4
+                0.14.6dev5+13.g9f8f25f37
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -273,10 +273,10 @@ The argument can be either “default”, “in_order”,
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a>(dest, src, count)</p></td>
-<td><p></p></td>
+<td><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy_async" title="dpctl.SyclQueue.memcpy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy_async</span></code></a>(dest, src, count)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy_async" title="dpctl.SyclQueue.memcpy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy_async</span></code></a>(dest, src, count[, dEvents])</p></td>
+<td><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
 <td><p></p></td>
@@ -416,12 +416,14 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy_async">
-<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy_async" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy_async" title="Permalink to this definition"></a></dt>
+<dd><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.prefetch">
