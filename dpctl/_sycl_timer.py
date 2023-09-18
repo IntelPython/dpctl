@@ -67,10 +67,8 @@ class SyclTimer:
         self.timer = host_timer
         self.time_scale = time_scale
         self.queue = None
-        self.host_start = None
-        self.host_finish = None
-        self.event_start = None
-        self.event_finish = None
+        self.host_times = []
+        self.bracketing_events = []
 
     def __call__(self, queue=None):
         if isinstance(queue, SyclQueue):
@@ -89,13 +87,17 @@ class SyclTimer:
         return self
 
     def __enter__(self):
-        self.event_start = self.queue.submit_barrier()
-        self.host_start = self.timer()
+        self._event_start = self.queue.submit_barrier()
+        self._host_start = self.timer()
         return self
 
     def __exit__(self, *args):
-        self.event_finish = self.queue.submit_barrier()
-        self.host_finish = self.timer()
+        self.host_times.append((self._host_start, self.timer()))
+        self.bracketing_events.append(
+            (self._event_start, self.queue.submit_barrier())
+        )
+        del self._event_start
+        del self._host_start
 
     @property
     def dt(self):
@@ -103,13 +105,12 @@ class SyclTimer:
         element is the duration as measured by the host timer,
         while the second element is the duration as measured by
         the device timer and encoded in profiling events"""
-        self.event_start.wait()
-        self.event_finish.wait()
-        return (
-            (self.host_finish - self.host_start) * self.time_scale,
-            (
-                self.event_finish.profiling_info_start
-                - self.event_start.profiling_info_end
-            )
-            * (1e-9 * self.time_scale),
-        )
+        for es, ef in self.bracketing_events:
+            es.wait()
+            ef.wait()
+        host_dt = sum(tf - ts for ts, tf in self.host_times) * self.time_scale
+        dev_dt = sum(
+            ef.profiling_info_start - es.profiling_info_end
+            for es, ef in self.bracketing_events
+        ) * (1e-9 * self.time_scale)
+        return (host_dt, dev_dt)
