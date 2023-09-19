@@ -241,7 +241,9 @@ def _argmax_argmin_reduction(x, axis, keepdims, func):
         red_nd = nd
         # case of a scalar
         if red_nd == 0:
-            return dpt.copy(x)
+            return dpt.zeros(
+                (), dtype="i8", usm_type=x.usm_type, sycl_queue=x.sycl_queue
+            )
         x_tmp = x
         res_shape = tuple()
         perm = list(range(nd))
@@ -253,7 +255,9 @@ def _argmax_argmin_reduction(x, axis, keepdims, func):
         red_nd = len(axis)
         # check for axis=()
         if red_nd == 0:
-            return dpt.copy(x)
+            return dpt.zeros(
+                (), dtype="i8", usm_type=x.usm_type, sycl_queue=x.sycl_queue
+            )
         perm = [i for i in range(nd) if i not in axis] + list(axis)
         x_tmp = dpt.permute_dims(x, perm)
         res_shape = x_tmp.shape[: nd - red_nd]

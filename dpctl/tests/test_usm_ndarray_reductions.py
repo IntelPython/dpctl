@@ -14,6 +14,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from random import randrange
+
+import numpy as np
 import pytest
 
 import dpctl.tensor as dpt
@@ -64,23 +67,27 @@ def test_reduction_kernels(arg_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arg_dtype, q)
 
-    x = dpt.reshape(
-        dpt.arange(24 * 1025, dtype=arg_dtype, sycl_queue=q), (24, 1025)
-    )
+    x = dpt.ones((24, 1025), dtype=arg_dtype, sycl_queue=q)
+    x[x.shape[0] // 2, :] = 3
+    x[:, x.shape[1] // 2] = 3
 
     m = dpt.max(x)
-    assert m == x[-1, -1]
+    assert m == 3
     m = dpt.max(x, axis=0)
-    assert dpt.all(m == x[-1, :])
+    assert dpt.all(m == 3)
     m = dpt.max(x, axis=1)
-    assert dpt.all(m == x[:, -1])
+    assert dpt.all(m == 3)
+
+    x = dpt.ones((24, 1025), dtype=arg_dtype, sycl_queue=q)
+    x[x.shape[0] // 2, :] = 0
+    x[:, x.shape[1] // 2] = 0
 
     m = dpt.min(x)
-    assert m == x[0, 0]
+    assert m == 0
     m = dpt.min(x, axis=0)
-    assert dpt.all(m == x[0, :])
+    assert dpt.all(m == 0)
     m = dpt.min(x, axis=1)
-    assert dpt.all(m == x[:, 0])
+    assert dpt.all(m == 0)
 
 
 def test_max_min_nan_propagation():
@@ -107,3 +114,90 @@ def test_max_min_nan_propagation():
     x[0] = complex(0, dpt.nan)
     assert dpt.isnan(dpt.max(x))
     assert dpt.isnan(dpt.min(x))
+
+
+def test_argmax_scalar():
+    get_queue_or_skip()
+
+    x = dpt.ones(())
+    m = dpt.argmax(x)
+
+    assert m.shape == ()
+    assert m == 0
+
+
+@pytest.mark.parametrize("arg_dtype", ["i4", "f4", "c8"])
+def test_search_reduction_kernels(arg_dtype):
+    # i4 - always uses atomics w/ sycl group reduction
+    # f4 - always uses atomics w/ custom group reduction
+    # c8 - always uses temps w/ custom group reduction
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    x = dpt.ones((24 * 1025), dtype=arg_dtype, sycl_queue=q)
+    idx = randrange(x.size)
+    idx_tup = np.unravel_index(idx, (24, 1025))
+    x[idx] = 2
+
+    m = dpt.argmax(x)
+    assert m == idx
+
+    x = dpt.reshape(x, (24, 1025))
+
+    x[idx_tup[0], :] = 3
+    m = dpt.argmax(x, axis=0)
+    assert dpt.all(m == idx_tup[0])
+    x[:, idx_tup[1]] = 4
+    m = dpt.argmax(x, axis=1)
+    assert dpt.all(m == idx_tup[1])
+
+    x = x[:, ::-2]
+    idx = randrange(x.shape[1])
+    x[:, idx] = 5
+    m = dpt.argmax(x, axis=1)
+    assert dpt.all(m == idx)
+
+    x = dpt.ones((24 * 1025), dtype=arg_dtype, sycl_queue=q)
+    idx = randrange(x.size)
+    idx_tup = np.unravel_index(idx, (24, 1025))
+    x[idx] = 0
+
+    m = dpt.argmin(x)
+    assert m == idx
+
+    x = dpt.reshape(x, (24, 1025))
+
+    x[idx_tup[0], :] = -1
+    m = dpt.argmin(x, axis=0)
+    assert dpt.all(m == idx_tup[0])
+    x[:, idx_tup[1]] = -2
+    m = dpt.argmin(x, axis=1)
+    assert dpt.all(m == idx_tup[1])
+
+    x = x[:, ::-2]
+    idx = randrange(x.shape[1])
+    x[:, idx] = -3
+    m = dpt.argmin(x, axis=1)
+    assert dpt.all(m == idx)
+
+
+def test_argmax_argmin_nan_propagation():
+    get_queue_or_skip()
+
+    sz = 4
+    idx = randrange(sz)
+    # floats
+    x = dpt.arange(sz, dtype="f4")
+    x[idx] = dpt.nan
+    assert dpt.argmax(x) == idx
+    assert dpt.argmin(x) == idx
+
+    # complex
+    x = dpt.arange(sz, dtype="c8")
+    x[idx] = complex(dpt.nan, 0)
+    assert dpt.argmax(x) == idx
+    assert dpt.argmin(x) == idx
+
+    x[idx] = complex(0, dpt.nan)
+    assert dpt.argmax(x) == idx
+    assert dpt.argmin(x) == idx
