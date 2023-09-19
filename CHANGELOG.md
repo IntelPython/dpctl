@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updated codebase per SYCL-2020 intel/llvm compiler deprecation warnings.
 * Improved performance of advanced boolean indexing for arrays whose size fits in 32-bit signed integer type.
 * Removed deprecated `DPCTLDevice_GetMaxWorkItemSizes` function from the SyclInterface library.
+* Improved performance of `dpctl.tensor.reshape` in the case when a copy is being made.
+* Improved performance of `dpctl.tensor.roll` function.
 
 ### Fixed
 
