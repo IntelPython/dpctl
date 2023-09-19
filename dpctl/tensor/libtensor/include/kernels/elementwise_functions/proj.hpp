@@ -34,6 +34,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -50,6 +51,7 @@ namespace proj
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -71,7 +73,7 @@ template <typename argT, typename resT> struct ProjFunctor
         const realT x = std::real(in);
         const realT y = std::imag(in);
 
-        if (std::isinf(x) || std::isinf(y)) {
+        if (mu_ns::isinf(x) || mu_ns::isinf(y)) {
             const realT res_im = std::copysign(realT(0), y);
             return resT{std::numeric_limits<realT>::infinity(), res_im};
         }

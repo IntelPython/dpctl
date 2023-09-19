@@ -31,6 +31,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -47,6 +48,7 @@ namespace exp
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -71,15 +73,15 @@ template <typename argT, typename resT> struct ExpFunctor
 
             const realT x = std::real(in);
             const realT y = std::imag(in);
-            if (std::isfinite(x)) {
-                if (std::isfinite(y)) {
+            if (mu_ns::isfinite(x)) {
+                if (mu_ns::isfinite(y)) {
                     return std::exp(in);
                 }
                 else {
                     return resT{q_nan, q_nan};
                 }
             }
-            else if (std::isnan(x)) {
+            else if (mu_ns::isnan(x)) {
                 /* x is nan */
                 if (y == realT(0)) {
                     return resT{in};
@@ -93,7 +95,7 @@ template <typename argT, typename resT> struct ExpFunctor
                     if (y == realT(0)) {
                         return resT{x, y};
                     }
-                    else if (std::isfinite(y)) {
+                    else if (mu_ns::isfinite(y)) {
                         return resT{x * std::cos(y), x * std::sin(y)};
                     }
                     else {
@@ -102,7 +104,7 @@ template <typename argT, typename resT> struct ExpFunctor
                     }
                 }
                 else { /* x is -inf */
-                    if (std::isfinite(y)) {
+                    if (mu_ns::isfinite(y)) {
                         realT exp_x = std::exp(x);
                         return resT{exp_x * std::cos(y), exp_x * std::sin(y)};
                     }

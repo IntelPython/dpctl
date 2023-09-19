@@ -31,6 +31,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -46,6 +47,7 @@ namespace sinh
 {
 
 namespace py = pybind11;
+namespace mu_ns = dpctl::tensor::math_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -71,8 +73,8 @@ template <typename argT, typename resT> struct SinhFunctor
             const realT x = std::real(in);
             const realT y = std::imag(in);
 
-            const bool xfinite = std::isfinite(x);
-            const bool yfinite = std::isfinite(y);
+            const bool xfinite = mu_ns::isfinite(x);
+            const bool yfinite = mu_ns::isfinite(y);
 
             /*
              * Handle the nearly-non-exceptional cases where
@@ -101,7 +103,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * sinh(NaN +- I 0)   = d(NaN) + I +-0.
              */
             if (y == realT(0) && !xfinite) {
-                if (std::isnan(x)) {
+                if (mu_ns::isnan(x)) {
                     return resT{x, y};
                 }
                 const realT res_im = std::copysign(realT(0), y);
@@ -127,7 +129,7 @@ template <typename argT, typename resT> struct SinhFunctor
              *
              * sinh(+-Inf + I y)   = +-Inf cos(y) + I Inf sin(y)
              */
-            if (!xfinite && !std::isnan(x)) {
+            if (!xfinite && !mu_ns::isnan(x)) {
                 if (!yfinite) {
                     return resT{x * x, x * (y - y)};
                 }

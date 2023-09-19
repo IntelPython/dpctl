@@ -33,6 +33,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -49,6 +50,7 @@ namespace abs
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -106,16 +108,16 @@ private:
         constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
         constexpr realT p_inf = std::numeric_limits<realT>::infinity();
 
-        if (std::isinf(x)) {
+        if (mu_ns::isinf(x)) {
             return p_inf;
         }
-        else if (std::isinf(y)) {
+        else if (mu_ns::isinf(y)) {
             return p_inf;
         }
-        else if (std::isnan(x)) {
+        else if (mu_ns::isnan(x)) {
             return q_nan;
         }
-        else if (std::isnan(y)) {
+        else if (mu_ns::isnan(y)) {
             return q_nan;
         }
         else {

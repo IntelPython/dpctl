@@ -33,6 +33,7 @@
 
 #include "kernels/elementwise_functions/common.hpp"
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -48,6 +49,7 @@ namespace tanh
 {
 
 namespace py = pybind11;
+namespace mu_ns = dpctl::tensor::math_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -90,13 +92,13 @@ template <typename argT, typename resT> struct TanhFunctor
              * case is only needed to avoid a spurious invalid exception when
              * y is infinite.
              */
-            if (!std::isfinite(x)) {
-                if (std::isnan(x)) {
+            if (!mu_ns::isfinite(x)) {
+                if (mu_ns::isnan(x)) {
                     return resT{q_nan, (y == realT(0) ? y : q_nan)};
                 }
                 const realT res_re = std::copysign(realT(1), x);
                 const realT res_im = std::copysign(
-                    realT(0), std::isinf(y) ? y : std::sin(y) * std::cos(y));
+                    realT(0), mu_ns::isinf(y) ? y : std::sin(y) * std::cos(y));
                 return resT{res_re, res_im};
             }
             /*
@@ -105,7 +107,7 @@ template <typename argT, typename resT> struct TanhFunctor
              * tanh(0 + i NAN) = 0 + i NaN
              * tanh(0 +- i Inf) = 0 + i NaN
              */
-            if (!std::isfinite(y)) {
+            if (!mu_ns::isfinite(y)) {
                 if (x == realT(0)) {
                     return resT{x, q_nan};
                 }

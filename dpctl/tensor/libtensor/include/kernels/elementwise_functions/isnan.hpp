@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -45,6 +46,7 @@ namespace isnan
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace mu_ns = dpctl::tensor::math_utils;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -77,7 +79,7 @@ template <typename argT, typename resT> struct IsNanFunctor
             return constant_value;
         }
         else {
-            return sycl::isnan(in);
+            return mu_ns::isnan(in);
         }
     }
 
