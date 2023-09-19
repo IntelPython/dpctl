@@ -151,6 +151,52 @@ void populate_min_over_axis_dispatch_tables(void)
 
 } // namespace impl
 
+// Argmax
+namespace impl
+{
+
+using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
+static search_reduction_strided_impl_fn_ptr
+    argmax_over_axis_strided_temps_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+
+void populate_argmax_over_axis_dispatch_tables(void)
+{
+    using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
+    using td_ns::DispatchTableBuilder;
+
+    using dpctl::tensor::kernels::ArgmaxOverAxisTempsStridedFactory;
+    DispatchTableBuilder<search_reduction_strided_impl_fn_ptr,
+                         ArgmaxOverAxisTempsStridedFactory, td_ns::num_types>
+        dtb1;
+    dtb1.populate_dispatch_table(argmax_over_axis_strided_temps_dispatch_table);
+}
+
+} // namespace impl
+
+// Argmin
+namespace impl
+{
+
+using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
+static search_reduction_strided_impl_fn_ptr
+    argmin_over_axis_strided_temps_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+
+void populate_argmin_over_axis_dispatch_tables(void)
+{
+    using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
+    using td_ns::DispatchTableBuilder;
+
+    using dpctl::tensor::kernels::ArgminOverAxisTempsStridedFactory;
+    DispatchTableBuilder<search_reduction_strided_impl_fn_ptr,
+                         ArgminOverAxisTempsStridedFactory, td_ns::num_types>
+        dtb1;
+    dtb1.populate_dispatch_table(argmin_over_axis_strided_temps_dispatch_table);
+}
+
+} // namespace impl
+
 namespace py = pybind11;
 
 void init_reduction_functions(py::module_ m)
@@ -208,6 +254,46 @@ void init_reduction_functions(py::module_ m)
                 min_over_axis1_contig_atomic_dispatch_table);
         };
         m.def("_min_over_axis", min_pyapi, "", py::arg("src"),
+              py::arg("trailing_dims_to_reduce"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+    }
+
+    // ARGMAX
+    {
+        using dpctl::tensor::py_internal::impl::
+            populate_argmax_over_axis_dispatch_tables;
+        populate_argmax_over_axis_dispatch_tables();
+        using impl::argmax_over_axis_strided_temps_dispatch_table;
+
+        auto argmax_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
+                                arrayT dst, sycl::queue exec_q,
+                                const event_vecT &depends = {}) {
+            using dpctl::tensor::py_internal::py_search_over_axis;
+            return py_search_over_axis(
+                src, trailing_dims_to_reduce, dst, exec_q, depends,
+                argmax_over_axis_strided_temps_dispatch_table);
+        };
+        m.def("_argmax_over_axis", argmax_pyapi, "", py::arg("src"),
+              py::arg("trailing_dims_to_reduce"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+    }
+
+    // ARGMIN
+    {
+        using dpctl::tensor::py_internal::impl::
+            populate_argmin_over_axis_dispatch_tables;
+        populate_argmin_over_axis_dispatch_tables();
+        using impl::argmin_over_axis_strided_temps_dispatch_table;
+
+        auto argmin_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
+                                arrayT dst, sycl::queue exec_q,
+                                const event_vecT &depends = {}) {
+            using dpctl::tensor::py_internal::py_search_over_axis;
+            return py_search_over_axis(
+                src, trailing_dims_to_reduce, dst, exec_q, depends,
+                argmin_over_axis_strided_temps_dispatch_table);
+        };
+        m.def("_argmin_over_axis", argmin_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
     }

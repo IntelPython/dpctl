@@ -160,7 +160,7 @@ from ._elementwise_funcs import (
     tanh,
     trunc,
 )
-from ._reduction import max, min, sum
+from ._reduction import argmax, argmin, max, min, sum
 from ._testing import allclose
 
 __all__ = [
@@ -311,4 +311,6 @@ __all__ = [
     "tile",
     "max",
     "min",
+    "argmax",
+    "argmin",
 ]

@@ -51,6 +51,8 @@ namespace tensor
 namespace py_internal
 {
 
+/* ==================== Generic reductions ====================== */
+
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     dpctl::tensor::usm_ndarray src,
@@ -385,6 +387,189 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(keep_args_event, reduction_ev);
+}
+
+/* ==================== Search reductions ====================== */
+
+template <typename fn_tableT>
+std::pair<sycl::event, sycl::event> py_search_over_axis(
+    dpctl::tensor::usm_ndarray src,
+    int trailing_dims_to_reduce, // comp over this many trailing indexes
+    dpctl::tensor::usm_ndarray dst,
+    sycl::queue exec_q,
+    const std::vector<sycl::event> &depends,
+    const fn_tableT &dispatch_table)
+{
+    int src_nd = src.get_ndim();
+    int iteration_nd = src_nd - trailing_dims_to_reduce;
+    if (trailing_dims_to_reduce <= 0 || iteration_nd < 0) {
+        throw py::value_error("Trailing_dim_to_reduce must be positive, but no "
+                              "greater than rank of the array being reduced");
+    }
+
+    int dst_nd = dst.get_ndim();
+    if (dst_nd != iteration_nd) {
+        throw py::value_error("Destination array rank does not match input "
+                              "array rank and number of reduced dimensions");
+    }
+
+    const py::ssize_t *src_shape_ptr = src.get_shape_raw();
+    const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
+
+    bool same_shapes = true;
+    for (int i = 0; same_shapes && (i < dst_nd); ++i) {
+        same_shapes = same_shapes && (src_shape_ptr[i] == dst_shape_ptr[i]);
+    }
+
+    if (!same_shapes) {
+        throw py::value_error("Destination shape does not match unreduced "
+                              "dimensions of the input shape");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    size_t dst_nelems = dst.get_size();
+
+    size_t reduction_nelems(1);
+    for (int i = dst_nd; i < src_nd; ++i) {
+        reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
+    }
+
+    // check that dst and src do not overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    // destination must be ample enough to accommodate all elements
+    {
+        auto dst_offsets = dst.get_minmax_offsets();
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < dst_nelems) {
+            throw py::value_error(
+                "Destination array can not accommodate all the "
+                "elements of source array.");
+        }
+    }
+
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
+
+    namespace td_ns = dpctl::tensor::type_dispatch;
+    const auto &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    using dpctl::tensor::py_internal::simplify_iteration_space;
+    using dpctl::tensor::py_internal::simplify_iteration_space_1;
+
+    auto const &src_shape_vecs = src.get_shape_vector();
+    auto const &src_strides_vecs = src.get_strides_vector();
+    auto const &dst_strides_vecs = dst.get_strides_vector();
+
+    int reduction_nd = trailing_dims_to_reduce;
+    const py::ssize_t *reduction_shape_ptr = src_shape_ptr + dst_nd;
+    using shT = std::vector<py::ssize_t>;
+    shT reduction_src_strides(std::begin(src_strides_vecs) + dst_nd,
+                              std::end(src_strides_vecs));
+
+    shT compact_reduction_shape;
+    shT compact_reduction_src_strides;
+    py::ssize_t reduction_src_offset(0);
+
+    compact_iteration_space(
+        reduction_nd, reduction_shape_ptr, reduction_src_strides,
+        // output
+        compact_reduction_shape, compact_reduction_src_strides);
+
+    const py::ssize_t *iteration_shape_ptr = src_shape_ptr;
+
+    shT iteration_src_strides(std::begin(src_strides_vecs),
+                              std::begin(src_strides_vecs) + iteration_nd);
+    shT const &iteration_dst_strides = dst_strides_vecs;
+
+    shT simplified_iteration_shape;
+    shT simplified_iteration_src_strides;
+    shT simplified_iteration_dst_strides;
+    py::ssize_t iteration_src_offset(0);
+    py::ssize_t iteration_dst_offset(0);
+
+    if (iteration_nd == 0) {
+        if (dst_nelems != 1) {
+            throw std::runtime_error("iteration_nd == 0, but dst_nelems != 1");
+        }
+        iteration_nd = 1;
+        simplified_iteration_shape.push_back(1);
+        simplified_iteration_src_strides.push_back(0);
+        simplified_iteration_dst_strides.push_back(0);
+    }
+    else {
+        simplify_iteration_space(iteration_nd, iteration_shape_ptr,
+                                 iteration_src_strides, iteration_dst_strides,
+                                 // output
+                                 simplified_iteration_shape,
+                                 simplified_iteration_src_strides,
+                                 simplified_iteration_dst_strides,
+                                 iteration_src_offset, iteration_dst_offset);
+    }
+
+    auto fn = dispatch_table[src_typeid][dst_typeid];
+    if (fn == nullptr) {
+        throw std::runtime_error("Datatypes are not supported");
+    }
+
+    std::vector<sycl::event> host_task_events{};
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+
+    const auto &arrays_metainfo_packing_triple_ =
+        device_allocate_and_pack<py::ssize_t>(
+            exec_q, host_task_events,
+            // iteration metadata
+            simplified_iteration_shape, simplified_iteration_src_strides,
+            simplified_iteration_dst_strides,
+            // reduction metadata
+            compact_reduction_shape, compact_reduction_src_strides);
+    py::ssize_t *temp_allocation_ptr =
+        std::get<0>(arrays_metainfo_packing_triple_);
+    if (temp_allocation_ptr == nullptr) {
+        throw std::runtime_error("Unable to allocate memory on device");
+    }
+    const auto &copy_metadata_ev = std::get<2>(arrays_metainfo_packing_triple_);
+
+    py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
+    py::ssize_t *reduction_shape_stride =
+        temp_allocation_ptr + 3 * simplified_iteration_shape.size();
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.resize(depends.size());
+    std::copy(depends.begin(), depends.end(), all_deps.begin());
+    all_deps.push_back(copy_metadata_ev);
+
+    auto comp_ev = fn(exec_q, dst_nelems, reduction_nelems, src.get_data(),
+                      dst.get_data(), iteration_nd, iter_shape_and_strides,
+                      iteration_src_offset, iteration_dst_offset,
+                      reduction_nd, // number dimensions being reduced
+                      reduction_shape_stride, reduction_src_offset, all_deps);
+
+    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(comp_ev);
+        auto ctx = exec_q.get_context();
+        cgh.host_task([ctx, temp_allocation_ptr] {
+            sycl::free(temp_allocation_ptr, ctx);
+        });
+    });
+    host_task_events.push_back(temp_cleanup_ev);
+
+    sycl::event keep_args_event =
+        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+
+    return std::make_pair(keep_args_event, comp_ev);
 }
 
 extern void init_reduction_functions(py::module_ m);
