@@ -142,6 +142,10 @@ Other Functions
       - Returns True if two arrays are element-wise equal within tolerances.
     * - :func:`any()`
       - Tests whether any input array elements evaluate to True along a given axis.
+    * - :func:`argmax()`
+      - [FIXME]: <class 'function'> does not have a docstring
+    * - :func:`argmin()`
+      - [FIXME]: <class 'function'> does not have a docstring
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
