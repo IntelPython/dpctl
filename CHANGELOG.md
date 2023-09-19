@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added trigonometric (`dpctl.tensor.sin`, `dpctl.tensor.cos`, `dpctl.tensor.tan`) and hyperbolic (`dpctl.tensor.sinh`, `dpctl.tensor.cosh`, `dpctl.tensor.tanh`) elementwise functions and their inverses (`dpctl.tensor.asin`, `dpctl.tensor.asinh`, `dpctl.tensor.acos`, `dpctl.tensor.acosh`, `dpctl.tensor.atan`, `dpctl.tensor.atanh`).
 * Added `dpctl.tensor.round` function.
 * Added `dpctl.tensor.sign` and `dpctl.tensor.remainder` elementwise functions.
-* Added bitwise elementwsie functions `dpctl.tensor.bitwise_and`, `dpctl.tensor.bitwise_xor`, `dpctl.tensor.bitwise_or`, `dpctl.tensor.bitwise_invert`
+* Added bitwise elementwise functions `dpctl.tensor.bitwise_and`, `dpctl.tensor.bitwise_xor`, `dpctl.tensor.bitwise_or`, `dpctl.tensor.bitwise_invert`
 * Added bitwise shift functions `dpctl.tensor.bitwise_left_shift` and `dpctl.tensor.bitwise_right_shift`.
-* Added `dpctl.tensor.atan2` and `dpctl.tensor.singbit` elementwise functions.
+* Added `dpctl.tensor.atan2` and `dpctl.tensor.signbit` elementwise functions.
 * Added `dpctl.tensor.minumum` and `dpctl.tensor.maximum` binary elementwise functions.
 * Supported equality checking and hashing for `dpctl.SyclPlatform`.
 * Implemented `types` property for all unary and binary elementwise functions  [#1361](https://github.com/IntelPython/dpctl/pull/1361)
