@@ -97,6 +97,16 @@ void compact_iteration_space(int &,
                              std::vector<py::ssize_t> &,
                              std::vector<py::ssize_t> &);
 
+void split_iteration_space(const std::vector<py::ssize_t> &,
+                           const std::vector<py::ssize_t> &,
+                           int,
+                           int,
+                           // output
+                           std::vector<py::ssize_t> &,
+                           std::vector<py::ssize_t> &,
+                           std::vector<py::ssize_t> &,
+                           std::vector<py::ssize_t> &);
+
 py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &,
                                  std::vector<py::ssize_t> const &);
 py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &,

@@ -72,11 +72,13 @@ from dpctl.tensor._manipulation_functions import (
     iinfo,
     moveaxis,
     permute_dims,
+    repeat,
     result_type,
     roll,
     squeeze,
     stack,
     swapaxes,
+    tile,
     unstack,
 )
 from dpctl.tensor._print import (
@@ -305,4 +307,6 @@ __all__ = [
     "tanh",
     "trunc",
     "allclose",
+    "repeat",
+    "tile",
 ]

@@ -58,7 +58,9 @@ using dpctl::tensor::kernels::boolean_reduction_strided_impl_fn_ptr;
 static boolean_reduction_strided_impl_fn_ptr
     all_reduction_strided_dispatch_vector[td_ns::num_types];
 static boolean_reduction_contig_impl_fn_ptr
-    all_reduction_contig_dispatch_vector[td_ns::num_types];
+    all_reduction_axis1_contig_dispatch_vector[td_ns::num_types];
+static boolean_reduction_contig_impl_fn_ptr
+    all_reduction_axis0_contig_dispatch_vector[td_ns::num_types];
 
 void populate_all_dispatch_vectors(void)
 {
@@ -74,11 +76,19 @@ void populate_all_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::boolean_reduction_contig_impl_fn_ptr;
 
-    using dpctl::tensor::kernels::AllContigFactory;
+    using dpctl::tensor::kernels::AllAxis1ContigFactory;
     DispatchVectorBuilder<boolean_reduction_contig_impl_fn_ptr,
-                          AllContigFactory, td_ns::num_types>
+                          AllAxis1ContigFactory, td_ns::num_types>
         all_dvb2;
-    all_dvb2.populate_dispatch_vector(all_reduction_contig_dispatch_vector);
+    all_dvb2.populate_dispatch_vector(
+        all_reduction_axis1_contig_dispatch_vector);
+
+    using dpctl::tensor::kernels::AllAxis0ContigFactory;
+    DispatchVectorBuilder<boolean_reduction_contig_impl_fn_ptr,
+                          AllAxis0ContigFactory, td_ns::num_types>
+        all_dvb3;
+    all_dvb3.populate_dispatch_vector(
+        all_reduction_axis0_contig_dispatch_vector);
 };
 
 } // namespace impl
@@ -91,7 +101,9 @@ static boolean_reduction_strided_impl_fn_ptr
     any_reduction_strided_dispatch_vector[td_ns::num_types];
 using dpctl::tensor::kernels::boolean_reduction_contig_impl_fn_ptr;
 static boolean_reduction_contig_impl_fn_ptr
-    any_reduction_contig_dispatch_vector[td_ns::num_types];
+    any_reduction_axis1_contig_dispatch_vector[td_ns::num_types];
+static boolean_reduction_contig_impl_fn_ptr
+    any_reduction_axis0_contig_dispatch_vector[td_ns::num_types];
 
 void populate_any_dispatch_vectors(void)
 {
@@ -107,11 +119,19 @@ void populate_any_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::boolean_reduction_contig_impl_fn_ptr;
 
-    using dpctl::tensor::kernels::AnyContigFactory;
+    using dpctl::tensor::kernels::AnyAxis1ContigFactory;
     DispatchVectorBuilder<boolean_reduction_contig_impl_fn_ptr,
-                          AnyContigFactory, td_ns::num_types>
+                          AnyAxis1ContigFactory, td_ns::num_types>
         any_dvb2;
-    any_dvb2.populate_dispatch_vector(any_reduction_contig_dispatch_vector);
+    any_dvb2.populate_dispatch_vector(
+        any_reduction_axis1_contig_dispatch_vector);
+
+    using dpctl::tensor::kernels::AnyAxis0ContigFactory;
+    DispatchVectorBuilder<boolean_reduction_contig_impl_fn_ptr,
+                          AnyAxis0ContigFactory, td_ns::num_types>
+        any_dvb3;
+    any_dvb3.populate_dispatch_vector(
+        any_reduction_axis0_contig_dispatch_vector);
 };
 
 } // namespace impl
@@ -124,16 +144,18 @@ void init_boolean_reduction_functions(py::module_ m)
     // ALL
     {
         impl::populate_all_dispatch_vectors();
-        using impl::all_reduction_contig_dispatch_vector;
+        using impl::all_reduction_axis0_contig_dispatch_vector;
+        using impl::all_reduction_axis1_contig_dispatch_vector;
         using impl::all_reduction_strided_dispatch_vector;
 
         auto all_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
                              arrayT dst, sycl::queue exec_q,
                              const event_vecT &depends = {}) {
-            return py_boolean_reduction(src, trailing_dims_to_reduce, dst,
-                                        exec_q, depends,
-                                        all_reduction_contig_dispatch_vector,
-                                        all_reduction_strided_dispatch_vector);
+            return py_boolean_reduction(
+                src, trailing_dims_to_reduce, dst, exec_q, depends,
+                all_reduction_axis1_contig_dispatch_vector,
+                all_reduction_axis0_contig_dispatch_vector,
+                all_reduction_strided_dispatch_vector);
         };
         m.def("_all", all_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
@@ -143,16 +165,18 @@ void init_boolean_reduction_functions(py::module_ m)
     // ANY
     {
         impl::populate_any_dispatch_vectors();
-        using impl::any_reduction_contig_dispatch_vector;
+        using impl::any_reduction_axis0_contig_dispatch_vector;
+        using impl::any_reduction_axis1_contig_dispatch_vector;
         using impl::any_reduction_strided_dispatch_vector;
 
         auto any_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
                              arrayT dst, sycl::queue exec_q,
                              const event_vecT &depends = {}) {
-            return py_boolean_reduction(src, trailing_dims_to_reduce, dst,
-                                        exec_q, depends,
-                                        any_reduction_contig_dispatch_vector,
-                                        any_reduction_strided_dispatch_vector);
+            return py_boolean_reduction(
+                src, trailing_dims_to_reduce, dst, exec_q, depends,
+                any_reduction_axis1_contig_dispatch_vector,
+                any_reduction_axis0_contig_dispatch_vector,
+                any_reduction_strided_dispatch_vector);
         };
         m.def("_any", any_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),

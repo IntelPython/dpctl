@@ -408,6 +408,50 @@ void compact_iteration_space(int &nd,
     }
 }
 
+/* @brief Split shape/strides into dir1 (complementary to axis_start <= i <
+ * axis_end) and dir2 (along given set of axes)
+ */
+void split_iteration_space(const std::vector<py::ssize_t> &shape_vec,
+                           const std::vector<py::ssize_t> &strides_vec,
+                           int axis_start,
+                           int axis_end,
+                           std::vector<py::ssize_t> &dir1_shape_vec,
+                           std::vector<py::ssize_t> &dir2_shape_vec,
+                           std::vector<py::ssize_t> &dir1_strides_vec,
+                           std::vector<py::ssize_t> &dir2_strides_vec)
+{
+    int nd = static_cast<int>(shape_vec.size());
+    int dir2_sz = axis_end - axis_start;
+    int dir1_sz = nd - dir2_sz;
+
+    assert(dir1_sz > 0);
+    assert(dir2_sz > 0);
+
+    dir1_shape_vec.resize(dir1_sz);
+    dir2_shape_vec.resize(dir2_sz);
+
+    std::copy(shape_vec.begin(), shape_vec.begin() + axis_start,
+              dir1_shape_vec.begin());
+    std::copy(shape_vec.begin() + axis_end, shape_vec.end(),
+              dir1_shape_vec.begin() + axis_start);
+
+    std::copy(shape_vec.begin() + axis_start, shape_vec.begin() + axis_end,
+              dir2_shape_vec.begin());
+
+    dir1_strides_vec.resize(dir1_sz);
+    dir2_strides_vec.resize(dir2_sz);
+
+    std::copy(strides_vec.begin(), strides_vec.begin() + axis_start,
+              dir1_strides_vec.begin());
+    std::copy(strides_vec.begin() + axis_end, strides_vec.end(),
+              dir1_strides_vec.begin() + axis_start);
+
+    std::copy(strides_vec.begin() + axis_start, strides_vec.begin() + axis_end,
+              dir2_strides_vec.begin());
+
+    return;
+}
+
 py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &mi,
                                  std::vector<py::ssize_t> const &shape)
 {

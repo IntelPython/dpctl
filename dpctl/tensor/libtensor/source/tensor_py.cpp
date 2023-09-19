@@ -33,6 +33,7 @@
 
 #include "dpctl4pybind11.hpp"
 
+#include "accumulators.hpp"
 #include "boolean_advanced_indexing.hpp"
 #include "boolean_reductions.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
@@ -45,6 +46,7 @@
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
+#include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 #include "sum_reductions.hpp"
 #include "triul_ctor.hpp"
@@ -96,6 +98,11 @@ using dpctl::tensor::py_internal::py_mask_positions;
 using dpctl::tensor::py_internal::py_nonzero;
 using dpctl::tensor::py_internal::py_place;
 
+/* ================= Repeat ====================*/
+using dpctl::tensor::py_internal::py_cumsum_1d;
+using dpctl::tensor::py_internal::py_repeat_by_scalar;
+using dpctl::tensor::py_internal::py_repeat_by_sequence;
+
 /* ================ Eye ================== */
 
 using dpctl::tensor::py_internal::usm_ndarray_eye;
@@ -132,9 +139,13 @@ void init_dispatch_vectors(void)
     init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
-    populate_mask_positions_dispatch_vectors();
     populate_masked_extract_dispatch_vectors();
     populate_masked_place_dispatch_vectors();
+
+    populate_mask_positions_dispatch_vectors();
+
+    populate_cumsum_1d_dispatch_vectors();
+    init_repeat_dispatch_vectors();
 
     return;
 }
@@ -353,6 +364,9 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("cumsum"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
+    m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
     m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
           py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -386,6 +400,14 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
           py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
+
+    m.def("_repeat_by_sequence", &py_repeat_by_sequence, "", py::arg("src"),
+          py::arg("dst"), py::arg("reps"), py::arg("cumsum"), py::arg("axis"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_repeat_by_scalar", &py_repeat_by_scalar, "", py::arg("src"),
+          py::arg("dst"), py::arg("reps"), py::arg("axis"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     dpctl::tensor::py_internal::init_elementwise_functions(m);
     dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
