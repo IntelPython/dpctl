@@ -1670,25 +1670,37 @@ public:
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
                 argT val = inp_[inp_offset];
-                if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
-                    if (val < local_red_val) {
-                        local_red_val = val;
-                        if constexpr (!First) {
-                            local_idx = inds_[inp_offset];
-                        }
-                        else {
-                            local_idx = static_cast<outT>(arg_reduce_gid);
-                        }
+                if (val == local_red_val) {
+                    if constexpr (!First) {
+                        local_idx = std::min(local_idx, inds_[inp_offset]);
+                    }
+                    else {
+                        local_idx = std::min(local_idx,
+                                             static_cast<outT>(arg_reduce_gid));
                     }
                 }
-                else if constexpr (su_ns::IsMaximum<argT, ReductionOp>::value) {
-                    if (val > local_red_val) {
-                        local_red_val = val;
-                        if constexpr (!First) {
-                            local_idx = inds_[inp_offset];
+                else {
+                    if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
+                        if (val < local_red_val) {
+                            local_red_val = val;
+                            if constexpr (!First) {
+                                local_idx = inds_[inp_offset];
+                            }
+                            else {
+                                local_idx = static_cast<outT>(arg_reduce_gid);
+                            }
                         }
-                        else {
-                            local_idx = static_cast<outT>(arg_reduce_gid);
+                    }
+                    else if constexpr (su_ns::IsMaximum<argT,
+                                                        ReductionOp>::value) {
+                        if (val > local_red_val) {
+                            local_red_val = val;
+                            if constexpr (!First) {
+                                local_idx = inds_[inp_offset];
+                            }
+                            else {
+                                local_idx = static_cast<outT>(arg_reduce_gid);
+                            }
                         }
                     }
                 }
@@ -1813,83 +1825,102 @@ public:
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
                 argT val = inp_[inp_offset];
-                if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
-                    using dpctl::tensor::type_utils::is_complex;
-                    if constexpr (is_complex<argT>::value) {
-                        using dpctl::tensor::math_utils::less_complex;
-                        // less_complex always returns false for NaNs, so check
-                        if (less_complex<argT>(val, local_red_val) ||
-                            std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
-                        {
-                            local_red_val = val;
-                            if constexpr (!First) {
-                                local_idx = inds_[inp_offset];
-                            }
-                            else {
-                                local_idx = static_cast<outT>(arg_reduce_gid);
-                            }
-                        }
-                    }
-                    else if constexpr (std::is_floating_point_v<argT>) {
-                        if (val < local_red_val || std::isnan(val)) {
-                            local_red_val = val;
-                            if constexpr (!First) {
-                                local_idx = inds_[inp_offset];
-                            }
-                            else {
-                                local_idx = static_cast<outT>(arg_reduce_gid);
-                            }
-                        }
+                if (val == local_red_val) {
+                    if constexpr (!First) {
+                        local_idx = std::min(local_idx, inds_[inp_offset]);
                     }
                     else {
-                        if (val < local_red_val) {
-                            local_red_val = val;
-                            if constexpr (!First) {
-                                local_idx = inds_[inp_offset];
-                            }
-                            else {
-                                local_idx = static_cast<outT>(arg_reduce_gid);
-                            }
-                        }
+                        local_idx = std::min(local_idx,
+                                             static_cast<outT>(arg_reduce_gid));
                     }
                 }
-                else if constexpr (su_ns::IsMaximum<argT, ReductionOp>::value) {
-                    using dpctl::tensor::type_utils::is_complex;
-                    if constexpr (is_complex<argT>::value) {
-                        using dpctl::tensor::math_utils::greater_complex;
-                        if (greater_complex<argT>(val, local_red_val) ||
-                            std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
-                        {
-                            local_red_val = val;
-                            if constexpr (!First) {
-                                local_idx = inds_[inp_offset];
+                else {
+                    if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
+                        using dpctl::tensor::type_utils::is_complex;
+                        if constexpr (is_complex<argT>::value) {
+                            using dpctl::tensor::math_utils::less_complex;
+                            // less_complex always returns false for NaNs, so
+                            // check
+                            if (less_complex<argT>(val, local_red_val) ||
+                                std::isnan(std::real(val)) ||
+                                std::isnan(std::imag(val)))
+                            {
+                                local_red_val = val;
+                                if constexpr (!First) {
+                                    local_idx = inds_[inp_offset];
+                                }
+                                else {
+                                    local_idx =
+                                        static_cast<outT>(arg_reduce_gid);
+                                }
                             }
-                            else {
-                                local_idx = static_cast<outT>(arg_reduce_gid);
+                        }
+                        else if constexpr (std::is_floating_point_v<argT>) {
+                            if (val < local_red_val || std::isnan(val)) {
+                                local_red_val = val;
+                                if constexpr (!First) {
+                                    local_idx = inds_[inp_offset];
+                                }
+                                else {
+                                    local_idx =
+                                        static_cast<outT>(arg_reduce_gid);
+                                }
+                            }
+                        }
+                        else {
+                            if (val < local_red_val) {
+                                local_red_val = val;
+                                if constexpr (!First) {
+                                    local_idx = inds_[inp_offset];
+                                }
+                                else {
+                                    local_idx =
+                                        static_cast<outT>(arg_reduce_gid);
+                                }
                             }
                         }
                     }
-                    else if constexpr (std::is_floating_point_v<argT>) {
-                        if (val > local_red_val || std::isnan(val)) {
-                            local_red_val = val;
-                            if constexpr (!First) {
-                                local_idx = inds_[inp_offset];
-                            }
-                            else {
-                                local_idx = static_cast<outT>(arg_reduce_gid);
+                    else if constexpr (su_ns::IsMaximum<argT,
+                                                        ReductionOp>::value) {
+                        using dpctl::tensor::type_utils::is_complex;
+                        if constexpr (is_complex<argT>::value) {
+                            using dpctl::tensor::math_utils::greater_complex;
+                            if (greater_complex<argT>(val, local_red_val) ||
+                                std::isnan(std::real(val)) ||
+                                std::isnan(std::imag(val)))
+                            {
+                                local_red_val = val;
+                                if constexpr (!First) {
+                                    local_idx = inds_[inp_offset];
+                                }
+                                else {
+                                    local_idx =
+                                        static_cast<outT>(arg_reduce_gid);
+                                }
                             }
                         }
-                    }
-                    else {
-                        if (val > local_red_val) {
-                            local_red_val = val;
-                            if constexpr (!First) {
-                                local_idx = inds_[inp_offset];
+                        else if constexpr (std::is_floating_point_v<argT>) {
+                            if (val > local_red_val || std::isnan(val)) {
+                                local_red_val = val;
+                                if constexpr (!First) {
+                                    local_idx = inds_[inp_offset];
+                                }
+                                else {
+                                    local_idx =
+                                        static_cast<outT>(arg_reduce_gid);
+                                }
                             }
-                            else {
-                                local_idx = static_cast<outT>(arg_reduce_gid);
+                        }
+                        else {
+                            if (val > local_red_val) {
+                                local_red_val = val;
+                                if constexpr (!First) {
+                                    local_idx = inds_[inp_offset];
+                                }
+                                else {
+                                    local_idx =
+                                        static_cast<outT>(arg_reduce_gid);
+                                }
                             }
                         }
                     }
@@ -2042,7 +2073,7 @@ sycl::event search_reduction_over_group_temps_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
+            if constexpr (su_ns::IsSyclOp<argTy, ReductionOpT>::value) {
                 using KernelName = class search_reduction_over_group_temps_krn<
                     argTy, resTy, ReductionOpT, IndexOpT,
                     InputOutputIterIndexerT, ReductionIndexerT, true, true>;
@@ -2141,7 +2172,7 @@ sycl::event search_reduction_over_group_temps_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
+            if constexpr (su_ns::IsSyclOp<argTy, ReductionOpT>::value) {
                 using KernelName = class search_reduction_over_group_temps_krn<
                     argTy, resTy, ReductionOpT, IndexOpT,
                     InputOutputIterIndexerT, ReductionIndexerT, true, false>;
@@ -2221,7 +2252,7 @@ sycl::event search_reduction_over_group_temps_strided_impl(
                 auto globalRange =
                     sycl::range<1>{iter_nelems * reduction_groups_ * wg};
                 auto localRange = sycl::range<1>{wg};
-                if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
+                if constexpr (su_ns::IsSyclOp<argTy, ReductionOpT>::value) {
                     using KernelName =
                         class search_reduction_over_group_temps_krn<
                             argTy, resTy, ReductionOpT, IndexOpT,
@@ -2304,7 +2335,7 @@ sycl::event search_reduction_over_group_temps_strided_impl(
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
             auto localRange = sycl::range<1>{wg};
 
-            if constexpr (su_ns::IsSyclOp<resTy, ReductionOpT>::value) {
+            if constexpr (su_ns::IsSyclOp<argTy, ReductionOpT>::value) {
                 using KernelName = class search_reduction_over_group_temps_krn<
                     argTy, resTy, ReductionOpT, IndexOpT,
                     InputOutputIterIndexerT, ReductionIndexerT, false, true>;

@@ -201,3 +201,13 @@ def test_argmax_argmin_nan_propagation():
     x[idx] = complex(0, dpt.nan)
     assert dpt.argmax(x) == idx
     assert dpt.argmin(x) == idx
+
+
+def test_argmax_argmin_identities():
+    # make sure that identity arrays work as expected
+    get_queue_or_skip()
+
+    x = dpt.full(3, dpt.iinfo(dpt.int32).min, dtype="i4")
+    assert dpt.argmax(x) == 0
+    x = dpt.full(3, dpt.iinfo(dpt.int32).max, dtype="i4")
+    assert dpt.argmin(x) == 0
