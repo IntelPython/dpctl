@@ -316,7 +316,7 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         o2_kind_num = _strong_dtype_num_kind(o2_dtype)
         if o1_kind_num > o2_kind_num:
             if isinstance(o1_dtype, WeakIntegralType):
-                return dpt.int64, o2_dtype
+                return dpt.dtype(ti.default_device_int_type(dev)), o2_dtype
             if isinstance(o1_dtype, WeakComplexType):
                 if o2_dtype is dpt.float16 or o2_dtype is dpt.float32:
                     return dpt.complex64, o2_dtype
@@ -335,7 +335,7 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         o2_kind_num = _weak_type_num_kind(o2_dtype)
         if o2_kind_num > o1_kind_num:
             if isinstance(o2_dtype, WeakIntegralType):
-                return o1_dtype, dpt.int64
+                return o1_dtype, dpt.dtype(ti.default_device_int_type(dev))
             if isinstance(o2_dtype, WeakComplexType):
                 if o1_dtype is dpt.float16 or o1_dtype is dpt.float32:
                     return o1_dtype, dpt.complex64
