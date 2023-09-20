@@ -27,6 +27,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -47,6 +48,7 @@ namespace acos
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace cmplx_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -114,7 +116,8 @@ template <typename argT, typename resT> struct AcosFunctor
             }
 
             /* ordinary cases */
-            return std::acos(in);
+            return cmplx_ns::acos(
+                cmplx_ns::complex<realT>(in)); // std::acos(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
