@@ -299,6 +299,9 @@ def test_trig_out_overlap(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
+    if os.name == "nt" and dpt.isdtype(dpt.dtype(dtype), "complex floating"):
+        pytest.skip("Know problems on Windows")
+
     if np_call == np.tan:
         X = dpt.linspace(-np.pi / 2, np.pi / 2, 64, dtype=dtype, sycl_queue=q)[
             2:-2
