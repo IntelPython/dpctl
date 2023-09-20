@@ -27,7 +27,7 @@
 
 #include "dpctl_device_selection.hpp"
 #include "Config/dpctl_config.h"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 namespace
 {

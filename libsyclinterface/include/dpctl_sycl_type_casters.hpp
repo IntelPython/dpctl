@@ -30,7 +30,7 @@
 
 #include "dpctl_device_selection.hpp"
 #include "dpctl_sycl_types.h"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <vector>
 
 namespace dpctl::syclinterface

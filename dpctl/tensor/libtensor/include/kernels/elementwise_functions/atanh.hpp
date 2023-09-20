@@ -23,11 +23,12 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -48,6 +49,7 @@ namespace atanh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -119,7 +121,8 @@ template <typename argT, typename resT> struct AtanhFunctor
                 return resT{res_re, res_im};
             }
             /* ordinary cases */
-            return std::atanh(in);
+            return exprm_ns::atanh(
+                exprm_ns::complex<realT>(in)); // std::atanh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

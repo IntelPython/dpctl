@@ -23,9 +23,9 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <cstddef>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <vector>
 

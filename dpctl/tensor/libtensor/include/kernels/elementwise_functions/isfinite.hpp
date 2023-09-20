@@ -24,10 +24,10 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -46,6 +46,7 @@ namespace isfinite
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;

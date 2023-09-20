@@ -23,11 +23,12 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -48,6 +49,7 @@ namespace sign
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -61,38 +63,41 @@ template <typename argT, typename resT> struct SignFunctor
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
     using supports_sg_loadstore = std::false_type;
 
-    resT operator()(const argT &x) const
+    resT operator()(const argT &in) const
     {
         if constexpr (std::is_integral_v<argT>) {
             if constexpr (std::is_unsigned_v<argT>) {
-                return resT(0 < x);
+                return resT(0 < in);
             }
             else {
-                return sign<argT>(x);
+                return sign_impl<argT>(in);
             }
         }
         else {
             if constexpr (is_complex<argT>::value) {
-                if (x == argT(0)) {
+                using realT = typename argT::value_type;
+
+                if (in == argT(0)) {
                     return resT(0);
                 }
                 else {
-                    return (x / std::abs(x));
+                    auto z = exprm_ns::complex<realT>(in);
+                    return (z / exprm_ns::abs(z));
                 }
             }
             else {
-                if (std::isnan(x)) {
+                if (std::isnan(in)) {
                     return std::numeric_limits<resT>::quiet_NaN();
                 }
                 else {
-                    return sign<argT>(x);
+                    return sign_impl<argT>(in);
                 }
             }
         }
     }
 
 private:
-    template <typename T> T sign(const T &v) const
+    template <typename T> T sign_impl(const T &v) const
     {
         return (T(0) < v) - (v < T(0));
     }

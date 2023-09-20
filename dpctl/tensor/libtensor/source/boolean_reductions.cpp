@@ -24,8 +24,8 @@
 /// dpctl.tensor.all and dpctl.tensor.any
 //===----------------------------------------------------------------------===//
 
-#include <CL/sycl.hpp>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 

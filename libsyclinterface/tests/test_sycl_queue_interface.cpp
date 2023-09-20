@@ -34,8 +34,8 @@
 #include "dpctl_sycl_queue_manager.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
-#include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <sycl/sycl.hpp>
 
 using namespace sycl;
 using namespace dpctl::syclinterface;

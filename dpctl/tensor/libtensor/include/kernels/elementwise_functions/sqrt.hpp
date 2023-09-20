@@ -24,12 +24,13 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -50,6 +51,7 @@ namespace sqrt
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -74,7 +76,10 @@ template <typename argT, typename resT> struct SqrtFunctor
             // #else
             //             return std::sqrt(in);
             // #endif
-            return csqrt(in);
+            using realT = typename argT::value_type;
+
+            // return csqrt(in);
+            return exprm_ns::sqrt(exprm_ns::complex<realT>(in));
         }
         else {
             return std::sqrt(in);

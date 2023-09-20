@@ -23,10 +23,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -47,6 +48,7 @@ namespace acos
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -103,10 +105,12 @@ template <typename argT, typename resT> struct AcosFunctor
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
-                argT log_in = std::log(in);
+                using sycl_complexT = exprm_ns::complex<realT>;
+                sycl_complexT log_in =
+                    exprm_ns::log(exprm_ns::complex<realT>(in));
 
-                const realT wx = std::real(log_in);
-                const realT wy = std::imag(log_in);
+                const realT wx = log_in.real();
+                const realT wy = log_in.imag();
                 const realT rx = std::abs(wy);
 
                 realT ry = wx + std::log(realT(2));
@@ -114,7 +118,8 @@ template <typename argT, typename resT> struct AcosFunctor
             }
 
             /* ordinary cases */
-            return std::acos(in);
+            return exprm_ns::acos(
+                exprm_ns::complex<realT>(in)); // std::acos(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

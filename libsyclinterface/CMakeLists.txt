@@ -205,6 +205,19 @@ add_library(DPCTLSyclInterface
     ${helper_sources}
 )
 add_sycl_to_target(TARGET DPCTLSyclInterface SOURCES ${sources} ${helper_sources})
+# make fat binary
+if(_dpctl_sycl_targets)
+    target_compile_options(
+        DPCTLSyclInterface
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+    target_link_options(
+        DPCTLSyclInterface
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+   )
+endif()
 
 if(DPCTL_GENERATE_COVERAGE)
     target_link_options(DPCTLSyclInterface

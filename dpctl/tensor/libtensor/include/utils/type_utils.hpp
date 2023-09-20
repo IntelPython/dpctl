@@ -23,9 +23,9 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <complex>
 #include <exception>
+#include <sycl/sycl.hpp>
 #include <utility>
 
 namespace dpctl

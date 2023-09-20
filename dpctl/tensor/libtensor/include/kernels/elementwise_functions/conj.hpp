@@ -24,11 +24,12 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -49,6 +50,7 @@ namespace conj
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -68,7 +70,9 @@ template <typename argT, typename resT> struct ConjFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            return std::conj(in);
+            using rT = typename argT::value_type;
+
+            return exprm_ns::conj(exprm_ns::complex<rT>(in)); // std::conj(in);
         }
         else {
             if constexpr (!std::is_same_v<argT, bool>)

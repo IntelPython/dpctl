@@ -143,7 +143,20 @@ function(build_dpctl_ext _trgt _src _dest)
     add_custom_target(${_cythonize_trgt} DEPENDS ${_src})
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if (BUILD_DPCTL_EXT_SYCL)
-      add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
+        add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
+	if(_dpctl_sycl_targets)
+	    # make fat binary
+            target_compile_options(
+                ${_trgt}
+                PRIVATE
+                -fsycl-targets=${_dpctl_sycl_targets}
+            )
+	    target_link_options(
+	        ${_trgt}
+	        PRIVATE
+	        -fsycl-targets=${_dpctl_sycl_targets}
+	    )
+	endif()
     endif()
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})

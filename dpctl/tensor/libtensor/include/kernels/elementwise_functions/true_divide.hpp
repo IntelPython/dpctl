@@ -24,9 +24,10 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -49,6 +50,7 @@ namespace true_divide
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename argT1, typename argT2, typename resT>
 struct TrueDivideFunctor
@@ -61,7 +63,32 @@ struct TrueDivideFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return in1 / in2;
+        if constexpr (tu_ns::is_complex<argT1>::value &&
+                      tu_ns::is_complex<argT2>::value)
+        {
+            using realT1 = typename argT1::value_type;
+            using realT2 = typename argT2::value_type;
+
+            return exprm_ns::complex<realT1>(in1) /
+                   exprm_ns::complex<realT2>(in2);
+        }
+        else if constexpr (tu_ns::is_complex<argT1>::value &&
+                           !tu_ns::is_complex<argT2>::value)
+        {
+            using realT1 = typename argT1::value_type;
+
+            return exprm_ns::complex<realT1>(in1) / in2;
+        }
+        else if constexpr (!tu_ns::is_complex<argT1>::value &&
+                           tu_ns::is_complex<argT2>::value)
+        {
+            using realT2 = typename argT2::value_type;
+
+            return in1 / exprm_ns::complex<realT2>(in2);
+        }
+        else {
+            return in1 / in2;
+        }
     }
 
     template <int vec_sz>
@@ -381,7 +408,24 @@ template <typename argT, typename resT> struct TrueDivideInplaceFunctor
 
     void operator()(resT &res, const argT &in)
     {
-        res /= in;
+        if constexpr (tu_ns::is_complex<resT>::value) {
+            using res_rT = typename resT::value_type;
+            if constexpr (tu_ns::is_complex<argT>::value) {
+                using arg_rT = typename argT::value_type;
+
+                auto res1 = exprm_ns::complex<res_rT>(res);
+                res1 /= exprm_ns::complex<arg_rT>(in);
+                res = res1;
+            }
+            else {
+                auto res1 = exprm_ns::complex<res_rT>(res);
+                res1 /= in;
+                res = res1;
+            }
+        }
+        else {
+            res /= in;
+        }
     }
 
     template <int vec_sz>

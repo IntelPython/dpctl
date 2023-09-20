@@ -24,10 +24,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -48,6 +49,7 @@ namespace square
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -68,7 +70,16 @@ template <typename argT, typename resT> struct SquareFunctor
 
     resT operator()(const argT &in) const
     {
-        return in * in;
+        if constexpr (is_complex<argT>::value) {
+            using realT = typename argT::value_type;
+
+            auto z = exprm_ns::complex<realT>(in);
+
+            return z * z;
+        }
+        else {
+            return in * in;
+        }
     }
 
     template <int vec_sz>

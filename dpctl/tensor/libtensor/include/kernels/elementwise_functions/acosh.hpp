@@ -23,10 +23,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -47,6 +48,7 @@ namespace acosh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -110,15 +112,18 @@ template <typename argT, typename resT> struct AcoshFunctor
              * For large x or y including acos(+-Inf + I*+-Inf)
              */
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
-                const realT wx = std::real(std::log(in));
-                const realT wy = std::imag(std::log(in));
+                using sycl_complexT = typename exprm_ns::complex<realT>;
+                const sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
+                const realT wx = log_in.real();
+                const realT wy = log_in.imag();
                 const realT rx = std::abs(wy);
                 realT ry = wx + std::log(realT(2));
                 acos_in = resT{rx, (std::signbit(y)) ? ry : -ry};
             }
             else {
                 /* ordinary cases */
-                acos_in = std::acos(in);
+                acos_in = exprm_ns::acos(
+                    exprm_ns::complex<realT>(in)); // std::acos(in);
             }
 
             /* Now we calculate acosh(z) */

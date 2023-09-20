@@ -23,10 +23,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -47,6 +48,7 @@ namespace asinh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -106,16 +108,20 @@ template <typename argT, typename resT> struct AsinhFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
 
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
-                resT log_in = (std::signbit(x)) ? std::log(-in) : std::log(in);
-                realT wx = std::real(log_in) + std::log(realT(2));
-                realT wy = std::imag(log_in);
+                using sycl_complexT = exprm_ns::complex<realT>;
+                sycl_complexT log_in = (std::signbit(x))
+                                           ? exprm_ns::log(sycl_complexT(-in))
+                                           : exprm_ns::log(sycl_complexT(in));
+                realT wx = log_in.real() + std::log(realT(2));
+                realT wy = log_in.imag();
                 const realT res_re = std::copysign(wx, x);
                 const realT res_im = std::copysign(wy, y);
                 return resT{res_re, res_im};
             }
 
             /* ordinary cases */
-            return std::asinh(in);
+            return exprm_ns::asinh(
+                exprm_ns::complex<realT>(in)); // std::asinh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

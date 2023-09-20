@@ -23,10 +23,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -47,6 +48,7 @@ namespace asin
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -117,24 +119,26 @@ template <typename argT, typename resT> struct AsinFunctor
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
-                const resT z = {x, y};
+                using sycl_complexT = exprm_ns::complex<realT>;
+                const sycl_complexT z{x, y};
                 realT wx, wy;
                 if (!std::signbit(x)) {
-                    auto log_z = std::log(z);
-                    wx = std::real(log_z) + std::log(realT(2));
-                    wy = std::imag(log_z);
+                    auto log_z = exprm_ns::log(z);
+                    wx = log_z.real() + std::log(realT(2));
+                    wy = log_z.imag();
                 }
                 else {
-                    auto log_mz = std::log(-z);
-                    wx = std::real(log_mz) + std::log(realT(2));
-                    wy = std::imag(log_mz);
+                    auto log_mz = exprm_ns::log(-z);
+                    wx = log_mz.real() + std::log(realT(2));
+                    wy = log_mz.imag();
                 }
                 const realT asinh_re = std::copysign(wx, x);
                 const realT asinh_im = std::copysign(wy, y);
                 return resT{asinh_im, asinh_re};
             }
             /* ordinary cases */
-            return std::asin(in);
+            return exprm_ns::asin(
+                exprm_ns::complex<realT>(in)); // std::asin(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
