@@ -1,15 +1,15 @@
-#.rst:
+# .rst:
 #
 # Find the include directory for ``dpctl_capi.h``, ``dpctl4pybind11.hpp``.
 #
 # This module sets the following variables:
 #
 # ``Dpctl_FOUND``
-#   True if DPCTL was found.
+# True if DPCTL was found.
 # ``Dpctl_INCLUDE_DIRS``
-#   The include directories needed to use Dpctl.
+# The include directories needed to use Dpctl.
 # ``Dpctl_VERSION``
-#   The version of DPCTL found.
+# The version of DPCTL found.
 #
 # The module will also explicitly define one cache variable:
 #
@@ -21,18 +21,28 @@ if(NOT Dpctl_FOUND)
     COMPONENTS Interpreter Development.Module)
 
   if(PYTHON_EXECUTABLE)
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+    set(_python_bin ${PYTHON_EXECUTABLE})
+  endif()
+
+  if(Python_EXECUTABLE)
+    set(_python_bin ${Python_EXECUTABLE})
+  endif()
+
+  if(_python_bin)
+    execute_process(COMMAND "${_python_bin}"
       -c "import dpctl; print(dpctl.get_include())"
       OUTPUT_VARIABLE _dpctl_include_dir
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET
-      )
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+    )
+    execute_process(COMMAND "${_python_bin}"
       -c "import dpctl; print(dpctl.__version__)"
       OUTPUT_VARIABLE Dpctl_VERSION
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET
-      )
+    )
+  else()
+    message(FATAL_ERROR "Neither PYTHON_EXECUTABLE nor Python_EXECUTABLE is set.")
   endif()
 endif()
 
@@ -40,13 +50,13 @@ find_path(Dpctl_INCLUDE_DIR
   dpctl_capi.h dpctl4pybind11.hpp dpctl_sycl_interface.h
   PATHS "${_dpctl_include_dir}" "${PYTHON_INCLUDE_DIR}"
   PATH_SUFFIXES dpctl/include
-  )
+)
 get_filename_component(_dpctl_dir ${_dpctl_include_dir} DIRECTORY)
 
 find_path(Dpctl_TENSOR_INCLUDE_DIR
   kernels utils
   PATHS "${_dpctl_dir}/tensor/libtensor/include"
-  )
+)
 
 set(Dpctl_INCLUDE_DIRS ${Dpctl_INCLUDE_DIR})
 
@@ -54,10 +64,10 @@ set(Dpctl_INCLUDE_DIRS ${Dpctl_INCLUDE_DIR})
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Dpctl
-                                  REQUIRED_VARS
-                                    Dpctl_INCLUDE_DIR Dpctl_TENSOR_INCLUDE_DIR
-                                  VERSION_VAR Dpctl_VERSION
-                                  )
+  REQUIRED_VARS
+  Dpctl_INCLUDE_DIR Dpctl_TENSOR_INCLUDE_DIR
+  VERSION_VAR Dpctl_VERSION
+)
 
 mark_as_advanced(Dpctl_INCLUDE_DIR)
 mark_as_advanced(Dpctl_TENSOR_INCLUDE_DIR)
