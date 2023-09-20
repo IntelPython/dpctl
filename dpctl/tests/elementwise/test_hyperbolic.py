@@ -271,7 +271,7 @@ def test_hyper_real_special_cases(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
 
 
-@pytest.mark.skipif(os.name == "nt", reason="Known problems on Windows")
+@pytest.mark.broken_complex
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_hyper_complex_special_cases(np_call, dpt_call, dtype):

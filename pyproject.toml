@@ -33,6 +33,9 @@ omit = [
 ]
 
 [tool.pytest.ini.options]
+markers = [
+    "broken_complex: mark a test that is skipped due to complex implementation",
+]
 minversion = "6.0"
 norecursedirs= [
     ".*", "*.egg*", "build", "dist", "conda-recipe",
