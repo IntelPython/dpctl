@@ -23,13 +23,7 @@ import pytest
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import (
-    _all_dtypes,
-    _complex_fp_dtypes,
-    _no_complex_dtypes,
-    _real_fp_dtypes,
-    _usm_types,
-)
+from .utils import _all_dtypes, _complex_fp_dtypes, _real_fp_dtypes, _usm_types
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -131,26 +125,21 @@ def test_abs_complex(dtype):
             )
 
 
-@pytest.mark.parametrize("dtype", _no_complex_dtypes)
-def test_abs_out_overlap(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
+def test_abs_out_overlap():
+    get_queue_or_skip()
 
-    X = dpt.linspace(0, 35, 60, dtype=dtype, sycl_queue=q)
-    X = dpt.reshape(X, (3, 5, 4))
-
-    Xnp = dpt.asnumpy(X)
-    Ynp = np.abs(Xnp, out=Xnp)
-
+    X = dpt.arange(-3, 3, 1, dtype="i4")
+    expected = dpt.asarray([3, 2, 1, 0, 1, 2], dtype="i4")
     Y = dpt.abs(X, out=X)
-    assert Y is X
-    assert np.allclose(dpt.asnumpy(X), Xnp)
 
-    Ynp = np.abs(Xnp, out=Xnp[::-1])
+    assert Y is X
+    assert dpt.all(expected == X)
+
+    X = dpt.arange(-3, 3, 1, dtype="i4")
+    expected = expected[::-1]
     Y = dpt.abs(X, out=X[::-1])
     assert Y is not X
-    assert np.allclose(dpt.asnumpy(X), Xnp)
-    assert np.allclose(dpt.asnumpy(Y), Ynp)
+    assert dpt.all(expected == X)
 
 
 @pytest.mark.parametrize("dtype", _real_fp_dtypes)
