@@ -53,14 +53,17 @@ def pytest_addoption(parser):
         "--runcomplex",
         action="store_true",
         default=False,
-        help="run broken complex tests",
+        help="run broken complex tests on Windows",
     )
 
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--runcomplex"):
         return
-    skip_complex = pytest.mark.skip(reason="need --runcomplex option to run")
+    skip_complex = pytest.mark.skipif(
+        os.name == "nt",
+        reason="need --runcomplex option to run on Windows",
+    )
     for item in items:
         if "broken_complex" in item.keywords:
             item.add_marker(skip_complex)

@@ -15,7 +15,6 @@
 #  limitations under the License.
 
 import itertools
-import os
 
 import numpy as np
 import pytest
