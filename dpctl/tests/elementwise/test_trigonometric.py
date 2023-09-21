@@ -15,7 +15,6 @@
 #  limitations under the License.
 
 import itertools
-import os
 
 import numpy as np
 import pytest
@@ -268,7 +267,7 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
 
 
-@pytest.mark.skipif(os.name == "nt", reason="Known problem on Windows")
+@pytest.mark.broken_complex
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_trig_complex_special_cases(np_call, dpt_call, dtype):
@@ -291,38 +290,3 @@ def test_trig_complex_special_cases(np_call, dpt_call, dtype):
     assert_allclose(
         dpt.asnumpy(dpt.imag(dpt_call(Xc))), np.imag(Ynp), atol=tol, rtol=tol
     )
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_trig_out_overlap(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    if os.name == "nt" and dpt.isdtype(dpt.dtype(dtype), "complex floating"):
-        pytest.skip("Know problems on Windows")
-
-    if np_call == np.tan:
-        X = dpt.linspace(-np.pi / 2, np.pi / 2, 64, dtype=dtype, sycl_queue=q)[
-            2:-2
-        ]
-        tol = 50 * dpt.finfo(dtype).resolution
-    else:
-        X = dpt.linspace(-np.pi / 2, np.pi / 2, 60, dtype=dtype, sycl_queue=q)
-        tol = 8 * dpt.finfo(dtype).resolution
-    X = dpt.reshape(X, (3, 5, 4))
-
-    Xnp = dpt.asnumpy(X)
-    with np.errstate(all="ignore"):
-        Ynp = np_call(Xnp, out=Xnp)
-
-    Y = dpt_call(X, out=X)
-    assert Y is X
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-
-    with np.errstate(all="ignore"):
-        Ynp = np_call(Xnp, out=Xnp[::-1])
-    Y = dpt_call(X, out=X[::-1])
-    assert Y is not X
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)

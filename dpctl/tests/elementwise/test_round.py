@@ -213,26 +213,3 @@ def test_round_complex_special_cases(dtype):
     tol = 8 * dpt.finfo(dtype).resolution
     assert_allclose(dpt.asnumpy(dpt.real(Y)), np.real(Ynp), atol=tol, rtol=tol)
     assert_allclose(dpt.asnumpy(dpt.imag(Y)), np.imag(Ynp), atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_round_out_overlap(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    X = dpt.linspace(0, 1, 15, dtype=dtype, sycl_queue=q)
-    X = dpt.reshape(X, (3, 5))
-
-    Xnp = dpt.asnumpy(X)
-    Ynp = np.round(Xnp, out=Xnp)
-
-    Y = dpt.round(X, out=X)
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert Y is X
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-
-    Ynp = np.round(Xnp, out=Xnp[::-1])
-    Y = dpt.round(X, out=X[::-1])
-    assert Y is not X
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)

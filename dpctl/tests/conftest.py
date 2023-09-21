@@ -20,6 +20,7 @@
 import os
 import sys
 
+import pytest
 from _device_attributes_checks import (
     check,
     device_selector,
@@ -38,3 +39,31 @@ __all__ = [
     "suppress_invalid_numpy_warnings",
     "valid_filter",
 ]
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "broken_complex: Specified again to remove warnings ",
+    )
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--runcomplex",
+        action="store_true",
+        default=False,
+        help="run broken complex tests on Windows",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--runcomplex"):
+        return
+    skip_complex = pytest.mark.skipif(
+        os.name == "nt",
+        reason="need --runcomplex option to run on Windows",
+    )
+    for item in items:
+        if "broken_complex" in item.keywords:
+            item.add_marker(skip_complex)

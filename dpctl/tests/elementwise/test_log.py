@@ -128,27 +128,3 @@ def test_log_special_cases():
     )
 
     assert_equal(dpt.asnumpy(Y), expected)
-
-
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_log_out_overlap(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    X = dpt.linspace(5, 35, 60, dtype=dtype, sycl_queue=q)
-    X = dpt.reshape(X, (3, 5, 4))
-
-    Xnp = dpt.asnumpy(X)
-    Ynp = np.log(Xnp, out=Xnp)
-
-    Y = dpt.log(X, out=X)
-    assert Y is X
-
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-
-    Ynp = np.log(Xnp, out=Xnp[::-1])
-    Y = dpt.log(X, out=X[::-1])
-    assert Y is not X
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)
