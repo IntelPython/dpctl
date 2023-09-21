@@ -27,7 +27,7 @@ requirements:
         - wheel
     run:
         - python
-        - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
+        - {{ pin_compatible('numpy', min_pin='x.x', upper_bound='1.26') }}
         - dpcpp-cpp-rt >=2023.2
         - level-zero  # [linux]
 

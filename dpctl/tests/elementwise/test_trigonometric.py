@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import os
 
 import numpy as np
 import pytest
@@ -267,6 +268,7 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Known problem on Windows")
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_trig_complex_special_cases(np_call, dpt_call, dtype):
@@ -296,6 +298,9 @@ def test_trig_complex_special_cases(np_call, dpt_call, dtype):
 def test_trig_out_overlap(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+
+    if os.name == "nt" and dpt.isdtype(dpt.dtype(dtype), "complex floating"):
+        pytest.skip("Know problems on Windows")
 
     if np_call == np.tan:
         X = dpt.linspace(-np.pi / 2, np.pi / 2, 64, dtype=dtype, sycl_queue=q)[

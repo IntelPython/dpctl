@@ -175,7 +175,9 @@ skbuild.setup(
         "dpctl.program",
         "dpctl.utils",
     ],
-    package_data={"dpctl": ["tests/*.*", "tests/helper/*.py"]},
+    package_data={
+        "dpctl": ["tests/*.*", "tests/helper/*.py", "tests/elementwise/*.py"]
+    },
     include_package_data=True,
     zip_safe=False,
     setup_requires=["Cython"],
