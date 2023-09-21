@@ -34,7 +34,7 @@ omit = [
 
 [tool.pytest.ini.options]
 markers = [
-    "broken_complex: mark a test that is skipped on Windows due to complex implementation",
+    "broken_complex: mark a test that is skipped due to complex implementation issues in DPC++ compiler",
 ]
 minversion = "6.0"
 norecursedirs= [
