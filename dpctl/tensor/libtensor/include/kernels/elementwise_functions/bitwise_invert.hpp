@@ -72,7 +72,7 @@ template <typename argT, typename resT> struct BitwiseInvertFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const
     {
         if constexpr (std::is_same_v<argT, bool>) {
             auto res_vec = !in;
