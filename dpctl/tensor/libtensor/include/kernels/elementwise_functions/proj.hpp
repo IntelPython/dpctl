@@ -65,17 +65,28 @@ template <typename argT, typename resT> struct ProjFunctor
     // do both argTy and resTy support sugroup store/load operation
     using supports_sg_loadstore = typename std::false_type;
 
-    resT operator()(const argT &in)
+    resT operator()(const argT &in) const
     {
         using realT = typename argT::value_type;
         const realT x = std::real(in);
         const realT y = std::imag(in);
 
-        if (std::isinf(x) || std::isinf(y)) {
-            const realT res_im = std::copysign(realT(0), y);
-            return resT{std::numeric_limits<realT>::infinity(), res_im};
+        if (std::isinf(x)) {
+            return value_at_infinity(y);
         }
-        return in;
+        else if (std::isinf(y)) {
+            return value_at_infinity(y);
+        }
+        else {
+            return in;
+        }
+    }
+
+private:
+    template <typename T> std::complex<T> value_at_infinity(const T &y) const
+    {
+        const T res_im = std::copysign(T(0), y);
+        return std::complex<T>{std::numeric_limits<T>::infinity(), res_im};
     }
 };
 
