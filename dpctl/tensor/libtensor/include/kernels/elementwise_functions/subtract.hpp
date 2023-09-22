@@ -57,14 +57,15 @@ template <typename argT1, typename argT2, typename resT> struct SubtractFunctor
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         return in1 - in2;
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
         auto tmp = in1 - in2;
         if constexpr (std::is_same_v<resT,

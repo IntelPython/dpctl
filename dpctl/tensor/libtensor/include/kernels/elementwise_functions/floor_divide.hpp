@@ -55,7 +55,7 @@ struct FloorDivideFunctor
     using supports_sg_loadstore = std::true_type;
     using supports_vec = std::true_type;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (std::is_same_v<argT1, bool> &&
                       std::is_same_v<argT2, bool>) {
@@ -83,8 +83,9 @@ struct FloorDivideFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
         if constexpr (std::is_same_v<argT1, bool> &&
                       std::is_same_v<argT2, bool>) {

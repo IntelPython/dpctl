@@ -61,7 +61,7 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
                                        std::is_integral<argT1>,
                                        std::is_integral<argT2>>>;
 
-    resT operator()(argT1 in1, argT2 in2)
+    resT operator()(argT1 in1, argT2 in2) const
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
             if constexpr (std::is_signed_v<argT2>) {
@@ -89,8 +89,9 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
         auto res = sycl::pow(in1, in2);
         if constexpr (std::is_same_v<resT,

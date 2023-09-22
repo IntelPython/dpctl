@@ -66,7 +66,7 @@ template <typename argT, typename resT> struct SqrtFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &in)
+    resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
             // #ifdef _WINDOWS

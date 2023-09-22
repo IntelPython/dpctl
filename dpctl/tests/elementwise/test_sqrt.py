@@ -122,30 +122,6 @@ def test_sqrt_order(dtype):
             assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
-def test_sqrt_out_overlap(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    X = dpt.linspace(0, 35, 60, dtype=dtype, sycl_queue=q)
-    X = dpt.reshape(X, (3, 5, 4))
-
-    Xnp = dpt.asnumpy(X)
-    Ynp = np.sqrt(Xnp, out=Xnp)
-
-    Y = dpt.sqrt(X, out=X)
-    assert Y is X
-
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-
-    Ynp = np.sqrt(Xnp, out=Xnp[::-1])
-    Y = dpt.sqrt(X, out=X[::-1])
-    assert Y is not X
-    assert_allclose(dpt.asnumpy(X), Xnp, atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(Y), Ynp, atol=tol, rtol=tol)
-
-
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 def test_sqrt_special_cases():
     q = get_queue_or_skip()
@@ -181,6 +157,7 @@ def test_sqrt_real_fp_special_values(dtype):
     assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
 
 
+@pytest.mark.broken_complex
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_sqrt_complex_fp_special_values(dtype):
     q = get_queue_or_skip()

@@ -61,7 +61,7 @@ template <typename argT, typename resT> struct SignFunctor
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
     using supports_sg_loadstore = std::false_type;
 
-    resT operator()(const argT &x)
+    resT operator()(const argT &x) const
     {
         if constexpr (std::is_integral_v<argT>) {
             if constexpr (std::is_unsigned_v<argT>) {

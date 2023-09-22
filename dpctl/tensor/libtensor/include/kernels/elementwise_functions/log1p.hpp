@@ -65,7 +65,7 @@ template <typename argT, typename resT> struct Log1pFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &in)
+    resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
             // log1p(z) = ln((x + 1) + yI)

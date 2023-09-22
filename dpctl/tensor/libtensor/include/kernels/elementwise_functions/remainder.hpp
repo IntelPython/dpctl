@@ -56,7 +56,7 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
     using supports_sg_loadstore = std::true_type;
     using supports_vec = std::true_type;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
             if (in2 == argT2(0)) {
@@ -88,8 +88,9 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
             sycl::vec<resT, vec_sz> rem;

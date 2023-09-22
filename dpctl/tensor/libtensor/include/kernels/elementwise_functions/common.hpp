@@ -28,6 +28,8 @@
 #include <cstdint>
 #include <pybind11/pybind11.h>
 
+#include "utils/offset_utils.hpp"
+
 namespace dpctl
 {
 namespace tensor
@@ -36,6 +38,8 @@ namespace kernels
 {
 namespace elementwise_common
 {
+
+namespace py = pybind11;
 
 /*! @brief Functor for unary function evaluation on contiguous array */
 template <typename argT,

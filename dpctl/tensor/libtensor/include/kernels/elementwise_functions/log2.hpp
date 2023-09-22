@@ -66,7 +66,7 @@ template <typename argT, typename resT> struct Log2Functor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &in)
+    resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
@@ -78,7 +78,7 @@ template <typename argT, typename resT> struct Log2Functor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const
     {
         auto const &res_vec = sycl::log2(in);
         using deducedT = typename std::remove_cv_t<
