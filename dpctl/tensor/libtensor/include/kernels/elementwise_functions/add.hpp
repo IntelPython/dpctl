@@ -27,6 +27,7 @@
 #include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <type_traits>
 
 #include "utils/offset_utils.hpp"
@@ -49,6 +50,7 @@ namespace add
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename argT1, typename argT2, typename resT> struct AddFunctor
 {
@@ -60,7 +62,31 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return in1 + in2;
+        if constexpr (tu_ns::is_complex<argT1>::value &&
+                      tu_ns::is_complex<argT2>::value)
+        {
+            using rT1 = typename argT1::value_type;
+            using rT2 = typename argT2::value_type;
+
+            return exprm_ns::complex<rT1>(in1) + exprm_ns::complex<rT2>(in2);
+        }
+        else if constexpr (tu_ns::is_complex<argT1>::value &&
+                           !tu_ns::is_complex<argT2>::value)
+        {
+            using rT1 = typename argT1::value_type;
+
+            return exprm_ns::complex<rT1>(in1) + in2;
+        }
+        else if constexpr (!tu_ns::is_complex<argT1>::value &&
+                           tu_ns::is_complex<argT2>::value)
+        {
+            using rT2 = typename argT2::value_type;
+
+            return in1 + exprm_ns::complex<rT2>(in2);
+        }
+        else {
+            return in1 + in2;
+        }
     }
 
     template <int vec_sz>
