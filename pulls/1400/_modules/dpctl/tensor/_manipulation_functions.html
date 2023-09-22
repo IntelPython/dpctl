@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.14.6dev5+11.g09a1d08b9 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.15.0rc2+11.ga8efde9c7 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=53b548f0"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=bdc69810"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev5+11.g09a1d08b9
+                0.15.0rc2+11.ga8efde9c7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -107,10 +107,11 @@
 <span class="c1">#  limitations under the License.</span>
 
 
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">repeat</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">AxisError</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
@@ -225,7 +226,9 @@
         <span class="n">diff</span> <span class="o">=</span> <span class="n">biggest</span> <span class="o">-</span> <span class="n">nds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">ty</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ty</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">diff</span><span class="p">),</span> <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ty</span><span class="p">(</span>
+                <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">diff</span><span class="p">),</span> <span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="p">)</span>
     <span class="n">common_shape</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">biggest</span><span class="p">):</span>
         <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">]</span>
@@ -1008,6 +1011,302 @@
     <span class="n">ind</span><span class="p">[</span><span class="n">axis1</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis2</span>
     <span class="n">ind</span><span class="p">[</span><span class="n">axis2</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis1</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;repeat(x, repeats, axis=None)</span>
+
+<span class="sd">    Repeat elements of an array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): input array</span>
+
+<span class="sd">        repeat (Union[int, Tuple[int, ...]]):</span>
+<span class="sd">            The number of repetitions for each element.</span>
+<span class="sd">            `repeats` is broadcasted to fit the shape of the given axis.</span>
+
+<span class="sd">        axis (Optional[int]):</span>
+<span class="sd">            The axis along which to repeat values. The `axis` is required</span>
+<span class="sd">            if input array has more than one dimension.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_narray:</span>
+<span class="sd">            Array with repeated elements.</span>
+<span class="sd">            The returned array must have the same data type as `x`,</span>
+<span class="sd">            is created on the same device as `x` and has the same USM</span>
+<span class="sd">            allocation type as `x`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AxisError: if `axis` value is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">x_ndim</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x_ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`axis` cannot be `None` for array of dimension </span><span class="si">{</span><span class="n">x_ndim</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">x_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">x_ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">x_ndim</span><span class="p">)</span>
+        <span class="n">axis_size</span> <span class="o">=</span> <span class="n">x_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">AxisError</span><span class="p">(</span><span class="s2">&quot;`axis` must be `0` for input of dimension `0`&quot;</span><span class="p">)</span>
+        <span class="n">axis_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="n">scalar</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">repeats</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`repeats` must be a positive integer&quot;</span><span class="p">)</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">scalar</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">repeats</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`repeats` array must be 0- or 1-dimensional, got&quot;</span>
+                <span class="s2">&quot;</span><span class="si">{repeats.ndim}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">repeats</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">dputils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                <span class="s2">&quot;from input arguments.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">repeats</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">repeats</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`repeats` data type `</span><span class="si">{</span><span class="n">repeats</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">` cannot be cast to &quot;</span>
+                <span class="s2">&quot;`int64` according to the casting rule &#39;&#39;safe.&#39;&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">repeats</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">scalar</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># bring the single element to the host</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">repeats</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`repeats` elements must be positive&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">repeats</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">axis_size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`repeats` array must be broadcastable to the size of &quot;</span>
+                    <span class="s2">&quot;the repeated axis&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">repeats</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`repeats` elements must be positive&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+
+        <span class="n">len_reps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">len_reps</span> <span class="o">!=</span> <span class="n">axis_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`repeats` tuple must have the same length as the repeated &quot;</span>
+                <span class="s2">&quot;axis&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">len_reps</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="n">repeats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">repeats</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`repeats` elements must be positive&quot;</span><span class="p">)</span>
+            <span class="n">scalar</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">repeats</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">repeats</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`repeats` elements must be positive&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Expected int, tuple, or `usm_ndarray` for second argument,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">axis_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">x_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">scalar</span><span class="p">:</span>
+        <span class="n">res_axis_size</span> <span class="o">=</span> <span class="n">repeats</span> <span class="o">*</span> <span class="n">axis_size</span>
+        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">x_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">res_axis_size</span><span class="p">,)</span> <span class="o">+</span> <span class="n">x_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">res_axis_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ht_rep_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_repeat_by_scalar</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                <span class="n">reps</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ht_rep_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">repeats</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
+            <span class="n">rep_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">repeats</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ht_copy_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">rep_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">axis_size</span><span class="p">,),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># _cumsum_1d synchronizes so `depends` ends here safely</span>
+            <span class="n">res_axis_size</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_cumsum_1d</span><span class="p">(</span>
+                <span class="n">rep_buf</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">res_shape</span> <span class="o">=</span> <span class="n">x_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">res_axis_size</span><span class="p">,)</span> <span class="o">+</span> <span class="n">x_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">res_axis_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ht_rep_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_repeat_by_sequence</span><span class="p">(</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                    <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                    <span class="n">reps</span><span class="o">=</span><span class="n">rep_buf</span><span class="p">,</span>
+                    <span class="n">cumsum</span><span class="o">=</span><span class="n">cumsum</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">ht_rep_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">ht_copy_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">axis_size</span><span class="p">,),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># _cumsum_1d synchronizes so `depends` ends here safely</span>
+            <span class="n">res_axis_size</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_cumsum_1d</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+            <span class="n">res_shape</span> <span class="o">=</span> <span class="n">x_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">res_axis_size</span><span class="p">,)</span> <span class="o">+</span> <span class="n">x_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">res_axis_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ht_rep_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_repeat_by_sequence</span><span class="p">(</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                    <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                    <span class="n">reps</span><span class="o">=</span><span class="n">repeats</span><span class="p">,</span>
+                    <span class="n">cumsum</span><span class="o">=</span><span class="n">cumsum</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">ht_rep_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="tile"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.tile">[docs]</a><span class="k">def</span> <span class="nf">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repetitions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;tile(x, repetitions)</span>
+
+<span class="sd">    Repeat an input array `x` along each axis a number of times given by</span>
+<span class="sd">    `repetitions`.</span>
+
+<span class="sd">    For `N` = len(`repetitions`) and `M` = len(`x.shape`):</span>
+<span class="sd">    - if `M &lt; N`, `x` will have `N - M` new axes prepended to its shape</span>
+<span class="sd">    - if `M &gt; N`, `repetitions` will have `M - N` new axes 1 prepended to it</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): input array</span>
+
+<span class="sd">        repetitions (Union[int, Tuple[int, ...]]):</span>
+<span class="sd">            The number of repetitions for each dimension.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_narray:</span>
+<span class="sd">            Array with tiled elements.</span>
+<span class="sd">            The returned array must have the same data type as `x`,</span>
+<span class="sd">            is created on the same device as `x` and has the same USM</span>
+<span class="sd">            allocation type as `x`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repetitions</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repetitions</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">repetitions</span> <span class="o">=</span> <span class="p">(</span><span class="n">repetitions</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected tuple or integer type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># case of scalar</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">repetitions</span><span class="p">:</span>
+            <span class="c1"># handle empty tuple</span>
+            <span class="n">repetitions</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+            <span class="n">repetitions</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">rep_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span>
+    <span class="n">x_dims</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">rep_dims</span> <span class="o">&lt;</span> <span class="n">x_dims</span><span class="p">:</span>
+        <span class="n">repetitions</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_dims</span> <span class="o">-</span> <span class="n">rep_dims</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">repetitions</span>
+    <span class="k">elif</span> <span class="n">x_dims</span> <span class="o">&lt;</span> <span class="n">rep_dims</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">rep_dims</span> <span class="o">-</span> <span class="n">x_dims</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">sh</span><span class="p">,</span> <span class="n">rep</span><span class="p">:</span> <span class="n">sh</span> <span class="o">*</span> <span class="n">rep</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">repetitions</span><span class="p">))</span>
+    <span class="c1"># case of empty input</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="p">)</span>
+    <span class="n">in_sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">res_shape</span> <span class="o">==</span> <span class="n">in_sh</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">expanded_sh</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">broadcast_sh</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">out_sz</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">)):</span>
+        <span class="n">out_sz</span> <span class="o">*=</span> <span class="n">res_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">reps</span><span class="p">,</span> <span class="n">sh</span> <span class="o">=</span> <span class="n">repetitions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">in_sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">reps</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># dimension will be unchanged</span>
+            <span class="n">broadcast_sh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+            <span class="n">expanded_sh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">sh</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># dimension will be broadcast</span>
+            <span class="n">broadcast_sh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reps</span><span class="p">)</span>
+            <span class="n">expanded_sh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">broadcast_sh</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">reps</span><span class="p">,</span> <span class="n">sh</span><span class="p">])</span>
+            <span class="n">expanded_sh</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">sh</span><span class="p">])</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">out_sz</span><span class="p">,),</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="c1"># no need to copy data for empty output</span>
+    <span class="k">if</span> <span class="n">out_sz</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span>
+            <span class="c1"># this reshape should never copy</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expanded_sh</span><span class="p">),</span>
+            <span class="n">broadcast_sh</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># copy broadcast input into flat array</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>

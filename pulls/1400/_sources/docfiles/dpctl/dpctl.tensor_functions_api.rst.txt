@@ -66,10 +66,12 @@ Array Manipulation
 .. autofunction:: iinfo
 .. autofunction:: moveaxis
 .. autofunction:: permute_dims
+.. autofunction:: repeat
 .. autofunction:: reshape
 .. autofunction:: result_type
 .. autofunction:: roll
 .. autofunction:: squeeze
 .. autofunction:: stack
 .. autofunction:: swapaxes
+.. autofunction:: tile
 .. autofunction:: unstack
