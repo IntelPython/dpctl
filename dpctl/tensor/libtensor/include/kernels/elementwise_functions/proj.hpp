@@ -65,17 +65,28 @@ template <typename argT, typename resT> struct ProjFunctor
     // do both argTy and resTy support sugroup store/load operation
     using supports_sg_loadstore = typename std::false_type;
 
-    resT operator()(const argT &in)
+    resT operator()(const argT &in) const
     {
         using realT = typename argT::value_type;
         const realT x = std::real(in);
         const realT y = std::imag(in);
 
-        if (std::isinf(x) || std::isinf(y)) {
-            const realT res_im = std::copysign(realT(0), y);
-            return resT{std::numeric_limits<realT>::infinity(), res_im};
+        if (std::isinf(x)) {
+            return value_at_infinity(y);
         }
-        return in;
+        else if (std::isinf(y)) {
+            return value_at_infinity(y);
+        }
+        else {
+            return in;
+        }
+    }
+
+private:
+    template <typename T> std::complex<T> value_at_infinity(const T &y) const
+    {
+        const T res_im = std::copysign(T(0), y);
+        return std::complex<T>{std::numeric_limits<T>::infinity(), res_im};
     }
 };
 
@@ -114,6 +125,30 @@ sycl::event proj_contig_impl(sycl::queue exec_q,
         exec_q, nelems, arg_p, res_p, depends);
 }
 
+template <typename argTy>
+sycl::event
+proj_workaround_contig_impl(sycl::queue exec_q,
+                            size_t nelems,
+                            const char *arg_p,
+                            char *res_p,
+                            const std::vector<sycl::event> &depends = {})
+{
+    using resTy = typename ProjOutputType<argTy>::value_type;
+
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
+    resTy *res_tp = reinterpret_cast<resTy *>(res_p);
+
+    sycl::event e = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for({nelems}, [=](sycl::id<1> id) {
+            size_t i = id[0];
+            res_tp[i] = ProjFunctor<argTy, resTy>{}(arg_tp[i]);
+        });
+    });
+
+    return e;
+}
+
 template <typename fnT, typename T> struct ProjContigFactory
 {
     fnT get()
@@ -124,8 +159,14 @@ template <typename fnT, typename T> struct ProjContigFactory
             return fn;
         }
         else {
-            fnT fn = proj_contig_impl<T>;
-            return fn;
+            if constexpr (std::is_same_v<T, std::complex<double>>) {
+                fnT fn = proj_workaround_contig_impl<T>;
+                return fn;
+            }
+            else {
+                fnT fn = proj_contig_impl<T>;
+                return fn;
+            }
         }
     }
 };

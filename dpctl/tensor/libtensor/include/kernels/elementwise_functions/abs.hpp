@@ -61,7 +61,7 @@ template <typename argT, typename resT> struct AbsFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &x)
+    resT operator()(const argT &x) const
     {
 
         if constexpr (std::is_same_v<argT, bool> ||

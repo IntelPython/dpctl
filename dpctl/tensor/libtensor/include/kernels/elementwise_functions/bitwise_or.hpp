@@ -56,7 +56,7 @@ template <typename argT1, typename argT2, typename resT> struct BitwiseOrFunctor
     using supports_sg_loadstore = typename std::true_type;
     using supports_vec = typename std::true_type;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         using tu_ns::convert_impl;
 
@@ -69,8 +69,9 @@ template <typename argT1, typename argT2, typename resT> struct BitwiseOrFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
 
         if constexpr (std::is_same_v<resT, bool>) {

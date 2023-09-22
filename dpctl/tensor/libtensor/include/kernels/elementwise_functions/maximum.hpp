@@ -60,7 +60,7 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
         std::negation<std::disjunction<tu_ns::is_complex<argT1>,
                                        tu_ns::is_complex<argT2>>>>;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (tu_ns::is_complex<argT1>::value ||
                       tu_ns::is_complex<argT2>::value)
@@ -77,8 +77,9 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
         sycl::vec<resT, vec_sz> res;
 #pragma unroll

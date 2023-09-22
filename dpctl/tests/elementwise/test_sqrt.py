@@ -157,6 +157,7 @@ def test_sqrt_real_fp_special_values(dtype):
     assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
 
 
+@pytest.mark.broken_complex
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_sqrt_complex_fp_special_values(dtype):
     q = get_queue_or_skip()

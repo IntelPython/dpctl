@@ -59,14 +59,15 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
     using supports_sg_loadstore = std::true_type;
     using supports_vec = std::true_type;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         return impl<resT>(in1, in2);
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
-                                       const sycl::vec<argT2, vec_sz> &in2)
+    sycl::vec<resT, vec_sz>
+    operator()(const sycl::vec<argT1, vec_sz> &in1,
+               const sycl::vec<argT2, vec_sz> &in2) const
     {
         sycl::vec<resT, vec_sz> res;
         auto diff = in1 - in2; // take advantange of faster vec arithmetic
@@ -86,7 +87,7 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
     }
 
 private:
-    template <typename T> T impl(T const &in1, T const &in2)
+    template <typename T> T impl(T const &in1, T const &in2) const
     {
         if (in1 == in2) { // handle signed infinities
             const T log2 = std::log(T(2));
@@ -106,7 +107,7 @@ private:
         }
     }
 
-    template <typename T> T impl_finite(T const &in)
+    template <typename T> T impl_finite(T const &in) const
     {
         return (in > 0) ? (in + std::log1p(std::exp(-in)))
                         : std::log1p(std::exp(in));

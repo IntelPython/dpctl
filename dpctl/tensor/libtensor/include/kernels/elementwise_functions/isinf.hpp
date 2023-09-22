@@ -84,7 +84,7 @@ template <typename argT, typename resT> struct IsInfFunctor
     }
 
     template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in)
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const
     {
         auto const &res_vec = sycl::isinf(in);
 

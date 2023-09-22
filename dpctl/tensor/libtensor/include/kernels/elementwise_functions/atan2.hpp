@@ -55,7 +55,7 @@ template <typename argT1, typename argT2, typename resT> struct Atan2Functor
     using supports_sg_loadstore = std::true_type;
     using supports_vec = std::false_type;
 
-    resT operator()(const argT1 &in1, const argT2 &in2)
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if (std::isinf(in2) && !std::signbit(in2)) {
             if (std::isfinite(in1)) {
