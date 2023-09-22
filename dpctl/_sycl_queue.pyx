@@ -173,7 +173,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
      size_t byte_count,
      DPCTLSyclEventRef *dep_events,
      size_t dep_events_count
-):
+) except *:
     cdef void *c_dst_ptr = NULL
     cdef void *c_src_ptr = NULL
     cdef DPCTLSyclEventRef ERef = NULL
