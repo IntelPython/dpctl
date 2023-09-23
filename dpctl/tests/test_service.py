@@ -68,6 +68,18 @@ def test_get_include():
     assert type(incl) is str
     assert incl != ""
     assert os.path.isdir(incl)
+    assert os.path.exists(os.path.join(incl, "dpctl4pybind11.hpp"))
+    assert os.path.exists(os.path.join(incl, "dpctl_capi.h"))
+    assert os.path.exists(os.path.join(incl, "dpctl_sycl_interface.h"))
+    assert os.path.exists(
+        os.path.join(incl, "syclinterface", "Config", "dpctl_config.h")
+    )
+    assert os.path.exists(
+        os.path.join(incl, "syclinterface", "dpctl_sycl_types.h")
+    )
+    assert os.path.exists(
+        os.path.join(incl, "syclinterface", "dpctl_sycl_type_casters.hpp")
+    )
 
 
 def test_get_dpcppversion():
