@@ -1,6 +1,4 @@
-find_package(Python 3.9 REQUIRED
-  COMPONENTS Development.Module)
-find_package(NumPy REQUIRED)
+find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
