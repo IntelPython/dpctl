@@ -40,8 +40,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-set(SKBUILD_LINK_LIBRARIES_KEYWORD PUBLIC)
-
 add_subdirectory(dpctl)
 
 file(GLOB _cmake_scripts ${CMAKE_SOURCE_DIR}/cmake/*.cmake)
