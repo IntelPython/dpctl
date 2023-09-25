@@ -23,11 +23,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
@@ -48,7 +48,7 @@ namespace cosh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace cmplx_ns = sycl::ext::oneapi::experimental;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -83,8 +83,8 @@ template <typename argT, typename resT> struct CoshFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-                return cmplx_ns::cosh(
-                    cmplx_ns::complex<realT>(in)); // std::cosh(in);
+                return exprm_ns::cosh(
+                    exprm_ns::complex<realT>(in)); // std::cosh(in);
             }
 
             /*

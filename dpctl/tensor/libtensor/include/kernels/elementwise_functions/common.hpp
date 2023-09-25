@@ -23,10 +23,10 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 #include <utility>
 
 #include "utils/offset_utils.hpp"
