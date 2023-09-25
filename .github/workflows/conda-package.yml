@@ -62,7 +62,7 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
