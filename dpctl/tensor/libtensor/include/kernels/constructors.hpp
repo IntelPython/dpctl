@@ -72,7 +72,7 @@ template <> inline sycl::half unbox_py_scalar<sycl::half>(const py::object &o)
 // start and step data
 
 typedef sycl::event (*lin_space_step_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t, // num_elements
     const py::object &start,
     const py::object &step,
@@ -124,7 +124,7 @@ public:
  * @defgroup CtorKernels
  */
 template <typename Ty>
-sycl::event lin_space_step_impl(sycl::queue exec_q,
+sycl::event lin_space_step_impl(sycl::queue &exec_q,
                                 size_t nelems,
                                 Ty start_v,
                                 Ty step_v,
@@ -162,7 +162,7 @@ sycl::event lin_space_step_impl(sycl::queue exec_q,
  * @defgroup CtorKernels
  */
 template <typename Ty>
-sycl::event lin_space_step_impl(sycl::queue exec_q,
+sycl::event lin_space_step_impl(sycl::queue &exec_q,
                                 size_t nelems,
                                 const py::object &start,
                                 const py::object &step,
@@ -202,7 +202,7 @@ template <typename fnT, typename Ty> struct LinSpaceStepFactory
 // start and and data
 
 typedef sycl::event (*lin_space_affine_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t, // num_elements
     const py::object &start,
     const py::object &end,
@@ -280,7 +280,7 @@ public:
  * @defgroup CtorKernels
  */
 template <typename Ty>
-sycl::event lin_space_affine_impl(sycl::queue exec_q,
+sycl::event lin_space_affine_impl(sycl::queue &exec_q,
                                   size_t nelems,
                                   Ty start_v,
                                   Ty end_v,
@@ -333,7 +333,7 @@ sycl::event lin_space_affine_impl(sycl::queue exec_q,
  * @defgroup CtorKernels
  */
 template <typename Ty>
-sycl::event lin_space_affine_impl(sycl::queue exec_q,
+sycl::event lin_space_affine_impl(sycl::queue &exec_q,
                                   size_t nelems,
                                   const py::object &start,
                                   const py::object &end,
@@ -370,7 +370,7 @@ template <typename fnT, typename Ty> struct LinSpaceAffineFactory
 
 /* ================ Full ================== */
 
-typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue &,
                                             size_t,
                                             const py::object &,
                                             char *,
@@ -392,7 +392,7 @@ typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue,
  * @defgroup CtorKernels
  */
 template <typename dstTy>
-sycl::event full_contig_impl(sycl::queue q,
+sycl::event full_contig_impl(sycl::queue &q,
                              size_t nelems,
                              dstTy fill_v,
                              char *dst_p,
@@ -425,7 +425,7 @@ sycl::event full_contig_impl(sycl::queue q,
  * @defgroup CtorKernels
  */
 template <typename dstTy>
-sycl::event full_contig_impl(sycl::queue exec_q,
+sycl::event full_contig_impl(sycl::queue &exec_q,
                              size_t nelems,
                              const py::object &py_value,
                              char *dst_p,
@@ -455,7 +455,7 @@ template <typename fnT, typename Ty> struct FullContigFactory
 
 /* ================ Eye ================== */
 
-typedef sycl::event (*eye_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*eye_fn_ptr_t)(sycl::queue &,
                                     size_t nelems, // num_elements
                                     py::ssize_t start,
                                     py::ssize_t end,
@@ -509,7 +509,7 @@ public:
  * @defgroup CtorKernels
  */
 template <typename Ty>
-sycl::event eye_impl(sycl::queue exec_q,
+sycl::event eye_impl(sycl::queue &exec_q,
                      size_t nelems,
                      const py::ssize_t start,
                      const py::ssize_t end,
@@ -544,7 +544,7 @@ template <typename fnT, typename Ty> struct EyeFactory
 /* =========================== Tril and triu ============================== */
 
 // define function type
-typedef sycl::event (*tri_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*tri_fn_ptr_t)(sycl::queue &,
                                     py::ssize_t,   // inner_range  //py::ssize_t
                                     py::ssize_t,   // outer_range
                                     char *,        // src_data_ptr
@@ -579,7 +579,7 @@ typedef sycl::event (*tri_fn_ptr_t)(sycl::queue,
  */
 template <typename Ty, bool> class tri_kernel;
 template <typename Ty, bool upper>
-sycl::event tri_impl(sycl::queue exec_q,
+sycl::event tri_impl(sycl::queue &exec_q,
                      py::ssize_t inner_range,
                      py::ssize_t outer_range,
                      char *src_p,

@@ -103,7 +103,7 @@ template <typename inputT,
           size_t n_wi,
           typename IndexerT,
           typename TransformerT>
-sycl::event inclusive_scan_rec(sycl::queue exec_q,
+sycl::event inclusive_scan_rec(sycl::queue &exec_q,
                                size_t n_elems,
                                size_t wg_size,
                                const inputT *input,
@@ -214,14 +214,14 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
 }
 
 typedef size_t (*accumulate_contig_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     char *,
     std::vector<sycl::event> const &);
 
 template <typename maskT, typename cumsumT, typename transformerT>
-size_t accumulate_contig_impl(sycl::queue q,
+size_t accumulate_contig_impl(sycl::queue &q,
                               size_t n_elems,
                               const char *mask,
                               char *cumsum,
@@ -296,7 +296,7 @@ template <typename fnT, typename T> struct Cumsum1DContigFactory
 };
 
 typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     int,
@@ -305,7 +305,7 @@ typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
     std::vector<sycl::event> const &);
 
 template <typename maskT, typename cumsumT, typename transformerT>
-size_t accumulate_strided_impl(sycl::queue q,
+size_t accumulate_strided_impl(sycl::queue &q,
                                size_t n_elems,
                                const char *mask,
                                int nd,

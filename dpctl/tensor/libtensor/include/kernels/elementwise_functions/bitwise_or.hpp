@@ -165,7 +165,7 @@ template <typename argT1,
 class bitwise_or_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event bitwise_or_contig_impl(sycl::queue exec_q,
+sycl::event bitwise_or_contig_impl(sycl::queue &exec_q,
                                    size_t nelems,
                                    const char *arg1_p,
                                    py::ssize_t arg1_offset,
@@ -215,7 +215,7 @@ class bitwise_or_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-bitwise_or_strided_impl(sycl::queue exec_q,
+bitwise_or_strided_impl(sycl::queue &exec_q,
                         size_t nelems,
                         int nd,
                         const py::ssize_t *shape_and_strides,

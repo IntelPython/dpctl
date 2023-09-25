@@ -142,7 +142,7 @@ public:
 };
 
 typedef sycl::event (*where_contig_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     const char *,
@@ -151,7 +151,7 @@ typedef sycl::event (*where_contig_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 template <typename T, typename condT>
-sycl::event where_contig_impl(sycl::queue q,
+sycl::event where_contig_impl(sycl::queue &q,
                               size_t nelems,
                               const char *cond_cp,
                               const char *x1_cp,
@@ -221,7 +221,7 @@ public:
 };
 
 typedef sycl::event (*where_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     int,
     const char *,
@@ -236,7 +236,7 @@ typedef sycl::event (*where_strided_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 template <typename T, typename condT>
-sycl::event where_strided_impl(sycl::queue q,
+sycl::event where_strided_impl(sycl::queue &q,
                                size_t nelems,
                                int nd,
                                const char *cond_cp,

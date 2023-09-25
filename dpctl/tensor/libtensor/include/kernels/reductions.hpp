@@ -207,7 +207,7 @@ public:
 };
 
 typedef sycl::event (*sum_reduction_strided_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -243,7 +243,7 @@ using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_over_group_with_atomics_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -367,7 +367,7 @@ sycl::event sum_reduction_over_group_with_atomics_strided_impl(
 // Contig
 
 typedef sycl::event (*sum_reduction_contig_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -380,7 +380,7 @@ typedef sycl::event (*sum_reduction_contig_impl_fn_ptr)(
 /* @brief Reduce rows in a matrix */
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -491,7 +491,7 @@ sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
 /* @brief Reduce rows in a matrix */
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_axis0_over_group_with_atomics_contig_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of cols in a matrix
                         // when reducing over cols)
     size_t reduction_nelems, // size of each reduction  (length of cols, i.e.
@@ -662,7 +662,7 @@ class sum_reduction_over_group_temps_krn;
 
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_over_group_temps_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.

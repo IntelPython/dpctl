@@ -248,7 +248,7 @@ public:
 // Typedefs for function pointers
 
 typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     py::ssize_t,
@@ -257,7 +257,7 @@ typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_inplace_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     int,
     const py::ssize_t *,
@@ -269,7 +269,7 @@ typedef sycl::event (*binary_inplace_strided_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_inplace_row_matrix_broadcast_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     std::vector<sycl::event> &,
     size_t,
     size_t,
@@ -288,7 +288,7 @@ template <typename argTy,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
 sycl::event
-binary_inplace_contig_impl(sycl::queue exec_q,
+binary_inplace_contig_impl(sycl::queue &exec_q,
                            size_t nelems,
                            const char *rhs_p,
                            py::ssize_t rhs_offset,
@@ -324,7 +324,7 @@ template <typename argTy,
           template <typename T1, typename T2, typename IndT>
           class kernel_name>
 sycl::event
-binary_inplace_strided_impl(sycl::queue exec_q,
+binary_inplace_strided_impl(sycl::queue &exec_q,
                             size_t nelems,
                             int nd,
                             const py::ssize_t *shape_and_strides,
@@ -361,7 +361,7 @@ template <typename argT,
           template <typename T1, typename T3>
           class kernel_name>
 sycl::event binary_inplace_row_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -419,7 +419,7 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        sycl::context ctx = exec_q.get_context();
+        const sycl::context &ctx = exec_q.get_context();
         cgh.host_task([ctx, padded_vec]() { sycl::free(padded_vec, ctx); });
     });
     host_tasks.push_back(tmp_cleanup_ev);
