@@ -54,8 +54,8 @@ template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT>
 std::pair<sycl::event, sycl::event>
-py_unary_ufunc(dpctl::tensor::usm_ndarray src,
-               dpctl::tensor::usm_ndarray dst,
+py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
+               const dpctl::tensor::usm_ndarray &dst,
                sycl::queue q,
                const std::vector<sycl::event> &depends,
                //
@@ -252,7 +252,7 @@ py_unary_ufunc(dpctl::tensor::usm_ndarray src,
 }
 
 template <typename output_typesT>
-py::object py_unary_ufunc_result_type(py::dtype input_dtype,
+py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
                                       const output_typesT &output_types)
 {
     int tn = input_dtype.num(); // NumPy type numbers are the same as in dpctl
@@ -298,9 +298,9 @@ template <typename output_typesT,
           typename contig_matrix_row_dispatchT,
           typename contig_row_matrix_dispatchT>
 std::pair<sycl::event, sycl::event> py_binary_ufunc(
-    dpctl::tensor::usm_ndarray src1,
-    dpctl::tensor::usm_ndarray src2,
-    dpctl::tensor::usm_ndarray dst, // dst = op(src1, src2), elementwise
+    const dpctl::tensor::usm_ndarray &src1,
+    const dpctl::tensor::usm_ndarray &src2,
+    const dpctl::tensor::usm_ndarray &dst, // dst = op(src1, src2), elementwise
     sycl::queue exec_q,
     const std::vector<sycl::event> depends,
     //
@@ -560,8 +560,8 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
 }
 
 template <typename output_typesT>
-py::object py_binary_ufunc_result_type(py::dtype input1_dtype,
-                                       py::dtype input2_dtype,
+py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
+                                       const py::dtype &input2_dtype,
                                        const output_typesT &output_types_table)
 {
     int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpctl
@@ -605,8 +605,8 @@ template <typename output_typesT,
           typename strided_dispatchT,
           typename contig_row_matrix_dispatchT>
 std::pair<sycl::event, sycl::event>
-py_binary_inplace_ufunc(dpctl::tensor::usm_ndarray lhs,
-                        dpctl::tensor::usm_ndarray rhs,
+py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
+                        const dpctl::tensor::usm_ndarray &rhs,
                         sycl::queue exec_q,
                         const std::vector<sycl::event> depends,
                         //

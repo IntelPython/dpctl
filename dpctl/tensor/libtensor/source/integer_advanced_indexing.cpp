@@ -200,7 +200,7 @@ _populate_kernel_params(sycl::queue exec_q,
 
 /* Utility to parse python object py_ind into vector of `usm_ndarray`s */
 std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
-                                                     py::object py_ind)
+                                                     const py::object &py_ind)
 {
     size_t ind_count = py::len(py_ind);
     std::vector<dpctl::tensor::usm_ndarray> res;
@@ -233,9 +233,9 @@ std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
 }
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_take(dpctl::tensor::usm_ndarray src,
-                 py::object py_ind,
-                 dpctl::tensor::usm_ndarray dst,
+usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
+                 const py::object &py_ind,
+                 const dpctl::tensor::usm_ndarray &dst,
                  int axis_start,
                  uint8_t mode,
                  sycl::queue exec_q,
@@ -544,9 +544,9 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 }
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
-                py::object py_ind,
-                dpctl::tensor::usm_ndarray val,
+usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
+                const py::object &py_ind,
+                const dpctl::tensor::usm_ndarray &val,
                 int axis_start,
                 uint8_t mode,
                 sycl::queue exec_q,

@@ -40,21 +40,21 @@ namespace py_internal
 extern void init_repeat_dispatch_vectors(void);
 
 extern std::pair<sycl::event, sycl::event>
-py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
-                      dpctl::tensor::usm_ndarray dst,
-                      dpctl::tensor::usm_ndarray reps,
-                      dpctl::tensor::usm_ndarray cumsum,
+py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst,
+                      const dpctl::tensor::usm_ndarray &reps,
+                      const dpctl::tensor::usm_ndarray &cumsum,
                       int axis,
                       sycl::queue exec_q,
-                      std::vector<sycl::event> const &depends);
+                      const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
-py_repeat_by_scalar(dpctl::tensor::usm_ndarray src,
-                    dpctl::tensor::usm_ndarray dst,
+py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
+                    const dpctl::tensor::usm_ndarray &dst,
                     const py::ssize_t reps,
                     int axis,
                     sycl::queue exec_q,
-                    std::vector<sycl::event> const &depends);
+                    const std::vector<sycl::event> &depends);
 
 } // namespace py_internal
 } // namespace tensor

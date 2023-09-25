@@ -39,15 +39,15 @@ namespace py_internal
 
 extern void populate_mask_positions_dispatch_vectors(void);
 
-extern size_t py_mask_positions(dpctl::tensor::usm_ndarray mask,
-                                dpctl::tensor::usm_ndarray cumsum,
+extern size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
+                                const dpctl::tensor::usm_ndarray &cumsum,
                                 sycl::queue exec_q,
-                                std::vector<sycl::event> const &depends = {});
+                                const std::vector<sycl::event> &depends = {});
 
 extern void populate_cumsum_1d_dispatch_vectors(void);
 
-extern size_t py_cumsum_1d(dpctl::tensor::usm_ndarray src,
-                           dpctl::tensor::usm_ndarray cumsum,
+extern size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
+                           const dpctl::tensor::usm_ndarray &cumsum,
                            sycl::queue exec_q,
                            std::vector<sycl::event> const &depends = {});
 

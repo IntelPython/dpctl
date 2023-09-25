@@ -38,8 +38,8 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_for_reshape(dpctl::tensor::usm_ndarray src,
-                             dpctl::tensor::usm_ndarray dst,
+copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
+                             const dpctl::tensor::usm_ndarray &dst,
                              sycl::queue exec_q,
                              const std::vector<sycl::event> &depends = {});
 

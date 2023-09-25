@@ -38,10 +38,10 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-py_where(dpctl::tensor::usm_ndarray,
-         dpctl::tensor::usm_ndarray,
-         dpctl::tensor::usm_ndarray,
-         dpctl::tensor::usm_ndarray,
+py_where(const dpctl::tensor::usm_ndarray &,
+         const dpctl::tensor::usm_ndarray &,
+         const dpctl::tensor::usm_ndarray &,
+         const dpctl::tensor::usm_ndarray &,
          sycl::queue,
          const std::vector<sycl::event> &);
 

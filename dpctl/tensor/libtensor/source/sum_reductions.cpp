@@ -95,9 +95,9 @@ static sum_reduction_contig_impl_fn_ptr
                                                [td_ns::num_types];
 
 std::pair<sycl::event, sycl::event> py_sum_over_axis(
-    dpctl::tensor::usm_ndarray src,
+    const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // sum over this many trailing indexes
-    dpctl::tensor::usm_ndarray dst,
+    const dpctl::tensor::usm_ndarray &dst,
     sycl::queue exec_q,
     const std::vector<sycl::event> &depends)
 {
@@ -419,8 +419,8 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
     return std::make_pair(keep_args_event, comp_ev);
 }
 
-bool py_sum_over_axis_dtype_supported(py::dtype input_dtype,
-                                      py::dtype output_dtype,
+bool py_sum_over_axis_dtype_supported(const py::dtype &input_dtype,
+                                      const py::dtype &output_dtype,
                                       const std::string &dst_usm_type,
                                       sycl::queue q)
 {

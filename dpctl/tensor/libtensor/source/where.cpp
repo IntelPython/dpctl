@@ -59,10 +59,10 @@ static where_strided_impl_fn_ptr_t
 using dpctl::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-py_where(dpctl::tensor::usm_ndarray condition,
-         dpctl::tensor::usm_ndarray x1,
-         dpctl::tensor::usm_ndarray x2,
-         dpctl::tensor::usm_ndarray dst,
+py_where(const dpctl::tensor::usm_ndarray &condition,
+         const dpctl::tensor::usm_ndarray &x1,
+         const dpctl::tensor::usm_ndarray &x2,
+         const dpctl::tensor::usm_ndarray &dst,
          sycl::queue exec_q,
          const std::vector<sycl::event> &depends)
 {

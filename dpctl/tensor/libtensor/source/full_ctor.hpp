@@ -38,8 +38,8 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-usm_ndarray_full(py::object py_value,
-                 dpctl::tensor::usm_ndarray dst,
+usm_ndarray_full(const py::object &py_value,
+                 const dpctl::tensor::usm_ndarray &dst,
                  sycl::queue exec_q,
                  const std::vector<sycl::event> &depends = {});
 

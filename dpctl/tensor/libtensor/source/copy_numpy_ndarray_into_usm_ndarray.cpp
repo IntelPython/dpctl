@@ -54,8 +54,8 @@ static copy_and_cast_from_host_blocking_fn_ptr_t
                                                    [td_ns::num_types];
 
 void copy_numpy_ndarray_into_usm_ndarray(
-    py::array npy_src,
-    dpctl::tensor::usm_ndarray dst,
+    const py::array &npy_src,
+    const dpctl::tensor::usm_ndarray &dst,
     sycl::queue exec_q,
     const std::vector<sycl::event> &depends)
 {

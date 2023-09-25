@@ -58,9 +58,9 @@ static lin_space_affine_fn_ptr_t
     lin_space_affine_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_linear_sequence_step(py::object start,
-                                 py::object dt,
-                                 dpctl::tensor::usm_ndarray dst,
+usm_ndarray_linear_sequence_step(const py::object &start,
+                                 const py::object &dt,
+                                 const dpctl::tensor::usm_ndarray &dst,
                                  sycl::queue exec_q,
                                  const std::vector<sycl::event> &depends)
 {
@@ -105,9 +105,9 @@ usm_ndarray_linear_sequence_step(py::object start,
 }
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_linear_sequence_affine(py::object start,
-                                   py::object end,
-                                   dpctl::tensor::usm_ndarray dst,
+usm_ndarray_linear_sequence_affine(const py::object &start,
+                                   const py::object &end,
+                                   const dpctl::tensor::usm_ndarray &dst,
                                    bool include_endpoint,
                                    sycl::queue exec_q,
                                    const std::vector<sycl::event> &depends)

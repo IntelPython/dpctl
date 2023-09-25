@@ -39,7 +39,7 @@ namespace py_internal
 
 extern std::pair<sycl::event, sycl::event>
 usm_ndarray_eye(py::ssize_t k,
-                dpctl::tensor::usm_ndarray dst,
+                const dpctl::tensor::usm_ndarray &dst,
                 sycl::queue exec_q,
                 const std::vector<sycl::event> &depends = {});
 

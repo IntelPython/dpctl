@@ -57,12 +57,12 @@ using namespace dpctl::tensor::offset_utils;
  * @brief Cast pybind11 class managing Python object to specified type `T`.
  * @defgroup CtorKernels
  */
-template <typename T> T unbox_py_scalar(py::object o)
+template <typename T> T unbox_py_scalar(const py::object &o)
 {
     return py::cast<T>(o);
 }
 
-template <> inline sycl::half unbox_py_scalar<sycl::half>(py::object o)
+template <> inline sycl::half unbox_py_scalar<sycl::half>(const py::object &o)
 {
     float tmp = py::cast<float>(o);
     return static_cast<sycl::half>(tmp);
@@ -74,8 +74,8 @@ template <> inline sycl::half unbox_py_scalar<sycl::half>(py::object o)
 typedef sycl::event (*lin_space_step_fn_ptr_t)(
     sycl::queue,
     size_t, // num_elements
-    py::object start,
-    py::object step,
+    const py::object &start,
+    const py::object &step,
     char *, // dst_data_ptr
     const std::vector<sycl::event> &);
 
@@ -164,8 +164,8 @@ sycl::event lin_space_step_impl(sycl::queue exec_q,
 template <typename Ty>
 sycl::event lin_space_step_impl(sycl::queue exec_q,
                                 size_t nelems,
-                                py::object start,
-                                py::object step,
+                                const py::object &start,
+                                const py::object &step,
                                 char *array_data,
                                 const std::vector<sycl::event> &depends)
 {
@@ -204,8 +204,8 @@ template <typename fnT, typename Ty> struct LinSpaceStepFactory
 typedef sycl::event (*lin_space_affine_fn_ptr_t)(
     sycl::queue,
     size_t, // num_elements
-    py::object start,
-    py::object end,
+    const py::object &start,
+    const py::object &end,
     bool include_endpoint,
     char *, // dst_data_ptr
     const std::vector<sycl::event> &);
@@ -335,8 +335,8 @@ sycl::event lin_space_affine_impl(sycl::queue exec_q,
 template <typename Ty>
 sycl::event lin_space_affine_impl(sycl::queue exec_q,
                                   size_t nelems,
-                                  py::object start,
-                                  py::object end,
+                                  const py::object &start,
+                                  const py::object &end,
                                   bool include_endpoint,
                                   char *array_data,
                                   const std::vector<sycl::event> &depends)
@@ -372,7 +372,7 @@ template <typename fnT, typename Ty> struct LinSpaceAffineFactory
 
 typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue,
                                             size_t,
-                                            py::object,
+                                            const py::object &,
                                             char *,
                                             const std::vector<sycl::event> &);
 
@@ -427,7 +427,7 @@ sycl::event full_contig_impl(sycl::queue q,
 template <typename dstTy>
 sycl::event full_contig_impl(sycl::queue exec_q,
                              size_t nelems,
-                             py::object py_value,
+                             const py::object &py_value,
                              char *dst_p,
                              const std::vector<sycl::event> &depends)
 {
