@@ -39,7 +39,7 @@ namespace py_internal
 namespace
 {
 
-std::string _default_device_fp_type(sycl::device d)
+std::string _default_device_fp_type(const sycl::device &d)
 {
     if (d.has(sycl::aspect::fp64)) {
         return "f8";
@@ -49,14 +49,14 @@ std::string _default_device_fp_type(sycl::device d)
     }
 }
 
-std::string _default_device_int_type(sycl::device)
+std::string _default_device_int_type(const sycl::device &)
 {
     return "l"; // code for numpy.dtype('long') to be consistent
                 // with NumPy's default integer type across
                 // platforms.
 }
 
-std::string _default_device_complex_type(sycl::device d)
+std::string _default_device_complex_type(const sycl::device &d)
 {
     if (d.has(sycl::aspect::fp64)) {
         return "c16";
@@ -66,17 +66,17 @@ std::string _default_device_complex_type(sycl::device d)
     }
 }
 
-std::string _default_device_bool_type(sycl::device)
+std::string _default_device_bool_type(const sycl::device &)
 {
     return "b1";
 }
 
-std::string _default_device_index_type(sycl::device)
+std::string _default_device_index_type(const sycl::device &)
 {
     return "i8";
 }
 
-sycl::device _extract_device(py::object arg)
+sycl::device _extract_device(const py::object &arg)
 {
     auto const &api = dpctl::detail::dpctl_capi::get();
 
@@ -96,31 +96,31 @@ sycl::device _extract_device(py::object arg)
 
 } // namespace
 
-std::string default_device_fp_type(py::object arg)
+std::string default_device_fp_type(const py::object &arg)
 {
     sycl::device d = _extract_device(arg);
     return _default_device_fp_type(d);
 }
 
-std::string default_device_int_type(py::object arg)
+std::string default_device_int_type(const py::object &arg)
 {
     sycl::device d = _extract_device(arg);
     return _default_device_int_type(d);
 }
 
-std::string default_device_bool_type(py::object arg)
+std::string default_device_bool_type(const py::object &arg)
 {
     sycl::device d = _extract_device(arg);
     return _default_device_bool_type(d);
 }
 
-std::string default_device_complex_type(py::object arg)
+std::string default_device_complex_type(const py::object &arg)
 {
     sycl::device d = _extract_device(arg);
     return _default_device_complex_type(d);
 }
 
-std::string default_device_index_type(py::object arg)
+std::string default_device_index_type(const py::object &arg)
 {
     sycl::device d = _extract_device(arg);
     return _default_device_index_type(d);

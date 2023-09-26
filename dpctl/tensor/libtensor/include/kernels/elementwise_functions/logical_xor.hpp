@@ -167,7 +167,7 @@ class logical_xor_contig_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-logical_xor_contig_impl(sycl::queue exec_q,
+logical_xor_contig_impl(sycl::queue &exec_q,
                         size_t nelems,
                         const char *arg1_p,
                         py::ssize_t arg1_offset,
@@ -218,7 +218,7 @@ class logical_xor_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-logical_xor_strided_impl(sycl::queue exec_q,
+logical_xor_strided_impl(sycl::queue &exec_q,
                          size_t nelems,
                          int nd,
                          const py::ssize_t *shape_and_strides,

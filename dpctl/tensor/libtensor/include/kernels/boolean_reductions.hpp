@@ -244,7 +244,7 @@ public:
 };
 
 typedef sycl::event (*boolean_reduction_contig_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -264,7 +264,7 @@ using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
 sycl::event
-boolean_reduction_axis1_contig_impl(sycl::queue exec_q,
+boolean_reduction_axis1_contig_impl(sycl::queue &exec_q,
                                     size_t iter_nelems,
                                     size_t reduction_nelems,
                                     const char *arg_cp,
@@ -463,7 +463,7 @@ class boolean_reduction_axis0_contig_krn;
 
 template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
 sycl::event
-boolean_reduction_axis0_contig_impl(sycl::queue exec_q,
+boolean_reduction_axis0_contig_impl(sycl::queue &exec_q,
                                     size_t iter_nelems,
                                     size_t reduction_nelems,
                                     const char *arg_cp,
@@ -572,7 +572,7 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class boolean_reduction_seq_strided_krn;
 
 typedef sycl::event (*boolean_reduction_strided_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -588,7 +588,7 @@ typedef sycl::event (*boolean_reduction_strided_impl_fn_ptr)(
 
 template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
 sycl::event
-boolean_reduction_strided_impl(sycl::queue exec_q,
+boolean_reduction_strided_impl(sycl::queue &exec_q,
                                size_t iter_nelems,
                                size_t reduction_nelems,
                                const char *arg_cp,

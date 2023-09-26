@@ -93,7 +93,7 @@ class logical_not_contig_kernel;
 
 template <typename argTy>
 sycl::event
-logical_not_contig_impl(sycl::queue exec_q,
+logical_not_contig_impl(sycl::queue &exec_q,
                         size_t nelems,
                         const char *arg_p,
                         char *res_p,
@@ -129,7 +129,7 @@ class logical_not_strided_kernel;
 
 template <typename argTy>
 sycl::event
-logical_not_strided_impl(sycl::queue exec_q,
+logical_not_strided_impl(sycl::queue &exec_q,
                          size_t nelems,
                          int nd,
                          const py::ssize_t *shape_and_strides,

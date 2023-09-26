@@ -49,10 +49,10 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 template <typename contig_dispatchT, typename strided_dispatchT>
 std::pair<sycl::event, sycl::event>
-py_boolean_reduction(dpctl::tensor::usm_ndarray src,
+py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
                      int trailing_dims_to_reduce,
-                     dpctl::tensor::usm_ndarray dst,
-                     sycl::queue exec_q,
+                     const dpctl::tensor::usm_ndarray &dst,
+                     sycl::queue &exec_q,
                      const std::vector<sycl::event> &depends,
                      const contig_dispatchT &axis1_contig_dispatch_vector,
                      const contig_dispatchT &axis0_contig_dispatch_vector,
@@ -292,7 +292,7 @@ py_boolean_reduction(dpctl::tensor::usm_ndarray src,
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(red_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, packed_shapes_and_strides] {
             sycl::free(packed_shapes_and_strides, ctx);
         });

@@ -198,7 +198,7 @@ template <typename OrthoIndexerT,
 class masked_extract_all_slices_strided_impl_krn;
 
 typedef sycl::event (*masked_extract_all_slices_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     py::ssize_t,
     const char *,
     const char *,
@@ -211,7 +211,7 @@ typedef sycl::event (*masked_extract_all_slices_strided_impl_fn_ptr_t)(
 
 template <typename dataT, typename indT>
 sycl::event masked_extract_all_slices_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     py::ssize_t iteration_size,
     const char *src_p,
     const char *cumsum_p,
@@ -253,7 +253,7 @@ sycl::event masked_extract_all_slices_strided_impl(
 }
 
 typedef sycl::event (*masked_extract_some_slices_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     py::ssize_t,
     py::ssize_t,
     const char *,
@@ -278,7 +278,7 @@ class masked_extract_some_slices_strided_impl_krn;
 
 template <typename dataT, typename indT>
 sycl::event masked_extract_some_slices_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     py::ssize_t orthog_nelems,
     py::ssize_t masked_nelems,
     const char *src_p,
@@ -380,7 +380,7 @@ template <typename OrthoIndexerT,
 class masked_place_all_slices_strided_impl_krn;
 
 typedef sycl::event (*masked_place_all_slices_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     py::ssize_t,
     char *,
     const char *,
@@ -393,7 +393,7 @@ typedef sycl::event (*masked_place_all_slices_strided_impl_fn_ptr_t)(
 
 template <typename dataT, typename indT>
 sycl::event masked_place_all_slices_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     py::ssize_t iteration_size,
     char *dst_p,
     const char *cumsum_p,
@@ -430,7 +430,7 @@ sycl::event masked_place_all_slices_strided_impl(
 }
 
 typedef sycl::event (*masked_place_some_slices_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     py::ssize_t,
     py::ssize_t,
     char *,
@@ -455,7 +455,7 @@ class masked_place_some_slices_strided_impl_krn;
 
 template <typename dataT, typename indT>
 sycl::event masked_place_some_slices_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     py::ssize_t orthog_nelems,
     py::ssize_t masked_nelems,
     char *dst_p,
@@ -549,7 +549,7 @@ struct MaskPlaceSomeSlicesStridedFactoryForInt64
 template <typename T1, typename T2> class non_zero_indexes_krn;
 
 typedef sycl::event (*non_zero_indexes_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     py::ssize_t,
     py::ssize_t,
     int,
@@ -559,7 +559,7 @@ typedef sycl::event (*non_zero_indexes_fn_ptr_t)(
     std::vector<sycl::event> const &);
 
 template <typename indT1, typename indT2>
-sycl::event non_zero_indexes_impl(sycl::queue exec_q,
+sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
                                   py::ssize_t iter_size,
                                   py::ssize_t nz_elems,
                                   int nd,

@@ -27,6 +27,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <pybind11/pybind11.h>
+#include <utility>
 
 #include "utils/offset_utils.hpp"
 
@@ -81,9 +82,11 @@ public:
                 sycl::vec<resT, vec_sz> res_vec(const_val);
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     sg.store<vec_sz>(out_multi_ptr, res_vec);
                 }
@@ -110,12 +113,14 @@ public:
 
 #pragma unroll
                 for (std::uint16_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     x = sg.load<vec_sz>(in_multi_ptr);
                     sycl::vec<resT, vec_sz> res_vec = op(x);
@@ -148,12 +153,14 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg_vec = sg.load<vec_sz>(in_multi_ptr);
 #pragma unroll
@@ -187,12 +194,14 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg_vec = sg.load<vec_sz>(in_multi_ptr);
 #pragma unroll
@@ -261,7 +270,7 @@ template <typename argTy,
           class kernel_name,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-sycl::event unary_contig_impl(sycl::queue exec_q,
+sycl::event unary_contig_impl(sycl::queue &exec_q,
                               size_t nelems,
                               const char *arg_p,
                               char *res_p,
@@ -296,7 +305,7 @@ template <typename argTy,
           template <typename A, typename R, typename I>
           class kernel_name>
 sycl::event
-unary_strided_impl(sycl::queue exec_q,
+unary_strided_impl(sycl::queue &exec_q,
                    size_t nelems,
                    int nd,
                    const py::ssize_t *shape_and_strides,
@@ -374,15 +383,17 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in1_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in1[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in1[offset]);
                     auto in2_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in2[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in2[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg1_vec = sg.load<vec_sz>(in1_multi_ptr);
                     arg2_vec = sg.load<vec_sz>(in2_multi_ptr);
@@ -414,15 +425,17 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in1_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in1[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in1[offset]);
                     auto in2_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in2[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in2[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg1_vec = sg.load<vec_sz>(in1_multi_ptr);
                     arg2_vec = sg.load<vec_sz>(in2_multi_ptr);
@@ -624,14 +637,14 @@ public:
 // Typedefs for function pointers
 
 typedef sycl::event (*unary_contig_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     char *,
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*unary_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     int,
     const py::ssize_t *,
@@ -643,7 +656,7 @@ typedef sycl::event (*unary_strided_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_contig_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     py::ssize_t,
@@ -654,7 +667,7 @@ typedef sycl::event (*binary_contig_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     int,
     const py::ssize_t *,
@@ -668,7 +681,7 @@ typedef sycl::event (*binary_strided_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     std::vector<sycl::event> &,
     size_t,
     size_t,
@@ -681,7 +694,7 @@ typedef sycl::event (*binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     std::vector<sycl::event> &,
     size_t,
     size_t,
@@ -711,7 +724,7 @@ template <typename argTy1,
           class kernel_name,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2>
-sycl::event binary_contig_impl(sycl::queue exec_q,
+sycl::event binary_contig_impl(sycl::queue &exec_q,
                                size_t nelems,
                                const char *arg1_p,
                                py::ssize_t arg1_offset,
@@ -755,7 +768,7 @@ template <typename argTy1,
           template <typename T1, typename T2, typename T3, typename IndT>
           class kernel_name>
 sycl::event
-binary_strided_impl(sycl::queue exec_q,
+binary_strided_impl(sycl::queue &exec_q,
                     size_t nelems,
                     int nd,
                     const py::ssize_t *shape_and_strides,
@@ -799,7 +812,7 @@ template <typename argT1,
           template <typename T1, typename T2, typename T3>
           class kernel_name>
 sycl::event binary_contig_matrix_contig_row_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -861,7 +874,7 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        sycl::context ctx = exec_q.get_context();
+        const sycl::context &ctx = exec_q.get_context();
         cgh.host_task([ctx, padded_vec]() { sycl::free(padded_vec, ctx); });
     });
     host_tasks.push_back(tmp_cleanup_ev);
@@ -877,7 +890,7 @@ template <typename argT1,
           template <typename T1, typename T2, typename T3>
           class kernel_name>
 sycl::event binary_contig_row_contig_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -940,7 +953,7 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        sycl::context ctx = exec_q.get_context();
+        const sycl::context &ctx = exec_q.get_context();
         cgh.host_task([ctx, padded_vec]() { sycl::free(padded_vec, ctx); });
     });
     host_tasks.push_back(tmp_cleanup_ev);

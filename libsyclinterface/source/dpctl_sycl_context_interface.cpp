@@ -29,6 +29,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp>
+#include <utility>
 #include <vector>
 
 using namespace sycl;
@@ -86,7 +87,7 @@ DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
 
     try {
         CRef = wrap<context>(
-            new context(Devices, DPCTL_AsyncErrorHandler(handler)));
+            new context(std::move(Devices), DPCTL_AsyncErrorHandler(handler)));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
@@ -146,7 +147,8 @@ DPCTLContext_GetDevices(__dpctl_keep const DPCTLSyclContextRef CRef)
         auto Devices = Context->get_devices();
         DevicesVectorPtr->reserve(Devices.size());
         for (const auto &Dev : Devices) {
-            DevicesVectorPtr->emplace_back(wrap<device>(new device(Dev)));
+            DevicesVectorPtr->emplace_back(
+                wrap<device>(new device(std::move(Dev))));
         }
         return wrap<vecTy>(DevicesVectorPtr);
     } catch (std::exception const &e) {

@@ -95,10 +95,10 @@ static sum_reduction_contig_impl_fn_ptr
                                                [td_ns::num_types];
 
 std::pair<sycl::event, sycl::event> py_sum_over_axis(
-    dpctl::tensor::usm_ndarray src,
+    const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // sum over this many trailing indexes
-    dpctl::tensor::usm_ndarray dst,
-    sycl::queue exec_q,
+    const dpctl::tensor::usm_ndarray &dst,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -406,7 +406,7 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, temp_allocation_ptr] {
             sycl::free(temp_allocation_ptr, ctx);
         });
@@ -419,10 +419,10 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
     return std::make_pair(keep_args_event, comp_ev);
 }
 
-bool py_sum_over_axis_dtype_supported(py::dtype input_dtype,
-                                      py::dtype output_dtype,
+bool py_sum_over_axis_dtype_supported(const py::dtype &input_dtype,
+                                      const py::dtype &output_dtype,
                                       const std::string &dst_usm_type,
-                                      sycl::queue q)
+                                      sycl::queue &q)
 {
     int arg_tn =
         input_dtype.num(); // NumPy type numbers are the same as in dpctl

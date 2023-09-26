@@ -155,7 +155,7 @@ public:
     }
 };
 
-typedef sycl::event (*take_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*take_fn_ptr_t)(sycl::queue &,
                                      size_t,
                                      size_t,
                                      int,
@@ -173,7 +173,7 @@ typedef sycl::event (*take_fn_ptr_t)(sycl::queue,
                                      const std::vector<sycl::event> &);
 
 template <typename ProjectorT, typename Ty, typename indT>
-sycl::event take_impl(sycl::queue q,
+sycl::event take_impl(sycl::queue &q,
                       size_t orthog_nelems,
                       size_t ind_nelems,
                       int nd,
@@ -285,7 +285,7 @@ public:
     }
 };
 
-typedef sycl::event (*put_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*put_fn_ptr_t)(sycl::queue &,
                                     size_t,
                                     size_t,
                                     int,
@@ -303,7 +303,7 @@ typedef sycl::event (*put_fn_ptr_t)(sycl::queue,
                                     const std::vector<sycl::event> &);
 
 template <typename ProjectorT, typename Ty, typename indT>
-sycl::event put_impl(sycl::queue q,
+sycl::event put_impl(sycl::queue &q,
                      size_t orthog_nelems,
                      size_t ind_nelems,
                      int nd,

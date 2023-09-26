@@ -110,13 +110,13 @@ void populate_masked_extract_dispatch_vectors(void)
 }
 
 std::pair<sycl::event, sycl::event>
-py_extract(dpctl::tensor::usm_ndarray src,
-           dpctl::tensor::usm_ndarray cumsum,
+py_extract(const dpctl::tensor::usm_ndarray &src,
+           const dpctl::tensor::usm_ndarray &cumsum,
            int axis_start, // axis_start <= mask_i < axis_end
            int axis_end,
-           dpctl::tensor::usm_ndarray dst,
-           sycl::queue exec_q,
-           std::vector<sycl::event> const &depends)
+           const dpctl::tensor::usm_ndarray &dst,
+           sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
     if ((axis_start < 0 || axis_end > src_nd || axis_start >= axis_end)) {
@@ -264,7 +264,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(extract_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_src_shape_strides] {
                     sycl::free(packed_src_shape_strides, ctx);
                 });
@@ -366,7 +366,7 @@ py_extract(dpctl::tensor::usm_ndarray src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(extract_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });
@@ -444,13 +444,13 @@ void populate_masked_place_dispatch_vectors(void)
  * ((i > 0) ? cumsum[i-1] + 1 : 1)
  */
 std::pair<sycl::event, sycl::event>
-py_place(dpctl::tensor::usm_ndarray dst,
-         dpctl::tensor::usm_ndarray cumsum,
+py_place(const dpctl::tensor::usm_ndarray &dst,
+         const dpctl::tensor::usm_ndarray &cumsum,
          int axis_start, // axis_start <= mask_i < axis_end
          int axis_end,
-         dpctl::tensor::usm_ndarray rhs,
-         sycl::queue exec_q,
-         std::vector<sycl::event> const &depends)
+         const dpctl::tensor::usm_ndarray &rhs,
+         sycl::queue &exec_q,
+         const std::vector<sycl::event> &depends)
 {
     int dst_nd = dst.get_ndim();
     if ((axis_start < 0 || axis_end > dst_nd || axis_start >= axis_end)) {
@@ -594,7 +594,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(place_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_dst_shape_strides] {
                     sycl::free(packed_dst_shape_strides, ctx);
                 });
@@ -693,7 +693,7 @@ py_place(dpctl::tensor::usm_ndarray dst,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(place_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });
@@ -712,14 +712,14 @@ py_place(dpctl::tensor::usm_ndarray dst,
 // Non-zero
 
 std::pair<sycl::event, sycl::event>
-py_nonzero(dpctl::tensor::usm_ndarray
-               cumsum, // int32/int64 input array, 1D, C-contiguous
-           dpctl::tensor::usm_ndarray
-               indexes, // int32/int64 2D output array, C-contiguous
-           std::vector<py::ssize_t>
-               mask_shape, // shape of array from which cumsum was computed
-           sycl::queue exec_q,
-           std::vector<sycl::event> const &depends)
+py_nonzero(const dpctl::tensor::usm_ndarray
+               &cumsum, // int32/int64 input array, 1D, C-contiguous
+           const dpctl::tensor::usm_ndarray
+               &indexes, // int32/int64 2D output array, C-contiguous
+           const std::vector<py::ssize_t>
+               &mask_shape, // shape of array from which cumsum was computed
+           sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends)
 {
     if (!dpctl::utils::queues_are_compatible(exec_q, {cumsum, indexes})) {
         throw py::value_error(
@@ -838,7 +838,7 @@ py_nonzero(dpctl::tensor::usm_ndarray
 
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(non_zero_indexes_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, src_shape_device_ptr] {
             sycl::free(src_shape_device_ptr, ctx);
         });

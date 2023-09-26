@@ -156,7 +156,7 @@ class true_divide_contig_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-true_divide_contig_impl(sycl::queue exec_q,
+true_divide_contig_impl(sycl::queue &exec_q,
                         size_t nelems,
                         const char *arg1_p,
                         py::ssize_t arg1_offset,
@@ -206,7 +206,7 @@ class true_divide_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-true_divide_strided_impl(sycl::queue exec_q,
+true_divide_strided_impl(sycl::queue &exec_q,
                          size_t nelems,
                          int nd,
                          const py::ssize_t *shape_and_strides,
@@ -269,7 +269,7 @@ class true_divide_row_matrix_broadcast_sg_krn;
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event true_divide_contig_matrix_contig_row_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -322,7 +322,7 @@ struct TrueDivideContigMatrixContigRowBroadcastFactory
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event true_divide_contig_row_contig_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,

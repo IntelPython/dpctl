@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "pybind11/pybind11.h"
@@ -207,7 +208,7 @@ public:
 };
 
 typedef sycl::event (*sum_reduction_strided_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -243,7 +244,7 @@ using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_over_group_with_atomics_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -367,7 +368,7 @@ sycl::event sum_reduction_over_group_with_atomics_strided_impl(
 // Contig
 
 typedef sycl::event (*sum_reduction_contig_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -380,7 +381,7 @@ typedef sycl::event (*sum_reduction_contig_impl_fn_ptr)(
 /* @brief Reduce rows in a matrix */
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -491,7 +492,7 @@ sycl::event sum_reduction_axis1_over_group_with_atomics_contig_impl(
 /* @brief Reduce rows in a matrix */
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_axis0_over_group_with_atomics_contig_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of cols in a matrix
                         // when reducing over cols)
     size_t reduction_nelems, // size of each reduction  (length of cols, i.e.
@@ -662,7 +663,7 @@ class sum_reduction_over_group_temps_krn;
 
 template <typename argTy, typename resTy>
 sycl::event sum_reduction_over_group_temps_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -760,7 +761,8 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                 partially_reduced_tmp + reduction_groups * iter_nelems;
         }
 
-        sycl::event first_reduction_ev = exec_q.submit([&](sycl::handler &cgh) {
+        const sycl::event &first_reduction_ev = exec_q.submit([&](sycl::handler
+                                                                      &cgh) {
             cgh.depends_on(depends);
 
             using InputIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
@@ -858,7 +860,7 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
-            dependent_ev = partial_reduction_ev;
+            dependent_ev = std::move(partial_reduction_ev);
         }
 
         // final reduction to res
@@ -915,7 +917,7 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(final_reduction_ev);
-                sycl::context ctx = exec_q.get_context();
+                const sycl::context &ctx = exec_q.get_context();
 
                 cgh.host_task([ctx, partially_reduced_tmp] {
                     sycl::free(partially_reduced_tmp, ctx);

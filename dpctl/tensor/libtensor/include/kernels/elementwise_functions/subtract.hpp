@@ -174,7 +174,7 @@ template <typename argT1,
 class subtract_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event subtract_contig_impl(sycl::queue exec_q,
+sycl::event subtract_contig_impl(sycl::queue &exec_q,
                                  size_t nelems,
                                  const char *arg1_p,
                                  py::ssize_t arg1_offset,
@@ -223,7 +223,7 @@ class subtract_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-subtract_strided_impl(sycl::queue exec_q,
+subtract_strided_impl(sycl::queue &exec_q,
                       size_t nelems,
                       int nd,
                       const py::ssize_t *shape_and_strides,
@@ -285,7 +285,7 @@ class subtract_row_matrix_broadcast_sg_krn;
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event subtract_contig_matrix_contig_row_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -338,7 +338,7 @@ struct SubtractContigMatrixContigRowBroadcastFactory
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event subtract_contig_row_contig_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -435,7 +435,7 @@ class subtract_inplace_contig_kernel;
 
 template <typename argTy, typename resTy>
 sycl::event
-subtract_inplace_contig_impl(sycl::queue exec_q,
+subtract_inplace_contig_impl(sycl::queue &exec_q,
                              size_t nelems,
                              const char *arg_p,
                              py::ssize_t arg_offset,
@@ -473,7 +473,7 @@ class subtract_inplace_strided_kernel;
 
 template <typename argTy, typename resTy>
 sycl::event subtract_inplace_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t nelems,
     int nd,
     const py::ssize_t *shape_and_strides,
@@ -522,7 +522,7 @@ using SubtractInplaceRowMatrixBroadcastingFunctor =
 
 template <typename argT, typename resT>
 sycl::event subtract_inplace_row_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,

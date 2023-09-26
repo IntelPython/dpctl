@@ -128,15 +128,8 @@ template <typename T> struct SignOutputType
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class sign_contig_kernel;
 
-typedef sycl::event (*sign_contig_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const char *,
-    char *,
-    const std::vector<sycl::event> &);
-
 template <typename argTy>
-sycl::event sign_contig_impl(sycl::queue exec_q,
+sycl::event sign_contig_impl(sycl::queue &exec_q,
                              size_t nelems,
                              const char *arg_p,
                              char *res_p,
@@ -180,21 +173,9 @@ using SignStridedFunctor = elementwise_common::
 
 template <typename T1, typename T2, typename T3> class sign_strided_kernel;
 
-typedef sycl::event (*sign_strided_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    const py::ssize_t *,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
-
 template <typename argTy>
 sycl::event
-sign_strided_impl(sycl::queue exec_q,
+sign_strided_impl(sycl::queue &exec_q,
                   size_t nelems,
                   int nd,
                   const py::ssize_t *shape_and_strides,

@@ -100,7 +100,7 @@ public:
  * @brief Function pointer type for generic array cast and copying function.
  */
 typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     int,
     const py::ssize_t *,
@@ -146,7 +146,7 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
  */
 template <typename dstTy, typename srcTy>
 sycl::event
-copy_and_cast_generic_impl(sycl::queue q,
+copy_and_cast_generic_impl(sycl::queue &q,
                            size_t nelems,
                            int nd,
                            const py::ssize_t *shape_and_strides,
@@ -277,7 +277,7 @@ public:
  * @brief Function pointer type for contiguous array cast and copy function.
  */
 typedef sycl::event (*copy_and_cast_contig_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     char *,
@@ -303,7 +303,7 @@ typedef sycl::event (*copy_and_cast_contig_fn_ptr_t)(
    @ingroup CopyAndCastKernels
  */
 template <typename dstTy, typename srcTy>
-sycl::event copy_and_cast_contig_impl(sycl::queue q,
+sycl::event copy_and_cast_contig_impl(sycl::queue &q,
                                       size_t nelems,
                                       const char *src_cp,
                                       char *dst_cp,
@@ -356,7 +356,7 @@ template <typename fnT, typename D, typename S> struct CopyAndCastContigFactory
  * @ingroup CopyAndCastKernels
  */
 typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const std::array<py::ssize_t, 1>,
     const std::array<py::ssize_t, 1>,
@@ -372,7 +372,7 @@ typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
  * @ingroup CopyAndCastKernels
  */
 typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const std::array<py::ssize_t, 2>,
     const std::array<py::ssize_t, 2>,
@@ -414,7 +414,7 @@ typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
  */
 template <typename dstTy, typename srcTy, int nd>
 sycl::event
-copy_and_cast_nd_specialized_impl(sycl::queue q,
+copy_and_cast_nd_specialized_impl(sycl::queue &q,
                                   size_t nelems,
                                   const std::array<py::ssize_t, nd> shape,
                                   const std::array<py::ssize_t, nd> src_strides,
@@ -483,12 +483,12 @@ template <typename AccessorT,
 class GenericCopyFromHostFunctor
 {
 private:
-    AccessorT src_acc_;
+    const AccessorT src_acc_;
     dstTy *dst_ = nullptr;
     IndexerT indexer_;
 
 public:
-    GenericCopyFromHostFunctor(AccessorT src_acc,
+    GenericCopyFromHostFunctor(const AccessorT &src_acc,
                                dstTy *dst_p,
                                IndexerT indexer)
         : src_acc_(src_acc), dst_(dst_p), indexer_(indexer)
@@ -507,7 +507,7 @@ public:
 };
 
 typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     int,
     py::ssize_t *,
@@ -560,7 +560,7 @@ typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
  */
 template <typename dstTy, typename srcTy>
 void copy_and_cast_from_host_impl(
-    sycl::queue q,
+    sycl::queue &q,
     size_t nelems,
     int nd,
     py::ssize_t *shape_and_strides,
@@ -661,7 +661,7 @@ public:
 
 // define function type
 typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,        // num_elements
     int,           // src_nd
     int,           // dst_nd
@@ -693,7 +693,7 @@ typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
  */
 template <typename Ty>
 sycl::event
-copy_for_reshape_generic_impl(sycl::queue q,
+copy_for_reshape_generic_impl(sycl::queue &q,
                               size_t nelems,
                               int src_nd,
                               int dst_nd,
@@ -862,7 +862,7 @@ public:
 
 // define function type
 typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,              // shift
     size_t,              // num_elements
     int,                 // common_nd
@@ -899,7 +899,7 @@ typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
  */
 template <typename Ty>
 sycl::event
-copy_for_roll_strided_impl(sycl::queue q,
+copy_for_roll_strided_impl(sycl::queue &q,
                            size_t shift,
                            size_t nelems,
                            int nd,
@@ -950,7 +950,7 @@ copy_for_roll_strided_impl(sycl::queue q,
 
 // define function type
 typedef sycl::event (*copy_for_roll_contig_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,       // shift
     size_t,       // num_elements
     const char *, // src_data_ptr
@@ -983,7 +983,7 @@ template <typename Ty> class copy_for_roll_contig_kernel;
  * @ingroup CopyAndCastKernels
  */
 template <typename Ty>
-sycl::event copy_for_roll_contig_impl(sycl::queue q,
+sycl::event copy_for_roll_contig_impl(sycl::queue &q,
                                       size_t shift,
                                       size_t nelems,
                                       const char *src_p,
@@ -1053,7 +1053,7 @@ class copy_for_roll_ndshift_strided_kernel;
 
 // define function type
 typedef sycl::event (*copy_for_roll_ndshift_strided_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,              // num_elements
     int,                 // common_nd
     const py::ssize_t *, // packed shape, strides, shifts
@@ -1065,7 +1065,7 @@ typedef sycl::event (*copy_for_roll_ndshift_strided_fn_ptr_t)(
 
 template <typename Ty>
 sycl::event copy_for_roll_ndshift_strided_impl(
-    sycl::queue q,
+    sycl::queue &q,
     size_t nelems,
     int nd,
     const py::ssize_t *packed_shapes_and_strides_and_shifts,

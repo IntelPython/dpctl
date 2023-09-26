@@ -69,10 +69,10 @@ static copy_for_roll_ndshift_strided_fn_ptr_t
  *     dst[np.multi_index(i, dst.shape)] = src[np.multi_index(i, src.shape)]
  */
 std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_for_roll_1d(dpctl::tensor::usm_ndarray src,
-                             dpctl::tensor::usm_ndarray dst,
+copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
+                             const dpctl::tensor::usm_ndarray &dst,
                              py::ssize_t shift,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -239,7 +239,7 @@ copy_usm_ndarray_for_roll_1d(dpctl::tensor::usm_ndarray src,
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_roll_event);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task(
             [shape_strides, ctx]() { sycl::free(shape_strides, ctx); });
     });
@@ -251,10 +251,10 @@ copy_usm_ndarray_for_roll_1d(dpctl::tensor::usm_ndarray src,
 }
 
 std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_for_roll_nd(dpctl::tensor::usm_ndarray src,
-                             dpctl::tensor::usm_ndarray dst,
+copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
+                             const dpctl::tensor::usm_ndarray &dst,
                              const std::vector<py::ssize_t> &shifts,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -379,7 +379,7 @@ copy_usm_ndarray_for_roll_nd(dpctl::tensor::usm_ndarray src,
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_roll_event);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([shape_strides_shifts, ctx]() {
             sycl::free(shape_strides_shifts, ctx);
         });

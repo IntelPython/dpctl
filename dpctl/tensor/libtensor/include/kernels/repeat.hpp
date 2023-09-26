@@ -107,7 +107,7 @@ public:
 };
 
 typedef sycl::event (*repeat_by_sequence_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -128,7 +128,7 @@ typedef sycl::event (*repeat_by_sequence_fn_ptr_t)(
 
 template <typename T, typename repT>
 sycl::event
-repeat_by_sequence_impl(sycl::queue q,
+repeat_by_sequence_impl(sycl::queue &q,
                         size_t orthog_nelems,
                         size_t src_axis_nelems,
                         const char *src_cp,
@@ -191,7 +191,7 @@ template <typename fnT, typename T> struct RepeatSequenceFactory
 };
 
 typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     char *,
@@ -206,7 +206,7 @@ typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 template <typename T, typename repT>
-sycl::event repeat_by_sequence_1d_impl(sycl::queue q,
+sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
                                        size_t src_nelems,
                                        const char *src_cp,
                                        char *dst_cp,
@@ -306,7 +306,7 @@ public:
 };
 
 typedef sycl::event (*repeat_by_scalar_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -323,7 +323,7 @@ typedef sycl::event (*repeat_by_scalar_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 template <typename T>
-sycl::event repeat_by_scalar_impl(sycl::queue q,
+sycl::event repeat_by_scalar_impl(sycl::queue &q,
                                   size_t orthog_nelems,
                                   size_t dst_axis_nelems,
                                   const char *src_cp,
@@ -375,7 +375,7 @@ template <typename fnT, typename T> struct RepeatScalarFactory
 };
 
 typedef sycl::event (*repeat_by_scalar_1d_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     char *,
@@ -387,7 +387,7 @@ typedef sycl::event (*repeat_by_scalar_1d_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 template <typename T>
-sycl::event repeat_by_scalar_1d_impl(sycl::queue q,
+sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
                                      size_t dst_nelems,
                                      const char *src_cp,
                                      char *dst_cp,

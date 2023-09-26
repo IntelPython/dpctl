@@ -38,6 +38,7 @@
 #include <CL/sycl/backend/opencl.hpp>
 #endif
 #include <sstream>
+#include <utility>
 
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
@@ -202,7 +203,7 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
     }
 
     using ekbTy = kernel_bundle<bundle_state::executable>;
-    ekbTy kb =
+    const ekbTy &kb =
         make_kernel_bundle<cl_be, bundle_state::executable>(clProgram, ctx);
     return wrap<ekbTy>(new ekbTy(kb));
 }
@@ -317,7 +318,8 @@ _GetKernel_ocl_impl(const kernel_bundle<bundle_state::executable> &kb,
         try {
             context ctx = kb.get_context();
 
-            kernel interop_kernel = make_kernel<cl_be>(ocl_kernel_from_kb, ctx);
+            const kernel &interop_kernel =
+                make_kernel<cl_be>(ocl_kernel_from_kb, ctx);
 
             return wrap<kernel>(new kernel(interop_kernel));
         } catch (std::exception const &e) {
@@ -473,7 +475,7 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
     }
 
     try {
-        auto kb = make_kernel_bundle<ze_be, bundle_state::executable>(
+        const auto &kb = make_kernel_bundle<ze_be, bundle_state::executable>(
             {ZeModule, ext::oneapi::level_zero::ownership::keep}, SyclCtx);
 
         return wrap<kernel_bundle<bundle_state::executable>>(
@@ -514,8 +516,8 @@ _GetKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
 
         if (ze_status == ZE_RESULT_SUCCESS) {
             found = true;
-            auto ctx = kb.get_context();
-            auto k = make_kernel<ze_be>(
+            const auto &ctx = kb.get_context();
+            const auto &k = make_kernel<ze_be>(
                 {kb, ZeKern, ext::oneapi::level_zero::ownership::keep}, ctx);
             syclInteropKern_ptr = std::unique_ptr<kernel>(new kernel(k));
             break;

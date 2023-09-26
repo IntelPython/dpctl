@@ -36,6 +36,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 using namespace sycl;
@@ -224,7 +225,7 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
     auto P = unwrap<platform>(PRef);
     if (P) {
-        auto default_ctx = P->ext_oneapi_get_default_context();
+        const auto &default_ctx = P->ext_oneapi_get_default_context();
         return wrap<context>(new context(default_ctx));
     }
     else {

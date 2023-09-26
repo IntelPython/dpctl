@@ -59,11 +59,11 @@ static where_strided_impl_fn_ptr_t
 using dpctl::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-py_where(dpctl::tensor::usm_ndarray condition,
-         dpctl::tensor::usm_ndarray x1,
-         dpctl::tensor::usm_ndarray x2,
-         dpctl::tensor::usm_ndarray dst,
-         sycl::queue exec_q,
+py_where(const dpctl::tensor::usm_ndarray &condition,
+         const dpctl::tensor::usm_ndarray &x1,
+         const dpctl::tensor::usm_ndarray &x2,
+         const dpctl::tensor::usm_ndarray &dst,
+         sycl::queue &exec_q,
          const std::vector<sycl::event> &depends)
 {
 
@@ -228,7 +228,7 @@ py_where(dpctl::tensor::usm_ndarray condition,
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(where_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([packed_shape_strides, ctx]() {
             sycl::free(packed_shape_strides, ctx);
         });

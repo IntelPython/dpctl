@@ -38,9 +38,9 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-usm_ndarray_triul(sycl::queue exec_q,
-                  dpctl::tensor::usm_ndarray src,
-                  dpctl::tensor::usm_ndarray dst,
+usm_ndarray_triul(sycl::queue &exec_q,
+                  const dpctl::tensor::usm_ndarray &src,
+                  const dpctl::tensor::usm_ndarray &dst,
                   char part,
                   py::ssize_t k = 0,
                   const std::vector<sycl::event> &depends = {});
