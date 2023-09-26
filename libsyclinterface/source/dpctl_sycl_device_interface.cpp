@@ -35,6 +35,7 @@
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <algorithm>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 using namespace sycl;
@@ -543,7 +544,7 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
-            auto parent_D = D->get_info<info::device::parent_device>();
+            const auto &parent_D = D->get_info<info::device::parent_device>();
             return wrap<device>(new device(parent_D));
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);

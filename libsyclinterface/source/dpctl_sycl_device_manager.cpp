@@ -34,6 +34,7 @@
 #include <iomanip>
 #include <iostream>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 using namespace sycl;
@@ -188,7 +189,7 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (entry != cache.end()) {
         context *ContextPtr = nullptr;
         try {
-            ContextPtr = new context(entry->second);
+            ContextPtr = new context(std::move(entry->second));
             CRef = wrap<context>(ContextPtr);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);

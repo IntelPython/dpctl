@@ -30,6 +30,7 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp> /* SYCL headers   */
+#include <utility>
 
 using namespace sycl;
 
@@ -221,7 +222,7 @@ DPCTLUSM_GetPointerDevice(__dpctl_keep const DPCTLSyclUSMRef MRef,
     auto Ptr = unwrap<void>(MRef);
     auto C = unwrap<context>(CRef);
 
-    auto Dev = get_pointer_device(Ptr, *C);
+    const auto &Dev = get_pointer_device(Ptr, *C);
 
     return wrap<device>(new device(Dev));
 }

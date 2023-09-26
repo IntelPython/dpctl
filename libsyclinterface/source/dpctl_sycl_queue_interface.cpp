@@ -34,6 +34,7 @@
 #include <CL/sycl.hpp> /* SYCL headers   */
 #include <exception>
 #include <stdexcept>
+#include <utility>
 
 using namespace sycl;
 
@@ -387,7 +388,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         return nullptr;
     }
 
-    return wrap<event>(new event(e));
+    return wrap<event>(new event(std::move(e)));
 }
 
 __dpctl_give DPCTLSyclEventRef
@@ -443,7 +444,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         return nullptr;
     }
 
-    return wrap<event>(new event(e));
+    return wrap<event>(new event(std::move(e)));
 }
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
@@ -475,7 +476,7 @@ DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef passed to memcpy was NULL.", __FILE__, __func__,
@@ -529,7 +530,7 @@ DPCTLQueue_MemAdvise(__dpctl_keep DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef passed to prefetch was NULL.", __FILE__, __func__,
@@ -593,7 +594,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
             return nullptr;
         }
 
-        return wrap<event>(new event(e));
+        return wrap<event>(new event(std::move(e)));
     }
     else {
         error_handler("Argument QRef is NULL", __FILE__, __func__, __LINE__);
@@ -622,7 +623,7 @@ DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
@@ -646,7 +647,7 @@ DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
@@ -670,7 +671,7 @@ DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef or USMRef passed to fill16 were NULL.", __FILE__,
@@ -694,7 +695,7 @@ DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef or USMRef passed to fill32 were NULL.", __FILE__,
@@ -718,7 +719,7 @@ DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef or USMRef passed to fill64 were NULL.", __FILE__,
@@ -745,7 +746,7 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
-        return wrap<event>(new event(ev));
+        return wrap<event>(new event(std::move(ev)));
     }
     else {
         error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,
