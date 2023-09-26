@@ -82,9 +82,11 @@ public:
                 sycl::vec<resT, vec_sz> res_vec(const_val);
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     sg.store<vec_sz>(out_multi_ptr, res_vec);
                 }
@@ -111,12 +113,14 @@ public:
 
 #pragma unroll
                 for (std::uint16_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     x = sg.load<vec_sz>(in_multi_ptr);
                     sycl::vec<resT, vec_sz> res_vec = op(x);
@@ -149,12 +153,14 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg_vec = sg.load<vec_sz>(in_multi_ptr);
 #pragma unroll
@@ -188,12 +194,14 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg_vec = sg.load<vec_sz>(in_multi_ptr);
 #pragma unroll
@@ -375,15 +383,17 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in1_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in1[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in1[offset]);
                     auto in2_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in2[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in2[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg1_vec = sg.load<vec_sz>(in1_multi_ptr);
                     arg2_vec = sg.load<vec_sz>(in2_multi_ptr);
@@ -415,15 +425,17 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
                     auto in1_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in1[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in1[offset]);
                     auto in2_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&in2[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&in2[offset]);
                     auto out_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&out[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&out[offset]);
 
                     arg1_vec = sg.load<vec_sz>(in1_multi_ptr);
                     arg2_vec = sg.load<vec_sz>(in2_multi_ptr);
