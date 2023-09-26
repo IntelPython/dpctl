@@ -1059,7 +1059,7 @@ sycl::event keep_args_alive(sycl::queue &q,
 /*! @brief Check if all allocation queues are the same as the
     execution queue */
 template <std::size_t num>
-bool queues_are_compatible(sycl::queue exec_q,
+bool queues_are_compatible(const sycl::queue &exec_q,
                            const sycl::queue (&alloc_qs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {
@@ -1074,7 +1074,7 @@ bool queues_are_compatible(sycl::queue exec_q,
 /*! @brief Check if all allocation queues of  usm_ndarays are the same as
     the execution queue */
 template <std::size_t num>
-bool queues_are_compatible(sycl::queue exec_q,
+bool queues_are_compatible(const sycl::queue &exec_q,
                            const ::dpctl::tensor::usm_ndarray (&arrs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {
