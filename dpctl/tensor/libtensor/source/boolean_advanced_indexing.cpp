@@ -594,7 +594,7 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(place_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_dst_shape_strides] {
                     sycl::free(packed_dst_shape_strides, ctx);
                 });
