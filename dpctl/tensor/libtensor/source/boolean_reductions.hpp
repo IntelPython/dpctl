@@ -292,7 +292,7 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(red_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, packed_shapes_and_strides] {
             sycl::free(packed_shapes_and_strides, ctx);
         });

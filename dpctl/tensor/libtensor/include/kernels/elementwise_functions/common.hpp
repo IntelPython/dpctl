@@ -862,7 +862,7 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        sycl::context ctx = exec_q.get_context();
+        const sycl::context &ctx = exec_q.get_context();
         cgh.host_task([ctx, padded_vec]() { sycl::free(padded_vec, ctx); });
     });
     host_tasks.push_back(tmp_cleanup_ev);

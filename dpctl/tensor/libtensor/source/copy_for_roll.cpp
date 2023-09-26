@@ -239,7 +239,7 @@ copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_roll_event);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task(
             [shape_strides, ctx]() { sycl::free(shape_strides, ctx); });
     });
@@ -379,7 +379,7 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_roll_event);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([shape_strides_shifts, ctx]() {
             sycl::free(shape_strides_shifts, ctx);
         });

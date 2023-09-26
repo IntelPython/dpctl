@@ -327,7 +327,7 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });
@@ -538,7 +538,7 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });

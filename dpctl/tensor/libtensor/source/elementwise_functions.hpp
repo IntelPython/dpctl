@@ -227,7 +227,7 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         q, host_tasks, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
     py::ssize_t *shape_strides = std::get<0>(ptr_size_event_triple_);
-    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_triple_);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
 
     if (shape_strides == nullptr) {
         throw std::runtime_error("Device memory allocation failed");
@@ -533,7 +533,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         simplified_src2_strides, simplified_dst_strides);
 
     py::ssize_t *shape_strides = std::get<0>(ptr_sz_event_triple_);
-    sycl::event copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
 
     if (shape_strides == nullptr) {
         throw std::runtime_error("Unabled to allocate device memory");
@@ -799,7 +799,7 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         simplified_lhs_strides);
 
     py::ssize_t *shape_strides = std::get<0>(ptr_sz_event_triple_);
-    sycl::event copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
 
     if (shape_strides == nullptr) {
         throw std::runtime_error("Unabled to allocate device memory");

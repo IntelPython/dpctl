@@ -338,9 +338,9 @@ PYBIND11_MODULE(_tensor_impl, m)
           dpctl::tensor::py_internal::default_device_index_type,
           "Gives default index type supported by device.", py::arg("dev"));
 
-    auto tril_fn = [](dpctl::tensor::usm_ndarray src,
-                      dpctl::tensor::usm_ndarray dst, py::ssize_t k,
-                      sycl::queue exec_q,
+    auto tril_fn = [](const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
+                      sycl::queue &exec_q,
                       const std::vector<sycl::event> depends)
         -> std::pair<sycl::event, sycl::event> {
         return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
@@ -349,9 +349,9 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    auto triu_fn = [](dpctl::tensor::usm_ndarray src,
-                      dpctl::tensor::usm_ndarray dst, py::ssize_t k,
-                      sycl::queue exec_q,
+    auto triu_fn = [](const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
+                      sycl::queue &exec_q,
                       const std::vector<sycl::event> depends)
         -> std::pair<sycl::event, sycl::event> {
         return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
@@ -371,8 +371,8 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    auto overlap = [](dpctl::tensor::usm_ndarray x1,
-                      dpctl::tensor::usm_ndarray x2) -> bool {
+    auto overlap = [](const dpctl::tensor::usm_ndarray &x1,
+                      const dpctl::tensor::usm_ndarray &x2) -> bool {
         auto const &overlap = MemoryOverlap();
         return overlap(x1, x2);
     };
@@ -380,8 +380,9 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Determines if the memory regions indexed by each array overlap",
           py::arg("array1"), py::arg("array2"));
 
-    auto same_logical_tensors = [](dpctl::tensor::usm_ndarray x1,
-                                   dpctl::tensor::usm_ndarray x2) -> bool {
+    auto same_logical_tensors =
+        [](const dpctl::tensor::usm_ndarray &x1,
+           const dpctl::tensor::usm_ndarray &x2) -> bool {
         auto const &same_logical_tensors = SameLogicalTensors();
         return same_logical_tensors(x1, x2);
     };

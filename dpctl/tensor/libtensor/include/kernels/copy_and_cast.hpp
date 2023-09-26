@@ -483,12 +483,12 @@ template <typename AccessorT,
 class GenericCopyFromHostFunctor
 {
 private:
-    AccessorT src_acc_;
+    const AccessorT src_acc_;
     dstTy *dst_ = nullptr;
     IndexerT indexer_;
 
 public:
-    GenericCopyFromHostFunctor(AccessorT src_acc,
+    GenericCopyFromHostFunctor(const AccessorT &src_acc,
                                dstTy *dst_p,
                                IndexerT indexer)
         : src_acc_(src_acc), dst_(dst_p), indexer_(indexer)

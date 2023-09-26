@@ -264,7 +264,7 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(extract_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_src_shape_strides] {
                     sycl::free(packed_src_shape_strides, ctx);
                 });
@@ -366,7 +366,7 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(extract_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });
@@ -693,7 +693,7 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(place_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });
@@ -838,7 +838,7 @@ py_nonzero(const dpctl::tensor::usm_ndarray
 
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(non_zero_indexes_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, src_shape_device_ptr] {
             sycl::free(src_shape_device_ptr, ctx);
         });

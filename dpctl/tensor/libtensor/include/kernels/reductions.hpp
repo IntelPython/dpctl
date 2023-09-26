@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "pybind11/pybind11.h"
@@ -760,7 +761,8 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
                 partially_reduced_tmp + reduction_groups * iter_nelems;
         }
 
-        sycl::event first_reduction_ev = exec_q.submit([&](sycl::handler &cgh) {
+        const sycl::event &first_reduction_ev = exec_q.submit([&](sycl::handler
+                                                                      &cgh) {
             cgh.depends_on(depends);
 
             using InputIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
@@ -858,7 +860,7 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
-            dependent_ev = partial_reduction_ev;
+            dependent_ev = std::move(partial_reduction_ev);
         }
 
         // final reduction to res
@@ -915,7 +917,7 @@ sycl::event sum_reduction_over_group_temps_strided_impl(
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(final_reduction_ev);
-                sycl::context ctx = exec_q.get_context();
+                const sycl::context &ctx = exec_q.get_context();
 
                 cgh.host_task([ctx, partially_reduced_tmp] {
                     sycl::free(partially_reduced_tmp, ctx);

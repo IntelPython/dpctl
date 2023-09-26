@@ -174,7 +174,7 @@ usm_ndarray_triul(sycl::queue &exec_q,
     if (dev_shape_and_strides == nullptr) {
         throw std::runtime_error("Unabled to allocate device memory");
     }
-    sycl::event copy_shape_and_strides = exec_q.copy<py::ssize_t>(
+    const sycl::event &copy_shape_and_strides = exec_q.copy<py::ssize_t>(
         shp_host_shape_and_strides->data(), dev_shape_and_strides, 3 * nd);
 
     py::ssize_t inner_range = src_shape[src_nd - 1] * src_shape[src_nd - 2];
@@ -194,9 +194,9 @@ usm_ndarray_triul(sycl::queue &exec_q,
                dev_shape_and_strides, k, depends, {copy_shape_and_strides});
     }
 
-    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+    const auto &temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(tri_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task(
             [shp_host_shape_and_strides, dev_shape_and_strides, ctx]() {
                 // capture of shp_host_shape_and_strides ensure the underlying

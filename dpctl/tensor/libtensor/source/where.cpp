@@ -228,7 +228,7 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(where_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([packed_shape_strides, ctx]() {
             sycl::free(packed_shape_strides, ctx);
         });

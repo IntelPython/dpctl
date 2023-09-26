@@ -406,7 +406,7 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, temp_allocation_ptr] {
             sycl::free(temp_allocation_ptr, ctx);
         });

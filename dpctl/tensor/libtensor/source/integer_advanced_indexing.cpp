@@ -120,14 +120,14 @@ _populate_kernel_params(sycl::queue &exec_q,
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
-    sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
+    const sycl::event &device_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), device_ind_ptrs, host_ind_ptrs_shp->size());
 
-    sycl::event device_ind_sh_st_copy_ev =
+    const sycl::event &device_ind_sh_st_copy_ev =
         exec_q.copy<py::ssize_t>(host_ind_sh_st_shp->data(), device_ind_sh_st,
                                  host_ind_sh_st_shp->size());
 
-    sycl::event device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
+    const sycl::event &device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), device_ind_offsets,
         host_ind_offsets_shp->size());
 
@@ -173,22 +173,24 @@ _populate_kernel_params(sycl::queue &exec_q,
                   host_along_sh_st_shp->begin() + 2 * k + ind_nd);
     }
 
-    sycl::event device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
+    const sycl::event &device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
         host_orthog_sh_st_shp->data(), device_orthog_sh_st,
         host_orthog_sh_st_shp->size());
 
-    sycl::event device_along_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
+    const sycl::event &device_along_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
         host_along_sh_st_shp->data(), device_along_sh_st,
         host_along_sh_st_shp->size());
 
-    sycl::event shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on({device_along_sh_st_copy_ev, device_orthog_sh_st_copy_ev,
-                        device_ind_offsets_copy_ev, device_ind_sh_st_copy_ev,
-                        device_ind_ptrs_copy_ev});
-        cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
-                       host_ind_ptrs_shp, host_orthog_sh_st_shp,
-                       host_along_sh_st_shp]() {});
-    });
+    const sycl::event &shared_ptr_cleanup_ev =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on({device_along_sh_st_copy_ev,
+                            device_orthog_sh_st_copy_ev,
+                            device_ind_offsets_copy_ev,
+                            device_ind_sh_st_copy_ev, device_ind_ptrs_copy_ev});
+            cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
+                           host_ind_ptrs_shp, host_orthog_sh_st_shp,
+                           host_along_sh_st_shp]() {});
+        });
     host_task_events.push_back(shared_ptr_cleanup_ev);
 
     std::vector<sycl::event> sh_st_pack_deps{
@@ -523,7 +525,7 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(take_generic_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
                        packed_ind_shapes_strides, packed_ind_ptrs,
                        packed_ind_offsets, ctx]() {
@@ -837,7 +839,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(put_generic_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
                        packed_ind_shapes_strides, packed_ind_ptrs,
                        packed_ind_offsets, ctx]() {

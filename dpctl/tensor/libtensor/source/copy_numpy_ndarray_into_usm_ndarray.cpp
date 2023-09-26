@@ -236,7 +236,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
     if (shape_strides == nullptr) {
         throw std::runtime_error("Unable to allocate device memory");
     }
-    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     // Get implementation function pointer
     auto copy_and_cast_from_host_blocking_fn =

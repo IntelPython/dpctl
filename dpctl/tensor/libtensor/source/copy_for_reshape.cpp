@@ -158,7 +158,7 @@ copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
 
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_reshape_event);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task(
             [shape_strides, ctx]() { sycl::free(shape_strides, ctx); });
     });
