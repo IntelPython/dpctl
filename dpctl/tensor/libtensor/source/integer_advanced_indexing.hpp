@@ -44,7 +44,7 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &,
                  const dpctl::tensor::usm_ndarray &,
                  int,
                  uint8_t,
-                 sycl::queue,
+                 sycl::queue &,
                  const std::vector<sycl::event> & = {});
 
 extern std::pair<sycl::event, sycl::event>
@@ -53,7 +53,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &,
                 const dpctl::tensor::usm_ndarray &,
                 int,
                 uint8_t,
-                sycl::queue,
+                sycl::queue &,
                 const std::vector<sycl::event> & = {});
 
 extern void init_advanced_indexing_dispatch_tables(void);

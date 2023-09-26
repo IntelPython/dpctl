@@ -63,7 +63,7 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
          const dpctl::tensor::usm_ndarray &x1,
          const dpctl::tensor::usm_ndarray &x2,
          const dpctl::tensor::usm_ndarray &dst,
-         sycl::queue exec_q,
+         sycl::queue &exec_q,
          const std::vector<sycl::event> &depends)
 {
 

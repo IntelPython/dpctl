@@ -2746,10 +2746,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::abs_strided_dispatch_vector;
 
         auto abs_pyapi = [&](const arrayT &src, const arrayT &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, abs_output_typeid_vector,
+                src, dst, exec_q, depends, abs_output_typeid_vector,
                 abs_contig_dispatch_vector, abs_strided_dispatch_vector);
         };
         m.def("_abs", abs_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -2769,10 +2769,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::acos_strided_dispatch_vector;
 
         auto acos_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, acos_output_typeid_vector,
+                src, dst, exec_q, depends, acos_output_typeid_vector,
                 acos_contig_dispatch_vector, acos_strided_dispatch_vector);
         };
         m.def("_acos", acos_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -2792,12 +2792,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::acosh_strided_dispatch_vector;
 
         auto acosh_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  acosh_output_typeid_vector,
-                                  acosh_contig_dispatch_vector,
-                                  acosh_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, acosh_output_typeid_vector,
+                acosh_contig_dispatch_vector, acosh_strided_dispatch_vector);
         };
         m.def("_acosh", acosh_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -2821,11 +2820,10 @@ void init_elementwise_functions(py::module_ m)
         auto add_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                              const dpctl::tensor::usm_ndarray &src2,
                              const dpctl::tensor::usm_ndarray &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                add_output_id_table,
+                src1, src2, dst, exec_q, depends, add_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 add_contig_dispatch_table,
@@ -2855,10 +2853,10 @@ void init_elementwise_functions(py::module_ m)
 
         auto add_inplace_pyapi =
             [&](const dpctl::tensor::usm_ndarray &src,
-                const dpctl::tensor::usm_ndarray &dst, sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends = {}) {
                 return py_binary_inplace_ufunc(
-                    src, dst, std::move(exec_q), depends, add_output_id_table,
+                    src, dst, exec_q, depends, add_output_id_table,
                     // function pointers to handle inplace operation on
                     // contiguous arrays (pointers may be nullptr)
                     add_inplace_contig_dispatch_table,
@@ -2883,10 +2881,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::asin_strided_dispatch_vector;
 
         auto asin_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, asin_output_typeid_vector,
+                src, dst, exec_q, depends, asin_output_typeid_vector,
                 asin_contig_dispatch_vector, asin_strided_dispatch_vector);
         };
         m.def("_asin", asin_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -2906,12 +2904,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::asinh_strided_dispatch_vector;
 
         auto asinh_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  asinh_output_typeid_vector,
-                                  asinh_contig_dispatch_vector,
-                                  asinh_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, asinh_output_typeid_vector,
+                asinh_contig_dispatch_vector, asinh_strided_dispatch_vector);
         };
         m.def("_asinh", asinh_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -2930,7 +2927,7 @@ void init_elementwise_functions(py::module_ m)
         using impl::atan_output_typeid_vector;
         using impl::atan_strided_dispatch_vector;
 
-        auto atan_pyapi = [&](arrayT src, arrayT dst, sycl::queue exec_q,
+        auto atan_pyapi = [&](arrayT src, arrayT dst, sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
                 src, dst, exec_q, depends, atan_output_typeid_vector,
@@ -2955,11 +2952,10 @@ void init_elementwise_functions(py::module_ m)
         auto atan2_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                const dpctl::tensor::usm_ndarray &src2,
                                const dpctl::tensor::usm_ndarray &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                atan2_output_id_table,
+                src1, src2, dst, exec_q, depends, atan2_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 atan2_contig_dispatch_table,
@@ -2994,12 +2990,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::atanh_strided_dispatch_vector;
 
         auto atanh_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  atanh_output_typeid_vector,
-                                  atanh_contig_dispatch_vector,
-                                  atanh_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, atanh_output_typeid_vector,
+                atanh_contig_dispatch_vector, atanh_strided_dispatch_vector);
         };
         m.def("_atanh", atanh_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -3021,12 +3016,11 @@ void init_elementwise_functions(py::module_ m)
         auto bitwise_and_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                      const dpctl::tensor::usm_ndarray &src2,
                                      const dpctl::tensor::usm_ndarray &dst,
-                                     sycl::queue exec_q,
+                                     sycl::queue &exec_q,
                                      const std::vector<sycl::event> &depends =
                                          {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                bitwise_and_output_id_table,
+                src1, src2, dst, exec_q, depends, bitwise_and_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 bitwise_and_contig_dispatch_table,
@@ -3066,11 +3060,11 @@ void init_elementwise_functions(py::module_ m)
                                                 &src2,
                                             const dpctl::tensor::usm_ndarray
                                                 &dst,
-                                            sycl::queue exec_q,
+                                            sycl::queue &exec_q,
                                             const std::vector<sycl::event>
                                                 &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
+                src1, src2, dst, exec_q, depends,
                 bitwise_left_shift_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
@@ -3107,9 +3101,9 @@ void init_elementwise_functions(py::module_ m)
         using impl::bitwise_invert_strided_dispatch_vector;
 
         auto bitwise_invert_pyapi = [&](const arrayT &src, const arrayT &dst,
-                                        sycl::queue exec_q,
+                                        sycl::queue &exec_q,
                                         const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
+            return py_unary_ufunc(src, dst, exec_q, depends,
                                   bitwise_invert_output_typeid_vector,
                                   bitwise_invert_contig_dispatch_vector,
                                   bitwise_invert_strided_dispatch_vector);
@@ -3135,12 +3129,11 @@ void init_elementwise_functions(py::module_ m)
         auto bitwise_or_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                     const dpctl::tensor::usm_ndarray &src2,
                                     const dpctl::tensor::usm_ndarray &dst,
-                                    sycl::queue exec_q,
+                                    sycl::queue &exec_q,
                                     const std::vector<sycl::event> &depends =
                                         {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                bitwise_or_output_id_table,
+                src1, src2, dst, exec_q, depends, bitwise_or_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 bitwise_or_contig_dispatch_table,
@@ -3180,11 +3173,11 @@ void init_elementwise_functions(py::module_ m)
                                                  &src2,
                                              const dpctl::tensor::usm_ndarray
                                                  &dst,
-                                             sycl::queue exec_q,
+                                             sycl::queue &exec_q,
                                              const std::vector<sycl::event>
                                                  &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
+                src1, src2, dst, exec_q, depends,
                 bitwise_right_shift_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
@@ -3223,12 +3216,11 @@ void init_elementwise_functions(py::module_ m)
         auto bitwise_xor_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                      const dpctl::tensor::usm_ndarray &src2,
                                      const dpctl::tensor::usm_ndarray &dst,
-                                     sycl::queue exec_q,
+                                     sycl::queue &exec_q,
                                      const std::vector<sycl::event> &depends =
                                          {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                bitwise_xor_output_id_table,
+                src1, src2, dst, exec_q, depends, bitwise_xor_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 bitwise_xor_contig_dispatch_table,
@@ -3263,10 +3255,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::ceil_strided_dispatch_vector;
 
         auto ceil_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, ceil_output_typeid_vector,
+                src, dst, exec_q, depends, ceil_output_typeid_vector,
                 ceil_contig_dispatch_vector, ceil_strided_dispatch_vector);
         };
         m.def("_ceil", ceil_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3286,10 +3278,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::conj_strided_dispatch_vector;
 
         auto conj_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, conj_output_typeid_vector,
+                src, dst, exec_q, depends, conj_output_typeid_vector,
                 conj_contig_dispatch_vector, conj_strided_dispatch_vector);
         };
         m.def("_conj", conj_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3309,10 +3301,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::cos_strided_dispatch_vector;
 
         auto cos_pyapi = [&](const arrayT &src, const arrayT &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, cos_output_typeid_vector,
+                src, dst, exec_q, depends, cos_output_typeid_vector,
                 cos_contig_dispatch_vector, cos_strided_dispatch_vector);
         };
         m.def("_cos", cos_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3332,10 +3324,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::cosh_strided_dispatch_vector;
 
         auto cosh_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, cosh_output_typeid_vector,
+                src, dst, exec_q, depends, cosh_output_typeid_vector,
                 cosh_contig_dispatch_vector, cosh_strided_dispatch_vector);
         };
         m.def("_cosh", cosh_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3361,11 +3353,10 @@ void init_elementwise_functions(py::module_ m)
         auto divide_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                 const dpctl::tensor::usm_ndarray &src2,
                                 const dpctl::tensor::usm_ndarray &dst,
-                                sycl::queue exec_q,
+                                sycl::queue &exec_q,
                                 const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                true_divide_output_id_table,
+                src1, src2, dst, exec_q, depends, true_divide_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 true_divide_contig_dispatch_table,
@@ -3400,11 +3391,10 @@ void init_elementwise_functions(py::module_ m)
         auto equal_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                const dpctl::tensor::usm_ndarray &src2,
                                const dpctl::tensor::usm_ndarray &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                equal_output_id_table,
+                src1, src2, dst, exec_q, depends, equal_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 equal_contig_dispatch_table,
@@ -3439,10 +3429,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::exp_strided_dispatch_vector;
 
         auto exp_pyapi = [&](const arrayT &src, const arrayT &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, exp_output_typeid_vector,
+                src, dst, exec_q, depends, exp_output_typeid_vector,
                 exp_contig_dispatch_vector, exp_strided_dispatch_vector);
         };
         m.def("_exp", exp_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3462,12 +3452,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::expm1_strided_dispatch_vector;
 
         auto expm1_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  expm1_output_typeid_vector,
-                                  expm1_contig_dispatch_vector,
-                                  expm1_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, expm1_output_typeid_vector,
+                expm1_contig_dispatch_vector, expm1_strided_dispatch_vector);
         };
         m.def("_expm1", expm1_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -3487,12 +3476,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::floor_strided_dispatch_vector;
 
         auto floor_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  floor_output_typeid_vector,
-                                  floor_contig_dispatch_vector,
-                                  floor_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, floor_output_typeid_vector,
+                floor_contig_dispatch_vector, floor_strided_dispatch_vector);
         };
         m.def("_floor", floor_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -3514,12 +3502,11 @@ void init_elementwise_functions(py::module_ m)
         auto floor_divide_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                       const dpctl::tensor::usm_ndarray &src2,
                                       const dpctl::tensor::usm_ndarray &dst,
-                                      sycl::queue exec_q,
+                                      sycl::queue &exec_q,
                                       const std::vector<sycl::event> &depends =
                                           {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                floor_divide_output_id_table,
+                src1, src2, dst, exec_q, depends, floor_divide_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 floor_divide_contig_dispatch_table,
@@ -3556,11 +3543,10 @@ void init_elementwise_functions(py::module_ m)
         auto greater_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                  const dpctl::tensor::usm_ndarray &src2,
                                  const dpctl::tensor::usm_ndarray &dst,
-                                 sycl::queue exec_q,
+                                 sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                greater_output_id_table,
+                src1, src2, dst, exec_q, depends, greater_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 greater_contig_dispatch_table,
@@ -3597,12 +3583,11 @@ void init_elementwise_functions(py::module_ m)
         auto greater_equal_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                        const dpctl::tensor::usm_ndarray &src2,
                                        const dpctl::tensor::usm_ndarray &dst,
-                                       sycl::queue exec_q,
+                                       sycl::queue &exec_q,
                                        const std::vector<sycl::event> &depends =
                                            {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                greater_equal_output_id_table,
+                src1, src2, dst, exec_q, depends, greater_equal_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 greater_equal_contig_dispatch_table,
@@ -3638,10 +3623,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::imag_strided_dispatch_vector;
 
         auto imag_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, imag_output_typeid_vector,
+                src, dst, exec_q, depends, imag_output_typeid_vector,
                 imag_contig_dispatch_vector, imag_strided_dispatch_vector);
         };
         m.def("_imag", imag_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3662,9 +3647,9 @@ void init_elementwise_functions(py::module_ m)
         using impl::isfinite_strided_dispatch_vector;
         auto isfinite_pyapi =
             [&](const dpctl::tensor::usm_ndarray &src,
-                const dpctl::tensor::usm_ndarray &dst, sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends = {}) {
-                return py_unary_ufunc(src, dst, std::move(exec_q), depends,
+                return py_unary_ufunc(src, dst, exec_q, depends,
                                       isfinite_output_typeid_vector,
                                       isfinite_contig_dispatch_vector,
                                       isfinite_strided_dispatch_vector);
@@ -3687,12 +3672,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::isinf_strided_dispatch_vector;
         auto isinf_pyapi = [&](const dpctl::tensor::usm_ndarray &src,
                                const dpctl::tensor::usm_ndarray &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  isinf_output_typeid_vector,
-                                  isinf_contig_dispatch_vector,
-                                  isinf_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, isinf_output_typeid_vector,
+                isinf_contig_dispatch_vector, isinf_strided_dispatch_vector);
         };
         auto isinf_result_type_pyapi = [&](const py::dtype &dtype) {
             return py_unary_ufunc_result_type(dtype,
@@ -3712,12 +3696,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::isnan_strided_dispatch_vector;
         auto isnan_pyapi = [&](const dpctl::tensor::usm_ndarray &src,
                                const dpctl::tensor::usm_ndarray &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  isnan_output_typeid_vector,
-                                  isnan_contig_dispatch_vector,
-                                  isnan_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, isnan_output_typeid_vector,
+                isnan_contig_dispatch_vector, isnan_strided_dispatch_vector);
         };
         auto isnan_result_type_pyapi = [&](const py::dtype &dtype) {
             return py_unary_ufunc_result_type(dtype,
@@ -3738,11 +3721,10 @@ void init_elementwise_functions(py::module_ m)
         auto less_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                               const dpctl::tensor::usm_ndarray &src2,
                               const dpctl::tensor::usm_ndarray &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                less_output_id_table,
+                src1, src2, dst, exec_q, depends, less_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 less_contig_dispatch_table,
@@ -3779,12 +3761,11 @@ void init_elementwise_functions(py::module_ m)
         auto less_equal_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                     const dpctl::tensor::usm_ndarray &src2,
                                     const dpctl::tensor::usm_ndarray &dst,
-                                    sycl::queue exec_q,
+                                    sycl::queue &exec_q,
                                     const std::vector<sycl::event> &depends =
                                         {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                less_equal_output_id_table,
+                src1, src2, dst, exec_q, depends, less_equal_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 less_equal_contig_dispatch_table,
@@ -3819,10 +3800,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::log_strided_dispatch_vector;
 
         auto log_pyapi = [&](const arrayT &src, const arrayT &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, log_output_typeid_vector,
+                src, dst, exec_q, depends, log_output_typeid_vector,
                 log_contig_dispatch_vector, log_strided_dispatch_vector);
         };
         m.def("_log", log_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -3842,12 +3823,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::log1p_strided_dispatch_vector;
 
         auto log1p_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  log1p_output_typeid_vector,
-                                  log1p_contig_dispatch_vector,
-                                  log1p_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log1p_output_typeid_vector,
+                log1p_contig_dispatch_vector, log1p_strided_dispatch_vector);
         };
         m.def("_log1p", log1p_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -3868,10 +3848,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::log2_strided_dispatch_vector;
         auto log2_pyapi = [&](const dpctl::tensor::usm_ndarray &src,
                               const dpctl::tensor::usm_ndarray &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, log2_output_typeid_vector,
+                src, dst, exec_q, depends, log2_output_typeid_vector,
                 log2_contig_dispatch_vector, log2_strided_dispatch_vector);
         };
         auto log2_result_type_pyapi = [&](const py::dtype &dtype) {
@@ -3891,12 +3871,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::log10_strided_dispatch_vector;
         auto log10_pyapi = [&](const dpctl::tensor::usm_ndarray &src,
                                const dpctl::tensor::usm_ndarray &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  log10_output_typeid_vector,
-                                  log10_contig_dispatch_vector,
-                                  log10_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, log10_output_typeid_vector,
+                log10_contig_dispatch_vector, log10_strided_dispatch_vector);
         };
         auto log10_result_type_pyapi = [&](const py::dtype &dtype) {
             return py_unary_ufunc_result_type(dtype,
@@ -3917,12 +3896,11 @@ void init_elementwise_functions(py::module_ m)
         auto logaddexp_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                    const dpctl::tensor::usm_ndarray &src2,
                                    const dpctl::tensor::usm_ndarray &dst,
-                                   sycl::queue exec_q,
+                                   sycl::queue &exec_q,
                                    const std::vector<sycl::event> &depends =
                                        {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                logaddexp_output_id_table,
+                src1, src2, dst, exec_q, depends, logaddexp_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 logaddexp_contig_dispatch_table,
@@ -3959,12 +3937,11 @@ void init_elementwise_functions(py::module_ m)
         auto logical_and_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                      const dpctl::tensor::usm_ndarray &src2,
                                      const dpctl::tensor::usm_ndarray &dst,
-                                     sycl::queue exec_q,
+                                     sycl::queue &exec_q,
                                      const std::vector<sycl::event> &depends =
                                          {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                logical_and_output_id_table,
+                src1, src2, dst, exec_q, depends, logical_and_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 logical_and_contig_dispatch_table,
@@ -3999,9 +3976,9 @@ void init_elementwise_functions(py::module_ m)
         using impl::logical_not_strided_dispatch_vector;
 
         auto logical_not_pyapi = [&](const arrayT &src, arrayT dst,
-                                     sycl::queue exec_q,
+                                     sycl::queue &exec_q,
                                      const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
+            return py_unary_ufunc(src, dst, exec_q, depends,
                                   logical_not_output_typeid_vector,
                                   logical_not_contig_dispatch_vector,
                                   logical_not_strided_dispatch_vector);
@@ -4027,12 +4004,11 @@ void init_elementwise_functions(py::module_ m)
         auto logical_or_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                     const dpctl::tensor::usm_ndarray &src2,
                                     const dpctl::tensor::usm_ndarray &dst,
-                                    sycl::queue exec_q,
+                                    sycl::queue &exec_q,
                                     const std::vector<sycl::event> &depends =
                                         {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                logical_or_output_id_table,
+                src1, src2, dst, exec_q, depends, logical_or_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 logical_or_contig_dispatch_table,
@@ -4069,12 +4045,11 @@ void init_elementwise_functions(py::module_ m)
         auto logical_xor_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                      const dpctl::tensor::usm_ndarray &src2,
                                      const dpctl::tensor::usm_ndarray &dst,
-                                     sycl::queue exec_q,
+                                     sycl::queue &exec_q,
                                      const std::vector<sycl::event> &depends =
                                          {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                logical_xor_output_id_table,
+                src1, src2, dst, exec_q, depends, logical_xor_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 logical_xor_contig_dispatch_table,
@@ -4111,11 +4086,10 @@ void init_elementwise_functions(py::module_ m)
         auto maximum_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                  const dpctl::tensor::usm_ndarray &src2,
                                  const dpctl::tensor::usm_ndarray &dst,
-                                 sycl::queue exec_q,
+                                 sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                maximum_output_id_table,
+                src1, src2, dst, exec_q, depends, maximum_output_id_table,
                 // function pointers to handle operation on contiguous
                 // arrays (pointers may be nullptr)
                 maximum_contig_dispatch_table,
@@ -4152,11 +4126,10 @@ void init_elementwise_functions(py::module_ m)
         auto minimum_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                  const dpctl::tensor::usm_ndarray &src2,
                                  const dpctl::tensor::usm_ndarray &dst,
-                                 sycl::queue exec_q,
+                                 sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                minimum_output_id_table,
+                src1, src2, dst, exec_q, depends, minimum_output_id_table,
                 // function pointers to handle operation on contiguous
                 // arrays (pointers may be nullptr)
                 minimum_contig_dispatch_table,
@@ -4195,11 +4168,10 @@ void init_elementwise_functions(py::module_ m)
         auto multiply_pyapi =
             [&](const dpctl::tensor::usm_ndarray &src1,
                 const dpctl::tensor::usm_ndarray &src2,
-                const dpctl::tensor::usm_ndarray &dst, sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends = {}) {
                 return py_binary_ufunc(
-                    src1, src2, dst, std::move(exec_q), depends,
-                    multiply_output_id_table,
+                    src1, src2, dst, exec_q, depends, multiply_output_id_table,
                     // function pointers to handle operation on contiguous
                     // arrays (pointers may be nullptr)
                     multiply_contig_dispatch_table,
@@ -4229,11 +4201,10 @@ void init_elementwise_functions(py::module_ m)
 
         auto multiply_inplace_pyapi =
             [&](const dpctl::tensor::usm_ndarray &src,
-                const dpctl::tensor::usm_ndarray &dst, sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends = {}) {
                 return py_binary_inplace_ufunc(
-                    src, dst, std::move(exec_q), depends,
-                    multiply_output_id_table,
+                    src, dst, exec_q, depends, multiply_output_id_table,
                     // function pointers to handle inplace operation on
                     // contiguous arrays (pointers may be nullptr)
                     multiply_inplace_contig_dispatch_table,
@@ -4258,9 +4229,9 @@ void init_elementwise_functions(py::module_ m)
         using impl::negative_strided_dispatch_vector;
 
         auto negative_pyapi = [&](const arrayT &src, const arrayT &dst,
-                                  sycl::queue exec_q,
+                                  sycl::queue &exec_q,
                                   const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
+            return py_unary_ufunc(src, dst, exec_q, depends,
                                   negative_output_typeid_vector,
                                   negative_contig_dispatch_vector,
                                   negative_strided_dispatch_vector);
@@ -4285,12 +4256,11 @@ void init_elementwise_functions(py::module_ m)
         auto not_equal_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                    const dpctl::tensor::usm_ndarray &src2,
                                    const dpctl::tensor::usm_ndarray &dst,
-                                   sycl::queue exec_q,
+                                   sycl::queue &exec_q,
                                    const std::vector<sycl::event> &depends =
                                        {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                not_equal_output_id_table,
+                src1, src2, dst, exec_q, depends, not_equal_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 not_equal_contig_dispatch_table,
@@ -4325,9 +4295,9 @@ void init_elementwise_functions(py::module_ m)
         using impl::positive_strided_dispatch_vector;
 
         auto positive_pyapi = [&](const arrayT &src, const arrayT &dst,
-                                  sycl::queue exec_q,
+                                  sycl::queue &exec_q,
                                   const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
+            return py_unary_ufunc(src, dst, exec_q, depends,
                                   positive_output_typeid_vector,
                                   positive_contig_dispatch_vector,
                                   positive_strided_dispatch_vector);
@@ -4352,11 +4322,10 @@ void init_elementwise_functions(py::module_ m)
         auto pow_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                              const dpctl::tensor::usm_ndarray &src2,
                              const dpctl::tensor::usm_ndarray &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                pow_output_id_table,
+                src1, src2, dst, exec_q, depends, pow_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 pow_contig_dispatch_table,
@@ -4391,10 +4360,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::proj_strided_dispatch_vector;
 
         auto proj_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, proj_output_typeid_vector,
+                src, dst, exec_q, depends, proj_output_typeid_vector,
                 proj_contig_dispatch_vector, proj_strided_dispatch_vector);
         };
         m.def("_proj", proj_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4414,10 +4383,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::real_strided_dispatch_vector;
 
         auto real_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, real_output_typeid_vector,
+                src, dst, exec_q, depends, real_output_typeid_vector,
                 real_contig_dispatch_vector, real_strided_dispatch_vector);
         };
         m.def("_real", real_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4439,12 +4408,11 @@ void init_elementwise_functions(py::module_ m)
         auto remainder_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                    const dpctl::tensor::usm_ndarray &src2,
                                    const dpctl::tensor::usm_ndarray &dst,
-                                   sycl::queue exec_q,
+                                   sycl::queue &exec_q,
                                    const std::vector<sycl::event> &depends =
                                        {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                remainder_output_id_table,
+                src1, src2, dst, exec_q, depends, remainder_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 remainder_contig_dispatch_table,
@@ -4479,12 +4447,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::round_strided_dispatch_vector;
 
         auto round_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  round_output_typeid_vector,
-                                  round_contig_dispatch_vector,
-                                  round_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, round_output_typeid_vector,
+                round_contig_dispatch_vector, round_strided_dispatch_vector);
         };
         m.def("_round", round_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -4504,10 +4471,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::sign_strided_dispatch_vector;
 
         auto sign_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, sign_output_typeid_vector,
+                src, dst, exec_q, depends, sign_output_typeid_vector,
                 sign_contig_dispatch_vector, sign_strided_dispatch_vector);
         };
         m.def("_sign", sign_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4527,9 +4494,9 @@ void init_elementwise_functions(py::module_ m)
         using impl::signbit_strided_dispatch_vector;
 
         auto signbit_pyapi = [&](const arrayT &src, const arrayT &dst,
-                                 sycl::queue exec_q,
+                                 sycl::queue &exec_q,
                                  const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
+            return py_unary_ufunc(src, dst, exec_q, depends,
                                   signbit_output_typeid_vector,
                                   signbit_contig_dispatch_vector,
                                   signbit_strided_dispatch_vector);
@@ -4552,10 +4519,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::sin_strided_dispatch_vector;
 
         auto sin_pyapi = [&](const arrayT &src, const arrayT &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, sin_output_typeid_vector,
+                src, dst, exec_q, depends, sin_output_typeid_vector,
                 sin_contig_dispatch_vector, sin_strided_dispatch_vector);
         };
         m.def("_sin", sin_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4574,10 +4541,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::sinh_strided_dispatch_vector;
 
         auto sinh_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, sinh_output_typeid_vector,
+                src, dst, exec_q, depends, sinh_output_typeid_vector,
                 sinh_contig_dispatch_vector, sinh_strided_dispatch_vector);
         };
         m.def("_sinh", sinh_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4597,12 +4564,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::square_strided_dispatch_vector;
 
         auto square_pyapi = [&](const arrayT &src, const arrayT &dst,
-                                sycl::queue exec_q,
+                                sycl::queue &exec_q,
                                 const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  square_output_typeid_vector,
-                                  square_contig_dispatch_vector,
-                                  square_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, square_output_typeid_vector,
+                square_contig_dispatch_vector, square_strided_dispatch_vector);
         };
         m.def("_square", square_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -4622,10 +4588,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::sqrt_strided_dispatch_vector;
 
         auto sqrt_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, sqrt_output_typeid_vector,
+                src, dst, exec_q, depends, sqrt_output_typeid_vector,
                 sqrt_contig_dispatch_vector, sqrt_strided_dispatch_vector);
         };
         m.def("_sqrt", sqrt_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4649,11 +4615,10 @@ void init_elementwise_functions(py::module_ m)
         auto subtract_pyapi =
             [&](const dpctl::tensor::usm_ndarray &src1,
                 const dpctl::tensor::usm_ndarray &src2,
-                const dpctl::tensor::usm_ndarray &dst, sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends = {}) {
                 return py_binary_ufunc(
-                    src1, src2, dst, std::move(exec_q), depends,
-                    subtract_output_id_table,
+                    src1, src2, dst, exec_q, depends, subtract_output_id_table,
                     // function pointers to handle operation on contiguous
                     // arrays (pointers may be nullptr)
                     subtract_contig_dispatch_table,
@@ -4683,11 +4648,10 @@ void init_elementwise_functions(py::module_ m)
 
         auto subtract_inplace_pyapi =
             [&](const dpctl::tensor::usm_ndarray &src,
-                const dpctl::tensor::usm_ndarray &dst, sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends = {}) {
                 return py_binary_inplace_ufunc(
-                    src, dst, std::move(exec_q), depends,
-                    subtract_output_id_table,
+                    src, dst, exec_q, depends, subtract_output_id_table,
                     // function pointers to handle inplace operation on
                     // contiguous arrays (pointers may be nullptr)
                     subtract_inplace_contig_dispatch_table,
@@ -4712,10 +4676,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::tan_strided_dispatch_vector;
 
         auto tan_pyapi = [&](const arrayT &src, const arrayT &dst,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, tan_output_typeid_vector,
+                src, dst, exec_q, depends, tan_output_typeid_vector,
                 tan_contig_dispatch_vector, tan_strided_dispatch_vector);
         };
         m.def("_tan", tan_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4735,10 +4699,10 @@ void init_elementwise_functions(py::module_ m)
         using impl::tanh_strided_dispatch_vector;
 
         auto tanh_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue exec_q,
+                              sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
             return py_unary_ufunc(
-                src, dst, std::move(exec_q), depends, tanh_output_typeid_vector,
+                src, dst, exec_q, depends, tanh_output_typeid_vector,
                 tanh_contig_dispatch_vector, tanh_strided_dispatch_vector);
         };
         m.def("_tanh", tanh_pyapi, "", py::arg("src"), py::arg("dst"),
@@ -4758,12 +4722,11 @@ void init_elementwise_functions(py::module_ m)
         using impl::trunc_strided_dispatch_vector;
 
         auto trunc_pyapi = [&](const arrayT &src, const arrayT &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_unary_ufunc(src, dst, std::move(exec_q), depends,
-                                  trunc_output_typeid_vector,
-                                  trunc_contig_dispatch_vector,
-                                  trunc_strided_dispatch_vector);
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, trunc_output_typeid_vector,
+                trunc_contig_dispatch_vector, trunc_strided_dispatch_vector);
         };
         m.def("_trunc", trunc_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
@@ -4785,11 +4748,10 @@ void init_elementwise_functions(py::module_ m)
         auto hypot_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
                                const dpctl::tensor::usm_ndarray &src2,
                                const dpctl::tensor::usm_ndarray &dst,
-                               sycl::queue exec_q,
+                               sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {}) {
             return py_binary_ufunc(
-                src1, src2, dst, std::move(exec_q), depends,
-                hypot_output_id_table,
+                src1, src2, dst, exec_q, depends, hypot_output_id_table,
                 // function pointers to handle operation on contiguous arrays
                 // (pointers may be nullptr)
                 hypot_contig_dispatch_table,

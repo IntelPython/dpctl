@@ -95,7 +95,7 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
                       const dpctl::tensor::usm_ndarray &reps,
                       const dpctl::tensor::usm_ndarray &cumsum,
                       int axis,
-                      sycl::queue exec_q,
+                      sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -348,7 +348,7 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
                     const dpctl::tensor::usm_ndarray &dst,
                     const py::ssize_t reps,
                     int axis,
-                    sycl::queue exec_q,
+                    sycl::queue &exec_q,
                     const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();

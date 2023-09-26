@@ -52,7 +52,7 @@ static tri_fn_ptr_t tril_generic_dispatch_vector[td_ns::num_types];
 static tri_fn_ptr_t triu_generic_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_triul(sycl::queue exec_q,
+usm_ndarray_triul(sycl::queue &exec_q,
                   const dpctl::tensor::usm_ndarray &src,
                   const dpctl::tensor::usm_ndarray &dst,
                   char part,

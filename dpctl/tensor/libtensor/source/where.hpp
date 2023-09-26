@@ -42,7 +42,7 @@ py_where(const dpctl::tensor::usm_ndarray &,
          const dpctl::tensor::usm_ndarray &,
          const dpctl::tensor::usm_ndarray &,
          const dpctl::tensor::usm_ndarray &,
-         sycl::queue,
+         sycl::queue &,
          const std::vector<sycl::event> &);
 
 extern void init_where_dispatch_tables(void);

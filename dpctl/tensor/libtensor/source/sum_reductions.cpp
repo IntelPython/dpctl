@@ -98,7 +98,7 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
     const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // sum over this many trailing indexes
     const dpctl::tensor::usm_ndarray &dst,
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -422,7 +422,7 @@ std::pair<sycl::event, sycl::event> py_sum_over_axis(
 bool py_sum_over_axis_dtype_supported(const py::dtype &input_dtype,
                                       const py::dtype &output_dtype,
                                       const std::string &dst_usm_type,
-                                      sycl::queue q)
+                                      sycl::queue &q)
 {
     int arg_tn =
         input_dtype.num(); // NumPy type numbers are the same as in dpctl

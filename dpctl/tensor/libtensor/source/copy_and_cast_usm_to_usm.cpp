@@ -69,7 +69,7 @@ using dpctl::utils::keep_args_alive;
 std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
                                   const dpctl::tensor::usm_ndarray &dst,
-                                  sycl::queue exec_q,
+                                  sycl::queue &exec_q,
                                   const std::vector<sycl::event> &depends = {})
 {
     // array dimensions must be the same

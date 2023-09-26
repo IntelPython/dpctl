@@ -40,7 +40,7 @@ namespace py_internal
 extern void copy_numpy_ndarray_into_usm_ndarray(
     const py::array &npy_src,
     const dpctl::tensor::usm_ndarray &dst,
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> &depends = {});
 
 extern void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void);

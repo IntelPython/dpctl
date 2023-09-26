@@ -67,7 +67,7 @@ namespace py = pybind11;
 using dpctl::utils::keep_args_alive;
 
 std::vector<sycl::event>
-_populate_kernel_params(sycl::queue exec_q,
+_populate_kernel_params(sycl::queue &exec_q,
                         std::vector<sycl::event> &host_task_events,
                         char **device_ind_ptrs,
                         py::ssize_t *device_ind_sh_st,
@@ -238,7 +238,7 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
                  const dpctl::tensor::usm_ndarray &dst,
                  int axis_start,
                  uint8_t mode,
-                 sycl::queue exec_q,
+                 sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
     std::vector<dpctl::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
@@ -549,7 +549,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
                 const dpctl::tensor::usm_ndarray &val,
                 int axis_start,
                 uint8_t mode,
-                sycl::queue exec_q,
+                sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends)
 {
     std::vector<dpctl::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);

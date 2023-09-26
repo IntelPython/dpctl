@@ -114,8 +114,8 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
            const dpctl::tensor::usm_ndarray &cumsum,
            int axis_start, // axis_start <= mask_i < axis_end
            int axis_end,
-           dpctl::tensor::usm_ndarray dst,
-           sycl::queue exec_q,
+           const dpctl::tensor::usm_ndarray &dst,
+           sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -449,7 +449,7 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
          int axis_start, // axis_start <= mask_i < axis_end
          int axis_end,
          const dpctl::tensor::usm_ndarray &rhs,
-         sycl::queue exec_q,
+         sycl::queue &exec_q,
          const std::vector<sycl::event> &depends)
 {
     int dst_nd = dst.get_ndim();
@@ -718,7 +718,7 @@ py_nonzero(const dpctl::tensor::usm_ndarray
                &indexes, // int32/int64 2D output array, C-contiguous
            const std::vector<py::ssize_t>
                &mask_shape, // shape of array from which cumsum was computed
-           sycl::queue exec_q,
+           sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
 {
     if (!dpctl::utils::queues_are_compatible(exec_q, {cumsum, indexes})) {

@@ -72,7 +72,7 @@ std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
                              const dpctl::tensor::usm_ndarray &dst,
                              py::ssize_t shift,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
@@ -254,7 +254,7 @@ std::pair<sycl::event, sycl::event>
 copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
                              const dpctl::tensor::usm_ndarray &dst,
                              const std::vector<py::ssize_t> &shifts,
-                             sycl::queue exec_q,
+                             sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();

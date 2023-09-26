@@ -99,7 +99,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
 size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                          const dpctl::tensor::usm_ndarray &cumsum,
-                         sycl::queue exec_q,
+                         sycl::queue &exec_q,
                          const std::vector<sycl::event> &depends)
 {
     // cumsum is 1D
@@ -155,8 +155,7 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                       ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
                       : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
-        return fn(std::move(exec_q), mask_size, mask_data, cumsum_data,
-                  depends);
+        return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
     }
 
     const py::ssize_t *shape = mask.get_shape_raw();
@@ -236,7 +235,7 @@ void populate_cumsum_1d_dispatch_vectors(void)
 
 size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
                     const dpctl::tensor::usm_ndarray &cumsum,
-                    sycl::queue exec_q,
+                    sycl::queue &exec_q,
                     std::vector<sycl::event> const &depends)
 {
     // cumsum is 1D
@@ -291,7 +290,7 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
                 "this cumsum requires integer type, got src_typeid=" +
                 std::to_string(src_typeid));
         }
-        return fn(std::move(exec_q), src_size, src_data, cumsum_data, depends);
+        return fn(exec_q, src_size, src_data, cumsum_data, depends);
     }
 
     const py::ssize_t *shape = src.get_shape_raw();
