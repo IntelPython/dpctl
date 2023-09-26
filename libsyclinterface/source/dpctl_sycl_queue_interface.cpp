@@ -500,7 +500,7 @@ DPCTLQueue_Prefetch(__dpctl_keep DPCTLSyclQueueRef QRef,
                 error_handler(e, __FILE__, __func__, __LINE__);
                 return nullptr;
             }
-            return wrap<event>(new event(ev));
+            return wrap<event>(new event(std::move(ev)));
         }
         else {
             error_handler("Attempt to prefetch USM-allocation at nullptr.",
