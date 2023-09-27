@@ -52,7 +52,7 @@ def _default_reduction_dtype(inp_dt, q):
     return res_dt
 
 
-def sum(arr, axis=None, dtype=None, keepdims=False):
+def sum(x, axis=None, dtype=None, keepdims=False):
     """sum(x, axis=None, dtype=None, keepdims=False)
 
     Calculates the sum of the input array `x`.
@@ -101,9 +101,9 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
             array has the data type as described in the `dtype` parameter
             description above.
     """
-    if not isinstance(arr, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(arr)}")
-    nd = arr.ndim
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+    nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
     if not isinstance(axis, (tuple, list)):
@@ -111,18 +111,18 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
     axis = normalize_axis_tuple(axis, nd, "axis")
     red_nd = len(axis)
     perm = [i for i in range(nd) if i not in axis] + list(axis)
-    arr2 = dpt.permute_dims(arr, perm)
+    arr2 = dpt.permute_dims(x, perm)
     res_shape = arr2.shape[: nd - red_nd]
-    q = arr.sycl_queue
-    inp_dt = arr.dtype
+    q = x.sycl_queue
+    inp_dt = x.dtype
     if dtype is None:
         res_dt = _default_reduction_dtype(inp_dt, q)
     else:
         res_dt = dpt.dtype(dtype)
         res_dt = _to_device_supported_dtype(res_dt, q.sycl_device)
 
-    res_usm_type = arr.usm_type
-    if arr.size == 0:
+    res_usm_type = x.usm_type
+    if x.size == 0:
         if keepdims:
             res_shape = res_shape + (1,) * red_nd
             inv_perm = sorted(range(nd), key=lambda d: perm[d])
@@ -131,7 +131,7 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
     if red_nd == 0:
-        return dpt.astype(arr, res_dt, copy=False)
+        return dpt.astype(x, res_dt, copy=False)
 
     host_tasks_list = []
     if ti._sum_over_axis_dtype_supported(inp_dt, res_dt, res_usm_type, q):
@@ -173,43 +173,35 @@ def sum(arr, axis=None, dtype=None, keepdims=False):
     return res
 
 
-def _same_dtype_reduction(x, axis, keepdims, func):
+def _comparison_over_axis(x, axis, keepdims, _reduction_fn):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
 
     nd = x.ndim
     if axis is None:
-        red_nd = nd
-        # case of a scalar
-        if red_nd == 0:
-            return dpt.copy(x)
-        x_tmp = x
-        res_shape = tuple()
-        perm = list(range(nd))
-    else:
-        if not isinstance(axis, (tuple, list)):
-            axis = (axis,)
-        axis = normalize_axis_tuple(axis, nd, "axis")
-
-        red_nd = len(axis)
-        # check for axis=()
-        if red_nd == 0:
-            return dpt.copy(x)
-        perm = [i for i in range(nd) if i not in axis] + list(axis)
-        x_tmp = dpt.permute_dims(x, perm)
-        res_shape = x_tmp.shape[: nd - red_nd]
-
+        axis = tuple(range(nd))
+    if not isinstance(axis, (tuple, list)):
+        axis = (axis,)
+    axis = normalize_axis_tuple(axis, nd, "axis")
+    red_nd = len(axis)
+    perm = [i for i in range(nd) if i not in axis] + list(axis)
+    x_tmp = dpt.permute_dims(x, perm)
+    res_shape = x_tmp.shape[: nd - red_nd]
     exec_q = x.sycl_queue
+    res_dt = x.dtype
     res_usm_type = x.usm_type
-    res_dtype = x.dtype
+    if x.size == 0:
+        raise ValueError("reduction does not support zero-size arrays")
+    if red_nd == 0:
+        return x
 
     res = dpt.empty(
         res_shape,
-        dtype=res_dtype,
+        dtype=res_dt,
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
-    hev, _ = func(
+    hev, _ = _reduction_fn(
         src=x_tmp,
         trailing_dims_to_reduce=red_nd,
         dst=res,
@@ -225,54 +217,48 @@ def _same_dtype_reduction(x, axis, keepdims, func):
 
 
 def max(x, axis=None, keepdims=False):
-    return _same_dtype_reduction(x, axis, keepdims, ti._max_over_axis)
+    return _comparison_over_axis(x, axis, keepdims, ti._max_over_axis)
 
 
 def min(x, axis=None, keepdims=False):
-    return _same_dtype_reduction(x, axis, keepdims, ti._min_over_axis)
+    return _comparison_over_axis(x, axis, keepdims, ti._min_over_axis)
 
 
-def _argmax_argmin_reduction(x, axis, keepdims, func):
+def _search_over_axis(x, axis, keepdims, _reduction_fn):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
 
     nd = x.ndim
     if axis is None:
-        red_nd = nd
-        # case of a scalar
-        if red_nd == 0:
-            return dpt.zeros(
-                (), dtype="i8", usm_type=x.usm_type, sycl_queue=x.sycl_queue
-            )
-        x_tmp = x
-        res_shape = tuple()
-        perm = list(range(nd))
+        axis = tuple(range(nd))
+    elif isinstance(axis, int):
+        axis = (axis,)
     else:
-        if not isinstance(axis, (tuple, list)):
-            axis = (axis,)
-        axis = normalize_axis_tuple(axis, nd, "axis")
-
-        red_nd = len(axis)
-        # check for axis=()
-        if red_nd == 0:
-            return dpt.zeros(
-                (), dtype="i8", usm_type=x.usm_type, sycl_queue=x.sycl_queue
-            )
-        perm = [i for i in range(nd) if i not in axis] + list(axis)
-        x_tmp = dpt.permute_dims(x, perm)
-        res_shape = x_tmp.shape[: nd - red_nd]
-
+        raise TypeError(
+            f"`axis` argument expected `int` or `None`, got {type(axis)}"
+        )
+    axis = normalize_axis_tuple(axis, nd, "axis")
+    red_nd = len(axis)
+    perm = [i for i in range(nd) if i not in axis] + list(axis)
+    x_tmp = dpt.permute_dims(x, perm)
+    res_shape = x_tmp.shape[: nd - red_nd]
     exec_q = x.sycl_queue
+    res_dt = ti.default_device_index_type(exec_q.sycl_device)
     res_usm_type = x.usm_type
-    res_dtype = dpt.int64
+    if x.size == 0:
+        raise ValueError("reduction does not support zero-size arrays")
+    if red_nd == 0:
+        return dpt.zeros(
+            res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
+        )
 
     res = dpt.empty(
         res_shape,
-        dtype=res_dtype,
+        dtype=res_dt,
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
-    hev, _ = func(
+    hev, _ = _reduction_fn(
         src=x_tmp,
         trailing_dims_to_reduce=red_nd,
         dst=res,
@@ -288,8 +274,8 @@ def _argmax_argmin_reduction(x, axis, keepdims, func):
 
 
 def argmax(x, axis=None, keepdims=False):
-    return _argmax_argmin_reduction(x, axis, keepdims, ti._argmax_over_axis)
+    return _search_over_axis(x, axis, keepdims, ti._argmax_over_axis)
 
 
 def argmin(x, axis=None, keepdims=False):
-    return _argmax_argmin_reduction(x, axis, keepdims, ti._argmin_over_axis)
+    return _search_over_axis(x, axis, keepdims, ti._argmin_over_axis)
