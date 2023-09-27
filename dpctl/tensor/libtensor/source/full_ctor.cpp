@@ -53,9 +53,9 @@ using dpctl::tensor::kernels::constructors::full_contig_fn_ptr_t;
 static full_contig_fn_ptr_t full_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_full(py::object py_value,
-                 dpctl::tensor::usm_ndarray dst,
-                 sycl::queue exec_q,
+usm_ndarray_full(const py::object &py_value,
+                 const dpctl::tensor::usm_ndarray &dst,
+                 sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
     // start, end should be coercible into data type of dst

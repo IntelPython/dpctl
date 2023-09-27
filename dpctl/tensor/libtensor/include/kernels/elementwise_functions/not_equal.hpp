@@ -174,7 +174,7 @@ template <typename argT1,
 class not_equal_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event not_equal_contig_impl(sycl::queue exec_q,
+sycl::event not_equal_contig_impl(sycl::queue &exec_q,
                                   size_t nelems,
                                   const char *arg1_p,
                                   py::ssize_t arg1_offset,
@@ -223,7 +223,7 @@ class not_equal_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-not_equal_strided_impl(sycl::queue exec_q,
+not_equal_strided_impl(sycl::queue &exec_q,
                        size_t nelems,
                        int nd,
                        const py::ssize_t *shape_and_strides,

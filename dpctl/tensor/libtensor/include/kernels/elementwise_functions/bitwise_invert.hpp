@@ -126,7 +126,7 @@ class bitwise_invert_contig_kernel;
 
 template <typename argTy>
 sycl::event
-bitwise_invert_contig_impl(sycl::queue exec_q,
+bitwise_invert_contig_impl(sycl::queue &exec_q,
                            size_t nelems,
                            const char *arg_p,
                            char *res_p,
@@ -171,7 +171,7 @@ class bitwise_invert_strided_kernel;
 
 template <typename argTy>
 sycl::event
-bitwise_invert_strided_impl(sycl::queue exec_q,
+bitwise_invert_strided_impl(sycl::queue &exec_q,
                             size_t nelems,
                             int nd,
                             const py::ssize_t *shape_and_strides,

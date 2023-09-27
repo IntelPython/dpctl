@@ -50,8 +50,8 @@ static eye_fn_ptr_t eye_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_eye(py::ssize_t k,
-                dpctl::tensor::usm_ndarray dst,
-                sycl::queue exec_q,
+                const dpctl::tensor::usm_ndarray &dst,
+                sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends)
 {
     // dst must be 2D

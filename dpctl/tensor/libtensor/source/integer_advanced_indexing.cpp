@@ -67,7 +67,7 @@ namespace py = pybind11;
 using dpctl::utils::keep_args_alive;
 
 std::vector<sycl::event>
-_populate_kernel_params(sycl::queue exec_q,
+_populate_kernel_params(sycl::queue &exec_q,
                         std::vector<sycl::event> &host_task_events,
                         char **device_ind_ptrs,
                         py::ssize_t *device_ind_sh_st,
@@ -120,14 +120,14 @@ _populate_kernel_params(sycl::queue exec_q,
     std::copy(ind_offsets.begin(), ind_offsets.end(),
               host_ind_offsets_shp->begin());
 
-    sycl::event device_ind_ptrs_copy_ev = exec_q.copy<char *>(
+    const sycl::event &device_ind_ptrs_copy_ev = exec_q.copy<char *>(
         host_ind_ptrs_shp->data(), device_ind_ptrs, host_ind_ptrs_shp->size());
 
-    sycl::event device_ind_sh_st_copy_ev =
+    const sycl::event &device_ind_sh_st_copy_ev =
         exec_q.copy<py::ssize_t>(host_ind_sh_st_shp->data(), device_ind_sh_st,
                                  host_ind_sh_st_shp->size());
 
-    sycl::event device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
+    const sycl::event &device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
         host_ind_offsets_shp->data(), device_ind_offsets,
         host_ind_offsets_shp->size());
 
@@ -173,22 +173,24 @@ _populate_kernel_params(sycl::queue exec_q,
                   host_along_sh_st_shp->begin() + 2 * k + ind_nd);
     }
 
-    sycl::event device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
+    const sycl::event &device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
         host_orthog_sh_st_shp->data(), device_orthog_sh_st,
         host_orthog_sh_st_shp->size());
 
-    sycl::event device_along_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
+    const sycl::event &device_along_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
         host_along_sh_st_shp->data(), device_along_sh_st,
         host_along_sh_st_shp->size());
 
-    sycl::event shared_ptr_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on({device_along_sh_st_copy_ev, device_orthog_sh_st_copy_ev,
-                        device_ind_offsets_copy_ev, device_ind_sh_st_copy_ev,
-                        device_ind_ptrs_copy_ev});
-        cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
-                       host_ind_ptrs_shp, host_orthog_sh_st_shp,
-                       host_along_sh_st_shp]() {});
-    });
+    const sycl::event &shared_ptr_cleanup_ev =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on({device_along_sh_st_copy_ev,
+                            device_orthog_sh_st_copy_ev,
+                            device_ind_offsets_copy_ev,
+                            device_ind_sh_st_copy_ev, device_ind_ptrs_copy_ev});
+            cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
+                           host_ind_ptrs_shp, host_orthog_sh_st_shp,
+                           host_along_sh_st_shp]() {});
+        });
     host_task_events.push_back(shared_ptr_cleanup_ev);
 
     std::vector<sycl::event> sh_st_pack_deps{
@@ -200,7 +202,7 @@ _populate_kernel_params(sycl::queue exec_q,
 
 /* Utility to parse python object py_ind into vector of `usm_ndarray`s */
 std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
-                                                     py::object py_ind)
+                                                     const py::object &py_ind)
 {
     size_t ind_count = py::len(py_ind);
     std::vector<dpctl::tensor::usm_ndarray> res;
@@ -233,12 +235,12 @@ std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
 }
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_take(dpctl::tensor::usm_ndarray src,
-                 py::object py_ind,
-                 dpctl::tensor::usm_ndarray dst,
+usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
+                 const py::object &py_ind,
+                 const dpctl::tensor::usm_ndarray &dst,
                  int axis_start,
                  uint8_t mode,
-                 sycl::queue exec_q,
+                 sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
     std::vector<dpctl::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
@@ -523,7 +525,7 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(take_generic_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
                        packed_ind_shapes_strides, packed_ind_ptrs,
                        packed_ind_offsets, ctx]() {
@@ -544,12 +546,12 @@ usm_ndarray_take(dpctl::tensor::usm_ndarray src,
 }
 
 std::pair<sycl::event, sycl::event>
-usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
-                py::object py_ind,
-                dpctl::tensor::usm_ndarray val,
+usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
+                const py::object &py_ind,
+                const dpctl::tensor::usm_ndarray &val,
                 int axis_start,
                 uint8_t mode,
-                sycl::queue exec_q,
+                sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends)
 {
     std::vector<dpctl::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
@@ -837,7 +839,7 @@ usm_ndarray_put(dpctl::tensor::usm_ndarray dst,
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(put_generic_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
                        packed_ind_shapes_strides, packed_ind_ptrs,
                        packed_ind_offsets, ctx]() {

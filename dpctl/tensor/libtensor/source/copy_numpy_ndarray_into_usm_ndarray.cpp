@@ -54,9 +54,9 @@ static copy_and_cast_from_host_blocking_fn_ptr_t
                                                    [td_ns::num_types];
 
 void copy_numpy_ndarray_into_usm_ndarray(
-    py::array npy_src,
-    dpctl::tensor::usm_ndarray dst,
-    sycl::queue exec_q,
+    const py::array &npy_src,
+    const dpctl::tensor::usm_ndarray &dst,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> &depends)
 {
     int src_ndim = npy_src.ndim();
@@ -236,7 +236,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
     if (shape_strides == nullptr) {
         throw std::runtime_error("Unable to allocate device memory");
     }
-    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     // Get implementation function pointer
     auto copy_and_cast_from_host_blocking_fn =

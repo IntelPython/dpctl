@@ -67,9 +67,9 @@ namespace py = pybind11;
 using dpctl::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
-                                  dpctl::tensor::usm_ndarray dst,
-                                  sycl::queue exec_q,
+copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
+                                  const dpctl::tensor::usm_ndarray &dst,
+                                  sycl::queue &exec_q,
                                   const std::vector<sycl::event> &depends = {})
 {
     // array dimensions must be the same
@@ -250,15 +250,15 @@ copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
     if (shape_strides == nullptr) {
         throw std::runtime_error("Unable to allocate device memory");
     }
-    sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
-    sycl::event copy_and_cast_generic_ev = copy_and_cast_fn(
+    const sycl::event &copy_and_cast_generic_ev = copy_and_cast_fn(
         exec_q, src_nelems, nd, shape_strides, src_data, src_offset, dst_data,
         dst_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    auto ctx = exec_q.get_context();
-    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+    const auto &ctx = exec_q.get_context();
+    const auto &temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_and_cast_generic_ev);
         cgh.host_task(
             [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });

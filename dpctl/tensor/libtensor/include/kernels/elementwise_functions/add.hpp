@@ -176,7 +176,7 @@ template <typename argT1,
 class add_contig_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event add_contig_impl(sycl::queue exec_q,
+sycl::event add_contig_impl(sycl::queue &exec_q,
                             size_t nelems,
                             const char *arg1_p,
                             py::ssize_t arg1_offset,
@@ -222,7 +222,7 @@ template <typename T1, typename T2, typename resT, typename IndexerT>
 class add_strided_kernel;
 
 template <typename argTy1, typename argTy2>
-sycl::event add_strided_impl(sycl::queue exec_q,
+sycl::event add_strided_impl(sycl::queue &exec_q,
                              size_t nelems,
                              int nd,
                              const py::ssize_t *shape_and_strides,
@@ -270,7 +270,7 @@ using AddContigMatrixContigRowBroadcastingFunctor =
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event add_contig_matrix_contig_row_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -319,7 +319,7 @@ struct AddContigMatrixContigRowBroadcastFactory
 
 template <typename argT1, typename argT2, typename resT>
 sycl::event add_contig_row_contig_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,
@@ -412,7 +412,7 @@ class add_inplace_contig_kernel;
 
 template <typename argTy, typename resTy>
 sycl::event
-add_inplace_contig_impl(sycl::queue exec_q,
+add_inplace_contig_impl(sycl::queue &exec_q,
                         size_t nelems,
                         const char *arg_p,
                         py::ssize_t arg_offset,
@@ -446,7 +446,7 @@ class add_inplace_strided_kernel;
 
 template <typename argTy, typename resTy>
 sycl::event
-add_inplace_strided_impl(sycl::queue exec_q,
+add_inplace_strided_impl(sycl::queue &exec_q,
                          size_t nelems,
                          int nd,
                          const py::ssize_t *shape_and_strides,
@@ -492,7 +492,7 @@ using AddInplaceRowMatrixBroadcastingFunctor =
 
 template <typename argT, typename resT>
 sycl::event add_inplace_row_matrix_broadcast_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
     size_t n0,
     size_t n1,

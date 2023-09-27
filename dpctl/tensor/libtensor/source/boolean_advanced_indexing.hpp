@@ -39,34 +39,36 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-py_extract(dpctl::tensor::usm_ndarray src,
-           dpctl::tensor::usm_ndarray cumsum,
+py_extract(const dpctl::tensor::usm_ndarray &src,
+           const dpctl::tensor::usm_ndarray &cumsum,
            int axis_start, // axis_start <= mask_i < axis_end
            int axis_end,
-           dpctl::tensor::usm_ndarray dst,
-           sycl::queue exec_q,
-           std::vector<sycl::event> const &depends = {});
+           const dpctl::tensor::usm_ndarray &dst,
+           sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends = {});
 
 extern void populate_masked_extract_dispatch_vectors(void);
 
 extern std::pair<sycl::event, sycl::event>
-py_place(dpctl::tensor::usm_ndarray dst,
-         dpctl::tensor::usm_ndarray cumsum,
+py_place(const dpctl::tensor::usm_ndarray &dst,
+         const dpctl::tensor::usm_ndarray &cumsum,
          int axis_start, // axis_start <= mask_i < axis_end
          int axis_end,
-         dpctl::tensor::usm_ndarray rhs,
-         sycl::queue exec_q,
-         std::vector<sycl::event> const &depends = {});
+         const dpctl::tensor::usm_ndarray &rhs,
+         sycl::queue &exec_q,
+         const std::vector<sycl::event> &depends = {});
 
 extern void populate_masked_place_dispatch_vectors(void);
 
-extern std::pair<sycl::event, sycl::event> py_nonzero(
-    dpctl::tensor::usm_ndarray cumsum,  // int32 input array, 1D, C-contiguous
-    dpctl::tensor::usm_ndarray indexes, // int32 2D output array, C-contiguous
-    std::vector<py::ssize_t>
-        mask_shape, // shape of array from which cumsum was computed
-    sycl::queue exec_q,
-    std::vector<sycl::event> const &depends = {});
+extern std::pair<sycl::event, sycl::event>
+py_nonzero(const dpctl::tensor::usm_ndarray
+               &cumsum, // int32 input array, 1D, C-contiguous
+           const dpctl::tensor::usm_ndarray
+               &indexes, // int32 2D output array, C-contiguous
+           const std::vector<py::ssize_t>
+               &mask_shape, // shape of array from which cumsum was computed
+           sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends = {});
 
 } // namespace py_internal
 } // namespace tensor

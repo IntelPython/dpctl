@@ -162,18 +162,11 @@ template <typename T> struct Expm1OutputType
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
-typedef sycl::event (*expm1_contig_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    const char *,
-    char *,
-    const std::vector<sycl::event> &);
-
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class expm1_contig_kernel;
 
 template <typename argTy>
-sycl::event expm1_contig_impl(sycl::queue exec_q,
+sycl::event expm1_contig_impl(sycl::queue &exec_q,
                               size_t nelems,
                               const char *arg_p,
                               char *res_p,
@@ -213,21 +206,9 @@ template <typename fnT, typename T> struct Expm1TypeMapFactory
 
 template <typename T1, typename T2, typename T3> class expm1_strided_kernel;
 
-typedef sycl::event (*expm1_strided_impl_fn_ptr_t)(
-    sycl::queue,
-    size_t,
-    int,
-    const py::ssize_t *,
-    const char *,
-    py::ssize_t,
-    char *,
-    py::ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
-
 template <typename argTy>
 sycl::event
-expm1_strided_impl(sycl::queue exec_q,
+expm1_strided_impl(sycl::queue &exec_q,
                    size_t nelems,
                    int nd,
                    const py::ssize_t *shape_and_strides,

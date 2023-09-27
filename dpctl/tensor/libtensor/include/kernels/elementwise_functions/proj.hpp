@@ -114,7 +114,7 @@ template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class proj_contig_kernel;
 
 template <typename argTy>
-sycl::event proj_contig_impl(sycl::queue exec_q,
+sycl::event proj_contig_impl(sycl::queue &exec_q,
                              size_t nelems,
                              const char *arg_p,
                              char *res_p,
@@ -127,7 +127,7 @@ sycl::event proj_contig_impl(sycl::queue exec_q,
 
 template <typename argTy>
 sycl::event
-proj_workaround_contig_impl(sycl::queue exec_q,
+proj_workaround_contig_impl(sycl::queue &exec_q,
                             size_t nelems,
                             const char *arg_p,
                             char *res_p,
@@ -185,7 +185,7 @@ template <typename T1, typename T2, typename T3> class proj_strided_kernel;
 
 template <typename argTy>
 sycl::event
-proj_strided_impl(sycl::queue exec_q,
+proj_strided_impl(sycl::queue &exec_q,
                   size_t nelems,
                   int nd,
                   const py::ssize_t *shape_and_strides,

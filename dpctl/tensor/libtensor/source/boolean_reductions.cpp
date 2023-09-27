@@ -148,8 +148,8 @@ void init_boolean_reduction_functions(py::module_ m)
         using impl::all_reduction_axis1_contig_dispatch_vector;
         using impl::all_reduction_strided_dispatch_vector;
 
-        auto all_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
-                             arrayT dst, sycl::queue exec_q,
+        auto all_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                             const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_boolean_reduction(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
@@ -169,8 +169,8 @@ void init_boolean_reduction_functions(py::module_ m)
         using impl::any_reduction_axis1_contig_dispatch_vector;
         using impl::any_reduction_strided_dispatch_vector;
 
-        auto any_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
-                             arrayT dst, sycl::queue exec_q,
+        auto any_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                             const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             return py_boolean_reduction(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,

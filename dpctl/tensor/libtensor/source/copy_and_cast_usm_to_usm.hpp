@@ -38,9 +38,9 @@ namespace py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-copy_usm_ndarray_into_usm_ndarray(dpctl::tensor::usm_ndarray src,
-                                  dpctl::tensor::usm_ndarray dst,
-                                  sycl::queue exec_q,
+copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
+                                  const dpctl::tensor::usm_ndarray &dst,
+                                  sycl::queue &exec_q,
                                   const std::vector<sycl::event> &depends = {});
 
 extern void init_copy_and_cast_usm_to_usm_dispatch_tables();

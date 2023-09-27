@@ -173,7 +173,7 @@ class greater_equal_contig_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-greater_equal_contig_impl(sycl::queue exec_q,
+greater_equal_contig_impl(sycl::queue &exec_q,
                           size_t nelems,
                           const char *arg1_p,
                           py::ssize_t arg1_offset,
@@ -225,7 +225,7 @@ class greater_equal_strided_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event
-greater_equal_strided_impl(sycl::queue exec_q,
+greater_equal_strided_impl(sycl::queue &exec_q,
                            size_t nelems,
                            int nd,
                            const py::ssize_t *shape_and_strides,

@@ -541,7 +541,7 @@ int simplify_iteration_two_strides(const int nd,
 }
 
 template <typename T, class Error, typename vecT = std::vector<T>>
-std::tuple<vecT, vecT, T> contract_iter(vecT shape, vecT strides)
+std::tuple<vecT, vecT, T> contract_iter(const vecT &shape, const vecT &strides)
 {
     const size_t dim = shape.size();
     if (dim != strides.size()) {
@@ -560,7 +560,7 @@ std::tuple<vecT, vecT, T> contract_iter(vecT shape, vecT strides)
 
 template <typename T, class Error, typename vecT = std::vector<T>>
 std::tuple<vecT, vecT, T, vecT, T>
-contract_iter2(vecT shape, vecT strides1, vecT strides2)
+contract_iter2(const vecT &shape, const vecT &strides1, const vecT &strides2)
 {
     const size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size()) {
@@ -714,8 +714,10 @@ int simplify_iteration_three_strides(const int nd,
 }
 
 template <typename T, class Error, typename vecT = std::vector<T>>
-std::tuple<vecT, vecT, T, vecT, T, vecT, T>
-contract_iter3(vecT shape, vecT strides1, vecT strides2, vecT strides3)
+std::tuple<vecT, vecT, T, vecT, T, vecT, T> contract_iter3(const vecT &shape,
+                                                           const vecT &strides1,
+                                                           const vecT &strides2,
+                                                           const vecT &strides3)
 {
     const size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size() ||
@@ -899,11 +901,11 @@ int simplify_iteration_four_strides(const int nd,
 
 template <typename T, class Error, typename vecT = std::vector<T>>
 std::tuple<vecT, vecT, T, vecT, T, vecT, T, vecT, T>
-contract_iter4(vecT shape,
-               vecT strides1,
-               vecT strides2,
-               vecT strides3,
-               vecT strides4)
+contract_iter4(const vecT &shape,
+               const vecT &strides1,
+               const vecT &strides2,
+               const vecT &strides3,
+               const vecT &strides4)
 {
     const size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size() ||

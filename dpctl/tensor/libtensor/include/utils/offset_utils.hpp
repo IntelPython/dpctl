@@ -98,7 +98,7 @@ device_allocate_and_pack(sycl::queue q,
 
     usm_host_allocatorT usm_host_allocator(q);
     shT empty{0, usm_host_allocator};
-    shT packed_shape_strides = detail::concat(empty, vs...);
+    shT packed_shape_strides = detail::concat(std::move(empty), vs...);
 
     auto packed_shape_strides_owner =
         std::make_shared<shT>(std::move(packed_shape_strides));

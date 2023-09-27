@@ -101,7 +101,7 @@ template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class signbit_contig_kernel;
 
 template <typename argTy>
-sycl::event signbit_contig_impl(sycl::queue exec_q,
+sycl::event signbit_contig_impl(sycl::queue &exec_q,
                                 size_t nelems,
                                 const char *arg_p,
                                 char *res_p,
@@ -142,7 +142,7 @@ template <typename T1, typename T2, typename T3> class signbit_strided_kernel;
 
 template <typename argTy>
 sycl::event
-signbit_strided_impl(sycl::queue exec_q,
+signbit_strided_impl(sycl::queue &exec_q,
                      size_t nelems,
                      int nd,
                      const py::ssize_t *shape_and_strides,

@@ -30,6 +30,7 @@
 #include <complex>
 #include <memory>
 #include <pybind11/pybind11.h>
+#include <utility>
 #include <vector>
 
 namespace py = pybind11;
@@ -369,19 +370,19 @@ private:
         sycl::queue q_{};
         PySyclQueueObject *py_q_tmp =
             SyclQueue_Make(reinterpret_cast<DPCTLSyclQueueRef>(&q_));
-        py::object py_sycl_queue = py::reinterpret_steal<py::object>(
+        const py::object &py_sycl_queue = py::reinterpret_steal<py::object>(
             reinterpret_cast<PyObject *>(py_q_tmp));
 
         default_sycl_queue_ = std::shared_ptr<py::object>(
             new py::object(py_sycl_queue), Deleter{});
 
         py::module_ mod_memory = py::module_::import("dpctl.memory");
-        py::object py_as_usm_memory = mod_memory.attr("as_usm_memory");
+        const py::object &py_as_usm_memory = mod_memory.attr("as_usm_memory");
         as_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_as_usm_memory}, Deleter{});
 
         auto mem_kl = mod_memory.attr("MemoryUSMHost");
-        py::object py_default_usm_memory =
+        const py::object &py_default_usm_memory =
             mem_kl(1, py::arg("queue") = py_sycl_queue);
         default_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_default_usm_memory}, Deleter{});
@@ -390,7 +391,7 @@ private:
             py::module_::import("dpctl.tensor._usmarray");
         auto tensor_kl = mod_usmarray.attr("usm_ndarray");
 
-        py::object py_default_usm_ndarray =
+        const py::object &py_default_usm_ndarray =
             tensor_kl(py::tuple(), py::arg("dtype") = py::str("u1"),
                       py::arg("buffer") = py_default_usm_memory);
 
@@ -1032,7 +1033,7 @@ namespace utils
 {
 
 template <std::size_t num>
-sycl::event keep_args_alive(sycl::queue q,
+sycl::event keep_args_alive(sycl::queue &q,
                             const py::object (&py_objs)[num],
                             const std::vector<sycl::event> &depends = {})
 {
@@ -1043,7 +1044,7 @@ sycl::event keep_args_alive(sycl::queue q,
             shp_arr[i] = std::make_shared<py::handle>(py_objs[i]);
             shp_arr[i]->inc_ref();
         }
-        cgh.host_task([=]() {
+        cgh.host_task([shp_arr = std::move(shp_arr)]() {
             py::gil_scoped_acquire acquire;
 
             for (std::size_t i = 0; i < num; ++i) {
@@ -1058,7 +1059,7 @@ sycl::event keep_args_alive(sycl::queue q,
 /*! @brief Check if all allocation queues are the same as the
     execution queue */
 template <std::size_t num>
-bool queues_are_compatible(sycl::queue exec_q,
+bool queues_are_compatible(const sycl::queue &exec_q,
                            const sycl::queue (&alloc_qs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {
@@ -1073,7 +1074,7 @@ bool queues_are_compatible(sycl::queue exec_q,
 /*! @brief Check if all allocation queues of  usm_ndarays are the same as
     the execution queue */
 template <std::size_t num>
-bool queues_are_compatible(sycl::queue exec_q,
+bool queues_are_compatible(const sycl::queue &exec_q,
                            const ::dpctl::tensor::usm_ndarray (&arrs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {

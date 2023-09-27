@@ -177,7 +177,7 @@ template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class cosh_contig_kernel;
 
 template <typename argTy>
-sycl::event cosh_contig_impl(sycl::queue exec_q,
+sycl::event cosh_contig_impl(sycl::queue &exec_q,
                              size_t nelems,
                              const char *arg_p,
                              char *res_p,
@@ -218,7 +218,7 @@ template <typename T1, typename T2, typename T3> class cosh_strided_kernel;
 
 template <typename argTy>
 sycl::event
-cosh_strided_impl(sycl::queue exec_q,
+cosh_strided_impl(sycl::queue &exec_q,
                   size_t nelems,
                   int nd,
                   const py::ssize_t *shape_and_strides,

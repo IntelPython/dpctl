@@ -90,13 +90,13 @@ void init_repeat_dispatch_vectors(void)
 }
 
 std::pair<sycl::event, sycl::event>
-py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
-                      dpctl::tensor::usm_ndarray dst,
-                      dpctl::tensor::usm_ndarray reps,
-                      dpctl::tensor::usm_ndarray cumsum,
+py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst,
+                      const dpctl::tensor::usm_ndarray &reps,
+                      const dpctl::tensor::usm_ndarray &cumsum,
                       int axis,
-                      sycl::queue exec_q,
-                      std::vector<sycl::event> const &depends)
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
     if (axis < 0 || (axis + 1 > src_nd && src_nd > 0) ||
@@ -327,7 +327,7 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });
@@ -344,12 +344,12 @@ py_repeat_by_sequence(dpctl::tensor::usm_ndarray src,
 }
 
 std::pair<sycl::event, sycl::event>
-py_repeat_by_scalar(dpctl::tensor::usm_ndarray src,
-                    dpctl::tensor::usm_ndarray dst,
+py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
+                    const dpctl::tensor::usm_ndarray &dst,
                     const py::ssize_t reps,
                     int axis,
-                    sycl::queue exec_q,
-                    std::vector<sycl::event> const &depends)
+                    sycl::queue &exec_q,
+                    const std::vector<sycl::event> &depends)
 {
     int src_nd = src.get_ndim();
     if (axis < 0 || (axis + 1 > src_nd && src_nd > 0) ||
@@ -538,7 +538,7 @@ py_repeat_by_scalar(dpctl::tensor::usm_ndarray src,
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
-                auto ctx = exec_q.get_context();
+                const auto &ctx = exec_q.get_context();
                 cgh.host_task([ctx, packed_shapes_strides] {
                     sycl::free(packed_shapes_strides, ctx);
                 });

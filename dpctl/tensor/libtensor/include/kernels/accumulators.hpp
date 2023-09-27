@@ -103,7 +103,7 @@ template <typename inputT,
           size_t n_wi,
           typename IndexerT,
           typename TransformerT>
-sycl::event inclusive_scan_rec(sycl::queue exec_q,
+sycl::event inclusive_scan_rec(sycl::queue &exec_q,
                                size_t n_elems,
                                size_t wg_size,
                                const inputT *input,
@@ -116,19 +116,20 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
 {
     size_t n_groups = ceiling_quotient(n_elems, n_wi * wg_size);
 
-    sycl::event inc_scan_phase1_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
+    const sycl::event &inc_scan_phase1_ev =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
 
-        using slmT = sycl::local_accessor<size_t, 1>;
+            using slmT = sycl::local_accessor<size_t, 1>;
 
-        auto lws = sycl::range<1>(wg_size);
-        auto gws = sycl::range<1>(n_groups * wg_size);
+            auto lws = sycl::range<1>(wg_size);
+            auto gws = sycl::range<1>(n_groups * wg_size);
 
-        slmT slm_iscan_tmp(lws, cgh);
+            slmT slm_iscan_tmp(lws, cgh);
 
         cgh.parallel_for<class inclusive_scan_rec_local_scan_krn<
             inputT, outputT, n_wi, IndexerT, decltype(transformer)>>(
-            sycl::nd_range<1>(gws, lws), [=](sycl::nd_item<1> it)
+            sycl::nd_range<1>(gws, lws), [=, slm_iscan_tmp = std::move(slm_iscan_tmp)](sycl::nd_item<1> it)
         {
             auto chunk_gid = it.get_global_id(0);
             auto lid = it.get_local_id(0);
@@ -172,7 +173,7 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
                 output[i + m_wi] = local_isum[m_wi];
             }
         });
-    });
+        });
 
     sycl::event out_event = inc_scan_phase1_ev;
     if (n_groups > 1) {
@@ -203,25 +204,25 @@ sycl::event inclusive_scan_rec(sycl::queue exec_q,
 
         sycl::event e4 = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(e3);
-            auto ctx = exec_q.get_context();
+            const auto &ctx = exec_q.get_context();
             cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
         });
 
-        out_event = e4;
+        out_event = std::move(e4);
     }
 
     return out_event;
 }
 
 typedef size_t (*accumulate_contig_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     char *,
     std::vector<sycl::event> const &);
 
 template <typename maskT, typename cumsumT, typename transformerT>
-size_t accumulate_contig_impl(sycl::queue q,
+size_t accumulate_contig_impl(sycl::queue &q,
                               size_t n_elems,
                               const char *mask,
                               char *cumsum,
@@ -235,7 +236,7 @@ size_t accumulate_contig_impl(sycl::queue q,
     NoOpIndexer flat_indexer{};
     transformerT non_zero_indicator{};
 
-    sycl::event comp_ev =
+    const sycl::event &comp_ev =
         inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(flat_indexer),
                            decltype(non_zero_indicator)>(
             q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1,
@@ -296,7 +297,7 @@ template <typename fnT, typename T> struct Cumsum1DContigFactory
 };
 
 typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     const char *,
     int,
@@ -305,7 +306,7 @@ typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
     std::vector<sycl::event> const &);
 
 template <typename maskT, typename cumsumT, typename transformerT>
-size_t accumulate_strided_impl(sycl::queue q,
+size_t accumulate_strided_impl(sycl::queue &q,
                                size_t n_elems,
                                const char *mask,
                                int nd,
@@ -321,7 +322,7 @@ size_t accumulate_strided_impl(sycl::queue q,
     StridedIndexer strided_indexer{nd, 0, shape_strides};
     transformerT non_zero_indicator{};
 
-    sycl::event comp_ev =
+    const sycl::event &comp_ev =
         inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(strided_indexer),
                            decltype(non_zero_indicator)>(
             q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1,
