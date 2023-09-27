@@ -1672,11 +1672,12 @@ public:
                 argT val = inp_[inp_offset];
                 if (val == local_red_val) {
                     if constexpr (!First) {
-                        local_idx = std::min(local_idx, inds_[inp_offset]);
+                        local_idx =
+                            idx_reduction_op_(local_idx, inds_[inp_offset]);
                     }
                     else {
-                        local_idx = std::min(local_idx,
-                                             static_cast<outT>(arg_reduce_gid));
+                        local_idx = idx_reduction_op_(
+                            local_idx, static_cast<outT>(arg_reduce_gid));
                     }
                 }
                 else {
@@ -1827,11 +1828,12 @@ public:
                 argT val = inp_[inp_offset];
                 if (val == local_red_val) {
                     if constexpr (!First) {
-                        local_idx = std::min(local_idx, inds_[inp_offset]);
+                        local_idx =
+                            idx_reduction_op_(local_idx, inds_[inp_offset]);
                     }
                     else {
-                        local_idx = std::min(local_idx,
-                                             static_cast<outT>(arg_reduce_gid));
+                        local_idx = idx_reduction_op_(
+                            local_idx, static_cast<outT>(arg_reduce_gid));
                     }
                 }
                 else {
