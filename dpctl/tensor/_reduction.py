@@ -246,10 +246,58 @@ def _comparison_over_axis(x, axis, keepdims, _reduction_fn):
 
 
 def max(x, axis=None, keepdims=False):
+    """max(x, axis=None, dtype=None, keepdims=False)
+
+    Calculates the maximum value of the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int,...]]):
+            axis or axes along which maxima must be computed. If a tuple
+            of unique integers, the maxima are computed over multiple axes.
+            If `None`, the max is computed over the entire array.
+            Default: `None`.
+        keepdims (Optional[bool]):
+            if `True`, the reduced axes (dimensions) are included in the result
+            as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if `False`, the reduced axes are not included in
+            the returned array. Default: `False`.
+    Returns:
+        usm_ndarray:
+            an array containing the maxima. If the max was computed over the
+            entire array, a zero-dimensional array is returned. The returned
+            array has the same data type as `x`.
+    """
     return _comparison_over_axis(x, axis, keepdims, ti._max_over_axis)
 
 
 def min(x, axis=None, keepdims=False):
+    """min(x, axis=None, dtype=None, keepdims=False)
+
+    Calculates the minimum value of the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int,...]]):
+            axis or axes along which minima must be computed. If a tuple
+            of unique integers, the minima are computed over multiple axes.
+            If `None`, the min is computed over the entire array.
+            Default: `None`.
+        keepdims (Optional[bool]):
+            if `True`, the reduced axes (dimensions) are included in the result
+            as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if `False`, the reduced axes are not included in
+            the returned array. Default: `False`.
+    Returns:
+        usm_ndarray:
+            an array containing the minima. If the min was computed over the
+            entire array, a zero-dimensional array is returned. The returned
+            array has the same data type as `x`.
+    """
     return _comparison_over_axis(x, axis, keepdims, ti._min_over_axis)
 
 
@@ -303,8 +351,64 @@ def _search_over_axis(x, axis, keepdims, _reduction_fn):
 
 
 def argmax(x, axis=None, keepdims=False):
+    """argmax(x, axis=None, dtype=None, keepdims=False)
+
+    Returns the indices of the maximum values of the input array `x` along a
+    specified axis.
+
+    When the maximum value occurs multiple times, the indices corresponding to
+    the first occurrence are returned.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int]):
+            axis along which to search. If `None`, returns the index of the
+            maximum value of the flattened array.
+            Default: `None`.
+        keepdims (Optional[bool]):
+            if `True`, the reduced axes (dimensions) are included in the result
+            as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if `False`, the reduced axes are not included in
+            the returned array. Default: `False`.
+    Returns:
+        usm_ndarray:
+            an array containing the indices of the first occurrence of the
+            maximum values. If the entire array was searched, a
+            zero-dimensional array is returned. The returned array has the
+            default array index data type for the device of `x`.
+    """
     return _search_over_axis(x, axis, keepdims, ti._argmax_over_axis)
 
 
 def argmin(x, axis=None, keepdims=False):
+    """argmin(x, axis=None, dtype=None, keepdims=False)
+
+    Returns the indices of the minimum values of the input array `x` along a
+    specified axis.
+
+    When the minimum value occurs multiple times, the indices corresponding to
+    the first occurrence are returned.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int]):
+            axis along which to search. If `None`, returns the index of the
+            minimum value of the flattened array.
+            Default: `None`.
+        keepdims (Optional[bool]):
+            if `True`, the reduced axes (dimensions) are included in the result
+            as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if `False`, the reduced axes are not included in
+            the returned array. Default: `False`.
+    Returns:
+        usm_ndarray:
+            an array containing the indices of the first occurrence of the
+            minimum values. If the entire array was searched, a
+            zero-dimensional array is returned. The returned array has the
+            default array index data type for the device of `x`.
+    """
     return _search_over_axis(x, axis, keepdims, ti._argmin_over_axis)
