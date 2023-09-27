@@ -1586,6 +1586,249 @@ struct MinOverAxis0AtomicContigFactory
     }
 };
 
+// Sum
+
+/* @brief Types supported by plus-reduction code based on atomic_ref */
+template <typename argTy, typename outTy>
+struct TypePairSupportDataForSumReductionAtomic
+{
+
+    /* value if true a kernel for <argTy, outTy> must be instantiated, false
+     * otherwise */
+    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
+                                                         // feature, supported
+                                                         // by DPC++ input bool
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
+        // input int8
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
+        // input uint8
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
+        // input int16
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
+        // input uint16
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
+        // input int32
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
+        // input uint32
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
+        // input int64
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
+        // input uint64
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
+        // input half
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
+        // input float
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
+        // input double
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
+        // fall-through
+        td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename argTy, typename outTy>
+struct TypePairSupportDataForSumReductionTemps
+{
+
+    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
+                                                         // feature, supported
+                                                         // by DPC++ input bool
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
+
+        // input int8_t
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
+
+        // input uint8_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
+
+        // input int16_t
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
+
+        // input uint16_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
+
+        // input int32_t
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+
+        // input uint32_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
+
+        // input int64_t
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+
+        // input uint32_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+
+        // input half
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
+        td_ns::
+            TypePairDefinedEntry<argTy, sycl::half, outTy, std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    sycl::half,
+                                    outTy,
+                                    std::complex<double>>,
+
+        // input float
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<double>>,
+
+        // input double
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::complex<double>>,
+
+        // input std::complex
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<float>,
+                                    outTy,
+                                    std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<float>,
+                                    outTy,
+                                    std::complex<double>>,
+
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<double>,
+                                    outTy,
+                                    std::complex<double>>,
+
+        // fall-throug
+        td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct SumOverAxisAtomicStridedFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
+                          srcTy, dstTy>::is_defined)
+        {
+            using ReductionOpT = sycl::plus<dstTy>;
+            return dpctl::tensor::kernels::
+                reduction_over_group_with_atomics_strided_impl<srcTy, dstTy,
+                                                               ReductionOpT>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct SumOverAxisTempsStridedFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportDataForSumReductionTemps<
+                          srcTy, dstTy>::is_defined) {
+            using ReductionOpT = sycl::plus<dstTy>;
+            return dpctl::tensor::kernels::
+                reduction_over_group_temps_strided_impl<srcTy, dstTy,
+                                                        ReductionOpT>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct SumOverAxis1AtomicContigFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
+                          srcTy, dstTy>::is_defined)
+        {
+            using ReductionOpT = sycl::plus<dstTy>;
+            return dpctl::tensor::kernels::
+                reduction_axis1_over_group_with_atomics_contig_impl<
+                    srcTy, dstTy, ReductionOpT>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct SumOverAxis0AtomicContigFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportDataForSumReductionAtomic<
+                          srcTy, dstTy>::is_defined)
+        {
+            using ReductionOpT = sycl::plus<dstTy>;
+            return dpctl::tensor::kernels::
+                reduction_axis0_over_group_with_atomics_contig_impl<
+                    srcTy, dstTy, ReductionOpT>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
 // Argmax and Argmin
 
 /* = Search reduction using reduce_over_group*/

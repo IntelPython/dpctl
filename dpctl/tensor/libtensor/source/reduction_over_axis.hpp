@@ -41,7 +41,6 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -50,6 +49,112 @@ namespace tensor
 {
 namespace py_internal
 {
+
+inline bool check_atomic_support(const sycl::queue &exec_q,
+                                 sycl::usm::alloc usm_alloc_type,
+                                 bool require_atomic64 = false)
+{
+    bool supports_atomics = false;
+
+    const sycl::device &dev = exec_q.get_device();
+    if (require_atomic64) {
+        if (!dev.has(sycl::aspect::atomic64))
+            return false;
+    }
+
+    switch (usm_alloc_type) {
+    case sycl::usm::alloc::shared:
+        supports_atomics = dev.has(sycl::aspect::usm_atomic_shared_allocations);
+        break;
+    case sycl::usm::alloc::host:
+        supports_atomics = dev.has(sycl::aspect::usm_atomic_host_allocations);
+        break;
+    case sycl::usm::alloc::device:
+        supports_atomics = true;
+        break;
+    default:
+        supports_atomics = false;
+    }
+
+    return supports_atomics;
+}
+
+/* ====================== dtype supported ======================== */
+
+template <typename fnT>
+bool py_reduction_dtype_supported(const py::dtype &input_dtype,
+                                  const py::dtype &output_dtype,
+                                  const std::string &dst_usm_type,
+                                  sycl::queue &q,
+                                  const fnT &atomic_dispatch_table,
+                                  const fnT &temps_dispatch_table)
+{
+    int arg_tn =
+        input_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int out_tn =
+        output_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int arg_typeid = -1;
+    int out_typeid = -1;
+
+    auto array_types = td_ns::usm_ndarray_types();
+
+    try {
+        arg_typeid = array_types.typenum_to_lookup_id(arg_tn);
+        out_typeid = array_types.typenum_to_lookup_id(out_tn);
+    } catch (const std::exception &e) {
+        throw py::value_error(e.what());
+    }
+
+    if (arg_typeid < 0 || arg_typeid >= td_ns::num_types || out_typeid < 0 ||
+        out_typeid >= td_ns::num_types)
+    {
+        throw std::runtime_error("Reduction type support check: lookup failed");
+    }
+
+    // remove_all_extents gets underlying type of table
+    using fn_ptrT = typename std::remove_all_extents<fnT>::type;
+    fn_ptrT fn = nullptr;
+
+    sycl::usm::alloc kind = sycl::usm::alloc::unknown;
+
+    if (dst_usm_type == "device") {
+        kind = sycl::usm::alloc::device;
+    }
+    else if (dst_usm_type == "shared") {
+        kind = sycl::usm::alloc::shared;
+    }
+    else if (dst_usm_type == "host") {
+        kind = sycl::usm::alloc::host;
+    }
+    else {
+        throw py::value_error("Unrecognized `dst_usm_type` argument.");
+    }
+
+    bool supports_atomics = false;
+
+    switch (output_dtype.itemsize()) {
+    case sizeof(float):
+    {
+        supports_atomics = check_atomic_support(q, kind);
+    } break;
+    case sizeof(double):
+    {
+        constexpr bool require_atomic64 = true;
+        supports_atomics = check_atomic_support(q, kind, require_atomic64);
+    } break;
+    }
+
+    if (supports_atomics) {
+        fn = atomic_dispatch_table[arg_typeid][out_typeid];
+    }
+
+    if (fn == nullptr) {
+        // use slower reduction implementation using temporaries
+        fn = temps_dispatch_table[arg_typeid][out_typeid];
+    }
+
+    return (fn != nullptr);
+}
 
 /* ==================== Generic reductions ====================== */
 
@@ -138,8 +243,6 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         void *data_ptr = dst.get_data();
         const auto &ctx = exec_q.get_context();
         auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
-        using dpctl::tensor::sycl_utils::AtomicSupport;
-        const auto &check_atomic_support = AtomicSupport{};
         supports_atomics = check_atomic_support(exec_q, usm_type);
     } break;
     case sizeof(double):
@@ -149,8 +252,6 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
 
         constexpr bool require_atomic64 = true;
-        using dpctl::tensor::sycl_utils::AtomicSupport;
-        const auto &check_atomic_support = AtomicSupport{};
         supports_atomics =
             check_atomic_support(exec_q, usm_type, require_atomic64);
     } break;
@@ -376,7 +477,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(reduction_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, temp_allocation_ptr] {
             sycl::free(temp_allocation_ptr, ctx);
         });
@@ -559,7 +660,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
-        auto ctx = exec_q.get_context();
+        const auto &ctx = exec_q.get_context();
         cgh.host_task([ctx, temp_allocation_ptr] {
             sycl::free(temp_allocation_ptr, ctx);
         });

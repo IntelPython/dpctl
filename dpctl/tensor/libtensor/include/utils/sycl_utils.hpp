@@ -100,40 +100,6 @@ template <typename T, typename Op> struct IsSyclOp
         detail::IsContained<Op, sycl_ops<void>>::value;
 };
 
-struct AtomicSupport
-{
-    bool operator()(const sycl::queue &exec_q,
-                    sycl::usm::alloc usm_alloc_type,
-                    bool require_atomic64 = false) const
-    {
-        bool supports_atomics = false;
-
-        const sycl::device &dev = exec_q.get_device();
-        if (require_atomic64) {
-            if (!dev.has(sycl::aspect::atomic64))
-                return false;
-        }
-
-        switch (usm_alloc_type) {
-        case sycl::usm::alloc::shared:
-            supports_atomics =
-                dev.has(sycl::aspect::usm_atomic_shared_allocations);
-            break;
-        case sycl::usm::alloc::host:
-            supports_atomics =
-                dev.has(sycl::aspect::usm_atomic_host_allocations);
-            break;
-        case sycl::usm::alloc::device:
-            supports_atomics = true;
-            break;
-        default:
-            supports_atomics = false;
-        }
-
-        return supports_atomics;
-    }
-};
-
 /*! @brief Find the smallest multiple of supported sub-group size larger than
  * nelems */
 template <size_t f = 4>

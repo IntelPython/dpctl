@@ -151,6 +151,59 @@ void populate_min_over_axis_dispatch_tables(void)
 
 } // namespace impl
 
+// Sum
+namespace impl
+{
+
+using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+static reduction_strided_impl_fn_ptr
+    sum_over_axis_strided_atomic_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+static reduction_strided_impl_fn_ptr
+    sum_over_axis_strided_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+
+using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+static reduction_contig_impl_fn_ptr
+    sum_over_axis1_contig_atomic_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    sum_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+
+void populate_sum_over_axis_dispatch_tables(void)
+{
+    using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+    using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+    using namespace td_ns;
+
+    using dpctl::tensor::kernels::SumOverAxisAtomicStridedFactory;
+    DispatchTableBuilder<reduction_strided_impl_fn_ptr,
+                         SumOverAxisAtomicStridedFactory, num_types>
+        dtb1;
+    dtb1.populate_dispatch_table(sum_over_axis_strided_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::SumOverAxisTempsStridedFactory;
+    DispatchTableBuilder<reduction_strided_impl_fn_ptr,
+                         SumOverAxisTempsStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(sum_over_axis_strided_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::SumOverAxis1AtomicContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         SumOverAxis1AtomicContigFactory, num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(sum_over_axis1_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::SumOverAxis0AtomicContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         SumOverAxis0AtomicContigFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(sum_over_axis0_contig_atomic_dispatch_table);
+}
+
+} // namespace impl
+
 // Argmax
 namespace impl
 {
@@ -216,8 +269,8 @@ void init_reduction_functions(py::module_ m)
         using impl::max_over_axis_strided_atomic_dispatch_table;
         using impl::max_over_axis_strided_temps_dispatch_table;
 
-        auto max_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
-                             arrayT dst, sycl::queue exec_q,
+        auto max_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                             const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
@@ -242,8 +295,8 @@ void init_reduction_functions(py::module_ m)
         using impl::min_over_axis_strided_atomic_dispatch_table;
         using impl::min_over_axis_strided_temps_dispatch_table;
 
-        auto min_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
-                             arrayT dst, sycl::queue exec_q,
+        auto min_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                             const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
             using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
@@ -258,6 +311,45 @@ void init_reduction_functions(py::module_ m)
               py::arg("sycl_queue"), py::arg("depends") = py::list());
     }
 
+    // SUM
+    {
+        using dpctl::tensor::py_internal::impl::
+            populate_sum_over_axis_dispatch_tables;
+        populate_sum_over_axis_dispatch_tables();
+        using impl::sum_over_axis0_contig_atomic_dispatch_table;
+        using impl::sum_over_axis1_contig_atomic_dispatch_table;
+        using impl::sum_over_axis_strided_atomic_dispatch_table;
+        using impl::sum_over_axis_strided_temps_dispatch_table;
+
+        auto sum_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                             const arrayT &dst, sycl::queue &exec_q,
+                             const event_vecT &depends = {}) {
+            using dpctl::tensor::py_internal::py_reduction_over_axis;
+            return py_reduction_over_axis(
+                src, trailing_dims_to_reduce, dst, exec_q, depends,
+                sum_over_axis_strided_atomic_dispatch_table,
+                sum_over_axis_strided_temps_dispatch_table,
+                sum_over_axis0_contig_atomic_dispatch_table,
+                sum_over_axis1_contig_atomic_dispatch_table);
+        };
+        m.def("_sum_over_axis", sum_pyapi, "", py::arg("src"),
+              py::arg("trailing_dims_to_reduce"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto sum_dtype_supported =
+            [&](const py::dtype &input_dtype, const py::dtype &output_dtype,
+                const std::string &dst_usm_type, sycl::queue &q) {
+                using dpctl::tensor::py_internal::py_reduction_dtype_supported;
+                return py_reduction_dtype_supported(
+                    input_dtype, output_dtype, dst_usm_type, q,
+                    sum_over_axis_strided_atomic_dispatch_table,
+                    sum_over_axis_strided_temps_dispatch_table);
+            };
+        m.def("_sum_over_axis_dtype_supported", sum_dtype_supported, "",
+              py::arg("arg_dtype"), py::arg("out_dtype"),
+              py::arg("dst_usm_type"), py::arg("sycl_queue"));
+    }
+
     // ARGMAX
     {
         using dpctl::tensor::py_internal::impl::
@@ -265,8 +357,8 @@ void init_reduction_functions(py::module_ m)
         populate_argmax_over_axis_dispatch_tables();
         using impl::argmax_over_axis_strided_temps_dispatch_table;
 
-        auto argmax_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
-                                arrayT dst, sycl::queue exec_q,
+        auto argmax_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                                const arrayT &dst, sycl::queue &exec_q,
                                 const event_vecT &depends = {}) {
             using dpctl::tensor::py_internal::py_search_over_axis;
             return py_search_over_axis(
@@ -285,8 +377,8 @@ void init_reduction_functions(py::module_ m)
         populate_argmin_over_axis_dispatch_tables();
         using impl::argmin_over_axis_strided_temps_dispatch_table;
 
-        auto argmin_pyapi = [&](arrayT src, int trailing_dims_to_reduce,
-                                arrayT dst, sycl::queue exec_q,
+        auto argmin_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                                const arrayT &dst, sycl::queue &exec_q,
                                 const event_vecT &depends = {}) {
             using dpctl::tensor::py_internal::py_search_over_axis;
             return py_search_over_axis(
