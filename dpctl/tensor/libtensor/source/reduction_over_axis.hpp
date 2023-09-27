@@ -55,10 +55,10 @@ namespace py_internal
 
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_reduction_over_axis(
-    dpctl::tensor::usm_ndarray src,
+    const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
-    dpctl::tensor::usm_ndarray dst,
-    sycl::queue exec_q,
+    const dpctl::tensor::usm_ndarray &dst,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     const strided_fnT &atomic_dispatch_table,
     const strided_fnT &temps_dispatch_table,
@@ -393,10 +393,10 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
 template <typename fn_tableT>
 std::pair<sycl::event, sycl::event> py_search_over_axis(
-    dpctl::tensor::usm_ndarray src,
+    const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
-    dpctl::tensor::usm_ndarray dst,
-    sycl::queue exec_q,
+    const dpctl::tensor::usm_ndarray &dst,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     const fn_tableT &dispatch_table)
 {
