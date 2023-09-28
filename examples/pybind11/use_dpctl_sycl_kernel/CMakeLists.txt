@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
-project(use_queue_device LANGUAGES CXX)
+project(use_queue_device VERSION 0.1 LANGUAGES CXX
+  DESCRIPTION "Example of using dpctl.program.SyclKernel <-> sycl::kernel type casting")
 
 set(DPCTL_CMAKE_MODULES_PATH "${CMAKE_SOURCE_DIR}/../../../cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_CMAKE_MODULES_PATH})
@@ -19,9 +20,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(PythonExtensions REQUIRED)
+find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
-find_package(NumPy REQUIRED)
 
 set(py_module_name _use_kernel)
 pybind11_add_module(${py_module_name}
