@@ -42,11 +42,16 @@ def test_max_min_axis():
 def test_reduction_keepdims():
     get_queue_or_skip()
 
-    x = dpt.ones((3, 4, 5, 6, 7), dtype="i4")
+    n0, n1 = 3, 6
+    x = dpt.ones((n0, 4, 5, n1, 7), dtype="i4")
     m = dpt.max(x, axis=(1, 2, -1), keepdims=True)
 
-    assert m.shape == (3, 1, 1, 6, 1)
+    xx = dpt.reshape(dpt.permute_dims(x, (0, 3, 1, 2, -1)), (n0, n1, -1))
+    p = dpt.argmax(xx, axis=-1, keepdims=True)
+
+    assert m.shape == (n0, 1, 1, n1, 1)
     assert dpt.all(m == dpt.reshape(x[:, 0, 0, :, 0], m.shape))
+    assert dpt.all(p == 0)
 
 
 def test_max_scalar():
