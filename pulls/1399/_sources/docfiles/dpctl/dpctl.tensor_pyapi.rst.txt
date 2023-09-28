@@ -143,9 +143,9 @@ Other Functions
     * - :func:`any()`
       - Tests whether any input array elements evaluate to True along a given axis.
     * - :func:`argmax()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Returns the indices of the maximum values of the input array `x` along a specified axis.
     * - :func:`argmin()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Returns the indices of the minimum values of the input array `x` along a specified axis.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
@@ -155,9 +155,9 @@ Other Functions
     * - :func:`matrix_transpose()`
       - Transposes the innermost two dimensions of `x`, where `x` is a 2-dimensional matrix or a stack of 2-dimensional matrices.
     * - :func:`max()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Calculates the maximum value of the input array `x`.
     * - :func:`min()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Calculates the minimum value of the input array `x`.
     * - :func:`nonzero()`
       - Return the indices of non-zero elements.
     * - :func:`place()`
