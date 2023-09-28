@@ -320,10 +320,15 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
     steps:
-      - name: Download artifact
+      - name: Download conda artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Install anaconda-client
         run: conda install anaconda-client
@@ -353,10 +358,17 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: true
           activate-environment: ""
+
       - name: Install anaconda-client
         run: conda install anaconda-client
 
