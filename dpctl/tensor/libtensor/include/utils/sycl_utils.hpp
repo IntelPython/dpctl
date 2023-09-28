@@ -132,10 +132,10 @@ size_t choose_workgroup_size(const size_t nelems,
 }
 
 template <typename T, typename GroupT, typename LocAccT, typename OpT>
-T custom_reduce_over_group(GroupT wg,
+T custom_reduce_over_group(const GroupT &wg,
                            LocAccT local_mem_acc,
-                           T local_val,
-                           OpT op)
+                           const T &local_val,
+                           const OpT &op)
 {
     size_t wgs = wg.get_local_linear_range();
     local_mem_acc[wg.get_local_linear_id()] = local_val;

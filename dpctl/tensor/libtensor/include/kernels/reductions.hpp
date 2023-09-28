@@ -97,7 +97,9 @@ public:
             const py::ssize_t inp_offset =
                 inp_iter_offset + inp_reduction_offset;
 
-            red_val = reduction_op_(red_val, inp_[inp_offset]);
+            using dpctl::tensor::type_utils::convert_impl;
+            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            red_val = reduction_op_(red_val, val);
         }
 
         out_[out_iter_offset] = red_val;
