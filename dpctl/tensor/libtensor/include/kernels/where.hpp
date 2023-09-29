@@ -27,11 +27,11 @@
 #include "pybind11/stl.h"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 namespace dpctl

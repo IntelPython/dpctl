@@ -23,11 +23,11 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <array>
 #include <cstdint>
 #include <limits>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
