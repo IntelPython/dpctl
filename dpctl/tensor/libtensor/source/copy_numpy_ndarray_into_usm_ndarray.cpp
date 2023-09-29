@@ -22,8 +22,8 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include <CL/sycl.hpp>
 #include <algorithm>
+#include <sycl/sycl.hpp>
 #include <vector>
 
 #include "dpctl4pybind11.hpp"

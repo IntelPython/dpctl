@@ -24,12 +24,12 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl4pybind11.hpp"
-#include <CL/sycl.hpp>
 #include <complex>
 #include <cstdint>
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 #include <utility>
 
 #include "kernels/where.hpp"
