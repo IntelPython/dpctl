@@ -27,9 +27,9 @@
 #include "utils/offset_utils.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
-#include <CL/sycl.hpp>
 #include <complex>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 
 namespace dpctl
 {
