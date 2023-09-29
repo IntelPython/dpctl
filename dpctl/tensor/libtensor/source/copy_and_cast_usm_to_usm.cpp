@@ -22,7 +22,6 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <complex>
 #include <cstdint>
@@ -30,6 +29,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 #include <thread>
 #include <type_traits>
 #include <utility>

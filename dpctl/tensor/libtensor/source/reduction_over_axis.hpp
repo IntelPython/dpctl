@@ -25,10 +25,12 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <string>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
