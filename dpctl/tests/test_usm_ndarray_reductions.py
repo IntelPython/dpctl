@@ -216,3 +216,21 @@ def test_argmax_argmin_identities():
     assert dpt.argmax(x) == 0
     x = dpt.full(3, dpt.iinfo(dpt.int32).max, dtype="i4")
     assert dpt.argmin(x) == 0
+
+
+def test_reduction_arg_validation():
+    get_queue_or_skip()
+
+    x = dict()
+    with pytest.raises(TypeError):
+        dpt.sum(x)
+    with pytest.raises(TypeError):
+        dpt.max(x)
+    with pytest.raises(TypeError):
+        dpt.argmax(x)
+
+    x = dpt.zeros((0,), dtype="i4")
+    with pytest.raises(ValueError):
+        dpt.max(x)
+    with pytest.raises(ValueError):
+        dpt.argmax(x)

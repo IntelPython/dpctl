@@ -36,7 +36,6 @@ _all_dtypes = [
     "c8",
     "c16",
 ]
-_usm_types = ["device", "shared", "host"]
 
 
 @pytest.mark.parametrize("arg_dtype", _all_dtypes)
