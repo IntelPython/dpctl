@@ -49,10 +49,25 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
                       const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
+py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst,
+                      const dpctl::tensor::usm_ndarray &reps,
+                      const dpctl::tensor::usm_ndarray &cumsum,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> &depends);
+
+extern std::pair<sycl::event, sycl::event>
 py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
                     const dpctl::tensor::usm_ndarray &dst,
                     const py::ssize_t reps,
                     int axis,
+                    sycl::queue &exec_q,
+                    const std::vector<sycl::event> &depends);
+
+extern std::pair<sycl::event, sycl::event>
+py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
+                    const dpctl::tensor::usm_ndarray &dst,
+                    const py::ssize_t reps,
                     sycl::queue &exec_q,
                     const std::vector<sycl::event> &depends);
 

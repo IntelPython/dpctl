@@ -19,7 +19,6 @@ import itertools
 import operator
 
 import numpy as np
-from numpy import AxisError
 from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
 
 import dpctl
@@ -951,20 +950,11 @@ def repeat(x, repeats, axis=None):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
 
     x_ndim = x.ndim
-    if axis is None:
-        if x_ndim > 1:
-            raise ValueError(
-                f"`axis` cannot be `None` for array of dimension {x_ndim}"
-            )
-        axis = 0
-
     x_shape = x.shape
-    if x_ndim > 0:
+    if axis is not None:
         axis = normalize_axis_index(operator.index(axis), x_ndim)
         axis_size = x_shape[axis]
     else:
-        if axis != 0:
-            AxisError("`axis` must be `0` for input of dimension `0`")
         axis_size = x.size
 
     scalar = False
@@ -1047,7 +1037,10 @@ def repeat(x, repeats, axis=None):
 
     if scalar:
         res_axis_size = repeats * axis_size
-        res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+        if axis is not None:
+            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+        else:
+            res_shape = (res_axis_size,)
         res = dpt.empty(
             res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
         )
@@ -1081,9 +1074,17 @@ def repeat(x, repeats, axis=None):
             res_axis_size = ti._cumsum_1d(
                 rep_buf, cumsum, sycl_queue=exec_q, depends=[copy_ev]
             )
-            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+            if axis is not None:
+                res_shape = (
+                    x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+                )
+            else:
+                res_shape = (res_axis_size,)
             res = dpt.empty(
-                res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+                res_shape,
+                dtype=x.dtype,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             if res_axis_size > 0:
                 ht_rep_ev, _ = ti._repeat_by_sequence(
@@ -1103,11 +1104,18 @@ def repeat(x, repeats, axis=None):
                 usm_type=usm_type,
                 sycl_queue=exec_q,
             )
-            # _cumsum_1d synchronizes so `depends` ends here safely
             res_axis_size = ti._cumsum_1d(repeats, cumsum, sycl_queue=exec_q)
-            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+            if axis is not None:
+                res_shape = (
+                    x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+                )
+            else:
+                res_shape = (res_axis_size,)
             res = dpt.empty(
-                res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+                res_shape,
+                dtype=x.dtype,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             if res_axis_size > 0:
                 ht_rep_ev, _ = ti._repeat_by_sequence(

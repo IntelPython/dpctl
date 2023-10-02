@@ -30,6 +30,7 @@
 #include <pybind11/stl.h>
 #include <thread>
 #include <type_traits>
+#include <utility>
 
 #include "dpctl4pybind11.hpp"
 
@@ -402,13 +403,43 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_repeat_by_sequence", &py_repeat_by_sequence, "", py::arg("src"),
+    auto repeat_sequence = [](const dpctl::tensor::usm_ndarray &src,
+                              const dpctl::tensor::usm_ndarray &dst,
+                              const dpctl::tensor::usm_ndarray &reps,
+                              const dpctl::tensor::usm_ndarray &cumsum,
+                              std::optional<int> axis, sycl::queue &exec_q,
+                              const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        if (axis) {
+            return py_repeat_by_sequence(src, dst, reps, cumsum, axis.value(),
+                                         exec_q, depends);
+        }
+        else {
+            return py_repeat_by_sequence(src, dst, reps, cumsum, exec_q,
+                                         depends);
+        }
+    };
+    m.def("_repeat_by_sequence", repeat_sequence, py::arg("src"),
           py::arg("dst"), py::arg("reps"), py::arg("cumsum"), py::arg("axis"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    m.def("_repeat_by_scalar", &py_repeat_by_scalar, "", py::arg("src"),
-          py::arg("dst"), py::arg("reps"), py::arg("axis"),
-          py::arg("sycl_queue"), py::arg("depends") = py::list());
+    auto repeat_scalar = [](const dpctl::tensor::usm_ndarray &src,
+                            const dpctl::tensor::usm_ndarray &dst,
+                            const py::ssize_t reps, std::optional<int> axis,
+                            sycl::queue &exec_q,
+                            const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        if (axis) {
+            return py_repeat_by_scalar(src, dst, reps, axis.value(), exec_q,
+                                       depends);
+        }
+        else {
+            return py_repeat_by_scalar(src, dst, reps, exec_q, depends);
+        }
+    };
+    m.def("_repeat_by_scalar", repeat_scalar, py::arg("src"), py::arg("dst"),
+          py::arg("reps"), py::arg("axis"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     dpctl::tensor::py_internal::init_elementwise_functions(m);
     dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
