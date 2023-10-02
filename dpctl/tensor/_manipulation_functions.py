@@ -973,8 +973,8 @@ def repeat(x, repeats, axis=None):
     elif isinstance(repeats, dpt.usm_ndarray):
         if repeats.ndim > 1:
             raise ValueError(
-                "`repeats` array must be 0- or 1-dimensional, got"
-                "{repeats.ndim}"
+                "`repeats` array must be 0- or 1-dimensional, got "
+                f"{repeats.ndim}"
             )
         exec_q = dpctl.utils.get_execution_queue(
             (x.sycl_queue, repeats.sycl_queue)
