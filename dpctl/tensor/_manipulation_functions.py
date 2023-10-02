@@ -928,20 +928,26 @@ def repeat(x, repeats, axis=None):
     Args:
         x (usm_ndarray): input array
 
-        repeat (Union[int, Tuple[int, ...]]):
+        repeats (Union[int, Sequence[int, ...], usm_ndarray]):
             The number of repetitions for each element.
-            `repeats` is broadcasted to fit the shape of the given axis.
+            `repeats` is broadcast to fit the shape of the given axis.
+            If `repeats` is an array, it must have an integer data type.
+            Otherwise, `repeats` must be a Python integer, tuple, list, or
+            range.
 
         axis (Optional[int]):
-            The axis along which to repeat values. The `axis` is required
-            if input array has more than one dimension.
+            The axis along which to repeat values. If `axis` is `None`, the
+            function repeats elements of the flattened array.
+            Default: `None`.
 
     Returns:
         usm_narray:
             Array with repeated elements.
-            The returned array must have the same data type as `x`,
-            is created on the same device as `x` and has the same USM
-            allocation type as `x`.
+            The returned array must have the same data type as `x`, is created
+            on the same device as `x` and has the same USM allocation type as
+            `x`. If `axis` is `None`, the returned array is one-dimensional,
+            otherwise, it has the same shape as `x`, except for the axis along
+            which elements were repeated.
 
     Raises:
         AxisError: if `axis` value is invalid.
@@ -1005,22 +1011,22 @@ def repeat(x, repeats, axis=None):
             if not dpt.all(repeats >= 0):
                 raise ValueError("`repeats` elements must be positive")
 
-    elif isinstance(repeats, tuple):
+    elif isinstance(repeats, (tuple, list, range)):
         usm_type = x.usm_type
         exec_q = x.sycl_queue
 
         len_reps = len(repeats)
-        if len_reps != axis_size:
-            raise ValueError(
-                "`repeats` tuple must have the same length as the repeated "
-                "axis"
-            )
-        elif len_reps == 1:
+        if len_reps == 1:
             repeats = repeats[0]
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
             scalar = True
         else:
+            if len_reps != axis_size:
+                raise ValueError(
+                    "`repeats` sequence must have the same length as the "
+                    "repeated axis"
+                )
             repeats = dpt.asarray(
                 repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
             )
@@ -1028,7 +1034,7 @@ def repeat(x, repeats, axis=None):
                 raise ValueError("`repeats` elements must be positive")
     else:
         raise TypeError(
-            "Expected int, tuple, or `usm_ndarray` for second argument,"
+            "Expected int, sequence, or `usm_ndarray` for second argument,"
             f"got {type(repeats)}"
         )
 
