@@ -110,6 +110,7 @@ from ._elementwise_funcs import (
     bitwise_or,
     bitwise_right_shift,
     bitwise_xor,
+    cbrt,
     ceil,
     conj,
     cos,
@@ -314,4 +315,5 @@ __all__ = [
     "argmax",
     "argmin",
     "prod",
+    "cbrt",
 ]

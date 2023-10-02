@@ -48,6 +48,7 @@
 #include "kernels/elementwise_functions/bitwise_or.hpp"
 #include "kernels/elementwise_functions/bitwise_right_shift.hpp"
 #include "kernels/elementwise_functions/bitwise_xor.hpp"
+#include "kernels/elementwise_functions/cbrt.hpp"
 #include "kernels/elementwise_functions/ceil.hpp"
 #include "kernels/elementwise_functions/conj.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
@@ -2788,6 +2789,41 @@ void populate_hypot_dispatch_tables(void)
 
 } // namespace impl
 
+// U33: ==== CBRT        (x)
+namespace impl
+{
+
+namespace cbrt_fn_ns = dpctl::tensor::kernels::cbrt;
+
+static unary_contig_impl_fn_ptr_t cbrt_contig_dispatch_vector[td_ns::num_types];
+static int cbrt_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    cbrt_strided_dispatch_vector[td_ns::num_types];
+
+void populate_cbrt_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = cbrt_fn_ns;
+
+    using fn_ns::CbrtContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, CbrtContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(cbrt_contig_dispatch_vector);
+
+    using fn_ns::CbrtStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, CbrtStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(cbrt_strided_dispatch_vector);
+
+    using fn_ns::CbrtTypeMapFactory;
+    DispatchVectorBuilder<int, CbrtTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(cbrt_output_typeid_vector);
+}
+
+} // namespace impl
+
 // ==========================================================================================
 // //
 
@@ -4888,6 +4924,29 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_hypot_result_type", hypot_result_type_pyapi, "");
+    }
+
+    // U37: ==== CBRT        (x)
+    {
+        impl::populate_cbrt_dispatch_vectors();
+        using impl::cbrt_contig_dispatch_vector;
+        using impl::cbrt_output_typeid_vector;
+        using impl::cbrt_strided_dispatch_vector;
+
+        auto cbrt_pyapi = [&](const arrayT &src, const arrayT &dst,
+                              sycl::queue &exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, cbrt_output_typeid_vector,
+                cbrt_contig_dispatch_vector, cbrt_strided_dispatch_vector);
+        };
+        m.def("_cbrt", cbrt_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto cbrt_result_type_pyapi = [&](const py::dtype &dtype) {
+            return py_unary_ufunc_result_type(dtype, cbrt_output_typeid_vector);
+        };
+        m.def("_cbrt_result_type", cbrt_result_type_pyapi);
     }
 }
 
