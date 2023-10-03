@@ -25,6 +25,7 @@ Other Functions
 .. autofunction:: nonzero
 .. autofunction:: place
 .. autofunction:: print_options
+.. autofunction:: prod
 .. autofunction:: put
 .. autofunction:: set_print_options
 .. autofunction:: sum

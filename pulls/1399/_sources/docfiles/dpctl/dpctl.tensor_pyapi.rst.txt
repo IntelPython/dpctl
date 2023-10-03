@@ -164,12 +164,14 @@ Other Functions
       - Change elements of an array based on conditional and input values.
     * - :func:`print_options()`
       - Context manager for print options.
+    * - :func:`prod()`
+      - Calculates the product of elements in the input array `x`.
     * - :func:`put()`
       - Puts values of an array into another array along a given axis.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`sum()`
-      - Calculates the sum of the input array `x`.
+      - Calculates the sum of elements in the input array `x`.
     * - :func:`take()`
       - Takes elements from array along a given axis.
     * - :func:`usm_ndarray_repr()`
