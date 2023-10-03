@@ -26,6 +26,7 @@
 #include <CL/sycl.hpp>
 #include <algorithm>
 #include <cstddef>
+#include <type_traits>
 #include <vector>
 
 #include "math_utils.hpp"
@@ -272,6 +273,18 @@ struct GetIdentity<Op,
 template <typename T, class Op>
 using IsPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>> ||
                                   std::is_same_v<Op, std::plus<T>>>;
+// Multiplies
+
+template <typename T, class Op>
+using IsMultiplies =
+    std::bool_constant<std::is_same_v<Op, sycl::multiplies<T>> ||
+                       std::is_same_v<Op, std::multiplies<T>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsMultiplies<T, Op>::value>>
+{
+    static constexpr T value = static_cast<T>(1);
+};
 
 // Identity
 
@@ -280,13 +293,17 @@ template <typename Op, typename T, typename = void> struct Identity
 };
 
 template <typename Op, typename T>
-struct Identity<Op, T, std::enable_if_t<!IsSyclOp<T, Op>::value>>
+using UseBuiltInIdentity =
+    std::conjunction<IsSyclOp<T, Op>, sycl::has_known_identity<Op, T>>;
+
+template <typename Op, typename T>
+struct Identity<Op, T, std::enable_if_t<!UseBuiltInIdentity<Op, T>::value>>
 {
     static constexpr T value = GetIdentity<Op, T>::value;
 };
 
 template <typename Op, typename T>
-struct Identity<Op, T, std::enable_if_t<IsSyclOp<T, Op>::value>>
+struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
 {
     static constexpr T value = sycl::known_identity<Op, T>::value;
 };

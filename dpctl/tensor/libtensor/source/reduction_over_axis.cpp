@@ -204,6 +204,59 @@ void populate_sum_over_axis_dispatch_tables(void)
 
 } // namespace impl
 
+// Product
+namespace impl
+{
+
+using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+static reduction_strided_impl_fn_ptr
+    prod_over_axis_strided_atomic_dispatch_table[td_ns::num_types]
+                                                [td_ns::num_types];
+static reduction_strided_impl_fn_ptr
+    prod_over_axis_strided_temps_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+
+using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+static reduction_contig_impl_fn_ptr
+    prod_over_axis1_contig_atomic_dispatch_table[td_ns::num_types]
+                                                [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    prod_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
+                                                [td_ns::num_types];
+
+void populate_prod_over_axis_dispatch_tables(void)
+{
+    using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+    using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+    using namespace td_ns;
+
+    using dpctl::tensor::kernels::ProductOverAxisAtomicStridedFactory;
+    DispatchTableBuilder<reduction_strided_impl_fn_ptr,
+                         ProductOverAxisAtomicStridedFactory, num_types>
+        dtb1;
+    dtb1.populate_dispatch_table(prod_over_axis_strided_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::ProductOverAxisTempsStridedFactory;
+    DispatchTableBuilder<reduction_strided_impl_fn_ptr,
+                         ProductOverAxisTempsStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(prod_over_axis_strided_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::ProductOverAxis1AtomicContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         ProductOverAxis1AtomicContigFactory, num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(prod_over_axis1_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::ProductOverAxis0AtomicContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         ProductOverAxis0AtomicContigFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(prod_over_axis0_contig_atomic_dispatch_table);
+}
+
+} // namespace impl
+
 // Argmax
 namespace impl
 {
@@ -259,6 +312,12 @@ void init_reduction_functions(py::module_ m)
 
     namespace impl = dpctl::tensor::py_internal::impl;
 
+    using dpctl::tensor::py_internal::py_reduction_dtype_supported;
+    using dpctl::tensor::py_internal::py_reduction_over_axis;
+
+    using dpctl::tensor::py_internal::check_atomic_support;
+    using dpctl::tensor::py_internal::fixed_decision;
+
     // MAX
     {
         using dpctl::tensor::py_internal::impl::
@@ -269,16 +328,21 @@ void init_reduction_functions(py::module_ m)
         using impl::max_over_axis_strided_atomic_dispatch_table;
         using impl::max_over_axis_strided_temps_dispatch_table;
 
+        const auto &check_atomic_support_size4 =
+            check_atomic_support</*require_atomic64*/ false>;
+        const auto &check_atomic_support_size8 =
+            check_atomic_support</*require_atomic64*/ true>;
+
         auto max_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                              const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 max_over_axis_strided_atomic_dispatch_table,
                 max_over_axis_strided_temps_dispatch_table,
                 max_over_axis0_contig_atomic_dispatch_table,
-                max_over_axis1_contig_atomic_dispatch_table);
+                max_over_axis1_contig_atomic_dispatch_table,
+                check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_max_over_axis", max_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
@@ -295,16 +359,21 @@ void init_reduction_functions(py::module_ m)
         using impl::min_over_axis_strided_atomic_dispatch_table;
         using impl::min_over_axis_strided_temps_dispatch_table;
 
+        const auto &check_atomic_support_size4 =
+            check_atomic_support</*require_atomic64*/ false>;
+        const auto &check_atomic_support_size8 =
+            check_atomic_support</*require_atomic64*/ true>;
+
         auto min_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                              const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 min_over_axis_strided_atomic_dispatch_table,
                 min_over_axis_strided_temps_dispatch_table,
                 min_over_axis0_contig_atomic_dispatch_table,
-                min_over_axis1_contig_atomic_dispatch_table);
+                min_over_axis1_contig_atomic_dispatch_table,
+                check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_min_over_axis", min_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
@@ -321,16 +390,21 @@ void init_reduction_functions(py::module_ m)
         using impl::sum_over_axis_strided_atomic_dispatch_table;
         using impl::sum_over_axis_strided_temps_dispatch_table;
 
+        const auto &check_atomic_support_size4 =
+            check_atomic_support</*require_atomic64*/ false>;
+        const auto &check_atomic_support_size8 =
+            check_atomic_support</*require_atomic64*/ true>;
+
         auto sum_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                              const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 sum_over_axis_strided_atomic_dispatch_table,
                 sum_over_axis_strided_temps_dispatch_table,
                 sum_over_axis0_contig_atomic_dispatch_table,
-                sum_over_axis1_contig_atomic_dispatch_table);
+                sum_over_axis1_contig_atomic_dispatch_table,
+                check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_sum_over_axis", sum_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
@@ -339,13 +413,57 @@ void init_reduction_functions(py::module_ m)
         auto sum_dtype_supported =
             [&](const py::dtype &input_dtype, const py::dtype &output_dtype,
                 const std::string &dst_usm_type, sycl::queue &q) {
-                using dpctl::tensor::py_internal::py_reduction_dtype_supported;
                 return py_reduction_dtype_supported(
                     input_dtype, output_dtype, dst_usm_type, q,
                     sum_over_axis_strided_atomic_dispatch_table,
-                    sum_over_axis_strided_temps_dispatch_table);
+                    sum_over_axis_strided_temps_dispatch_table,
+                    check_atomic_support_size4, check_atomic_support_size8);
             };
         m.def("_sum_over_axis_dtype_supported", sum_dtype_supported, "",
+              py::arg("arg_dtype"), py::arg("out_dtype"),
+              py::arg("dst_usm_type"), py::arg("sycl_queue"));
+    }
+
+    // PROD
+    {
+        using dpctl::tensor::py_internal::impl::
+            populate_prod_over_axis_dispatch_tables;
+        populate_prod_over_axis_dispatch_tables();
+        using impl::prod_over_axis0_contig_atomic_dispatch_table;
+        using impl::prod_over_axis1_contig_atomic_dispatch_table;
+        using impl::prod_over_axis_strided_atomic_dispatch_table;
+        using impl::prod_over_axis_strided_temps_dispatch_table;
+
+        const auto &check_atomic_support_size4 =
+            check_atomic_support</*require_atomic64*/ false>;
+        const auto &check_atomic_support_size8 =
+            check_atomic_support</*require_atomic64*/ true>;
+
+        auto prod_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
+                              const arrayT &dst, sycl::queue &exec_q,
+                              const event_vecT &depends = {}) {
+            return py_reduction_over_axis(
+                src, trailing_dims_to_reduce, dst, exec_q, depends,
+                prod_over_axis_strided_atomic_dispatch_table,
+                prod_over_axis_strided_temps_dispatch_table,
+                prod_over_axis0_contig_atomic_dispatch_table,
+                prod_over_axis1_contig_atomic_dispatch_table,
+                check_atomic_support_size4, check_atomic_support_size8);
+        };
+        m.def("_prod_over_axis", prod_pyapi, "", py::arg("src"),
+              py::arg("trailing_dims_to_reduce"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto prod_dtype_supported =
+            [&](const py::dtype &input_dtype, const py::dtype &output_dtype,
+                const std::string &dst_usm_type, sycl::queue &q) {
+                return py_reduction_dtype_supported(
+                    input_dtype, output_dtype, dst_usm_type, q,
+                    prod_over_axis_strided_atomic_dispatch_table,
+                    prod_over_axis_strided_temps_dispatch_table,
+                    check_atomic_support_size4, check_atomic_support_size8);
+            };
+        m.def("_prod_over_axis_dtype_supported", prod_dtype_supported, "",
               py::arg("arg_dtype"), py::arg("out_dtype"),
               py::arg("dst_usm_type"), py::arg("sycl_queue"));
     }

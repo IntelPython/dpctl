@@ -50,14 +50,15 @@ namespace tensor
 namespace py_internal
 {
 
-inline bool check_atomic_support(const sycl::queue &exec_q,
-                                 sycl::usm::alloc usm_alloc_type,
-                                 bool require_atomic64 = false)
+template <bool require_atomic64 = false>
+bool check_atomic_support(const sycl::queue &exec_q,
+                          sycl::usm::alloc usm_alloc_type)
 {
     bool supports_atomics = false;
 
     const sycl::device &dev = exec_q.get_device();
-    if (require_atomic64) {
+
+    if constexpr (require_atomic64) {
         if (!dev.has(sycl::aspect::atomic64))
             return false;
     }
@@ -79,15 +80,24 @@ inline bool check_atomic_support(const sycl::queue &exec_q,
     return supports_atomics;
 }
 
+template <bool return_value>
+bool fixed_decision(const sycl::queue &, sycl::usm::alloc)
+{
+    return return_value;
+}
+
 /* ====================== dtype supported ======================== */
 
-template <typename fnT>
-bool py_reduction_dtype_supported(const py::dtype &input_dtype,
-                                  const py::dtype &output_dtype,
-                                  const std::string &dst_usm_type,
-                                  sycl::queue &q,
-                                  const fnT &atomic_dispatch_table,
-                                  const fnT &temps_dispatch_table)
+template <typename fnT, typename CheckAtomicSupportFnT>
+bool py_reduction_dtype_supported(
+    const py::dtype &input_dtype,
+    const py::dtype &output_dtype,
+    const std::string &dst_usm_type,
+    sycl::queue &q,
+    const fnT &atomic_dispatch_table,
+    const fnT &temps_dispatch_table,
+    const CheckAtomicSupportFnT &check_atomic_support_size4,
+    const CheckAtomicSupportFnT &check_atomic_support_size8)
 {
     int arg_tn =
         input_dtype.num(); // NumPy type numbers are the same as in dpctl
@@ -135,12 +145,11 @@ bool py_reduction_dtype_supported(const py::dtype &input_dtype,
     switch (output_dtype.itemsize()) {
     case sizeof(float):
     {
-        supports_atomics = check_atomic_support(q, kind);
+        supports_atomics = check_atomic_support_size4(q, kind);
     } break;
     case sizeof(double):
     {
-        constexpr bool require_atomic64 = true;
-        supports_atomics = check_atomic_support(q, kind, require_atomic64);
+        supports_atomics = check_atomic_support_size8(q, kind);
     } break;
     }
 
@@ -158,7 +167,7 @@ bool py_reduction_dtype_supported(const py::dtype &input_dtype,
 
 /* ==================== Generic reductions ====================== */
 
-template <typename strided_fnT, typename contig_fnT>
+template <typename strided_fnT, typename contig_fnT, typename SupportAtomicFnT>
 std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
@@ -168,7 +177,9 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     const strided_fnT &atomic_dispatch_table,
     const strided_fnT &temps_dispatch_table,
     const contig_fnT &axis0_dispatch_table,
-    const contig_fnT &axis1_dispatch_table)
+    const contig_fnT &axis1_dispatch_table,
+    const SupportAtomicFnT &check_atomic_support_size4,
+    const SupportAtomicFnT &check_atomic_support_size8)
 {
     int src_nd = src.get_ndim();
     int iteration_nd = src_nd - trailing_dims_to_reduce;
@@ -243,7 +254,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         void *data_ptr = dst.get_data();
         const auto &ctx = exec_q.get_context();
         auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
-        supports_atomics = check_atomic_support(exec_q, usm_type);
+        supports_atomics = check_atomic_support_size4(exec_q, usm_type);
     } break;
     case sizeof(double):
     {
@@ -251,9 +262,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         const auto &ctx = exec_q.get_context();
         auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
 
-        constexpr bool require_atomic64 = true;
-        supports_atomics =
-            check_atomic_support(exec_q, usm_type, require_atomic64);
+        supports_atomics = check_atomic_support_size8(exec_q, usm_type);
     } break;
     }
 
