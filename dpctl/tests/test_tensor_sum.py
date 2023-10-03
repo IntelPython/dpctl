@@ -14,7 +14,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import numpy as np
 import pytest
 
 import dpctl.tensor as dpt
@@ -36,7 +35,6 @@ _all_dtypes = [
     "c8",
     "c16",
 ]
-_usm_types = ["device", "shared", "host"]
 
 
 @pytest.mark.parametrize("arg_dtype", _all_dtypes)
@@ -56,11 +54,11 @@ def test_sum_arg_dtype_default_output_dtype_matrix(arg_dtype):
         assert r.dtype.kind == "f"
     elif m.dtype.kind == "c":
         assert r.dtype.kind == "c"
-    assert (dpt.asnumpy(r) == 100).all()
+    assert dpt.all(r == 100)
 
     m = dpt.ones(200, dtype=arg_dtype)[:1:-2]
     r = dpt.sum(m)
-    assert (dpt.asnumpy(r) == 99).all()
+    assert dpt.all(r == 99)
 
 
 @pytest.mark.parametrize("arg_dtype", _all_dtypes)
@@ -75,7 +73,7 @@ def test_sum_arg_out_dtype_matrix(arg_dtype, out_dtype):
 
     assert isinstance(r, dpt.usm_ndarray)
     assert r.dtype == dpt.dtype(out_dtype)
-    assert (dpt.asnumpy(r) == 100).all()
+    assert dpt.all(r == 100)
 
 
 def test_sum_empty():
@@ -94,7 +92,7 @@ def test_sum_axis():
 
     assert isinstance(s, dpt.usm_ndarray)
     assert s.shape == (3, 6)
-    assert (dpt.asnumpy(s) == np.full(s.shape, 4 * 5 * 7)).all()
+    assert dpt.all(s == dpt.asarray(4 * 5 * 7, dtype="i4"))
 
 
 def test_sum_keepdims():
@@ -105,7 +103,7 @@ def test_sum_keepdims():
 
     assert isinstance(s, dpt.usm_ndarray)
     assert s.shape == (3, 1, 1, 6, 1)
-    assert (dpt.asnumpy(s) == np.full(s.shape, 4 * 5 * 7)).all()
+    assert dpt.all(s == dpt.asarray(4 * 5 * 7, dtype=s.dtype))
 
 
 def test_sum_scalar():
@@ -117,7 +115,7 @@ def test_sum_scalar():
     assert isinstance(s, dpt.usm_ndarray)
     assert m.sycl_queue == s.sycl_queue
     assert s.shape == ()
-    assert dpt.asnumpy(s) == np.full((), 1)
+    assert s == dpt.full((), 1)
 
 
 @pytest.mark.parametrize("arg_dtype", _all_dtypes)
@@ -132,7 +130,7 @@ def test_sum_arg_out_dtype_scalar(arg_dtype, out_dtype):
 
     assert isinstance(r, dpt.usm_ndarray)
     assert r.dtype == dpt.dtype(out_dtype)
-    assert dpt.asnumpy(r) == 1
+    assert r == 1
 
 
 def test_sum_keepdims_zero_size():
@@ -187,3 +185,66 @@ def test_axis0_bug():
     expected = dpt.asarray([[0, 3], [1, 4], [2, 5]])
 
     assert dpt.all(s == expected)
+
+
+@pytest.mark.parametrize("arg_dtype", _all_dtypes[1:])
+def test_prod_arg_dtype_default_output_dtype_matrix(arg_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.prod(m)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    if m.dtype.kind == "i":
+        assert r.dtype.kind == "i"
+    elif m.dtype.kind == "u":
+        assert r.dtype.kind == "u"
+    elif m.dtype.kind == "f":
+        assert r.dtype.kind == "f"
+    elif m.dtype.kind == "c":
+        assert r.dtype.kind == "c"
+    assert dpt.all(r == 1)
+
+    if dpt.isdtype(m.dtype, "unsigned integer"):
+        m = dpt.tile(dpt.arange(1, 3, dtype=arg_dtype), 10)[:1:-2]
+        r = dpt.prod(m)
+        assert dpt.all(r == dpt.asarray(512, dtype=r.dtype))
+    else:
+        m = dpt.full(200, -1, dtype=arg_dtype)[:1:-2]
+        r = dpt.prod(m)
+        assert dpt.all(r == dpt.asarray(-1, dtype=r.dtype))
+
+
+def test_prod_empty():
+    get_queue_or_skip()
+    x = dpt.empty((0,), dtype="u1")
+    y = dpt.prod(x)
+    assert y.shape == tuple()
+    assert int(y) == 1
+
+
+def test_prod_axis():
+    get_queue_or_skip()
+
+    m = dpt.ones((3, 4, 5, 6, 7), dtype="i4")
+    s = dpt.prod(m, axis=(1, 2, -1))
+
+    assert isinstance(s, dpt.usm_ndarray)
+    assert s.shape == (3, 6)
+    assert dpt.all(s == dpt.asarray(1, dtype="i4"))
+
+
+@pytest.mark.parametrize("arg_dtype", _all_dtypes)
+@pytest.mark.parametrize("out_dtype", _all_dtypes[1:])
+def test_prod_arg_out_dtype_matrix(arg_dtype, out_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+    skip_if_dtype_not_supported(out_dtype, q)
+
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.prod(m, dtype=out_dtype)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype == dpt.dtype(out_dtype)
+    assert dpt.all(r == 1)
