@@ -149,7 +149,7 @@ def sum(x, axis=None, dtype=None, keepdims=False):
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int,...]]):
+        axis (Optional[int, Tuple[int, ...]]):
             axis or axes along which sums must be computed. If a tuple
             of unique integers, sums are computed over multiple axes.
             If `None`, the sum is computed over the entire array.
@@ -210,10 +210,10 @@ def prod(x, axis=None, dtype=None, keepdims=False):
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int,...]]):
-            axis or axes along which sums must be computed. If a tuple
-            of unique integers, sums are computed over multiple axes.
-            If `None`, the sum is computed over the entire array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis or axes along which products must be computed. If a tuple
+            of unique integers, products are computed over multiple axes.
+            If `None`, the product is computed over the entire array.
             Default: `None`.
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
@@ -237,7 +237,7 @@ def prod(x, axis=None, dtype=None, keepdims=False):
                   where input array `x` is allocated.
             If the data type (either specified or resolved) differs from the
             data type of `x`, the input array elements are cast to the
-            specified data type before computing the sum. Default: `None`.
+            specified data type before computing the product. Default: `None`.
         keepdims (Optional[bool]):
             if `True`, the reduced axes (dimensions) are included in the result
             as singleton dimensions, so that the returned array remains
@@ -314,7 +314,7 @@ def max(x, axis=None, keepdims=False):
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int,...]]):
+        axis (Optional[int, Tuple[int, ...]]):
             axis or axes along which maxima must be computed. If a tuple
             of unique integers, the maxima are computed over multiple axes.
             If `None`, the max is computed over the entire array.
@@ -342,7 +342,7 @@ def min(x, axis=None, keepdims=False):
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int,...]]):
+        axis (Optional[int, Tuple[int, ...]]):
             axis or axes along which minima must be computed. If a tuple
             of unique integers, the minima are computed over multiple axes.
             If `None`, the min is computed over the entire array.
