@@ -14,12 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import timeit
 
 from . import SyclQueue
 
 __doc__ = "This module implements :class:`dpctl.SyclTimer`."
+
+
+class HostDeviceDuration:
+    def __init__(self, host_dt, device_dt):
+        self._host_dt = host_dt
+        self._device_dt = device_dt
+
+    def __repr__(self):
+        return f"(host_dt={self._host_dt}, device_dt={self._device_dt})"
+
+    def __str__(self):
+        return f"(host_dt={self._host_dt}, device_dt={self._device_dt})"
+
+    def __iter__(self):
+        yield from [self._host_dt, self._device_dt]
+
+    @property
+    def host_dt(self):
+        return self._host_dt
+
+    @property
+    def device_dt(self):
+        return self._device_dt
 
 
 class SyclTimer:
@@ -45,7 +67,7 @@ class SyclTimer:
                 code_block
 
             # retrieve elapsed times in milliseconds
-            sycl_dt, wall_dt = timer.dt
+            wall_dt, device_dt = timer.dt
 
     Remark:
         The timer submits barriers to the queue at the entrance and the
@@ -101,10 +123,11 @@ class SyclTimer:
 
     @property
     def dt(self):
-        """Returns a tuple of elapsed times where first
-        element is the duration as measured by the host timer,
-        while the second element is the duration as measured by
-        the device timer and encoded in profiling events"""
+        """Returns a pair of elapsed times (host_dt, device_dt).
+
+        The host_dt is the duration as measured by the host
+        timer, while the device_dt is the duration as measured by
+        the device timer and encoded in profiling events."""
         for es, ef in self.bracketing_events:
             es.wait()
             ef.wait()
@@ -113,4 +136,4 @@ class SyclTimer:
             ef.profiling_info_start - es.profiling_info_end
             for es, ef in self.bracketing_events
         ) * (1e-9 * self.time_scale)
-        return (host_dt, dev_dt)
+        return HostDeviceDuration(host_dt, dev_dt)

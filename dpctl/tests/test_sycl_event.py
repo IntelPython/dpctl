@@ -202,7 +202,12 @@ def test_sycl_timer():
         m1.copy_from_device(m2)
         # host operation
         [x**2 for x in range(128 * 1024)]
-    host_dt, device_dt = timer.dt
+    elapsed = timer.dt
+    host_dt, device_dt = elapsed
+    assert isinstance(repr(elapsed), str)
+    assert isinstance(str(elapsed), str)
+    assert host_dt == elapsed.host_dt
+    assert device_dt == elapsed.device_dt
     assert host_dt > device_dt or (host_dt > 0 and device_dt >= 0)
     q_no_profiling = dpctl.SyclQueue()
     assert q_no_profiling.has_enable_profiling is False
