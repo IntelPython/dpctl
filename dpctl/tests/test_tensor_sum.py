@@ -17,6 +17,7 @@
 import pytest
 
 import dpctl.tensor as dpt
+import dpctl.utils as du
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
@@ -241,6 +242,16 @@ def test_prod_arg_out_dtype_matrix(arg_dtype, out_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arg_dtype, q)
     skip_if_dtype_not_supported(out_dtype, q)
+
+    out_dtype = dpt.dtype(out_dtype)
+    arg_dtype = dpt.dtype(arg_dtype)
+    if dpt.isdtype(out_dtype, "complex floating") and du._is_gen9(
+        q.sycl_device
+    ):
+        pytest.skip(
+            "Product reduction for complex output are known "
+            "to fail for Gen9 with 2024.0 compiler"
+        )
 
     m = dpt.ones(100, dtype=arg_dtype)
     r = dpt.prod(m, dtype=out_dtype)
