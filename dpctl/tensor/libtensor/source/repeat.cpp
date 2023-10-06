@@ -253,11 +253,18 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         }
         sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
 
+        std::vector<sycl::event> all_deps;
+        all_deps.reserve(depends.size() + 1);
+        all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+        all_deps.push_back(copy_shapes_strides_ev);
+
+        assert(all_deps.size() == depends.size() + 1);
+
         repeat_ev =
             fn(exec_q, src_axis_nelems, src_data_p, dst_data_p, reps_data_p,
                cumsum_data_p, src_nd, packed_src_shape_strides,
                dst_shape_vec[0], dst_strides_vec[0], reps_shape_vec[0],
-               reps_strides_vec[0], depends);
+               reps_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -496,10 +503,10 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
 
     assert(all_deps.size() == depends.size() + 1);
 
-    sycl::event repeat_ev =
-        fn(exec_q, src_sz, src_data_p, dst_data_p, reps_data_p, cumsum_data_p,
-           src_nd, packed_src_shapes_strides, dst_shape_vec[0],
-           dst_strides_vec[0], reps_shape_vec[0], reps_strides_vec[0], depends);
+    sycl::event repeat_ev = fn(
+        exec_q, src_sz, src_data_p, dst_data_p, reps_data_p, cumsum_data_p,
+        src_nd, packed_src_shapes_strides, dst_shape_vec[0], dst_strides_vec[0],
+        reps_shape_vec[0], reps_strides_vec[0], all_deps);
 
     sycl::event cleanup_tmp_allocations_ev =
         exec_q.submit([&](sycl::handler &cgh) {
@@ -652,7 +659,7 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
 
         repeat_ev = fn(exec_q, dst_axis_nelems, src_data_p, dst_data_p, reps,
                        src_nd, packed_src_shape_strides, dst_shape_vec[0],
-                       dst_strides_vec[0], depends);
+                       dst_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -856,7 +863,7 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
 
     sycl::event repeat_ev = fn(exec_q, dst_sz, src_data_p, dst_data_p, reps,
                                src_nd, packed_src_shape_strides,
-                               dst_shape_vec[0], dst_strides_vec[0], depends);
+                               dst_shape_vec[0], dst_strides_vec[0], all_deps);
 
     sycl::event cleanup_tmp_allocations_ev =
         exec_q.submit([&](sycl::handler &cgh) {
