@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils &mdash; Data Parallel Control (dpctl) 0.15.1dev0+10.gf3c7cabf3 documentation</title>
+  <title>dpctl.utils &mdash; Data Parallel Control (dpctl) 0.15.1dev0+13.gbf10319ab documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=5169c1f4"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7c3c3c4e"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev0+10.gf3c7cabf3
+                0.15.1dev0+13.gbf10319ab
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,37 +139,34 @@
 <col style="width: 67%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils._is_gen9" title="dpctl.utils._is_gen9"><code class="xref py py-func docutils literal notranslate"><span class="pre">_is_gen9()</span></code></a></p></td>
-<td><p>[FIXME]: &lt;class ‘function’&gt; does not have a docstring</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info" title="dpctl.utils.intel_device_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info" title="dpctl.utils.intel_device_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a></p></td>
 <td><p>For Intel(R) GPU devices returns a dictionary with device architectural details, and an empty dictionary otherwise. The dictionary contains the following keys: device_id: 32-bits device PCI identifier gpu_eu_count: Total number of execution units gpu_hw_threads_per_eu: Number of thread contexts in EU gpu_eu_simd_width: Physical SIMD width of EU gpu_slices: Total number of slices gpu_subslices_per_slice: Number of sub-slices per slice gpu_eu_count_per_subslice: Number of EUs in subslice max_mem_bandwidth: Maximum memory bandwidth in bytes/second Unsupported descriptors are omitted from the dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_device_id" title="dpctl.utils.intel_device_info_device_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_device_id()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_device_id" title="dpctl.utils.intel_device_info_device_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_device_id()</span></code></a></p></td>
 <td><p>[FIXME]: &lt;class ‘builtin_function_or_method’&gt; has a docstring with no summary</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_eu_count" title="dpctl.utils.intel_device_info_gpu_eu_count"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_eu_count()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_eu_count" title="dpctl.utils.intel_device_info_gpu_eu_count"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_eu_count()</span></code></a></p></td>
 <td><p>-&gt; int Returns the number of execution units (EUs) associated with the Intel GPU.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_eu_count_per_subslice" title="dpctl.utils.intel_device_info_gpu_eu_count_per_subslice"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_eu_count_per_subslice()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_eu_count_per_subslice" title="dpctl.utils.intel_device_info_gpu_eu_count_per_subslice"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_eu_count_per_subslice()</span></code></a></p></td>
 <td><p>-&gt; int Returns the number of EUs per subslice of GPU.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_eu_simd_width" title="dpctl.utils.intel_device_info_gpu_eu_simd_width"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_eu_simd_width()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_eu_simd_width" title="dpctl.utils.intel_device_info_gpu_eu_simd_width"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_eu_simd_width()</span></code></a></p></td>
 <td><p>-&gt; int Returns the physical SIMD width of the execution unit (EU).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_hw_threads_per_eu" title="dpctl.utils.intel_device_info_gpu_hw_threads_per_eu"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_hw_threads_per_eu()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_hw_threads_per_eu" title="dpctl.utils.intel_device_info_gpu_hw_threads_per_eu"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_hw_threads_per_eu()</span></code></a></p></td>
 <td><p>-&gt; int Returns the number of hardware threads in EU.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_slices" title="dpctl.utils.intel_device_info_gpu_slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_slices()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_slices" title="dpctl.utils.intel_device_info_gpu_slices"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_slices()</span></code></a></p></td>
 <td><p>-&gt; int Returns the number of slices in the GPU device, or zero.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_subslices_per_slice" title="dpctl.utils.intel_device_info_gpu_subslices_per_slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_subslices_per_slice()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_gpu_subslices_per_slice" title="dpctl.utils.intel_device_info_gpu_subslices_per_slice"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_gpu_subslices_per_slice()</span></code></a></p></td>
 <td><p>-&gt; int Returns the number of subslices per slice.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_max_mem_bandwidth" title="dpctl.utils.intel_device_info_max_mem_bandwidth"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_max_mem_bandwidth()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.intel_device_info_max_mem_bandwidth" title="dpctl.utils.intel_device_info_max_mem_bandwidth"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info_max_mem_bandwidth()</span></code></a></p></td>
 <td><p>-&gt; int Returns the maximum memory bandwidth in units of bytes/second.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.onetrace_enabled" title="dpctl.utils.onetrace_enabled"><code class="xref py py-func docutils literal notranslate"><span class="pre">onetrace_enabled()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.utils_functions_api.html#dpctl.utils.onetrace_enabled" title="dpctl.utils.onetrace_enabled"><code class="xref py py-func docutils literal notranslate"><span class="pre">onetrace_enabled()</span></code></a></p></td>
 <td><p>Enable <cite>onetrace</cite> collection for kernels executed in this context.</p></td>
 </tr>
 </tbody>

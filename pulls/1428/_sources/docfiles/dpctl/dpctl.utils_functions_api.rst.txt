@@ -11,7 +11,6 @@ dpctl.utils Functions
 Other Functions
 ---------------
 
-.. autofunction:: _is_gen9
 .. autofunction:: intel_device_info
 .. autofunction:: intel_device_info_device_id
 .. autofunction:: intel_device_info_gpu_eu_count
