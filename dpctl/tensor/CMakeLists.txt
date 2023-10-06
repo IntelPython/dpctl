@@ -64,6 +64,7 @@ set(_no_fast_math_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
 )
 foreach(_src_fn ${_no_fast_math_sources})
   get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
