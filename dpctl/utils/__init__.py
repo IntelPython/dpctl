@@ -92,17 +92,11 @@ def intel_device_info(dev):
     return dict()
 
 
-def _is_gen9(dev):
-    if not isinstance(dev, SyclDevice):
-        raise TypeError(f"Expected dpctl.SyclDevice, got {type(dev)}")
-    dev_id = intel_device_info_device_id(dev)
-    return (dev_id & 0xFF00) == 0x3E00
-
-
 __all__ = [
     "get_execution_queue",
     "get_coerced_usm_type",
     "validate_usm_type",
     "onetrace_enabled",
+    "intel_device_info",
     "ExecutionPlacementError",
 ]
