@@ -370,6 +370,230 @@ struct TrueDivideContigRowContigMatrixBroadcastFactory
     }
 };
 
+template <typename argT, typename resT> struct TrueDivideInplaceFunctor
+{
+
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+
+    void operator()(resT &res, const argT &in)
+    {
+        res /= in;
+    }
+
+    template <int vec_sz>
+    void operator()(sycl::vec<resT, vec_sz> &res,
+                    const sycl::vec<argT, vec_sz> &in)
+    {
+        res /= in;
+    }
+};
+
+// cannot use the out of place table, as it permits real lhs and complex rhs
+template <typename T1, typename T2> struct TrueDivideInplaceOutputType
+{
+    using value_type = typename std::disjunction< // disjunction is C++17
+                                                  // feature, supported by DPC++
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        sycl::half,
+                                        T2,
+                                        sycl::half,
+                                        sycl::half>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        std::complex<float>,
+                                        T2,
+                                        std::complex<float>,
+                                        std::complex<float>>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        float,
+                                        T2,
+                                        std::complex<float>,
+                                        std::complex<float>>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        std::complex<double>,
+                                        T2,
+                                        std::complex<double>,
+                                        std::complex<double>>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        double,
+                                        T2,
+                                        std::complex<double>,
+                                        std::complex<double>>,
+        td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+template <typename fnT, typename T1, typename T2>
+struct TrueDivideInplaceTypeMapFactory
+{
+    /*! @brief get typeid for output type of divide(T1 x, T2 y) */
+    std::enable_if_t<std::is_same<fnT, int>::value, int> get()
+    {
+        using rT = typename TrueDivideInplaceOutputType<T1, T2>::value_type;
+        return td_ns::GetTypeid<rT>{}.get();
+    }
+};
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using TrueDivideInplaceContigFunctor =
+    elementwise_common::BinaryInplaceContigFunctor<
+        argT,
+        resT,
+        TrueDivideInplaceFunctor<argT, resT>,
+        vec_sz,
+        n_vecs>;
+
+template <typename argT, typename resT, typename IndexerT>
+using TrueDivideInplaceStridedFunctor =
+    elementwise_common::BinaryInplaceStridedFunctor<
+        argT,
+        resT,
+        IndexerT,
+        TrueDivideInplaceFunctor<argT, resT>>;
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class true_divide_inplace_contig_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+true_divide_inplace_contig_impl(sycl::queue &exec_q,
+                                size_t nelems,
+                                const char *arg_p,
+                                py::ssize_t arg_offset,
+                                char *res_p,
+                                py::ssize_t res_offset,
+                                const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_contig_impl<
+        argTy, resTy, TrueDivideInplaceContigFunctor,
+        true_divide_inplace_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
+                                           res_p, res_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct TrueDivideInplaceContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename TrueDivideInplaceOutputType<
+                                         T1, T2>::value_type,
+                                     void>)
+        {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = true_divide_inplace_contig_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename resT, typename argT, typename IndexerT>
+class true_divide_inplace_strided_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event true_divide_inplace_strided_impl(
+    sycl::queue &exec_q,
+    size_t nelems,
+    int nd,
+    const py::ssize_t *shape_and_strides,
+    const char *arg_p,
+    py::ssize_t arg_offset,
+    char *res_p,
+    py::ssize_t res_offset,
+    const std::vector<sycl::event> &depends,
+    const std::vector<sycl::event> &additional_depends)
+{
+    return elementwise_common::binary_inplace_strided_impl<
+        argTy, resTy, TrueDivideInplaceStridedFunctor,
+        true_divide_inplace_strided_kernel>(
+        exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
+        res_offset, depends, additional_depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct TrueDivideInplaceStridedFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename TrueDivideInplaceOutputType<
+                                         T1, T2>::value_type,
+                                     void>)
+        {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = true_divide_inplace_strided_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename argT, typename resT>
+class true_divide_inplace_row_matrix_broadcast_sg_krn;
+
+template <typename argT, typename resT>
+using TrueDivideInplaceRowMatrixBroadcastingFunctor =
+    elementwise_common::BinaryInplaceRowMatrixBroadcastingFunctor<
+        argT,
+        resT,
+        TrueDivideInplaceFunctor<argT, resT>>;
+
+template <typename argT, typename resT>
+sycl::event true_divide_inplace_row_matrix_broadcast_impl(
+    sycl::queue &exec_q,
+    std::vector<sycl::event> &host_tasks,
+    size_t n0,
+    size_t n1,
+    const char *vec_p, // typeless pointer to (n1,) contiguous row
+    py::ssize_t vec_offset,
+    char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
+    py::ssize_t mat_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_row_matrix_broadcast_impl<
+        argT, resT, TrueDivideInplaceRowMatrixBroadcastingFunctor,
+        true_divide_inplace_row_matrix_broadcast_sg_krn>(
+        exec_q, host_tasks, n0, n1, vec_p, vec_offset, mat_p, mat_offset,
+        depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct TrueDivideInplaceRowMatrixBroadcastFactory
+{
+    fnT get()
+    {
+        using resT = typename TrueDivideInplaceOutputType<T1, T2>::value_type;
+        if constexpr (!std::is_same_v<resT, T2>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
+                          dpctl::tensor::type_utils::is_complex<T2>::value)
+            {
+                fnT fn = nullptr;
+                return fn;
+            }
+            else {
+                fnT fn = true_divide_inplace_row_matrix_broadcast_impl<T1, T2>;
+                return fn;
+            }
+        }
+    }
+};
+
 } // namespace true_divide
 } // namespace kernels
 } // namespace tensor
