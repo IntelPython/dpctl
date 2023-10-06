@@ -125,15 +125,6 @@ def test_onetrace_enabled():
     assert os.getenv(v_name, None) == v_v
 
 
-def test__is_gen9():
-    try:
-        d = dpctl.select_default_device()
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("Default device could not be created")
-    u = dpctl.utils._is_gen9(d)
-    assert isinstance(u, bool)
-
-
 def test_intel_device_info():
     try:
         d = dpctl.select_default_device()
