@@ -181,6 +181,7 @@ jobs:
           python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
       - name: Install gdb
         run: |
+          sudo apt-get update --fix-missing
           sudo apt-get install -y gdb
       - name: Run test_elementwise under gdb
         run: |
