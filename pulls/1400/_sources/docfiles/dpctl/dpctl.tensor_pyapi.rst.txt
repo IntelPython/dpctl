@@ -142,6 +142,10 @@ Other Functions
       - Returns True if two arrays are element-wise equal within tolerances.
     * - :func:`any()`
       - Tests whether any input array elements evaluate to True along a given axis.
+    * - :func:`argmax()`
+      - Returns the indices of the maximum values of the input array `x` along a specified axis.
+    * - :func:`argmin()`
+      - Returns the indices of the minimum values of the input array `x` along a specified axis.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
@@ -150,18 +154,24 @@ Other Functions
       - Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`.
     * - :func:`matrix_transpose()`
       - Transposes the innermost two dimensions of `x`, where `x` is a 2-dimensional matrix or a stack of 2-dimensional matrices.
+    * - :func:`max()`
+      - Calculates the maximum value of the input array `x`.
+    * - :func:`min()`
+      - Calculates the minimum value of the input array `x`.
     * - :func:`nonzero()`
       - Return the indices of non-zero elements.
     * - :func:`place()`
       - Change elements of an array based on conditional and input values.
     * - :func:`print_options()`
       - Context manager for print options.
+    * - :func:`prod()`
+      - Calculates the product of elements in the input array `x`.
     * - :func:`put()`
       - Puts values of an array into another array along a given axis.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`sum()`
-      - Calculates the sum of the input array `x`.
+      - Calculates the sum of elements in the input array `x`.
     * - :func:`take()`
       - Takes elements from array along a given axis.
     * - :func:`usm_ndarray_repr()`
