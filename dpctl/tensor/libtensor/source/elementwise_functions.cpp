@@ -2164,6 +2164,11 @@ static int pow_output_id_table[td_ns::num_types][td_ns::num_types];
 static binary_strided_impl_fn_ptr_t
     pow_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    pow_inplace_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    pow_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 void populate_pow_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -2187,6 +2192,20 @@ void populate_pow_dispatch_tables(void)
                          num_types>
         dtb3;
     dtb3.populate_dispatch_table(pow_contig_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::PowInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         PowInplaceStridedFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(pow_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::PowInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         PowInplaceContigFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(pow_inplace_contig_dispatch_table);
 };
 
 } // namespace impl
@@ -4610,6 +4629,31 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_pow_result_type", pow_result_type_pyapi, "");
+
+        using impl::pow_inplace_contig_dispatch_table;
+        using impl::pow_inplace_strided_dispatch_table;
+
+        auto pow_inplace_pyapi =
+            [&](const dpctl::tensor::usm_ndarray &src,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, pow_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    pow_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    pow_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    td_ns::NullPtrTable<
+                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
+            };
+        m.def("_pow_inplace", pow_inplace_pyapi, "", py::arg("lhs"),
+              py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // U??: ==== PROJ        (x)

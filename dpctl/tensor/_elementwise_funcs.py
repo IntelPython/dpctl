@@ -1266,7 +1266,7 @@ multiply = BinaryElementwiseFunc(
     ti._multiply_result_type,
     ti._multiply,
     _multiply_docstring_,
-    ti._multiply_inplace,
+    binary_inplace_fn=ti._multiply_inplace,
 )
 
 # U25: ==== NEGATIVE    (x)
@@ -1361,7 +1361,11 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 pow = BinaryElementwiseFunc(
-    "pow", ti._pow_result_type, ti._pow, _pow_docstring_
+    "pow",
+    ti._pow_result_type,
+    ti._pow,
+    _pow_docstring_,
+    binary_inplace_fn=ti._pow_inplace,
 )
 
 # U??: ==== PROJ        (x)
@@ -1654,7 +1658,7 @@ subtract = BinaryElementwiseFunc(
     ti._subtract_result_type,
     ti._subtract,
     _subtract_docstring_,
-    ti._subtract_inplace,
+    binary_inplace_fn=ti._subtract_inplace,
 )
 
 
