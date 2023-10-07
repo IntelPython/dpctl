@@ -1447,7 +1447,11 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 remainder = BinaryElementwiseFunc(
-    "remainder", ti._remainder_result_type, ti._remainder, _remainder_docstring_
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+    binary_inplace_fn=ti._remainder_inplace,
 )
 
 # U28: ==== ROUND       (x)

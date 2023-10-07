@@ -313,6 +313,189 @@ template <typename fnT, typename T1, typename T2> struct RemainderStridedFactory
     }
 };
 
+template <typename argT, typename resT> struct RemainderInplaceFunctor
+{
+
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+
+    void operator()(resT &res, const argT &in)
+    {
+        if constexpr (std::is_integral_v<argT> || std::is_integral_v<resT>) {
+            if (in == argT(0)) {
+                res = 0;
+                return;
+            }
+            if constexpr (std::is_signed_v<argT> || std::is_signed_v<resT>) {
+                auto tmp = res;
+                res %= in;
+                if (res != 0 && l_xor(tmp < 0, in < 0)) {
+                    res += in;
+                }
+            }
+            else {
+                res %= in;
+            }
+        }
+        else {
+            res = sycl::fmod(res, in);
+            if (res) {
+                if (l_xor(in < 0, res < 0)) {
+                    res += in;
+                }
+            }
+            else {
+                res = std::copysign(0, in);
+            }
+        }
+    }
+
+    template <int vec_sz>
+    void operator()(sycl::vec<resT, vec_sz> &res,
+                    const sycl::vec<argT, vec_sz> &in)
+    {
+        if constexpr (std::is_integral_v<argT> || std::is_integral_v<resT>) {
+#pragma unroll
+            for (auto i = 0; i < vec_sz; ++i) {
+                if (in[i] == argT(0)) {
+                    res[i] = 0;
+                }
+                else {
+                    auto rem = res[i] % in[i];
+                    if constexpr (std::is_signed_v<argT> ||
+                                  std::is_signed_v<resT>) {
+                        if (rem != 0 && l_xor(res[i] < 0, in[i] < 0)) {
+                            rem += in[i];
+                        }
+                    }
+                    res[i] = rem;
+                }
+            }
+        }
+        else {
+            res = sycl::fmod(res, in);
+#pragma unroll
+            for (auto i = 0; i < vec_sz; ++i) {
+                if (res[i]) {
+                    if (l_xor(in[i] < 0, res[i] < 0)) {
+                        res[i] += in[i];
+                    }
+                }
+                else {
+                    res[i] = std::copysign(0, in[i]);
+                }
+            }
+        }
+    }
+
+private:
+    bool l_xor(bool b1, bool b2) const
+    {
+        return (b1 != b2);
+    }
+};
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using RemainderInplaceContigFunctor =
+    elementwise_common::BinaryInplaceContigFunctor<
+        argT,
+        resT,
+        RemainderInplaceFunctor<argT, resT>,
+        vec_sz,
+        n_vecs>;
+
+template <typename argT, typename resT, typename IndexerT>
+using RemainderInplaceStridedFunctor =
+    elementwise_common::BinaryInplaceStridedFunctor<
+        argT,
+        resT,
+        IndexerT,
+        RemainderInplaceFunctor<argT, resT>>;
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class remainder_inplace_contig_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+remainder_inplace_contig_impl(sycl::queue &exec_q,
+                              size_t nelems,
+                              const char *arg_p,
+                              py::ssize_t arg_offset,
+                              char *res_p,
+                              py::ssize_t res_offset,
+                              const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_contig_impl<
+        argTy, resTy, RemainderInplaceContigFunctor,
+        remainder_inplace_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
+                                         res_p, res_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct RemainderInplaceContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename RemainderOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = remainder_inplace_contig_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename resT, typename argT, typename IndexerT>
+class remainder_inplace_strided_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event remainder_inplace_strided_impl(
+    sycl::queue &exec_q,
+    size_t nelems,
+    int nd,
+    const py::ssize_t *shape_and_strides,
+    const char *arg_p,
+    py::ssize_t arg_offset,
+    char *res_p,
+    py::ssize_t res_offset,
+    const std::vector<sycl::event> &depends,
+    const std::vector<sycl::event> &additional_depends)
+{
+    return elementwise_common::binary_inplace_strided_impl<
+        argTy, resTy, RemainderInplaceStridedFunctor,
+        remainder_inplace_strided_kernel>(exec_q, nelems, nd, shape_and_strides,
+                                          arg_p, arg_offset, res_p, res_offset,
+                                          depends, additional_depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct RemainderInplaceStridedFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename RemainderOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = remainder_inplace_strided_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
 } // namespace remainder
 } // namespace kernels
 } // namespace tensor
