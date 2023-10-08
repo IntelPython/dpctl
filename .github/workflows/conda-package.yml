@@ -102,6 +102,8 @@ jobs:
         run: |
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
       - name: Build conda package
+        env:
+          OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: conda build --no-test --python ${{ matrix.python }} -c intel -c conda-forge --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v3

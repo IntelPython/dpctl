@@ -9,6 +9,7 @@ build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     script_env:
         - WHEELS_OUTPUT_FOLDER
+        - OVERRIDE_INTEL_IPO  # [win]
 
 requirements:
     build:
