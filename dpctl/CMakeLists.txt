@@ -191,6 +191,7 @@ foreach(_cy_file ${_cython_sources})
     build_dpctl_ext(${_trgt} ${_cy_file} "dpctl")
 endforeach()
 
+# _sycl_queue include _host_task_util.hpp
 target_include_directories(_sycl_queue PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(program)
