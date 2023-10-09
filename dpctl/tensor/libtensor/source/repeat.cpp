@@ -136,7 +136,6 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_orthog_dims(true);
     size_t orthog_nelems(1); // number of orthogonal iterations
-
     for (auto i = 0; i < axis; ++i) {
         auto src_sh_i = src_shape[i];
         orthog_nelems *= src_sh_i;
@@ -554,7 +553,6 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_orthog_dims(true);
     size_t orthog_nelems(1); // number of orthogonal iterations
-
     for (auto i = 0; i < axis; ++i) {
         auto src_sh_i = src_shape[i];
         orthog_nelems *= src_sh_i;
@@ -634,7 +632,7 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         assert(dst_shape_vec.size() == 1);
         assert(dst_strides_vec.size() == 1);
 
-        if (src_nd > 0) {
+        if (src_nd == 0) {
             src_shape_vec = {0};
             src_strides_vec = {0};
         }
