@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data Parallel Control (dpctl) 0.15.1dev0+19.g99421a92e documentation</title>
+  <title>Queue &mdash; Data Parallel Control (dpctl) 0.15.1dev0+29.g0683ef41f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=cccb53fb"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=9d14e739"></script>
         <script src="../../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev0+19.g99421a92e
+                0.15.1dev0+29.g0683ef41f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -173,7 +173,7 @@ associated task completes, set a keyword <code class="docutils literal notransla
 <p>A possible output for the <a class="reference internal" href="#fig-constructing-queue-context-device-property"><span class="std std-ref">Constructing SyclQueue from context and device</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_subdevice_multidevice_context
 Could not create sub device.
-&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz] at 0x7efda98e44b0&gt; has 2 compute units
+&lt;dpctl.SyclDevice [backend_type.opencl, device_type.cpu,  Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz] at 0x7f7751c895b0&gt; has 2 compute units
 INFO: ===========================
 </pre></div>
 </div>
@@ -204,9 +204,9 @@ is called.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7fbffaa46700, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7faee51a9900, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
-    Name            Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+    Name            Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
     Driver version  2023.16.7.0.21_160000
     Vendor          Intel(R) Corporation
     Filter string   opencl:cpu:0
