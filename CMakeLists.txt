@@ -18,7 +18,7 @@ option(DPCTL_GENERATE_COVERAGE
     OFF
 )
 
-find_package(IntelDPCPP REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
+find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 
 add_subdirectory(libsyclinterface)
 

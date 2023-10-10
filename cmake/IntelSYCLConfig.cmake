@@ -1,5 +1,5 @@
 #
-# Modifications, Copyright (C) 2021 Intel Corporation
+# Modifications, Copyright (C) 2022 Intel Corporation
 #
 # This software and the related documents are Intel copyrighted materials, and
 # your use of them is governed by the express license under which they were
@@ -15,10 +15,10 @@
 # file Copyright.txt or https://cmake.org/licensing for details.
 
 #[=======================================================================[.rst:
-IntelDPCPPConfig
+IntelSYCLConfig
 -------
 
-DPCPP Library to verify DPCPP/SYCL compatability of CMAKE_CXX_COMPILER
+Library to verify SYCL compatability of CMAKE_CXX_COMPILER
 and passes relevant compiler flags.
 
 Result Variables
@@ -26,8 +26,8 @@ Result Variables
 
 This will define the following variables:
 
-``IntelDPCPP_FOUND``
-  True if the system has the DPCPP library.
+``IntelSYCL_FOUND``
+  True if the system has the SYCL library.
 ``SYCL_LANGUAGE_VERSION``
   The SYCL language spec version by Compiler.
 ``SYCL_INCLUDE_DIR``
@@ -37,35 +37,39 @@ This will define the following variables:
 ``SYCL_FLAGS``
   SYCL specific flags for the compiler.
 
+``IntelSYCL::SYCL_CXX``
+  Target for using Intel SYCL (DPC++).  The following properties are defined
+  for the target: ``INTERFACE_COMPILE_OPTIONS``, ``INTERFACE_LINK_OPTIONS``,
+  ``INTERFACE_INCLUDE_DIRECTORIES``, and ``INTERFACE_LINK_DIRECTORIES``
+
 Cache Variables
 ^^^^^^^^^^^^^^^
 
-The following cache variables may also be set:
+The following cache variable may also be set:
 
-``SYCL_INCLUDE_DIR``
-  The directory containing ``sycl.hpp``.
-``SYCL_LIBRARY_DIR``
-  The path to the SYCL library.
-``SYCL_FLAGS``
-  SYCL specific flags for the compiler.
 ``SYCL_LANGUAGE_VERSION``
   The SYCL language spec version by Compiler.
 
 
-.. note::
+.. Note::
 
-  For now, user needs to set -DCMAKE_CXX_COMPILER or environment of
+  1. User needs to set -DCMAKE_CXX_COMPILER or environment of
   CXX pointing to SYCL compatible compiler  ( eg: icx, clang++, icpx)
 
-  Note: do not set to DPCPP compiler. If set to a Compiler family
-  that supports dpcpp ( eg: IntelLLVM) both DPCPP and SYCL
-  features are enabled.
 
-  And add this package to user's Cmake config file.
+  2. Add this package to user's Cmake config file.
 
   .. code-block:: cmake
 
-    find_package(IntelDPCPP REQUIRED)
+    find_package(IntelSYCL REQUIRED)
+
+  3. Add sources to target through add_sycl_to_target()
+
+  .. code-block:: cmake
+
+     # Compile specific sources for SYCL and build target for SYCL
+     add_executable(target_proj A.cpp B.cpp offload1.cpp offload2.cpp)
+     add_sycl_to_target(TARGET target_proj SOURCES offload1.cpp offload2.cpp)
 
 #]=======================================================================]
 
@@ -83,24 +87,32 @@ endif()
 
 string(COMPARE EQUAL "${CMAKE_CXX_COMPILER}" "" nocmplr)
 if(nocmplr)
-  set(IntelDPCPP_FOUND False)
+  set(IntelSYCL_FOUND False)
   set(SYCL_REASON_FAILURE "SYCL: CMAKE_CXX_COMPILER not set!!")
-  set(IntelDPCPP_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+  set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+endif()
+
+# Check if a Compiler ID is being set. project() should be set prior to find_package()
+
+if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "x")
+   set(IntelSYCL_FOUND False)
+   set(SYCL_REASON_FAILURE "CMake CXX Compiler family is not set. Please make sure find_package(IntelSYCL) is called after project()!!")
+   set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+   return()
 endif()
 
 # Check for known compiler family that supports SYCL
 
 if( NOT "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang" AND
     NOT "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
-   set(IntelDPCPP_FOUND False)
+   set(IntelSYCL_FOUND False)
    set(SYCL_REASON_FAILURE "Unsupported compiler family ${CMAKE_CXX_COMPILER_ID} and compiler ${CMAKE_CXX_COMPILER}!!")
-   set(IntelDPCPP_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+   set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
    return()
 endif()
 
 # Assume that CXX Compiler supports SYCL and then test to verify.
 set(SYCL_COMPILER ${CMAKE_CXX_COMPILER})
-
 
 # Function to write a test case to verify SYCL features.
 
@@ -144,7 +156,7 @@ function(SYCL_FEATURE_TEST_BUILD TEST_SRC_FILE TEST_EXE)
     OUTPUT_VARIABLE output ERROR_VARIABLE output
     OUTPUT_FILE ${SYCL_TEST_DIR}/Compile.log
     RESULT_VARIABLE result
-    TIMEOUT 20
+    TIMEOUT 60
     )
 
   # Verify if test case build properly.
@@ -168,12 +180,12 @@ function(SYCL_FEATURE_TEST_RUN TEST_EXE)
     WORKING_DIRECTORY ${SYCL_TEST_DIR}
     OUTPUT_VARIABLE output ERROR_VARIABLE output
     RESULT_VARIABLE result
-    TIMEOUT 20
+    TIMEOUT 60
     )
 
   # Verify the test execution output.
   if(test_result)
-    set(IntelDPCPP_FOUND False)
+    set(IntelSYCL_FOUND False)
     set(SYCL_REASON_FAILURE "SYCL: feature test execution failed!!")
   endif()
   # TODO: what iff the result is false.. error or ignore?
@@ -236,14 +248,14 @@ set(SYCL_LINK_FLAGS "")
 # Based on Compiler ID, add support for SYCL
 if( "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang" OR
     "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
-  set(SYCL_FLAGS "-fsycl ")
-  set(SYCL_LINK_FLAGS "-fsycl ")
+  list(APPEND SYCL_FLAGS "-fsycl")
+  list(APPEND SYCL_LINK_FLAGS "-fsycl")
 endif()
 
 # TODO verify if this is needed
 # Windows: Add Exception handling
 if(WIN32)
-  set(SYCL_FLAGS "${SYCL_FLAGS} /EHsc")
+  list(APPEND SYCL_FLAGS "/EHsc")
 endif()
 
 set(SYCL_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SYCL_FLAGS}")
@@ -273,32 +285,76 @@ SYCL_FEATURE_TEST_EXTRACT(${test_output})
 # define macro  SYCL_LANGUAGE_VERSION
 string(COMPARE EQUAL "${SYCL_LANGUAGE_VERSION}" "" nosycllang)
 if(nosycllang)
-  set(IntelDPCPP_FOUND False)
+  set(IntelSYCL_FOUND False)
   set(SYCL_REASON_FAILURE "SYCL: It appears that the ${CMAKE_CXX_COMPILER} does not support SYCL")
-  set(IntelDPCPP_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+  set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
 endif()
 
 # Placeholder for identifying various implemenations of SYCL compilers.
 # for now, set to the CMAKE_CXX_COMPILER_ID
 set(SYCL_IMPLEMENTATION_ID "${CMAKE_CXX_COMPILER_ID}")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SYCL_FLAGS}")
-set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} ${SYCL_LINK_FLAGS}")
+message(DEBUG "The SYCL compiler is ${SYCL_COMPILER}")
+message(DEBUG "The SYCL Flags are ${SYCL_FLAGS}")
+message(DEBUG "The SYCL Language Version is ${SYCL_LANGUAGE_VERSION}")
 
-message(STATUS "Echo from ${CMAKE_CURRENT_SOURCE_DIR}/IntelDPCPPConfig.cmake")
-message(STATUS "The SYCL compiler is ${SYCL_COMPILER}")
-message(STATUS "The SYCL Flags are ${SYCL_FLAGS}")
-message(STATUS "The SYCL Language Version is ${SYCL_LANGUAGE_VERSION}")
+add_library(IntelSYCL::SYCL_CXX INTERFACE IMPORTED)
+set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
+  INTERFACE_COMPILE_OPTIONS ${SYCL_FLAGS})
+set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
+  INTERFACE_LINK_OPTIONS ${SYCL_LINK_FLAGS})
+set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
+  INTERFACE_INCLUDE_DIRECTORIES ${SYCL_INCLUDE_DIR})
+set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
+  INTERFACE_LINK_DIRECTORIES ${SYCL_LIBRARY_DIR})
 
 find_package_handle_standard_args(
-  IntelDPCPP
-  FOUND_VAR IntelDPCPP_FOUND
+  IntelSYCL
+  FOUND_VAR IntelSYCL_FOUND
   REQUIRED_VARS SYCL_INCLUDE_DIR SYCL_LIBRARY_DIR SYCL_FLAGS
   VERSION_VAR SYCL_LANGUAGE_VERSION
   REASON_FAILURE_MESSAGE "${SYCL_REASON_FAILURE}")
 
 # Include in Cache
 set(SYCL_LANGUAGE_VERSION "${SYCL_LANGUAGE_VERSION}" CACHE STRING "SYCL Language version")
-set(SYCL_INCLUDE_DIR "${SYCL_INCLUDE_DIR}" CACHE FILEPATH "SYCL Include directory")
-set(SYCL_LIBRARY_DIR "${SYCL_LIBRARY_DIR}" CACHE FILEPATH "SYCL Library Directory")
-set(SYCL_FLAGS "${SYCL_FLAGS}" CACHE STRING "SYCL flags for the compiler")
+
+function(add_sycl_to_target)
+
+  set(one_value_args TARGET)
+  set(multi_value_args SOURCES)
+  cmake_parse_arguments(SYCL
+    ""
+    "${one_value_args}"
+    "${multi_value_args}"
+    ${ARGN})
+
+
+    get_target_property(__sycl_cxx_options IntelSYCL::SYCL_CXX INTERFACE_COMPILE_OPTIONS)
+    get_target_property(__sycl_cxx_include_directories IntelSYCL::SYCL_CXX INTERFACE_INCLUDE_DIRECTORIES)
+
+    if(NOT ${ARGC})
+      message(FATAL_ERROR " add_sycl_to_target() does not have any arguments")
+    elseif(${ARGC} EQUAL 1)
+      message(WARNING "add_sycl_to_target() have only one argument specified.. assuming the target to be ${ARGV}.
+Adding sycl to all sources but that may effect compilation times")
+      set(SYCL_TARGET ${ARGV})
+    endif()
+
+    if(NOT SYCL_SOURCES)
+      message(WARNING "add_sycl_to_target() does not have sources specified.. Adding sycl to all sources but that may effect compilation times")
+      target_compile_options(${SYCL_TARGET} PUBLIC ${__sycl_cxx_options})
+      target_include_directories(${SYCL_TARGET} PUBLIC ${__sycl_cxx_include_directories})
+    endif()
+
+    foreach(source ${SYCL_SOURCES})
+      set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "${__sycl_cxx_options}")
+      set_source_files_properties(${source} PROPERTIES INCLUDE_DIRECTORIES "${__sycl_cxx_include_directories}")
+    endforeach()
+
+    get_target_property(__sycl_link_options
+        IntelSYCL::SYCL_CXX INTERFACE_LINK_OPTIONS)
+    target_link_options(${SYCL_TARGET} PRIVATE "${__sycl_link_options}")
+    get_target_property(__sycl_link_directories
+        IntelSYCL::SYCL_CXX INTERFACE_LINK_DIRECTORIES)
+    target_link_directories(${SYCL_TARGET} PUBLIC "${__sycl_link_directories}")
+endfunction(add_sycl_to_target)

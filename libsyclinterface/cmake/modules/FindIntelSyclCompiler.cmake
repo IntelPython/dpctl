@@ -19,21 +19,23 @@
 #
 # Example usage:
 #
-# find_package(IntelSycl)
+# find_package(IntelSyclCompiler)
 #
 # If successful, the following variables will be defined:
-# IntelSycl_FOUND
-# IntelSycl_VERSION
-# IntelSycl_INCLUDE_DIR
-# IntelSycl_C_COMPILER
-# IntelSycl_CXX_COMPILER
-# IntelSycl_SYCL_INCLUDE_DIR
-# IntelSycl_LIBRARY_DIR
-# IntelSycl_SYCL_LIBRARY
-# IntelSycl_OPENCL_LIBRARY
+# IntelSyclCompiler_FOUND
+# IntelSyclCompiler_VERSION
+# IntelSyclCompiler_INCLUDE_DIR
+# IntelSyclCompiler_C_COMPILER
+# IntelSyclCompiler_CXX_COMPILER
+# IntelSyclCompiler_SYCL_INCLUDE_DIR
+# IntelSyclCompiler_LIBRARY_DIR
+# IntelSyclCompiler_SYCL_LIBRARY
+# IntelSyclCompiler_OPENCL_LIBRARY
 
 include(FindPackageHandleStandardArgs)
-find_package(IntelDPCPP REQUIRED)
+if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
+   find_package(IntelSYCL REQUIRED)
+endif()
 
 # We will extract the version information from the compiler
 set(clangxx_cmd "${CMAKE_CXX_COMPILER}")
@@ -91,78 +93,78 @@ execute_process(
 
 # If dpcpp is found then set the package variables
 if(${clangxx_result} MATCHES "0")
-    string(REPLACE "\n" ";" IntelSycl_VERSION_LIST "${clangxx_ver}")
+    string(REPLACE "\n" ";" IntelSyclCompiler_VERSION_LIST "${clangxx_ver}")
     set(IDX 0)
-    foreach(X ${IntelSycl_VERSION_LIST})
+    foreach(X ${IntelSyclCompiler_VERSION_LIST})
         message(STATUS "dpcpp ver[${IDX}]: ${X}")
         MATH(EXPR IDX "${IDX}+1")
     endforeach()
-    list(GET IntelSycl_VERSION_LIST 0 VERSION_STRING)
+    list(GET IntelSyclCompiler_VERSION_LIST 0 VERSION_STRING)
 
     # Get the dpcpp version
     string(REGEX MATCH
         "[0-9]+\.[0-9]+\.[0-9]+"
-        IntelSycl_VERSION
+        IntelSyclCompiler_VERSION
         ${VERSION_STRING}
     )
 
     # Split out the version into major, minor an patch
-    string(REPLACE "." ";" IntelSycl_VERSION_LIST1 "${IntelSycl_VERSION}")
-    list(GET IntelSycl_VERSION_LIST1 0 IntelSycl_VERSION_MAJOR)
-    list(GET IntelSycl_VERSION_LIST1 1 IntelSycl_VERSION_MINOR)
-    list(GET IntelSycl_VERSION_LIST1 2 IntelSycl_VERSION_PATCH)
-    set(IntelSycl_INCLUDE_DIR ${SYCL_INCLUDE_DIR})
-    set(IntelSycl_SYCL_INCLUDE_DIR ${SYCL_INCLUDE_DIR}/sycl)
-    set(IntelSycl_LIBRARY_DIR ${SYCL_LIBRARY_DIR})
+    string(REPLACE "." ";" IntelSyclCompiler_VERSION_LIST1 "${IntelSyclCompiler_VERSION}")
+    list(GET IntelSyclCompiler_VERSION_LIST1 0 IntelSyclCompiler_VERSION_MAJOR)
+    list(GET IntelSyclCompiler_VERSION_LIST1 1 IntelSyclCompiler_VERSION_MINOR)
+    list(GET IntelSyclCompiler_VERSION_LIST1 2 IntelSyclCompiler_VERSION_PATCH)
+    set(IntelSyclCompiler_INCLUDE_DIR ${SYCL_INCLUDE_DIR})
+    set(IntelSyclCompiler_SYCL_INCLUDE_DIR ${SYCL_INCLUDE_DIR}/sycl)
+    set(IntelSyclCompiler_LIBRARY_DIR ${SYCL_LIBRARY_DIR})
     if("x${CMAKE_SYSTEM_NAME}" STREQUAL "xWindows")
         find_file(
-            IntelSycl_SYCL_LIBRARY
+            IntelSyclCompiler_SYCL_LIBRARY
             NAMES "sycl.lib" "sycl6.lib" "sycl7.lib"
-            PATHS ${IntelSycl_LIBRARY_DIR}
+            PATHS ${IntelSyclCompiler_LIBRARY_DIR}
         )
         find_file(
-            IntelSycl_OPENCL_LIBRARY
+            IntelSyclCompiler_OPENCL_LIBRARY
             NAMES "OpenCL.lib"
-            PATHS ${IntelSycl_LIBRARY_DIR}
+            PATHS ${IntelSyclCompiler_LIBRARY_DIR}
         )
     elseif("x${CMAKE_SYSTEM_NAME}" STREQUAL "xLinux")
         find_file(
-            IntelSycl_SYCL_LIBRARY
+            IntelSyclCompiler_SYCL_LIBRARY
             NAMES "libsycl.so"
-            PATHS ${IntelSycl_LIBRARY_DIR}
+            PATHS ${IntelSyclCompiler_LIBRARY_DIR}
         )
         find_file(
-            IntelSycl_OPENCL_LIBRARY
+            IntelSyclCompiler_OPENCL_LIBRARY
             NAMES "libOpenCL.so"
-            PATHS ${IntelSycl_LIBRARY_DIR}
+            PATHS ${IntelSyclCompiler_LIBRARY_DIR}
         )
     endif()
 
 endif()
 
 # Check if a specific version of DPCPP is requested.
-if(IntelSycl_FIND_VERSION AND (DEFINED IntelSycl_VERSION))
+if(IntelSyclCompiler_FIND_VERSION AND (DEFINED IntelSyclCompiler_VERSION))
     set(VERSION_GT_FIND_VERSION FALSE)
     versions_greater_equal(
-        ${IntelSycl_VERSION}
-        ${IntelSycl_FIND_VERSION}
+        ${IntelSyclCompiler_VERSION}
+        ${IntelSyclCompiler_FIND_VERSION}
         VERSION_GT_FIND_VERSION
     )
     if(VERSION_GT_FIND_VERSION)
-        set(IntelSycl_FOUND TRUE)
+        set(IntelSyclCompiler_FOUND TRUE)
     else()
-        set(IntelSycl_FOUND FALSE)
+        set(IntelSyclCompiler_FOUND FALSE)
     endif()
 else()
-    set(IntelSycl_FOUND TRUE)
+    set(IntelSyclCompiler_FOUND TRUE)
 endif()
 
-find_package_handle_standard_args(IntelSycl DEFAULT_MSG
-    IntelSycl_FOUND
-    IntelSycl_VERSION
-    IntelSycl_INCLUDE_DIR
-    IntelSycl_SYCL_INCLUDE_DIR
-    IntelSycl_LIBRARY_DIR
-    IntelSycl_SYCL_LIBRARY
-    IntelSycl_OPENCL_LIBRARY
+find_package_handle_standard_args(IntelSyclCompiler DEFAULT_MSG
+    IntelSyclCompiler_FOUND
+    IntelSyclCompiler_VERSION
+    IntelSyclCompiler_INCLUDE_DIR
+    IntelSyclCompiler_SYCL_INCLUDE_DIR
+    IntelSyclCompiler_LIBRARY_DIR
+    IntelSyclCompiler_SYCL_LIBRARY
+    IntelSyclCompiler_OPENCL_LIBRARY
 )

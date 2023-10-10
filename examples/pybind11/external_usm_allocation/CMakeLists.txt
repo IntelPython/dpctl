@@ -5,7 +5,7 @@ project(external_usm_allocation VERSION 0.1 LANGUAGES CXX
 
 set(DPCTL_CMAKE_MODULES_PATH "${CMAKE_SOURCE_DIR}/../../../cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_CMAKE_MODULES_PATH})
-find_package(IntelDPCPP REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
+find_package(IntelSYCL REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -23,10 +23,14 @@ find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
 
 set(py_module_name _external_usm_alloc)
+set(_sources
+  external_usm_allocation/_usm_alloc_example.cpp
+)
 pybind11_add_module(${py_module_name}
     MODULE
-    external_usm_allocation/_usm_alloc_example.cpp
+    ${_sources}
 )
+add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 install(TARGETS ${py_module_name}
   DESTINATION external_usm_allocation

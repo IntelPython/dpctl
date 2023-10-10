@@ -16,9 +16,11 @@ add_custom_target(_dpctl4pybind11_header_ready
 )
 
 set(python_module_name _device_queries)
+set(_module_src ${CMAKE_CURRENT_SOURCE_DIR}/src/device_queries.cpp)
 pybind11_add_module(${python_module_name} MODULE
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/device_queries.cpp
+  ${_module_src}
 )
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 target_include_directories(${python_module_name}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include

@@ -4,7 +4,7 @@ project(example_use_mkl_gemm VERSION 0.1 LANGUAGES CXX
   DESCRIPTION "Example of using Python wrapper to oneMKL function")
 set(DPCTL_CMAKE_MODULES_PATH "${CMAKE_SOURCE_DIR}/../../../cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_CMAKE_MODULES_PATH})
-find_package(IntelDPCPP REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
+find_package(IntelSYCL REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
@@ -35,10 +35,12 @@ find_library(OpenCL NAMES OpenCL REQUIRED)
 
 set(py_module_name _onemkl)
 
+set(_sources sycl_gemm/_onemkl.cpp)
 pybind11_add_module(${py_module_name}
     MODULE
-    sycl_gemm/_onemkl.cpp
+    ${_sources}
 )
+add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
 target_compile_definitions(${py_module_name} PRIVATE -DMKL_ILP64)
 target_include_directories(${py_module_name}
     PUBLIC ${MKL_INCLUDE_DIR} sycl_gemm
@@ -50,11 +52,14 @@ target_link_libraries(${py_module_name}
 install(TARGETS ${py_module_name} DESTINATION sycl_gemm)
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 
-get_target_property(_sycl_gemm_sources ${py_module_name} SOURCES)
-set_source_files_properties(${_sycl_gemm_sources}
-  PROPERTIES
-  COMPILE_OPTIONS "-O3"
-)
+foreach(_src_fn ${_sources})
+    get_source_file_property(_compile_options ${_src_fn} COMPILE_OPTIONS)
+    set(_combined_options ${_compile_options} "-O3")
+    set_source_files_properties(${_src_fn}
+        PROPERTIES
+        COMPILE_OPTIONS "${_combined_options}"
+    )
+endforeach()
 target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 
 add_executable(standalone_cpp

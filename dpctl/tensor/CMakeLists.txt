@@ -30,8 +30,7 @@ if(WIN32)
     endif()
 endif()
 
-set(python_module_name _tensor_impl)
-pybind11_add_module(${python_module_name} MODULE
+set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
@@ -52,16 +51,29 @@ pybind11_add_module(${python_module_name} MODULE
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
 )
+
+set(python_module_name _tensor_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
 set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
 endif()
-set_source_files_properties(
+
+set(_no_fast_math_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
-  PROPERTIES COMPILE_OPTIONS "${_clang_prefix}-fno-fast-math")
+)
+foreach(_src_fn ${_no_fast_math_sources})
+  get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
+  set(_combined_options_prop ${_cmpl_options_prop} "${_clang_prefix}-fno-fast-math")
+  set_source_files_properties(
+     ${_src_fn}
+     PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
+  )
+endforeach()
 if (UNIX)
   set_source_files_properties(
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
