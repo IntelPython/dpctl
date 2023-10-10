@@ -392,6 +392,8 @@ template <typename argT, typename resT> struct TrueDivideInplaceFunctor
 };
 
 // cannot use the out of place table, as it permits real lhs and complex rhs
+// T1 corresponds to the type of the rhs, while T2 corresponds to the lhs
+// the type of the result must be the same as T2
 template <typename T1, typename T2> struct TrueDivideInplaceOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
@@ -433,6 +435,7 @@ struct TrueDivideInplaceTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename TrueDivideInplaceOutputType<T1, T2>::value_type;
+        static_assert(std::is_same_v<rT, T2> || std::is_same_v<rT, void>);
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
