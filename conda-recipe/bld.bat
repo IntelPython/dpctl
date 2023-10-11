@@ -34,7 +34,7 @@ if EXIST "%PLATFORM_DIR%" (
 
 if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     rem Install and assemble wheel package from the build bits
-    "%PYTHON%" setup.py install bdist_wheel %SKBUILD_ARGS%
+    "%PYTHON%" setup.py install bdist_wheel --build-number %GIT_DESCRIBE_NUMBER% %SKBUILD_ARGS%
     if errorlevel 1 exit 1
     copy dist\dpctl*.whl %WHEELS_OUTPUT_FOLDER%
     if errorlevel 1 exit 1
