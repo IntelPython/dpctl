@@ -407,7 +407,24 @@ template <typename argT, typename resT> struct TrueDivideInplaceFunctor
 
     void operator()(resT &res, const argT &in)
     {
-        res /= in;
+        if constexpr (tu_ns::is_complex<resT>::value) {
+            using res_rT = typename resT::value_type;
+            if constexpr (tu_ns::is_complex<argT>::value) {
+                using arg_rT = typename argT::value_type;
+
+                auto res1 = exprm_ns::complex<res_rT>(res);
+                res1 /= exprm_ns::complex<arg_rT>(in);
+                res = res1;
+            }
+            else {
+                auto res1 = exprm_ns::complex<res_rT>(res);
+                res1 /= in;
+                res = res1;
+            }
+        }
+        else {
+            res /= in;
+        }
     }
 
     template <int vec_sz>
