@@ -933,6 +933,8 @@ namespace true_divide_fn_ns = dpctl::tensor::kernels::true_divide;
 static binary_contig_impl_fn_ptr_t
     true_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static int true_divide_output_id_table[td_ns::num_types][td_ns::num_types];
+static int true_divide_inplace_output_id_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     true_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -946,6 +948,16 @@ static binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t
 static binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t
     true_divide_contig_row_contig_matrix_broadcast_dispatch_table
         [td_ns::num_types][td_ns::num_types];
+
+static binary_inplace_contig_impl_fn_ptr_t
+    true_divide_inplace_contig_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    true_divide_inplace_strided_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
+    true_divide_inplace_row_matrix_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
 
 void populate_true_divide_dispatch_tables(void)
 {
@@ -990,6 +1002,33 @@ void populate_true_divide_dispatch_tables(void)
         dtb5;
     dtb5.populate_dispatch_table(
         true_divide_contig_row_contig_matrix_broadcast_dispatch_table);
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::TrueDivideInplaceTypeMapFactory;
+    DispatchTableBuilder<int, TrueDivideInplaceTypeMapFactory, num_types> dtb6;
+    dtb6.populate_dispatch_table(true_divide_inplace_output_id_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::TrueDivideInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         TrueDivideInplaceStridedFactory, num_types>
+        dtb7;
+    dtb7.populate_dispatch_table(true_divide_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::TrueDivideInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         TrueDivideInplaceContigFactory, num_types>
+        dtb8;
+    dtb8.populate_dispatch_table(true_divide_inplace_contig_dispatch_table);
+
+    // function pointers for inplace operation on contiguous matrix
+    // and contiguous row
+    using fn_ns::TrueDivideInplaceRowMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_row_matrix_broadcast_impl_fn_ptr_t,
+                         TrueDivideInplaceRowMatrixBroadcastFactory, num_types>
+        dtb9;
+    dtb9.populate_dispatch_table(true_divide_inplace_row_matrix_dispatch_table);
 };
 
 } // namespace impl
@@ -1151,6 +1190,13 @@ static int floor_divide_output_id_table[td_ns::num_types][td_ns::num_types];
 static binary_strided_impl_fn_ptr_t
     floor_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    floor_divide_inplace_contig_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    floor_divide_inplace_strided_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+
 void populate_floor_divide_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -1174,6 +1220,20 @@ void populate_floor_divide_dispatch_tables(void)
                          num_types>
         dtb3;
     dtb3.populate_dispatch_table(floor_divide_contig_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::FloorDivideInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         FloorDivideInplaceStridedFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(floor_divide_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::FloorDivideInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         FloorDivideInplaceContigFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(floor_divide_inplace_contig_dispatch_table);
 };
 
 } // namespace impl
@@ -3379,6 +3439,33 @@ void init_elementwise_functions(py::module_ m)
               py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_divide_result_type", divide_result_type_pyapi, "");
+
+        using impl::true_divide_inplace_contig_dispatch_table;
+        using impl::true_divide_inplace_output_id_table;
+        using impl::true_divide_inplace_row_matrix_dispatch_table;
+        using impl::true_divide_inplace_strided_dispatch_table;
+
+        auto divide_inplace_pyapi =
+            [&](const dpctl::tensor::usm_ndarray &src,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends,
+                    true_divide_inplace_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    true_divide_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    true_divide_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    true_divide_inplace_row_matrix_dispatch_table);
+            };
+        m.def("_divide_inplace", divide_inplace_pyapi, "", py::arg("lhs"),
+              py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // B09: ==== EQUAL         (x1, x2)
@@ -3531,6 +3618,31 @@ void init_elementwise_functions(py::module_ m)
               py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_floor_divide_result_type", floor_divide_result_type_pyapi, "");
+
+        using impl::floor_divide_inplace_contig_dispatch_table;
+        using impl::floor_divide_inplace_strided_dispatch_table;
+
+        auto floor_divide_inplace_pyapi =
+            [&](const dpctl::tensor::usm_ndarray &src,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, floor_divide_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    floor_divide_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    floor_divide_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    td_ns::NullPtrTable<
+                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
+            };
+        m.def("_floor_divide_inplace", floor_divide_inplace_pyapi, "",
+              py::arg("lhs"), py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // B11: ==== GREATER       (x1, x2)

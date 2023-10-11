@@ -590,6 +590,7 @@ divide = BinaryElementwiseFunc(
     ti._divide_result_type,
     ti._divide,
     _divide_docstring_,
+    binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=_acceptance_fn_divide,
 )
 
@@ -720,6 +721,7 @@ floor_divide = BinaryElementwiseFunc(
     ti._floor_divide_result_type,
     ti._floor_divide,
     _floor_divide_docstring_,
+    binary_inplace_fn=ti._floor_divide_inplace,
 )
 
 # B11: ==== GREATER       (x1, x2)

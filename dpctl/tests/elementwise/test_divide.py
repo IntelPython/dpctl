@@ -21,9 +21,16 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _compare_dtypes, _usm_types
+from .utils import (
+    _all_dtypes,
+    _compare_dtypes,
+    _complex_fp_dtypes,
+    _real_fp_dtypes,
+    _usm_types,
+)
 
 
 @pytest.mark.parametrize("op1_dtype", _all_dtypes)
@@ -187,3 +194,65 @@ def test_divide_canary_mock_array():
     c = Canary()
     with pytest.raises(ValueError):
         dpt.divide(a, c)
+
+
+@pytest.mark.parametrize("dtype", _real_fp_dtypes + _complex_fp_dtypes)
+def test_divide_inplace_python_scalar(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.zeros((10, 10), dtype=dtype, sycl_queue=q)
+    dt_kind = X.dtype.kind
+    if dt_kind == "f":
+        X /= float(1)
+    elif dt_kind == "c":
+        X /= complex(1)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes)
+@pytest.mark.parametrize("op2_dtype", _all_dtypes)
+def test_divide_inplace_dtype_matrix(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype, sycl_queue=q)
+
+    dev = q.sycl_device
+    _fp16 = dev.has_aspect_fp16
+    _fp64 = dev.has_aspect_fp64
+    # out array only valid if it is inexact
+    if (
+        _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64)
+        and dpt.dtype(op1_dtype).kind in "fc"
+    ):
+        ar1 /= ar2
+        assert dpt.all(ar1 == 1)
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)[::-1]
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype, sycl_queue=q)[::2]
+        ar3 /= ar4
+        assert dpt.all(ar3 == 1)
+    else:
+        with pytest.raises(TypeError):
+            ar1 /= ar2
+            dpt.divide(ar1, ar2, out=ar1)
+
+    # out is second arg
+    ar1 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype, sycl_queue=q)
+    if (
+        _can_cast(ar1.dtype, ar2.dtype, _fp16, _fp64)
+        and dpt.dtype(op2_dtype).kind in "fc"
+    ):
+        dpt.divide(ar1, ar2, out=ar2)
+        assert dpt.all(ar2 == 1)
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)[::-1]
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype, sycl_queue=q)[::2]
+        dpt.divide(ar3, ar4, out=ar4)
+        dpt.all(ar4 == 1)
+    else:
+        with pytest.raises(TypeError):
+            dpt.divide(ar1, ar2, out=ar2)
