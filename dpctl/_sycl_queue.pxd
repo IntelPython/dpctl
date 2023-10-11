@@ -29,8 +29,6 @@ from ._sycl_event cimport SyclEvent
 from .program._program cimport SyclKernel
 
 
-cdef void default_async_error_handler(int) except * nogil
-
 cdef public api class _SyclQueue [
     object Py_SyclQueueObject, type Py_SyclQueueType
 ]:
