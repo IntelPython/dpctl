@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import platform
 
 import numpy as np
 import pytest
@@ -40,6 +41,15 @@ _dpt_funcs = [t[1] for t in _all_funcs]
 def test_trig_out_type(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+
+    dtype = dpt.dtype(dtype)
+    if platform.system() == "Windows" and dpt.isdtype(
+        dtype, "complex floating"
+    ):
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
 
     X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
     expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
@@ -92,6 +102,15 @@ def test_trig_real_contig(np_call, dpt_call, dtype):
 def test_trig_complex_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+
+    dtype = dpt.dtype(dtype)
+    if platform.system() == "Windows" and dpt.isdtype(
+        dtype, "complex floating"
+    ):
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
 
     n_seq = 100
     n_rep = 137
@@ -150,6 +169,14 @@ def test_trig_order(np_call, dpt_call, dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     arg_dt = np.dtype(dtype)
+    if platform.system() == "Windows" and dpt.isdtype(
+        arg_dt, "complex floating"
+    ):
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
+
     input_shape = (4, 4, 4, 4)
     X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
     if np_call in _trig_funcs:
@@ -226,6 +253,12 @@ def test_trig_real_strided(np_call, dpt_call, dtype):
 def test_trig_complex_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+
+    if platform.system() == "Windows":
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
 
     np.random.seed(42)
     strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])

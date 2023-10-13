@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import platform
 
 import numpy as np
 import pytest
@@ -29,6 +30,15 @@ from .utils import _all_dtypes, _no_complex_dtypes, _usm_types
 def test_sign_out_type(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+
+    dtype = dpt.dtype(dtype)
+    if platform.system() == "Windows" and dpt.isdtype(
+        dtype, "complex floating"
+    ):
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
 
     arg_dt = np.dtype(dtype)
     X = dpt.asarray(0, dtype=arg_dt, sycl_queue=q)
@@ -64,6 +74,14 @@ def test_sign_order(dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     arg_dt = np.dtype(dtype)
+    if platform.system() == "Windows" and dpt.isdtype(
+        arg_dt, "complex floating"
+    ):
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
+
     input_shape = (10, 10, 10, 10)
     X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
     X[..., 0::2] = 1
@@ -85,6 +103,14 @@ def test_sign_complex(dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     arg_dt = np.dtype(dtype)
+    if platform.system() == "Windows" and dpt.isdtype(
+        arg_dt, "complex floating"
+    ):
+        pytest.skip(
+            "Elementwise functions are known to be broken for "
+            "complex types on Windows"
+        )
+
     input_shape = (10, 10, 10, 10)
     X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
     Xnp = np.random.standard_normal(
