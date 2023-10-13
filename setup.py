@@ -176,9 +176,31 @@ skbuild.setup(
         "dpctl.utils",
     ],
     package_data={
-        "dpctl": ["tests/*.*", "tests/helper/*.py", "tests/elementwise/*.py"]
+        "dpctl": [
+            "tests/*.*",
+            "tests/helper/*.py",
+            "tests/elementwise/*.py",
+            "tests/*.pyx",
+            "tests/input_files/*",
+            "resources/cmake/*.cmake",
+            "include/*.h*",
+            "include/syclinterface/*.h*",
+            "include/syclinterface/Config/*.h",
+            "include/syclinterface/Support/*.h",
+            "tensor/libtensor/include/kernels/*.h*",
+            "tensor/libtensor/include/utils/*.h*",
+            "tensor/include/dlpack/*.*",
+            "_sycl*.h",
+            "memory/_memory*.h",
+            "program/_program*.h",
+            "tensor/_usmarray*.h",
+            "*.pxd",
+            "memory/*.pxd",
+            "tensor/*.pxd",
+            "program/*.pxd",
+        ]
     },
-    include_package_data=True,
+    include_package_data=False,
     zip_safe=False,
     setup_requires=["Cython"],
     install_requires=[
