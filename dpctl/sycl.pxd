@@ -20,7 +20,7 @@
 from . cimport _backend as dpctl_backend
 
 
-cdef extern from "CL/sycl.hpp" namespace "sycl":
+cdef extern from "sycl/sycl.hpp" namespace "sycl":
     cdef cppclass queue "sycl::queue":
         pass
 

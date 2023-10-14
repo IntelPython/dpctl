@@ -31,7 +31,7 @@
 
 #include "Python.h"
 #include "syclinterface/dpctl_data_types.h"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 int async_dec_ref(DPCTLSyclQueueRef QRef,
                   PyObject **obj_array,
