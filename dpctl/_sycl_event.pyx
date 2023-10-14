@@ -218,7 +218,7 @@ cdef class SyclEvent(_SyclEvent):
 
     @staticmethod
     cdef void _wait(SyclEvent event):
-        with nogil: DPCTLEvent_WaitAndThrow(event._event_ref)
+        with nogil: DPCTLEvent_Wait(event._event_ref)
 
     @staticmethod
     def wait_for(event):

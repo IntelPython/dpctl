@@ -56,7 +56,6 @@ from ._backend cimport (  # noqa: E211
     _arg_data_type,
     _backend_type,
     _queue_property_type,
-    error_handler_callback,
 )
 from .memory._memory cimport _Memory
 
@@ -112,18 +111,6 @@ cdef class SyclQueueCreationError(Exception):
 
     """
     pass
-
-
-cdef class SyclAsynchronousError(Exception):
-    """
-    A SyclAsynchronousError exception is raised when SYCL operation submission
-    or execution encounters an error.
-    """
-
-
-cdef void default_async_error_handler(int err) except * nogil:
-    with gil:
-        raise SyclAsynchronousError(err)
 
 
 cdef int _parse_queue_properties(object prop) except *:
@@ -404,7 +391,7 @@ cdef class SyclQueue(_SyclQueue):
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
-            <error_handler_callback *>&default_async_error_handler,
+            NULL,
             props
         )
         if QRef is NULL:
@@ -481,7 +468,7 @@ cdef class SyclQueue(_SyclQueue):
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
-            <error_handler_callback *>&default_async_error_handler,
+            NULL,
             props
         )
         if (QRef is NULL):
@@ -566,7 +553,7 @@ cdef class SyclQueue(_SyclQueue):
         qref = DPCTLQueue_Create(
             cref,
             dref,
-            <error_handler_callback *>&default_async_error_handler,
+            NULL,
             props
         )
         if qref is NULL:

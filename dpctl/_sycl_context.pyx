@@ -48,7 +48,6 @@ from ._backend cimport (  # noqa: E211
     error_handler_callback,
 )
 from ._sycl_device cimport SyclDevice
-from ._sycl_queue cimport default_async_error_handler
 from ._sycl_device import SyclDeviceCreationError
 
 __all__ = [
@@ -201,8 +200,7 @@ cdef class SyclContext(_SyclContext):
     cdef int _init_context_from_one_device(self, SyclDevice device, int props):
         cdef DPCTLSyclDeviceRef DRef = device.get_device_ref()
         cdef DPCTLSyclContextRef CRef = NULL
-        cdef error_handler_callback * eh_callback = (
-            <error_handler_callback *>&default_async_error_handler)
+        cdef error_handler_callback * eh_callback = NULL
         # look up cached contexts for root devices first
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
@@ -219,8 +217,7 @@ cdef class SyclContext(_SyclContext):
         cdef int j = 0
         cdef size_t num_bytes
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        cdef error_handler_callback * eh_callback = (
-            <error_handler_callback *>&default_async_error_handler)
+        cdef error_handler_callback * eh_callback = NULL
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclDeviceRef *elems
 
