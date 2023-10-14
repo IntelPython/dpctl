@@ -28,7 +28,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/sycl.hpp> /* SYCL headers   */
+#include <sycl/sycl.hpp> /* SYCL headers   */
 #include <vector>
 
 using namespace sycl;

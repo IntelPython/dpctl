@@ -29,8 +29,8 @@
 #include "dpctl_sycl_platform_interface.h"
 #include "dpctl_sycl_platform_manager.h"
 #include "dpctl_utils.h"
-#include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <sycl/sycl.hpp>
 #include <vector>
 
 using namespace sycl;

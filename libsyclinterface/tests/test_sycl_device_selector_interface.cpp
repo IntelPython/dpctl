@@ -28,8 +28,8 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <sycl/sycl.hpp>
 
 using namespace sycl;
 
