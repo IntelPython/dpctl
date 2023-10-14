@@ -27,8 +27,8 @@
 #include "Config/dpctl_config.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_types.h"
-#include <CL/sycl.hpp>
 #include <gtest/gtest.h>
+#include <sycl/sycl.hpp>
 #include <vector>
 
 using namespace sycl;

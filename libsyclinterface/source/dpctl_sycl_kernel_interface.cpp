@@ -29,8 +29,8 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/sycl.hpp> /* Sycl headers */
 #include <cstdint>
+#include <sycl/sycl.hpp> /* Sycl headers */
 
 using namespace sycl;
 

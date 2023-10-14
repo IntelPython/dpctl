@@ -29,10 +29,10 @@
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
-#include <CL/sycl.hpp>           /* SYCL headers   */
 #include <Config/dpctl_config.h> /* Config */
 #include <iomanip>
 #include <iostream>
+#include <sycl/sycl.hpp> /* SYCL headers   */
 #include <unordered_map>
 #include <utility>
 #include <vector>

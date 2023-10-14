@@ -31,9 +31,9 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/sycl.hpp> /* SYCL headers   */
 #include <exception>
 #include <stdexcept>
+#include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 
 using namespace sycl;

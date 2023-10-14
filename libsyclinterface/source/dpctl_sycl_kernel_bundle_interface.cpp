@@ -30,14 +30,10 @@
 #include "dpctl_dynamic_lib_helper.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/cl.h>     /* OpenCL headers     */
-#include <CL/sycl.hpp> /* Sycl headers       */
-#if __has_include(<sycl/backend/opencl.hpp>)
-#include <sycl/backend/opencl.hpp>
-#else
-#include <CL/sycl/backend/opencl.hpp>
-#endif
+#include <CL/cl.h> /* OpenCL headers     */
 #include <sstream>
+#include <sycl/backend/opencl.hpp>
+#include <sycl/sycl.hpp> /* Sycl headers       */
 #include <utility>
 
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
@@ -45,11 +41,7 @@
 // not reorder the includes.
 // clang-format off
 #include "ze_api.h" /* Level Zero headers */
-#if __has_include(<sycl/ext/oneapi/backend/level_zero.hpp>)
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
-#else
-#include <CL/sycl/backend/level_zero.hpp>
-#endif
 // clang-format on
 #endif
 

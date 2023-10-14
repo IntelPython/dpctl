@@ -27,7 +27,7 @@
 
 #include "Support/DllExport.h"
 #include "dpctl_error_handler_type.h"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 /*!
  * @brief Functor class used by DPCTL to handle SYCL asynchronous errors.

@@ -34,11 +34,11 @@
 #include "dpctl_sycl_kernel_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_queue_manager.h"
-#include <CL/sycl.hpp>
 #include <array>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <sycl/sycl.hpp>
 
 using namespace sycl;
 

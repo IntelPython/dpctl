@@ -32,10 +32,10 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
-#include <CL/sycl.hpp>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <sycl/sycl.hpp>
 
 namespace
 {

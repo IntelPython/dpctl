@@ -32,9 +32,9 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
-#include <CL/sycl.hpp> /* SYCL headers   */
 #include <algorithm>
 #include <cstring>
+#include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 #include <vector>
 

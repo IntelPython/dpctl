@@ -31,11 +31,11 @@
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
-#include <CL/sycl.hpp>
 #include <iomanip>
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
