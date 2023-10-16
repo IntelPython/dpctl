@@ -21,16 +21,16 @@ from numpy.testing import assert_allclose
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _map_to_device_dtype, _real_fp_dtypes
+from .utils import _map_to_device_dtype, _no_complex_dtypes, _real_fp_dtypes
 
 
-@pytest.mark.parametrize("dtype", _real_fp_dtypes)
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
 def test_rsqrt_out_type(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     x = dpt.asarray(1, dtype=dtype, sycl_queue=q)
-    expected_dtype = np.reciprocal(np.sqrt(1, dtype=dtype)).dtype
+    expected_dtype = np.reciprocal(np.sqrt(np.array(1, dtype=dtype))).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
     assert dpt.rsqrt(x).dtype == expected_dtype
 

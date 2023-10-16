@@ -22,11 +22,11 @@ import pytest
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _compare_dtypes, _real_fp_dtypes
+from .utils import _compare_dtypes, _no_complex_dtypes, _real_fp_dtypes
 
 
-@pytest.mark.parametrize("op1_dtype", _real_fp_dtypes)
-@pytest.mark.parametrize("op2_dtype", _real_fp_dtypes)
+@pytest.mark.parametrize("op1_dtype", _no_complex_dtypes)
+@pytest.mark.parametrize("op2_dtype", _no_complex_dtypes)
 def test_copysign_dtype_matrix(op1_dtype, op2_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(op1_dtype, q)

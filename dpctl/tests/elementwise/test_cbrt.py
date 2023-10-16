@@ -21,10 +21,10 @@ from numpy.testing import assert_allclose
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _map_to_device_dtype, _real_fp_dtypes
+from .utils import _map_to_device_dtype, _no_complex_dtypes, _real_fp_dtypes
 
 
-@pytest.mark.parametrize("dtype", _real_fp_dtypes)
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
 def test_cbrt_out_type(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
