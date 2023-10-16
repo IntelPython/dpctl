@@ -51,10 +51,12 @@
 #include "kernels/elementwise_functions/cbrt.hpp"
 #include "kernels/elementwise_functions/ceil.hpp"
 #include "kernels/elementwise_functions/conj.hpp"
+#include "kernels/elementwise_functions/copysign.hpp"
 #include "kernels/elementwise_functions/cos.hpp"
 #include "kernels/elementwise_functions/cosh.hpp"
 #include "kernels/elementwise_functions/equal.hpp"
 #include "kernels/elementwise_functions/exp.hpp"
+#include "kernels/elementwise_functions/exp2.hpp"
 #include "kernels/elementwise_functions/expm1.hpp"
 #include "kernels/elementwise_functions/floor.hpp"
 #include "kernels/elementwise_functions/floor_divide.hpp"
@@ -2750,7 +2752,6 @@ void populate_trunc_dispatch_vectors(void)
 } // namespace impl
 
 // B24:  ==== HYPOT    (x1, x2)
-
 namespace impl
 {
 namespace hypot_fn_ns = dpctl::tensor::kernels::hypot;
@@ -2789,7 +2790,7 @@ void populate_hypot_dispatch_tables(void)
 
 } // namespace impl
 
-// U33: ==== CBRT        (x)
+// U37: ==== CBRT        (x)
 namespace impl
 {
 
@@ -2820,6 +2821,80 @@ void populate_cbrt_dispatch_vectors(void)
     using fn_ns::CbrtTypeMapFactory;
     DispatchVectorBuilder<int, CbrtTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(cbrt_output_typeid_vector);
+}
+
+} // namespace impl
+
+// B24:  ==== COPYSIGN    (x1, x2)
+namespace impl
+{
+namespace copysign_fn_ns = dpctl::tensor::kernels::copysign;
+
+static binary_contig_impl_fn_ptr_t
+    copysign_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int copysign_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    copysign_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_copysign_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = copysign_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::CopysignTypeMapFactory;
+    DispatchTableBuilder<int, CopysignTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(copysign_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::CopysignStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t, CopysignStridedFactory,
+                         num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(copysign_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::CopysignContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, CopysignContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(copysign_contig_dispatch_table);
+};
+
+} // namespace impl
+
+// U38: ==== EXP2           (x)
+namespace impl
+{
+
+namespace exp2_fn_ns = dpctl::tensor::kernels::exp2;
+
+static unary_contig_impl_fn_ptr_t exp2_contig_dispatch_vector[td_ns::num_types];
+static int exp2_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    exp2_strided_dispatch_vector[td_ns::num_types];
+
+void populate_exp2_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = exp2_fn_ns;
+
+    using fn_ns::Exp2ContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, Exp2ContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(exp2_contig_dispatch_vector);
+
+    using fn_ns::Exp2StridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, Exp2StridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(exp2_strided_dispatch_vector);
+
+    using fn_ns::Exp2TypeMapFactory;
+    DispatchVectorBuilder<int, Exp2TypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(exp2_output_typeid_vector);
 }
 
 } // namespace impl
@@ -4947,6 +5022,70 @@ void init_elementwise_functions(py::module_ m)
             return py_unary_ufunc_result_type(dtype, cbrt_output_typeid_vector);
         };
         m.def("_cbrt_result_type", cbrt_result_type_pyapi);
+    }
+
+    // B25: ==== COPYSIGN       (x1, x2)
+    {
+        impl::populate_copysign_dispatch_tables();
+        using impl::copysign_contig_dispatch_table;
+        using impl::copysign_output_id_table;
+        using impl::copysign_strided_dispatch_table;
+
+        auto copysign_pyapi = [&](const dpctl::tensor::usm_ndarray &src1,
+                                  const dpctl::tensor::usm_ndarray &src2,
+                                  const dpctl::tensor::usm_ndarray &dst,
+                                  sycl::queue &exec_q,
+                                  const std::vector<sycl::event> &depends =
+                                      {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, copysign_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                copysign_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                copysign_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto copysign_result_type_pyapi = [&](const py::dtype &dtype1,
+                                              const py::dtype &dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               copysign_output_id_table);
+        };
+        m.def("_copysign", copysign_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_copysign_result_type", copysign_result_type_pyapi, "");
+    }
+
+    // U38: ==== EXP2      (x)
+    {
+        impl::populate_exp2_dispatch_vectors();
+        using impl::exp2_contig_dispatch_vector;
+        using impl::exp2_output_typeid_vector;
+        using impl::exp2_strided_dispatch_vector;
+
+        auto exp2_pyapi = [&](const arrayT &src, const arrayT &dst,
+                              sycl::queue &exec_q,
+                              const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, exp2_output_typeid_vector,
+                exp2_contig_dispatch_vector, exp2_strided_dispatch_vector);
+        };
+        m.def("_exp2", exp2_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto exp2_result_type_pyapi = [&](const py::dtype &dtype) {
+            return py_unary_ufunc_result_type(dtype, exp2_output_typeid_vector);
+        };
+        m.def("_exp2_result_type", exp2_result_type_pyapi);
     }
 }
 
