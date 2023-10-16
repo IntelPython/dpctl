@@ -89,6 +89,7 @@
 #include "kernels/elementwise_functions/real.hpp"
 #include "kernels/elementwise_functions/remainder.hpp"
 #include "kernels/elementwise_functions/round.hpp"
+#include "kernels/elementwise_functions/rsqrt.hpp"
 #include "kernels/elementwise_functions/sign.hpp"
 #include "kernels/elementwise_functions/signbit.hpp"
 #include "kernels/elementwise_functions/sin.hpp"
@@ -2899,6 +2900,42 @@ void populate_exp2_dispatch_vectors(void)
 
 } // namespace impl
 
+// U39: ==== RSQRT        (x)
+namespace impl
+{
+
+namespace rsqrt_fn_ns = dpctl::tensor::kernels::rsqrt;
+
+static unary_contig_impl_fn_ptr_t
+    rsqrt_contig_dispatch_vector[td_ns::num_types];
+static int rsqrt_output_typeid_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t
+    rsqrt_strided_dispatch_vector[td_ns::num_types];
+
+void populate_rsqrt_dispatch_vectors(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = rsqrt_fn_ns;
+
+    using fn_ns::RsqrtContigFactory;
+    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, RsqrtContigFactory,
+                          num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(rsqrt_contig_dispatch_vector);
+
+    using fn_ns::RsqrtStridedFactory;
+    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, RsqrtStridedFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(rsqrt_strided_dispatch_vector);
+
+    using fn_ns::RsqrtTypeMapFactory;
+    DispatchVectorBuilder<int, RsqrtTypeMapFactory, num_types> dvb3;
+    dvb3.populate_dispatch_vector(rsqrt_output_typeid_vector);
+}
+
+} // namespace impl
+
 // ==========================================================================================
 // //
 
@@ -5086,6 +5123,30 @@ void init_elementwise_functions(py::module_ m)
             return py_unary_ufunc_result_type(dtype, exp2_output_typeid_vector);
         };
         m.def("_exp2_result_type", exp2_result_type_pyapi);
+    }
+
+    // U39: ==== RSQRT        (x)
+    {
+        impl::populate_rsqrt_dispatch_vectors();
+        using impl::rsqrt_contig_dispatch_vector;
+        using impl::rsqrt_output_typeid_vector;
+        using impl::rsqrt_strided_dispatch_vector;
+
+        auto rsqrt_pyapi = [&](const arrayT &src, const arrayT &dst,
+                               sycl::queue &exec_q,
+                               const event_vecT &depends = {}) {
+            return py_unary_ufunc(
+                src, dst, exec_q, depends, rsqrt_output_typeid_vector,
+                rsqrt_contig_dispatch_vector, rsqrt_strided_dispatch_vector);
+        };
+        m.def("_rsqrt", rsqrt_pyapi, "", py::arg("src"), py::arg("dst"),
+              py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+        auto rsqrt_result_type_pyapi = [&](const py::dtype &dtype) {
+            return py_unary_ufunc_result_type(dtype,
+                                              rsqrt_output_typeid_vector);
+        };
+        m.def("_rsqrt_result_type", rsqrt_result_type_pyapi);
     }
 }
 

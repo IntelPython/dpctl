@@ -152,6 +152,7 @@ from ._elementwise_funcs import (
     real,
     remainder,
     round,
+    rsqrt,
     sign,
     signbit,
     sin,
@@ -320,4 +321,5 @@ __all__ = [
     "cbrt",
     "exp2",
     "copysign",
+    "rsqrt",
 ]
