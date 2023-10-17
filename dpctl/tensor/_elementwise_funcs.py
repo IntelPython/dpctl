@@ -1761,3 +1761,116 @@ Returns:
 hypot = BinaryElementwiseFunc(
     "hypot", ti._hypot_result_type, ti._hypot, _hypot_docstring_
 )
+
+
+# U37: ==== CBRT        (x)
+_cbrt_docstring_ = """
+cbrt(x, out=None, order='K')
+
+Computes positive cube-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise positive cube-root.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+cbrt = UnaryElementwiseFunc(
+    "cbrt", ti._cbrt_result_type, ti._cbrt, _cbrt_docstring_
+)
+
+
+# U38: ==== EXP2        (x)
+_exp2_docstring_ = """
+exp2(x, out=None, order='K')
+
+Computes the base-2 exponential for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise base-2 exponentials.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+exp2 = UnaryElementwiseFunc(
+    "exp2", ti._exp2_result_type, ti._exp2, _exp2_docstring_
+)
+
+
+# B25: ==== COPYSIGN    (x1, x2)
+_copysign_docstring_ = """
+copysign(x1, x2, out=None, order='K')
+
+Composes a floating-point value with the magnitude of `x1_i` and the sign of
+`x2_i` for each element of input arrays `x1` and `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real floating-point data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real floating-point data
+        type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+copysign = BinaryElementwiseFunc(
+    "copysign",
+    ti._copysign_result_type,
+    ti._copysign,
+    _copysign_docstring_,
+)
+
+
+# U39: ==== RSQRT        (x)
+_rsqrt_docstring_ = """
+rsqrt(x, out=None, order='K')
+
+Computes the reciprocal square-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise reciprocal square-root.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+rsqrt = UnaryElementwiseFunc(
+    "rsqrt", ti._rsqrt_result_type, ti._rsqrt, _rsqrt_docstring_
+)
