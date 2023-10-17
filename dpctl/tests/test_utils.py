@@ -21,7 +21,6 @@ import pytest
 
 import dpctl
 import dpctl.utils
-from dpctl.enum_types import backend_type
 
 
 def test_get_execution_queue_input_validation():
@@ -132,9 +131,7 @@ def test_intel_device_info():
         pytest.skip("Default device could not be created")
     descr = dpctl.utils.intel_device_info(d)
     assert isinstance(descr, dict)
-    assert ("device_id" in descr) or (
-        not d.has_aspect_cpu and not d.backend == backend_type.level_zero
-    )
+    assert ("device_id" in descr) or not descr
     allowed_names = [
         "device_id",
         "gpu_slices",
