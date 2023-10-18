@@ -209,7 +209,12 @@ add_sycl_to_target(TARGET DPCTLSyclInterface SOURCES ${sources} ${helper_sources
 target_compile_options(
     DPCTLSyclInterface
     PRIVATE
-    -fsycl-targets=spir64-unknown-unknown,nvptx64-nvidia-cuda
+    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
+)
+target_link_options(
+    DPCTLSyclInterface
+    PRIVATE
+    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
 )
 
 if(DPCTL_GENERATE_COVERAGE)

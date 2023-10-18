@@ -56,7 +56,12 @@ add_sycl_to_target(
 target_compile_options(
     dpctl_c_api_tests
     PRIVATE
-    -fsycl-targets=spir64-unknown-unknown,nvptx64-nvidia-cuda
+    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
+)
+target_link_options(
+    dpctl_c_api_tests
+    PRIVATE
+    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
 )
 
 if(DPCTL_GENERATE_COVERAGE)

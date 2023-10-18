@@ -148,8 +148,13 @@ function(build_dpctl_ext _trgt _src _dest)
         target_compile_options(
             ${_trgt}
             PRIVATE
-            -fsycl-targets=spir64-unknown-unknown,nvptx64-nvidia-cuda
+            -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
         )
+	target_link_options(
+	    ${_trgt}
+	    PRIVATE
+	    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
+	)
     endif()
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})

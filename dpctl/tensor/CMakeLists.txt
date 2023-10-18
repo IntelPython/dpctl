@@ -59,7 +59,12 @@ add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
 target_compile_options(
     ${python_module_name}
     PRIVATE
-    -fsycl-targets=spir64-unknown-unknown,nvptx64-nvidia-cuda
+    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
+)
+target_link_options(
+    ${python_module_name}
+    PRIVATE
+    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
 )
 
 set(_clang_prefix "")
