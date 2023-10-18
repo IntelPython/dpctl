@@ -21,6 +21,12 @@ pybind11_add_module(${python_module_name} MODULE
   ${_module_src}
 )
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
+# make fat binary
+target_compile_options(
+    ${python_module_name}
+    PRIVATE
+    -fsycl-targets=spir64-unknown-unknown,nvptx64-nvidia-cuda
+)
 target_include_directories(${python_module_name}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include

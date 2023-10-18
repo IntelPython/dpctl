@@ -55,6 +55,13 @@ set(_tensor_impl_sources
 set(python_module_name _tensor_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
+# make fat binary
+target_compile_options(
+    ${python_module_name}
+    PRIVATE
+    -fsycl-targets=spir64-unknown-unknown,nvptx64-nvidia-cuda
+)
+
 set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
