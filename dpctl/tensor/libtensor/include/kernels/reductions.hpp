@@ -2524,57 +2524,33 @@ struct TypePairSupportDataForSumReductionAtomic
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
         // input int8
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
         // input uint8
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
         // input int16
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
         // input uint16
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
         // input int32
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
         // input uint32
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
         // input int64
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
         // input uint64
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;
 };
@@ -2803,57 +2779,33 @@ struct TypePairSupportDataForProductReductionAtomic
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
         // input int8
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
         // input uint8
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
         // input int16
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
         // input uint16
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
         // input int32
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
         // input uint32
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
         // input int64
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
         // input uint64
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;
 };
