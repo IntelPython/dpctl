@@ -45,6 +45,7 @@ namespace py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
+
 // Max
 namespace impl
 {
@@ -335,19 +336,10 @@ namespace impl
 
 using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
 static reduction_strided_impl_fn_ptr
-    logsumexp_over_axis_strided_atomic_dispatch_table[td_ns::num_types]
-                                                     [td_ns::num_types];
-static reduction_strided_impl_fn_ptr
     logsumexp_over_axis_strided_temps_dispatch_table[td_ns::num_types]
                                                     [td_ns::num_types];
 
 using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
-static reduction_contig_impl_fn_ptr
-    logsumexp_over_axis1_contig_atomic_dispatch_table[td_ns::num_types]
-                                                     [td_ns::num_types];
-static reduction_contig_impl_fn_ptr
-    logsumexp_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
-                                                     [td_ns::num_types];
 static reduction_contig_impl_fn_ptr
     logsumexp_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
                                                     [td_ns::num_types];
@@ -361,46 +353,25 @@ void populate_logsumexp_over_axis_dispatch_tables(void)
     using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
     using namespace td_ns;
 
-    using dpctl::tensor::kernels::LogSumExpOverAxisAtomicStridedFactory;
-    DispatchTableBuilder<reduction_strided_impl_fn_ptr,
-                         LogSumExpOverAxisAtomicStridedFactory, num_types>
-        dtb1;
-    dtb1.populate_dispatch_table(
-        logsumexp_over_axis_strided_atomic_dispatch_table);
-
     using dpctl::tensor::kernels::LogSumExpOverAxisTempsStridedFactory;
     DispatchTableBuilder<reduction_strided_impl_fn_ptr,
                          LogSumExpOverAxisTempsStridedFactory, num_types>
-        dtb2;
-    dtb2.populate_dispatch_table(
+        dtb1;
+    dtb1.populate_dispatch_table(
         logsumexp_over_axis_strided_temps_dispatch_table);
-
-    using dpctl::tensor::kernels::LogSumExpOverAxis1AtomicContigFactory;
-    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
-                         LogSumExpOverAxis1AtomicContigFactory, num_types>
-        dtb3;
-    dtb3.populate_dispatch_table(
-        logsumexp_over_axis1_contig_atomic_dispatch_table);
-
-    using dpctl::tensor::kernels::LogSumExpOverAxis0AtomicContigFactory;
-    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
-                         LogSumExpOverAxis0AtomicContigFactory, num_types>
-        dtb4;
-    dtb4.populate_dispatch_table(
-        logsumexp_over_axis0_contig_atomic_dispatch_table);
 
     using dpctl::tensor::kernels::LogSumExpOverAxis1TempsContigFactory;
     DispatchTableBuilder<reduction_contig_impl_fn_ptr,
                          LogSumExpOverAxis1TempsContigFactory, td_ns::num_types>
-        dtb5;
-    dtb5.populate_dispatch_table(
+        dtb2;
+    dtb2.populate_dispatch_table(
         logsumexp_over_axis1_contig_temps_dispatch_table);
 
     using dpctl::tensor::kernels::LogSumExpOverAxis0TempsContigFactory;
     DispatchTableBuilder<reduction_contig_impl_fn_ptr,
                          LogSumExpOverAxis0TempsContigFactory, td_ns::num_types>
-        dtb6;
-    dtb6.populate_dispatch_table(
+        dtb3;
+    dtb3.populate_dispatch_table(
         logsumexp_over_axis0_contig_temps_dispatch_table);
 }
 
@@ -412,19 +383,10 @@ namespace impl
 
 using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
 static reduction_strided_impl_fn_ptr
-    hypot_over_axis_strided_atomic_dispatch_table[td_ns::num_types]
-                                                 [td_ns::num_types];
-static reduction_strided_impl_fn_ptr
     hypot_over_axis_strided_temps_dispatch_table[td_ns::num_types]
                                                 [td_ns::num_types];
 
 using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
-static reduction_contig_impl_fn_ptr
-    hypot_over_axis1_contig_atomic_dispatch_table[td_ns::num_types]
-                                                 [td_ns::num_types];
-static reduction_contig_impl_fn_ptr
-    hypot_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
-                                                 [td_ns::num_types];
 static reduction_contig_impl_fn_ptr
     hypot_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
                                                 [td_ns::num_types];
@@ -438,41 +400,23 @@ void populate_hypot_over_axis_dispatch_tables(void)
     using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
     using namespace td_ns;
 
-    using dpctl::tensor::kernels::HypotOverAxisAtomicStridedFactory;
-    DispatchTableBuilder<reduction_strided_impl_fn_ptr,
-                         HypotOverAxisAtomicStridedFactory, num_types>
-        dtb1;
-    dtb1.populate_dispatch_table(hypot_over_axis_strided_atomic_dispatch_table);
-
     using dpctl::tensor::kernels::HypotOverAxisTempsStridedFactory;
     DispatchTableBuilder<reduction_strided_impl_fn_ptr,
                          HypotOverAxisTempsStridedFactory, num_types>
-        dtb2;
-    dtb2.populate_dispatch_table(hypot_over_axis_strided_temps_dispatch_table);
-
-    using dpctl::tensor::kernels::HypotOverAxis1AtomicContigFactory;
-    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
-                         HypotOverAxis1AtomicContigFactory, num_types>
-        dtb3;
-    dtb3.populate_dispatch_table(hypot_over_axis1_contig_atomic_dispatch_table);
-
-    using dpctl::tensor::kernels::HypotOverAxis0AtomicContigFactory;
-    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
-                         HypotOverAxis0AtomicContigFactory, num_types>
-        dtb4;
-    dtb4.populate_dispatch_table(hypot_over_axis0_contig_atomic_dispatch_table);
+        dtb1;
+    dtb1.populate_dispatch_table(hypot_over_axis_strided_temps_dispatch_table);
 
     using dpctl::tensor::kernels::HypotOverAxis1TempsContigFactory;
     DispatchTableBuilder<reduction_contig_impl_fn_ptr,
                          HypotOverAxis1TempsContigFactory, td_ns::num_types>
-        dtb5;
-    dtb5.populate_dispatch_table(hypot_over_axis1_contig_temps_dispatch_table);
+        dtb2;
+    dtb2.populate_dispatch_table(hypot_over_axis1_contig_temps_dispatch_table);
 
     using dpctl::tensor::kernels::HypotOverAxis0TempsContigFactory;
     DispatchTableBuilder<reduction_contig_impl_fn_ptr,
                          HypotOverAxis0TempsContigFactory, td_ns::num_types>
-        dtb6;
-    dtb6.populate_dispatch_table(hypot_over_axis0_contig_temps_dispatch_table);
+        dtb3;
+    dtb3.populate_dispatch_table(hypot_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -576,9 +520,11 @@ void init_reduction_functions(py::module_ m)
 
     using dpctl::tensor::py_internal::py_reduction_dtype_supported;
     using dpctl::tensor::py_internal::py_reduction_over_axis;
+    using dpctl::tensor::py_internal::py_search_over_axis;
+    using dpctl::tensor::py_internal::py_tree_reduction_dtype_supported;
+    using dpctl::tensor::py_internal::py_tree_reduction_over_axis;
 
     using dpctl::tensor::py_internal::check_atomic_support;
-    using dpctl::tensor::py_internal::fixed_decision;
 
     // MAX
     {
@@ -751,48 +697,35 @@ void init_reduction_functions(py::module_ m)
         using dpctl::tensor::py_internal::impl::
             populate_logsumexp_over_axis_dispatch_tables;
         populate_logsumexp_over_axis_dispatch_tables();
-        using impl::logsumexp_over_axis0_contig_atomic_dispatch_table;
         using impl::logsumexp_over_axis0_contig_temps_dispatch_table;
-        using impl::logsumexp_over_axis1_contig_atomic_dispatch_table;
         using impl::logsumexp_over_axis1_contig_temps_dispatch_table;
-        using impl::logsumexp_over_axis_strided_atomic_dispatch_table;
         using impl::logsumexp_over_axis_strided_temps_dispatch_table;
 
-        const auto &check_atomic_support_size4 =
-            check_atomic_support</*require_atomic64*/ false>;
-        const auto &check_atomic_support_size8 =
-            check_atomic_support</*require_atomic64*/ true>;
+        using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+        using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
 
         auto logsumexp_pyapi = [&](const arrayT &src,
                                    int trailing_dims_to_reduce,
                                    const arrayT &dst, sycl::queue &exec_q,
                                    const event_vecT &depends = {}) {
-            return py_reduction_over_axis(
+            return py_tree_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
-                logsumexp_over_axis_strided_atomic_dispatch_table,
-                logsumexp_over_axis0_contig_atomic_dispatch_table,
-                logsumexp_over_axis1_contig_atomic_dispatch_table,
                 logsumexp_over_axis_strided_temps_dispatch_table,
                 logsumexp_over_axis0_contig_temps_dispatch_table,
-                logsumexp_over_axis1_contig_temps_dispatch_table,
-                check_atomic_support_size4, check_atomic_support_size8);
+                logsumexp_over_axis1_contig_temps_dispatch_table);
         };
         m.def("_logsumexp_over_axis", logsumexp_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-        auto logsumexp_dtype_supported =
-            [&](const py::dtype &input_dtype, const py::dtype &output_dtype,
-                const std::string &dst_usm_type, sycl::queue &q) {
-                return py_reduction_dtype_supported(
-                    input_dtype, output_dtype, dst_usm_type, q,
-                    logsumexp_over_axis_strided_atomic_dispatch_table,
-                    logsumexp_over_axis_strided_temps_dispatch_table,
-                    check_atomic_support_size4, check_atomic_support_size8);
-            };
+        auto logsumexp_dtype_supported = [&](const py::dtype &input_dtype,
+                                             const py::dtype &output_dtype) {
+            return py_tree_reduction_dtype_supported(
+                input_dtype, output_dtype,
+                logsumexp_over_axis_strided_temps_dispatch_table);
+        };
         m.def("_logsumexp_over_axis_dtype_supported", logsumexp_dtype_supported,
-              "", py::arg("arg_dtype"), py::arg("out_dtype"),
-              py::arg("dst_usm_type"), py::arg("sycl_queue"));
+              "", py::arg("arg_dtype"), py::arg("out_dtype"));
     }
 
     // HYPOT
@@ -800,47 +733,31 @@ void init_reduction_functions(py::module_ m)
         using dpctl::tensor::py_internal::impl::
             populate_hypot_over_axis_dispatch_tables;
         populate_hypot_over_axis_dispatch_tables();
-        using impl::hypot_over_axis0_contig_atomic_dispatch_table;
         using impl::hypot_over_axis0_contig_temps_dispatch_table;
-        using impl::hypot_over_axis1_contig_atomic_dispatch_table;
         using impl::hypot_over_axis1_contig_temps_dispatch_table;
-        using impl::hypot_over_axis_strided_atomic_dispatch_table;
         using impl::hypot_over_axis_strided_temps_dispatch_table;
-
-        const auto &check_atomic_support_size4 =
-            check_atomic_support</*require_atomic64*/ false>;
-        const auto &check_atomic_support_size8 =
-            check_atomic_support</*require_atomic64*/ true>;
 
         auto hypot_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                                const arrayT &dst, sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            return py_reduction_over_axis(
+            return py_tree_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
-                hypot_over_axis_strided_atomic_dispatch_table,
-                hypot_over_axis0_contig_atomic_dispatch_table,
-                hypot_over_axis1_contig_atomic_dispatch_table,
                 hypot_over_axis_strided_temps_dispatch_table,
                 hypot_over_axis0_contig_temps_dispatch_table,
-                hypot_over_axis1_contig_temps_dispatch_table,
-                check_atomic_support_size4, check_atomic_support_size8);
+                hypot_over_axis1_contig_temps_dispatch_table);
         };
         m.def("_hypot_over_axis", hypot_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-        auto hypot_dtype_supported =
-            [&](const py::dtype &input_dtype, const py::dtype &output_dtype,
-                const std::string &dst_usm_type, sycl::queue &q) {
-                return py_reduction_dtype_supported(
-                    input_dtype, output_dtype, dst_usm_type, q,
-                    hypot_over_axis_strided_atomic_dispatch_table,
-                    hypot_over_axis_strided_temps_dispatch_table,
-                    check_atomic_support_size4, check_atomic_support_size8);
-            };
+        auto hypot_dtype_supported = [&](const py::dtype &input_dtype,
+                                         const py::dtype &output_dtype) {
+            return py_tree_reduction_dtype_supported(
+                input_dtype, output_dtype,
+                hypot_over_axis_strided_temps_dispatch_table);
+        };
         m.def("_hypot_over_axis_dtype_supported", hypot_dtype_supported, "",
-              py::arg("arg_dtype"), py::arg("out_dtype"),
-              py::arg("dst_usm_type"), py::arg("sycl_queue"));
+              py::arg("arg_dtype"), py::arg("out_dtype"));
     }
 
     // ARGMAX
@@ -855,7 +772,6 @@ void init_reduction_functions(py::module_ m)
         auto argmax_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                                 const arrayT &dst, sycl::queue &exec_q,
                                 const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_search_over_axis;
             return py_search_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 argmax_over_axis_strided_temps_dispatch_table,
@@ -879,7 +795,6 @@ void init_reduction_functions(py::module_ m)
         auto argmin_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                                 const arrayT &dst, sycl::queue &exec_q,
                                 const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_search_over_axis;
             return py_search_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 argmin_over_axis_strided_temps_dispatch_table,
