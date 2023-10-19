@@ -18,9 +18,31 @@ from random import randrange
 
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
+
+_no_complex_dtypes = [
+    "?",
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+]
+
+
+_all_dtypes = _no_complex_dtypes + [
+    "c8",
+    "c16",
+]
 
 
 def test_max_min_axis():
@@ -234,3 +256,123 @@ def test_reduction_arg_validation():
         dpt.max(x)
     with pytest.raises(ValueError):
         dpt.argmax(x)
+
+
+@pytest.mark.parametrize("arg_dtype", _no_complex_dtypes[1:])
+def test_logsumexp_arg_dtype_default_output_dtype_matrix(arg_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.logsumexp(m)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype.kind == "f"
+    tol = dpt.finfo(r.dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(r),
+        np.logaddexp.reduce(dpt.asnumpy(m), dtype=r.dtype),
+        rtol=tol,
+        atol=tol,
+    )
+
+
+def test_logsumexp_empty():
+    get_queue_or_skip()
+    x = dpt.empty((0,), dtype="f4")
+    y = dpt.logsumexp(x)
+    assert y.shape == tuple()
+    assert y == -dpt.inf
+
+
+def test_logsumexp_axis():
+    get_queue_or_skip()
+
+    m = dpt.ones((3, 4, 5, 6, 7), dtype="f4")
+    s = dpt.logsumexp(m, axis=(1, 2, -1))
+
+    assert isinstance(s, dpt.usm_ndarray)
+    assert s.shape == (3, 6)
+    tol = dpt.finfo(s.dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(s),
+        np.logaddexp.reduce(dpt.asnumpy(m), axis=(1, 2, -1), dtype=s.dtype),
+        rtol=tol,
+        atol=tol,
+    )
+
+
+@pytest.mark.parametrize("arg_dtype", _no_complex_dtypes[1:])
+@pytest.mark.parametrize("out_dtype", _all_dtypes[1:])
+def test_logsumexp_arg_out_dtype_matrix(arg_dtype, out_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+    skip_if_dtype_not_supported(out_dtype, q)
+
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.logsumexp(m, dtype=out_dtype)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype == dpt.dtype(out_dtype)
+
+
+def test_logsumexp_keepdims():
+    get_queue_or_skip()
+
+    m = dpt.ones((3, 4, 5, 6, 7), dtype="i4")
+    s = dpt.logsumexp(m, axis=(1, 2, -1), keepdims=True)
+
+    assert isinstance(s, dpt.usm_ndarray)
+    assert s.shape == (3, 1, 1, 6, 1)
+
+
+def test_logsumexp_scalar():
+    get_queue_or_skip()
+
+    m = dpt.ones(())
+    s = dpt.logsumexp(m)
+
+    assert isinstance(s, dpt.usm_ndarray)
+    assert m.sycl_queue == s.sycl_queue
+    assert s.shape == ()
+
+
+@pytest.mark.parametrize("arg_dtype", _no_complex_dtypes[1:])
+def test_hypot_arg_dtype_default_output_dtype_matrix(arg_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.reduce_hypot(m)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype.kind == "f"
+    tol = dpt.finfo(r.dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(r),
+        np.hypot.reduce(dpt.asnumpy(m), dtype=r.dtype),
+        rtol=tol,
+        atol=tol,
+    )
+
+
+def test_hypot_empty():
+    get_queue_or_skip()
+    x = dpt.empty((0,), dtype="f4")
+    y = dpt.reduce_hypot(x)
+    assert y.shape == tuple()
+    assert y == 0
+
+
+@pytest.mark.parametrize("arg_dtype", _no_complex_dtypes[1:])
+@pytest.mark.parametrize("out_dtype", _all_dtypes[1:])
+def test_hypot_arg_out_dtype_matrix(arg_dtype, out_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+    skip_if_dtype_not_supported(out_dtype, q)
+
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.reduce_hypot(m, dtype=out_dtype)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype == dpt.dtype(out_dtype)
