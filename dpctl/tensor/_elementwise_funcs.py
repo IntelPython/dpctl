@@ -331,6 +331,7 @@ bitwise_left_shift = BinaryElementwiseFunc(
     ti._bitwise_left_shift_result_type,
     ti._bitwise_left_shift,
     _bitwise_left_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_left_shift_inplace,
 )
 
 
@@ -427,6 +428,7 @@ bitwise_right_shift = BinaryElementwiseFunc(
     ti._bitwise_right_shift_result_type,
     ti._bitwise_right_shift,
     _bitwise_right_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_right_shift_inplace,
 )
 
 
