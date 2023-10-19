@@ -40,7 +40,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise absolute values.
         For complex input, the absolute value is its magnitude.
         If `x` has a real-valued data type, the returned array has the
@@ -67,7 +67,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse cosine, in radians
         and in the closed interval `[-pi/2, pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
@@ -93,7 +93,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse hyperbolic cosine.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -123,7 +123,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise sums. The data type of the
         returned array is determined by the Type Promotion Rules.
 """
@@ -151,7 +151,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse sine, in radians
         and in the closed interval `[-pi/2, pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
@@ -177,7 +177,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse hyperbolic sine.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -203,7 +203,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse tangent, in radians
         and in the closed interval `[-pi/2, pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
@@ -235,7 +235,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the inverse tangent of the quotient `x1`/`x2`.
         The returned array must have a real-valued floating-point data type
         determined by Type Promotion Rules.
@@ -261,7 +261,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic inverse tangent.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -292,7 +292,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -326,7 +326,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -356,7 +356,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results.
         The data type of the returned array is same as the data type of the
         input array.
@@ -390,7 +390,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -423,7 +423,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -458,7 +458,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -490,7 +490,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise ceiling results.
 """
 
@@ -514,7 +514,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise conjugate values.
 """
 
@@ -538,7 +538,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise cosine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -561,7 +561,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic cosine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -589,7 +589,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise division. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -622,7 +622,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise equality comparison.
         The returned array has a data type of `bool`.
 """
@@ -647,7 +647,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise exponential of x.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -701,7 +701,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise floor results.
 """
 
@@ -724,7 +724,7 @@ Args:
         Second input array, also expected to have a real-valued or boolean data
         type.
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise floor of division.
         The data type of the returned array is determined by the Type
         Promotion Rules.
@@ -757,7 +757,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise greater-than comparison.
         The returned array has a data type of `bool`.
 """
@@ -785,7 +785,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise greater-than or equal-to
         comparison.
         The returned array has a data type of `bool`.
@@ -814,7 +814,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise imaginary component of input.
         If the input is a real-valued data type, the returned array has
         the same data type. If the input is a complex floating-point
@@ -842,7 +842,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array which is True where `x` is not positive infinity,
         negative infinity, or NaN, False otherwise.
         The data type of the returned array is `bool`.
@@ -868,7 +868,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array which is True where `x` is positive or negative infinity,
         False otherwise. The data type of the returned array is `bool`.
 """
@@ -893,7 +893,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array which is True where x is NaN, False otherwise.
         The data type of the returned array is `bool`.
 """
@@ -921,7 +921,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise less-than comparison.
         The returned array has a data type of `bool`.
 """
@@ -949,7 +949,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise less-than or equal-to
         comparison. The returned array has a data type of `bool`.
 """
@@ -1029,7 +1029,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise base-2 logarithm of `x`.
         The data type of the returned array is determined by the
         Type Promotion Rules.
@@ -1055,7 +1055,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise base-10 logarithm of `x`.
         The data type of the returned array is determined by the
         Type Promotion Rules.
@@ -1090,7 +1090,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise division. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1118,7 +1118,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise logical AND results.
 """
 logical_and = BinaryElementwiseFunc(
@@ -1174,7 +1174,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise logical OR results.
 """
 logical_or = BinaryElementwiseFunc(
@@ -1203,7 +1203,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise logical XOR results.
 """
 logical_xor = BinaryElementwiseFunc(
@@ -1232,7 +1232,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise maxima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -1262,7 +1262,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise minima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -1292,7 +1292,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise products. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -1351,7 +1351,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise inequality comparison.
         The returned array has a data type of `bool`.
 """
@@ -1425,7 +1425,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise projection.
 """
 
@@ -1449,7 +1449,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise real component of input.
         If the input is a real-valued data type, the returned array has
         the same data type. If the input is a complex floating-point
@@ -1515,7 +1515,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise rounded results.
 """
 
@@ -1543,7 +1543,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise result of the signum function. The
         data type of the returned array is determined by the Type Promotion
         Rules.
@@ -1570,7 +1570,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise signbit results. The returned array
         must have a data type of `bool`.
 """
@@ -1595,7 +1595,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise sine. The data type of the
         returned array is determined by the Type Promotion Rules.
 """
@@ -1618,7 +1618,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic sine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1668,7 +1668,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise positive square-roots of `x`. The
         data type of the returned array is determined by the Type Promotion
         Rules.
@@ -1697,7 +1697,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise differences. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1726,7 +1726,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise tangent. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1749,7 +1749,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic tangent. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1778,7 +1778,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise division. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1808,7 +1808,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hypotenuse. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1834,7 +1834,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise positive cube-root.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -1861,7 +1861,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise base-2 exponentials.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -1892,7 +1892,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1920,7 +1920,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise reciprocal square-root.
         The returned array has a floating-point data type determined by
         the Type Promotion Rules.
