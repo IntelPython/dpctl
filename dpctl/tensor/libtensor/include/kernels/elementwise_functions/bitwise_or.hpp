@@ -253,6 +253,144 @@ template <typename fnT, typename T1, typename T2> struct BitwiseOrStridedFactory
     }
 };
 
+template <typename argT, typename resT> struct BitwiseOrInplaceFunctor
+{
+    using supports_sg_loadstore = typename std::true_type;
+    using supports_vec = typename std::true_type;
+
+    void operator()(resT &res, const argT &in) const
+    {
+        using tu_ns::convert_impl;
+
+        if constexpr (std::is_same_v<resT, bool>) {
+            res = res || in;
+        }
+        else {
+            res |= in;
+        }
+    }
+
+    template <int vec_sz>
+    void operator()(sycl::vec<resT, vec_sz> &res,
+                    const sycl::vec<argT, vec_sz> &in) const
+    {
+
+        if constexpr (std::is_same_v<resT, bool>) {
+            using dpctl::tensor::type_utils::vec_cast;
+
+            auto tmp = (res || in);
+            res = vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
+                tmp);
+        }
+        else {
+            res |= in;
+        }
+    }
+};
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using BitwiseOrInplaceContigFunctor =
+    elementwise_common::BinaryInplaceContigFunctor<
+        argT,
+        resT,
+        BitwiseOrInplaceFunctor<argT, resT>,
+        vec_sz,
+        n_vecs>;
+
+template <typename argT, typename resT, typename IndexerT>
+using BitwiseOrInplaceStridedFunctor =
+    elementwise_common::BinaryInplaceStridedFunctor<
+        argT,
+        resT,
+        IndexerT,
+        BitwiseOrInplaceFunctor<argT, resT>>;
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class bitwise_or_inplace_contig_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+bitwise_or_inplace_contig_impl(sycl::queue &exec_q,
+                               size_t nelems,
+                               const char *arg_p,
+                               py::ssize_t arg_offset,
+                               char *res_p,
+                               py::ssize_t res_offset,
+                               const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_contig_impl<
+        argTy, resTy, BitwiseOrInplaceContigFunctor,
+        bitwise_or_inplace_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
+                                          res_p, res_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct BitwiseOrInplaceContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<
+                          typename BitwiseOrOutputType<T1, T2>::value_type,
+                          void>)
+        {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = bitwise_or_inplace_contig_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename resT, typename argT, typename IndexerT>
+class bitwise_or_inplace_strided_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event bitwise_or_inplace_strided_impl(
+    sycl::queue &exec_q,
+    size_t nelems,
+    int nd,
+    const py::ssize_t *shape_and_strides,
+    const char *arg_p,
+    py::ssize_t arg_offset,
+    char *res_p,
+    py::ssize_t res_offset,
+    const std::vector<sycl::event> &depends,
+    const std::vector<sycl::event> &additional_depends)
+{
+    return elementwise_common::binary_inplace_strided_impl<
+        argTy, resTy, BitwiseOrInplaceStridedFunctor,
+        bitwise_or_inplace_strided_kernel>(
+        exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
+        res_offset, depends, additional_depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct BitwiseOrInplaceStridedFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<
+                          typename BitwiseOrOutputType<T1, T2>::value_type,
+                          void>)
+        {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = bitwise_or_inplace_strided_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
 } // namespace bitwise_or
 } // namespace kernels
 } // namespace tensor

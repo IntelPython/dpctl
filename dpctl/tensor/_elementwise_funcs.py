@@ -297,6 +297,7 @@ bitwise_and = BinaryElementwiseFunc(
     ti._bitwise_and_result_type,
     ti._bitwise_and,
     _bitwise_and_docstring_,
+    binary_inplace_fn=ti._bitwise_and_inplace,
 )
 
 # B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
@@ -393,6 +394,7 @@ bitwise_or = BinaryElementwiseFunc(
     ti._bitwise_or_result_type,
     ti._bitwise_or,
     _bitwise_or_docstring_,
+    binary_inplace_fn=ti._bitwise_or_inplace,
 )
 
 # B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
