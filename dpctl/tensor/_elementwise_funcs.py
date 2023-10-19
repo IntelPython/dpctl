@@ -1069,7 +1069,7 @@ log10 = UnaryElementwiseFunc(
 _logaddexp_docstring_ = """
 logaddexp(x1, x2, out=None, order='K')
 
-Calculates the natural logarithm of the sum of exponentiations for each element
+Calculates the natural logarithm of the sum of exponentials for each element
 `x1_i` of the input array `x1` with the respective element `x2_i` of the input
 array `x2`.
 
@@ -1091,7 +1091,7 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the result of element-wise division. The data type
+        An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
