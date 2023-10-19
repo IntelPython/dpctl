@@ -94,9 +94,9 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the element-wise inverse hyperbolic cosine.
-        The data type of the returned array is determined by
-        the Type Promotion Rules.
+        An array containing the element-wise inverse hyperbolic cosine, in
+        radians and in the half-closed interval `[0, inf)`. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 acosh = UnaryElementwiseFunc(
