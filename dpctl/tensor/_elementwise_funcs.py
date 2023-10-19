@@ -461,6 +461,7 @@ bitwise_xor = BinaryElementwiseFunc(
     ti._bitwise_xor_result_type,
     ti._bitwise_xor,
     _bitwise_xor_docstring_,
+    binary_inplace_fn=ti._bitwise_xor_inplace,
 )
 
 

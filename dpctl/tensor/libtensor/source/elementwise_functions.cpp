@@ -806,6 +806,13 @@ static int bitwise_xor_output_id_table[td_ns::num_types][td_ns::num_types];
 static binary_strided_impl_fn_ptr_t
     bitwise_xor_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
+static binary_inplace_contig_impl_fn_ptr_t
+    bitwise_xor_inplace_contig_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
+static binary_inplace_strided_impl_fn_ptr_t
+    bitwise_xor_inplace_strided_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+
 void populate_bitwise_xor_dispatch_tables(void)
 {
     using namespace td_ns;
@@ -829,6 +836,20 @@ void populate_bitwise_xor_dispatch_tables(void)
                          num_types>
         dtb3;
     dtb3.populate_dispatch_table(bitwise_xor_contig_dispatch_table);
+
+    // function pointers for inplace operation on general strided arrays
+    using fn_ns::BitwiseXorInplaceStridedFactory;
+    DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
+                         BitwiseXorInplaceStridedFactory, num_types>
+        dtb4;
+    dtb4.populate_dispatch_table(bitwise_xor_inplace_strided_dispatch_table);
+
+    // function pointers for inplace operation on contiguous inputs and output
+    using fn_ns::BitwiseXorInplaceContigFactory;
+    DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
+                         BitwiseXorInplaceContigFactory, num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(bitwise_xor_inplace_contig_dispatch_table);
 };
 } // namespace impl
 
@@ -3584,6 +3605,31 @@ void init_elementwise_functions(py::module_ m)
               py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
         m.def("_bitwise_xor_result_type", bitwise_xor_result_type_pyapi, "");
+
+        using impl::bitwise_xor_inplace_contig_dispatch_table;
+        using impl::bitwise_xor_inplace_strided_dispatch_table;
+
+        auto bitwise_xor_inplace_pyapi =
+            [&](const dpctl::tensor::usm_ndarray &src,
+                const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
+                const std::vector<sycl::event> &depends = {}) {
+                return py_binary_inplace_ufunc(
+                    src, dst, exec_q, depends, bitwise_xor_output_id_table,
+                    // function pointers to handle inplace operation on
+                    // contiguous arrays (pointers may be nullptr)
+                    bitwise_xor_inplace_contig_dispatch_table,
+                    // function pointers to handle inplace operation on strided
+                    // arrays (most general case)
+                    bitwise_xor_inplace_strided_dispatch_table,
+                    // function pointers to handle inplace operation on
+                    // c-contig matrix with c-contig row with broadcasting
+                    // (may be nullptr)
+                    td_ns::NullPtrTable<
+                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
+            };
+        m.def("_bitwise_xor_inplace", bitwise_xor_inplace_pyapi, "",
+              py::arg("lhs"), py::arg("rhs"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
     }
 
     // U09: ==== CEIL          (x)
