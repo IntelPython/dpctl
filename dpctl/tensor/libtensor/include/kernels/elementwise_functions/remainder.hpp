@@ -316,10 +316,11 @@ template <typename fnT, typename T1, typename T2> struct RemainderStridedFactory
 template <typename argT, typename resT> struct RemainderInplaceFunctor
 {
 
-    using supports_sg_loadstore = std::negation<
-        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
-    using supports_vec = std::negation<
-        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::true_type;
+
+    // functor is only well-defined when argT and resT are the same
+    static_assert(std::is_same_v<argT, resT>);
 
     void operator()(resT &res, const argT &in)
     {
@@ -331,7 +332,7 @@ template <typename argT, typename resT> struct RemainderInplaceFunctor
             if constexpr (std::is_signed_v<argT> || std::is_signed_v<resT>) {
                 auto tmp = res;
                 res %= in;
-                if (res != 0 && l_xor(tmp < 0, in < 0)) {
+                if (res != resT(0) && l_xor(tmp < 0, in < 0)) {
                     res += in;
                 }
             }
@@ -347,7 +348,7 @@ template <typename argT, typename resT> struct RemainderInplaceFunctor
                 }
             }
             else {
-                res = std::copysign(0, in);
+                res = sycl::copysign(resT(0), in);
             }
         }
     }
@@ -384,7 +385,7 @@ template <typename argT, typename resT> struct RemainderInplaceFunctor
                     }
                 }
                 else {
-                    res[i] = std::copysign(0, in[i]);
+                    res[i] = sycl::copysign(resT(0), in[i]);
                 }
             }
         }
@@ -444,8 +445,10 @@ struct RemainderInplaceContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename RemainderOutputType<T1, T2>::value_type,
-                                     void>) {
+        if constexpr (std::is_same_v<
+                          typename RemainderOutputType<T1, T2>::value_type,
+                          void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -484,8 +487,10 @@ struct RemainderInplaceStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename RemainderOutputType<T1, T2>::value_type,
-                                     void>) {
+        if constexpr (std::is_same_v<
+                          typename RemainderOutputType<T1, T2>::value_type,
+                          void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
