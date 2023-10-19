@@ -64,6 +64,12 @@ static reduction_contig_impl_fn_ptr
 static reduction_contig_impl_fn_ptr
     max_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
                                                [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    max_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    max_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 void populate_max_over_axis_dispatch_tables(void)
 {
@@ -94,6 +100,18 @@ void populate_max_over_axis_dispatch_tables(void)
                          MaxOverAxis0AtomicContigFactory, td_ns::num_types>
         dtb4;
     dtb4.populate_dispatch_table(max_over_axis0_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::MaxOverAxis1TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         MaxOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(max_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::MaxOverAxis0TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         MaxOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(max_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -117,6 +135,12 @@ static reduction_contig_impl_fn_ptr
 static reduction_contig_impl_fn_ptr
     min_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
                                                [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    min_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    min_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 void populate_min_over_axis_dispatch_tables(void)
 {
@@ -147,6 +171,18 @@ void populate_min_over_axis_dispatch_tables(void)
                          MinOverAxis0AtomicContigFactory, td_ns::num_types>
         dtb4;
     dtb4.populate_dispatch_table(min_over_axis0_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::MinOverAxis1TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         MinOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(min_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::MinOverAxis0TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         MinOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(min_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -170,6 +206,12 @@ static reduction_contig_impl_fn_ptr
 static reduction_contig_impl_fn_ptr
     sum_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
                                                [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    sum_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    sum_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 void populate_sum_over_axis_dispatch_tables(void)
 {
@@ -200,6 +242,18 @@ void populate_sum_over_axis_dispatch_tables(void)
                          SumOverAxis0AtomicContigFactory, num_types>
         dtb4;
     dtb4.populate_dispatch_table(sum_over_axis0_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::SumOverAxis1TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         SumOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(sum_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::SumOverAxis0TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         SumOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(sum_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -223,6 +277,12 @@ static reduction_contig_impl_fn_ptr
 static reduction_contig_impl_fn_ptr
     prod_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
                                                 [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    prod_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    prod_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
 
 void populate_prod_over_axis_dispatch_tables(void)
 {
@@ -253,6 +313,18 @@ void populate_prod_over_axis_dispatch_tables(void)
                          ProductOverAxis0AtomicContigFactory, num_types>
         dtb4;
     dtb4.populate_dispatch_table(prod_over_axis0_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::ProductOverAxis1TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         ProductOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(prod_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::ProductOverAxis0TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         ProductOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(prod_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -276,6 +348,12 @@ static reduction_contig_impl_fn_ptr
 static reduction_contig_impl_fn_ptr
     logsumexp_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
                                                      [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    logsumexp_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                                    [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    logsumexp_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
+                                                    [td_ns::num_types];
 
 void populate_logsumexp_over_axis_dispatch_tables(void)
 {
@@ -310,6 +388,20 @@ void populate_logsumexp_over_axis_dispatch_tables(void)
         dtb4;
     dtb4.populate_dispatch_table(
         logsumexp_over_axis0_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::LogSumExpOverAxis1TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         LogSumExpOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(
+        logsumexp_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::LogSumExpOverAxis0TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         LogSumExpOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(
+        logsumexp_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -333,6 +425,12 @@ static reduction_contig_impl_fn_ptr
 static reduction_contig_impl_fn_ptr
     hypot_over_axis0_contig_atomic_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    hypot_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                                [td_ns::num_types];
+static reduction_contig_impl_fn_ptr
+    hypot_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
+                                                [td_ns::num_types];
 
 void populate_hypot_over_axis_dispatch_tables(void)
 {
@@ -363,6 +461,18 @@ void populate_hypot_over_axis_dispatch_tables(void)
                          HypotOverAxis0AtomicContigFactory, num_types>
         dtb4;
     dtb4.populate_dispatch_table(hypot_over_axis0_contig_atomic_dispatch_table);
+
+    using dpctl::tensor::kernels::HypotOverAxis1TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         HypotOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb5;
+    dtb5.populate_dispatch_table(hypot_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::HypotOverAxis0TempsContigFactory;
+    DispatchTableBuilder<reduction_contig_impl_fn_ptr,
+                         HypotOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(hypot_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -371,21 +481,42 @@ void populate_hypot_over_axis_dispatch_tables(void)
 namespace impl
 {
 
-using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
-static search_reduction_strided_impl_fn_ptr
+using dpctl::tensor::kernels::search_strided_impl_fn_ptr;
+static search_strided_impl_fn_ptr
     argmax_over_axis_strided_temps_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+
+using dpctl::tensor::kernels::search_contig_impl_fn_ptr;
+static search_contig_impl_fn_ptr
+    argmax_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+using dpctl::tensor::kernels::search_contig_impl_fn_ptr;
+static search_contig_impl_fn_ptr
+    argmax_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
 
 void populate_argmax_over_axis_dispatch_tables(void)
 {
-    using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
+    using dpctl::tensor::kernels::search_strided_impl_fn_ptr;
     using td_ns::DispatchTableBuilder;
 
     using dpctl::tensor::kernels::ArgmaxOverAxisTempsStridedFactory;
-    DispatchTableBuilder<search_reduction_strided_impl_fn_ptr,
+    DispatchTableBuilder<search_strided_impl_fn_ptr,
                          ArgmaxOverAxisTempsStridedFactory, td_ns::num_types>
         dtb1;
     dtb1.populate_dispatch_table(argmax_over_axis_strided_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::ArgmaxOverAxis1TempsContigFactory;
+    DispatchTableBuilder<search_contig_impl_fn_ptr,
+                         ArgmaxOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(argmax_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::ArgmaxOverAxis0TempsContigFactory;
+    DispatchTableBuilder<search_contig_impl_fn_ptr,
+                         ArgmaxOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(argmax_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -394,21 +525,42 @@ void populate_argmax_over_axis_dispatch_tables(void)
 namespace impl
 {
 
-using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
-static search_reduction_strided_impl_fn_ptr
+using dpctl::tensor::kernels::search_strided_impl_fn_ptr;
+static search_strided_impl_fn_ptr
     argmin_over_axis_strided_temps_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+
+using dpctl::tensor::kernels::search_contig_impl_fn_ptr;
+static search_contig_impl_fn_ptr
+    argmin_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+using dpctl::tensor::kernels::search_contig_impl_fn_ptr;
+static search_contig_impl_fn_ptr
+    argmin_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
 
 void populate_argmin_over_axis_dispatch_tables(void)
 {
-    using dpctl::tensor::kernels::search_reduction_strided_impl_fn_ptr;
+    using dpctl::tensor::kernels::search_strided_impl_fn_ptr;
     using td_ns::DispatchTableBuilder;
 
     using dpctl::tensor::kernels::ArgminOverAxisTempsStridedFactory;
-    DispatchTableBuilder<search_reduction_strided_impl_fn_ptr,
+    DispatchTableBuilder<search_strided_impl_fn_ptr,
                          ArgminOverAxisTempsStridedFactory, td_ns::num_types>
         dtb1;
     dtb1.populate_dispatch_table(argmin_over_axis_strided_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::ArgminOverAxis1TempsContigFactory;
+    DispatchTableBuilder<search_contig_impl_fn_ptr,
+                         ArgminOverAxis1TempsContigFactory, td_ns::num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(argmin_over_axis1_contig_temps_dispatch_table);
+
+    using dpctl::tensor::kernels::ArgminOverAxis0TempsContigFactory;
+    DispatchTableBuilder<search_contig_impl_fn_ptr,
+                         ArgminOverAxis0TempsContigFactory, td_ns::num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(argmin_over_axis0_contig_temps_dispatch_table);
 }
 
 } // namespace impl
@@ -434,7 +586,9 @@ void init_reduction_functions(py::module_ m)
             populate_max_over_axis_dispatch_tables;
         populate_max_over_axis_dispatch_tables();
         using impl::max_over_axis0_contig_atomic_dispatch_table;
+        using impl::max_over_axis0_contig_temps_dispatch_table;
         using impl::max_over_axis1_contig_atomic_dispatch_table;
+        using impl::max_over_axis1_contig_temps_dispatch_table;
         using impl::max_over_axis_strided_atomic_dispatch_table;
         using impl::max_over_axis_strided_temps_dispatch_table;
 
@@ -449,9 +603,11 @@ void init_reduction_functions(py::module_ m)
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 max_over_axis_strided_atomic_dispatch_table,
-                max_over_axis_strided_temps_dispatch_table,
                 max_over_axis0_contig_atomic_dispatch_table,
                 max_over_axis1_contig_atomic_dispatch_table,
+                max_over_axis_strided_temps_dispatch_table,
+                max_over_axis0_contig_temps_dispatch_table,
+                max_over_axis1_contig_temps_dispatch_table,
                 check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_max_over_axis", max_pyapi, "", py::arg("src"),
@@ -465,7 +621,9 @@ void init_reduction_functions(py::module_ m)
             populate_min_over_axis_dispatch_tables;
         populate_min_over_axis_dispatch_tables();
         using impl::min_over_axis0_contig_atomic_dispatch_table;
+        using impl::min_over_axis0_contig_temps_dispatch_table;
         using impl::min_over_axis1_contig_atomic_dispatch_table;
+        using impl::min_over_axis1_contig_temps_dispatch_table;
         using impl::min_over_axis_strided_atomic_dispatch_table;
         using impl::min_over_axis_strided_temps_dispatch_table;
 
@@ -480,9 +638,11 @@ void init_reduction_functions(py::module_ m)
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 min_over_axis_strided_atomic_dispatch_table,
-                min_over_axis_strided_temps_dispatch_table,
                 min_over_axis0_contig_atomic_dispatch_table,
                 min_over_axis1_contig_atomic_dispatch_table,
+                min_over_axis_strided_temps_dispatch_table,
+                min_over_axis0_contig_temps_dispatch_table,
+                min_over_axis1_contig_temps_dispatch_table,
                 check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_min_over_axis", min_pyapi, "", py::arg("src"),
@@ -496,7 +656,9 @@ void init_reduction_functions(py::module_ m)
             populate_sum_over_axis_dispatch_tables;
         populate_sum_over_axis_dispatch_tables();
         using impl::sum_over_axis0_contig_atomic_dispatch_table;
+        using impl::sum_over_axis0_contig_temps_dispatch_table;
         using impl::sum_over_axis1_contig_atomic_dispatch_table;
+        using impl::sum_over_axis1_contig_temps_dispatch_table;
         using impl::sum_over_axis_strided_atomic_dispatch_table;
         using impl::sum_over_axis_strided_temps_dispatch_table;
 
@@ -511,9 +673,11 @@ void init_reduction_functions(py::module_ m)
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 sum_over_axis_strided_atomic_dispatch_table,
-                sum_over_axis_strided_temps_dispatch_table,
                 sum_over_axis0_contig_atomic_dispatch_table,
                 sum_over_axis1_contig_atomic_dispatch_table,
+                sum_over_axis_strided_temps_dispatch_table,
+                sum_over_axis0_contig_temps_dispatch_table,
+                sum_over_axis1_contig_temps_dispatch_table,
                 check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_sum_over_axis", sum_pyapi, "", py::arg("src"),
@@ -540,7 +704,9 @@ void init_reduction_functions(py::module_ m)
             populate_prod_over_axis_dispatch_tables;
         populate_prod_over_axis_dispatch_tables();
         using impl::prod_over_axis0_contig_atomic_dispatch_table;
+        using impl::prod_over_axis0_contig_temps_dispatch_table;
         using impl::prod_over_axis1_contig_atomic_dispatch_table;
+        using impl::prod_over_axis1_contig_temps_dispatch_table;
         using impl::prod_over_axis_strided_atomic_dispatch_table;
         using impl::prod_over_axis_strided_temps_dispatch_table;
 
@@ -555,9 +721,11 @@ void init_reduction_functions(py::module_ m)
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 prod_over_axis_strided_atomic_dispatch_table,
-                prod_over_axis_strided_temps_dispatch_table,
                 prod_over_axis0_contig_atomic_dispatch_table,
                 prod_over_axis1_contig_atomic_dispatch_table,
+                prod_over_axis_strided_temps_dispatch_table,
+                prod_over_axis0_contig_temps_dispatch_table,
+                prod_over_axis1_contig_temps_dispatch_table,
                 check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_prod_over_axis", prod_pyapi, "", py::arg("src"),
@@ -584,7 +752,9 @@ void init_reduction_functions(py::module_ m)
             populate_logsumexp_over_axis_dispatch_tables;
         populate_logsumexp_over_axis_dispatch_tables();
         using impl::logsumexp_over_axis0_contig_atomic_dispatch_table;
+        using impl::logsumexp_over_axis0_contig_temps_dispatch_table;
         using impl::logsumexp_over_axis1_contig_atomic_dispatch_table;
+        using impl::logsumexp_over_axis1_contig_temps_dispatch_table;
         using impl::logsumexp_over_axis_strided_atomic_dispatch_table;
         using impl::logsumexp_over_axis_strided_temps_dispatch_table;
 
@@ -600,9 +770,11 @@ void init_reduction_functions(py::module_ m)
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 logsumexp_over_axis_strided_atomic_dispatch_table,
-                logsumexp_over_axis_strided_temps_dispatch_table,
                 logsumexp_over_axis0_contig_atomic_dispatch_table,
                 logsumexp_over_axis1_contig_atomic_dispatch_table,
+                logsumexp_over_axis_strided_temps_dispatch_table,
+                logsumexp_over_axis0_contig_temps_dispatch_table,
+                logsumexp_over_axis1_contig_temps_dispatch_table,
                 check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_logsumexp_over_axis", logsumexp_pyapi, "", py::arg("src"),
@@ -629,7 +801,9 @@ void init_reduction_functions(py::module_ m)
             populate_hypot_over_axis_dispatch_tables;
         populate_hypot_over_axis_dispatch_tables();
         using impl::hypot_over_axis0_contig_atomic_dispatch_table;
+        using impl::hypot_over_axis0_contig_temps_dispatch_table;
         using impl::hypot_over_axis1_contig_atomic_dispatch_table;
+        using impl::hypot_over_axis1_contig_temps_dispatch_table;
         using impl::hypot_over_axis_strided_atomic_dispatch_table;
         using impl::hypot_over_axis_strided_temps_dispatch_table;
 
@@ -644,9 +818,11 @@ void init_reduction_functions(py::module_ m)
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 hypot_over_axis_strided_atomic_dispatch_table,
-                hypot_over_axis_strided_temps_dispatch_table,
                 hypot_over_axis0_contig_atomic_dispatch_table,
                 hypot_over_axis1_contig_atomic_dispatch_table,
+                hypot_over_axis_strided_temps_dispatch_table,
+                hypot_over_axis0_contig_temps_dispatch_table,
+                hypot_over_axis1_contig_temps_dispatch_table,
                 check_atomic_support_size4, check_atomic_support_size8);
         };
         m.def("_hypot_over_axis", hypot_pyapi, "", py::arg("src"),
@@ -672,6 +848,8 @@ void init_reduction_functions(py::module_ m)
         using dpctl::tensor::py_internal::impl::
             populate_argmax_over_axis_dispatch_tables;
         populate_argmax_over_axis_dispatch_tables();
+        using impl::argmax_over_axis0_contig_temps_dispatch_table;
+        using impl::argmax_over_axis1_contig_temps_dispatch_table;
         using impl::argmax_over_axis_strided_temps_dispatch_table;
 
         auto argmax_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
@@ -680,7 +858,9 @@ void init_reduction_functions(py::module_ m)
             using dpctl::tensor::py_internal::py_search_over_axis;
             return py_search_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
-                argmax_over_axis_strided_temps_dispatch_table);
+                argmax_over_axis_strided_temps_dispatch_table,
+                argmax_over_axis0_contig_temps_dispatch_table,
+                argmax_over_axis1_contig_temps_dispatch_table);
         };
         m.def("_argmax_over_axis", argmax_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
@@ -692,6 +872,8 @@ void init_reduction_functions(py::module_ m)
         using dpctl::tensor::py_internal::impl::
             populate_argmin_over_axis_dispatch_tables;
         populate_argmin_over_axis_dispatch_tables();
+        using impl::argmin_over_axis0_contig_temps_dispatch_table;
+        using impl::argmin_over_axis1_contig_temps_dispatch_table;
         using impl::argmin_over_axis_strided_temps_dispatch_table;
 
         auto argmin_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
@@ -700,7 +882,9 @@ void init_reduction_functions(py::module_ m)
             using dpctl::tensor::py_internal::py_search_over_axis;
             return py_search_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
-                argmin_over_axis_strided_temps_dispatch_table);
+                argmin_over_axis_strided_temps_dispatch_table,
+                argmin_over_axis0_contig_temps_dispatch_table,
+                argmin_over_axis1_contig_temps_dispatch_table);
         };
         m.def("_argmin_over_axis", argmin_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),

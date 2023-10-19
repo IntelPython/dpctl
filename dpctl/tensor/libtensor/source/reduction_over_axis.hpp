@@ -175,9 +175,11 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     const strided_fnT &atomic_dispatch_table,
+    const contig_fnT &axis0_atomic_dispatch_table,
+    const contig_fnT &axis1_atomic_dispatch_table,
     const strided_fnT &temps_dispatch_table,
-    const contig_fnT &axis0_dispatch_table,
-    const contig_fnT &axis1_dispatch_table,
+    const contig_fnT &axis0_temps_dispatch_table,
+    const contig_fnT &axis1_temps_dispatch_table,
     const SupportAtomicFnT &check_atomic_support_size4,
     const SupportAtomicFnT &check_atomic_support_size8)
 {
@@ -267,60 +269,74 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     }
 
     // handle special case when both reduction and iteration are 1D contiguous
-    // and can be done with atomics
-    if (supports_atomics) {
-        bool is_src_c_contig = src.is_c_contiguous();
-        bool is_dst_c_contig = dst.is_c_contiguous();
-        bool is_src_f_contig = src.is_f_contiguous();
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_src_f_contig = src.is_f_contiguous();
 
-        if ((is_src_c_contig && is_dst_c_contig) ||
-            (is_src_f_contig && dst_nelems == 1))
-        {
-            auto fn = axis1_dispatch_table[src_typeid][dst_typeid];
-
-            if (fn != nullptr) {
-                size_t iter_nelems = dst_nelems;
-
-                constexpr py::ssize_t zero_offset = 0;
-
-                sycl::event reduction_over_axis_contig_ev =
-                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
-                       dst.get_data(),
-                       zero_offset, // iteration_src_offset
-                       zero_offset, // iteration_dst_offset
-                       zero_offset, // reduction_src_offset
-                       depends);
-
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
-                    exec_q, {src, dst}, {reduction_over_axis_contig_ev});
-
-                return std::make_pair(keep_args_event,
-                                      reduction_over_axis_contig_ev);
-            }
+    if ((is_src_c_contig && is_dst_c_contig) ||
+        (is_src_f_contig && dst_nelems == 1))
+    {
+        // remove_all_extents gets underlying type of table
+        using contig_fn_ptr_T =
+            typename std::remove_all_extents<contig_fnT>::type;
+        contig_fn_ptr_T fn;
+        if (supports_atomics) {
+            fn = axis1_atomic_dispatch_table[src_typeid][dst_typeid];
         }
-        else if (is_src_f_contig &&
-                 ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
-        {
-            auto fn = axis0_dispatch_table[src_typeid][dst_typeid];
-            if (fn != nullptr) {
-                size_t iter_nelems = dst_nelems;
+        else {
+            fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
+        }
+        if (fn != nullptr) {
+            size_t iter_nelems = dst_nelems;
 
-                constexpr py::ssize_t zero_offset = 0;
+            constexpr py::ssize_t zero_offset = 0;
 
-                sycl::event reduction_over_axis_contig_ev =
-                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
-                       dst.get_data(),
-                       zero_offset, // iteration_src_offset
-                       zero_offset, // iteration_dst_offset
-                       zero_offset, // reduction_src_offset
-                       depends);
+            sycl::event reduction_over_axis_contig_ev =
+                fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                   dst.get_data(),
+                   zero_offset, // iteration_src_offset
+                   zero_offset, // iteration_dst_offset
+                   zero_offset, // reduction_src_offset
+                   depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
-                    exec_q, {src, dst}, {reduction_over_axis_contig_ev});
+            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
-                return std::make_pair(keep_args_event,
-                                      reduction_over_axis_contig_ev);
-            }
+            return std::make_pair(keep_args_event,
+                                  reduction_over_axis_contig_ev);
+        }
+    }
+    else if (is_src_f_contig &&
+             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
+    {
+        // remove_all_extents gets underlying type of table
+        using contig_fn_ptr_T =
+            typename std::remove_all_extents<contig_fnT>::type;
+        contig_fn_ptr_T fn;
+        if (supports_atomics) {
+            fn = axis0_atomic_dispatch_table[src_typeid][dst_typeid];
+        }
+        else {
+            fn = axis0_temps_dispatch_table[src_typeid][dst_typeid];
+        }
+        if (fn != nullptr) {
+            size_t iter_nelems = dst_nelems;
+
+            constexpr py::ssize_t zero_offset = 0;
+
+            sycl::event reduction_over_axis_contig_ev =
+                fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                   dst.get_data(),
+                   zero_offset, // iteration_src_offset
+                   zero_offset, // iteration_dst_offset
+                   zero_offset, // reduction_src_offset
+                   depends);
+
+            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                exec_q, {src, dst}, {reduction_over_axis_contig_ev});
+
+            return std::make_pair(keep_args_event,
+                                  reduction_over_axis_contig_ev);
         }
     }
 
@@ -378,7 +394,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                                  iteration_src_offset, iteration_dst_offset);
     }
 
-    if (supports_atomics && (reduction_nd == 1) && (iteration_nd == 1)) {
+    if ((reduction_nd == 1) && (iteration_nd == 1)) {
         bool mat_reduce_over_axis1 = false;
         bool mat_reduce_over_axis0 = false;
         bool array_reduce_all_elems = false;
@@ -400,7 +416,15 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         }
 
         if (mat_reduce_over_axis1 || array_reduce_all_elems) {
-            auto fn = axis1_dispatch_table[src_typeid][dst_typeid];
+            using contig_fn_ptr_T =
+                typename std::remove_all_extents<contig_fnT>::type;
+            contig_fn_ptr_T fn;
+            if (supports_atomics) {
+                fn = axis1_atomic_dispatch_table[src_typeid][dst_typeid];
+            }
+            else {
+                fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
+            }
             if (fn != nullptr) {
                 sycl::event reduction_over_axis1_contig_ev =
                     fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -415,7 +439,15 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
             }
         }
         else if (mat_reduce_over_axis0) {
-            auto fn = axis0_dispatch_table[src_typeid][dst_typeid];
+            using contig_fn_ptr_T =
+                typename std::remove_all_extents<contig_fnT>::type;
+            contig_fn_ptr_T fn;
+            if (supports_atomics) {
+                fn = axis1_atomic_dispatch_table[src_typeid][dst_typeid];
+            }
+            else {
+                fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
+            }
             if (fn != nullptr) {
                 sycl::event reduction_over_axis0_contig_ev =
                     fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -501,14 +533,16 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
 /* ==================== Search reductions ====================== */
 
-template <typename fn_tableT>
+template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_search_over_axis(
     const dpctl::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
     const dpctl::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
-    const fn_tableT &dispatch_table)
+    const strided_fnT &strided_dispatch_table,
+    const contig_fnT &axis0_contig_dispatch_table,
+    const contig_fnT &axis1_contig_dispatch_table)
 {
     int src_nd = src.get_ndim();
     int iteration_nd = src_nd - trailing_dims_to_reduce;
@@ -574,6 +608,61 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
+    // handle special case when both reduction and iteration are 1D contiguous
+    // and can be done with atomics
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_src_f_contig = src.is_f_contiguous();
+
+    if ((is_src_c_contig && is_dst_c_contig) ||
+        (is_src_f_contig && dst_nelems == 1))
+    {
+        auto fn = axis1_contig_dispatch_table[src_typeid][dst_typeid];
+        if (fn != nullptr) {
+            size_t iter_nelems = dst_nelems;
+
+            constexpr py::ssize_t zero_offset = 0;
+
+            sycl::event reduction_over_axis_contig_ev =
+                fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                   dst.get_data(),
+                   zero_offset, // iteration_src_offset
+                   zero_offset, // iteration_dst_offset
+                   zero_offset, // reduction_src_offset
+                   depends);
+
+            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                exec_q, {src, dst}, {reduction_over_axis_contig_ev});
+
+            return std::make_pair(keep_args_event,
+                                  reduction_over_axis_contig_ev);
+        }
+    }
+    else if (is_src_f_contig &&
+             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
+    {
+        auto fn = axis0_contig_dispatch_table[src_typeid][dst_typeid];
+        if (fn != nullptr) {
+            size_t iter_nelems = dst_nelems;
+
+            constexpr py::ssize_t zero_offset = 0;
+
+            sycl::event reduction_over_axis_contig_ev =
+                fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                   dst.get_data(),
+                   zero_offset, // iteration_src_offset
+                   zero_offset, // iteration_dst_offset
+                   zero_offset, // reduction_src_offset
+                   depends);
+
+            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                exec_q, {src, dst}, {reduction_over_axis_contig_ev});
+
+            return std::make_pair(keep_args_event,
+                                  reduction_over_axis_contig_ev);
+        }
+    }
+
     using dpctl::tensor::py_internal::simplify_iteration_space;
     using dpctl::tensor::py_internal::simplify_iteration_space_1;
 
@@ -627,7 +716,59 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                                  iteration_src_offset, iteration_dst_offset);
     }
 
-    auto fn = dispatch_table[src_typeid][dst_typeid];
+    if ((reduction_nd == 1) && (iteration_nd == 1)) {
+        bool mat_reduce_over_axis1 = false;
+        bool mat_reduce_over_axis0 = false;
+        bool array_reduce_all_elems = false;
+        size_t iter_nelems = dst_nelems;
+
+        if (compact_reduction_src_strides[0] == 1) {
+            array_reduce_all_elems = (simplified_iteration_shape[0] == 1);
+            mat_reduce_over_axis1 =
+                (simplified_iteration_dst_strides[0] == 1) &&
+                (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
+                 reduction_nelems);
+        }
+        else if (static_cast<size_t>(compact_reduction_src_strides[0]) ==
+                 iter_nelems) {
+            mat_reduce_over_axis0 =
+                (simplified_iteration_dst_strides[0] == 1) &&
+                (simplified_iteration_src_strides[0] == 1);
+        }
+
+        if (mat_reduce_over_axis1 || array_reduce_all_elems) {
+            auto fn = axis1_contig_dispatch_table[src_typeid][dst_typeid];
+            if (fn != nullptr) {
+                sycl::event reduction_over_axis1_contig_ev =
+                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                       dst.get_data(), iteration_src_offset,
+                       iteration_dst_offset, reduction_src_offset, depends);
+
+                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                    exec_q, {src, dst}, {reduction_over_axis1_contig_ev});
+
+                return std::make_pair(keep_args_event,
+                                      reduction_over_axis1_contig_ev);
+            }
+        }
+        else if (mat_reduce_over_axis0) {
+            auto fn = axis0_contig_dispatch_table[src_typeid][dst_typeid];
+            if (fn != nullptr) {
+                sycl::event reduction_over_axis0_contig_ev =
+                    fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
+                       dst.get_data(), iteration_src_offset,
+                       iteration_dst_offset, reduction_src_offset, depends);
+
+                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                    exec_q, {src, dst}, {reduction_over_axis0_contig_ev});
+
+                return std::make_pair(keep_args_event,
+                                      reduction_over_axis0_contig_ev);
+            }
+        }
+    }
+
+    auto fn = strided_dispatch_table[src_typeid][dst_typeid];
     if (fn == nullptr) {
         throw std::runtime_error("Datatypes are not supported");
     }
