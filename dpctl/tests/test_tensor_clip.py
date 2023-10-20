@@ -488,3 +488,11 @@ def test_clip_strided(dt):
     a_max = a_max[::-2]
     r = dpt.clip(x, min=-3, max=a_max)
     assert dpt.all(a_max == r)
+
+
+def test_clip_max_less_than_min():
+    get_queue_or_skip()
+
+    x = dpt.ones(10, dtype="i4")
+    res = dpt.clip(x, 5, 0)
+    assert dpt.all(res == 0)

@@ -51,7 +51,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 using namespace dpctl::tensor::offset_utils;
 
-template <typename T> T dpt_clamp(const T &x, const T &min, const T &max)
+template <typename T> T clip(const T &x, const T &min, const T &max)
 {
     using dpctl::tensor::type_utils::is_complex;
     if constexpr (is_complex<T>::value) {
@@ -105,8 +105,7 @@ public:
                  offset < std::min(nelems, base + sgSize * (n_vecs * vec_sz));
                  offset += sgSize)
             {
-                dst_p[offset] =
-                    dpt_clamp(x_p[offset], min_p[offset], max_p[offset]);
+                dst_p[offset] = clip(x_p[offset], min_p[offset], max_p[offset]);
             }
         }
         else {
@@ -142,18 +141,10 @@ public:
                     x_vec = sg.load<vec_sz>(x_multi_ptr);
                     min_vec = sg.load<vec_sz>(min_multi_ptr);
                     max_vec = sg.load<vec_sz>(max_multi_ptr);
-                    if constexpr (std::is_floating_point_v<T> ||
-                                  std::is_same_v<T, bool>) {
 #pragma unroll
-                        for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id)
-                        {
-                            dst_vec[vec_id] =
-                                dpt_clamp(x_vec[vec_id], min_vec[vec_id],
-                                          max_vec[vec_id]);
-                        }
-                    }
-                    else {
-                        dst_vec = sycl::clamp(x_vec, min_vec, max_vec);
+                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                        dst_vec[vec_id] = clip(x_vec[vec_id], min_vec[vec_id],
+                                               max_vec[vec_id]);
                     }
                     sg.store<vec_sz>(dst_multi_ptr, dst_vec);
                 }
@@ -161,13 +152,7 @@ public:
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems;
                      k += sgSize) {
-                    if constexpr (std::is_floating_point_v<T> ||
-                                  std::is_same_v<T, bool>) {
-                        dst_p[k] = dpt_clamp(x_p[k], min_p[k], max_p[k]);
-                    }
-                    else {
-                        dst_p[k] = sycl::clamp(x_p[k], min_p[k], max_p[k]);
-                    }
+                    dst_p[k] = clip(x_p[k], min_p[k], max_p[k]);
                 }
             }
         }
@@ -243,18 +228,9 @@ public:
     {
         size_t gid = id[0];
         auto offsets = indexer(static_cast<py::ssize_t>(gid));
-        if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
-            dst_p[offsets.get_fourth_offset()] =
-                sycl::clamp(x_p[offsets.get_first_offset()],
-                            min_p[offsets.get_second_offset()],
-                            max_p[offsets.get_third_offset()]);
-        }
-        else {
-            dst_p[offsets.get_fourth_offset()] =
-                dpt_clamp(x_p[offsets.get_first_offset()],
-                          min_p[offsets.get_second_offset()],
-                          max_p[offsets.get_third_offset()]);
-        }
+        dst_p[offsets.get_fourth_offset()] = clip(
+            x_p[offsets.get_first_offset()], min_p[offsets.get_second_offset()],
+            max_p[offsets.get_third_offset()]);
     }
 };
 
