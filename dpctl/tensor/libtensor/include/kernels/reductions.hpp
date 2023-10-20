@@ -2115,10 +2115,6 @@ struct TypePairSupportDataForCompReductionAtomic
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
         // input uint64
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;
 };
