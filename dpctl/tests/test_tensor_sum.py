@@ -173,6 +173,21 @@ def test_largish_reduction(arg_dtype, n):
     assert dpt.all(dpt.equal(y1, n * m))
 
 
+@pytest.mark.parametrize("n", [1023, 1024, 1025])
+def test_largish_reduction_axis1_axis0(n):
+    get_queue_or_skip()
+
+    m = 25
+    x1 = dpt.ones((m, n), dtype="f4")
+    x2 = dpt.ones((n, m), dtype="f4")
+
+    y1 = dpt.sum(x1, axis=1)
+    y2 = dpt.sum(x2, axis=0)
+
+    assert dpt.all(y1 == n)
+    assert dpt.all(y2 == n)
+
+
 def test_axis0_bug():
     "gh-1391"
     get_queue_or_skip()

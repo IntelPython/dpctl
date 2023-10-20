@@ -326,6 +326,28 @@ def test_logsumexp_keepdims():
     assert s.shape == (3, 1, 1, 6, 1)
 
 
+def test_logsumexp_keepdims_zero_size():
+    get_queue_or_skip()
+    n = 10
+    a = dpt.ones((n, 0, n))
+
+    s1 = dpt.logsumexp(a, keepdims=True)
+    assert s1.shape == (1, 1, 1)
+
+    s2 = dpt.logsumexp(a, axis=(0, 1), keepdims=True)
+    assert s2.shape == (1, 1, n)
+
+    s3 = dpt.logsumexp(a, axis=(1, 2), keepdims=True)
+    assert s3.shape == (n, 1, 1)
+
+    s4 = dpt.logsumexp(a, axis=(0, 2), keepdims=True)
+    assert s4.shape == (1, 0, 1)
+
+    a0 = a[0]
+    s5 = dpt.logsumexp(a0, keepdims=True)
+    assert s5.shape == (1, 1)
+
+
 def test_logsumexp_scalar():
     get_queue_or_skip()
 
@@ -335,6 +357,29 @@ def test_logsumexp_scalar():
     assert isinstance(s, dpt.usm_ndarray)
     assert m.sycl_queue == s.sycl_queue
     assert s.shape == ()
+
+
+def test_logsumexp_complex():
+    get_queue_or_skip()
+
+    x = dpt.zeros(1, dtype="c8")
+    with pytest.raises(TypeError):
+        dpt.logsumexp(x)
+
+
+def test_logsumexp_int_axis():
+    get_queue_or_skip()
+
+    x = dpt.zeros((8, 10), dtype="f4")
+    res = dpt.logsumexp(x, axis=0)
+    assert res.ndim == 1
+    assert res.shape[0] == 10
+
+
+def test_logsumexp_invalid_arr():
+    x = dict()
+    with pytest.raises(TypeError):
+        dpt.logsumexp(x)
 
 
 @pytest.mark.parametrize("arg_dtype", _no_complex_dtypes[1:])
@@ -376,3 +421,11 @@ def test_hypot_arg_out_dtype_matrix(arg_dtype, out_dtype):
 
     assert isinstance(r, dpt.usm_ndarray)
     assert r.dtype == dpt.dtype(out_dtype)
+
+
+def test_hypot_complex():
+    get_queue_or_skip()
+
+    x = dpt.zeros(1, dtype="c8")
+    with pytest.raises(TypeError):
+        dpt.reduce_hypot(x)
