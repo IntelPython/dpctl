@@ -47,7 +47,8 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions1.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
 )
@@ -63,7 +64,8 @@ endif()
 set(_no_fast_math_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions1.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions2.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
 )
 foreach(_src_fn ${_no_fast_math_sources})
