@@ -129,6 +129,8 @@ def test_clip_python_scalars():
     for zero, one, arr in zip(py_zeros, py_ones, arrs):
         r = dpt.clip(arr, zero, one)
         assert isinstance(r, dpt.usm_ndarray)
+        r = dpt.clip(arr, min=zero)
+        assert isinstance(r, dpt.usm_ndarray)
 
 
 def test_clip_in_place():
@@ -169,14 +171,46 @@ def test_clip_out_need_temporary():
     get_queue_or_skip()
 
     x = dpt.ones(10, dtype="i4")
+    a_min = dpt.asarray(2, dtype="i4")
+    a_max = dpt.asarray(3, dtype="i4")
+    dpt.clip(x[:6], 2, 3, out=x[-6:])
+    assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)
+
+    x = dpt.ones(10, dtype="i4")
+    a_min = dpt.asarray(2, dtype="i4")
+    a_max = dpt.asarray(3, dtype="i2")
+    dpt.clip(x[:6], 2, 3, out=x[-6:])
+    assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)
+
+    x = dpt.ones(10, dtype="i4")
+    a_min = dpt.asarray(2, dtype="i2")
+    a_max = dpt.asarray(3, dtype="i4")
+    dpt.clip(x[:6], 2, 3, out=x[-6:])
+    assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)
+
+    x = dpt.ones(10, dtype="i4")
+    a_min = dpt.asarray(2, dtype="i2")
+    a_max = dpt.asarray(3, dtype="i1")
     dpt.clip(x[:6], 2, 3, out=x[-6:])
     assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)
 
     x = dpt.full(6, 3, dtype="i4")
     a_min = dpt.full(10, 2, dtype="i4")
-    dpt.clip(x, min=a_min[:6], max=4, out=a_min[-6:])
+    a_max = dpt.asarray(4, dtype="i4")
+    dpt.clip(x, min=a_min[:6], max=a_max, out=a_min[-6:])
     assert dpt.all(a_min[:-6] == 2) and dpt.all(a_min[-6:] == 3)
 
+    x = dpt.full(6, 3, dtype="i4")
+    a_min = dpt.full(10, 2, dtype="i4")
+    a_max = dpt.asarray(4, dtype="i2")
+    dpt.clip(x, min=a_min[:6], max=a_max, out=a_min[-6:])
+    assert dpt.all(a_min[:-6] == 2) and dpt.all(a_min[-6:] == 3)
+
+
+def test_clip_out_need_temporary_none():
+    get_queue_or_skip()
+
+    x = dpt.full(6, 3, dtype="i4")
     # with min/max == None
     a_min = dpt.full(10, 2, dtype="i4")
     dpt.clip(x, min=a_min[:6], max=None, out=a_min[-6:])
@@ -198,7 +232,10 @@ def test_where_arg_validation():
         dpt.where(x1, x2, check)
 
 
-def test_clip_order():
+@pytest.mark.parametrize(
+    "dt1,dt2", [("i4", "i4"), ("i4", "i2"), ("i2", "i4"), ("i1", "i2")]
+)
+def test_clip_order(dt1, dt2):
     get_queue_or_skip()
 
     test_shape = (
@@ -209,8 +246,8 @@ def test_clip_order():
     n = test_shape[-1]
 
     ar1 = dpt.ones(test_shape, dtype="i4", order="C")
-    ar2 = dpt.ones(test_shape, dtype="i4", order="C")
-    ar3 = dpt.ones(test_shape, dtype="i4", order="C")
+    ar2 = dpt.ones(test_shape, dtype=dt1, order="C")
+    ar3 = dpt.ones(test_shape, dtype=dt2, order="C")
     r1 = dpt.clip(ar1, ar2, ar3, order="C")
     assert r1.flags.c_contiguous
     r2 = dpt.clip(ar1, ar2, ar3, order="F")
@@ -219,6 +256,49 @@ def test_clip_order():
     assert r3.flags.c_contiguous
     r4 = dpt.clip(ar1, ar2, ar3, order="K")
     assert r4.flags.c_contiguous
+
+    ar1 = dpt.ones(test_shape, dtype="i4", order="F")
+    ar2 = dpt.ones(test_shape, dtype=dt1, order="F")
+    ar3 = dpt.ones(test_shape, dtype=dt2, order="F")
+    r1 = dpt.clip(ar1, ar2, ar3, order="C")
+    assert r1.flags.c_contiguous
+    r2 = dpt.clip(ar1, ar2, ar3, order="F")
+    assert r2.flags.f_contiguous
+    r3 = dpt.clip(ar1, ar2, ar3, order="A")
+    assert r3.flags.f_contiguous
+    r4 = dpt.clip(ar1, ar2, ar3, order="K")
+    assert r4.flags.f_contiguous
+
+    ar1 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2]
+    ar2 = dpt.ones(test_shape2, dtype=dt1, order="C")[:20, ::-2]
+    ar3 = dpt.ones(test_shape2, dtype=dt2, order="C")[:20, ::-2]
+    r4 = dpt.clip(ar1, ar2, ar3, order="K")
+    assert r4.strides == (n, -1)
+    r5 = dpt.clip(ar1, ar2, ar3, order="C")
+    assert r5.strides == (n, 1)
+
+    ar1 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2].mT
+    ar2 = dpt.ones(test_shape2, dtype=dt1, order="C")[:20, ::-2].mT
+    ar3 = dpt.ones(test_shape2, dtype=dt2, order="C")[:20, ::-2].mT
+    r4 = dpt.clip(ar1, ar2, ar3, order="K")
+    assert r4.strides == (-1, n)
+    r5 = dpt.clip(ar1, ar2, ar3, order="C")
+    assert r5.strides == (n, 1)
+
+
+@pytest.mark.parametrize("dt", ["i4", "i2"])
+def test_clip_none_order(dt):
+    get_queue_or_skip()
+
+    test_shape = (
+        20,
+        20,
+    )
+    test_shape2 = tuple(2 * dim for dim in test_shape)
+    n = test_shape[-1]
+
+    ar1 = dpt.ones(test_shape, dtype="i4", order="C")
+    ar2 = dpt.ones(test_shape, dtype=dt, order="C")
 
     r1 = dpt.clip(ar1, min=None, max=ar2, order="C")
     assert r1.flags.c_contiguous
@@ -230,16 +310,7 @@ def test_clip_order():
     assert r4.flags.c_contiguous
 
     ar1 = dpt.ones(test_shape, dtype="i4", order="F")
-    ar2 = dpt.ones(test_shape, dtype="i4", order="F")
-    ar3 = dpt.ones(test_shape, dtype="i4", order="F")
-    r1 = dpt.clip(ar1, ar2, ar3, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.clip(ar1, ar2, ar3, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.clip(ar1, ar2, ar3, order="A")
-    assert r3.flags.f_contiguous
-    r4 = dpt.clip(ar1, ar2, ar3, order="K")
-    assert r4.flags.f_contiguous
+    ar2 = dpt.ones(test_shape, dtype=dt, order="F")
 
     r1 = dpt.clip(ar1, min=None, max=ar2, order="C")
     assert r1.flags.c_contiguous
@@ -251,29 +322,19 @@ def test_clip_order():
     assert r4.flags.f_contiguous
 
     ar1 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2]
-    ar2 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2]
-    ar3 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2]
-    r4 = dpt.clip(ar1, ar2, ar3, order="K")
-    assert r4.strides == (n, -1)
-    r5 = dpt.clip(ar1, ar2, ar3, order="C")
-    assert r5.strides == (n, 1)
+    ar2 = dpt.ones(test_shape2, dtype=dt, order="C")[:20, ::-2]
 
-    r4 = dpt.clip(ar1, min=None, max=ar3, order="K")
+    r4 = dpt.clip(ar1, min=None, max=ar2, order="K")
     assert r4.strides == (n, -1)
-    r5 = dpt.clip(ar1, min=None, max=ar3, order="C")
+    r5 = dpt.clip(ar1, min=None, max=ar2, order="C")
     assert r5.strides == (n, 1)
 
     ar1 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2].mT
-    ar2 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2].mT
-    ar3 = dpt.ones(test_shape2, dtype="i4", order="C")[:20, ::-2].mT
-    r4 = dpt.clip(ar1, ar2, ar3, order="K")
-    assert r4.strides == (-1, n)
-    r5 = dpt.clip(ar1, ar2, ar3, order="C")
-    assert r5.strides == (n, 1)
+    ar2 = dpt.ones(test_shape2, dtype=dt, order="C")[:20, ::-2].mT
 
-    r4 = dpt.clip(ar1, min=None, max=ar3, order="K")
+    r4 = dpt.clip(ar1, min=None, max=ar2, order="K")
     assert r4.strides == (-1, n)
-    r5 = dpt.clip(ar1, min=None, max=ar3, order="C")
+    r5 = dpt.clip(ar1, min=None, max=ar2, order="C")
     assert r5.strides == (n, 1)
 
 

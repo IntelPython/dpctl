@@ -281,7 +281,7 @@ def _clip_none_call(x, val, out, order, _binary_fn):
 
         if res_dt != out.dtype:
             raise TypeError(
-                f"Output array of type {res_dt} is needed," f"got {out.dtype}"
+                f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
 
         if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
@@ -699,7 +699,7 @@ def clip(x, min=None, max=None, out=None, order="K"):
                 else:
                     if res_dt != out.dtype:
                         raise TypeError(
-                            f"Output array of type {res_dt} is needed,"
+                            f"Output array of type {res_dt} is needed, "
                             f"got {out.dtype}"
                         )
                 x = dpt.broadcast_to(x, res_shape)
