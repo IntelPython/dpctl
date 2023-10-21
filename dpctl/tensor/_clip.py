@@ -197,14 +197,7 @@ def _clip_none_call(x, val, out, order, _binary_fn):
         order = "K"
     q1, x_usm_type = x.sycl_queue, x.usm_type
     q2, val_usm_type = _get_queue_usm_type(val)
-    if q1 is None and q2 is None:
-        raise ExecutionPlacementError(
-            "Execution placement can not be unambiguously inferred "
-            "from input arguments. "
-            "One of the arguments must represent USM allocation and "
-            "expose `__sycl_usm_array_interface__` property"
-        )
-    elif q2 is None:
+    if q2 is None:
         exec_q = q1
         res_usm_type = x_usm_type
     else:
@@ -221,15 +214,9 @@ def _clip_none_call(x, val, out, order, _binary_fn):
             )
         )
     dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
-    x_shape = _get_shape(x)
+    x_shape = x.shape
     val_shape = _get_shape(val)
-    if not all(
-        isinstance(s, (tuple, list))
-        for s in (
-            x_shape,
-            val_shape,
-        )
-    ):
+    if not isinstance(val_shape, (tuple, list)):
         raise TypeError(
             "Shape of arguments can not be inferred. "
             "Arguments are expected to be "
@@ -248,7 +235,7 @@ def _clip_none_call(x, val, out, order, _binary_fn):
             f"{x_shape} and {val_shape}"
         )
     sycl_dev = exec_q.sycl_device
-    x_dtype = _get_dtype(x, sycl_dev)
+    x_dtype = x.dtype
     val_dtype = _get_dtype(val, sycl_dev)
     if not _validate_dtype(val_dtype):
         raise ValueError("Operands have unsupported data types")
@@ -446,358 +433,294 @@ def clip(x, min=None, max=None, out=None, order="K"):
     elif min is None:
         return _clip_none_call(x, max, out, order, ti._minimum)
     else:
-        if order not in ["K", "C", "F", "A"]:
-            order = "K"
-        if min is not None and max is not None:
-            q1, x_usm_type = _get_queue_usm_type(x)
-            q2, min_usm_type = _get_queue_usm_type(min)
-            q3, max_usm_type = _get_queue_usm_type(max)
-            if q2 is None and q3 is None:
-                exec_q = q1
-                res_usm_type = x_usm_type
-            elif q3 is None:
-                exec_q = dpctl.utils.get_execution_queue((q1, q2))
-                if exec_q is None:
-                    raise ExecutionPlacementError(
-                        "Execution placement can not be unambiguously inferred "
-                        "from input arguments."
-                    )
-                res_usm_type = dpctl.utils.get_coerced_usm_type(
-                    (
-                        x_usm_type,
-                        min_usm_type,
-                    )
+        q1, x_usm_type = x.sycl_queue, x.usm_type
+        q2, min_usm_type = _get_queue_usm_type(min)
+        q3, max_usm_type = _get_queue_usm_type(max)
+        if q2 is None and q3 is None:
+            exec_q = q1
+            res_usm_type = x_usm_type
+        elif q3 is None:
+            exec_q = dpctl.utils.get_execution_queue((q1, q2))
+            if exec_q is None:
+                raise ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
                 )
-            elif q2 is None:
-                exec_q = dpctl.utils.get_execution_queue((q1, q3))
-                if exec_q is None:
-                    raise ExecutionPlacementError(
-                        "Execution placement can not be unambiguously inferred "
-                        "from input arguments."
-                    )
-                res_usm_type = dpctl.utils.get_coerced_usm_type(
-                    (
-                        x_usm_type,
-                        max_usm_type,
-                    )
+            res_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    min_usm_type,
                 )
-            else:
-                exec_q = dpctl.utils.get_execution_queue((q1, q2, q3))
-                if exec_q is None:
-                    raise ExecutionPlacementError(
-                        "Execution placement can not be unambiguously inferred "
-                        "from input arguments."
-                    )
-                res_usm_type = dpctl.utils.get_coerced_usm_type(
-                    (
-                        x_usm_type,
-                        min_usm_type,
-                        max_usm_type,
-                    )
+            )
+        elif q2 is None:
+            exec_q = dpctl.utils.get_execution_queue((q1, q3))
+            if exec_q is None:
+                raise ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
                 )
-            dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
-            x_shape = x.shape
-            min_shape = _get_shape(min)
-            max_shape = _get_shape(max)
-            if not all(
-                isinstance(s, (tuple, list))
-                for s in (
+            res_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    max_usm_type,
+                )
+            )
+        else:
+            exec_q = dpctl.utils.get_execution_queue((q1, q2, q3))
+            if exec_q is None:
+                raise ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            res_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    min_usm_type,
+                    max_usm_type,
+                )
+            )
+        dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+        x_shape = x.shape
+        min_shape = _get_shape(min)
+        max_shape = _get_shape(max)
+        if not all(
+            isinstance(s, (tuple, list))
+            for s in (
+                min_shape,
+                max_shape,
+            )
+        ):
+            raise TypeError(
+                "Shape of arguments can not be inferred. "
+                "Arguments are expected to be "
+                "lists, tuples, or both"
+            )
+        try:
+            res_shape = _broadcast_shape_impl(
+                [
+                    x_shape,
                     min_shape,
                     max_shape,
-                )
-            ):
+                ]
+            )
+        except ValueError:
+            raise ValueError(
+                "operands could not be broadcast together with shapes "
+                f"{x_shape}, {min_shape}, and {max_shape}"
+            )
+        sycl_dev = exec_q.sycl_device
+        x_dtype = x.dtype
+        min_dtype = _get_dtype(min, sycl_dev)
+        max_dtype = _get_dtype(max, sycl_dev)
+        if not all(_validate_dtype(o) for o in (min_dtype, max_dtype)):
+            raise ValueError("Operands have unsupported data types")
+
+        min_dtype, max_dtype = _resolve_one_strong_two_weak_types(
+            x_dtype, min_dtype, max_dtype, sycl_dev
+        )
+
+        buf1_dt, buf2_dt, res_dt = _check_clip_dtypes(
+            x_dtype,
+            min_dtype,
+            max_dtype,
+            sycl_dev,
+        )
+
+        if res_dt is None:
+            raise TypeError(
+                f"function '{clip}' does not support input types "
+                f"({x_dtype}, {min_dtype}, {max_dtype}), "
+                "and the inputs could not be safely coerced to any "
+                "supported types according to the casting rule ''safe''."
+            )
+
+        orig_out = out
+        if out is not None:
+            if not isinstance(out, dpt.usm_ndarray):
                 raise TypeError(
-                    "Shape of arguments can not be inferred. "
-                    "Arguments are expected to be "
-                    "lists, tuples, or both"
+                    "output array must be of usm_ndarray type, got "
+                    f"{type(out)}"
                 )
-            try:
-                res_shape = _broadcast_shape_impl(
-                    [
-                        x_shape,
-                        min_shape,
-                        max_shape,
-                    ]
-                )
-            except ValueError:
+
+            if out.shape != res_shape:
                 raise ValueError(
-                    "operands could not be broadcast together with shapes "
-                    f"{x_shape}, {min_shape}, and {max_shape}"
+                    "The shape of input and output arrays are "
+                    f"inconsistent. Expected output shape is {res_shape}, "
+                    f"got {out.shape}"
                 )
-            sycl_dev = exec_q.sycl_device
-            x_dtype = x.dtype
-            min_dtype = _get_dtype(min, sycl_dev)
-            max_dtype = _get_dtype(max, sycl_dev)
-            if not all(_validate_dtype(o) for o in (min_dtype, max_dtype)):
-                raise ValueError("Operands have unsupported data types")
 
-            min_dtype, max_dtype = _resolve_one_strong_two_weak_types(
-                x_dtype, min_dtype, max_dtype, sycl_dev
-            )
-
-            buf1_dt, buf2_dt, res_dt = _check_clip_dtypes(
-                x_dtype,
-                min_dtype,
-                max_dtype,
-                sycl_dev,
-            )
-
-            if res_dt is None:
+            if res_dt != out.dtype:
                 raise TypeError(
-                    f"function '{clip}' does not support input types "
-                    f"({x_dtype}, {min_dtype}, {max_dtype}), "
-                    "and the inputs could not be safely coerced to any "
-                    "supported types according to the casting rule ''safe''."
+                    f"Output array of type {res_dt} is needed, "
+                    f"got {out.dtype}"
                 )
 
-            orig_out = out
-            if out is not None:
-                if not isinstance(out, dpt.usm_ndarray):
-                    raise TypeError(
-                        "output array must be of usm_ndarray type, got "
-                        f"{type(out)}"
-                    )
+            if (
+                dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
+                is None
+            ):
+                raise ExecutionPlacementError(
+                    "Input and output allocation queues are not compatible"
+                )
 
-                if out.shape != res_shape:
-                    raise ValueError(
-                        "The shape of input and output arrays are "
-                        f"inconsistent. Expected output shape is {res_shape}, "
-                        f"got {out.shape}"
-                    )
-
-                if res_dt != out.dtype:
-                    raise TypeError(
-                        f"Output array of type {res_dt} is needed, "
-                        f"got {out.dtype}"
-                    )
-
-                if (
-                    dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
-                    is None
-                ):
-                    raise ExecutionPlacementError(
-                        "Input and output allocation queues are not compatible"
-                    )
-
-                if ti._array_overlap(x, out):
-                    if not ti._same_logical_tensors(x, out):
-                        out = dpt.empty_like(out)
-
-                if isinstance(min, dpt.usm_ndarray):
-                    if (
-                        ti._array_overlap(min, out)
-                        and not ti._same_logical_tensors(min, out)
-                        and buf1_dt is None
-                    ):
-                        out = dpt.empty_like(out)
-
-                if isinstance(max, dpt.usm_ndarray):
-                    if (
-                        ti._array_overlap(max, out)
-                        and not ti._same_logical_tensors(max, out)
-                        and buf2_dt is None
-                    ):
-                        out = dpt.empty_like(out)
+            if ti._array_overlap(x, out):
+                if not ti._same_logical_tensors(x, out):
+                    out = dpt.empty_like(out)
 
             if isinstance(min, dpt.usm_ndarray):
-                a_min = min
-            else:
-                a_min = dpt.asarray(min, dtype=min_dtype, sycl_queue=exec_q)
+                if (
+                    ti._array_overlap(min, out)
+                    and not ti._same_logical_tensors(min, out)
+                    and buf1_dt is None
+                ):
+                    out = dpt.empty_like(out)
+
             if isinstance(max, dpt.usm_ndarray):
-                a_max = max
-            else:
-                a_max = dpt.asarray(max, dtype=max_dtype, sycl_queue=exec_q)
+                if (
+                    ti._array_overlap(max, out)
+                    and not ti._same_logical_tensors(max, out)
+                    and buf2_dt is None
+                ):
+                    out = dpt.empty_like(out)
 
-            if buf1_dt is None and buf2_dt is None:
-                if out is None:
-                    if order == "K":
-                        out = _empty_like_triple_orderK(
-                            x,
-                            a_min,
-                            a_max,
-                            res_dt,
-                            res_shape,
-                            res_usm_type,
-                            exec_q,
-                        )
-                    else:
-                        if order == "A":
-                            order = (
-                                "F"
-                                if all(
-                                    arr.flags.f_contiguous
-                                    for arr in (
-                                        x,
-                                        a_min,
-                                        a_max,
-                                    )
+        if isinstance(min, dpt.usm_ndarray):
+            a_min = min
+        else:
+            a_min = dpt.asarray(min, dtype=min_dtype, sycl_queue=exec_q)
+        if isinstance(max, dpt.usm_ndarray):
+            a_max = max
+        else:
+            a_max = dpt.asarray(max, dtype=max_dtype, sycl_queue=exec_q)
+
+        if buf1_dt is None and buf2_dt is None:
+            if out is None:
+                if order == "K":
+                    out = _empty_like_triple_orderK(
+                        x,
+                        a_min,
+                        a_max,
+                        res_dt,
+                        res_shape,
+                        res_usm_type,
+                        exec_q,
+                    )
+                else:
+                    if order == "A":
+                        order = (
+                            "F"
+                            if all(
+                                arr.flags.f_contiguous
+                                for arr in (
+                                    x,
+                                    a_min,
+                                    a_max,
                                 )
-                                else "C"
                             )
-                        out = dpt.empty(
-                            res_shape,
-                            dtype=res_dt,
-                            usm_type=res_usm_type,
-                            sycl_queue=exec_q,
-                            order=order,
+                            else "C"
                         )
-                if x_shape != res_shape:
-                    x = dpt.broadcast_to(x, res_shape)
-                if a_min.shape != res_shape:
-                    a_min = dpt.broadcast_to(a_min, res_shape)
-                if a_max.shape != res_shape:
-                    a_max = dpt.broadcast_to(a_max, res_shape)
-                ht_binary_ev, binary_ev = ti._clip(
-                    src=x, min=a_min, max=a_max, dst=out, sycl_queue=exec_q
-                )
-                if not (orig_out is None or orig_out is out):
-                    # Copy the out data from temporary buffer to original memory
-                    ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=out,
-                        dst=orig_out,
+                    out = dpt.empty(
+                        res_shape,
+                        dtype=res_dt,
+                        usm_type=res_usm_type,
                         sycl_queue=exec_q,
-                        depends=[binary_ev],
+                        order=order,
                     )
-                    ht_copy_out_ev.wait()
-                    out = orig_out
-                ht_binary_ev.wait()
-                return out
-            elif buf1_dt is None:
-                if order == "K":
-                    buf2 = _empty_like_orderK(a_max, buf2_dt)
-                else:
-                    if order == "A":
-                        order = "F" if a_min.flags.f_contiguous else "C"
-                    buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
-                ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                    src=a_max, dst=buf2, sycl_queue=exec_q
-                )
-                if out is None:
-                    if order == "K":
-                        out = _empty_like_triple_orderK(
-                            x,
-                            a_min,
-                            buf2,
-                            res_dt,
-                            res_shape,
-                            res_usm_type,
-                            exec_q,
-                        )
-                    else:
-                        out = dpt.empty(
-                            res_shape,
-                            dtype=res_dt,
-                            usm_type=res_usm_type,
-                            sycl_queue=exec_q,
-                            order=order,
-                        )
-
+            if x_shape != res_shape:
                 x = dpt.broadcast_to(x, res_shape)
-                if a_min.shape != res_shape:
-                    a_min = dpt.broadcast_to(a_min, res_shape)
-                buf2 = dpt.broadcast_to(buf2, res_shape)
-                ht_binary_ev, binary_ev = ti._clip(
-                    src=x,
-                    min=a_min,
-                    max=buf2,
-                    dst=out,
-                    sycl_queue=exec_q,
-                    depends=[copy_ev],
-                )
-                if not (orig_out is None or orig_out is out):
-                    # Copy the out data from temporary buffer to original memory
-                    ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=out,
-                        dst=orig_out,
-                        sycl_queue=exec_q,
-                        depends=[binary_ev],
-                    )
-                    ht_copy_out_ev.wait()
-                    out = orig_out
-                ht_copy_ev.wait()
-                ht_binary_ev.wait()
-                return out
-            elif buf2_dt is None:
-                if order == "K":
-                    buf1 = _empty_like_orderK(a_min, buf1_dt)
-                else:
-                    if order == "A":
-                        order = "F" if a_min.flags.f_contiguous else "C"
-                    buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
-                ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                    src=a_min, dst=buf1, sycl_queue=exec_q
-                )
-                if out is None:
-                    if order == "K":
-                        out = _empty_like_triple_orderK(
-                            x,
-                            buf1,
-                            a_max,
-                            res_dt,
-                            res_shape,
-                            res_usm_type,
-                            exec_q,
-                        )
-                    else:
-                        out = dpt.empty(
-                            res_shape,
-                            dtype=res_dt,
-                            usm_type=res_usm_type,
-                            sycl_queue=exec_q,
-                            order=order,
-                        )
-
-                x = dpt.broadcast_to(x, res_shape)
-                buf1 = dpt.broadcast_to(buf1, res_shape)
-                if a_max.shape != res_shape:
-                    a_max = dpt.broadcast_to(a_max, res_shape)
-                ht_binary_ev, binary_ev = ti._clip(
-                    src=x,
-                    min=buf1,
-                    max=a_max,
-                    dst=out,
-                    sycl_queue=exec_q,
-                    depends=[copy_ev],
-                )
-                if not (orig_out is None or orig_out is out):
-                    # Copy the out data from temporary buffer to original memory
-                    ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                        src=out,
-                        dst=orig_out,
-                        sycl_queue=exec_q,
-                        depends=[binary_ev],
-                    )
-                    ht_copy_out_ev.wait()
-                    out = orig_out
-                ht_copy_ev.wait()
-                ht_binary_ev.wait()
-                return out
-
-            if order in ["K", "A"]:
-                if a_min.flags.f_contiguous and a_max.flags.f_contiguous:
-                    order = "F"
-                elif a_min.flags.c_contiguous and a_max.flags.c_contiguous:
-                    order = "C"
-                else:
-                    order = "C" if order == "A" else "K"
-            if order == "K":
-                buf1 = _empty_like_orderK(a_min, buf1_dt)
-            else:
-                buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
-            ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=a_min, dst=buf1, sycl_queue=exec_q
+            if a_min.shape != res_shape:
+                a_min = dpt.broadcast_to(a_min, res_shape)
+            if a_max.shape != res_shape:
+                a_max = dpt.broadcast_to(a_max, res_shape)
+            ht_binary_ev, binary_ev = ti._clip(
+                src=x, min=a_min, max=a_max, dst=out, sycl_queue=exec_q
             )
+            if not (orig_out is None or orig_out is out):
+                # Copy the out data from temporary buffer to original memory
+                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=out,
+                    dst=orig_out,
+                    sycl_queue=exec_q,
+                    depends=[binary_ev],
+                )
+                ht_copy_out_ev.wait()
+                out = orig_out
+            ht_binary_ev.wait()
+            return out
+        elif buf1_dt is None:
             if order == "K":
                 buf2 = _empty_like_orderK(a_max, buf2_dt)
             else:
+                if order == "A":
+                    order = "F" if a_min.flags.f_contiguous else "C"
                 buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
-            ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_max, dst=buf2, sycl_queue=exec_q
             )
             if out is None:
                 if order == "K":
                     out = _empty_like_triple_orderK(
-                        x, buf1, buf2, res_dt, res_shape, res_usm_type, exec_q
+                        x,
+                        a_min,
+                        buf2,
+                        res_dt,
+                        res_shape,
+                        res_usm_type,
+                        exec_q,
+                    )
+                else:
+                    out = dpt.empty(
+                        res_shape,
+                        dtype=res_dt,
+                        usm_type=res_usm_type,
+                        sycl_queue=exec_q,
+                        order=order,
+                    )
+
+            x = dpt.broadcast_to(x, res_shape)
+            if a_min.shape != res_shape:
+                a_min = dpt.broadcast_to(a_min, res_shape)
+            buf2 = dpt.broadcast_to(buf2, res_shape)
+            ht_binary_ev, binary_ev = ti._clip(
+                src=x,
+                min=a_min,
+                max=buf2,
+                dst=out,
+                sycl_queue=exec_q,
+                depends=[copy_ev],
+            )
+            if not (orig_out is None or orig_out is out):
+                # Copy the out data from temporary buffer to original memory
+                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=out,
+                    dst=orig_out,
+                    sycl_queue=exec_q,
+                    depends=[binary_ev],
+                )
+                ht_copy_out_ev.wait()
+                out = orig_out
+            ht_copy_ev.wait()
+            ht_binary_ev.wait()
+            return out
+        elif buf2_dt is None:
+            if order == "K":
+                buf1 = _empty_like_orderK(a_min, buf1_dt)
+            else:
+                if order == "A":
+                    order = "F" if a_min.flags.f_contiguous else "C"
+                buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_min, dst=buf1, sycl_queue=exec_q
+            )
+            if out is None:
+                if order == "K":
+                    out = _empty_like_triple_orderK(
+                        x,
+                        buf1,
+                        a_max,
+                        res_dt,
+                        res_shape,
+                        res_usm_type,
+                        exec_q,
                     )
                 else:
                     out = dpt.empty(
@@ -810,14 +733,75 @@ def clip(x, min=None, max=None, out=None, order="K"):
 
             x = dpt.broadcast_to(x, res_shape)
             buf1 = dpt.broadcast_to(buf1, res_shape)
-            buf2 = dpt.broadcast_to(buf2, res_shape)
-            ht_, _ = ti._clip(
+            if a_max.shape != res_shape:
+                a_max = dpt.broadcast_to(a_max, res_shape)
+            ht_binary_ev, binary_ev = ti._clip(
                 src=x,
                 min=buf1,
-                max=buf2,
+                max=a_max,
                 dst=out,
                 sycl_queue=exec_q,
-                depends=[copy1_ev, copy2_ev],
+                depends=[copy_ev],
             )
-            dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
+            if not (orig_out is None or orig_out is out):
+                # Copy the out data from temporary buffer to original memory
+                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=out,
+                    dst=orig_out,
+                    sycl_queue=exec_q,
+                    depends=[binary_ev],
+                )
+                ht_copy_out_ev.wait()
+                out = orig_out
+            ht_copy_ev.wait()
+            ht_binary_ev.wait()
             return out
+
+        if order in ["K", "A"]:
+            if a_min.flags.f_contiguous and a_max.flags.f_contiguous:
+                order = "F"
+            elif a_min.flags.c_contiguous and a_max.flags.c_contiguous:
+                order = "C"
+            else:
+                order = "C" if order == "A" else "K"
+        if order == "K":
+            buf1 = _empty_like_orderK(a_min, buf1_dt)
+        else:
+            buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
+        ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_min, dst=buf1, sycl_queue=exec_q
+        )
+        if order == "K":
+            buf2 = _empty_like_orderK(a_max, buf2_dt)
+        else:
+            buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
+        ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_max, dst=buf2, sycl_queue=exec_q
+        )
+        if out is None:
+            if order == "K":
+                out = _empty_like_triple_orderK(
+                    x, buf1, buf2, res_dt, res_shape, res_usm_type, exec_q
+                )
+            else:
+                out = dpt.empty(
+                    res_shape,
+                    dtype=res_dt,
+                    usm_type=res_usm_type,
+                    sycl_queue=exec_q,
+                    order=order,
+                )
+
+        x = dpt.broadcast_to(x, res_shape)
+        buf1 = dpt.broadcast_to(buf1, res_shape)
+        buf2 = dpt.broadcast_to(buf2, res_shape)
+        ht_, _ = ti._clip(
+            src=x,
+            min=buf1,
+            max=buf2,
+            dst=out,
+            sycl_queue=exec_q,
+            depends=[copy1_ev, copy2_ev],
+        )
+        dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
+        return out
