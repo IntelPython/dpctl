@@ -435,6 +435,50 @@ def test_clip_errors():
         ar4,
     )
 
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments.",
+        dpt.clip,
+        ar1,
+        ar4,
+        ar2,
+        ar3,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments.",
+        dpt.clip,
+        ar1,
+        ar4,
+        1,
+        ar3,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments.",
+        dpt.clip,
+        ar1,
+        1,
+        ar4,
+        ar3,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments.",
+        dpt.clip,
+        ar1,
+        ar4,
+        None,
+        ar2,
+    )
+
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones_like(ar1, dtype="float32")
     ar3 = dpt.ones_like(ar1, dtype="float32")
