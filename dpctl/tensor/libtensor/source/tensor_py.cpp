@@ -44,6 +44,8 @@
 #include "device_support_queries.hpp"
 #include "elementwise_functions1.hpp"
 #include "elementwise_functions2.hpp"
+#include "elementwise_functions3.hpp"
+#include "elementwise_functions4.hpp"
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
@@ -444,6 +446,8 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     dpctl::tensor::py_internal::init_elementwise_functions1(m);
     dpctl::tensor::py_internal::init_elementwise_functions2(m);
+    dpctl::tensor::py_internal::init_elementwise_functions3(m);
+    dpctl::tensor::py_internal::init_elementwise_functions4(m);
     dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
     dpctl::tensor::py_internal::init_reduction_functions(m);
 }
