@@ -601,3 +601,31 @@ def test_clip_max_less_than_min():
     x = dpt.ones(10, dtype="i4")
     res = dpt.clip(x, 5, 0)
     assert dpt.all(res == 0)
+
+
+def test_clip_minmax_weak_types():
+    get_queue_or_skip()
+
+    x = dpt.zeros(10, dtype=dpt.bool)
+    min_list = [False, 0, 0.0, 0.0 + 0.0j]
+    max_list = [True, 1, 1.0, 1.0 + 0.0j]
+    for min_v, max_v in zip(min_list, max_list):
+        if isinstance(min_v, bool) and isinstance(max_v, bool):
+            y = dpt.clip(x, min_v, max_v)
+            assert isinstance(y, dpt.usm_ndarray)
+        else:
+            with pytest.raises(TypeError):
+                dpt.clip(x, min_v, max_v)
+
+
+def test_clip_max_weak_types():
+    get_queue_or_skip()
+
+    x = dpt.zeros(10, dtype="i4")
+    m = dpt.ones(10, dtype="i4")
+
+    with pytest.raises(TypeError):
+        dpt.clip(x, m, 2.5)
+
+    with pytest.raises(TypeError):
+        dpt.clip(x, 2.5, m)
