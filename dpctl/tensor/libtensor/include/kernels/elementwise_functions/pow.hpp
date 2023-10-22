@@ -35,6 +35,7 @@
 #include "utils/type_utils.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "kernels/elementwise_functions/common_inplace.hpp"
 #include <pybind11/pybind11.h>
 
 namespace dpctl
