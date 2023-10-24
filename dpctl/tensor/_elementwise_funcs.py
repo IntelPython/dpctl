@@ -1183,7 +1183,7 @@ logical_xor = BinaryElementwiseFunc(
     _logical_xor_docstring_,
 )
 
-# B??: ==== MAXIMUM    (x1, x2)
+# B26: ==== MAXIMUM    (x1, x2)
 _maximum_docstring_ = """
 maximum(x1, x2, out=None, order='K')
 
@@ -1213,7 +1213,7 @@ maximum = BinaryElementwiseFunc(
     _maximum_docstring_,
 )
 
-# B??: ==== MINIMUM    (x1, x2)
+# B27: ==== MINIMUM    (x1, x2)
 _minimum_docstring_ = """
 minimum(x1, x2, out=None, order='K')
 
@@ -1373,7 +1373,7 @@ pow = BinaryElementwiseFunc(
     binary_inplace_fn=ti._pow_inplace,
 )
 
-# U??: ==== PROJ        (x)
+# U40: ==== PROJ        (x)
 _proj_docstring = """
 proj(x, out=None, order='K')
 
@@ -1514,7 +1514,7 @@ sign = UnaryElementwiseFunc(
     "sign", ti._sign_result_type, ti._sign, _sign_docstring
 )
 
-# ==== SIGNBIT        (x)
+# U41: ==== SIGNBIT        (x)
 _signbit_docstring = """
 signbit(x, out=None, order='K')
 
