@@ -42,23 +42,16 @@ namespace tensor
 namespace py_internal
 {
 
+/*! @brief Add reduction functions to Python module */
 void init_reduction_functions(py::module_ m)
 {
-    using dpctl::tensor::py_internal::init_argmax;
     init_argmax(m);
-    using dpctl::tensor::py_internal::init_argmin;
     init_argmin(m);
-    using dpctl::tensor::py_internal::init_logsumexp;
     init_logsumexp(m);
-    using dpctl::tensor::py_internal::init_max;
     init_max(m);
-    using dpctl::tensor::py_internal::init_min;
     init_min(m);
-    using dpctl::tensor::py_internal::init_prod;
     init_prod(m);
-    using dpctl::tensor::py_internal::init_reduce_hypot;
     init_reduce_hypot(m);
-    using dpctl::tensor::py_internal::init_sum;
     init_sum(m);
 }
 
