@@ -35,7 +35,7 @@ namespace tensor
 namespace py_internal
 {
 
-extern void init_elementwise_functions(py::module_ m);
+extern void init_elementwise_functions(py::module_);
 
 } // namespace py_internal
 } // namespace tensor
