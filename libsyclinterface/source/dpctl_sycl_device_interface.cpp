@@ -543,6 +543,18 @@ DPCTLDevice_GetParentDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     auto D = unwrap<device>(DRef);
     if (D) {
+        bool is_unpartitioned = false;
+        try {
+            auto pp =
+                D->get_info<sycl::info::device::partition_type_property>();
+            is_unpartitioned =
+                (pp == sycl::info::partition_property::no_partition);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        if (is_unpartitioned)
+            return nullptr;
         try {
             const auto &parent_D = D->get_info<info::device::parent_device>();
             return wrap<device>(new device(parent_D));
