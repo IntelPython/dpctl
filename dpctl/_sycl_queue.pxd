@@ -70,6 +70,19 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef SyclContext get_sycl_context(self)
     cpdef SyclDevice get_sycl_device(self)
     cdef  DPCTLSyclQueueRef get_queue_ref(self)
+    cpdef SyclEvent _submit_keep_args_alive(
+        self,
+        object args,
+        list dEvents
+    )
+    cpdef SyclEvent submit_async(
+        self,
+        SyclKernel kernel,
+        list args,
+        list gS,
+        list lS=*,
+        list dEvents=*
+    )
     cpdef SyclEvent submit(
         self,
         SyclKernel kernel,
@@ -81,6 +94,7 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef void wait(self)
     cdef DPCTLSyclQueueRef get_queue_ref(self)
     cpdef memcpy(self, dest, src, size_t count)
+    cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=*)
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
     cpdef SyclEvent submit_barrier(self, dependent_events=*)

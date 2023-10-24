@@ -45,6 +45,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_IsInOrder,
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
+    DPCTLQueue_MemcpyWithEvents,
     DPCTLQueue_Prefetch,
     DPCTLQueue_SubmitBarrierForEvents,
     DPCTLQueue_SubmitNDRange,
@@ -64,6 +65,7 @@ import ctypes
 from .enum_types import backend_type
 
 from cpython cimport pycapsule
+from cpython.buffer cimport PyObject_CheckBuffer
 from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc
 
@@ -72,7 +74,7 @@ import logging
 
 
 cdef extern from "_host_task_util.hpp":
-    int async_dec_ref(DPCTLSyclQueueRef, PyObject **, size_t, DPCTLSyclEventRef *, size_t) nogil
+    DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef, PyObject **, size_t, DPCTLSyclEventRef *, size_t, int *) nogil
 
 
 __all__ = [
@@ -158,6 +160,62 @@ cdef void _queue_capsule_deleter(object o) noexcept:
             o, "used_SyclQueueRef"
         )
         DPCTLQueue_Delete(QRef)
+
+
+cdef bint _is_buffer(object o):
+    return PyObject_CheckBuffer(o)
+
+
+cdef DPCTLSyclEventRef _memcpy_impl(
+     SyclQueue q,
+     object dst,
+     object src,
+     size_t byte_count,
+     DPCTLSyclEventRef *dep_events,
+     size_t dep_events_count
+) except *:
+    cdef void *c_dst_ptr = NULL
+    cdef void *c_src_ptr = NULL
+    cdef DPCTLSyclEventRef ERef = NULL
+    cdef const unsigned char[::1] src_host_buf = None
+    cdef unsigned char[::1] dst_host_buf = None
+
+    if isinstance(src, _Memory):
+        c_src_ptr = <void*>(<_Memory>src).memory_ptr
+    elif _is_buffer(src):
+        src_host_buf = src
+        c_src_ptr = <void *>&src_host_buf[0]
+    else:
+        raise TypeError(
+             "Parameter `src` should have either type "
+             "`dpctl.memory._Memory` or a type that "
+             "supports Python buffer protocol"
+       )
+
+    if isinstance(dst, _Memory):
+        c_dst_ptr = <void*>(<_Memory>dst).memory_ptr
+    elif _is_buffer(dst):
+        dst_host_buf = dst
+        c_dst_ptr = <void *>&dst_host_buf[0]
+    else:
+        raise TypeError(
+             "Parameter `dst` should have either type "
+             "`dpctl.memory._Memory` or a type that "
+             "supports Python buffer protocol"
+       )
+
+    if dep_events_count == 0 or dep_events is NULL:
+        ERef = DPCTLQueue_Memcpy(q._queue_ref, c_dst_ptr, c_src_ptr, byte_count)
+    else:
+        ERef = DPCTLQueue_MemcpyWithEvents(
+            q._queue_ref,
+            c_dst_ptr,
+            c_src_ptr,
+            byte_count,
+            dep_events,
+            dep_events_count
+        )
+    return ERef
 
 
 cdef class _SyclQueue:
@@ -703,7 +761,81 @@ cdef class SyclQueue(_SyclQueue):
         """
         return <size_t>self._queue_ref
 
-    cpdef SyclEvent submit(
+
+    cpdef SyclEvent _submit_keep_args_alive(
+        self,
+        object args,
+        list dEvents
+    ):
+        """ SyclQueue._submit_keep_args_alive(args, events)
+
+        Keeps objects in `args` alive until tasks associated with events
+        complete.
+
+        Args:
+            args(object): Python object to keep alive.
+               Typically a tuple with arguments to offloaded tasks
+            events(Tuple[dpctl.SyclEvent]): Gating events
+               The list or tuple of events associated with tasks
+               working on Python objects collected in `args`.
+        Returns:
+            dpctl.SyclEvent
+               The event associated with the submission of host task.
+
+        Increments reference count of `args` and schedules asynchronous
+        ``host_task`` to decrement the count once dependent events are
+        complete.
+
+        N.B.: The `host_task` attempts to acquire Python GIL, and it is
+        known to be unsafe during interpreter shudown sequence. It is
+        thus strongly advised to ensure that all submitted `host_task`
+        complete before the end of the Python script.
+        """
+        cdef size_t nDE = len(dEvents)
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef PyObject *args_raw = NULL
+        cdef DPCTLSyclEventRef htERef = NULL
+        cdef int status = -1
+
+        # Create the array of dependent events if any
+        if nDE > 0:
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if not depEvents:
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dEvents):
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        free(depEvents)
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
+
+        # increment reference counts to list of arguments
+        Py_INCREF(args)
+
+        # schedule decrement
+        args_raw = <PyObject *>args
+
+        htERef = async_dec_ref(
+            self.get_queue_ref(),
+            &args_raw, 1,
+            depEvents, nDE, &status
+        )
+
+        free(depEvents)
+        if (status != 0):
+            with nogil: DPCTLEvent_Wait(htERef)
+            DPCTLEvent_Delete(htERef)
+            raise RuntimeError("Could not submit keep_args_alive host_task")
+
+        return SyclEvent._create(htERef)
+
+
+    cpdef SyclEvent submit_async(
         self,
         SyclKernel kernel,
         list args,
@@ -715,13 +847,14 @@ cdef class SyclQueue(_SyclQueue):
         cdef _arg_data_type *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef Eref = NULL
+        cdef DPCTLSyclEventRef htEref = NULL
         cdef int ret = 0
         cdef size_t gRange[3]
         cdef size_t lRange[3]
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
-        cdef PyObject **arg_objects = NULL
+        cdef PyObject *args_raw = NULL
         cdef ssize_t i = 0
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
@@ -745,7 +878,15 @@ cdef class SyclQueue(_SyclQueue):
                 raise MemoryError()
             else:
                 for idx, de in enumerate(dEvents):
-                    depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        free(kargs)
+                        free(kargty)
+                        free(depEvents)
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
 
         # populate the args and argstype arrays
         ret = self._populate_args(args, kargs, kargty)
@@ -823,50 +964,69 @@ cdef class SyclQueue(_SyclQueue):
             raise SyclKernelSubmitError(
                 "Kernel submission to Sycl queue failed."
             )
-        # increment reference counts to each argument
-        arg_objects = <PyObject **>malloc(len(args) * sizeof(PyObject *))
-        for i in range(len(args)):
-            arg_objects[i] = <PyObject *>(args[i])
-            Py_INCREF(<object> arg_objects[i])
-
-        # schedule decrement
-        if async_dec_ref(self.get_queue_ref(), arg_objects, len(args), &Eref, 1):
-            # async task submission failed, decrement ref counts and wait
-            for i in range(len(args)):
-                arg_objects[i] = <PyObject *>(args[i])
-                Py_DECREF(<object> arg_objects[i])
-            with nogil: DPCTLEvent_Wait(Eref)
-
-        # free memory
-        free(arg_objects)
 
         return SyclEvent._create(Eref)
+
+    cpdef SyclEvent submit(
+        self,
+        SyclKernel kernel,
+        list args,
+        list gS,
+        list lS=None,
+        list dEvents=None
+    ):
+        cdef SyclEvent e = self.submit_async(kernel, args, gS, lS, dEvents)
+        e.wait()
+        return e
 
     cpdef void wait(self):
         with nogil: DPCTLQueue_Wait(self._queue_ref)
 
     cpdef memcpy(self, dest, src, size_t count):
-        cdef void *c_dest
-        cdef void *c_src
+        """Copy memory from `src` to `dst`"""
         cdef DPCTLSyclEventRef ERef = NULL
 
-        if isinstance(dest, _Memory):
-            c_dest = <void*>(<_Memory>dest).memory_ptr
-        else:
-            raise TypeError("Parameter `dest` should have type _Memory.")
-
-        if isinstance(src, _Memory):
-            c_src = <void*>(<_Memory>src).memory_ptr
-        else:
-            raise TypeError("Parameter `src` should have type _Memory.")
-
-        ERef = DPCTLQueue_Memcpy(self._queue_ref, c_dest, c_src, count)
+        ERef = _memcpy_impl(<SyclQueue>self, dest, src, count, NULL, 0)
         if (ERef is NULL):
             raise RuntimeError(
                 "SyclQueue.memcpy operation encountered an error"
             )
         with nogil: DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
+
+    cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=None):
+        """Copy memory from `src` to `dst`"""
+        cdef DPCTLSyclEventRef ERef = NULL
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef size_t nDE = 0
+
+        if dEvents is None:
+            ERef = _memcpy_impl(<SyclQueue>self, dest, src, count, NULL, 0)
+        else:
+            nDE = len(dEvents)
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if depEvents is NULL:
+                raise MemoryError()
+            else:
+                for idx, de in enumerate(dEvents):
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        free(depEvents)
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
+            ERef = _memcpy_impl(self, dest, src, count, depEvents, nDE)
+            free(depEvents)
+
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.memcpy operation encountered an error"
+            )
+
+        return SyclEvent._create(ERef)
 
     cpdef prefetch(self, mem, size_t count=0):
         cdef void *ptr

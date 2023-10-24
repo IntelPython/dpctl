@@ -44,7 +44,77 @@ def test_memcpy_copy_usm_to_usm():
 
     q.memcpy(mobj2, mobj1, 3)
 
-    assert mv2[:3], b"123"
+    assert mv2[:3] == b"123"
+
+
+def test_memcpy_copy_host_to_usm():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    usm_obj = _create_memory(q)
+
+    canary = bytearray(b"123456789")
+    host_obj = memoryview(canary)
+
+    q.memcpy(usm_obj, host_obj, len(canary))
+
+    mv2 = memoryview(usm_obj)
+
+    assert mv2[: len(canary)] == canary
+
+
+def test_memcpy_copy_usm_to_host():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    usm_obj = _create_memory(q)
+    mv2 = memoryview(usm_obj)
+
+    n = 9
+    for id in range(n):
+        mv2[id] = ord("a") + id
+
+    host_obj = bytearray(b" " * n)
+
+    q.memcpy(host_obj, usm_obj, n)
+
+    assert host_obj == b"abcdefghi"
+
+
+def test_memcpy_copy_host_to_host():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    src_buf = b"abcdefghijklmnopqrstuvwxyz"
+    dst_buf = bytearray(len(src_buf))
+
+    q.memcpy(dst_buf, src_buf, len(src_buf))
+
+    assert dst_buf == src_buf
+
+
+def test_memcpy_async():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    src_buf = b"abcdefghijklmnopqrstuvwxyz"
+    n = len(src_buf)
+    dst_buf = bytearray(n)
+    dst_buf2 = bytearray(n)
+
+    e = q.memcpy_async(dst_buf, src_buf, n)
+    e2 = q.memcpy_async(dst_buf2, src_buf, n, [e])
+
+    e.wait()
+    e2.wait()
+    assert dst_buf == src_buf
+    assert dst_buf2 == src_buf
 
 
 def test_memcpy_type_error():
@@ -56,8 +126,8 @@ def test_memcpy_type_error():
 
     with pytest.raises(TypeError) as cm:
         q.memcpy(None, mobj, 3)
-    assert "`dest`" in str(cm.value)
+    assert "_Memory" in str(cm.value)
 
     with pytest.raises(TypeError) as cm:
         q.memcpy(mobj, None, 3)
-    assert "`src`" in str(cm.value)
+    assert "_Memory" in str(cm.value)

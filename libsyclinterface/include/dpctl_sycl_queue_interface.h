@@ -295,6 +295,29 @@ DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   size_t Count);
 
 /*!
+ * @brief C-API wrapper for ``sycl::queue::memcpy``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    Dest           An USM pointer to the destination memory.
+ * @param    Src            An USM pointer to the source memory.
+ * @param    Count          A number of bytes to copy.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::memcpy`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_MemcpyWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *Dest,
+                            const void *Src,
+                            size_t Count,
+                            __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount);
+
+/*!
  * @brief C-API wrapper for ``sycl::queue::prefetch``.
  *
  * @param    QRef           An opaque pointer to the ``sycl::queue``.

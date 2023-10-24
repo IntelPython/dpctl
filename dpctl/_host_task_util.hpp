@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2022 Intel Corporation
+// Copyright 2020-2023 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,30 +29,30 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#pragma once
 #include "Python.h"
 #include "syclinterface/dpctl_data_types.h"
+#include "syclinterface/dpctl_sycl_type_casters.hpp"
 #include <CL/sycl.hpp>
 
-int async_dec_ref(DPCTLSyclQueueRef QRef,
-                  PyObject **obj_array,
-                  size_t obj_array_size,
-                  DPCTLSyclEventRef *ERefs,
-                  size_t nERefs)
+DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
+                                PyObject **obj_array,
+                                size_t obj_array_size,
+                                DPCTLSyclEventRef *depERefs,
+                                size_t nDepERefs,
+                                int *status)
 {
+    using dpctl::syclinterface::unwrap;
+    using dpctl::syclinterface::wrap;
 
-    sycl::queue *q = reinterpret_cast<sycl::queue *>(QRef);
+    sycl::queue *q = unwrap<sycl::queue>(QRef);
 
-    std::vector<PyObject *> obj_vec;
-    obj_vec.reserve(obj_array_size);
-    for (size_t obj_id = 0; obj_id < obj_array_size; ++obj_id) {
-        obj_vec.push_back(obj_array[obj_id]);
-    }
+    std::vector<PyObject *> obj_vec(obj_array, obj_array + obj_array_size);
 
     try {
-        q->submit([&](sycl::handler &cgh) {
-            for (size_t ev_id = 0; ev_id < nERefs; ++ev_id) {
-                cgh.depends_on(
-                    *(reinterpret_cast<sycl::event *>(ERefs[ev_id])));
+        sycl::event ht_ev = q->submit([&](sycl::handler &cgh) {
+            for (size_t ev_id = 0; ev_id < nDepERefs; ++ev_id) {
+                cgh.depends_on(*(unwrap<sycl::event>(depERefs[ev_id])));
             }
             cgh.host_task([obj_array_size, obj_vec]() {
                 // if the main thread has not finilized the interpreter yet
@@ -66,9 +66,21 @@ int async_dec_ref(DPCTLSyclQueueRef QRef,
                 }
             });
         });
+
+        constexpr int result_ok = 0;
+
+        *status = result_ok;
+        auto e_ptr = new sycl::event(ht_ev);
+        return wrap<sycl::event>(e_ptr);
     } catch (const std::exception &e) {
-        return 1;
+        constexpr int result_std_exception = 1;
+
+        *status = result_std_exception;
+        return nullptr;
     }
 
-    return 0;
+    constexpr int result_other_abnormal = 2;
+
+    *status = result_other_abnormal;
+    return nullptr;
 }

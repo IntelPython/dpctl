@@ -14,12 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import timeit
 
 from . import SyclQueue
 
 __doc__ = "This module implements :class:`dpctl.SyclTimer`."
+
+
+class HostDeviceDuration:
+    def __init__(self, host_dt, device_dt):
+        self._host_dt = host_dt
+        self._device_dt = device_dt
+
+    def __repr__(self):
+        return f"(host_dt={self._host_dt}, device_dt={self._device_dt})"
+
+    def __str__(self):
+        return f"(host_dt={self._host_dt}, device_dt={self._device_dt})"
+
+    def __iter__(self):
+        yield from [self._host_dt, self._device_dt]
+
+    @property
+    def host_dt(self):
+        return self._host_dt
+
+    @property
+    def device_dt(self):
+        return self._device_dt
 
 
 class SyclTimer:
@@ -45,7 +67,7 @@ class SyclTimer:
                 code_block
 
             # retrieve elapsed times in milliseconds
-            sycl_dt, wall_dt = timer.dt
+            wall_dt, device_dt = timer.dt
 
     Remark:
         The timer submits barriers to the queue at the entrance and the
@@ -67,10 +89,8 @@ class SyclTimer:
         self.timer = host_timer
         self.time_scale = time_scale
         self.queue = None
-        self.host_start = None
-        self.host_finish = None
-        self.event_start = None
-        self.event_finish = None
+        self.host_times = []
+        self.bracketing_events = []
 
     def __call__(self, queue=None):
         if isinstance(queue, SyclQueue):
@@ -89,27 +109,31 @@ class SyclTimer:
         return self
 
     def __enter__(self):
-        self.event_start = self.queue.submit_barrier()
-        self.host_start = self.timer()
+        self._event_start = self.queue.submit_barrier()
+        self._host_start = self.timer()
         return self
 
     def __exit__(self, *args):
-        self.event_finish = self.queue.submit_barrier()
-        self.host_finish = self.timer()
+        self.host_times.append((self._host_start, self.timer()))
+        self.bracketing_events.append(
+            (self._event_start, self.queue.submit_barrier())
+        )
+        del self._event_start
+        del self._host_start
 
     @property
     def dt(self):
-        """Returns a tuple of elapsed times where first
-        element is the duration as measured by the host timer,
-        while the second element is the duration as measured by
-        the device timer and encoded in profiling events"""
-        self.event_start.wait()
-        self.event_finish.wait()
-        return (
-            (self.host_finish - self.host_start) * self.time_scale,
-            (
-                self.event_finish.profiling_info_start
-                - self.event_start.profiling_info_end
-            )
-            * (1e-9 * self.time_scale),
-        )
+        """Returns a pair of elapsed times (host_dt, device_dt).
+
+        The host_dt is the duration as measured by the host
+        timer, while the device_dt is the duration as measured by
+        the device timer and encoded in profiling events."""
+        for es, ef in self.bracketing_events:
+            es.wait()
+            ef.wait()
+        host_dt = sum(tf - ts for ts, tf in self.host_times) * self.time_scale
+        dev_dt = sum(
+            ef.profiling_info_start - es.profiling_info_end
+            for es, ef in self.bracketing_events
+        ) * (1e-9 * self.time_scale)
+        return HostDeviceDuration(host_dt, dev_dt)
