@@ -82,11 +82,11 @@ def test_clip_dtypes(dt1, dt2):
         assert dpt.all(r == ar1)
         assert r.sycl_queue == ar1.sycl_queue
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpt.clip(ar1, ar2, ar3)
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpt.clip(ar1, min=ar3, max=None)
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpt.clip(ar1, min=None, max=ar3)
 
 
@@ -217,7 +217,7 @@ def test_clip_out_need_temporary_none():
     assert dpt.all(a_min[:-6] == 2) and dpt.all(a_min[-6:] == 3)
 
 
-def test_where_arg_validation():
+def test_clip_arg_validation():
     get_queue_or_skip()
 
     check = dict()
@@ -225,11 +225,7 @@ def test_where_arg_validation():
     x2 = dpt.empty((1,), dtype="i4")
 
     with pytest.raises(TypeError):
-        dpt.where(check, x1, x2)
-    with pytest.raises(TypeError):
-        dpt.where(x1, check, x2)
-    with pytest.raises(TypeError):
-        dpt.where(x1, x2, check)
+        dpt.clip(check, x1, x2)
 
 
 @pytest.mark.parametrize(
@@ -381,7 +377,7 @@ def test_clip_dtype_error():
     ar4 = dpt.empty_like(ar1, dtype="f4")
 
     assert_raises_regex(
-        TypeError,
+        ValueError,
         "Output array of type.*is needed",
         dpt.clip,
         ar1,
@@ -390,7 +386,7 @@ def test_clip_dtype_error():
         ar4,
     )
     assert_raises_regex(
-        TypeError,
+        ValueError,
         "Output array of type.*is needed",
         dpt.clip,
         ar1,
@@ -550,7 +546,7 @@ def test_clip_out_type_check():
     out = range(10)
 
     with pytest.raises(TypeError):
-        dpt.add(x1, x2, x3, out=out)
+        dpt.clip(x1, x2, x3, out=out)
 
 
 @pytest.mark.parametrize("dt", ["i4", "f4", "c8"])
@@ -614,7 +610,7 @@ def test_clip_minmax_weak_types():
             y = dpt.clip(x, min_v, max_v)
             assert isinstance(y, dpt.usm_ndarray)
         else:
-            with pytest.raises(TypeError):
+            with pytest.raises(ValueError):
                 dpt.clip(x, min_v, max_v)
 
 
@@ -624,8 +620,8 @@ def test_clip_max_weak_types():
     x = dpt.zeros(10, dtype="i4")
     m = dpt.ones(10, dtype="i4")
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.clip(x, m, 2.5)
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.clip(x, 2.5, m)

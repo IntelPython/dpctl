@@ -246,7 +246,7 @@ def _clip_none(x, val, out, order, _binary_fn):
     _fp16 = sycl_dev.has_aspect_fp16
     _fp64 = sycl_dev.has_aspect_fp64
     if not _can_cast(val_dtype, res_dt, _fp16, _fp64):
-        raise TypeError(
+        raise ValueError(
             f"function 'clip' does not support input types "
             f"({x_dtype}, {val_dtype}), "
             "and the inputs could not be safely coerced to any "
@@ -267,7 +267,7 @@ def _clip_none(x, val, out, order, _binary_fn):
             )
 
         if res_dt != out.dtype:
-            raise TypeError(
+            raise ValueError(
                 f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
 
@@ -527,7 +527,7 @@ def clip(x, min=None, max=None, out=None, order="K"):
         )
 
         if res_dt is None:
-            raise TypeError(
+            raise ValueError(
                 f"function '{clip}' does not support input types "
                 f"({x_dtype}, {min_dtype}, {max_dtype}), "
                 "and the inputs could not be safely coerced to any "
@@ -550,7 +550,7 @@ def clip(x, min=None, max=None, out=None, order="K"):
                 )
 
             if res_dt != out.dtype:
-                raise TypeError(
+                raise ValueError(
                     f"Output array of type {res_dt} is needed, "
                     f"got {out.dtype}"
                 )
