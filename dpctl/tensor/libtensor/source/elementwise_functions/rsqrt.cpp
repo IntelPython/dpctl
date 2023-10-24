@@ -52,7 +52,7 @@ namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
-// U??: ==== RSQRT   (x)
+// U39: ==== RSQRT   (x)
 namespace impl
 {
 

@@ -28,7 +28,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <utility>
+#include <vector>
 
 #include "bitwise_right_shift.hpp"
 #include "elementwise_functions.hpp"

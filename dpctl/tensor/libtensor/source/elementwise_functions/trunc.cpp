@@ -28,7 +28,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <utility>
+#include <vector>
 
 #include "elementwise_functions.hpp"
 #include "trunc.hpp"
@@ -52,7 +52,7 @@ namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
-// U35: ==== TRUNC   (x)
+// U36: ==== TRUNC   (x)
 namespace impl
 {
 

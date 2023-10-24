@@ -28,7 +28,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <utility>
+#include <vector>
 
 #include "elementwise_functions.hpp"
 #include "minimum.hpp"
@@ -54,7 +54,7 @@ using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
-// B??: ===== MINIMUM (x1, x2)
+// B27: ===== MINIMUM (x1, x2)
 namespace impl
 {
 namespace minimum_fn_ns = dpctl::tensor::kernels::minimum;
