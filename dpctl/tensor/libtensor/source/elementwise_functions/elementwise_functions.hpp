@@ -39,7 +39,16 @@
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-static inline py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
+namespace dpctl
+{
+namespace tensor
+{
+namespace py_internal
+{
+
+namespace
+{
+inline py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
 {
     switch (dst_typenum_t) {
     case td_ns::typenum_t::BOOL:
@@ -75,7 +84,7 @@ static inline py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
     }
 }
 
-static inline int _result_typeid(int arg_typeid, const int *fn_output_id)
+inline int _result_typeid(int arg_typeid, const int *fn_output_id)
 {
     if (arg_typeid < 0 || arg_typeid >= td_ns::num_types) {
         throw py::value_error("Input typeid " + std::to_string(arg_typeid) +
@@ -85,12 +94,7 @@ static inline int _result_typeid(int arg_typeid, const int *fn_output_id)
     return fn_output_id[arg_typeid];
 }
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
-{
+} // end of anonymous namespace
 
 template <typename output_typesT,
           typename contig_dispatchT,
