@@ -43,9 +43,11 @@ Public methods
 .. autofunction:: dpctl.SyclQueue.get_sycl_device
 .. autofunction:: dpctl.SyclQueue.mem_advise
 .. autofunction:: dpctl.SyclQueue.memcpy
+.. autofunction:: dpctl.SyclQueue.memcpy_async
 .. autofunction:: dpctl.SyclQueue.prefetch
 .. autofunction:: dpctl.SyclQueue.print_device_info
 .. autofunction:: dpctl.SyclQueue.submit
+.. autofunction:: dpctl.SyclQueue.submit_async
 .. autofunction:: dpctl.SyclQueue.submit_barrier
 .. autofunction:: dpctl.SyclQueue.wait
 
@@ -53,3 +55,4 @@ Private methods
 ---------------
 
 .. autofunction:: dpctl.SyclQueue._get_capsule
+.. autofunction:: dpctl.SyclQueue._submit_keep_args_alive
