@@ -29,61 +29,16 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <utility>
 #include <vector>
 
+#include "elementwise_functions_type_utils.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
+namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-
-static inline py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
-{
-    switch (dst_typenum_t) {
-    case td_ns::typenum_t::BOOL:
-        return py::dtype("?");
-    case td_ns::typenum_t::INT8:
-        return py::dtype("i1");
-    case td_ns::typenum_t::UINT8:
-        return py::dtype("u1");
-    case td_ns::typenum_t::INT16:
-        return py::dtype("i2");
-    case td_ns::typenum_t::UINT16:
-        return py::dtype("u2");
-    case td_ns::typenum_t::INT32:
-        return py::dtype("i4");
-    case td_ns::typenum_t::UINT32:
-        return py::dtype("u4");
-    case td_ns::typenum_t::INT64:
-        return py::dtype("i8");
-    case td_ns::typenum_t::UINT64:
-        return py::dtype("u8");
-    case td_ns::typenum_t::HALF:
-        return py::dtype("f2");
-    case td_ns::typenum_t::FLOAT:
-        return py::dtype("f4");
-    case td_ns::typenum_t::DOUBLE:
-        return py::dtype("f8");
-    case td_ns::typenum_t::CFLOAT:
-        return py::dtype("c8");
-    case td_ns::typenum_t::CDOUBLE:
-        return py::dtype("c16");
-    default:
-        throw py::value_error("Unrecognized dst_typeid");
-    }
-}
-
-static inline int _result_typeid(int arg_typeid, const int *fn_output_id)
-{
-    if (arg_typeid < 0 || arg_typeid >= td_ns::num_types) {
-        throw py::value_error("Input typeid " + std::to_string(arg_typeid) +
-                              " is outside of expected bounds.");
-    }
-
-    return fn_output_id[arg_typeid];
-}
 
 namespace dpctl
 {
@@ -92,6 +47,7 @@ namespace tensor
 namespace py_internal
 {
 
+/*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT>
@@ -293,6 +249,8 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         strided_fn_ev);
 }
 
+/*! @brief Template implementing Python API for querying of type support by
+ *         unary elementwise functions */
 template <typename output_typesT>
 py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
                                       const output_typesT &output_types)
@@ -308,6 +266,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         throw py::value_error(e.what());
     }
 
+    using dpctl::tensor::py_internal::type_utils::_result_typeid;
     int dst_typeid = _result_typeid(src_typeid, output_types);
 
     if (dst_typeid < 0) {
@@ -315,8 +274,9 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
+        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
 
+        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
 
         return py::cast<py::object>(dt);
@@ -334,6 +294,8 @@ bool isEqual(Container const &c, std::initializer_list<T> const &l)
 }
 } // namespace
 
+/*! @brief Template implementing Python API for binary elementwise
+ *         functions */
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT,
@@ -601,6 +563,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         strided_fn_ev);
 }
 
+/*! @brief Type querying for binary elementwise functions */
 template <typename output_typesT>
 py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
                                        const py::dtype &input2_dtype,
@@ -632,8 +595,9 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
+        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
 
+        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
 
         return py::cast<py::object>(dt);

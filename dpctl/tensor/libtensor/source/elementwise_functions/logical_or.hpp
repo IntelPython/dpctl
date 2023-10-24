@@ -26,6 +26,8 @@
 #pragma once
 #include <pybind11/pybind11.h>
 
+namespace py = pybind11;
+
 namespace dpctl
 {
 namespace tensor
@@ -33,7 +35,7 @@ namespace tensor
 namespace py_internal
 {
 
-extern void init_elementwise_functions1(py::module_ m);
+extern void init_logical_xor(py::module_ m);
 
 } // namespace py_internal
 } // namespace tensor
