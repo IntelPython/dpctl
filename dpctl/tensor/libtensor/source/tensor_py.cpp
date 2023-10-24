@@ -48,7 +48,7 @@
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
-#include "reduction_over_axis.hpp"
+#include "reductions/reduction_common.hpp"
 #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 #include "triul_ctor.hpp"
