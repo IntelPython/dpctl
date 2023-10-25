@@ -85,11 +85,21 @@ bool check_atomic_support(const sycl::queue &exec_q,
     }
 }
 
-template <typename fnT, typename T> struct MaxAtomicSupportFactory
+template <typename fnT, typename T> struct ArithmeticAtomicSupportFactory
 {
     fnT get()
     {
-        if constexpr (std::is_floating_point_v<T>) {
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (std::is_floating_point_v<T> ||
+                      std::is_same_v<T, sycl::half> || is_complex<T>::value)
+        {
+            // for real- and complex- floating point types, tree reduction has
+            // better round-off accumulation properties (round-off error is
+            // proportional to the log2(reduction_size), while naive elementwise
+            // summation used by atomic implementation has round-off error
+            // growing proportional to the reduction_size.), hence reduction
+            // over floating point types should always use tree_reduction
+            // algorithm, even though atomic implementation may be applicable
             return fixed_decision<false>;
         }
         else {
@@ -98,43 +108,33 @@ template <typename fnT, typename T> struct MaxAtomicSupportFactory
     }
 };
 
-template <typename fnT, typename T> struct MinAtomicSupportFactory
+template <typename fnT, typename T> struct MinMaxAtomicSupportFactory
 {
     fnT get()
     {
-        if constexpr (std::is_floating_point_v<T>) {
-            return fixed_decision<false>;
-        }
-        else {
-            return check_atomic_support<T>;
-        }
+        return check_atomic_support<T>;
     }
 };
 
-template <typename fnT, typename T> struct SumAtomicSupportFactory
+template <typename fnT, typename T>
+struct MaxAtomicSupportFactory : public ArithmeticAtomicSupportFactory<fnT, T>
 {
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return fixed_decision<false>;
-        }
-        else {
-            return check_atomic_support<T>;
-        }
-    }
 };
 
-template <typename fnT, typename T> struct ProductAtomicSupportFactory
+template <typename fnT, typename T>
+struct MinAtomicSupportFactory : public ArithmeticAtomicSupportFactory<fnT, T>
 {
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return fixed_decision<false>;
-        }
-        else {
-            return check_atomic_support<T>;
-        }
-    }
+};
+
+template <typename fnT, typename T>
+struct SumAtomicSupportFactory : public ArithmeticAtomicSupportFactory<fnT, T>
+{
+};
+
+template <typename fnT, typename T>
+struct ProductAtomicSupportFactory
+    : public ArithmeticAtomicSupportFactory<fnT, T>
+{
 };
 
 } // namespace atomic_support
