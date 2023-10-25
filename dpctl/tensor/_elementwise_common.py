@@ -649,12 +649,7 @@ class BinaryElementwiseFunc:
                         sycl_queue=exec_q,
                         order=order,
                     )
-            else:
-                if res_dt != out.dtype:
-                    raise TypeError(
-                        f"Output array of type {res_dt} is needed,"
-                        f"got {out.dtype}"
-                    )
+
             if src1.shape != res_shape:
                 src1 = dpt.broadcast_to(src1, res_shape)
             buf2 = dpt.broadcast_to(buf2, res_shape)

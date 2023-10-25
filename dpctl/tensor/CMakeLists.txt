@@ -121,6 +121,7 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
 list(APPEND _tensor_impl_sources
      ${_elementwise_sources}
@@ -138,6 +139,7 @@ set(_no_fast_math_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
 list(APPEND _no_fast_math_sources
      ${_elementwise_sources}
