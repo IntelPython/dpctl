@@ -292,22 +292,8 @@ template <typename T> struct LogSumExp
 {
     T operator()(const T &x, const T &y) const
     {
-        if (x == y) {
-            const T log2 = std::log(T(2));
-            return x + log2;
-        }
-        else {
-            const T tmp = x - y;
-            if (tmp > 0) {
-                return x + std::log1p(std::exp(-tmp));
-            }
-            else if (tmp <= 0) {
-                return y + std::log1p(std::exp(tmp));
-            }
-            else {
-                return std::numeric_limits<T>::quiet_NaN();
-            }
-        }
+        using dpctl::tensor::math_utils::logaddexp;
+        return logaddexp<T>(x, y);
     }
 };
 

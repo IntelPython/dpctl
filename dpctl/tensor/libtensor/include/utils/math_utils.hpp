@@ -115,6 +115,26 @@ template <typename T> T min_complex(const T &x1, const T &x2)
     return (std::isnan(real1) || isnan_imag1 || lt) ? x1 : x2;
 }
 
+template <typename T> T logaddexp(T x, T y)
+{
+    if (x == y) { // handle signed infinities
+        const T log2 = std::log(T(2));
+        return x + log2;
+    }
+    else {
+        const T tmp = x - y;
+        if (tmp > 0) {
+            return x + std::log1p(std::exp(-tmp));
+        }
+        else if (tmp <= 0) {
+            return y + std::log1p(std::exp(tmp));
+        }
+        else {
+            return std::numeric_limits<T>::quiet_NaN();
+        }
+    }
+}
+
 } // namespace math_utils
 } // namespace tensor
 } // namespace dpctl
