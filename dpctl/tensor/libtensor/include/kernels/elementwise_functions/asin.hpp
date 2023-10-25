@@ -120,7 +120,7 @@ template <typename argT, typename resT> struct AsinFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
                 using sycl_complexT = exprm_ns::complex<realT>;
-                const sycl_complexT z {x, y};
+                const sycl_complexT z{x, y};
                 realT wx, wy;
                 if (!std::signbit(x)) {
                     auto log_z = exprm_ns::log(z);

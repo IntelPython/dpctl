@@ -81,7 +81,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-	      return exprm_ns::sinh(exprm_ns::complex<realT>(in));
+                return exprm_ns::sinh(exprm_ns::complex<realT>(in));
             }
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.

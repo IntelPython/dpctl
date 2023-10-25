@@ -109,9 +109,9 @@ template <typename argT, typename resT> struct AsinhFunctor
 
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
                 using sycl_complexT = exprm_ns::complex<realT>;
-                sycl_complexT log_in = (std::signbit(x)) ?
-		  exprm_ns::log(sycl_complexT(-in)) :
-		  exprm_ns::log(sycl_complexT(in));
+                sycl_complexT log_in = (std::signbit(x))
+                                           ? exprm_ns::log(sycl_complexT(-in))
+                                           : exprm_ns::log(sycl_complexT(in));
                 realT wx = log_in.real() + std::log(realT(2));
                 realT wy = log_in.imag();
                 const realT res_re = std::copysign(wx, x);

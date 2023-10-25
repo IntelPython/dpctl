@@ -106,7 +106,8 @@ template <typename argT, typename resT> struct AcosFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
                 using sycl_complexT = exprm_ns::complex<realT>;
-                sycl_complexT log_in = exprm_ns::log(exprm_ns::complex<realT>(in));
+                sycl_complexT log_in =
+                    exprm_ns::log(exprm_ns::complex<realT>(in));
 
                 const realT wx = log_in.real();
                 const realT wy = log_in.imag();
