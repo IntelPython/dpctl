@@ -16,6 +16,7 @@ Other Functions
 .. autofunction:: any
 .. autofunction:: argmax
 .. autofunction:: argmin
+.. autofunction:: clip
 .. autofunction:: extract
 .. autofunction:: get_print_options
 .. autofunction:: isdtype

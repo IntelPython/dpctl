@@ -146,6 +146,8 @@ Other Functions
       - Returns the indices of the maximum values of the input array `x` along a specified axis.
     * - :func:`argmin()`
       - Returns the indices of the minimum values of the input array `x` along a specified axis.
+    * - :func:`clip()`
+      - Clips to the range [`min_i`, `max_i`] for each element `x_i` in `x`.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
