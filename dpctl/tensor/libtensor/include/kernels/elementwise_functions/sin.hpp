@@ -48,7 +48,7 @@ namespace sin
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace cmplx_ns = sycl::ext::oneapi::experimental;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -81,8 +81,8 @@ template <typename argT, typename resT> struct SinFunctor
              * real and imaginary parts of input are finite.
              */
             if (in_re_finite && in_im_finite) {
-                return cmplx_ns::sin(
-                    cmplx_ns::complex<realT>(in)); // std::sin(in);
+                return exprm_ns::sin(
+                    exprm_ns::complex<realT>(in)); // std::sin(in);
             }
 
             /*

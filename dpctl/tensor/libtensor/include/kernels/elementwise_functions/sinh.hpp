@@ -48,7 +48,7 @@ namespace sinh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace cmplx_ns = sycl::ext::oneapi::experimental;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -81,7 +81,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-                return std::sinh(in);
+	      return exprm_ns::sinh(exprm_ns::complex<realT>(in));
             }
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.
