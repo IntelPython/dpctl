@@ -50,44 +50,10 @@ namespace tensor
 namespace py_internal
 {
 
-template <bool require_atomic64 = false>
-bool check_atomic_support(const sycl::queue &exec_q,
-                          sycl::usm::alloc usm_alloc_type)
-{
-    bool supports_atomics = false;
-
-    const sycl::device &dev = exec_q.get_device();
-
-    if constexpr (require_atomic64) {
-        if (!dev.has(sycl::aspect::atomic64))
-            return false;
-    }
-
-    switch (usm_alloc_type) {
-    case sycl::usm::alloc::shared:
-        supports_atomics = dev.has(sycl::aspect::usm_atomic_shared_allocations);
-        break;
-    case sycl::usm::alloc::host:
-        supports_atomics = dev.has(sycl::aspect::usm_atomic_host_allocations);
-        break;
-    case sycl::usm::alloc::device:
-        supports_atomics = true;
-        break;
-    default:
-        supports_atomics = false;
-    }
-
-    return supports_atomics;
-}
-
-template <bool return_value>
-bool fixed_decision(const sycl::queue &, sycl::usm::alloc)
-{
-    return return_value;
-}
-
 /* ====================== dtype supported ======================== */
 
+/*! @brief Template implementing Python API for querying type support by
+ * reduction which may support atomics */
 template <typename fnT, typename CheckAtomicSupportFnT>
 bool py_reduction_dtype_supported(
     const py::dtype &input_dtype,
@@ -96,8 +62,7 @@ bool py_reduction_dtype_supported(
     sycl::queue &q,
     const fnT &atomic_dispatch_table,
     const fnT &temps_dispatch_table,
-    const CheckAtomicSupportFnT &check_atomic_support_size4,
-    const CheckAtomicSupportFnT &check_atomic_support_size8)
+    const CheckAtomicSupportFnT &check_atomic_support)
 {
     int arg_tn =
         input_dtype.num(); // NumPy type numbers are the same as in dpctl
@@ -140,18 +105,7 @@ bool py_reduction_dtype_supported(
         throw py::value_error("Unrecognized `dst_usm_type` argument.");
     }
 
-    bool supports_atomics = false;
-
-    switch (output_dtype.itemsize()) {
-    case sizeof(float):
-    {
-        supports_atomics = check_atomic_support_size4(q, kind);
-    } break;
-    case sizeof(double):
-    {
-        supports_atomics = check_atomic_support_size8(q, kind);
-    } break;
-    }
+    bool supports_atomics = check_atomic_support[out_typeid](q, kind);
 
     if (supports_atomics) {
         fn = atomic_dispatch_table[arg_typeid][out_typeid];
@@ -165,6 +119,8 @@ bool py_reduction_dtype_supported(
     return (fn != nullptr);
 }
 
+/*! @brief Template implementing Python API for querying type support by tree
+ * reduction */
 template <typename fnT>
 bool py_tree_reduction_dtype_supported(const py::dtype &input_dtype,
                                        const py::dtype &output_dtype,
@@ -199,6 +155,8 @@ bool py_tree_reduction_dtype_supported(const py::dtype &input_dtype,
 
 /* ==================== Generic reductions ====================== */
 
+/*! @brief Template implementing Python API for reduction over axis which may
+ * support atomics */
 template <typename strided_fnT, typename contig_fnT, typename SupportAtomicFnT>
 std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     const dpctl::tensor::usm_ndarray &src,
@@ -212,8 +170,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     const strided_fnT &temps_dispatch_table,
     const contig_fnT &axis0_temps_dispatch_table,
     const contig_fnT &axis1_temps_dispatch_table,
-    const SupportAtomicFnT &check_atomic_support_size4,
-    const SupportAtomicFnT &check_atomic_support_size8)
+    const SupportAtomicFnT &check_atomic_support)
 {
     int src_nd = src.get_ndim();
     int iteration_nd = src_nd - trailing_dims_to_reduce;
@@ -279,26 +236,11 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
-    int dst_itemsize = dst.get_elemsize();
-    bool supports_atomics = false;
+    void *data_ptr = dst.get_data();
+    const auto &ctx = exec_q.get_context();
+    auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
 
-    switch (dst_itemsize) {
-    case sizeof(float):
-    {
-        void *data_ptr = dst.get_data();
-        const auto &ctx = exec_q.get_context();
-        auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
-        supports_atomics = check_atomic_support_size4(exec_q, usm_type);
-    } break;
-    case sizeof(double):
-    {
-        void *data_ptr = dst.get_data();
-        const auto &ctx = exec_q.get_context();
-        auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
-
-        supports_atomics = check_atomic_support_size8(exec_q, usm_type);
-    } break;
-    }
+    bool supports_atomics = check_atomic_support[dst_typeid](exec_q, usm_type);
 
     // handle special case when both reduction and iteration are 1D contiguous
     bool is_src_c_contig = src.is_c_contiguous();
@@ -563,7 +505,8 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
 /* ================= No atomic reductions ====================== */
 
-// no atomics case
+/*! @brief Template implementing Python API for reduction over axis without
+ * atomics */
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     const dpctl::tensor::usm_ndarray &src,
@@ -854,6 +797,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     return std::make_pair(keep_args_event, reduction_ev);
 }
 
+/*! @brief Template implementing Python API for searching over an axis */
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_search_over_axis(
     const dpctl::tensor::usm_ndarray &src,

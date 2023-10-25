@@ -30,8 +30,10 @@
 #include <vector>
 
 #include "kernels/reductions.hpp"
-#include "reduction_over_axis.hpp"
 #include "utils/type_dispatch.hpp"
+
+#include "reduction_atomic_support.hpp"
+#include "reduction_over_axis.hpp"
 
 namespace py = pybind11;
 
@@ -112,6 +114,20 @@ void populate_sum_over_axis_dispatch_tables(void)
     dtb6.populate_dispatch_table(sum_over_axis0_contig_temps_dispatch_table);
 }
 
+using atomic_support::atomic_support_fn_ptr_t;
+static atomic_support_fn_ptr_t sum_atomic_support_vector[td_ns::num_types];
+
+void populate_sum_atomic_support_dispatch_vector(void)
+{
+    using td_ns::DispatchVectorBuilder;
+
+    using atomic_support::SumAtomicSupportFactory;
+    DispatchVectorBuilder<atomic_support_fn_ptr_t, SumAtomicSupportFactory,
+                          td_ns::num_types>
+        dvb;
+    dvb.populate_dispatch_vector(sum_atomic_support_vector);
+}
+
 } // namespace impl
 
 void init_sum(py::module_ m)
@@ -128,11 +144,9 @@ void init_sum(py::module_ m)
         using impl::sum_over_axis_strided_atomic_dispatch_table;
         using impl::sum_over_axis_strided_temps_dispatch_table;
 
-        using dpctl::tensor::py_internal::check_atomic_support;
-        const auto &check_atomic_support_size4 =
-            check_atomic_support</*require_atomic64*/ false>;
-        const auto &check_atomic_support_size8 =
-            check_atomic_support</*require_atomic64*/ true>;
+        using impl::populate_sum_atomic_support_dispatch_vector;
+        populate_sum_atomic_support_dispatch_vector();
+        using impl::sum_atomic_support_vector;
 
         auto sum_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                              const arrayT &dst, sycl::queue &exec_q,
@@ -146,7 +160,7 @@ void init_sum(py::module_ m)
                 sum_over_axis_strided_temps_dispatch_table,
                 sum_over_axis0_contig_temps_dispatch_table,
                 sum_over_axis1_contig_temps_dispatch_table,
-                check_atomic_support_size4, check_atomic_support_size8);
+                sum_atomic_support_vector);
         };
         m.def("_sum_over_axis", sum_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
@@ -160,7 +174,7 @@ void init_sum(py::module_ m)
                     input_dtype, output_dtype, dst_usm_type, q,
                     sum_over_axis_strided_atomic_dispatch_table,
                     sum_over_axis_strided_temps_dispatch_table,
-                    check_atomic_support_size4, check_atomic_support_size8);
+                    sum_atomic_support_vector);
             };
         m.def("_sum_over_axis_dtype_supported", sum_dtype_supported, "",
               py::arg("arg_dtype"), py::arg("out_dtype"),

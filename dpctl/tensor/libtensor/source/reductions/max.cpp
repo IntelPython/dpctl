@@ -30,8 +30,10 @@
 #include <vector>
 
 #include "kernels/reductions.hpp"
-#include "reduction_over_axis.hpp"
 #include "utils/type_dispatch.hpp"
+
+#include "reduction_atomic_support.hpp"
+#include "reduction_over_axis.hpp"
 
 namespace py = pybind11;
 
@@ -71,8 +73,6 @@ static reduction_contig_impl_fn_ptr
 
 void populate_max_over_axis_dispatch_tables(void)
 {
-    using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
-    using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
     using td_ns::DispatchTableBuilder;
 
     using dpctl::tensor::kernels::MaxOverAxisAtomicStridedFactory;
@@ -112,6 +112,20 @@ void populate_max_over_axis_dispatch_tables(void)
     dtb6.populate_dispatch_table(max_over_axis0_contig_temps_dispatch_table);
 }
 
+using atomic_support::atomic_support_fn_ptr_t;
+static atomic_support_fn_ptr_t max_atomic_support_vector[td_ns::num_types];
+
+void populate_max_atomic_support_dispatch_vector(void)
+{
+    using td_ns::DispatchVectorBuilder;
+
+    using atomic_support::MaxAtomicSupportFactory;
+    DispatchVectorBuilder<atomic_support_fn_ptr_t, MaxAtomicSupportFactory,
+                          td_ns::num_types>
+        dvb;
+    dvb.populate_dispatch_vector(max_atomic_support_vector);
+}
+
 } // namespace impl
 
 void init_max(py::module_ m)
@@ -128,11 +142,9 @@ void init_max(py::module_ m)
         using impl::max_over_axis_strided_atomic_dispatch_table;
         using impl::max_over_axis_strided_temps_dispatch_table;
 
-        using dpctl::tensor::py_internal::check_atomic_support;
-        const auto &check_atomic_support_size4 =
-            check_atomic_support</*require_atomic64*/ false>;
-        const auto &check_atomic_support_size8 =
-            check_atomic_support</*require_atomic64*/ true>;
+        using impl::populate_max_atomic_support_dispatch_vector;
+        populate_max_atomic_support_dispatch_vector();
+        using impl::max_atomic_support_vector;
 
         auto max_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                              const arrayT &dst, sycl::queue &exec_q,
@@ -146,7 +158,7 @@ void init_max(py::module_ m)
                 max_over_axis_strided_temps_dispatch_table,
                 max_over_axis0_contig_temps_dispatch_table,
                 max_over_axis1_contig_temps_dispatch_table,
-                check_atomic_support_size4, check_atomic_support_size8);
+                max_atomic_support_vector);
         };
         m.def("_max_over_axis", max_pyapi, "", py::arg("src"),
               py::arg("trailing_dims_to_reduce"), py::arg("dst"),
