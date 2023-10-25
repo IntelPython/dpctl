@@ -206,16 +206,18 @@ add_library(DPCTLSyclInterface
 )
 add_sycl_to_target(TARGET DPCTLSyclInterface SOURCES ${sources} ${helper_sources})
 # make fat binary
-target_compile_options(
-    DPCTLSyclInterface
-    PRIVATE
-    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
-)
-target_link_options(
-    DPCTLSyclInterface
-    PRIVATE
-    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
-)
+if(_dpctl_sycl_targets)
+    target_compile_options(
+        DPCTLSyclInterface
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+    target_link_options(
+        DPCTLSyclInterface
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+   )
+endif()
 
 if(DPCTL_GENERATE_COVERAGE)
     target_link_options(DPCTLSyclInterface

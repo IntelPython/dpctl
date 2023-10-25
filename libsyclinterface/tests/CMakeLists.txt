@@ -52,6 +52,7 @@ add_sycl_to_target(
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
 )
+if (_dpctl_sycl_targets)
 # make fat binary
 target_compile_options(
     dpctl_c_api_tests
@@ -63,6 +64,7 @@ target_link_options(
     PRIVATE
     -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
 )
+endif()
 
 if(DPCTL_GENERATE_COVERAGE)
     target_include_directories(dpctl_c_api_tests
