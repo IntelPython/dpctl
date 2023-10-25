@@ -22,7 +22,6 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions,
 /// specifically functions for elementwise operations.
 //===----------------------------------------------------------------------===//
-
 #pragma once
 
 #include "dpctl4pybind11.hpp"
@@ -30,13 +29,16 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <utility>
 #include <vector>
 
+#include "elementwise_functions_type_utils.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
+
+namespace py = pybind11;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -45,11 +47,7 @@ namespace tensor
 namespace py_internal
 {
 
-namespace td_ns = dpctl::tensor::type_dispatch;
-
-extern py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t);
-extern int _result_typeid(int arg_typeid, const int *fn_output_id);
-
+/*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT>
@@ -251,6 +249,8 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         strided_fn_ev);
 }
 
+/*! @brief Template implementing Python API for querying of type support by
+ *         unary elementwise functions */
 template <typename output_typesT>
 py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
                                       const output_typesT &output_types)
@@ -266,6 +266,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         throw py::value_error(e.what());
     }
 
+    using dpctl::tensor::py_internal::type_utils::_result_typeid;
     int dst_typeid = _result_typeid(src_typeid, output_types);
 
     if (dst_typeid < 0) {
@@ -273,8 +274,9 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
+        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
 
+        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
 
         return py::cast<py::object>(dt);
@@ -292,6 +294,8 @@ bool isEqual(Container const &c, std::initializer_list<T> const &l)
 }
 } // namespace
 
+/*! @brief Template implementing Python API for binary elementwise
+ *         functions */
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT,
@@ -559,6 +563,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         strided_fn_ev);
 }
 
+/*! @brief Type querying for binary elementwise functions */
 template <typename output_typesT>
 py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
                                        const py::dtype &input2_dtype,
@@ -590,8 +595,9 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
+        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
 
+        auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
 
         return py::cast<py::object>(dt);
@@ -824,8 +830,6 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, host_tasks),
         strided_fn_ev);
 }
-
-extern void init_elementwise_functions(py::module_ m);
 
 } // namespace py_internal
 } // namespace tensor

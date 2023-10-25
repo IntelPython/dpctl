@@ -42,7 +42,7 @@
 #include "copy_for_roll.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
-#include "elementwise_functions.hpp"
+#include "elementwise_functions/elementwise_common.hpp"
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"

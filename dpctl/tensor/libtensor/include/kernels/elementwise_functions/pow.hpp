@@ -35,6 +35,7 @@
 #include "utils/type_utils.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "kernels/elementwise_functions/common_inplace.hpp"
 #include <pybind11/pybind11.h>
 
 namespace dpctl
@@ -55,31 +56,30 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
 
     using supports_sg_loadstore = std::negation<
         std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec =
-        std::negation<std::disjunction<tu_ns::is_complex<argT1>,
-                                       tu_ns::is_complex<argT2>,
-                                       std::is_integral<argT1>,
-                                       std::is_integral<argT2>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
 
-    resT operator()(argT1 in1, argT2 in2) const
+    resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+            auto tmp1 = in1;
+            auto tmp2 = in2;
             if constexpr (std::is_signed_v<argT2>) {
-                if (in2 < 0) {
+                if (tmp2 < 0) {
                     // invalid; return 0
                     return resT(0);
                 }
             }
             resT res = 1;
-            if (in1 == 1 || in2 == 0) {
+            if (tmp1 == 1 || tmp2 == 0) {
                 return res;
             }
-            while (in2 > 0) {
-                if (in2 & 1) {
-                    res *= in1;
+            while (tmp2 > 0) {
+                if (tmp2 & 1) {
+                    res *= tmp1;
                 }
-                in2 >>= 1;
-                in1 *= in1;
+                tmp2 >>= 1;
+                tmp1 *= tmp1;
             }
             return res;
         }
@@ -93,16 +93,48 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
     operator()(const sycl::vec<argT1, vec_sz> &in1,
                const sycl::vec<argT2, vec_sz> &in2) const
     {
-        auto res = sycl::pow(in1, in2);
-        if constexpr (std::is_same_v<resT,
-                                     typename decltype(res)::element_type>) {
+        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+            sycl::vec<resT, vec_sz> res;
+#pragma unroll
+            for (int i = 0; i < vec_sz; ++i) {
+                auto tmp1 = in1[i];
+                auto tmp2 = in2[i];
+                if constexpr (std::is_signed_v<argT2>) {
+                    if (tmp2 < 0) {
+                        // invalid; yield 0
+                        res[i] = 0;
+                        continue;
+                    }
+                }
+                resT res_tmp = 1;
+                if (tmp1 == 1 || tmp2 == 0) {
+                    res[i] = res_tmp;
+                    continue;
+                }
+                while (tmp2 > 0) {
+                    if (tmp2 & 1) {
+                        res_tmp *= tmp1;
+                    }
+                    tmp2 >>= 1;
+                    tmp1 *= tmp1;
+                }
+                res[i] = res_tmp;
+            }
             return res;
         }
         else {
-            using dpctl::tensor::type_utils::vec_cast;
+            auto res = sycl::pow(in1, in2);
+            if constexpr (std::is_same_v<resT,
+                                         typename decltype(res)::element_type>)
+            {
+                return res;
+            }
+            else {
+                using dpctl::tensor::type_utils::vec_cast;
 
-            return vec_cast<resT, typename decltype(res)::element_type, vec_sz>(
-                res);
+                return vec_cast<resT, typename decltype(res)::element_type,
+                                vec_sz>(res);
+            }
         }
     }
 };
@@ -128,10 +160,6 @@ using PowStridedFunctor =
                                              IndexerT,
                                              PowFunctor<argT1, argT2, resT>>;
 
-// TODO: when type promotion logic is better defined,
-// consider implementing overloads of std::pow that take
-// integers for the exponents. Seem to give better accuracy in
-// some cases (complex data especially)
 template <typename T1, typename T2> struct PowOutputType
 {
     using value_type = typename std::disjunction< // disjunction is C++17
@@ -281,6 +309,184 @@ template <typename fnT, typename T1, typename T2> struct PowStridedFactory
         }
         else {
             fnT fn = pow_strided_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename argT, typename resT> struct PowInplaceFunctor
+{
+
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+    using supports_vec = std::negation<
+        std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
+
+    void operator()(resT &res, const argT &in)
+    {
+        if constexpr (std::is_integral_v<argT> || std::is_integral_v<resT>) {
+            auto tmp1 = res;
+            auto tmp2 = in;
+            if constexpr (std::is_signed_v<argT>) {
+                if (tmp2 < 0) {
+                    // invalid; return 0
+                    res = 0;
+                    return;
+                }
+            }
+            if (tmp1 == 1) {
+                return;
+            }
+            if (tmp2 == 0) {
+                res = 1;
+                return;
+            }
+            resT res_tmp = 1;
+            while (tmp2 > 0) {
+                if (tmp2 & 1) {
+                    res_tmp *= tmp1;
+                }
+                tmp2 >>= 1;
+                tmp1 *= tmp1;
+            }
+            res = res_tmp;
+            return;
+        }
+        else {
+            res = std::pow(res, in);
+        };
+    }
+
+    template <int vec_sz>
+    void operator()(sycl::vec<resT, vec_sz> &res,
+                    const sycl::vec<argT, vec_sz> &in)
+    {
+        if constexpr (std::is_integral_v<argT> || std::is_integral_v<resT>) {
+#pragma unroll
+            for (int i = 0; i < vec_sz; ++i) {
+                auto tmp1 = res[i];
+                auto tmp2 = in[i];
+                if constexpr (std::is_signed_v<argT>) {
+                    if (tmp2 < 0) {
+                        // invalid; return 0
+                        res[i] = 0;
+                        continue;
+                    }
+                }
+                if (tmp1 == 1) {
+                    continue;
+                }
+                if (tmp2 == 0) {
+                    res[i] = 1;
+                    continue;
+                }
+                resT res_tmp = 1;
+                while (tmp2 > 0) {
+                    if (tmp2 & 1) {
+                        res_tmp *= tmp1;
+                    }
+                    tmp2 >>= 1;
+                    tmp1 *= tmp1;
+                }
+                res[i] = res_tmp;
+            }
+        }
+        else {
+            res = sycl::pow(res, in);
+        }
+    }
+};
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+using PowInplaceContigFunctor = elementwise_common::BinaryInplaceContigFunctor<
+    argT,
+    resT,
+    PowInplaceFunctor<argT, resT>,
+    vec_sz,
+    n_vecs>;
+
+template <typename argT, typename resT, typename IndexerT>
+using PowInplaceStridedFunctor =
+    elementwise_common::BinaryInplaceStridedFunctor<
+        argT,
+        resT,
+        IndexerT,
+        PowInplaceFunctor<argT, resT>>;
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class pow_inplace_contig_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+pow_inplace_contig_impl(sycl::queue &exec_q,
+                        size_t nelems,
+                        const char *arg_p,
+                        py::ssize_t arg_offset,
+                        char *res_p,
+                        py::ssize_t res_offset,
+                        const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_contig_impl<
+        argTy, resTy, PowInplaceContigFunctor, pow_inplace_contig_kernel>(
+        exec_q, nelems, arg_p, arg_offset, res_p, res_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2> struct PowInplaceContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = pow_inplace_contig_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename resT, typename argT, typename IndexerT>
+class pow_inplace_strided_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+pow_inplace_strided_impl(sycl::queue &exec_q,
+                         size_t nelems,
+                         int nd,
+                         const py::ssize_t *shape_and_strides,
+                         const char *arg_p,
+                         py::ssize_t arg_offset,
+                         char *res_p,
+                         py::ssize_t res_offset,
+                         const std::vector<sycl::event> &depends,
+                         const std::vector<sycl::event> &additional_depends)
+{
+    return elementwise_common::binary_inplace_strided_impl<
+        argTy, resTy, PowInplaceStridedFunctor, pow_inplace_strided_kernel>(
+        exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
+        res_offset, depends, additional_depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct PowInplaceStridedFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
+                                     void>) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = pow_inplace_strided_impl<T1, T2>;
             return fn;
         }
     }

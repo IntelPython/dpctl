@@ -297,6 +297,7 @@ bitwise_and = BinaryElementwiseFunc(
     ti._bitwise_and_result_type,
     ti._bitwise_and,
     _bitwise_and_docstring_,
+    binary_inplace_fn=ti._bitwise_and_inplace,
 )
 
 # B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
@@ -330,6 +331,7 @@ bitwise_left_shift = BinaryElementwiseFunc(
     ti._bitwise_left_shift_result_type,
     ti._bitwise_left_shift,
     _bitwise_left_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_left_shift_inplace,
 )
 
 
@@ -393,6 +395,7 @@ bitwise_or = BinaryElementwiseFunc(
     ti._bitwise_or_result_type,
     ti._bitwise_or,
     _bitwise_or_docstring_,
+    binary_inplace_fn=ti._bitwise_or_inplace,
 )
 
 # B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
@@ -425,6 +428,7 @@ bitwise_right_shift = BinaryElementwiseFunc(
     ti._bitwise_right_shift_result_type,
     ti._bitwise_right_shift,
     _bitwise_right_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_right_shift_inplace,
 )
 
 
@@ -459,6 +463,7 @@ bitwise_xor = BinaryElementwiseFunc(
     ti._bitwise_xor_result_type,
     ti._bitwise_xor,
     _bitwise_xor_docstring_,
+    binary_inplace_fn=ti._bitwise_xor_inplace,
 )
 
 
@@ -1178,7 +1183,7 @@ logical_xor = BinaryElementwiseFunc(
     _logical_xor_docstring_,
 )
 
-# B??: ==== MAXIMUM    (x1, x2)
+# B26: ==== MAXIMUM    (x1, x2)
 _maximum_docstring_ = """
 maximum(x1, x2, out=None, order='K')
 
@@ -1208,7 +1213,7 @@ maximum = BinaryElementwiseFunc(
     _maximum_docstring_,
 )
 
-# B??: ==== MINIMUM    (x1, x2)
+# B27: ==== MINIMUM    (x1, x2)
 _minimum_docstring_ = """
 minimum(x1, x2, out=None, order='K')
 
@@ -1266,7 +1271,7 @@ multiply = BinaryElementwiseFunc(
     ti._multiply_result_type,
     ti._multiply,
     _multiply_docstring_,
-    ti._multiply_inplace,
+    binary_inplace_fn=ti._multiply_inplace,
 )
 
 # U25: ==== NEGATIVE    (x)
@@ -1361,10 +1366,14 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 pow = BinaryElementwiseFunc(
-    "pow", ti._pow_result_type, ti._pow, _pow_docstring_
+    "pow",
+    ti._pow_result_type,
+    ti._pow,
+    _pow_docstring_,
+    binary_inplace_fn=ti._pow_inplace,
 )
 
-# U??: ==== PROJ        (x)
+# U40: ==== PROJ        (x)
 _proj_docstring = """
 proj(x, out=None, order='K')
 
@@ -1443,7 +1452,11 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 remainder = BinaryElementwiseFunc(
-    "remainder", ti._remainder_result_type, ti._remainder, _remainder_docstring_
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+    binary_inplace_fn=ti._remainder_inplace,
 )
 
 # U28: ==== ROUND       (x)
@@ -1501,7 +1514,7 @@ sign = UnaryElementwiseFunc(
     "sign", ti._sign_result_type, ti._sign, _sign_docstring
 )
 
-# ==== SIGNBIT        (x)
+# U41: ==== SIGNBIT        (x)
 _signbit_docstring = """
 signbit(x, out=None, order='K')
 
@@ -1654,7 +1667,7 @@ subtract = BinaryElementwiseFunc(
     ti._subtract_result_type,
     ti._subtract,
     _subtract_docstring_,
-    ti._subtract_inplace,
+    binary_inplace_fn=ti._subtract_inplace,
 )
 
 
