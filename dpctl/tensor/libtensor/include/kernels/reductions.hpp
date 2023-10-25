@@ -2458,7 +2458,7 @@ struct MinOverAxis1TempsContigFactory
         {
             if constexpr (std::is_integral_v<dstTy> &&
                           !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::maximum<dstTy>;
+                using ReductionOpT = sycl::minimum<dstTy>;
                 return dpctl::tensor::kernels::
                     reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                                  ReductionOpT>;
@@ -2486,7 +2486,7 @@ struct MinOverAxis0TempsContigFactory
         {
             if constexpr (std::is_integral_v<dstTy> &&
                           !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::maximum<dstTy>;
+                using ReductionOpT = sycl::minimum<dstTy>;
                 return dpctl::tensor::kernels::
                     reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                                  ReductionOpT>;
