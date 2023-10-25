@@ -288,98 +288,6 @@ def prod(x, axis=None, dtype=None, keepdims=False):
     )
 
 
-def _tree_reduction_over_axis(
-    x,
-    axis,
-    dtype,
-    keepdims,
-    _reduction_fn,
-    _dtype_supported,
-    _default_reduction_type_fn,
-    _identity=None,
-):
-    if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
-    nd = x.ndim
-    if axis is None:
-        axis = tuple(range(nd))
-    if not isinstance(axis, (tuple, list)):
-        axis = (axis,)
-    axis = normalize_axis_tuple(axis, nd, "axis")
-    red_nd = len(axis)
-    perm = [i for i in range(nd) if i not in axis] + list(axis)
-    arr2 = dpt.permute_dims(x, perm)
-    res_shape = arr2.shape[: nd - red_nd]
-    q = x.sycl_queue
-    inp_dt = x.dtype
-    if dtype is None:
-        res_dt = _default_reduction_type_fn(inp_dt, q)
-    else:
-        res_dt = dpt.dtype(dtype)
-        res_dt = _to_device_supported_dtype(res_dt, q.sycl_device)
-
-    res_usm_type = x.usm_type
-    if x.size == 0:
-        if _identity is None:
-            raise ValueError("reduction does not support zero-size arrays")
-        else:
-            if keepdims:
-                res_shape = res_shape + (1,) * red_nd
-                inv_perm = sorted(range(nd), key=lambda d: perm[d])
-                res_shape = tuple(res_shape[i] for i in inv_perm)
-            return dpt.astype(
-                dpt.full(
-                    res_shape,
-                    _identity,
-                    dtype=_default_reduction_type_fn(inp_dt, q),
-                    usm_type=res_usm_type,
-                    sycl_queue=q,
-                ),
-                res_dt,
-            )
-    if red_nd == 0:
-        return dpt.astype(x, res_dt, copy=False)
-
-    host_tasks_list = []
-    if _dtype_supported(inp_dt, res_dt):
-        res = dpt.empty(
-            res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
-        )
-        ht_e, _ = _reduction_fn(
-            src=arr2, trailing_dims_to_reduce=red_nd, dst=res, sycl_queue=q
-        )
-        host_tasks_list.append(ht_e)
-    else:
-        if dtype is None:
-            raise RuntimeError(
-                "Automatically determined reduction data type does not "
-                "have direct implementation"
-            )
-        tmp_dt = _default_reduction_type_fn(inp_dt, q)
-        tmp = dpt.empty(
-            res_shape, dtype=tmp_dt, usm_type=res_usm_type, sycl_queue=q
-        )
-        ht_e_tmp, r_e = _reduction_fn(
-            src=arr2, trailing_dims_to_reduce=red_nd, dst=tmp, sycl_queue=q
-        )
-        host_tasks_list.append(ht_e_tmp)
-        res = dpt.empty(
-            res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
-        )
-        ht_e, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=tmp, dst=res, sycl_queue=q, depends=[r_e]
-        )
-        host_tasks_list.append(ht_e)
-
-    if keepdims:
-        res_shape = res_shape + (1,) * red_nd
-        inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
-
-    return res
-
-
 def logsumexp(x, axis=None, dtype=None, keepdims=False):
     """logsumexp(x, axis=None, dtype=None, keepdims=False)
 
@@ -422,13 +330,15 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
             array has the data type as described in the `dtype` parameter
             description above.
     """
-    return _tree_reduction_over_axis(
+    return _reduction_over_axis(
         x,
         axis,
         dtype,
         keepdims,
         ti._logsumexp_over_axis,
-        ti._logsumexp_over_axis_dtype_supported,
+        lambda inp_dt, res_dt, *_: ti._logsumexp_over_axis_dtype_supported(
+            inp_dt, res_dt
+        ),
         _default_reduction_dtype_fp_types,
         _identity=-dpt.inf,
     )
@@ -476,13 +386,15 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
             array has the data type as described in the `dtype` parameter
             description above.
     """
-    return _tree_reduction_over_axis(
+    return _reduction_over_axis(
         x,
         axis,
         dtype,
         keepdims,
         ti._hypot_over_axis,
-        ti._hypot_over_axis_dtype_supported,
+        lambda inp_dt, res_dt, *_: ti._hypot_over_axis_dtype_supported(
+            inp_dt, res_dt
+        ),
         _default_reduction_dtype_fp_types,
         _identity=0,
     )
