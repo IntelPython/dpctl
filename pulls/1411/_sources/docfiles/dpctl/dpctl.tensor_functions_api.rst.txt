@@ -16,9 +16,11 @@ Other Functions
 .. autofunction:: any
 .. autofunction:: argmax
 .. autofunction:: argmin
+.. autofunction:: clip
 .. autofunction:: extract
 .. autofunction:: get_print_options
 .. autofunction:: isdtype
+.. autofunction:: logsumexp
 .. autofunction:: matrix_transpose
 .. autofunction:: max
 .. autofunction:: min
@@ -27,6 +29,7 @@ Other Functions
 .. autofunction:: print_options
 .. autofunction:: prod
 .. autofunction:: put
+.. autofunction:: reduce_hypot
 .. autofunction:: set_print_options
 .. autofunction:: sum
 .. autofunction:: take

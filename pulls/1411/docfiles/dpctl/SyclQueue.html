@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.15.1dev0+51.g9d75686f2 documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.15.1dev0+83.ga7bc1ea22 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=f13857d1"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7606ada5"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev0+51.g9d75686f2
+                0.15.1dev0+83.ga7bc1ea22
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -273,15 +273,21 @@ The argument can be either “default”, “in_order”,
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy" title="dpctl.SyclQueue.memcpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy</span></code></a>(dest, src, count)</p></td>
+<td><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy_async" title="dpctl.SyclQueue.memcpy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy_async</span></code></a>(dest, src, count[, dEvents])</p></td>
+<td><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.print_device_info" title="dpctl.SyclQueue.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.print_device_info" title="dpctl.SyclQueue.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
 <td><p>Print information about the SYCL device associated with this queue.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_async</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit_barrier" title="dpctl.SyclQueue.submit_barrier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></a>([dependent_events])</p></td>
@@ -297,6 +303,9 @@ The argument can be either “default”, “in_order”,
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="dpctl.SyclQueue._get_capsule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_capsule</span></code></a>()</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue._submit_keep_args_alive" title="dpctl.SyclQueue._submit_keep_args_alive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_submit_keep_args_alive</span></code></a>(args, events)</p></td>
+<td><p>Keeps objects in <cite>args</cite> alive until tasks associated with events complete.</p></td>
 </tr>
 </tbody>
 </table>
@@ -407,7 +416,14 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy_async">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy_async" title="Permalink to this definition"></a></dt>
+<dd><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.prefetch">
@@ -424,6 +440,11 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.submit_async">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit_async" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -444,6 +465,38 @@ associated with this queue.</p>
 <dt class="sig sig-object py" id="dpctl.SyclQueue._get_capsule">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">_get_capsule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue._get_capsule" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.SyclQueue._submit_keep_args_alive">
+<span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">_submit_keep_args_alive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue._submit_keep_args_alive" title="Permalink to this definition"></a></dt>
+<dd><p>Keeps objects in <cite>args</cite> alive until tasks associated with events
+complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>object</em>) – Python object to keep alive.
+Typically a tuple with arguments to offloaded tasks</p></li>
+<li><p><strong>events</strong> (<em>Tuple</em><em>[</em><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em>) – Gating events
+The list or tuple of events associated with tasks
+working on Python objects collected in <cite>args</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dpctl.SyclEvent</dt><dd><p>The event associated with the submission of host task.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p>Increments reference count of <cite>args</cite> and schedules asynchronous
+<code class="docutils literal notranslate"><span class="pre">host_task</span></code> to decrement the count once dependent events are
+complete.</p>
+<p>N.B.: The <cite>host_task</cite> attempts to acquire Python GIL, and it is
+known to be unsafe during interpreter shudown sequence. It is
+thus strongly advised to ensure that all submitted <cite>host_task</cite>
+complete before the end of the Python script.</p>
+</dd></dl>
 
 </section>
 </section>
