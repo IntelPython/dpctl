@@ -50,12 +50,18 @@ namespace tensor
 namespace kernels
 {
 
+template <typename ReductionOpT, typename T> struct needs_workaround
+{
+    static constexpr bool value =
+        std::is_same_v<ReductionOpT, sycl::multiplies<T>> &&
+        (std::is_same_v<T, std::int64_t> || std::is_same_v<T, std::uint64_t>);
+};
+
 template <typename ReductionOpT, typename T> struct can_use_reduce_over_group
 {
     static constexpr bool value =
         sycl::has_known_identity<ReductionOpT, T>::value &&
-        !std::is_same_v<T, std::int64_t> && !std::is_same_v<T, std::uint64_t> &&
-        !std::is_same_v<ReductionOpT, sycl::multiplies<T>>;
+        !needs_workaround<ReductionOpT, T>::value;
 };
 
 template <typename argT,
