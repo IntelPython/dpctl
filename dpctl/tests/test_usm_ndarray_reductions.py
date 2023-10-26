@@ -169,6 +169,14 @@ def test_search_reduction_kernels(arg_dtype):
     m = dpt.argmax(x)
     assert m == idx
 
+    m = dpt.argmax(dpt.flip(x))
+    assert m == x.size - 1 - idx
+
+    y = dpt.ones(2 * x.size, dtype=arg_dtype, sycl_queue=q)
+    y[::2] = x
+    m = dpt.argmax(y)
+    assert m == 2 * idx
+
     x = dpt.reshape(x, (24, 1025))
 
     x[idx_tup[0], :] = 3
