@@ -102,6 +102,17 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/true_divide.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/trunc.cpp
 )
+set(_reduction_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduction_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmax.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/logsumexp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/max.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/min.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/prod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduce_hypot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/sum.cpp
+)
 set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
@@ -120,11 +131,11 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
 list(APPEND _tensor_impl_sources
      ${_elementwise_sources}
+     ${_reduction_sources}
 )
 
 set(python_module_name _tensor_impl)
@@ -138,12 +149,13 @@ endif()
 set(_no_fast_math_sources
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reduction_over_axis.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
 list(APPEND _no_fast_math_sources
      ${_elementwise_sources}
+     ${_reduction_sources}
 )
+
 foreach(_src_fn ${_no_fast_math_sources})
   get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
   set(_combined_options_prop ${_cmpl_options_prop} "${_clang_prefix}-fno-fast-math")

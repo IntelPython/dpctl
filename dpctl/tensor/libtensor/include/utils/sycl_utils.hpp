@@ -286,6 +286,46 @@ struct GetIdentity<Op, T, std::enable_if_t<IsMultiplies<T, Op>::value>>
     static constexpr T value = static_cast<T>(1);
 };
 
+// LogSumExp
+
+template <typename T> struct LogSumExp
+{
+    T operator()(const T &x, const T &y) const
+    {
+        using dpctl::tensor::math_utils::logaddexp;
+        return logaddexp<T>(x, y);
+    }
+};
+
+template <typename T, class Op>
+using IsLogSumExp = std::bool_constant<std::is_same_v<Op, LogSumExp<T>>>;
+
+// only defined for types with infinity
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsLogSumExp<T, Op>::value>>
+{
+    static constexpr T value = -std::numeric_limits<T>::infinity();
+};
+
+// Hypot
+
+template <typename T> struct Hypot
+{
+    T operator()(const T &x, const T &y) const
+    {
+        return sycl::hypot(x, y);
+    }
+};
+
+template <typename T, class Op>
+using IsHypot = std::bool_constant<std::is_same_v<Op, Hypot<T>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsHypot<T, Op>::value>>
+{
+    static constexpr T value = 0;
+};
+
 // Identity
 
 template <typename Op, typename T, typename = void> struct Identity

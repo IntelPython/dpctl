@@ -165,7 +165,16 @@ from ._elementwise_funcs import (
     tanh,
     trunc,
 )
-from ._reduction import argmax, argmin, max, min, prod, sum
+from ._reduction import (
+    argmax,
+    argmin,
+    logsumexp,
+    max,
+    min,
+    prod,
+    reduce_hypot,
+    sum,
+)
 from ._testing import allclose
 
 __all__ = [
@@ -324,4 +333,6 @@ __all__ = [
     "copysign",
     "rsqrt",
     "clip",
+    "logsumexp",
+    "reduce_hypot",
 ]
