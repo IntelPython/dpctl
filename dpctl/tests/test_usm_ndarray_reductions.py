@@ -169,9 +169,12 @@ def test_search_reduction_kernels(arg_dtype):
     m = dpt.argmax(x)
     assert m == idx
 
+    # test case of strided input mapping to contig
+    # implementation
     m = dpt.argmax(dpt.flip(x))
     assert m == x.size - 1 - idx
 
+    # test case of strided implementation
     y = dpt.ones(2 * x.size, dtype=arg_dtype, sycl_queue=q)
     y[::2] = x
     m = dpt.argmax(y)
