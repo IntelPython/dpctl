@@ -1094,7 +1094,7 @@ sycl::event reduction_over_group_temps_strided_impl(
     // max_max_wg prevents running out of resources on CPU
     constexpr size_t max_max_wg = 2048;
     size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>());
+        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
@@ -1444,7 +1444,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     // max_max_wg prevents running out of resources on CPU
     constexpr size_t max_max_wg = 2048;
     size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>());
+        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
@@ -1788,7 +1788,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     // max_max_wg prevents running out of resources on CPU
     constexpr size_t max_max_wg = 2048;
     size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>());
+        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
@@ -3883,8 +3883,9 @@ sycl::event search_over_group_temps_strided_impl(
 
     constexpr size_t preferrered_reductions_per_wi = 4;
     // max_max_wg prevents running out of resources on CPU
-    size_t max_wg = std::min(
-        size_t(2048), d.get_info<sycl::info::device::max_work_group_size>());
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
@@ -4279,8 +4280,9 @@ sycl::event search_axis1_over_group_temps_contig_impl(
 
     constexpr size_t preferrered_reductions_per_wi = 8;
     // max_max_wg prevents running out of resources on CPU
-    size_t max_wg = std::min(
-        size_t(2048), d.get_info<sycl::info::device::max_work_group_size>());
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
@@ -4657,8 +4659,9 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
     constexpr size_t preferrered_reductions_per_wi = 8;
     // max_max_wg prevents running out of resources on CPU
-    size_t max_wg = std::min(
-        size_t(2048), d.get_info<sycl::info::device::max_work_group_size>());
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferrered_reductions_per_wi);
     if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
