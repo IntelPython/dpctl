@@ -1339,7 +1339,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                 static_cast<py::ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{iter_nd, iter_res_offset,
                                          /* shape */ iter_shape_and_strides,
-                                         /*s trides */ iter_shape_and_strides +
+                                         /* strides */ iter_shape_and_strides +
                                              2 * iter_nd};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1424,8 +1424,9 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     py::ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
 
     constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -1767,8 +1768,9 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     py::ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
 
     constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -4258,8 +4260,9 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     py::ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
 
     constexpr argTy identity_val = su_ns::Identity<ReductionOpT, argTy>::value;
     constexpr resTy idx_identity_val = su_ns::Identity<IndexOpT, resTy>::value;
@@ -4635,8 +4638,9 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     py::ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
 
     constexpr argTy identity_val = su_ns::Identity<ReductionOpT, argTy>::value;
     constexpr resTy idx_identity_val = su_ns::Identity<IndexOpT, resTy>::value;
