@@ -43,6 +43,7 @@ def test_sum_arg_dtype_default_output_dtype_matrix(arg_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arg_dtype, q)
 
+    # test reduction for C-contiguous input
     m = dpt.ones(100, dtype=arg_dtype)
     r = dpt.sum(m)
 
@@ -55,11 +56,19 @@ def test_sum_arg_dtype_default_output_dtype_matrix(arg_dtype):
         assert r.dtype.kind == "f"
     elif m.dtype.kind == "c":
         assert r.dtype.kind == "c"
+
     assert dpt.all(r == 100)
 
+    # test reduction for strided input
     m = dpt.ones(200, dtype=arg_dtype)[:1:-2]
     r = dpt.sum(m)
     assert dpt.all(r == 99)
+
+    # test reduction for strided input which can be simplified
+    # to contiguous computation
+    m = dpt.ones(100, dtype=arg_dtype)
+    r = dpt.sum(dpt.flip(m))
+    assert dpt.all(r == 100)
 
 
 @pytest.mark.parametrize("arg_dtype", _all_dtypes)
