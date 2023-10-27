@@ -417,10 +417,10 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                 typename std::remove_all_extents<contig_fnT>::type;
             contig_fn_ptr_T fn;
             if (supports_atomics) {
-                fn = axis1_atomic_dispatch_table[src_typeid][dst_typeid];
+                fn = axis0_atomic_dispatch_table[src_typeid][dst_typeid];
             }
             else {
-                fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
+                fn = axis0_temps_dispatch_table[src_typeid][dst_typeid];
             }
             if (fn != nullptr) {
                 sycl::event reduction_over_axis0_contig_ev =
@@ -727,7 +727,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
             }
         }
         else if (mat_reduce_over_axis0) {
-            auto fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
+            auto fn = axis0_temps_dispatch_table[src_typeid][dst_typeid];
             if (fn != nullptr) {
                 sycl::event reduction_over_axis0_contig_ev =
                     fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -929,7 +929,6 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     }
 
     using dpctl::tensor::py_internal::simplify_iteration_space;
-    using dpctl::tensor::py_internal::simplify_iteration_space_1;
 
     auto const &src_shape_vecs = src.get_shape_vector();
     auto const &src_strides_vecs = src.get_strides_vector();
