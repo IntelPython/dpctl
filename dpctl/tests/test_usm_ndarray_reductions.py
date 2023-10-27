@@ -61,6 +61,20 @@ def test_max_min_axis():
     assert dpt.all(m == x[:, 0, 0, :, 0])
 
 
+def test_max_axis1_axis0():
+    """See gh-1455"""
+    get_queue_or_skip()
+
+    x = dpt.reshape(dpt.arange(3 * 4 * 5), (3, 4, 5))
+
+    m = dpt.max(x, axis=0)
+    assert dpt.all(m == x[-1, :, :])
+
+    x = dpt.flip(x, axis=2)
+    m = dpt.max(x, axis=2)
+    assert dpt.all(m == x[:, :, 0])
+
+
 def test_reduction_keepdims():
     get_queue_or_skip()
 
@@ -440,3 +454,28 @@ def test_hypot_complex():
     x = dpt.zeros(1, dtype="c8")
     with pytest.raises(TypeError):
         dpt.reduce_hypot(x)
+
+
+def test_tree_reduction_axis1_axis0():
+    """See gh-1455"""
+    get_queue_or_skip()
+
+    x = dpt.reshape(dpt.arange(3 * 4 * 5, dtype="f4"), (3, 4, 5))
+
+    m = dpt.logsumexp(x, axis=0)
+    tol = dpt.finfo(m.dtype).resolution
+    assert_allclose(
+        dpt.asnumpy(m),
+        np.logaddexp.reduce(dpt.asnumpy(x), axis=0, dtype=m.dtype),
+        rtol=tol,
+        atol=tol,
+    )
+
+    x = dpt.flip(x, axis=2)
+    m = dpt.logsumexp(x, axis=2)
+    assert_allclose(
+        dpt.asnumpy(m),
+        np.logaddexp.reduce(dpt.asnumpy(x), axis=2, dtype=m.dtype),
+        rtol=tol,
+        atol=tol,
+    )

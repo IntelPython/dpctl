@@ -117,12 +117,12 @@ template <typename fnT, typename T> struct MinMaxAtomicSupportFactory
 };
 
 template <typename fnT, typename T>
-struct MaxAtomicSupportFactory : public ArithmeticAtomicSupportFactory<fnT, T>
+struct MaxAtomicSupportFactory : public MinMaxAtomicSupportFactory<fnT, T>
 {
 };
 
 template <typename fnT, typename T>
-struct MinAtomicSupportFactory : public ArithmeticAtomicSupportFactory<fnT, T>
+struct MinAtomicSupportFactory : public MinMaxAtomicSupportFactory<fnT, T>
 {
 };
 
