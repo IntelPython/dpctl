@@ -212,6 +212,36 @@ def test_axis0_bug():
     assert dpt.all(s == expected)
 
 
+def test_sum_axis1_axis0():
+    """See gh-1455"""
+    get_queue_or_skip()
+
+    # The atomic case is checked in `test_usm_ndarray_reductions`
+    # This test checks the tree reduction path for correctness
+    x = dpt.reshape(dpt.arange(3 * 4 * 5, dtype="f4"), (3, 4, 5))
+
+    m = dpt.sum(x, axis=0)
+    expected = dpt.asarray(
+        [
+            [60, 63, 66, 69, 72],
+            [75, 78, 81, 84, 87],
+            [90, 93, 96, 99, 102],
+            [105, 108, 111, 114, 117],
+        ],
+        dtype="f4",
+    )
+    tol = dpt.finfo(m.dtype).resolution
+    assert dpt.allclose(m, expected, atol=tol, rtol=tol)
+
+    x = dpt.flip(x, axis=2)
+    m = dpt.sum(x, axis=2)
+    expected = dpt.asarray(
+        [[10, 35, 60, 85], [110, 135, 160, 185], [210, 235, 260, 285]],
+        dtype="f4",
+    )
+    assert dpt.allclose(m, expected, atol=tol, rtol=tol)
+
+
 def _any_complex(dtypes):
     return any(dpt.isdtype(dpt.dtype(dt), "complex floating") for dt in dtypes)
 
