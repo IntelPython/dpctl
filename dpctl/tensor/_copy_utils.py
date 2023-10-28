@@ -37,7 +37,7 @@ int32_t_max = 2147483648
 
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
-        raise TypeError
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
     nb = ary.usm_data.nbytes
     hh = dpm.MemoryUSMHost(nb, queue=ary.sycl_queue)
     hh.copy_from_device(ary.usm_data)
