@@ -874,14 +874,11 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     // handle special case when both reduction and iteration are 1D contiguous
-    // and can be done with atomics
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
     bool is_src_f_contig = src.is_f_contiguous();
 
-    if ((is_src_c_contig && is_dst_c_contig) ||
-        (is_src_f_contig && dst_nelems == 1))
-    {
+    if (is_src_c_contig && is_dst_c_contig) {
         auto fn = axis1_contig_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
             size_t iter_nelems = dst_nelems;
@@ -903,9 +900,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                                   reduction_over_axis_contig_ev);
         }
     }
-    else if (is_src_f_contig &&
-             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
-    {
+    else if (is_src_f_contig && dst_nd == 1) {
         auto fn = axis0_contig_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
             size_t iter_nelems = dst_nelems;
@@ -983,11 +978,9 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     if ((reduction_nd == 1) && (iteration_nd == 1)) {
         bool mat_reduce_over_axis1 = false;
         bool mat_reduce_over_axis0 = false;
-        bool array_reduce_all_elems = false;
         size_t iter_nelems = dst_nelems;
 
         if (compact_reduction_src_strides[0] == 1) {
-            array_reduce_all_elems = (simplified_iteration_shape[0] == 1);
             mat_reduce_over_axis1 =
                 (simplified_iteration_dst_strides[0] == 1) &&
                 (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
@@ -1000,7 +993,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                 (simplified_iteration_src_strides[0] == 1);
         }
 
-        if (mat_reduce_over_axis1 || array_reduce_all_elems) {
+        if (mat_reduce_over_axis1) {
             auto fn = axis1_contig_dispatch_table[src_typeid][dst_typeid];
             if (fn != nullptr) {
                 sycl::event reduction_over_axis1_contig_ev =
