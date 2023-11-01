@@ -265,6 +265,22 @@ def test_argmax_argmin_identities():
     assert dpt.argmin(x) == 0
 
 
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_argmax_axis0_axis1(order):
+    get_queue_or_skip()
+
+    x = dpt.asarray([[1, 2, 3], [6, 5, 4]], dtype="i4", order=order)
+    assert dpt.argmax(x) == 3
+
+    res = dpt.argmax(x, axis=0)
+    expected = dpt.asarray([1, 1, 1], dtype=res.dtype)
+    assert dpt.all(res == expected)
+
+    res = dpt.argmax(x, axis=1)
+    expected = dpt.asarray([2, 0], dtype=res.dtype)
+    assert dpt.all(res == expected)
+
+
 def test_reduction_arg_validation():
     get_queue_or_skip()
 
