@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import dpctl.tensor._tensor_impl as ti
+import dpctl.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 from ._type_utils import _acceptance_fn_divide
