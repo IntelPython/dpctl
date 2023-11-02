@@ -696,7 +696,41 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    {
+    if (reduction_nelems < wg) {
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                        NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{
+                0, static_cast<py::ssize_t>(reduction_nelems),
+                static_cast<py::ssize_t>(iter_nelems)};
+
+            using KernelName =
+                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
+                                               InputOutputIterIndexerT,
+                                               ReductionIndexerT>;
+
+            sycl::range<1> iter_range{iter_nelems};
+
+            cgh.parallel_for<KernelName>(
+                iter_range,
+                SequentialReduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+    else {
         sycl::event res_init_ev = exec_q.fill<resTy>(
             res_tp, resTy(identity_val), iter_nelems, depends);
 
@@ -1848,6 +1882,41 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    if (reduction_nelems < wg) {
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                        NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{
+                0, static_cast<py::ssize_t>(reduction_nelems),
+                static_cast<py::ssize_t>(iter_nelems)};
+
+            using KernelName =
+                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
+                                               InputOutputIterIndexerT,
+                                               ReductionIndexerT>;
+
+            sycl::range<1> iter_range{iter_nelems};
+
+            cgh.parallel_for<KernelName>(
+                iter_range,
+                SequentialReduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // max_max_wg prevents running out of resources on CPU
