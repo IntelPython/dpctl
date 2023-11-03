@@ -3476,7 +3476,9 @@ public:
                             idx_val = static_cast<outT>(m);
                         }
                     }
-                    else if constexpr (std::is_floating_point_v<argT>) {
+                    else if constexpr (std::is_floating_point_v<argT> ||
+                                       std::is_same_v<argT, sycl::half>)
+                    {
                         if (val < red_val || std::isnan(val)) {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -3501,7 +3503,9 @@ public:
                             idx_val = static_cast<outT>(m);
                         }
                     }
-                    else if constexpr (std::is_floating_point_v<argT>) {
+                    else if constexpr (std::is_floating_point_v<argT> ||
+                                       std::is_same_v<argT, sycl::half>)
+                    {
                         if (val > red_val || std::isnan(val)) {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -3789,7 +3793,9 @@ public:
                                 }
                             }
                         }
-                        else if constexpr (std::is_floating_point_v<argT>) {
+                        else if constexpr (std::is_floating_point_v<argT> ||
+                                           std::is_same_v<argT, sycl::half>)
+                        {
                             if (val < local_red_val || std::isnan(val)) {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -3833,7 +3839,9 @@ public:
                                 }
                             }
                         }
-                        else if constexpr (std::is_floating_point_v<argT>) {
+                        else if constexpr (std::is_floating_point_v<argT> ||
+                                           std::is_same_v<argT, sycl::half>)
+                        {
                             if (val > local_red_val || std::isnan(val)) {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -3876,7 +3884,9 @@ public:
                             ? local_idx
                             : idx_identity_;
         }
-        else if constexpr (std::is_floating_point_v<argT>) {
+        else if constexpr (std::is_floating_point_v<argT> ||
+                           std::is_same_v<argT, sycl::half>)
+        {
             // equality does not hold for NaNs, so check here
             local_idx =
                 (red_val_over_wg == local_red_val || std::isnan(local_red_val))
