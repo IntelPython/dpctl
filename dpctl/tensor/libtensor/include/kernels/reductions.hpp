@@ -2247,11 +2247,10 @@ template <typename argTy, typename outTy>
 struct TypePairSupportDataForCompReductionAtomic
 {
 
-    /* value if true a kernel for <argTy, outTy> must be instantiated, false
+    /* value is true if a kernel for <argTy, outTy> must be instantiated, false
      * otherwise */
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++
+    // disjunction is C++17 feature, supported by DPC++
+    static constexpr bool is_defined = std::disjunction<
         // input int32
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
         // input uint32
@@ -2260,6 +2259,10 @@ struct TypePairSupportDataForCompReductionAtomic
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
         // input uint64
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        // input float
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
+        // input double
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;
 };
@@ -2268,19 +2271,17 @@ template <typename argTy, typename outTy>
 struct TypePairSupportDataForCompReductionTemps
 {
 
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    // disjunction is C++17 feature, supported by DPC++
+    static constexpr bool is_defined = std::disjunction<
+        // input bool
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, bool>,
         // input int8_t
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
-
         // input uint8_t
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
 
         // input int16_t
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
-
         // input uint16_t
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
 
