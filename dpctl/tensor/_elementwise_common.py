@@ -421,7 +421,7 @@ class BinaryElementwiseFunc:
             implementation functions supports it, or
             returns `None` otherwise.
         binary_dp_impl_fn (callable):
-            Data-parallel umplementation function with signature
+            Data-parallel implementation function with signature
             `impl_fn(src1: usm_ndarray, src2: usm_ndarray, dst: usm_ndarray,
              sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
             where the `src1` and `src2` are the argument arrays, `dst` is the
@@ -437,7 +437,7 @@ class BinaryElementwiseFunc:
         docs (str):
             Documentation string for the unary function.
         binary_inplace_fn (callable, optional):
-            Data-parallel omplementation function with signature
+            Data-parallel implementation function with signature
             `impl_fn(src: usm_ndarray, dst: usm_ndarray,
              sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
             where the `src` is the argument array, `dst` is the
