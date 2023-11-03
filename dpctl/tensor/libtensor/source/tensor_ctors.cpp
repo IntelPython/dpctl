@@ -37,7 +37,6 @@
 
 #include "accumulators.hpp"
 #include "boolean_advanced_indexing.hpp"
-#include "boolean_reductions.hpp"
 #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
@@ -48,7 +47,6 @@
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
-#include "reductions/reduction_common.hpp"
 #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 #include "triul_ctor.hpp"
