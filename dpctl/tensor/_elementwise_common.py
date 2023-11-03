@@ -39,6 +39,31 @@ from ._type_utils import (
 class UnaryElementwiseFunc:
     """
     Class that implements unary element-wise functions.
+
+    Args:
+        name (str):
+            Name of the unary function
+        result_type_resovler_fn (callable):
+            Function that takes dtype of the input and
+            returns the dtype of the result if the
+            implementation functions supports it, or
+            returns `None` otherwise.
+        unary_dp_impl_fn (callable):
+            Data-parallel implementation function with signature
+            `impl_fn(src: usm_ndarray, dst: usm_ndarray,
+             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
+            where the `src` is the argument array, `dst` is the
+            array to be populated with function values, effectively
+            evaluating `dst = func(src)`.
+            The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
+            The first event corresponds to data-management host tasks,
+            including lifetime management of argument Python objects to ensure
+            that their associated USM allocation is not freed before offloaded
+            computational tasks complete execution, while the second event
+            corresponds to computational tasks associated with function
+            evaluation.
+        docs (str):
+            Documentation string for the unary function.
     """
 
     def __init__(self, name, result_type_resolver_fn, unary_dp_impl_fn, docs):
@@ -55,8 +80,31 @@ class UnaryElementwiseFunc:
     def __repr__(self):
         return f"<{self.__name__} '{self.name_}'>"
 
+    def get_implementation_function(self):
+        """Returns the implementation function for
+        this elementwise unary function.
+
+        """
+        return self.unary_fn_
+
+    def get_type_result_resolver_function(self):
+        """Returns the type resolver function for this
+        elementwise unary function.
+        """
+        return self.result_type_resolver_fn_
+
     @property
     def types(self):
+        """Returns information about types supported by
+        implementation function, using NumPy's character
+        encoding for data types, e.g.
+
+        :Example:
+            .. code-block:: python
+
+                dpctl.tensor.sin.types
+                # Outputs: ['e->e', 'f->f', 'd->d', 'F->F', 'D->D']
+        """
         types = self.types_
         if not types:
             types = []
@@ -363,6 +411,56 @@ def _get_shape(o):
 class BinaryElementwiseFunc:
     """
     Class that implements binary element-wise functions.
+
+    Args:
+        name (str):
+            Name of the unary function
+        result_type_resovle_fn (callable):
+            Function that takes dtypes of the input and
+            returns the dtype of the result if the
+            implementation functions supports it, or
+            returns `None` otherwise.
+        binary_dp_impl_fn (callable):
+            Data-parallel umplementation function with signature
+            `impl_fn(src1: usm_ndarray, src2: usm_ndarray, dst: usm_ndarray,
+             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
+            where the `src1` and `src2` are the argument arrays, `dst` is the
+            array to be populated with function values,
+            i.e. `dst=func(src1, src2)`.
+            The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
+            The first event corresponds to data-management host tasks,
+            including lifetime management of argument Python objects to ensure
+            that their associated USM allocation is not freed before offloaded
+            computational tasks complete execution, while the second event
+            corresponds to computational tasks associated with function
+            evaluation.
+        docs (str):
+            Documentation string for the unary function.
+        binary_inplace_fn (callable, optional):
+            Data-parallel omplementation function with signature
+            `impl_fn(src: usm_ndarray, dst: usm_ndarray,
+             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
+            where the `src` is the argument array, `dst` is the
+            array to be populated with function values,
+            i.e. `dst=func(dst, src)`.
+            The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
+            The first event corresponds to data-management host tasks,
+            including async lifetime management of Python arguments,
+            while the second event corresponds to computational tasks
+            associated with function evaluation.
+        acceptance_fn (callable, optional):
+            Function to influence type promotion behavior of this binary
+            function. The function takes 6 arguments:
+                arg1_dtype - Data type of the first argument
+                arg2_dtype - Data type of the second argument
+                ret_buf1_dtype - Data type the first argument would be cast to
+                ret_buf2_dtype - Data type the second argument would be cast to
+                res_dtype - Data type of the output array with function values
+                sycl_dev - The :class:`dpctl.SyclDevice` where the function
+                    evaluation is carried out.
+            The function is only called when both arguments of the binary
+            function require casting, e.g. both arguments of
+            `dpctl.tensor.logaddexp` are arrays with integral data type.
     """
 
     def __init__(
@@ -392,8 +490,60 @@ class BinaryElementwiseFunc:
     def __repr__(self):
         return f"<{self.__name__} '{self.name_}'>"
 
+    def get_implementation_function(self):
+        """Returns the out-of-place implementation
+        function for this elementwise binary function.
+
+        """
+        return self.binary_fn_
+
+    def get_implementation_inplace_function(self):
+        """Returns the in-place implementation
+        function for this elementwise binary function.
+
+        """
+        return self.binary_inplace_fn_
+
+    def get_type_result_resolver_function(self):
+        """Returns the type resolver function for this
+        elementwise binary function.
+        """
+        return self.result_type_resolver_fn_
+
+    def get_type_promotion_path_acceptance_function(self):
+        """Returns the acceptance function for this
+        elementwise binary function.
+
+        Acceptance function influences the type promotion
+        behavior of this binary function.
+        The function takes 6 arguments:
+            arg1_dtype - Data type of the first argument
+            arg2_dtype - Data type of the second argument
+            ret_buf1_dtype - Data type the first argument would be cast to
+            ret_buf2_dtype - Data type the second argument would be cast to
+            res_dtype - Data type of the output array with function values
+            sycl_dev - :class:`dpctl.SyclDevice` on which function evaluation
+                is carried out.
+
+        The acceptance function is only invoked if both input arrays must be
+        cast to intermediary data types, as would happen during call of
+        `dpctl.tensor.hypot` with both arrays being of integral data type.
+        """
+        return self.acceptance_fn_
+
     @property
     def types(self):
+        """Returns information about types supported by
+        implementation function, using NumPy's character
+        encoding for data types, e.g.
+
+        :Example:
+            .. code-block:: python
+
+                dpctl.tensor.divide.types
+                # Outputs: ['ee->e', 'ff->f', 'fF->F', 'dd->d', 'dD->D',
+                #    'Ff->F', 'FF->F', 'Dd->D', 'DD->D']
+        """
         types = self.types_
         if not types:
             types = []
