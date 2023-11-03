@@ -83,7 +83,6 @@ def _reduction_over_axis(
     _reduction_fn,
     _dtype_supported,
     _default_reduction_type_fn,
-    _identity=None,
 ):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
@@ -106,23 +105,8 @@ def _reduction_over_axis(
         res_dt = _to_device_supported_dtype(res_dt, q.sycl_device)
 
     res_usm_type = x.usm_type
-    if x.size == 0:
-        if _identity is None:
-            raise ValueError("reduction does not support zero-size arrays")
-        else:
-            if keepdims:
-                res_shape = res_shape + (1,) * red_nd
-                inv_perm = sorted(range(nd), key=lambda d: perm[d])
-                res_shape = tuple(res_shape[i] for i in inv_perm)
-            return dpt.full(
-                res_shape,
-                _identity,
-                dtype=res_dt,
-                usm_type=res_usm_type,
-                sycl_queue=q,
-            )
     if red_nd == 0:
-        return dpt.astype(x, res_dt, copy=False)
+        return dpt.astype(x, res_dt, copy=True)
 
     host_tasks_list = []
     if _dtype_supported(inp_dt, res_dt, res_usm_type, q):
@@ -251,7 +235,6 @@ def sum(x, axis=None, dtype=None, keepdims=False):
         tri._sum_over_axis,
         tri._sum_over_axis_dtype_supported,
         _default_reduction_dtype,
-        _identity=0,
     )
 
 
@@ -312,7 +295,6 @@ def prod(x, axis=None, dtype=None, keepdims=False):
         tri._prod_over_axis,
         tri._prod_over_axis_dtype_supported,
         _default_reduction_dtype,
-        _identity=1,
     )
 
 
@@ -368,7 +350,6 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
             inp_dt, res_dt
         ),
         _default_reduction_dtype_fp_types,
-        _identity=-dpt.inf,
     )
 
 
@@ -424,7 +405,6 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
             inp_dt, res_dt
         ),
         _default_reduction_dtype_fp_types,
-        _identity=0,
     )
 
 
@@ -446,9 +426,19 @@ def _comparison_over_axis(x, axis, keepdims, _reduction_fn):
     res_dt = x.dtype
     res_usm_type = x.usm_type
     if x.size == 0:
-        raise ValueError("reduction does not support zero-size arrays")
+        if any([x.shape[i] == 0 for i in axis]):
+            raise ValueError(
+                "reduction cannot be performed over zero-size axes"
+            )
+        else:
+            return dpt.empty(
+                res_shape,
+                dtype=res_dt,
+                usm_type=res_usm_type,
+                sycl_queue=exec_q,
+            )
     if red_nd == 0:
-        return x
+        return dpt.copy(x)
 
     res = dpt.empty(
         res_shape,
@@ -549,7 +539,17 @@ def _search_over_axis(x, axis, keepdims, _reduction_fn):
     res_dt = ti.default_device_index_type(exec_q.sycl_device)
     res_usm_type = x.usm_type
     if x.size == 0:
-        raise ValueError("reduction does not support zero-size arrays")
+        if any([x.shape[i] == 0 for i in axis]):
+            raise ValueError(
+                "reduction cannot be performed over zero-size axes"
+            )
+        else:
+            return dpt.empty(
+                res_shape,
+                dtype=res_dt,
+                usm_type=res_usm_type,
+                sycl_queue=exec_q,
+            )
     if red_nd == 0:
         return dpt.zeros(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q

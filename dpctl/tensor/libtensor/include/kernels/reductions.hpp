@@ -1009,6 +1009,9 @@ template <typename T1,
           typename T6>
 class custom_reduction_over_group_temps_strided_krn;
 
+template <typename T1, typename T2, typename T3>
+class reduction_over_group_temps_empty_krn;
+
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class single_reduction_axis0_temps_contig_krn;
 
@@ -1119,6 +1122,31 @@ sycl::event reduction_over_group_temps_strided_impl(
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
     constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+
+    if (reduction_nelems == 0) {
+        sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
+            using IndexerT =
+                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+
+            const py::ssize_t *const &res_shape = iter_shape_and_strides;
+            const py::ssize_t *const &res_strides =
+                iter_shape_and_strides + 2 * iter_nd;
+            IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
+                                 res_strides);
+            using InitKernelName =
+                class reduction_over_group_temps_empty_krn<resTy, argTy,
+                                                           ReductionOpT>;
+            cgh.depends_on(depends);
+
+            cgh.parallel_for<InitKernelName>(
+                sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
+                    auto res_offset = res_indexer(id[0]);
+                    res_tp[res_offset] = identity_val;
+                });
+        });
+
+        return res_init_ev;
+    }
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
@@ -1244,7 +1272,7 @@ sycl::event reduction_over_group_temps_strided_impl(
         resTy *partially_reduced_tmp2 = nullptr;
 
         if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unabled to allocate device_memory");
+            throw std::runtime_error("Unable to allocate device_memory");
         }
         else {
             partially_reduced_tmp2 =
@@ -1501,6 +1529,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
 
     constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
 
+    if (reduction_nelems == 0) {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(identity_val), iter_nelems, depends);
+
+        return res_init_ev;
+    }
+
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
@@ -1632,7 +1667,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         resTy *partially_reduced_tmp2 = nullptr;
 
         if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unabled to allocate device_memory");
+            throw std::runtime_error("Unable to allocate device_memory");
         }
         else {
             partially_reduced_tmp2 =
@@ -1879,6 +1914,13 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
 
     constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
 
+    if (reduction_nelems == 0) {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(identity_val), iter_nelems, depends);
+
+        return res_init_ev;
+    }
+
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
@@ -2015,7 +2057,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         resTy *partially_reduced_tmp2 = nullptr;
 
         if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unabled to allocate device_memory");
+            throw std::runtime_error("Unable to allocate device_memory");
         }
         else {
             partially_reduced_tmp2 =
@@ -2712,12 +2754,16 @@ struct TypePairSupportDataForSumReductionTemps
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
 
         // input int8_t
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int16_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
 
         // input uint8_t
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
@@ -2727,11 +2773,15 @@ struct TypePairSupportDataForSumReductionTemps
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
 
         // input int16_t
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
 
         // input uint16_t
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
@@ -2739,20 +2789,28 @@ struct TypePairSupportDataForSumReductionTemps
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
 
         // input int32_t
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
 
         // input uint32_t
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
 
         // input int64_t
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
 
-        // input uint32_t
+        // input uint64_t
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
 
         // input half
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
@@ -2967,12 +3025,16 @@ struct TypePairSupportDataForProductReductionTemps
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
 
         // input int8_t
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int16_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
 
         // input uint8_t
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
@@ -2982,11 +3044,15 @@ struct TypePairSupportDataForProductReductionTemps
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
 
         // input int16_t
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
 
         // input uint16_t
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
@@ -2994,20 +3060,28 @@ struct TypePairSupportDataForProductReductionTemps
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
 
         // input int32_t
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
 
         // input uint32_t
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
 
         // input int64_t
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
 
         // input uint32_t
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
 
         // input half
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
@@ -3957,6 +4031,8 @@ template <typename T1,
           bool b2>
 class custom_search_over_group_temps_strided_krn;
 
+template <typename T1, typename T2, typename T3> class search_empty_krn;
+
 template <typename T1,
           typename T2,
           typename T3,
@@ -4159,6 +4235,30 @@ sycl::event search_over_group_temps_strided_impl(
 
     constexpr argTy identity_val = su_ns::Identity<ReductionOpT, argTy>::value;
     constexpr resTy idx_identity_val = su_ns::Identity<IndexOpT, resTy>::value;
+
+    if (reduction_nelems == 0) {
+        sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
+            using IndexerT =
+                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+
+            const py::ssize_t *const &res_shape = iter_shape_and_strides;
+            const py::ssize_t *const &res_strides =
+                iter_shape_and_strides + 2 * iter_nd;
+            IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
+                                 res_strides);
+            using InitKernelName =
+                class search_empty_krn<resTy, argTy, ReductionOpT>;
+            cgh.depends_on(depends);
+
+            cgh.parallel_for<InitKernelName>(
+                sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
+                    auto res_offset = res_indexer(id[0]);
+                    res_tp[res_offset] = idx_identity_val;
+                });
+        });
+
+        return res_init_ev;
+    }
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
@@ -4590,6 +4690,13 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     constexpr argTy identity_val = su_ns::Identity<ReductionOpT, argTy>::value;
     constexpr resTy idx_identity_val = su_ns::Identity<IndexOpT, resTy>::value;
 
+    if (reduction_nelems == 0) {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(idx_identity_val), iter_nelems, depends);
+
+        return res_init_ev;
+    }
+
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
@@ -5004,6 +5111,13 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
     constexpr argTy identity_val = su_ns::Identity<ReductionOpT, argTy>::value;
     constexpr resTy idx_identity_val = su_ns::Identity<IndexOpT, resTy>::value;
+
+    if (reduction_nelems == 0) {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(idx_identity_val), iter_nelems, depends);
+
+        return res_init_ev;
+    }
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
