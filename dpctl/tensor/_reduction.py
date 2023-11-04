@@ -19,6 +19,7 @@ from numpy.core.numeric import normalize_axis_tuple
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.tensor._tensor_reductions_impl as tri
 
 from ._type_utils import _to_device_supported_dtype
 
@@ -220,8 +221,8 @@ def sum(x, axis=None, dtype=None, keepdims=False):
         axis,
         dtype,
         keepdims,
-        ti._sum_over_axis,
-        ti._sum_over_axis_dtype_supported,
+        tri._sum_over_axis,
+        tri._sum_over_axis_dtype_supported,
         _default_reduction_dtype,
         _identity=0,
     )
@@ -281,8 +282,8 @@ def prod(x, axis=None, dtype=None, keepdims=False):
         axis,
         dtype,
         keepdims,
-        ti._prod_over_axis,
-        ti._prod_over_axis_dtype_supported,
+        tri._prod_over_axis,
+        tri._prod_over_axis_dtype_supported,
         _default_reduction_dtype,
         _identity=1,
     )
@@ -335,8 +336,8 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
         axis,
         dtype,
         keepdims,
-        ti._logsumexp_over_axis,
-        lambda inp_dt, res_dt, *_: ti._logsumexp_over_axis_dtype_supported(
+        tri._logsumexp_over_axis,
+        lambda inp_dt, res_dt, *_: tri._logsumexp_over_axis_dtype_supported(
             inp_dt, res_dt
         ),
         _default_reduction_dtype_fp_types,
@@ -391,8 +392,8 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
         axis,
         dtype,
         keepdims,
-        ti._hypot_over_axis,
-        lambda inp_dt, res_dt, *_: ti._hypot_over_axis_dtype_supported(
+        tri._hypot_over_axis,
+        lambda inp_dt, res_dt, *_: tri._hypot_over_axis_dtype_supported(
             inp_dt, res_dt
         ),
         _default_reduction_dtype_fp_types,
@@ -468,7 +469,7 @@ def max(x, axis=None, keepdims=False):
             entire array, a zero-dimensional array is returned. The returned
             array has the same data type as `x`.
     """
-    return _comparison_over_axis(x, axis, keepdims, ti._max_over_axis)
+    return _comparison_over_axis(x, axis, keepdims, tri._max_over_axis)
 
 
 def min(x, axis=None, keepdims=False):
@@ -496,7 +497,7 @@ def min(x, axis=None, keepdims=False):
             entire array, a zero-dimensional array is returned. The returned
             array has the same data type as `x`.
     """
-    return _comparison_over_axis(x, axis, keepdims, ti._min_over_axis)
+    return _comparison_over_axis(x, axis, keepdims, tri._min_over_axis)
 
 
 def _search_over_axis(x, axis, keepdims, _reduction_fn):
@@ -577,7 +578,7 @@ def argmax(x, axis=None, keepdims=False):
             zero-dimensional array is returned. The returned array has the
             default array index data type for the device of `x`.
     """
-    return _search_over_axis(x, axis, keepdims, ti._argmax_over_axis)
+    return _search_over_axis(x, axis, keepdims, tri._argmax_over_axis)
 
 
 def argmin(x, axis=None, keepdims=False):
@@ -609,4 +610,4 @@ def argmin(x, axis=None, keepdims=False):
             zero-dimensional array is returned. The returned array has the
             default array index data type for the device of `x`.
     """
-    return _search_over_axis(x, axis, keepdims, ti._argmin_over_axis)
+    return _search_over_axis(x, axis, keepdims, tri._argmin_over_axis)

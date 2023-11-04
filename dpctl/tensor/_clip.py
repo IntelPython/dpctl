@@ -16,6 +16,7 @@
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_elementwise_impl as tei
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._copy_utils import (
     _empty_like_orderK,
@@ -429,9 +430,9 @@ def clip(x, min=None, max=None, out=None, order="K"):
             "only one of `min` and `max` is permitted to be `None`"
         )
     elif max is None:
-        return _clip_none(x, min, out, order, ti._maximum)
+        return _clip_none(x, min, out, order, tei._maximum)
     elif min is None:
-        return _clip_none(x, max, out, order, ti._minimum)
+        return _clip_none(x, max, out, order, tei._minimum)
     else:
         q1, x_usm_type = x.sycl_queue, x.usm_type
         q2, min_usm_type = _get_queue_usm_type(min)

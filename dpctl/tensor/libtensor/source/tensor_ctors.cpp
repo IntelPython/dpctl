@@ -1,4 +1,5 @@
-//===-- tensor_py.cpp - Implementation of _tensor_impl module  --*-C++-*-/===//
+//===-- tensor_ctors.cpp -                                    ---*-C++-*-/===//
+//   Implementation of _tensor_impl module
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -36,19 +37,16 @@
 
 #include "accumulators.hpp"
 #include "boolean_advanced_indexing.hpp"
-#include "boolean_reductions.hpp"
 #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_for_roll.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
-#include "elementwise_functions/elementwise_common.hpp"
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "linear_sequences.hpp"
-#include "reductions/reduction_common.hpp"
 #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 #include "triul_ctor.hpp"
@@ -454,8 +452,4 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Returns a tuple of events: (hev, ev)",
           py::arg("src"), py::arg("min"), py::arg("max"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
-
-    dpctl::tensor::py_internal::init_elementwise_functions(m);
-    dpctl::tensor::py_internal::init_boolean_reduction_functions(m);
-    dpctl::tensor::py_internal::init_reduction_functions(m);
 }

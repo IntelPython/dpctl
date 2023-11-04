@@ -113,10 +113,13 @@ set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduce_hypot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/sum.cpp
 )
+set(_boolean_reduction_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
+)
 set(_tensor_impl_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_py.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_numpy_ndarray_into_usm_ndarray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_reshape.cpp
@@ -128,19 +131,39 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/triul_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
-list(APPEND _tensor_impl_sources
-     ${_elementwise_sources}
-     ${_reduction_sources}
+set(_tensor_elementwise_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_elementwise.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
+    ${_elementwise_sources}
 )
+set(_tensor_reductions_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_reductions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
+    ${_boolean_reduction_sources}
+    ${_reduction_sources}
+)
+
+set(_py_trgts)
 
 set(python_module_name _tensor_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_elementwise_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_elementwise_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_elementwise_impl_sources})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_reductions_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
+list(APPEND _py_trgts ${python_module_name})
+
 set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
@@ -170,19 +193,22 @@ if (UNIX)
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/sqrt.cpp
     PROPERTIES COMPILE_DEFINITIONS "USE_STD_ABS_FOR_COMPLEX_TYPES;USE_STD_SQRT_FOR_COMPLEX_TYPES")
 endif()
-target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
-target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
-if(UNIX)
-    # this option is supported on Linux only
-    target_link_options(${python_module_name} PRIVATE -fsycl-link-huge-device-code)
-endif()
-target_include_directories(${python_module_name}
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
-)
+
 set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
-target_link_options(${python_module_name} PRIVATE ${_linker_options})
-add_dependencies(${python_module_name} _dpctl4pybind11_deps)
-install(TARGETS ${python_module_name} DESTINATION "dpctl/tensor")
+foreach(python_module_name ${_py_trgts})
+    target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
+    target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
+    if(UNIX)
+        # this option is supported on Linux only
+        target_link_options(${python_module_name} PRIVATE -fsycl-link-huge-device-code)
+    endif()
+    target_include_directories(${python_module_name}
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include
+        ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
+    )
+    target_link_options(${python_module_name} PRIVATE ${_linker_options})
+    add_dependencies(${python_module_name} _dpctl4pybind11_deps)
+    install(TARGETS ${python_module_name} DESTINATION "dpctl/tensor")
+endforeach()

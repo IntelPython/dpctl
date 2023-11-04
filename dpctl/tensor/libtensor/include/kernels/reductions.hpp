@@ -477,11 +477,11 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                 reduction_shape_stride};
 
-            constexpr size_t preferrered_reductions_per_wi = 4;
+            constexpr size_t preferred_reductions_per_wi = 8;
             size_t reductions_per_wi =
-                (reduction_nelems < preferrered_reductions_per_wi * wg)
+                (reduction_nelems < preferred_reductions_per_wi * wg)
                     ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
-                    : preferrered_reductions_per_wi;
+                    : preferred_reductions_per_wi;
 
             size_t reduction_groups =
                 (reduction_nelems + reductions_per_wi * wg - 1) /
@@ -619,11 +619,11 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{};
 
-            constexpr size_t preferrered_reductions_per_wi = 8;
+            constexpr size_t preferred_reductions_per_wi = 8;
             size_t reductions_per_wi =
-                (reduction_nelems < preferrered_reductions_per_wi * wg)
+                (reduction_nelems < preferred_reductions_per_wi * wg)
                     ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
-                    : preferrered_reductions_per_wi;
+                    : preferred_reductions_per_wi;
 
             size_t reduction_groups =
                 (reduction_nelems + reductions_per_wi * wg - 1) /
@@ -696,7 +696,41 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    {
+    if (reduction_nelems < wg) {
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                        NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{
+                0, static_cast<py::ssize_t>(reduction_nelems),
+                static_cast<py::ssize_t>(iter_nelems)};
+
+            using KernelName =
+                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
+                                               InputOutputIterIndexerT,
+                                               ReductionIndexerT>;
+
+            sycl::range<1> iter_range{iter_nelems};
+
+            cgh.parallel_for<KernelName>(
+                iter_range,
+                SequentialReduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+    else {
         sycl::event res_init_ev = exec_q.fill<resTy>(
             res_tp, resTy(identity_val), iter_nelems, depends);
 
@@ -718,11 +752,11 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
                 0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
                 /* step */ static_cast<py::ssize_t>(iter_nelems)};
 
-            constexpr size_t preferrered_reductions_per_wi = 8;
+            constexpr size_t preferred_reductions_per_wi = 8;
             size_t reductions_per_wi =
-                (reduction_nelems < preferrered_reductions_per_wi * wg)
+                (reduction_nelems < preferred_reductions_per_wi * wg)
                     ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
-                    : preferrered_reductions_per_wi;
+                    : preferred_reductions_per_wi;
 
             size_t reduction_groups =
                 (reduction_nelems + reductions_per_wi * wg - 1) /
@@ -1090,15 +1124,7 @@ sycl::event reduction_over_group_temps_strided_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    constexpr size_t preferrered_reductions_per_wi = 4;
-    // max_max_wg prevents running out of resources on CPU
-    constexpr size_t max_max_wg = 2048;
-    size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
-
-    size_t reductions_per_wi(preferrered_reductions_per_wi);
-    if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+    if (reduction_nelems < wg) {
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -1113,7 +1139,47 @@ sycl::event reduction_over_group_temps_strided_impl(
             ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                 reduction_shape_stride};
 
-            wg = max_wg;
+            cgh.parallel_for<class reduction_seq_strided_krn<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>>(
+                sycl::range<1>(iter_nelems),
+                SequentialReduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    constexpr size_t preferred_reductions_per_wi = 8;
+    // max_max_wg prevents running out of resources on CPU
+    constexpr size_t max_max_wg = 2048;
+    size_t max_wg = std::min(
+        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+    size_t reductions_per_wi(preferred_reductions_per_wi);
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::StridedIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{
+                iter_nd, iter_arg_offset, iter_res_offset,
+                iter_shape_and_strides};
+            ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                reduction_shape_stride};
+
+            if (iter_nelems == 1) {
+                // increase GPU occupancy
+                wg = max_wg;
+            }
             reductions_per_wi =
                 std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
@@ -1164,13 +1230,13 @@ sycl::event reduction_over_group_temps_strided_impl(
     else {
         // more than one work-groups is needed, requires a temporary
         size_t reduction_groups =
-            (reduction_nelems + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
         size_t second_iter_reduction_groups_ =
-            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
 
         resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
             iter_nelems * (reduction_groups + second_iter_reduction_groups_),
@@ -1227,7 +1293,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                         arg_tp, partially_reduced_tmp, ReductionOpT(),
                         identity_val, in_out_iter_indexer, reduction_indexer,
                         reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
             else {
                 using SlmT = sycl::local_accessor<resTy, 1>;
@@ -1244,7 +1310,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                         arg_tp, partially_reduced_tmp, ReductionOpT(),
                         identity_val, in_out_iter_indexer, reduction_indexer,
                         local_memory, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
         });
 
@@ -1255,11 +1321,10 @@ sycl::event reduction_over_group_temps_strided_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferrered_reductions_per_wi * max_wg) {
-            size_t reduction_groups_ =
-                (remaining_reduction_nelems +
-                 preferrered_reductions_per_wi * wg - 1) /
-                (preferrered_reductions_per_wi * wg);
+               preferred_reductions_per_wi * max_wg) {
+            size_t reduction_groups_ = (remaining_reduction_nelems +
+                                        preferred_reductions_per_wi * wg - 1) /
+                                       (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -1302,7 +1367,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
                             remaining_reduction_nelems, iter_nelems,
-                            preferrered_reductions_per_wi));
+                            preferred_reductions_per_wi));
                 }
                 else {
                     using SlmT = sycl::local_accessor<resTy, 1>;
@@ -1319,7 +1384,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
                             local_memory, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
+                            iter_nelems, preferred_reductions_per_wi));
                 }
             });
 
@@ -1440,15 +1505,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    constexpr size_t preferrered_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
-    constexpr size_t max_max_wg = 2048;
-    size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
-
-    size_t reductions_per_wi(preferrered_reductions_per_wi);
-    if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+    if (reduction_nelems < wg) {
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -1466,7 +1523,50 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
-            wg = max_wg;
+            cgh.parallel_for<class reduction_seq_contig_krn<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>>(
+                sycl::range<1>(iter_nelems),
+                SequentialReduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    constexpr size_t preferred_reductions_per_wi = 8;
+    // max_max_wg prevents running out of resources on CPU
+    constexpr size_t max_max_wg = 2048;
+    size_t max_wg = std::min(
+        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+    size_t reductions_per_wi(preferred_reductions_per_wi);
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using InputIterIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIterIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT = NoOpIndexerT;
+
+            InputOutputIterIndexerT in_out_iter_indexer{
+                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
+                                  static_cast<py::ssize_t>(reduction_nelems)},
+                NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{};
+
+            if (iter_nelems == 1) {
+                // increase GPU occupancy
+                wg = max_wg;
+            }
             reductions_per_wi =
                 std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
@@ -1518,13 +1618,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     else {
         // more than one work-groups is needed, requires a temporary
         size_t reduction_groups =
-            (reduction_nelems + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
         size_t second_iter_reduction_groups_ =
-            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
 
         resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
             iter_nelems * (reduction_groups + second_iter_reduction_groups_),
@@ -1575,7 +1675,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                         arg_tp, partially_reduced_tmp, ReductionOpT(),
                         identity_val, in_out_iter_indexer, reduction_indexer,
                         reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
             else {
                 using SlmT = sycl::local_accessor<resTy, 1>;
@@ -1592,7 +1692,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                         arg_tp, partially_reduced_tmp, ReductionOpT(),
                         identity_val, in_out_iter_indexer, reduction_indexer,
                         local_memory, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
         });
 
@@ -1603,11 +1703,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferrered_reductions_per_wi * max_wg) {
-            size_t reduction_groups_ =
-                (remaining_reduction_nelems +
-                 preferrered_reductions_per_wi * wg - 1) /
-                (preferrered_reductions_per_wi * wg);
+               preferred_reductions_per_wi * max_wg) {
+            size_t reduction_groups_ = (remaining_reduction_nelems +
+                                        preferred_reductions_per_wi * wg - 1) /
+                                       (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -1650,7 +1749,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
                             remaining_reduction_nelems, iter_nelems,
-                            preferrered_reductions_per_wi));
+                            preferred_reductions_per_wi));
                 }
                 else {
                     using SlmT = sycl::local_accessor<resTy, 1>;
@@ -1667,7 +1766,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
                             local_memory, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
+                            iter_nelems, preferred_reductions_per_wi));
                 }
             });
 
@@ -1784,15 +1883,51 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    constexpr size_t preferrered_reductions_per_wi = 8;
+    if (reduction_nelems < wg) {
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                        NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{
+                0, static_cast<py::ssize_t>(reduction_nelems),
+                static_cast<py::ssize_t>(iter_nelems)};
+
+            using KernelName =
+                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
+                                               InputOutputIterIndexerT,
+                                               ReductionIndexerT>;
+
+            sycl::range<1> iter_range{iter_nelems};
+
+            cgh.parallel_for<KernelName>(
+                iter_range,
+                SequentialReduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val,
+                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    constexpr size_t preferred_reductions_per_wi = 8;
     // max_max_wg prevents running out of resources on CPU
     constexpr size_t max_max_wg = 2048;
     size_t max_wg = std::min(
         max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
-    size_t reductions_per_wi(preferrered_reductions_per_wi);
-    if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+    size_t reductions_per_wi(preferred_reductions_per_wi);
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -1811,7 +1946,10 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                 0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
                 /* step */ static_cast<py::ssize_t>(iter_nelems)};
 
-            wg = max_wg;
+            if (iter_nelems == 1) {
+                // increase GPU occupancy
+                wg = max_wg;
+            }
             reductions_per_wi =
                 std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
@@ -1863,13 +2001,13 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     else {
         // more than one work-groups is needed, requires a temporary
         size_t reduction_groups =
-            (reduction_nelems + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
         size_t second_iter_reduction_groups_ =
-            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
 
         resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
             iter_nelems * (reduction_groups + second_iter_reduction_groups_),
@@ -1920,7 +2058,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                         arg_tp, partially_reduced_tmp, ReductionOpT(),
                         identity_val, in_out_iter_indexer, reduction_indexer,
                         reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
             else {
                 using SlmT = sycl::local_accessor<resTy, 1>;
@@ -1937,7 +2075,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                         arg_tp, partially_reduced_tmp, ReductionOpT(),
                         identity_val, in_out_iter_indexer, reduction_indexer,
                         local_memory, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
         });
 
@@ -1948,11 +2086,10 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferrered_reductions_per_wi * max_wg) {
-            size_t reduction_groups_ =
-                (remaining_reduction_nelems +
-                 preferrered_reductions_per_wi * wg - 1) /
-                (preferrered_reductions_per_wi * wg);
+               preferred_reductions_per_wi * max_wg) {
+            size_t reduction_groups_ = (remaining_reduction_nelems +
+                                        preferred_reductions_per_wi * wg - 1) /
+                                       (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -1995,7 +2132,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
                             remaining_reduction_nelems, iter_nelems,
-                            preferrered_reductions_per_wi));
+                            preferred_reductions_per_wi));
                 }
                 else {
                     using SlmT = sycl::local_accessor<resTy, 1>;
@@ -2012,7 +2149,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                             temp_arg, temp2_arg, ReductionOpT(), identity_val,
                             in_out_iter_indexer, reduction_indexer,
                             local_memory, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
+                            iter_nelems, preferred_reductions_per_wi));
                 }
             });
 
@@ -2110,11 +2247,10 @@ template <typename argTy, typename outTy>
 struct TypePairSupportDataForCompReductionAtomic
 {
 
-    /* value if true a kernel for <argTy, outTy> must be instantiated, false
+    /* value is true if a kernel for <argTy, outTy> must be instantiated, false
      * otherwise */
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++
+    // disjunction is C++17 feature, supported by DPC++
+    static constexpr bool is_defined = std::disjunction<
         // input int32
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
         // input uint32
@@ -2123,6 +2259,10 @@ struct TypePairSupportDataForCompReductionAtomic
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
         // input uint64
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        // input float
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
+        // input double
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;
 };
@@ -2131,19 +2271,17 @@ template <typename argTy, typename outTy>
 struct TypePairSupportDataForCompReductionTemps
 {
 
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    // disjunction is C++17 feature, supported by DPC++
+    static constexpr bool is_defined = std::disjunction<
+        // input bool
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, bool>,
         // input int8_t
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
-
         // input uint8_t
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
 
         // input int16_t
         td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
-
         // input uint16_t
         td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
 
@@ -3263,6 +3401,129 @@ struct LogSumExpOverAxis0TempsContigFactory
 
 // Argmax and Argmin
 
+/* Sequential search reduction */
+
+template <typename argT,
+          typename outT,
+          typename ReductionOp,
+          typename IdxReductionOp,
+          typename InputOutputIterIndexerT,
+          typename InputRedIndexerT>
+struct SequentialSearchReduction
+{
+private:
+    const argT *inp_ = nullptr;
+    outT *out_ = nullptr;
+    ReductionOp reduction_op_;
+    argT identity_;
+    IdxReductionOp idx_reduction_op_;
+    outT idx_identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
+    size_t reduction_max_gid_ = 0;
+
+public:
+    SequentialSearchReduction(const argT *inp,
+                              outT *res,
+                              ReductionOp reduction_op,
+                              const argT &identity_val,
+                              IdxReductionOp idx_reduction_op,
+                              const outT &idx_identity_val,
+                              InputOutputIterIndexerT arg_res_iter_indexer,
+                              InputRedIndexerT arg_reduced_dims_indexer,
+                              size_t reduction_size)
+        : inp_(inp), out_(res), reduction_op_(reduction_op),
+          identity_(identity_val), idx_reduction_op_(idx_reduction_op),
+          idx_identity_(idx_identity_val),
+          inp_out_iter_indexer_(arg_res_iter_indexer),
+          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
+          reduction_max_gid_(reduction_size)
+    {
+    }
+
+    void operator()(sycl::id<1> id) const
+    {
+
+        auto const &inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
+        const py::ssize_t &inp_iter_offset =
+            inp_out_iter_offsets_.get_first_offset();
+        const py::ssize_t &out_iter_offset =
+            inp_out_iter_offsets_.get_second_offset();
+
+        argT red_val(identity_);
+        outT idx_val(idx_identity_);
+        for (size_t m = 0; m < reduction_max_gid_; ++m) {
+            const py::ssize_t inp_reduction_offset =
+                inp_reduced_dims_indexer_(m);
+            const py::ssize_t inp_offset =
+                inp_iter_offset + inp_reduction_offset;
+
+            argT val = inp_[inp_offset];
+            if (val == red_val) {
+                idx_val = idx_reduction_op_(idx_val, static_cast<outT>(m));
+            }
+            else {
+                if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
+                    using dpctl::tensor::type_utils::is_complex;
+                    if constexpr (is_complex<argT>::value) {
+                        using dpctl::tensor::math_utils::less_complex;
+                        // less_complex always returns false for NaNs, so check
+                        if (less_complex<argT>(val, red_val) ||
+                            std::isnan(std::real(val)) ||
+                            std::isnan(std::imag(val)))
+                        {
+                            red_val = val;
+                            idx_val = static_cast<outT>(m);
+                        }
+                    }
+                    else if constexpr (std::is_floating_point_v<argT> ||
+                                       std::is_same_v<argT, sycl::half>)
+                    {
+                        if (val < red_val || std::isnan(val)) {
+                            red_val = val;
+                            idx_val = static_cast<outT>(m);
+                        }
+                    }
+                    else {
+                        if (val < red_val) {
+                            red_val = val;
+                            idx_val = static_cast<outT>(m);
+                        }
+                    }
+                }
+                else if constexpr (su_ns::IsMaximum<argT, ReductionOp>::value) {
+                    using dpctl::tensor::type_utils::is_complex;
+                    if constexpr (is_complex<argT>::value) {
+                        using dpctl::tensor::math_utils::greater_complex;
+                        if (greater_complex<argT>(val, red_val) ||
+                            std::isnan(std::real(val)) ||
+                            std::isnan(std::imag(val)))
+                        {
+                            red_val = val;
+                            idx_val = static_cast<outT>(m);
+                        }
+                    }
+                    else if constexpr (std::is_floating_point_v<argT> ||
+                                       std::is_same_v<argT, sycl::half>)
+                    {
+                        if (val > red_val || std::isnan(val)) {
+                            red_val = val;
+                            idx_val = static_cast<outT>(m);
+                        }
+                    }
+                    else {
+                        if (val > red_val) {
+                            red_val = val;
+                            idx_val = static_cast<outT>(m);
+                        }
+                    }
+                }
+            }
+        }
+        out_[out_iter_offset] = idx_val;
+    }
+};
+
 /* = Search reduction using reduce_over_group*/
 
 template <typename argT,
@@ -3532,7 +3793,9 @@ public:
                                 }
                             }
                         }
-                        else if constexpr (std::is_floating_point_v<argT>) {
+                        else if constexpr (std::is_floating_point_v<argT> ||
+                                           std::is_same_v<argT, sycl::half>)
+                        {
                             if (val < local_red_val || std::isnan(val)) {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -3576,7 +3839,9 @@ public:
                                 }
                             }
                         }
-                        else if constexpr (std::is_floating_point_v<argT>) {
+                        else if constexpr (std::is_floating_point_v<argT> ||
+                                           std::is_same_v<argT, sycl::half>)
+                        {
                             if (val > local_red_val || std::isnan(val)) {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -3619,7 +3884,9 @@ public:
                             ? local_idx
                             : idx_identity_;
         }
-        else if constexpr (std::is_floating_point_v<argT>) {
+        else if constexpr (std::is_floating_point_v<argT> ||
+                           std::is_same_v<argT, sycl::half>)
+        {
             // equality does not hold for NaNs, so check here
             local_idx =
                 (red_val_over_wg == local_red_val || std::isnan(local_red_val))
@@ -3666,6 +3933,14 @@ template <typename T1,
           typename T3,
           typename T4,
           typename T5,
+          typename T6>
+class search_seq_strided_krn;
+
+template <typename T1,
+          typename T2,
+          typename T3,
+          typename T4,
+          typename T5,
           typename T6,
           bool b1,
           bool b2>
@@ -3681,6 +3956,14 @@ template <typename T1,
           bool b1,
           bool b2>
 class custom_search_over_group_temps_strided_krn;
+
+template <typename T1,
+          typename T2,
+          typename T3,
+          typename T4,
+          typename T5,
+          typename T6>
+class search_seq_contig_krn;
 
 template <typename T1,
           typename T2,
@@ -3881,15 +4164,7 @@ sycl::event search_over_group_temps_strided_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    constexpr size_t preferrered_reductions_per_wi = 4;
-    // max_max_wg prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
-
-    size_t reductions_per_wi(preferrered_reductions_per_wi);
-    if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+    if (reduction_nelems < wg) {
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -3904,7 +4179,49 @@ sycl::event search_over_group_temps_strided_impl(
             ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                 reduction_shape_stride};
 
-            wg = max_wg;
+            cgh.parallel_for<class search_seq_strided_krn<
+                argTy, resTy, ReductionOpT, IndexOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>>(
+                sycl::range<1>(iter_nelems),
+                SequentialSearchReduction<argTy, resTy, ReductionOpT, IndexOpT,
+                                          InputOutputIterIndexerT,
+                                          ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val, IndexOpT(),
+                    idx_identity_val, in_out_iter_indexer, reduction_indexer,
+                    reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    constexpr size_t preferred_reductions_per_wi = 4;
+    // max_max_wg prevents running out of resources on CPU
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+    size_t reductions_per_wi(preferred_reductions_per_wi);
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::StridedIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{
+                iter_nd, iter_arg_offset, iter_res_offset,
+                iter_shape_and_strides};
+            ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                reduction_shape_stride};
+
+            if (iter_nelems == 1) {
+                // increase GPU occupancy
+                wg = max_wg;
+            }
             reductions_per_wi =
                 std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
@@ -3956,13 +4273,13 @@ sycl::event search_over_group_temps_strided_impl(
     else {
         // more than one work-groups is needed, requires a temporary
         size_t reduction_groups =
-            (reduction_nelems + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
         size_t second_iter_reduction_groups_ =
-            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
 
         resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
             iter_nelems * (reduction_groups + second_iter_reduction_groups_),
@@ -4031,7 +4348,7 @@ sycl::event search_over_group_temps_strided_impl(
                         partially_reduced_tmp, ReductionOpT(), identity_val,
                         IndexOpT(), idx_identity_val, in_out_iter_indexer,
                         reduction_indexer, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
             else {
                 using SlmT = sycl::local_accessor<argTy, 1>;
@@ -4050,7 +4367,7 @@ sycl::event search_over_group_temps_strided_impl(
                         partially_reduced_tmp, ReductionOpT(), identity_val,
                         IndexOpT(), idx_identity_val, in_out_iter_indexer,
                         reduction_indexer, local_memory, reduction_nelems,
-                        iter_nelems, preferrered_reductions_per_wi));
+                        iter_nelems, preferred_reductions_per_wi));
             }
         });
 
@@ -4065,11 +4382,10 @@ sycl::event search_over_group_temps_strided_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferrered_reductions_per_wi * max_wg) {
-            size_t reduction_groups_ =
-                (remaining_reduction_nelems +
-                 preferrered_reductions_per_wi * wg - 1) /
-                (preferrered_reductions_per_wi * wg);
+               preferred_reductions_per_wi * max_wg) {
+            size_t reduction_groups_ = (remaining_reduction_nelems +
+                                        preferred_reductions_per_wi * wg - 1) /
+                                       (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -4114,7 +4430,7 @@ sycl::event search_over_group_temps_strided_impl(
                             ReductionOpT(), identity_val, IndexOpT(),
                             idx_identity_val, in_out_iter_indexer,
                             reduction_indexer, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
+                            iter_nelems, preferred_reductions_per_wi));
                 }
                 else {
                     using SlmT = sycl::local_accessor<argTy, 1>;
@@ -4135,7 +4451,7 @@ sycl::event search_over_group_temps_strided_impl(
                             idx_identity_val, in_out_iter_indexer,
                             reduction_indexer, local_memory,
                             remaining_reduction_nelems, iter_nelems,
-                            preferrered_reductions_per_wi));
+                            preferred_reductions_per_wi));
                 }
             });
 
@@ -4278,15 +4594,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    constexpr size_t preferrered_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
-
-    size_t reductions_per_wi(preferrered_reductions_per_wi);
-    if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+    if (reduction_nelems < wg) {
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -4304,7 +4612,52 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
-            wg = max_wg;
+            cgh.parallel_for<class search_seq_contig_krn<
+                argTy, resTy, ReductionOpT, IndexOpT, InputOutputIterIndexerT,
+                ReductionIndexerT>>(
+                sycl::range<1>(iter_nelems),
+                SequentialSearchReduction<argTy, resTy, ReductionOpT, IndexOpT,
+                                          InputOutputIterIndexerT,
+                                          ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val, IndexOpT(),
+                    idx_identity_val, in_out_iter_indexer, reduction_indexer,
+                    reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    constexpr size_t preferred_reductions_per_wi = 8;
+    // max_max_wg prevents running out of resources on CPU
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+    size_t reductions_per_wi(preferred_reductions_per_wi);
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using InputIterIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIterIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT = NoOpIndexerT;
+
+            InputOutputIterIndexerT in_out_iter_indexer{
+                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
+                                  static_cast<py::ssize_t>(reduction_nelems)},
+                NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{};
+
+            if (iter_nelems == 1) {
+                // increase GPU occupancy
+                wg = max_wg;
+            }
             reductions_per_wi =
                 std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
@@ -4356,13 +4709,13 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     else {
         // more than one work-groups is needed, requires a temporary
         size_t reduction_groups =
-            (reduction_nelems + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
         size_t second_iter_reduction_groups_ =
-            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
 
         resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
             iter_nelems * (reduction_groups + second_iter_reduction_groups_),
@@ -4425,7 +4778,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                         partially_reduced_tmp, ReductionOpT(), identity_val,
                         IndexOpT(), idx_identity_val, in_out_iter_indexer,
                         reduction_indexer, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
             else {
                 using SlmT = sycl::local_accessor<argTy, 1>;
@@ -4444,7 +4797,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                         partially_reduced_tmp, ReductionOpT(), identity_val,
                         IndexOpT(), idx_identity_val, in_out_iter_indexer,
                         reduction_indexer, local_memory, reduction_nelems,
-                        iter_nelems, preferrered_reductions_per_wi));
+                        iter_nelems, preferred_reductions_per_wi));
             }
         });
 
@@ -4459,11 +4812,10 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferrered_reductions_per_wi * max_wg) {
-            size_t reduction_groups_ =
-                (remaining_reduction_nelems +
-                 preferrered_reductions_per_wi * wg - 1) /
-                (preferrered_reductions_per_wi * wg);
+               preferred_reductions_per_wi * max_wg) {
+            size_t reduction_groups_ = (remaining_reduction_nelems +
+                                        preferred_reductions_per_wi * wg - 1) /
+                                       (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -4508,7 +4860,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                             ReductionOpT(), identity_val, IndexOpT(),
                             idx_identity_val, in_out_iter_indexer,
                             reduction_indexer, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
+                            iter_nelems, preferred_reductions_per_wi));
                 }
                 else {
                     using SlmT = sycl::local_accessor<argTy, 1>;
@@ -4529,7 +4881,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                             idx_identity_val, in_out_iter_indexer,
                             reduction_indexer, local_memory,
                             remaining_reduction_nelems, iter_nelems,
-                            preferrered_reductions_per_wi));
+                            preferred_reductions_per_wi));
                 }
             });
 
@@ -4657,15 +5009,53 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-    constexpr size_t preferrered_reductions_per_wi = 8;
+    if (reduction_nelems < wg) {
+        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    NoOpIndexerT, NoOpIndexerT>;
+            using ReductionIndexerT =
+                dpctl::tensor::offset_utils::Strided1DIndexer;
+
+            InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                        NoOpIndexerT{}};
+            ReductionIndexerT reduction_indexer{
+                0, static_cast<py::ssize_t>(reduction_nelems),
+                static_cast<py::ssize_t>(iter_nelems)};
+
+            using KernelName =
+                class search_seq_contig_krn<argTy, resTy, ReductionOpT,
+                                            IndexOpT, InputOutputIterIndexerT,
+                                            ReductionIndexerT>;
+
+            sycl::range<1> iter_range{iter_nelems};
+
+            cgh.parallel_for<KernelName>(
+                iter_range,
+                SequentialSearchReduction<argTy, resTy, ReductionOpT, IndexOpT,
+                                          InputOutputIterIndexerT,
+                                          ReductionIndexerT>(
+                    arg_tp, res_tp, ReductionOpT(), identity_val, IndexOpT(),
+                    idx_identity_val, in_out_iter_indexer, reduction_indexer,
+                    reduction_nelems));
+        });
+
+        return comp_ev;
+    }
+
+    constexpr size_t preferred_reductions_per_wi = 8;
     // max_max_wg prevents running out of resources on CPU
     size_t max_wg =
         std::min(size_t(2048),
                  d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
-    size_t reductions_per_wi(preferrered_reductions_per_wi);
-    if (reduction_nelems <= preferrered_reductions_per_wi * max_wg) {
-        // reduction only requries 1 work-group, can output directly to res
+    size_t reductions_per_wi(preferred_reductions_per_wi);
+    if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
+        // Perform reduction using one 1 work-group per iteration,
+        // can output directly to res
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
@@ -4684,7 +5074,10 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
                 /* step */ static_cast<py::ssize_t>(iter_nelems)};
 
-            wg = max_wg;
+            if (iter_nelems == 1) {
+                // increase GPU occupancy
+                wg = max_wg;
+            }
             reductions_per_wi =
                 std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
@@ -4736,13 +5129,13 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     else {
         // more than one work-groups is needed, requires a temporary
         size_t reduction_groups =
-            (reduction_nelems + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
         size_t second_iter_reduction_groups_ =
-            (reduction_groups + preferrered_reductions_per_wi * wg - 1) /
-            (preferrered_reductions_per_wi * wg);
+            (reduction_groups + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
 
         resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
             iter_nelems * (reduction_groups + second_iter_reduction_groups_),
@@ -4806,7 +5199,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                         partially_reduced_tmp, ReductionOpT(), identity_val,
                         IndexOpT(), idx_identity_val, in_out_iter_indexer,
                         reduction_indexer, reduction_nelems, iter_nelems,
-                        preferrered_reductions_per_wi));
+                        preferred_reductions_per_wi));
             }
             else {
                 using SlmT = sycl::local_accessor<argTy, 1>;
@@ -4825,7 +5218,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                         partially_reduced_tmp, ReductionOpT(), identity_val,
                         IndexOpT(), idx_identity_val, in_out_iter_indexer,
                         reduction_indexer, local_memory, reduction_nelems,
-                        iter_nelems, preferrered_reductions_per_wi));
+                        iter_nelems, preferred_reductions_per_wi));
             }
         });
 
@@ -4840,11 +5233,10 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferrered_reductions_per_wi * max_wg) {
-            size_t reduction_groups_ =
-                (remaining_reduction_nelems +
-                 preferrered_reductions_per_wi * wg - 1) /
-                (preferrered_reductions_per_wi * wg);
+               preferred_reductions_per_wi * max_wg) {
+            size_t reduction_groups_ = (remaining_reduction_nelems +
+                                        preferred_reductions_per_wi * wg - 1) /
+                                       (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -4889,7 +5281,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                             ReductionOpT(), identity_val, IndexOpT(),
                             idx_identity_val, in_out_iter_indexer,
                             reduction_indexer, remaining_reduction_nelems,
-                            iter_nelems, preferrered_reductions_per_wi));
+                            iter_nelems, preferred_reductions_per_wi));
                 }
                 else {
                     using SlmT = sycl::local_accessor<argTy, 1>;
@@ -4910,7 +5302,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                             idx_identity_val, in_out_iter_indexer,
                             reduction_indexer, local_memory,
                             remaining_reduction_nelems, iter_nelems,
-                            preferrered_reductions_per_wi));
+                            preferred_reductions_per_wi));
                 }
             });
 
