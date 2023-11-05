@@ -39,6 +39,7 @@ from dpctl.tensor import Device
         (2, 5, 2),
         (2, 2, 2, 2, 2, 2, 2, 2),
         5,
+        np.int32(7),
     ],
 )
 @pytest.mark.parametrize("usm_type", ["shared", "host", "device"])
