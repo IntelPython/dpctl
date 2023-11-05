@@ -2806,10 +2806,12 @@ struct TypePairSupportDataForSumReductionTemps
 
         // input int64_t
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
 
         // input uint64_t
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
 
         // input half
@@ -3077,10 +3079,12 @@ struct TypePairSupportDataForProductReductionTemps
 
         // input int64_t
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
 
         // input uint32_t
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
 
         // input half
