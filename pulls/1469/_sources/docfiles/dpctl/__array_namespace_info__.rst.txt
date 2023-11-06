@@ -1,0 +1,11 @@
+.. ___array_namespace_info___api:
+
+#####################################
+dpctl.tensor.__array_namespace_info__
+#####################################
+
+.. currentmodule:: dpctl.tensor
+
+.. autoclass:: dpctl.tensor.__array_namespace_info__
+
+
