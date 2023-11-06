@@ -23,6 +23,8 @@ from dpctl.tensor._tensor_impl import (
     default_device_int_type,
 )
 
+__array_api_version__ = "2022.12"
+
 
 def _isdtype_impl(dtype, kind):
     if isinstance(kind, dpt.dtype):
