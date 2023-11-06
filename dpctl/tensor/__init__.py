@@ -93,6 +93,7 @@ from dpctl.tensor._search_functions import where
 from dpctl.tensor._usmarray import usm_ndarray
 from dpctl.tensor._utility_functions import all, any
 
+from ._array_api import __array_namespace_info__
 from ._clip import clip
 from ._constants import e, inf, nan, newaxis, pi
 from ._elementwise_funcs import (
@@ -335,4 +336,5 @@ __all__ = [
     "clip",
     "logsumexp",
     "reduce_hypot",
+    "__array_namespace_info__",
 ]
