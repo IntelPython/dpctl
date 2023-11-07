@@ -114,15 +114,12 @@ def _reduction_over_axis(
                 res_shape = res_shape + (1,) * red_nd
                 inv_perm = sorted(range(nd), key=lambda d: perm[d])
                 res_shape = tuple(res_shape[i] for i in inv_perm)
-            return dpt.astype(
-                dpt.full(
-                    res_shape,
-                    _identity,
-                    dtype=dtype,
-                    usm_type=res_usm_type,
-                    sycl_queue=q,
-                ),
-                res_dt,
+            return dpt.full(
+                res_shape,
+                _identity,
+                dtype=res_dt,
+                usm_type=res_usm_type,
+                sycl_queue=q,
             )
     if red_nd == 0:
         return dpt.astype(x, res_dt, copy=False)
