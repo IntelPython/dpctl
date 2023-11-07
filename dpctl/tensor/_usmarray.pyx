@@ -191,10 +191,11 @@ cdef class usm_ndarray:
                 try:
                     <Py_ssize_t> shape
                     shape = [shape, ]
-                except Exception:
+                except Exception as e:
                     raise TypeError(
-                        "Argument shape must be a list or a tuple."
-                    )
+                        "Argument shape must a non-negative integer, "
+			"or a list/tuple of such integers."
+                    ) from e
         nd = len(shape)
         if dtype is None:
             if isinstance(buffer, (dpmem._memory._Memory, usm_ndarray)):
