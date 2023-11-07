@@ -445,7 +445,7 @@ def _comparison_over_axis(x, axis, keepdims, _reduction_fn):
 
 
 def max(x, axis=None, keepdims=False):
-    """max(x, axis=None, dtype=None, keepdims=False)
+    """max(x, axis=None, keepdims=False)
 
     Calculates the maximum value of the input array `x`.
 
@@ -473,7 +473,7 @@ def max(x, axis=None, keepdims=False):
 
 
 def min(x, axis=None, keepdims=False):
-    """min(x, axis=None, dtype=None, keepdims=False)
+    """min(x, axis=None, keepdims=False)
 
     Calculates the minimum value of the input array `x`.
 
@@ -550,7 +550,7 @@ def _search_over_axis(x, axis, keepdims, _reduction_fn):
 
 
 def argmax(x, axis=None, keepdims=False):
-    """argmax(x, axis=None, dtype=None, keepdims=False)
+    """argmax(x, axis=None, keepdims=False)
 
     Returns the indices of the maximum values of the input array `x` along a
     specified axis.
@@ -582,7 +582,7 @@ def argmax(x, axis=None, keepdims=False):
 
 
 def argmin(x, axis=None, keepdims=False):
-    """argmin(x, axis=None, dtype=None, keepdims=False)
+    """argmin(x, axis=None, keepdims=False)
 
     Returns the indices of the minimum values of the input array `x` along a
     specified axis.
