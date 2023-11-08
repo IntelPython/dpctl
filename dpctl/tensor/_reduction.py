@@ -114,15 +114,12 @@ def _reduction_over_axis(
                 res_shape = res_shape + (1,) * red_nd
                 inv_perm = sorted(range(nd), key=lambda d: perm[d])
                 res_shape = tuple(res_shape[i] for i in inv_perm)
-            return dpt.astype(
-                dpt.full(
-                    res_shape,
-                    _identity,
-                    dtype=_default_reduction_type_fn(inp_dt, q),
-                    usm_type=res_usm_type,
-                    sycl_queue=q,
-                ),
-                res_dt,
+            return dpt.full(
+                res_shape,
+                _identity,
+                dtype=res_dt,
+                usm_type=res_usm_type,
+                sycl_queue=q,
             )
     if red_nd == 0:
         return dpt.astype(x, res_dt, copy=False)
@@ -142,21 +139,51 @@ def _reduction_over_axis(
                 "Automatically determined reduction data type does not "
                 "have direct implementation"
             )
-        tmp_dt = _default_reduction_type_fn(inp_dt, q)
-        tmp = dpt.empty(
-            res_shape, dtype=tmp_dt, usm_type=res_usm_type, sycl_queue=q
-        )
-        ht_e_tmp, r_e = _reduction_fn(
-            src=arr2, trailing_dims_to_reduce=red_nd, dst=tmp, sycl_queue=q
-        )
-        host_tasks_list.append(ht_e_tmp)
-        res = dpt.empty(
-            res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
-        )
-        ht_e, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=tmp, dst=res, sycl_queue=q, depends=[r_e]
-        )
-        host_tasks_list.append(ht_e)
+        if _dtype_supported(res_dt, res_dt, res_usm_type, q):
+            tmp = dpt.empty(
+                arr2.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
+            )
+            ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=arr2, dst=tmp, sycl_queue=q
+            )
+            host_tasks_list.append(ht_e_cpy)
+            res = dpt.empty(
+                res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
+            )
+            ht_e_red, _ = _reduction_fn(
+                src=tmp,
+                trailing_dims_to_reduce=red_nd,
+                dst=res,
+                sycl_queue=q,
+                depends=[cpy_e],
+            )
+            host_tasks_list.append(ht_e_red)
+        else:
+            buf_dt = _default_reduction_type_fn(inp_dt, q)
+            tmp = dpt.empty(
+                arr2.shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
+            )
+            ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=arr2, dst=tmp, sycl_queue=q
+            )
+            tmp_res = dpt.empty(
+                res_shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
+            )
+            host_tasks_list.append(ht_e_cpy)
+            res = dpt.empty(
+                res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
+            )
+            ht_e_red, r_e = _reduction_fn(
+                src=tmp,
+                trailing_dims_to_reduce=red_nd,
+                dst=tmp_res,
+                sycl_queue=q,
+                depends=[cpy_e],
+            )
+            ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=tmp_res, dst=res, sycl_queue=q, depends=[r_e]
+            )
+            host_tasks_list.append(ht_e_cpy2)
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
@@ -445,7 +472,7 @@ def _comparison_over_axis(x, axis, keepdims, _reduction_fn):
 
 
 def max(x, axis=None, keepdims=False):
-    """max(x, axis=None, dtype=None, keepdims=False)
+    """max(x, axis=None, keepdims=False)
 
     Calculates the maximum value of the input array `x`.
 
@@ -473,7 +500,7 @@ def max(x, axis=None, keepdims=False):
 
 
 def min(x, axis=None, keepdims=False):
-    """min(x, axis=None, dtype=None, keepdims=False)
+    """min(x, axis=None, keepdims=False)
 
     Calculates the minimum value of the input array `x`.
 
@@ -550,7 +577,7 @@ def _search_over_axis(x, axis, keepdims, _reduction_fn):
 
 
 def argmax(x, axis=None, keepdims=False):
-    """argmax(x, axis=None, dtype=None, keepdims=False)
+    """argmax(x, axis=None, keepdims=False)
 
     Returns the indices of the maximum values of the input array `x` along a
     specified axis.
@@ -582,7 +609,7 @@ def argmax(x, axis=None, keepdims=False):
 
 
 def argmin(x, axis=None, keepdims=False):
-    """argmin(x, axis=None, dtype=None, keepdims=False)
+    """argmin(x, axis=None, keepdims=False)
 
     Returns the indices of the minimum values of the input array `x` along a
     specified axis.

@@ -329,3 +329,12 @@ def test_prod_arg_out_dtype_matrix(arg_dtype, out_dtype):
     assert isinstance(r, dpt.usm_ndarray)
     assert r.dtype == dpt.dtype(out_dtype)
     assert dpt.all(r == 1)
+
+
+def test_gh_1468():
+    "See https://github.com/IntelPython/dpctl/issues/1468"
+    get_queue_or_skip()
+
+    a = dpt.full((2, 3, 4), 123456789, dtype=dpt.int32)
+    t = dpt.sum(a, dtype="f4")
+    assert t > 0
