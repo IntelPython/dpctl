@@ -18,7 +18,6 @@ Classes
    :hidden:
 
    Device
-   __array_namespace_info__
    dtype
    usm_ndarray
 
@@ -27,8 +26,6 @@ Classes
 
     * - :class:`Device`
       - An object representing Data-API concept of device.
-    * - :class:`__array_namespace_info__`
-      - [FIXME]: <class 'type'> does not have a docstring
     * - :class:`dtype`
       - Create a data type object.
     * - :class:`usm_ndarray`
@@ -139,6 +136,8 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`__array_namespace_info__()`
+      - Returns a namespace with Array API namespace inspection utilities.
     * - :func:`all()`
       - Tests whether all input array elements evaluate to True along a given axis.
     * - :func:`allclose()`
