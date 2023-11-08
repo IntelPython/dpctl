@@ -11,6 +11,7 @@ dpctl.tensor Functions
 Other Functions
 ---------------
 
+.. autofunction:: __array_namespace_info__
 .. autofunction:: all
 .. autofunction:: allclose
 .. autofunction:: any

@@ -136,6 +136,8 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`__array_namespace_info__()`
+      - Returns a namespace with Array API namespace inspection utilities.
     * - :func:`all()`
       - Tests whether all input array elements evaluate to True along a given axis.
     * - :func:`allclose()`
