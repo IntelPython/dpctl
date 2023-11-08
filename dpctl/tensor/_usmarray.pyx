@@ -182,13 +182,20 @@ cdef class usm_ndarray:
         cdef bint is_fp16 = False
 
         self._reset()
-        if (not isinstance(shape, (list, tuple))
-                and not hasattr(shape, 'tolist')):
-            try:
-                <Py_ssize_t> shape
-                shape = [shape, ]
-            except Exception:
-                raise TypeError("Argument shape must be a list or a tuple.")
+        if not isinstance(shape, (list, tuple)):
+            if hasattr(shape, 'tolist'):
+                fn = getattr(shape, 'tolist')
+                if callable(fn):
+                    shape = shape.tolist()
+            if not isinstance(shape, (list, tuple)):
+                try:
+                    <Py_ssize_t> shape
+                    shape = [shape, ]
+                except Exception as e:
+                    raise TypeError(
+                        "Argument shape must a non-negative integer, "
+			"or a list/tuple of such integers."
+                    ) from e
         nd = len(shape)
         if dtype is None:
             if isinstance(buffer, (dpmem._memory._Memory, usm_ndarray)):

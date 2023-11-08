@@ -175,9 +175,11 @@ def test_search_reduction_kernels(arg_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arg_dtype, q)
 
-    x = dpt.ones((24 * 1025), dtype=arg_dtype, sycl_queue=q)
+    x_shape = (24, 1024)
+    x_size = np.prod(x_shape)
+    x = dpt.ones(x_size, dtype=arg_dtype, sycl_queue=q)
     idx = randrange(x.size)
-    idx_tup = np.unravel_index(idx, (24, 1025))
+    idx_tup = np.unravel_index(idx, x_shape)
     x[idx] = 2
 
     m = dpt.argmax(x)
@@ -194,7 +196,7 @@ def test_search_reduction_kernels(arg_dtype):
     m = dpt.argmax(y)
     assert m == 2 * idx
 
-    x = dpt.reshape(x, (24, 1025))
+    x = dpt.reshape(x, x_shape)
 
     x[idx_tup[0], :] = 3
     m = dpt.argmax(x, axis=0)
@@ -209,15 +211,15 @@ def test_search_reduction_kernels(arg_dtype):
     m = dpt.argmax(x, axis=1)
     assert dpt.all(m == idx)
 
-    x = dpt.ones((24 * 1025), dtype=arg_dtype, sycl_queue=q)
+    x = dpt.ones(x_size, dtype=arg_dtype, sycl_queue=q)
     idx = randrange(x.size)
-    idx_tup = np.unravel_index(idx, (24, 1025))
+    idx_tup = np.unravel_index(idx, x_shape)
     x[idx] = 0
 
     m = dpt.argmin(x)
     assert m == idx
 
-    x = dpt.reshape(x, (24, 1025))
+    x = dpt.reshape(x, x_shape)
 
     x[idx_tup[0], :] = -1
     m = dpt.argmin(x, axis=0)
