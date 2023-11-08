@@ -205,6 +205,10 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
     size_t dst_nelems = dst.get_size();
 
+    if (dst_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
         reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
@@ -551,6 +555,10 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
 
     size_t dst_nelems = dst.get_size();
 
+    if (dst_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
         reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
@@ -841,6 +849,10 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     }
 
     size_t dst_nelems = dst.get_size();
+
+    if (dst_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
 
     size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {

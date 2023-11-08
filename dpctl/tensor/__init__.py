@@ -90,6 +90,7 @@ from dpctl.tensor._print import (
 )
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._search_functions import where
+from dpctl.tensor._statistical_functions import mean, std, var
 from dpctl.tensor._usmarray import usm_ndarray
 from dpctl.tensor._utility_functions import all, any
 
@@ -336,6 +337,9 @@ __all__ = [
     "clip",
     "logsumexp",
     "reduce_hypot",
+    "mean",
+    "std",
+    "var",
     "__array_api_version__",
     "__array_namespace_info__",
 ]
