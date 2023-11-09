@@ -11,6 +11,7 @@ dpctl.tensor Functions
 Other Functions
 ---------------
 
+.. autofunction:: __array_namespace_info__
 .. autofunction:: all
 .. autofunction:: allclose
 .. autofunction:: any
@@ -23,6 +24,7 @@ Other Functions
 .. autofunction:: logsumexp
 .. autofunction:: matrix_transpose
 .. autofunction:: max
+.. autofunction:: mean
 .. autofunction:: min
 .. autofunction:: nonzero
 .. autofunction:: place
@@ -31,10 +33,12 @@ Other Functions
 .. autofunction:: put
 .. autofunction:: reduce_hypot
 .. autofunction:: set_print_options
+.. autofunction:: std
 .. autofunction:: sum
 .. autofunction:: take
 .. autofunction:: usm_ndarray_repr
 .. autofunction:: usm_ndarray_str
+.. autofunction:: var
 .. autofunction:: where
 
 Array Construction
