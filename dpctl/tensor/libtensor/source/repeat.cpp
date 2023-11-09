@@ -136,7 +136,6 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_orthog_dims(true);
     size_t orthog_nelems(1); // number of orthogonal iterations
-
     for (auto i = 0; i < axis; ++i) {
         auto src_sh_i = src_shape[i];
         orthog_nelems *= src_sh_i;
@@ -237,18 +236,44 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         assert(dst_shape_vec.size() == 1);
         assert(dst_strides_vec.size() == 1);
 
-        py::ssize_t src_shape(0);
-        py::ssize_t src_stride(0);
-        if (src_nd > 0) {
-            src_shape = src_shape_vec[0];
-            src_stride = src_strides_vec[0];
+        if (src_nd == 0) {
+            src_shape_vec = {0};
+            src_strides_vec = {0};
         }
 
-        sycl::event repeat_ev =
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        const auto &ptr_size_event_tuple1 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, src_shape_vec, src_strides_vec);
+        py::ssize_t *packed_src_shape_strides =
+            std::get<0>(ptr_size_event_tuple1);
+        if (packed_src_shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocate device memory");
+        }
+        sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+
+        std::vector<sycl::event> all_deps;
+        all_deps.reserve(depends.size() + 1);
+        all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+        all_deps.push_back(copy_shapes_strides_ev);
+
+        assert(all_deps.size() == depends.size() + 1);
+
+        repeat_ev =
             fn(exec_q, src_axis_nelems, src_data_p, dst_data_p, reps_data_p,
-               cumsum_data_p, src_shape, src_stride, dst_shape_vec[0],
-               dst_strides_vec[0], reps_shape_vec[0], reps_strides_vec[0],
-               depends);
+               cumsum_data_p, src_nd, packed_src_shape_strides,
+               dst_shape_vec[0], dst_strides_vec[0], reps_shape_vec[0],
+               reps_strides_vec[0], all_deps);
+
+        sycl::event cleanup_tmp_allocations_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(repeat_ev);
+                const auto &ctx = exec_q.get_context();
+                cgh.host_task([ctx, packed_src_shape_strides] {
+                    sycl::free(packed_src_shape_strides, ctx);
+                });
+            });
+        host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
     else {
         // non-empty othogonal directions
@@ -344,6 +369,162 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
 }
 
 std::pair<sycl::event, sycl::event>
+py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst,
+                      const dpctl::tensor::usm_ndarray &reps,
+                      const dpctl::tensor::usm_ndarray &cumsum,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> &depends)
+{
+
+    int dst_nd = dst.get_ndim();
+    if (dst_nd != 1) {
+        throw py::value_error(
+            "`dst` array must be 1-dimensional when repeating a full array");
+    }
+
+    int reps_nd = reps.get_ndim();
+    if (reps_nd != 1) {
+        throw py::value_error("`reps` array must be 1-dimensional");
+    }
+
+    if (cumsum.get_ndim() != 1) {
+        throw py::value_error("`cumsum` array must be 1-dimensional.");
+    }
+
+    if (!cumsum.is_c_contiguous()) {
+        throw py::value_error("Expecting `cumsum` array to be C-contiguous.");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, reps, cumsum, dst}))
+    {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    size_t src_sz = src.get_size();
+    size_t reps_sz = reps.get_size();
+    size_t cumsum_sz = cumsum.get_size();
+
+    // shape at repeated axis must be equal to the sum of reps
+    if (src_sz != reps_sz || src_sz != cumsum_sz) {
+        throw py::value_error("Inconsistent array dimensions");
+    }
+
+    if (src_sz == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    // ensure that dst is sufficiently ample
+    auto dst_offsets = dst.get_minmax_offsets();
+    // destination must be ample enough to accommodate all elements
+    {
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < static_cast<size_t>(dst.get_size())) {
+            throw py::value_error(
+                "Memory addressed by the destination array can not "
+                "accommodate all the "
+                "array elements.");
+        }
+    }
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    // check that dst does not intersect with src, cumsum, or reps
+    if (overlap(dst, src) || overlap(dst, reps) || overlap(dst, cumsum)) {
+        throw py::value_error("Destination array overlaps with inputs");
+    }
+
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
+    int reps_typenum = reps.get_typenum();
+    int cumsum_typenum = cumsum.get_typenum();
+
+    auto const &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+    int reps_typeid = array_types.typenum_to_lookup_id(reps_typenum);
+    int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
+
+    if (src_typeid != dst_typeid) {
+        throw py::value_error(
+            "Destination array must have the same elemental data type");
+    }
+
+    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    if (cumsum_typeid != int64_typeid) {
+        throw py::value_error(
+            "Unexpected data type of `cumsum` array, expecting "
+            "'int64'");
+    }
+
+    if (reps_typeid != cumsum_typeid) {
+        throw py::value_error("`reps` array must have the same elemental "
+                              "data type as cumsum");
+    }
+
+    const char *src_data_p = src.get_data();
+    const char *reps_data_p = reps.get_data();
+    const char *cumsum_data_p = cumsum.get_data();
+    char *dst_data_p = dst.get_data();
+
+    int src_nd = src.get_ndim();
+    auto src_shape_vec = src.get_shape_vector();
+    auto src_strides_vec = src.get_strides_vector();
+    if (src_nd == 0) {
+        src_shape_vec = {0};
+        src_strides_vec = {0};
+    }
+
+    auto dst_shape_vec = dst.get_shape_vector();
+    auto dst_strides_vec = dst.get_strides_vector();
+
+    auto reps_shape_vec = reps.get_shape_vector();
+    auto reps_strides_vec = reps.get_strides_vector();
+
+    std::vector<sycl::event> host_task_events{};
+
+    auto fn = repeat_by_sequence_1d_dispatch_vector[src_typeid];
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    const auto &ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, src_shape_vec, src_strides_vec);
+    py::ssize_t *packed_src_shapes_strides = std::get<0>(ptr_size_event_tuple1);
+    if (packed_src_shapes_strides == nullptr) {
+        throw std::runtime_error("Unable to allocate device memory");
+    }
+    sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+    all_deps.push_back(copy_shapes_strides_ev);
+
+    assert(all_deps.size() == depends.size() + 1);
+
+    sycl::event repeat_ev = fn(
+        exec_q, src_sz, src_data_p, dst_data_p, reps_data_p, cumsum_data_p,
+        src_nd, packed_src_shapes_strides, dst_shape_vec[0], dst_strides_vec[0],
+        reps_shape_vec[0], reps_strides_vec[0], all_deps);
+
+    sycl::event cleanup_tmp_allocations_ev =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(repeat_ev);
+            const auto &ctx = exec_q.get_context();
+            cgh.host_task([ctx, packed_src_shapes_strides] {
+                sycl::free(packed_src_shapes_strides, ctx);
+            });
+        });
+    host_task_events.push_back(cleanup_tmp_allocations_ev);
+    host_task_events.push_back(repeat_ev);
+
+    sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
+        exec_q, {src, reps, cumsum, dst}, host_task_events);
+
+    return std::make_pair(py_obj_management_host_task_ev, repeat_ev);
+}
+
+std::pair<sycl::event, sycl::event>
 py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
                     const dpctl::tensor::usm_ndarray &dst,
                     const py::ssize_t reps,
@@ -372,7 +553,6 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_orthog_dims(true);
     size_t orthog_nelems(1); // number of orthogonal iterations
-
     for (auto i = 0; i < axis; ++i) {
         auto src_sh_i = src_shape[i];
         orthog_nelems *= src_sh_i;
@@ -452,15 +632,42 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         assert(dst_shape_vec.size() == 1);
         assert(dst_strides_vec.size() == 1);
 
-        py::ssize_t src_shape(0);
-        py::ssize_t src_stride(0);
-        if (src_nd > 0) {
-            src_shape = src_shape_vec[0];
-            src_stride = src_strides_vec[0];
+        if (src_nd == 0) {
+            src_shape_vec = {0};
+            src_strides_vec = {0};
         }
-        sycl::event repeat_ev =
-            fn(exec_q, dst_axis_nelems, src_data_p, dst_data_p, reps, src_shape,
-               src_stride, dst_shape_vec[0], dst_strides_vec[0], depends);
+
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        const auto &ptr_size_event_tuple1 =
+            device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, src_shape_vec, src_strides_vec);
+        py::ssize_t *packed_src_shape_strides =
+            std::get<0>(ptr_size_event_tuple1);
+        if (packed_src_shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocate device memory");
+        }
+        sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+
+        std::vector<sycl::event> all_deps;
+        all_deps.reserve(depends.size() + 1);
+        all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+        all_deps.push_back(copy_shapes_strides_ev);
+
+        assert(all_deps.size() == depends.size() + 1);
+
+        repeat_ev = fn(exec_q, dst_axis_nelems, src_data_p, dst_data_p, reps,
+                       src_nd, packed_src_shape_strides, dst_shape_vec[0],
+                       dst_strides_vec[0], all_deps);
+
+        sycl::event cleanup_tmp_allocations_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(repeat_ev);
+                const auto &ctx = exec_q.get_context();
+                cgh.host_task([ctx, packed_src_shape_strides] {
+                    sycl::free(packed_src_shape_strides, ctx);
+                });
+            });
+        host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
     else {
         // non-empty othogonal directions
@@ -546,6 +753,126 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
+    host_task_events.push_back(repeat_ev);
+
+    sycl::event py_obj_management_host_task_ev =
+        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+
+    return std::make_pair(py_obj_management_host_task_ev, repeat_ev);
+}
+
+std::pair<sycl::event, sycl::event>
+py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
+                    const dpctl::tensor::usm_ndarray &dst,
+                    const py::ssize_t reps,
+                    sycl::queue &exec_q,
+                    const std::vector<sycl::event> &depends)
+{
+    int dst_nd = dst.get_ndim();
+    if (dst_nd != 1) {
+        throw py::value_error(
+            "`dst` array must be 1-dimensional when repeating a full array");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    size_t src_sz = src.get_size();
+    size_t dst_sz = dst.get_size();
+
+    // shape at repeated axis must be equal to the shape of src at the axis *
+    // reps
+    if ((src_sz * reps) != dst_sz) {
+        throw py::value_error("Inconsistent array dimensions");
+    }
+
+    if (src_sz == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    // ensure that dst is sufficiently ample
+    auto dst_offsets = dst.get_minmax_offsets();
+    // destination must be ample enough to accommodate all elements
+    {
+        size_t range =
+            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
+        if (range + 1 < static_cast<size_t>(src_sz * reps)) {
+            throw py::value_error(
+                "Memory addressed by the destination array can not "
+                "accommodate all the "
+                "array elements.");
+        }
+    }
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    // check that dst does not intersect with src
+    if (overlap(dst, src)) {
+        throw py::value_error("Destination array overlaps with inputs");
+    }
+
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
+
+    auto const &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    if (src_typeid != dst_typeid) {
+        throw py::value_error(
+            "Destination array must have the same elemental data type");
+    }
+
+    const char *src_data_p = src.get_data();
+    char *dst_data_p = dst.get_data();
+
+    int src_nd = src.get_ndim();
+    auto src_shape_vec = src.get_shape_vector();
+    auto src_strides_vec = src.get_strides_vector();
+
+    if (src_nd == 0) {
+        src_shape_vec = {0};
+        src_strides_vec = {0};
+    }
+
+    auto dst_shape_vec = dst.get_shape_vector();
+    auto dst_strides_vec = dst.get_strides_vector();
+
+    std::vector<sycl::event> host_task_events{};
+
+    auto fn = repeat_by_scalar_1d_dispatch_vector[src_typeid];
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    const auto &ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, src_shape_vec, src_strides_vec);
+    py::ssize_t *packed_src_shape_strides = std::get<0>(ptr_size_event_tuple1);
+    if (packed_src_shape_strides == nullptr) {
+        throw std::runtime_error("Unable to allocate device memory");
+    }
+    sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+    all_deps.push_back(copy_shapes_strides_ev);
+
+    assert(all_deps.size() == depends.size() + 1);
+
+    sycl::event repeat_ev = fn(exec_q, dst_sz, src_data_p, dst_data_p, reps,
+                               src_nd, packed_src_shape_strides,
+                               dst_shape_vec[0], dst_strides_vec[0], all_deps);
+
+    sycl::event cleanup_tmp_allocations_ev =
+        exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(repeat_ev);
+            const auto &ctx = exec_q.get_context();
+            cgh.host_task([ctx, packed_src_shape_strides] {
+                sycl::free(packed_src_shape_strides, ctx);
+            });
+        });
+
+    host_task_events.push_back(cleanup_tmp_allocations_ev);
     host_task_events.push_back(repeat_ev);
 
     sycl::event py_obj_management_host_task_ev =

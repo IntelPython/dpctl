@@ -410,9 +410,12 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
     try {
         e = Queue->submit([&](handler &cgh) {
             // Depend on any event that was specified by the caller.
-            if (NDepEvents)
-                for (auto i = 0ul; i < NDepEvents; ++i)
-                    cgh.depends_on(*unwrap<event>(DepEvents[i]));
+            if (DepEvents)
+                for (auto i = 0ul; i < NDepEvents; ++i) {
+                    auto ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        cgh.depends_on(*ei);
+                }
 
             for (auto i = 0ul; i < NArgs; ++i) {
                 // \todo add support for Sycl buffers
@@ -483,6 +486,42 @@ DPCTLQueue_Memcpy(__dpctl_keep const DPCTLSyclQueueRef QRef,
                       __LINE__);
         return nullptr;
     }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_MemcpyWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *Dest,
+                            const void *Src,
+                            size_t Count,
+                            const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount)
+{
+    event ev;
+    auto Q = unwrap<queue>(QRef);
+    if (Q) {
+        try {
+            ev = Q->submit([&](handler &cgh) {
+                if (DepEvents)
+                    for (size_t i = 0; i < DepEventsCount; ++i) {
+                        event *ei = unwrap<event>(DepEvents[i]);
+                        if (ei)
+                            cgh.depends_on(*ei);
+                    }
+
+                cgh.memcpy(Dest, Src, Count);
+            });
+        } catch (const std::exception &ex) {
+            error_handler(ex, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+    }
+    else {
+        error_handler("QRef passed to memcpy was NULL.", __FILE__, __func__,
+                      __LINE__);
+        return nullptr;
+    }
+
+    return wrap<event>(new event(ev));
 }
 
 __dpctl_give DPCTLSyclEventRef

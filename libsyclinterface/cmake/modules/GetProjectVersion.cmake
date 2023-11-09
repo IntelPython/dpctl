@@ -29,7 +29,7 @@
 # VERSION_MINOR
 # VERSION
 # SEMVER
-cmake_minimum_required( VERSION 3.14.0 )
+cmake_minimum_required(VERSION 3.14...3.27 FATAL_ERROR )
 
 function(get_version)
     # Use git describe to get latest tag name

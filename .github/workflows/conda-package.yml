@@ -102,6 +102,8 @@ jobs:
         run: |
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
       - name: Build conda package
+        env:
+          OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: conda build --no-test --python ${{ matrix.python }} -c intel -c conda-forge --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -181,6 +183,7 @@ jobs:
           python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
       - name: Install gdb
         run: |
+          sudo apt-get update --fix-missing
           sudo apt-get install -y gdb
       - name: Run test_elementwise under gdb
         run: |
@@ -320,15 +323,22 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
     steps:
-      - name: Download artifact
+      - name: Download conda artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Install anaconda-client
         run: conda install anaconda-client
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Package version
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
         env:
@@ -339,7 +349,7 @@ jobs:
       - name: Upload Wheels
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
 
   upload_windows:
     needs: test_windows
@@ -353,12 +363,23 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: true
           activate-environment: ""
+
       - name: Install anaconda-client
         run: conda install anaconda-client
+
+      - name: Package version
+        shell: bash -el {0}
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
         env:
@@ -369,7 +390,37 @@ jobs:
       - name: Upload Wheels
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+
+  cleanup_packages:
+    name: Clean up anaconda packages
+    needs: [upload_linux, upload_windows]
+    runs-on: 'ubuntu-latest'
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          run-post: false
+          channel-priority: "disabled"
+          channels: conda-forge
+          python-version: '3.11'
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          repository: IntelPython/devops-tools
+          fetch-depth: 0
+
+      - name: Cleanup old packages
+        run: |
+          python scripts/cleanup-old-packages.py \
+          --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
+          --package dppy/${{ env.PACKAGE_NAME }} --label dev
 
   test_examples_linux:
     needs: build_linux
@@ -615,7 +666,7 @@ jobs:
           python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests
-          pytest --ci --json-report --json-report-file=$FILE array_api_tests/ || true
+          pytest --json-report --json-report-file=$FILE array_api_tests/ || true
       - name: Set Github environment variables
         shell: bash -l {0}
         run: |

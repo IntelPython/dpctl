@@ -90,9 +90,12 @@ from dpctl.tensor._print import (
 )
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._search_functions import where
+from dpctl.tensor._statistical_functions import mean, std, var
 from dpctl.tensor._usmarray import usm_ndarray
 from dpctl.tensor._utility_functions import all, any
 
+from ._array_api import __array_api_version__, __array_namespace_info__
+from ._clip import clip
 from ._constants import e, inf, nan, newaxis, pi
 from ._elementwise_funcs import (
     abs,
@@ -110,13 +113,16 @@ from ._elementwise_funcs import (
     bitwise_or,
     bitwise_right_shift,
     bitwise_xor,
+    cbrt,
     ceil,
     conj,
+    copysign,
     cos,
     cosh,
     divide,
     equal,
     exp,
+    exp2,
     expm1,
     floor,
     floor_divide,
@@ -149,6 +155,7 @@ from ._elementwise_funcs import (
     real,
     remainder,
     round,
+    rsqrt,
     sign,
     signbit,
     sin,
@@ -160,7 +167,16 @@ from ._elementwise_funcs import (
     tanh,
     trunc,
 )
-from ._reduction import sum
+from ._reduction import (
+    argmax,
+    argmin,
+    logsumexp,
+    max,
+    min,
+    prod,
+    reduce_hypot,
+    sum,
+)
 from ._testing import allclose
 
 __all__ = [
@@ -309,4 +325,21 @@ __all__ = [
     "allclose",
     "repeat",
     "tile",
+    "max",
+    "min",
+    "argmax",
+    "argmin",
+    "prod",
+    "cbrt",
+    "exp2",
+    "copysign",
+    "rsqrt",
+    "clip",
+    "logsumexp",
+    "reduce_hypot",
+    "mean",
+    "std",
+    "var",
+    "__array_api_version__",
+    "__array_namespace_info__",
 ]

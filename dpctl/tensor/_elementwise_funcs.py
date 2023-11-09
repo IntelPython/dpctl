@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import dpctl.tensor._tensor_impl as ti
+import dpctl.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 from ._type_utils import _acceptance_fn_divide
@@ -297,6 +297,7 @@ bitwise_and = BinaryElementwiseFunc(
     ti._bitwise_and_result_type,
     ti._bitwise_and,
     _bitwise_and_docstring_,
+    binary_inplace_fn=ti._bitwise_and_inplace,
 )
 
 # B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
@@ -330,6 +331,7 @@ bitwise_left_shift = BinaryElementwiseFunc(
     ti._bitwise_left_shift_result_type,
     ti._bitwise_left_shift,
     _bitwise_left_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_left_shift_inplace,
 )
 
 
@@ -393,6 +395,7 @@ bitwise_or = BinaryElementwiseFunc(
     ti._bitwise_or_result_type,
     ti._bitwise_or,
     _bitwise_or_docstring_,
+    binary_inplace_fn=ti._bitwise_or_inplace,
 )
 
 # B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
@@ -425,6 +428,7 @@ bitwise_right_shift = BinaryElementwiseFunc(
     ti._bitwise_right_shift_result_type,
     ti._bitwise_right_shift,
     _bitwise_right_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_right_shift_inplace,
 )
 
 
@@ -459,6 +463,7 @@ bitwise_xor = BinaryElementwiseFunc(
     ti._bitwise_xor_result_type,
     ti._bitwise_xor,
     _bitwise_xor_docstring_,
+    binary_inplace_fn=ti._bitwise_xor_inplace,
 )
 
 
@@ -590,6 +595,7 @@ divide = BinaryElementwiseFunc(
     ti._divide_result_type,
     ti._divide,
     _divide_docstring_,
+    binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=_acceptance_fn_divide,
 )
 
@@ -720,6 +726,7 @@ floor_divide = BinaryElementwiseFunc(
     ti._floor_divide_result_type,
     ti._floor_divide,
     _floor_divide_docstring_,
+    binary_inplace_fn=ti._floor_divide_inplace,
 )
 
 # B11: ==== GREATER       (x1, x2)
@@ -1176,7 +1183,7 @@ logical_xor = BinaryElementwiseFunc(
     _logical_xor_docstring_,
 )
 
-# B??: ==== MAXIMUM    (x1, x2)
+# B26: ==== MAXIMUM    (x1, x2)
 _maximum_docstring_ = """
 maximum(x1, x2, out=None, order='K')
 
@@ -1206,7 +1213,7 @@ maximum = BinaryElementwiseFunc(
     _maximum_docstring_,
 )
 
-# B??: ==== MINIMUM    (x1, x2)
+# B27: ==== MINIMUM    (x1, x2)
 _minimum_docstring_ = """
 minimum(x1, x2, out=None, order='K')
 
@@ -1264,7 +1271,7 @@ multiply = BinaryElementwiseFunc(
     ti._multiply_result_type,
     ti._multiply,
     _multiply_docstring_,
-    ti._multiply_inplace,
+    binary_inplace_fn=ti._multiply_inplace,
 )
 
 # U25: ==== NEGATIVE    (x)
@@ -1359,10 +1366,14 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 pow = BinaryElementwiseFunc(
-    "pow", ti._pow_result_type, ti._pow, _pow_docstring_
+    "pow",
+    ti._pow_result_type,
+    ti._pow,
+    _pow_docstring_,
+    binary_inplace_fn=ti._pow_inplace,
 )
 
-# U??: ==== PROJ        (x)
+# U40: ==== PROJ        (x)
 _proj_docstring = """
 proj(x, out=None, order='K')
 
@@ -1441,7 +1452,11 @@ Returns:
         the returned array is determined by the Type Promotion Rules.
 """
 remainder = BinaryElementwiseFunc(
-    "remainder", ti._remainder_result_type, ti._remainder, _remainder_docstring_
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+    binary_inplace_fn=ti._remainder_inplace,
 )
 
 # U28: ==== ROUND       (x)
@@ -1499,7 +1514,7 @@ sign = UnaryElementwiseFunc(
     "sign", ti._sign_result_type, ti._sign, _sign_docstring
 )
 
-# ==== SIGNBIT        (x)
+# U41: ==== SIGNBIT        (x)
 _signbit_docstring = """
 signbit(x, out=None, order='K')
 
@@ -1652,7 +1667,7 @@ subtract = BinaryElementwiseFunc(
     ti._subtract_result_type,
     ti._subtract,
     _subtract_docstring_,
-    ti._subtract_inplace,
+    binary_inplace_fn=ti._subtract_inplace,
 )
 
 
@@ -1758,4 +1773,117 @@ Returns:
 
 hypot = BinaryElementwiseFunc(
     "hypot", ti._hypot_result_type, ti._hypot, _hypot_docstring_
+)
+
+
+# U37: ==== CBRT        (x)
+_cbrt_docstring_ = """
+cbrt(x, out=None, order='K')
+
+Computes positive cube-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise positive cube-root.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+cbrt = UnaryElementwiseFunc(
+    "cbrt", ti._cbrt_result_type, ti._cbrt, _cbrt_docstring_
+)
+
+
+# U38: ==== EXP2        (x)
+_exp2_docstring_ = """
+exp2(x, out=None, order='K')
+
+Computes the base-2 exponential for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise base-2 exponentials.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+exp2 = UnaryElementwiseFunc(
+    "exp2", ti._exp2_result_type, ti._exp2, _exp2_docstring_
+)
+
+
+# B25: ==== COPYSIGN    (x1, x2)
+_copysign_docstring_ = """
+copysign(x1, x2, out=None, order='K')
+
+Composes a floating-point value with the magnitude of `x1_i` and the sign of
+`x2_i` for each element of input arrays `x1` and `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real floating-point data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real floating-point data
+        type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+copysign = BinaryElementwiseFunc(
+    "copysign",
+    ti._copysign_result_type,
+    ti._copysign,
+    _copysign_docstring_,
+)
+
+
+# U39: ==== RSQRT        (x)
+_rsqrt_docstring_ = """
+rsqrt(x, out=None, order='K')
+
+Computes the reciprocal square-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise reciprocal square-root.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+rsqrt = UnaryElementwiseFunc(
+    "rsqrt", ti._rsqrt_result_type, ti._rsqrt, _rsqrt_docstring_
 )

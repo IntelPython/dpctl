@@ -21,6 +21,7 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 from .utils import _all_dtypes, _compare_dtypes, _usm_types
@@ -152,3 +153,60 @@ def test_pow_python_scalar(arr_dt):
         assert isinstance(R, dpt.usm_ndarray)
         R = dpt.pow(sc, X)
         assert isinstance(R, dpt.usm_ndarray)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes[1:])
+def test_pow_inplace_python_scalar(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    X = dpt.ones((10, 10), dtype=dtype, sycl_queue=q)
+    dt_kind = X.dtype.kind
+    if dt_kind in "ui":
+        X **= int(1)
+    elif dt_kind == "f":
+        X **= float(1)
+    elif dt_kind == "c":
+        X **= complex(1)
+
+
+@pytest.mark.parametrize("op1_dtype", _all_dtypes[1:])
+@pytest.mark.parametrize("op2_dtype", _all_dtypes[1:])
+def test_pow_inplace_dtype_matrix(op1_dtype, op2_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(op1_dtype, q)
+    skip_if_dtype_not_supported(op2_dtype, q)
+
+    sz = 127
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+
+    dev = q.sycl_device
+    _fp16 = dev.has_aspect_fp16
+    _fp64 = dev.has_aspect_fp64
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+        ar1 **= ar2
+        assert (
+            dpt.asnumpy(ar1) == np.full(ar1.shape, 1, dtype=ar1.dtype)
+        ).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
+
+        ar3[::-1] *= ar4[::2]
+        assert (
+            dpt.asnumpy(ar3) == np.full(ar3.shape, 1, dtype=ar3.dtype)
+        ).all()
+
+    else:
+        with pytest.raises(TypeError):
+            ar1 **= ar2
+
+
+def test_pow_inplace_basic():
+    get_queue_or_skip()
+
+    x = dpt.arange(10, dtype="i4")
+    expected = dpt.square(x)
+    x **= 2
+
+    assert dpt.all(x == expected)

@@ -31,6 +31,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -61,7 +62,8 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return impl<resT>(in1, in2);
+        using dpctl::tensor::math_utils::logaddexp;
+        return logaddexp<resT>(in1, in2);
     }
 
     template <int vec_sz>
@@ -79,7 +81,8 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
                          impl_finite<resT>(-std::abs(diff[i]));
             }
             else {
-                res[i] = impl<resT>(in1[i], in2[i]);
+                using dpctl::tensor::math_utils::logaddexp;
+                res[i] = logaddexp<resT>(in1[i], in2[i]);
             }
         }
 
@@ -87,26 +90,6 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
     }
 
 private:
-    template <typename T> T impl(T const &in1, T const &in2) const
-    {
-        if (in1 == in2) { // handle signed infinities
-            const T log2 = std::log(T(2));
-            return in1 + log2;
-        }
-        else {
-            const T tmp = in1 - in2;
-            if (tmp > 0) {
-                return in1 + std::log1p(std::exp(-tmp));
-            }
-            else if (tmp <= 0) {
-                return in2 + std::log1p(std::exp(tmp));
-            }
-            else {
-                return std::numeric_limits<T>::quiet_NaN();
-            }
-        }
-    }
-
     template <typename T> T impl_finite(T const &in) const
     {
         return (in > 0) ? (in + std::log1p(std::exp(-in)))

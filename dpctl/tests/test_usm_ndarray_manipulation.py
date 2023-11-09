@@ -1170,6 +1170,12 @@ def test_repeat_axes():
     res = dpt.repeat(x, reps, axis=1)
     assert dpt.all(res == expected_res)
 
+    x = dpt.arange(10, dtype="i4")
+    expected_res = dpt.empty(x.shape[0] * reps, x.dtype)
+    expected_res[::2], expected_res[1::2] = x, x
+    res = dpt.repeat(x, reps, axis=0)
+    assert dpt.all(res == expected_res)
+
 
 def test_repeat_size_0_outputs():
     get_queue_or_skip()
@@ -1193,10 +1199,16 @@ def test_repeat_size_0_outputs():
     assert res.size == 0
     assert res.shape == (3, 0, 5)
 
-    x = dpt.ones((3, 2, 5))
     res = dpt.repeat(x, (0, 0), axis=1)
     assert res.size == 0
     assert res.shape == (3, 0, 5)
+
+    # axis=None cases
+    res = dpt.repeat(x, 0)
+    assert res.size == 0
+
+    res = dpt.repeat(x, (0,) * x.size)
+    assert res.size == 0
 
 
 def test_repeat_strides():
@@ -1218,6 +1230,17 @@ def test_repeat_strides():
     res = dpt.repeat(x1, reps, axis=0)
     assert dpt.all(res == expected_res)
     res = dpt.repeat(x1, (reps,) * x1.shape[0], axis=0)
+    assert dpt.all(res == expected_res)
+
+    # axis=None
+    x = dpt.reshape(dpt.arange(10 * 10), (10, 10))
+    x1 = dpt.reshape(x[::-2, :], -1)
+    x2 = x[::-2, :]
+    expected_res = dpt.empty(10 * 10, dtype="i4")
+    expected_res[::2], expected_res[1::2] = x1, x1
+    res = dpt.repeat(x2, reps)
+    assert dpt.all(res == expected_res)
+    res = dpt.repeat(x2, (reps,) * x1.size)
     assert dpt.all(res == expected_res)
 
 
@@ -1255,11 +1278,6 @@ def test_repeat_arg_validation():
     x = dpt.empty(())
     with pytest.raises(ValueError):
         dpt.repeat(x, 2, axis=1)
-
-    # x.ndim cannot be > 1 for axis=None
-    x = dpt.empty((5, 10))
-    with pytest.raises(ValueError):
-        dpt.repeat(x, 2, axis=None)
 
     # repeats must be positive
     x = dpt.empty(5)

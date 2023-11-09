@@ -122,3 +122,27 @@ def test_onetrace_enabled():
     with dpctl.utils.onetrace_enabled():
         assert os.getenv(v_name, None) == "1"
     assert os.getenv(v_name, None) == v_v
+
+
+def test_intel_device_info():
+    try:
+        d = dpctl.select_default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Default device could not be created")
+    descr = dpctl.utils.intel_device_info(d)
+    assert isinstance(descr, dict)
+    assert ("device_id" in descr) or not descr
+    allowed_names = [
+        "device_id",
+        "gpu_slices",
+        "gpu_eu_count",
+        "gpu_eu_simd_width",
+        "gpu_hw_threads_per_eu",
+        "gpu_subslices_per_slice",
+        "gpu_eu_count_per_subslice",
+        "max_mem_bandwidth",
+    ]
+    for descriptor_name in descr.keys():
+        test = descriptor_name in allowed_names
+        err_msg = f"Key '{descriptor_name}' is not recognized"
+        assert test, err_msg

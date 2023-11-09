@@ -46,14 +46,16 @@ namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename OrthogIndexer,
-          typename AxisIndexer,
+          typename SrcAxisIndexer,
+          typename DstAxisIndexer,
           typename RepIndexer,
           typename T,
           typename repT>
 class repeat_by_sequence_kernel;
 
 template <typename OrthogIndexer,
-          typename AxisIndexer,
+          typename SrcAxisIndexer,
+          typename DstAxisIndexer,
           typename RepIndexer,
           typename T,
           typename repT>
@@ -66,8 +68,8 @@ private:
     const repT *cumsum = nullptr;
     size_t src_axis_nelems = 1;
     OrthogIndexer orthog_strider;
-    AxisIndexer src_axis_strider;
-    AxisIndexer dst_axis_strider;
+    SrcAxisIndexer src_axis_strider;
+    DstAxisIndexer dst_axis_strider;
     RepIndexer reps_strider;
 
 public:
@@ -77,8 +79,8 @@ public:
                           const repT *cumsum_,
                           size_t src_axis_nelems_,
                           OrthogIndexer orthog_strider_,
-                          AxisIndexer src_axis_strider_,
-                          AxisIndexer dst_axis_strider_,
+                          SrcAxisIndexer src_axis_strider_,
+                          DstAxisIndexer dst_axis_strider_,
                           RepIndexer reps_strider_)
         : src(src_), dst(dst_), reps(reps_), cumsum(cumsum_),
           src_axis_nelems(src_axis_nelems_), orthog_strider(orthog_strider_),
@@ -167,12 +169,12 @@ repeat_by_sequence_impl(sycl::queue &q,
 
         const size_t gws = orthog_nelems * src_axis_nelems;
 
-        cgh.parallel_for<repeat_by_sequence_kernel<TwoOffsets_StridedIndexer,
-                                                   Strided1DIndexer,
-                                                   Strided1DIndexer, T, repT>>(
+        cgh.parallel_for<repeat_by_sequence_kernel<
+            TwoOffsets_StridedIndexer, Strided1DIndexer, Strided1DIndexer,
+            Strided1DIndexer, T, repT>>(
             sycl::range<1>(gws),
             RepeatSequenceFunctor<TwoOffsets_StridedIndexer, Strided1DIndexer,
-                                  Strided1DIndexer, T, repT>(
+                                  Strided1DIndexer, Strided1DIndexer, T, repT>(
                 src_tp, dst_tp, reps_tp, cumsum_tp, src_axis_nelems,
                 orthog_indexer, src_axis_indexer, dst_axis_indexer,
                 reps_indexer));
@@ -197,8 +199,8 @@ typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
     char *,
     const char *,
     const char *,
-    py::ssize_t,
-    py::ssize_t,
+    int,
+    const py::ssize_t *,
     py::ssize_t,
     py::ssize_t,
     py::ssize_t,
@@ -212,8 +214,8 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
                                        char *dst_cp,
                                        const char *reps_cp,
                                        const char *cumsum_cp,
-                                       py::ssize_t src_shape,
-                                       py::ssize_t src_stride,
+                                       int src_nd,
+                                       const py::ssize_t *src_shape_strides,
                                        py::ssize_t dst_shape,
                                        py::ssize_t dst_stride,
                                        py::ssize_t reps_shape,
@@ -231,19 +233,19 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
         // orthog ndim indexer
         TwoZeroOffsets_Indexer orthog_indexer{};
         // indexers along repeated axis
-        Strided1DIndexer src_indexer{0, src_shape, src_stride};
+        StridedIndexer src_indexer{src_nd, 0, src_shape_strides};
         Strided1DIndexer dst_indexer{0, dst_shape, dst_stride};
         // indexer along reps array
         Strided1DIndexer reps_indexer{0, reps_shape, reps_stride};
 
         const size_t gws = src_nelems;
 
-        cgh.parallel_for<
-            repeat_by_sequence_kernel<TwoZeroOffsets_Indexer, Strided1DIndexer,
-                                      Strided1DIndexer, T, repT>>(
+        cgh.parallel_for<repeat_by_sequence_kernel<
+            TwoZeroOffsets_Indexer, StridedIndexer, Strided1DIndexer,
+            Strided1DIndexer, T, repT>>(
             sycl::range<1>(gws),
-            RepeatSequenceFunctor<TwoZeroOffsets_Indexer, Strided1DIndexer,
-                                  Strided1DIndexer, T, repT>(
+            RepeatSequenceFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
+                                  Strided1DIndexer, Strided1DIndexer, T, repT>(
                 src_tp, dst_tp, reps_tp, cumsum_tp, src_nelems, orthog_indexer,
                 src_indexer, dst_indexer, reps_indexer));
     });
@@ -260,10 +262,16 @@ template <typename fnT, typename T> struct RepeatSequence1DFactory
     }
 };
 
-template <typename OrthogIndexer, typename AxisIndexer, typename T>
+template <typename OrthogIndexer,
+          typename SrcAxisIndexer,
+          typename DstAxisIndexer,
+          typename T>
 class repeat_by_scalar_kernel;
 
-template <typename OrthogIndexer, typename AxisIndexer, typename T>
+template <typename OrthogIndexer,
+          typename SrcAxisIndexer,
+          typename DstAxisIndexer,
+          typename T>
 class RepeatScalarFunctor
 {
 private:
@@ -272,8 +280,8 @@ private:
     const py::ssize_t reps = 1;
     size_t dst_axis_nelems = 0;
     OrthogIndexer orthog_strider;
-    AxisIndexer src_axis_strider;
-    AxisIndexer dst_axis_strider;
+    SrcAxisIndexer src_axis_strider;
+    DstAxisIndexer dst_axis_strider;
 
 public:
     RepeatScalarFunctor(const T *src_,
@@ -281,8 +289,8 @@ public:
                         const py::ssize_t reps_,
                         size_t dst_axis_nelems_,
                         OrthogIndexer orthog_strider_,
-                        AxisIndexer src_axis_strider_,
-                        AxisIndexer dst_axis_strider_)
+                        SrcAxisIndexer src_axis_strider_,
+                        DstAxisIndexer dst_axis_strider_)
         : src(src_), dst(dst_), reps(reps_), dst_axis_nelems(dst_axis_nelems_),
           orthog_strider(orthog_strider_), src_axis_strider(src_axis_strider_),
           dst_axis_strider(dst_axis_strider_)
@@ -354,10 +362,11 @@ sycl::event repeat_by_scalar_impl(sycl::queue &q,
 
         const size_t gws = orthog_nelems * dst_axis_nelems;
 
-        cgh.parallel_for<repeat_by_scalar_kernel<TwoOffsets_StridedIndexer,
-                                                 Strided1DIndexer, T>>(
+        cgh.parallel_for<repeat_by_scalar_kernel<
+            TwoOffsets_StridedIndexer, Strided1DIndexer, Strided1DIndexer, T>>(
             sycl::range<1>(gws),
-            RepeatScalarFunctor<TwoOffsets_StridedIndexer, Strided1DIndexer, T>(
+            RepeatScalarFunctor<TwoOffsets_StridedIndexer, Strided1DIndexer,
+                                Strided1DIndexer, T>(
                 src_tp, dst_tp, reps, dst_axis_nelems, orthog_indexer,
                 src_axis_indexer, dst_axis_indexer));
     });
@@ -380,8 +389,8 @@ typedef sycl::event (*repeat_by_scalar_1d_fn_ptr_t)(
     const char *,
     char *,
     const py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    int,
+    const py::ssize_t *,
     py::ssize_t,
     py::ssize_t,
     const std::vector<sycl::event> &);
@@ -392,8 +401,8 @@ sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
                                      const char *src_cp,
                                      char *dst_cp,
                                      const py::ssize_t reps,
-                                     py::ssize_t src_shape,
-                                     py::ssize_t src_stride,
+                                     int src_nd,
+                                     const py::ssize_t *src_shape_strides,
                                      py::ssize_t dst_shape,
                                      py::ssize_t dst_stride,
                                      const std::vector<sycl::event> &depends)
@@ -407,17 +416,18 @@ sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
         // orthog ndim indexer
         TwoZeroOffsets_Indexer orthog_indexer{};
         // indexers along repeated axis
-        Strided1DIndexer src_indexer(0, src_shape, src_stride);
+        StridedIndexer src_indexer(src_nd, 0, src_shape_strides);
         Strided1DIndexer dst_indexer{0, dst_shape, dst_stride};
 
         const size_t gws = dst_nelems;
 
-        cgh.parallel_for<repeat_by_scalar_kernel<TwoZeroOffsets_Indexer,
-                                                 Strided1DIndexer, T>>(
+        cgh.parallel_for<repeat_by_scalar_kernel<
+            TwoZeroOffsets_Indexer, StridedIndexer, Strided1DIndexer, T>>(
             sycl::range<1>(gws),
-            RepeatScalarFunctor<TwoZeroOffsets_Indexer, Strided1DIndexer, T>(
-                src_tp, dst_tp, reps, dst_nelems, orthog_indexer, src_indexer,
-                dst_indexer));
+            RepeatScalarFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
+                                Strided1DIndexer, T>(src_tp, dst_tp, reps,
+                                                     dst_nelems, orthog_indexer,
+                                                     src_indexer, dst_indexer));
     });
 
     return repeat_ev;

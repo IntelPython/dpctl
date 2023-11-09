@@ -3,6 +3,7 @@ from numpy.core.numeric import normalize_axis_tuple
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.tensor._tensor_reductions_impl as tri
 
 
 def _boolean_reduction(x, axis, keepdims, func):
@@ -94,7 +95,7 @@ def all(x, axis=None, keepdims=False):
             An array with a data type of `bool`
             containing the results of the logical AND reduction.
     """
-    return _boolean_reduction(x, axis, keepdims, ti._all)
+    return _boolean_reduction(x, axis, keepdims, tri._all)
 
 
 def any(x, axis=None, keepdims=False):
@@ -122,4 +123,4 @@ def any(x, axis=None, keepdims=False):
             An array with a data type of `bool`
             containing the results of the logical OR reduction.
     """
-    return _boolean_reduction(x, axis, keepdims, ti._any)
+    return _boolean_reduction(x, axis, keepdims, tri._any)

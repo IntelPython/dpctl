@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
-project(use_queue_device LANGUAGES CXX)
+project(use_queue_device VERSION 0.1 LANGUAGES CXX
+  DESCRIPTION "Example of using dpctl.program.SyclKernel <-> sycl::kernel type casting")
 
 set(DPCTL_CMAKE_MODULES_PATH "${CMAKE_SOURCE_DIR}/../../../cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_CMAKE_MODULES_PATH})
-find_package(IntelDPCPP REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
+find_package(IntelSYCL REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -19,15 +20,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(PythonExtensions REQUIRED)
+find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
-find_package(NumPy REQUIRED)
 
 set(py_module_name _use_kernel)
+set(_sources use_kernel/_example.cpp)
 pybind11_add_module(${py_module_name}
     MODULE
-    use_kernel/_example.cpp
+    ${_sources}
 )
+add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 install(TARGETS ${py_module_name}
   DESTINATION use_kernel

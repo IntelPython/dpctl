@@ -58,7 +58,6 @@ elseif(UNIX)
     string(CONCAT CXXFLAGS
         "${WARNING_FLAGS}"
         "${SDL_FLAGS}"
-        "-fsycl "
     )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
@@ -137,10 +136,15 @@ add_custom_target(
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 function(build_dpctl_ext _trgt _src _dest)
+    set(options SYCL)
+    cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     set(_cythonize_trgt "${_trgt}_cythonize_pyx")
     add_custom_target(${_cythonize_trgt} DEPENDS ${_src})
-    python_add_library(${_trgt} MODULE ${_generated_src})
+    Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
+    if (BUILD_DPCTL_EXT_SYCL)
+      add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
+    endif()
     target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
     add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})
     if (DPCTL_GENERATE_COVERAGE)
@@ -185,13 +189,18 @@ function(build_dpctl_ext _trgt _src _dest)
     install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
-file(GLOB _cython_sources *.pyx)
+file(GLOB _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.pyx)
+list(REMOVE_ITEM _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpctl_ext(${_trgt} ${_cy_file} "dpctl")
 endforeach()
 
-target_include_directories(_sycl_queue PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
+get_filename_component(_trgt ${_cy_file} NAME_WLE)
+build_dpctl_ext(${_trgt} ${_cy_file} "dpctl" SYCL)
+# _sycl_queue include _host_task_util.hpp
+target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(program)
 add_subdirectory(memory)

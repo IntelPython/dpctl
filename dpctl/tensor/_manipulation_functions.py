@@ -19,7 +19,6 @@ import itertools
 import operator
 
 import numpy as np
-from numpy import AxisError
 from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
 
 import dpctl
@@ -929,20 +928,26 @@ def repeat(x, repeats, axis=None):
     Args:
         x (usm_ndarray): input array
 
-        repeat (Union[int, Tuple[int, ...]]):
+        repeats (Union[int, Sequence[int, ...], usm_ndarray]):
             The number of repetitions for each element.
-            `repeats` is broadcasted to fit the shape of the given axis.
+            `repeats` is broadcast to fit the shape of the given axis.
+            If `repeats` is an array, it must have an integer data type.
+            Otherwise, `repeats` must be a Python integer, tuple, list, or
+            range.
 
         axis (Optional[int]):
-            The axis along which to repeat values. The `axis` is required
-            if input array has more than one dimension.
+            The axis along which to repeat values. If `axis` is `None`, the
+            function repeats elements of the flattened array.
+            Default: `None`.
 
     Returns:
         usm_narray:
             Array with repeated elements.
-            The returned array must have the same data type as `x`,
-            is created on the same device as `x` and has the same USM
-            allocation type as `x`.
+            The returned array must have the same data type as `x`, is created
+            on the same device as `x` and has the same USM allocation type as
+            `x`. If `axis` is `None`, the returned array is one-dimensional,
+            otherwise, it has the same shape as `x`, except for the axis along
+            which elements were repeated.
 
     Raises:
         AxisError: if `axis` value is invalid.
@@ -951,20 +956,11 @@ def repeat(x, repeats, axis=None):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
 
     x_ndim = x.ndim
-    if axis is None:
-        if x_ndim > 1:
-            raise ValueError(
-                f"`axis` cannot be `None` for array of dimension {x_ndim}"
-            )
-        axis = 0
-
     x_shape = x.shape
-    if x_ndim > 0:
+    if axis is not None:
         axis = normalize_axis_index(operator.index(axis), x_ndim)
         axis_size = x_shape[axis]
     else:
-        if axis != 0:
-            AxisError("`axis` must be `0` for input of dimension `0`")
         axis_size = x.size
 
     scalar = False
@@ -977,8 +973,8 @@ def repeat(x, repeats, axis=None):
     elif isinstance(repeats, dpt.usm_ndarray):
         if repeats.ndim > 1:
             raise ValueError(
-                "`repeats` array must be 0- or 1-dimensional, got"
-                "{repeats.ndim}"
+                "`repeats` array must be 0- or 1-dimensional, got "
+                f"{repeats.ndim}"
             )
         exec_q = dpctl.utils.get_execution_queue(
             (x.sycl_queue, repeats.sycl_queue)
@@ -1015,22 +1011,22 @@ def repeat(x, repeats, axis=None):
             if not dpt.all(repeats >= 0):
                 raise ValueError("`repeats` elements must be positive")
 
-    elif isinstance(repeats, tuple):
+    elif isinstance(repeats, (tuple, list, range)):
         usm_type = x.usm_type
         exec_q = x.sycl_queue
 
         len_reps = len(repeats)
-        if len_reps != axis_size:
-            raise ValueError(
-                "`repeats` tuple must have the same length as the repeated "
-                "axis"
-            )
-        elif len_reps == 1:
+        if len_reps == 1:
             repeats = repeats[0]
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
             scalar = True
         else:
+            if len_reps != axis_size:
+                raise ValueError(
+                    "`repeats` sequence must have the same length as the "
+                    "repeated axis"
+                )
             repeats = dpt.asarray(
                 repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
             )
@@ -1038,7 +1034,7 @@ def repeat(x, repeats, axis=None):
                 raise ValueError("`repeats` elements must be positive")
     else:
         raise TypeError(
-            "Expected int, tuple, or `usm_ndarray` for second argument,"
+            "Expected int, sequence, or `usm_ndarray` for second argument,"
             f"got {type(repeats)}"
         )
 
@@ -1047,7 +1043,10 @@ def repeat(x, repeats, axis=None):
 
     if scalar:
         res_axis_size = repeats * axis_size
-        res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+        if axis is not None:
+            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+        else:
+            res_shape = (res_axis_size,)
         res = dpt.empty(
             res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
         )
@@ -1081,9 +1080,17 @@ def repeat(x, repeats, axis=None):
             res_axis_size = ti._cumsum_1d(
                 rep_buf, cumsum, sycl_queue=exec_q, depends=[copy_ev]
             )
-            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+            if axis is not None:
+                res_shape = (
+                    x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+                )
+            else:
+                res_shape = (res_axis_size,)
             res = dpt.empty(
-                res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+                res_shape,
+                dtype=x.dtype,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             if res_axis_size > 0:
                 ht_rep_ev, _ = ti._repeat_by_sequence(
@@ -1103,11 +1110,18 @@ def repeat(x, repeats, axis=None):
                 usm_type=usm_type,
                 sycl_queue=exec_q,
             )
-            # _cumsum_1d synchronizes so `depends` ends here safely
             res_axis_size = ti._cumsum_1d(repeats, cumsum, sycl_queue=exec_q)
-            res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+            if axis is not None:
+                res_shape = (
+                    x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
+                )
+            else:
+                res_shape = (res_axis_size,)
             res = dpt.empty(
-                res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+                res_shape,
+                dtype=x.dtype,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             if res_axis_size > 0:
                 ht_rep_ev, _ = ti._repeat_by_sequence(

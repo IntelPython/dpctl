@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpctl
+    VERSION 0.15
     LANGUAGES CXX
     DESCRIPTION "Python interface for XPU programming"
 )
@@ -17,7 +18,7 @@ option(DPCTL_GENERATE_COVERAGE
     OFF
 )
 
-find_package(IntelDPCPP REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
+find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 
 add_subdirectory(libsyclinterface)
 
