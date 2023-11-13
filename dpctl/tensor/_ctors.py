@@ -821,7 +821,7 @@ def arange(
     except TypeError:
         sh = 0
     if is_bool and sh > 2:
-        raise ValueError("no fill-function for boolean data type")
+        raise TypeError("no fill-function for boolean data type")
     res = dpt.usm_ndarray(
         (sh,),
         dtype=dt,
