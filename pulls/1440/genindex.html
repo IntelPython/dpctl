@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data Parallel Control (dpctl) 0.15.1dev0+34.g3aa74b4f3 documentation</title>
+  <title>Index &mdash; Data Parallel Control (dpctl) 0.15.1dev2+3.gf19179139 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/doxyrest-pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=1e22ffa3"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c97444ff"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="_static/target-highlight.js?v=df7d332b"></script>
@@ -44,7 +44,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev0+34.g3aa74b4f3
+                0.15.1dev2+3.gf19179139
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -120,6 +120,8 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.__array_namespace_info__">__array_namespace_info__() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray._byte_bounds">_byte_bounds (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice._context">_context (dpctl.memory.MemoryUSMDevice attribute)</a>
@@ -161,6 +163,8 @@
 </li>
       </ul></li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray._set_namespace">_set_namespace() (in module dpctl.tensor.usm_ndarray)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue._submit_keep_args_alive">_submit_keep_args_alive() (in module dpctl.SyclQueue)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -253,6 +257,8 @@
         <li><a href="docfiles/libsyclinterface/class_dpctl_syclinterface_dpctl_gpu_selector.html#index-0">dpctl::syclinterface::dpctl_gpu_selector</a>
 </li>
       </ul></li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.clip">clip() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.compile_num_sub_groups">compile_num_sub_groups (dpctl.program.SyclKernel attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclKernel.html#dpctl.program.SyclKernel.compile_sub_group_size">compile_sub_group_size (dpctl.program.SyclKernel attribute)</a>
@@ -1075,8 +1081,6 @@
         <li><a href="docfiles/libsyclinterface/group_EventInterface.html#index-5">function</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLEvent_GetProfilingInfoEnd
 
@@ -1084,6 +1088,8 @@
         <li><a href="docfiles/libsyclinterface/group_EventInterface.html#index-6">function</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     DPCTLEvent_GetProfilingInfoStart
 
@@ -1610,17 +1616,24 @@
 </li>
       </ul></li>
       <li>
-    DPCTLQueue_Memset
+    DPCTLQueue_MemcpyWithEvents
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-19">function</a>
 </li>
       </ul></li>
       <li>
-    DPCTLQueue_Prefetch
+    DPCTLQueue_Memset
 
       <ul>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-20">function</a>
+</li>
+      </ul></li>
+      <li>
+    DPCTLQueue_Prefetch
+
+      <ul>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-21">function</a>
 </li>
       </ul></li>
       <li>
@@ -1641,21 +1654,21 @@
     DPCTLQueue_SubmitNDRange
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-21">function</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-22">function</a>
 </li>
       </ul></li>
       <li>
     DPCTLQueue_SubmitRange
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-22">function</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-23">function</a>
 </li>
       </ul></li>
       <li>
     DPCTLQueue_Wait
 
       <ul>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-23">function</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-24">function</a>
 </li>
       </ul></li>
       <li>
@@ -2278,19 +2291,21 @@
 </li>
         <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-18">DPCTLQueue_Memcpy</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-19">DPCTLQueue_Memset</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-19">DPCTLQueue_MemcpyWithEvents</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-20">DPCTLQueue_Prefetch</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-20">DPCTLQueue_Memset</a>
+</li>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-21">DPCTLQueue_Prefetch</a>
 </li>
         <li><a href="docfiles/libsyclinterface/global.html#index-31">DPCTLQueue_SubmitBarrier</a>
 </li>
         <li><a href="docfiles/libsyclinterface/global.html#index-32">DPCTLQueue_SubmitBarrierForEvents</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-21">DPCTLQueue_SubmitNDRange</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-22">DPCTLQueue_SubmitNDRange</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-22">DPCTLQueue_SubmitRange</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-23">DPCTLQueue_SubmitRange</a>
 </li>
-        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-23">DPCTLQueue_Wait</a>
+        <li><a href="docfiles/libsyclinterface/group_QueueInterface.html#index-24">DPCTLQueue_Wait</a>
 </li>
         <li><a href="docfiles/libsyclinterface/group_QueueManager.html#index-1">DPCTLQueueMgr_GetCurrentQueue</a>
 </li>
@@ -2553,6 +2568,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.local_mem_size">local_mem_size (dpctl.SyclDevice attribute)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.logsumexp">logsumexp() (in module dpctl.tensor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2589,12 +2606,16 @@
 </li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.max_write_image_args">max_write_image_args (dpctl.SyclDevice attribute)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.mean">mean() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.mem_advise">mem_advise() (in module dpctl.SyclQueue)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.memcpy">memcpy() (in module dpctl.SyclQueue)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.memcpy_async">memcpy_async() (in module dpctl.SyclQueue)</a>
+</li>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice">MemoryUSMDevice (class in dpctl.memory)</a>
 </li>
       <li><a href="docfiles/dpctl/MemoryUSMHost.html#dpctl.memory.MemoryUSMHost">MemoryUSMHost (class in dpctl.memory)</a>
@@ -2822,6 +2843,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.real">real (dpctl.tensor.usm_ndarray attribute)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.reduce_hypot">reduce_hypot() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice.reference_obj">reference_obj (dpctl.memory.MemoryUSMDevice attribute)</a>
 
       <ul>
@@ -2877,6 +2900,8 @@
 </li>
       <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.stack">stack() (in module dpctl.tensor)</a>
 </li>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.std">std() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.str">str (numpy.dtype attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/usm_ndarray.html#dpctl.tensor.usm_ndarray.strides">strides (dpctl.tensor.usm_ndarray attribute)</a>
@@ -2888,6 +2913,8 @@
       <li><a href="docfiles/dpctl/dtype.html#numpy.dtype.subdtype">subdtype (numpy.dtype attribute)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.submit">submit() (in module dpctl.SyclQueue)</a>
+</li>
+      <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.submit_async">submit_async() (in module dpctl.SyclQueue)</a>
 </li>
       <li><a href="docfiles/dpctl/SyclQueue.html#dpctl.SyclQueue.submit_barrier">submit_barrier() (in module dpctl.SyclQueue)</a>
 </li>
@@ -3066,6 +3093,8 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.var">var() (in module dpctl.tensor)</a>
+</li>
       <li><a href="docfiles/dpctl/SyclDevice.html#dpctl.SyclDevice.vendor">vendor (dpctl.SyclDevice attribute)</a>
 
       <ul>

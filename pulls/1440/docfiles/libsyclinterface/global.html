@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data Parallel Control (dpctl) 0.15.1dev0+34.g3aa74b4f3 documentation</title>
+  <title>Global Namespace &mdash; Data Parallel Control (dpctl) 0.15.1dev2+3.gf19179139 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=1e22ffa3"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c97444ff"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev0+34.g3aa74b4f3
+                0.15.1dev2+3.gf19179139
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -776,6 +776,16 @@
     <span class="kt">void</span><span class="o">*</span> <span class="n">Dest</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Src</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">Count</span>
+    <span class="p">);</span>
+
+<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<a class="reference internal" href="group_QueueInterface.html#doxid-d2-d22-group-queue-interface-1ga34c52bf71f359347136ea6e45d4a7754"><span class="std std-ref">DPCTLQueue_MemcpyWithEvents</span></a><span></span><span class="p">(</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">Dest</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">Src</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">Count</span><span class="p">,</span>
+    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">DepEventsCount</span>
     <span class="p">);</span>
 
 <span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
