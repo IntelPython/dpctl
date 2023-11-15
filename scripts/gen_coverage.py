@@ -195,8 +195,8 @@ if __name__ == "__main__":
         args.cxx_compiler = "icpx"
         args.compiler_root = None
         icx_path = subprocess.check_output(["which", "icx"])
-        bin_dir = os.path.dirname(os.path.dirname(icx_path))
-        args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
+        bin_dir = os.path.dirname(icx_path)
+        args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "compiler")
     else:
         args_to_validate = [
             "c_compiler",
