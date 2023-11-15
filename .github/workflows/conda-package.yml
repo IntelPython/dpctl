@@ -393,36 +393,6 @@ jobs:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
 
-  cleanup_packages:
-    name: Clean up anaconda packages
-    needs: [upload_linux, upload_windows]
-    runs-on: 'ubuntu-latest'
-    defaults:
-      run:
-        shell: bash -el {0}
-    steps:
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          run-post: false
-          channel-priority: "disabled"
-          channels: conda-forge
-          python-version: '3.11'
-
-      - name: Install anaconda-client
-        run: conda install anaconda-client
-
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          repository: IntelPython/devops-tools
-          fetch-depth: 0
-
-      - name: Cleanup old packages
-        run: |
-          python scripts/cleanup-old-packages.py \
-          --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
-          --package dppy/${{ env.PACKAGE_NAME }} --label dev
-
   test_examples_linux:
     needs: build_linux
     runs-on:  ${{ matrix.runner }}
@@ -700,3 +670,33 @@ jobs:
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]'
+
+  cleanup_packages:
+    name: Clean up anaconda packages
+    needs: [upload_linux, upload_windows]
+    runs-on: 'ubuntu-latest'
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          run-post: false
+          channel-priority: "disabled"
+          channels: conda-forge
+          python-version: '3.11'
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: IntelPython/devops-tools
+          fetch-depth: 0
+
+      - name: Cleanup old packages
+        run: |
+          python scripts/cleanup-old-packages.py \
+          --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
+          --package dppy/${{ env.PACKAGE_NAME }} --label dev
