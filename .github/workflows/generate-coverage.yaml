@@ -90,19 +90,7 @@ jobs:
         run: |
           pip install numpy"<1.26.0" cython setuptools pytest pytest-cov scikit-build cmake coverage[toml]
 
-      - name: Build dpctl with coverage for oneAPI 2023
-        if: env.USE_2023 == '1'
-        shell: bash -l {0}
-        run: |
-          source /opt/intel/oneapi/setvars.sh
-          export ARGS="--not-oneapi --compiler-root ${CMPLR_ROOT}"
-          export ARGS="${ARGS} --c-compiler ${CMPLR_ROOT}/linux/bin/icx"
-          export ARGS="${ARGS} --cxx-compiler ${CMPLR_ROOT}/linux/bin/icpx"
-          export ARGS="${ARGS} --bin-llvm ${CMPLR_ROOT}/linux/bin-llvm"
-          python scripts/gen_coverage.py ${ARGS}
-
-      - name: Build dpctl with coverage for default oneAPI
-        if: env.USE_2023 != '1'
+      - name: Build dpctl with coverage
         shell: bash -l {0}
         run: |
           source /opt/intel/oneapi/setvars.sh
