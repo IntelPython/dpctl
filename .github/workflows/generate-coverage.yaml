@@ -12,6 +12,8 @@ jobs:
     env:
       ONEAPI_ROOT: /opt/intel/oneapi
       GTEST_ROOT: /home/runner/work/googletest-1.13.0/install
+      # Use oneAPI compiler 2023 to work around an issue
+      USE_2023: 1
 
     steps:
       - name: Cancel Previous Runs
@@ -27,10 +29,17 @@ jobs:
           sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
           sudo apt-get update
 
-      - name: Install Intel OneAPI
+      - name: Install Intel OneAPI 2023
+        if: env.USE_2023 == '1'
         run: |
           sudo apt-get install intel-oneapi-compiler-dpcpp-cpp-2023.2.1
           sudo apt-get install intel-oneapi-tbb-2021.10.0
+
+      - name: Install latest Intel OneAPI
+        if: env.USE_2023 != '1'
+        run: |
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
+          sudo apt-get install intel-oneapi-tbb
 
       - name: Install CMake and Ninja
         run: |
@@ -81,7 +90,19 @@ jobs:
         run: |
           pip install numpy"<1.26.0" cython setuptools pytest pytest-cov scikit-build cmake coverage[toml]
 
-      - name: Build dpctl with coverage
+      - name: Build dpctl with coverage for oneAPI 2023
+        if: env.USE_2023 == '1'
+        shell: bash -l {0}
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          export ARGS="--not-oneapi --compiler-root ${CMPLR_ROOT}"
+          export ARGS="${ARGS} --c-compiler ${CMPLR_ROOT}/linux/bin/icx"
+          export ARGS="${ARGS} --cxx-compiler ${CMPLR_ROOT}/linux/bin/icpx"
+          export ARGS="${ARGS} --bin-llvm ${CMPLR_ROOT}/linux/bin-llvm"
+          python scripts/gen_coverage.py ${ARGS}
+
+      - name: Build dpctl with coverage for default oneAPI
+        if: env.USE_2023 != '1'
         shell: bash -l {0}
         run: |
           source /opt/intel/oneapi/setvars.sh
