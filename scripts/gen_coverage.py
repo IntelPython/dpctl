@@ -196,7 +196,13 @@ if __name__ == "__main__":
         args.compiler_root = None
         icx_path = subprocess.check_output(["which", "icx"])
         bin_dir = os.path.dirname(icx_path)
-        args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "compiler")
+        compiler_dir = os.path.join(bin_dir.decode("utf-8"), "compiler")
+        if os.path.exists(compiler_dir):
+            args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "compiler")
+        else:
+            bin_dir = os.path.dirname(bin_dir)
+            args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
+        assert os.path.exists(args.bin_llvm)
     else:
         args_to_validate = [
             "c_compiler",
