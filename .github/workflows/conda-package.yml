@@ -48,8 +48,9 @@ jobs:
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
       - name: Build conda package
         run: |
-          CHANNELS="-c intel/label/validation -c intel -c conda-forge --override-channels"
-          VERSIONS="--python ${{ matrix.python }}"
+          # use bootstrap channel to pull NumPy linked with OpenBLAS
+          CHANNELS="-c dppy/label/bootstrap -c intel/label/validation -c intel -c conda-forge --override-channels"
+          VERSIONS="--python ${{ matrix.python }} --numpy 1.23"
           TEST="--no-test"
           conda build \
             $TEST \
