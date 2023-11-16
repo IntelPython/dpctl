@@ -28,11 +28,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -50,7 +50,6 @@ namespace abs
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -121,7 +120,7 @@ private:
             return q_nan;
         }
         else {
-#ifdef USE_STD_ABS_FOR_COMPLEX_TYPES
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::abs(exprm_ns::complex<realT>(z));
 #else
             return std::hypot(std::real(z), std::imag(z));

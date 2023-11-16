@@ -26,11 +26,11 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -48,7 +48,6 @@ namespace acos
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -105,6 +104,7 @@ template <typename argT, typename resT> struct AcosFunctor
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = exprm_ns::complex<realT>;
                 sycl_complexT log_in =
                     exprm_ns::log(exprm_ns::complex<realT>(in));
@@ -115,11 +115,24 @@ template <typename argT, typename resT> struct AcosFunctor
 
                 realT ry = wx + std::log(realT(2));
                 return resT{rx, (std::signbit(y)) ? ry : -ry};
+#else
+                resT log_in = std::log(in);
+                const realT wx = std::real(log_in);
+                const realT wy = std::imag(log_in);
+                const realT rx = std::abs(wy);
+
+                realT ry = wx + std::log(realT(2));
+                return resT{rx, (std::signbit(y)) ? ry : -ry};
+#endif
             }
 
             /* ordinary cases */
+#if USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::acos(
                 exprm_ns::complex<realT>(in)); // std::acos(in);
+#else
+            return std::acos(in);
+#endif
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

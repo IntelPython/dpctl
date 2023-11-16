@@ -24,12 +24,13 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
+#include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -50,7 +51,6 @@ namespace multiply
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename argT1, typename argT2, typename resT> struct MultiplyFunctor
 {
@@ -65,11 +65,15 @@ template <typename argT1, typename argT2, typename resT> struct MultiplyFunctor
         if constexpr (tu_ns::is_complex<argT1>::value &&
                       tu_ns::is_complex<argT2>::value)
         {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
             return exprm_ns::complex<realT1>(in1) *
                    exprm_ns::complex<realT2>(in2);
+#else
+            return in1 * in2;
+#endif
         }
         else {
             return in1 * in2;

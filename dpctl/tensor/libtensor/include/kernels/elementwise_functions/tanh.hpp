@@ -28,11 +28,11 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -50,7 +50,6 @@ namespace tanh
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace cmplx_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -114,8 +113,12 @@ template <typename argT, typename resT> struct TanhFunctor
                 return resT{q_nan, q_nan};
             }
             /* ordinary cases */
-            return cmplx_ns::tanh(
-                cmplx_ns::complex<realT>(in)); // std::tanh(in);
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            return exprm_ns::tanh(
+                exprm_ns::complex<realT>(in)); // std::tanh(in);
+#else
+            return std::tanh(in);
+#endif
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

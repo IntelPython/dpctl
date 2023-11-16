@@ -29,11 +29,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -51,7 +51,6 @@ namespace sqrt
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -71,15 +70,25 @@ template <typename argT, typename resT> struct SqrtFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            // #ifdef _WINDOWS
-            //             return csqrt(in);
-            // #else
-            //             return std::sqrt(in);
-            // #endif
             using realT = typename argT::value_type;
-
-            // return csqrt(in);
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::sqrt(exprm_ns::complex<realT>(in));
+#else
+#ifdef _WINDOWS
+            // Work around a problem on Windows, where std::sqrt for
+            // single precision input uses double type, precluding
+            // offloading to devices that do not support double precision
+            // i.e. Iris Xe
+            if constexpr (std::is_same_v<realT, double>) {
+                return std::sqrt(in);
+            }
+            else {
+                return csqrt(in);
+            }
+#else
+            return std::sqrt(in);
+#endif
+#endif
         }
         else {
             return std::sqrt(in);
