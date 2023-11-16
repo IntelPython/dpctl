@@ -12,6 +12,8 @@ jobs:
     env:
       ONEAPI_ROOT: /opt/intel/oneapi
       GTEST_ROOT: /home/runner/work/googletest-1.13.0/install
+      # Use oneAPI compiler 2023 to work around an issue
+      USE_2023: 1
 
     steps:
       - name: Cancel Previous Runs
@@ -27,7 +29,14 @@ jobs:
           sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
           sudo apt-get update
 
-      - name: Install Intel OneAPI
+      - name: Install Intel OneAPI 2023
+        if: env.USE_2023 == '1'
+        run: |
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp-2023.2.1
+          sudo apt-get install intel-oneapi-tbb-2021.10.0
+
+      - name: Install latest Intel OneAPI
+        if: env.USE_2023 != '1'
         run: |
           sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
           sudo apt-get install intel-oneapi-tbb
