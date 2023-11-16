@@ -49,7 +49,7 @@ jobs:
       - name: Build conda package
         run: |
           # use bootstrap channel to pull NumPy linked with OpenBLAS
-          CHANNELS="-c dppy/label/bootstrap -c intel/label/validation -c intel -c conda-forge --override-channels"
+          CHANNELS="-c dppy/label/bootstrap -c intel -c conda-forge --override-channels"
           VERSIONS="--python ${{ matrix.python }} --numpy 1.23"
           TEST="--no-test"
           conda build \
@@ -105,7 +105,7 @@ jobs:
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
-        run: conda build --no-test --python ${{ matrix.python }} -c intel/label/validation -c intel  -c conda-forge --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} -c intel  -c conda-forge --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -128,7 +128,7 @@ jobs:
         runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel/label/validation -c intel -c conda-forge --override-channels
+      CHANNELS: -c intel -c conda-forge --override-channels
 
     steps:
       - name: Download artifact
@@ -213,7 +213,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     env:
       workdir: '${{ github.workspace }}'
-      CHANNELS: -c intel/label/validation -c intel -c conda-forge --override-channels
+      CHANNELS: -c intel -c conda-forge --override-channels
 
     steps:
       - name: Download artifact
@@ -272,7 +272,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install opencl_rt
         shell: cmd /C CALL {0}
-        run: conda install -n dpctl_test opencl_rt -c intel/label/validation -c intel --override-channels
+        run: conda install -n dpctl_test opencl_rt -c intel --override-channels
       - name: Install dpctl
         shell: cmd /C CALL {0}
         run: |
@@ -403,7 +403,7 @@ jobs:
         runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel/label/validation -c intel -c conda-forge --override-channels
+      CHANNELS: -c intel -c conda-forge --override-channels
 
     steps:
       - name: Install conda-build
@@ -461,7 +461,7 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel/label/validation -c intel -c conda-forge --override-channels"
+          CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel -c conda-forge --override-channels"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           conda install -n examples -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp">=0.10.1" || exit 1
       - name: Build and run examples of pybind11 extensions
@@ -546,7 +546,7 @@ jobs:
         runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      CHANNELS: -c intel/label/validation -c intel -c conda-forge --override-channels
+      CHANNELS: -c intel -c conda-forge --override-channels
     steps:
       - name: Cache array API tests
         id: cache-array-api-tests
