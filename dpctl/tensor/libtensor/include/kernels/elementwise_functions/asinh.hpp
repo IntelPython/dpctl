@@ -23,13 +23,14 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -106,16 +107,30 @@ template <typename argT, typename resT> struct AsinhFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
 
             if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
-                resT log_in = (std::signbit(x)) ? std::log(-in) : std::log(in);
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+                using sycl_complexT = exprm_ns::complex<realT>;
+                sycl_complexT log_in = (std::signbit(x))
+                                           ? exprm_ns::log(sycl_complexT(-in))
+                                           : exprm_ns::log(sycl_complexT(in));
+                realT wx = log_in.real() + std::log(realT(2));
+                realT wy = log_in.imag();
+#else
+                auto log_in = std::log(std::signbit(x) ? -in : in);
                 realT wx = std::real(log_in) + std::log(realT(2));
                 realT wy = std::imag(log_in);
+#endif
                 const realT res_re = std::copysign(wx, x);
                 const realT res_im = std::copysign(wy, y);
                 return resT{res_re, res_im};
             }
 
             /* ordinary cases */
+#if USE_SYCL_FOR_COMPLEX_TYPES
+            return exprm_ns::asinh(
+                exprm_ns::complex<realT>(in)); // std::asinh(in);
+#else
             return std::asinh(in);
+#endif
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

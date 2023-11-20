@@ -26,10 +26,10 @@
 #pragma once
 
 #include "dpctl_capi.h"
-#include <CL/sycl.hpp>
 #include <complex>
 #include <memory>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 

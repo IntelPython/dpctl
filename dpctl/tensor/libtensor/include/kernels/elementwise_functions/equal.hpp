@@ -24,11 +24,12 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -62,7 +63,22 @@ template <typename argT1, typename argT2, typename resT> struct EqualFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return (in1 == in2);
+        if constexpr (tu_ns::is_complex<argT1>::value &&
+                      tu_ns::is_complex<argT2>::value)
+        {
+            using realT1 = typename argT1::value_type;
+            using realT2 = typename argT2::value_type;
+
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            return exprm_ns::complex<realT1>(in1) ==
+                   exprm_ns::complex<realT2>(in2);
+#else
+            return (in1 == in2);
+#endif
+        }
+        else {
+            return (in1 == in2);
+        }
     }
 
     template <int vec_sz>

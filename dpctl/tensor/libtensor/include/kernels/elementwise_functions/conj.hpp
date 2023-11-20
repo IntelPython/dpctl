@@ -24,14 +24,15 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -68,7 +69,13 @@ template <typename argT, typename resT> struct ConjFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            using rT = typename argT::value_type;
+
+            return exprm_ns::conj(exprm_ns::complex<rT>(in)); // std::conj(in);
+#else
             return std::conj(in);
+#endif
         }
         else {
             if constexpr (!std::is_same_v<argT, bool>)

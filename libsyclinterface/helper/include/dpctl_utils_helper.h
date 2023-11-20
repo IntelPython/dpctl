@@ -26,7 +26,7 @@
 
 #include "Support/DllExport.h"
 #include "dpctl_sycl_enum_types.h"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 /*!
  * @brief Converts a sycl::info::device_type input value to a string.

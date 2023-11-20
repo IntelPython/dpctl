@@ -23,13 +23,13 @@
 /// dpctl.tensor.put
 //===----------------------------------------------------------------------===//
 
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 #include <utility>
 
 #include "dpctl4pybind11.hpp"

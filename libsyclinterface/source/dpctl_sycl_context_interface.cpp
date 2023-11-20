@@ -28,7 +28,7 @@
 #include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 

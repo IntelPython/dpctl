@@ -26,9 +26,9 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 #include <tuple>
 #include <vector>
 

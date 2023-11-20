@@ -187,12 +187,17 @@ foreach(_src_fn ${_no_fast_math_sources})
      PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
   )
 endforeach()
-if (UNIX)
+
+set(_compiler_definitions "USE_SYCL_FOR_COMPLEX_TYPES")
+
+foreach(_src_fn ${_elementwise_sources})
+  get_source_file_property(_cmpl_options_defs ${_src_fn} COMPILE_DEFINITIONS)
+  set(_combined_options_defs ${_cmpl_options_defs} "${_compiler_definitions}")
   set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/abs.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/sqrt.cpp
-    PROPERTIES COMPILE_DEFINITIONS "USE_STD_ABS_FOR_COMPLEX_TYPES;USE_STD_SQRT_FOR_COMPLEX_TYPES")
-endif()
+     ${_src_fn}
+     PROPERTIES COMPILE_DEFINITIONS "${_combined_options_defs}"
+  )
+endforeach()
 
 set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
 foreach(python_module_name ${_py_trgts})
@@ -209,6 +214,19 @@ foreach(python_module_name ${_py_trgts})
         ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
+    if(_dpctl_sycl_targets)
+        # make fat binary
+        target_compile_options(
+            ${python_module_name}
+            PRIVATE
+            -fsycl-targets=${_dpctl_sycl_targets}
+        )
+        target_link_options(
+            ${python_module_name}
+            PRIVATE
+            -fsycl-targets=${_dpctl_sycl_targets}
+        )
+    endif()
     add_dependencies(${python_module_name} _dpctl4pybind11_deps)
     install(TARGETS ${python_module_name} DESTINATION "dpctl/tensor")
 endforeach()

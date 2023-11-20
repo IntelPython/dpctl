@@ -25,8 +25,8 @@
 #pragma once
 
 #include "dpctl4pybind11.hpp"
-#include <CL/sycl.hpp>
 #include <complex>
+#include <sycl/sycl.hpp>
 
 namespace dpctl
 {

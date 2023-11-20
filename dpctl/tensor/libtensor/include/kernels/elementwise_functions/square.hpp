@@ -24,13 +24,14 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -68,7 +69,20 @@ template <typename argT, typename resT> struct SquareFunctor
 
     resT operator()(const argT &in) const
     {
-        return in * in;
+        if constexpr (is_complex<argT>::value) {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            using realT = typename argT::value_type;
+
+            auto z = exprm_ns::complex<realT>(in);
+
+            return z * z;
+#else
+            return in * in;
+#endif
+        }
+        else {
+            return in * in;
+        }
     }
 
     template <int vec_sz>

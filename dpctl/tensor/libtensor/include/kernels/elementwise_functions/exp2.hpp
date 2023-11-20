@@ -24,13 +24,14 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -76,7 +77,11 @@ template <typename argT, typename resT> struct Exp2Functor
             const realT y = std::imag(tmp);
             if (std::isfinite(x)) {
                 if (std::isfinite(y)) {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+                    return exprm_ns::exp(exprm_ns::complex<realT>(tmp));
+#else
                     return std::exp(tmp);
+#endif
                 }
                 else {
                     return resT{q_nan, q_nan};

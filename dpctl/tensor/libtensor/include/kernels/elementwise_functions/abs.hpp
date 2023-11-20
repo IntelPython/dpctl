@@ -23,15 +23,16 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -119,8 +120,8 @@ private:
             return q_nan;
         }
         else {
-#ifdef USE_STD_ABS_FOR_COMPLEX_TYPES
-            return std::abs(z);
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            return exprm_ns::abs(exprm_ns::complex<realT>(z));
 #else
             return std::hypot(std::real(z), std::imag(z));
 #endif

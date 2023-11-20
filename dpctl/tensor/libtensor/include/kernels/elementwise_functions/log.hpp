@@ -23,13 +23,15 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -65,7 +67,17 @@ template <typename argT, typename resT> struct LogFunctor
 
     resT operator()(const argT &in) const
     {
-        return std::log(in);
+        if constexpr (is_complex<argT>::value) {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            using realT = typename argT::value_type;
+            return exprm_ns::log(exprm_ns::complex<realT>(in)); // std::log(in);
+#else
+            return std::log(in);
+#endif
+        }
+        else {
+            return std::log(in);
+        }
     }
 };
 

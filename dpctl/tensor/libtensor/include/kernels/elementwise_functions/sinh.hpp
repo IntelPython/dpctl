@@ -23,13 +23,14 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -79,7 +80,11 @@ template <typename argT, typename resT> struct SinhFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+                return exprm_ns::sinh(exprm_ns::complex<realT>(in));
+#else
                 return std::sinh(in);
+#endif
             }
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.

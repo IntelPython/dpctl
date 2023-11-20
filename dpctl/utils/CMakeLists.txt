@@ -21,6 +21,19 @@ pybind11_add_module(${python_module_name} MODULE
   ${_module_src}
 )
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
+if(_dpctl_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+    target_link_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+endif()
 target_include_directories(${python_module_name}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../include

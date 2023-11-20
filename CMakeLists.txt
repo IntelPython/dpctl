@@ -17,8 +17,29 @@ option(DPCTL_GENERATE_COVERAGE
     "Build dpctl with coverage instrumentation"
     OFF
 )
+option(DPCTL_TARGET_CUDA
+    "Build DPCTL to target CUDA devices"
+    OFF
+)
 
 find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
+
+set(_dpctl_sycl_targets)
+if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
+   if(DPCTL_TARGET_CUDA)
+      set(_dpctl_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+   else()
+      if(DEFINED ENV{DPCTL_TARGET_CUDA})
+          set(_dpctl_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+      endif()
+   endif()
+else()
+   set(_dpctl_sycl_targets ${DPCTL_SYCL_TARGETS})
+endif()
+
+if(_dpctl_sycl_targets)
+   message(STATUS "Compiling for -fsycl-targets=${_dpctl_sycl_targets}")
+endif()
 
 add_subdirectory(libsyclinterface)
 

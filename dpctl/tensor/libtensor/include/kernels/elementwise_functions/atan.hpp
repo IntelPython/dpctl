@@ -23,14 +23,15 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "kernels/elementwise_functions/common.hpp"
+#include "sycl_complex.hpp"
 
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -126,7 +127,12 @@ template <typename argT, typename resT> struct AtanFunctor
                 return resT{atanh_im, atanh_re};
             }
             /* ordinary cases */
+#ifdef USE_SYCL_FOR_COMPLEX_TYPES
+            return exprm_ns::atan(
+                exprm_ns::complex<realT>(in)); // std::atan(in);
+#else
             return std::atan(in);
+#endif
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

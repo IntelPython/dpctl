@@ -28,7 +28,7 @@
 #pragma once
 
 #include "Support/DllExport.h"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 namespace dpctl
 {
