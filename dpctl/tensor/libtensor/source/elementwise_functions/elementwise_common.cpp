@@ -29,6 +29,7 @@
 #include "acos.hpp"
 #include "acosh.hpp"
 #include "add.hpp"
+#include "angle.hpp"
 #include "asin.hpp"
 #include "asinh.hpp"
 #include "atan.hpp"
@@ -111,6 +112,7 @@ void init_elementwise_functions(py::module_ m)
     init_acos(m);
     init_acosh(m);
     init_add(m);
+    init_angle(m);
     init_asin(m);
     init_asinh(m);
     init_atan(m);

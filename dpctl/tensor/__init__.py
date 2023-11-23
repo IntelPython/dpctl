@@ -102,6 +102,7 @@ from ._elementwise_funcs import (
     acos,
     acosh,
     add,
+    angle,
     asin,
     asinh,
     atan,
@@ -344,4 +345,5 @@ __all__ = [
     "__array_api_version__",
     "__array_namespace_info__",
     "reciprocal",
+    "angle",
 ]

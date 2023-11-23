@@ -1917,3 +1917,34 @@ reciprocal = UnaryElementwiseFunc(
     ti._reciprocal,
     _reciprocal_docstring,
 )
+
+
+# U43: ==== ANGLE        (x)
+_angle_docstring = """
+angle(x, out=None, order='K')
+
+Computes the phase angle (also called the argument) of each element `x_i` for
+input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a complex-valued floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise phase angles.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+angle = UnaryElementwiseFunc(
+    "angle",
+    ti._angle_result_type,
+    ti._angle,
+    _angle_docstring,
+)
