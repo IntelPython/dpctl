@@ -79,6 +79,7 @@
 #include "pow.hpp"
 #include "proj.hpp"
 #include "real.hpp"
+#include "reciprocal.hpp"
 #include "remainder.hpp"
 #include "round.hpp"
 #include "rsqrt.hpp"
@@ -161,6 +162,7 @@ void init_elementwise_functions(py::module_ m)
     init_pow(m);
     init_proj(m);
     init_real(m);
+    init_reciprocal(m);
     init_remainder(m);
     init_round(m);
     init_rsqrt(m);
