@@ -1,4 +1,4 @@
-//=== proj.hpp -   Unary function CONJ                     ------
+//=== proj.hpp -   Unary function PROJ                     ------
 //*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
