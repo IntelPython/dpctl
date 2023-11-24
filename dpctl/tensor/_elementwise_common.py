@@ -28,7 +28,8 @@ from dpctl.utils import ExecutionPlacementError
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._type_utils import (
-    _acceptance_fn_default,
+    _acceptance_fn_default1,
+    _acceptance_fn_default2,
     _all_data_types,
     _find_buf_dtype,
     _find_buf_dtype2,
@@ -62,17 +63,39 @@ class UnaryElementwiseFunc:
             computational tasks complete execution, while the second event
             corresponds to computational tasks associated with function
             evaluation.
+        acceptance_fn (callable, optional):
+            Function to influence type promotion behavior of this unary
+            function. The function takes 4 arguments:
+                arg_dtype - Data type of the first argument
+                buf_dtype - Data type the argument would be cast to
+                res_dtype - Data type of the output array with function values
+                sycl_dev - The :class:`dpctl.SyclDevice` where the function
+                    evaluation is carried out.
+            The function is invoked when the argument of the unary function
+            requires casting, e.g. the argument of `dpctl.tensor.log` is an
+            array with integral data type.
         docs (str):
             Documentation string for the unary function.
     """
 
-    def __init__(self, name, result_type_resolver_fn, unary_dp_impl_fn, docs):
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+        acceptance_fn=None,
+    ):
         self.__name__ = "UnaryElementwiseFunc"
         self.name_ = name
         self.result_type_resolver_fn_ = result_type_resolver_fn
         self.types_ = None
         self.unary_fn_ = unary_dp_impl_fn
         self.__doc__ = docs
+        if callable(acceptance_fn):
+            self.acceptance_fn_ = acceptance_fn
+        else:
+            self.acceptance_fn_ = _acceptance_fn_default1
 
     def __str__(self):
         return f"<{self.__name__} '{self.name_}'>"
@@ -92,6 +115,24 @@ class UnaryElementwiseFunc:
         elementwise unary function.
         """
         return self.result_type_resolver_fn_
+
+    def get_type_promotion_path_acceptance_function(self):
+        """Returns the acceptance function for this
+        elementwise binary function.
+
+        Acceptance function influences the type promotion
+        behavior of this unary function.
+        The function takes 4 arguments:
+            arg_dtype - Data type of the first argument
+            buf_dtype - Data type the argument would be cast to
+            res_dtype - Data type of the output array with function values
+            sycl_dev - The :class:`dpctl.SyclDevice` where the function
+                evaluation is carried out.
+        The function is invoked when the argument of the unary function
+        requires casting, e.g. the argument of `dpctl.tensor.log` is an
+        array with integral data type.
+        """
+        return self.acceptance_fn_
 
     @property
     def types(self):
@@ -122,7 +163,10 @@ class UnaryElementwiseFunc:
         if order not in ["C", "F", "K", "A"]:
             order = "K"
         buf_dt, res_dt = _find_buf_dtype(
-            x.dtype, self.result_type_resolver_fn_, x.sycl_device
+            x.dtype,
+            self.result_type_resolver_fn_,
+            x.sycl_device,
+            acceptance_fn=self.acceptance_fn_,
         )
         if res_dt is None:
             raise TypeError(
@@ -482,7 +526,7 @@ class BinaryElementwiseFunc:
         if callable(acceptance_fn):
             self.acceptance_fn_ = acceptance_fn
         else:
-            self.acceptance_fn_ = _acceptance_fn_default
+            self.acceptance_fn_ = _acceptance_fn_default2
 
     def __str__(self):
         return f"<{self.__name__} '{self.name_}'>"

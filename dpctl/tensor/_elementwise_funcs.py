@@ -17,7 +17,7 @@
 import dpctl.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
-from ._type_utils import _acceptance_fn_divide
+from ._type_utils import _acceptance_fn_divide, _acceptance_fn_reciprocal
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = """
@@ -1916,6 +1916,7 @@ reciprocal = UnaryElementwiseFunc(
     ti._reciprocal_result_type,
     ti._reciprocal,
     _reciprocal_docstring,
+    acceptance_fn=_acceptance_fn_reciprocal,
 )
 
 

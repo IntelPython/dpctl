@@ -132,7 +132,27 @@ def _to_device_supported_dtype(dt, dev):
     return dt
 
 
-def _find_buf_dtype(arg_dtype, query_fn, sycl_dev):
+def _acceptance_fn_default1(arg_dtype, ret_buf_dt, res_dt, sycl_dev):
+    return True
+
+
+def _acceptance_fn_reciprocal(arg_dtype, buf_dt, res_dt, sycl_dev):
+    # if the kind of result is different from
+    # the kind of input, use the default data
+    # we use default dtype for the resulting kind.
+    # This guarantees alignment of reciprocal and
+    # divide output types.
+    if buf_dt.kind != arg_dtype.kind:
+        default_dt = _get_device_default_dtype(res_dt.kind, sycl_dev)
+        if res_dt == default_dt:
+            return True
+        else:
+            return False
+    else:
+        return True
+
+
+def _find_buf_dtype(arg_dtype, query_fn, sycl_dev, acceptance_fn):
     res_dt = query_fn(arg_dtype)
     if res_dt:
         return None, res_dt
@@ -144,7 +164,11 @@ def _find_buf_dtype(arg_dtype, query_fn, sycl_dev):
         if _can_cast(arg_dtype, buf_dt, _fp16, _fp64):
             res_dt = query_fn(buf_dt)
             if res_dt:
-                return buf_dt, res_dt
+                acceptable = acceptance_fn(arg_dtype, buf_dt, res_dt, sycl_dev)
+                if acceptable:
+                    return buf_dt, res_dt
+                else:
+                    continue
 
     return None, None
 
@@ -163,7 +187,7 @@ def _get_device_default_dtype(dt_kind, sycl_dev):
     raise RuntimeError
 
 
-def _acceptance_fn_default(
+def _acceptance_fn_default2(
     arg1_dtype, arg2_dtype, ret_buf1_dt, ret_buf2_dt, res_dt, sycl_dev
 ):
     return True
@@ -230,6 +254,8 @@ __all__ = [
     "_find_buf_dtype",
     "_find_buf_dtype2",
     "_to_device_supported_dtype",
-    "_acceptance_fn_default",
+    "_acceptance_fn_default1",
+    "_acceptance_fn_reciprocal",
+    "_acceptance_fn_default2",
     "_acceptance_fn_divide",
 ]
