@@ -1,5 +1,4 @@
-//=== angle.hpp -   Unary function ANGLE                     ------
-//*-C++-*--/===//
+//=== angle.hpp -   Unary function ANGLE              ------*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
