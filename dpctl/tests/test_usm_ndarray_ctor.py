@@ -1465,6 +1465,7 @@ def test_real_imag_views():
     X_scalar = dpt.usm_ndarray((), dtype="f4")
     assert isinstance(X_scalar.imag, dpt.usm_ndarray)
     assert not X_scalar.imag
+    assert X_scalar.real.sycl_queue == X_scalar.imag.sycl_queue
 
 
 def test_real_imag_views_fp16():
