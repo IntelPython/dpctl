@@ -1461,6 +1461,23 @@ def test_real_imag_views():
     X_scalar[...] = complex(n * m, 2 * n * m)
     assert X_scalar.real and X_scalar.imag
 
+    # check that _zero_like works for scalars
+    X_scalar = dpt.usm_ndarray((), dtype="f4")
+    assert isinstance(X_scalar.imag, dpt.usm_ndarray)
+    assert not X_scalar.imag
+
+
+def test_real_imag_views_fp16():
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dpt.float16, q)
+
+    X = dpt.usm_ndarray(
+        (3, 4), dtype=dpt.float16, buffer_ctor_kwargs={"queue": q}
+    )
+    assert isinstance(X.real, dpt.usm_ndarray) and isinstance(
+        X.imag, dpt.usm_ndarray
+    )
+
 
 @pytest.mark.parametrize(
     "dtype",
