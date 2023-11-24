@@ -114,18 +114,11 @@ def run(
         def is_py_ext(fn):
             return re.match(regexp1, fn) or re.match(regexp2, fn)
 
-        for root, _, files in os.walk("_skbuild"):
+        for root, _, files in os.walk("dpctl"):
             for file in files:
                 if not file.endswith(".so"):
                     continue
-                if os.path.join("libsyclinterface", "tests") in root:
-                    continue
-                if any(
-                    match in root
-                    for match in [
-                        "libsyclinterface",
-                    ]
-                ) or is_py_ext(file):
+                if is_py_ext(file) or file.find("DPCTLSyclInterface") != -1:
                     objects.extend(["-object", os.path.join(root, file)])
         print("Using objects: ", objects)
         return objects
