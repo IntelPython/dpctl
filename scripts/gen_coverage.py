@@ -109,7 +109,7 @@ def run(
         objects = []
         sfx_regexp = sysconfig.get_config_var("EXT_SUFFIX").replace(".", r"\.")
         regexp1 = re.compile(r"^_tensor_.*impl" + sfx_regexp)
-        regexp2 = re.compile(r"^_device_queries" + sfx_regexp)
+        regexp2 = re.compile(r"^^_device_queries" + sfx_regexp)
 
         def is_py_ext(fn):
             return re.match(regexp1, fn) or re.match(regexp2, fn)
@@ -127,6 +127,7 @@ def run(
                     ]
                 ) or is_py_ext(file):
                     objects.extend(["-object", os.path.join(root, file)])
+        print("Using objects: ", objects)
         return objects
 
     objects = find_objects()
