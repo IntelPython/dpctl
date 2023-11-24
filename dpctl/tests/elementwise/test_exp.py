@@ -198,7 +198,6 @@ def test_exp_complex_strided(dtype):
             )
 
 
-@pytest.mark.broken_complex
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_exp_complex_special_cases(dtype):
     q = get_queue_or_skip()
