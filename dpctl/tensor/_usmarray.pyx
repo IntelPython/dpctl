@@ -687,7 +687,8 @@ cdef class usm_ndarray:
         """ Returns real component for arrays with complex data-types
         and returns itself for all other data-types.
         """
-        if (self.typenum_ < UAR_CFLOAT):
+        # explicitly check for UAR_HALF, which is greater than UAR_CFLOAT
+        if (self.typenum_ < UAR_CFLOAT or self.typenum_ == UAR_HALF):
             # elements are real
             return self
         if (self.typenum_ < UAR_TYPE_SENTINEL):
@@ -698,7 +699,8 @@ cdef class usm_ndarray:
         """ Returns imaginary component for arrays with complex data-types
         and returns zero array for all other data-types.
         """
-        if (self.typenum_ < UAR_CFLOAT):
+        # explicitly check for UAR_HALF, which is greater than UAR_CFLOAT
+        if (self.typenum_ < UAR_CFLOAT or self.typenum_ == UAR_HALF):
             # elements are real
             return _zero_like(self)
         if (self.typenum_ < UAR_TYPE_SENTINEL):
