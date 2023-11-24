@@ -1306,14 +1306,15 @@ cdef usm_ndarray _m_transpose(usm_ndarray ary):
 
 cdef usm_ndarray _zero_like(usm_ndarray ary):
     """
-    Make C-contiguous array of zero elements with same shape
-    and type as ary.
+    Make C-contiguous array of zero elements with same shape,
+    type, device, and sycl_queue as ary.
     """
     cdef dt = _make_typestr(ary.typenum_)
     cdef usm_ndarray r = usm_ndarray(
         _make_int_tuple(ary.nd_, ary.shape_) if ary.nd_ > 0 else tuple(),
         dtype=dt,
-        buffer=ary.base_.get_usm_type()
+        buffer=ary.base_.get_usm_type(),
+        buffer_ctor_kwargs={"queue": ary.get_sycl_queue()},
     )
     r.base_.memset()
     return r
