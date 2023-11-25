@@ -121,6 +121,16 @@ Overview
 		);
 
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	:ref:`DPCTLQueue_MemcpyWithEvents<doxid-d2/d22/group___queue_interface_1ga34c52bf71f359347136ea6e45d4a7754>`(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* Dest,
+		const void* Src,
+		size_t Count,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t DepEventsCount
+		);
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLQueue_Memset<doxid-d2/d22/group___queue_interface_1ga263f4a51235b115732a1f088433241e6>`(
 		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
 		void* USMRef,
@@ -255,7 +265,7 @@ A new DPCTLSyclQueueRef created by copying the passed in DPCTLSyclQueueRef objec
 		int properties
 		)
 
-A wrapper for sycl::queue contructor to construct a new queue from the provided context, device, async handler and propertis bit flags.
+A wrapper for sycl::queue constructor to construct a new queue from the provided context, device, async handler and propertis bit flags.
 
 
 
@@ -866,6 +876,67 @@ C-API wrapper for ``sycl::queue::memcpy``.
 		- Count
 
 		- A number of bytes to copy.
+
+
+
+.. rubric:: Returns:
+
+An opaque pointer to the ``sycl::event`` returned by the ``sycl::queue::memcpy`` function.
+
+.. index:: pair: function; DPCTLQueue_MemcpyWithEvents
+.. _doxid-d2/d22/group___queue_interface_1ga34c52bf71f359347136ea6e45d4a7754:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API __dpctl_give :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
+	DPCTLQueue_MemcpyWithEvents(
+		__dpctl_keep const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef,
+		void* Dest,
+		const void* Src,
+		size_t Count,
+		__dpctl_keep const :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`* DepEvents,
+		size_t DepEventsCount
+		)
+
+C-API wrapper for ``sycl::queue::memcpy``.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- QRef
+
+		- An opaque pointer to the ``sycl::queue``.
+
+	*
+		- Dest
+
+		- An USM pointer to the destination memory.
+
+	*
+		- Src
+
+		- An USM pointer to the source memory.
+
+	*
+		- Count
+
+		- A number of bytes to copy.
+
+	*
+		- DepEvents
+
+		- A pointer to array of DPCTLSyclEventRef opaque pointers to dependent events.
+
+	*
+		- DepEventsCount
+
+		- A number of dependent events.
 
 
 

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils Functions &mdash; Data-parallel Control (dpctl) 0.14.6dev0+6.gef0f7a1d7 documentation</title>
+  <title>dpctl.utils Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.g753fbb4bd2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,12 +22,12 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/target-highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=85b7e1e4"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/target-highlight.js?v=df7d332b"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -42,10 +42,10 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+6.gef0f7a1d7
+                0.15.1dev2+20.g753fbb4bd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,7 +71,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -91,52 +91,78 @@
              
   <section id="dpctl-utils-functions">
 <span id="dpctl-utils-functions-api"></span><h1>dpctl.utils Functions<a class="headerlink" href="#dpctl-utils-functions" title="Permalink to this heading"></a></h1>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.utils.get_coerced_usm_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_coerced_usm_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_coerced_usm_type" title="Permalink to this definition"></a></dt>
-<dd><p>Given a list of strings denoting the types of USM allocations
-for input arrays returns the type of USM allocation for the output
-array(s) per compute follows data paradigm.
-Returns <cite>None</cite> if the type can not be deduced.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.utils.get_execution_queue">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_execution_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_execution_queue" title="Permalink to this definition"></a></dt>
-<dd><p>Given a list of <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> objects
-returns the execution queue under compute follows data paradigm,
-or returns <cite>None</cite> if queues are not equal.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.utils.validate_usm_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">validate_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.validate_usm_type" title="Permalink to this definition"></a></dt>
-<dd><p>Raises an exception if <cite>usm_type</cite> is invalid.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>usm_type</strong> – Specification for USM allocation type. Valid specifications
-are <cite>“device”</cite>, <cite>“shared”</cite>, or <cite>“host”</cite>. If <cite>allow_none</cite>
-keyword argument is set, a value of <cite>None</cite> is also permitted.</p></li>
-<li><p><strong>allow_none</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether <cite>usm_type</cite> value of <cite>None</cite> is considered valid.
-Default: <cite>True</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – if <cite>usm_type</cite> is an unrecognized string.</p></li>
-<li><p><strong>TypeError</strong> – if <cite>usm_type</cite> is not a string, and <cite>usm_type</cite> is not <cite>None</cite>
-    provided <cite>allow_none</cite> is <cite>True</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
 <section id="other-functions">
 <h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sycl_device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils.html#intel_device_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.intel_device_info" title="Permalink to this definition"></a></dt>
+<dd><p>For Intel(R) GPU devices returns a dictionary
+with device architectural details, and an empty
+dictionary otherwise. The dictionary contains
+the following keys:</p>
+<blockquote>
+<div><p>device_id: 32-bits device PCI identifier
+gpu_eu_count: Total number of execution units
+gpu_hw_threads_per_eu: Number of thread contexts in EU
+gpu_eu_simd_width: Physical SIMD width of EU
+gpu_slices: Total number of slices
+gpu_subslices_per_slice: Number of sub-slices per slice
+gpu_eu_count_per_subslice: Number of EUs in subslice
+max_mem_bandwidth: Maximum memory bandwidth in bytes/second</p>
+</div></blockquote>
+<p>Unsupported descriptors are omitted from the dictionary.
+Descriptors other than PCI identifier are supported only for
+SyclDevices with Leve-Zero backend.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_device_id">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_device_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_device_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get ext_intel_device_id for the device, zero if not an intel device</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_gpu_eu_count">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_gpu_eu_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_gpu_eu_count" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of execution units (EUs) associated with the Intel GPU.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_gpu_eu_count_per_subslice">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_gpu_eu_count_per_subslice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_gpu_eu_count_per_subslice" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of EUs per subslice of GPU.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_gpu_eu_simd_width">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_gpu_eu_simd_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_gpu_eu_simd_width" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the physical SIMD width of the execution unit (EU).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_gpu_hw_threads_per_eu">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_gpu_hw_threads_per_eu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_gpu_hw_threads_per_eu" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of hardware threads in EU.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_gpu_slices">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_gpu_slices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_gpu_slices" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of slices in the GPU device, or zero.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_gpu_subslices_per_slice">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_gpu_subslices_per_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_gpu_subslices_per_slice" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of subslices per slice.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.utils.intel_device_info_max_mem_bandwidth">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info_max_mem_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><span class="pre">dpctl.SyclDevice</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dpctl.utils.intel_device_info_max_mem_bandwidth" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the maximum memory bandwidth in units of bytes/second.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.onetrace_enabled">
 <span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_onetrace_context.html#onetrace_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition"></a></dt>

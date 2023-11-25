@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data-parallel Control (dpctl) 0.14.6dev0+6.gef0f7a1d7 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.g753fbb4bd2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,12 +22,12 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/target-highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=85b7e1e4"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/target-highlight.js?v=df7d332b"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -42,10 +42,10 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+6.gef0f7a1d7
+                0.15.1dev2+20.g753fbb4bd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,7 +71,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -93,6 +93,12 @@
 <span id="dpctl-tensor-functions-api"></span><h1>dpctl.tensor Functions<a class="headerlink" href="#dpctl-tensor-functions" title="Permalink to this heading"></a></h1>
 <section id="other-functions">
 <h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.__array_namespace_info__">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">__array_namespace_info__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_array_api.html#__array_namespace_info__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.__array_namespace_info__" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a namespace with Array API namespace inspection utilities.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.all">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_utility_functions.html#all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.all" title="Permalink to this definition"></a></dt>
@@ -126,6 +132,16 @@ containing the results of the logical AND reduction.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.allclose">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">allclose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_testing.html#allclose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.allclose" title="Permalink to this definition"></a></dt>
+<dd><p>Returns True if two arrays are element-wise equal within tolerances.</p>
+<p>The testing is based on the following elementwise comparison:</p>
+<blockquote>
+<div><p>abs(a - b) &lt;= max(atol, rtol * max(abs(a), abs(b)))</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.any">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_utility_functions.html#any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.any" title="Permalink to this definition"></a></dt>
 <dd><p>Tests whether any input array elements evaluate to True along a given axis.</p>
@@ -150,6 +166,108 @@ Default: <cite>False</cite>.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An array with a data type of <cite>bool</cite>
 containing the results of the logical OR reduction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.argmax">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#argmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argmax" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the indices of the maximum values of the input array <cite>x</cite> along a
+specified axis.</p>
+<p>When the maximum value occurs multiple times, the indices corresponding to
+the first occurrence are returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis along which to search. If <cite>None</cite>, returns the index of the
+maximum value of the flattened array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the indices of the first occurrence of the
+maximum values. If the entire array was searched, a
+zero-dimensional array is returned. The returned array has the
+default array index data type for the device of <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.argmin">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#argmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argmin" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the indices of the minimum values of the input array <cite>x</cite> along a
+specified axis.</p>
+<p>When the minimum value occurs multiple times, the indices corresponding to
+the first occurrence are returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis along which to search. If <cite>None</cite>, returns the index of the
+minimum value of the flattened array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the indices of the first occurrence of the
+minimum values. If the entire array was searched, a
+zero-dimensional array is returned. The returned array has the
+default array index data type for the device of <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.clip">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_clip.html#clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.clip" title="Permalink to this definition"></a></dt>
+<dd><p>Clips to the range [<cite>min_i</cite>, <cite>max_i</cite>] for each element <cite>x_i</cite>
+in <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array containing elements to clip.
+Must be compatible with <cite>min</cite> and <cite>max</cite> according
+to broadcasting rules.</p></li>
+<li><p><strong>min</strong> (<em>{None</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Array containing minimum values.
+Must be compatible with <cite>x</cite> and <cite>max</cite> according
+to broadcasting rules.
+Only one of <cite>min</cite> and <cite>max</cite> can be <cite>None</cite>.</p></li>
+<li><p><strong>max</strong> (<em>{None</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Array containing maximum values.
+Must be compatible with <cite>x</cite> and <cite>min</cite> according
+to broadcasting rules.
+Only one of <cite>min</cite> and <cite>max</cite> can be <cite>None</cite>.</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Output array to populate.
+Array must have the correct shape and the expected data type.</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>,</em><em>&quot;F&quot;</em><em>,</em><em>&quot;A&quot;</em><em>,</em><em>&quot;K&quot;</em><em>, </em><em>optional</em>) – Memory layout of the newly output array, if parameter <cite>out</cite> is
+<cite>None</cite>.
+Default: “K”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array with elements clipped to the range [<cite>min</cite>, <cite>max</cite>].
+The returned array has the same data type as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -225,6 +343,172 @@ of a specified data type <cite>kind</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.logsumexp">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">logsumexp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#logsumexp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.logsumexp" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the logarithm of the sum of exponentials of elements in the
+input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which values must be computed. If a tuple
+of unique integers, values are computed over multiple axes.
+If <cite>None</cite>, the result is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real-valued floating-point data type,
+the returned array will have the default real-valued
+floating-point data type for the device where input
+array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a complex-valued floating-point data type,
+an error is raised.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the result. Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the results. If the result was computed over
+the entire array, a zero-dimensional array is returned. The returned
+array has the data type as described in the <cite>dtype</cite> parameter
+description above.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.matrix_transpose">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">matrix_transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_linear_algebra_functions.html#matrix_transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.matrix_transpose" title="Permalink to this definition"></a></dt>
+<dd><p>Transposes the innermost two dimensions of <cite>x</cite>, where <cite>x</cite> is a
+2-dimensional matrix or a stack of 2-dimensional matrices.</p>
+<p>To convert from a 1-dimensional array to a 2-dimensional column
+vector, use x[:, dpt.newaxis].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array with shape (…, m, n).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array with shape (…, n, m).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.max">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.max" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the maximum value of the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which maxima must be computed. If a tuple
+of unique integers, the maxima are computed over multiple axes.
+If <cite>None</cite>, the max is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the maxima. If the max was computed over the
+entire array, a zero-dimensional array is returned. The returned
+array has the same data type as <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.mean">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.mean" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the arithmetic mean of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which the arithmetic means must be computed. If
+a tuple of unique integers, the means are computed over multiple
+axes. If <cite>None</cite>, the mean is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input array according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing the arithmetic means. If the mean was computed
+over the entire array, a zero-dimensional array is returned.</p>
+<p>If <cite>x</cite> has a floating-point data type, the returned array will have
+the same data type as <cite>x</cite>.
+If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.min">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.min" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the minimum value of the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which minima must be computed. If a tuple
+of unique integers, the minima are computed over multiple axes.
+If <cite>None</cite>, the min is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the minima. If the min was computed over the
+entire array, a zero-dimensional array is returned. The returned
+array has the same data type as <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.nonzero">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#nonzero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.nonzero" title="Permalink to this definition"></a></dt>
 <dd><p>Return the indices of non-zero elements.</p>
@@ -275,6 +559,64 @@ non-empty. Array <cite>vals</cite> must be one dimensional.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.prod">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.prod" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the product of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which products must be computed. If a tuple
+of unique integers, products are computed over multiple axes.
+If <cite>None</cite>, the product is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real-valued floating-point data type,
+the returned array will have the default real-valued
+floating-point data type for the device where input
+array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has signed integral data type, the returned array
+will have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has unsigned integral data type, the returned array
+will have the default unsigned integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a complex-valued floating-point data type,
+the returned array will have the default complex-valued
+floating-pointer data type for the device where input
+array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean data type, the returned array will
+have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the product. Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the products. If the product was computed over
+the entire array, a zero-dimensional array is returned. The returned
+array has the data type as described in the <cite>dtype</cite> parameter
+description above.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.put">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put" title="Permalink to this definition"></a></dt>
 <dd><p>Puts values of an array into another array
@@ -295,6 +637,57 @@ negative indices.
 “clip” - clips indices to (0 &lt;= i &lt; n)
 Default: <cite>“wrap”</cite>.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.reduce_hypot">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">reduce_hypot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#reduce_hypot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.reduce_hypot" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the square root of the sum of squares of elements in the input
+array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which values must be computed. If a tuple
+of unique integers, values are computed over multiple axes.
+If <cite>None</cite>, the result is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real-valued floating-point data type,
+the returned array will have the default real-valued
+floating-point data type for the device where input
+array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a complex-valued floating-point data type,
+an error is raised.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the result. Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input arrays according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array containing the results. If the result was computed over
+the entire array, a zero-dimensional array is returned. The returned
+array has the data type as described in the <cite>dtype</cite> parameter
+description above.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -347,7 +740,7 @@ Default: “maxprec_equal”</p>
 <li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
 in the current precision will print as zero.
 Default: <cite>False</cite>.</p></li>
-<li><p><strong>nanstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to repesent nan.
+<li><p><strong>nanstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to represent nan.
 Raises <cite>TypeError</cite> if nanstr is not a string.
 Default: <cite>“nan”</cite>.</p></li>
 <li><p><strong>infstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to represent infinity.
@@ -375,16 +768,56 @@ Default: “False”</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.sum">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.sum" title="Permalink to this definition"></a></dt>
-<dd><p>Calculates the sum of the input array <cite>x</cite>.</p>
+<dt class="sig sig-object py" id="dpctl.tensor.std">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.std" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the standard deviation of elements in the input array <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>]</em><em>]</em>) – axis or axes along which sums must be computed. If a tuple
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which the standard deviations must be computed.
+If a tuple of unique integers, the standard deviations are computed
+over multiple axes. If <cite>None</cite>, the standard deviation is computed
+over the entire array. Default: <cite>None</cite>.</p></li>
+<li><p><strong>correction</strong> (<em>Optional</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – degrees of freedom adjustment. The divisor used in calculating the
+standard deviation is <cite>N-correction</cite>, where <cite>N</cite> corresponds to the
+total number of elements over which the standard deviation is
+calculated. Default: <cite>0.0</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input array according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing the standard deviations. If the standard
+deviation was computed over the entire array, a zero-dimensional
+array is returned.</p>
+<p>If <cite>x</cite> has a real-valued floating-point data type, the returned
+array will have the same data type as <cite>x</cite>.
+If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.sum">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.sum" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the sum of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which sums must be computed. If a tuple
 of unique integers, sums are computed over multiple axes.
-If <cite>None</cite>, the sum if computed over the entire array.
+If <cite>None</cite>, the sum is computed over the entire array.
 Default: <cite>None</cite>.</p></li>
 <li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
 type is inferred from the “kind” of the input array data type.</p>
@@ -394,13 +827,13 @@ type is inferred from the “kind” of the input array data type.</p>
 the returned array will have the default real-valued
 floating-point data type for the device where input
 array <cite>x</cite> is allocated.</p></li>
-<li><p>If x` has signed integral data type, the returned array
+<li><p>If <cite>x</cite> has signed integral data type, the returned array
 will have the default signed integral type for the device
 where input array <cite>x</cite> is allocated.</p></li>
 <li><p>If <cite>x</cite> has unsigned integral data type, the returned array
 will have the default unsigned integral type for the device
 where input array <cite>x</cite> is allocated.</p></li>
-<li><p>If <cite>x</cite> has a complex-valued floating-point data typee,
+<li><p>If <cite>x</cite> has a complex-valued floating-point data type,
 the returned array will have the default complex-valued
 floating-pointer data type for the device where input
 array <cite>x</cite> is allocated.</p></li>
@@ -582,6 +1015,45 @@ Default: “”</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.var">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.var" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the variance of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which the variances must be computed. If a tuple
+of unique integers, the variances are computed over multiple axes.
+If <cite>None</cite>, the variance is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>correction</strong> (<em>Optional</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – degrees of freedom adjustment. The divisor used in calculating the
+variance is <cite>N-correction</cite>, where <cite>N</cite> corresponds to the total
+number of elements over which the variance is calculated.
+Default: <cite>0.0</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input array according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing the variances. If the variance was computed
+over the entire array, a zero-dimensional array is returned.</p>
+<p>If <cite>x</cite> has a real-valued floating-point data type, the returned
+array will have the same data type as <cite>x</cite>.
+If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -921,56 +1393,6 @@ and copying. Default: <cite>None</cite>.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.from_dlpack">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">from_dlpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.from_dlpack" title="Permalink to this definition"></a></dt>
-<dd><p>Constructs <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance from a Python
-object <cite>obj</cite> that implements <cite>__dlpack__</cite> protocol. The output
-array is always a zero-copy view of the input.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>obj</strong> – A Python object representing an array that supports <cite>__dlpack__</cite>
-protocol.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array with a view into the tensor underlying the input <cite>obj</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – if <cite>obj</cite> does not implement <cite>__dlpack__</cite> method.</p></li>
-<li><p><strong>ValueError</strong> – if zero copy view can not be constructed because
-    the input array resides on an unsupported device.</p></li>
-</ul>
-</dd>
-</dl>
-<p>See <a class="reference external" href="https://dmlc.github.io/dlpack/latest/">https://dmlc.github.io/dlpack/latest/</a> for more details.</p>
-<dl class="field-list">
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-
-<span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
-    <span class="s2">&quot;Helper class implementing `__dlpack__` protocol&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">=</span> <span class="n">array</span>
-
-    <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
-
-<span class="n">C</span> <span class="o">=</span> <span class="n">Container</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int16&quot;</span><span class="p">))</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd>
 </dl>
 </dd></dl>
@@ -1653,7 +2075,7 @@ axes are flipped. Default: <cite>None</cite>.</p></li>
 an array with integer dtype.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>An object with the followign attributes
+<dd class="field-even"><p><p>An object with the following attributes
 * bits: int</p>
 <blockquote>
 <div><p>number of bits occupied by the data type</p>
@@ -1741,6 +2163,41 @@ type as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>usm_narray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.repeat">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">repeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#repeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.repeat" title="Permalink to this definition"></a></dt>
+<dd><p>Repeat elements of an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
+<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Sequence</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – The number of repetitions for each element.
+<cite>repeats</cite> is broadcast to fit the shape of the given axis.
+If <cite>repeats</cite> is an array, it must have an integer data type.
+Otherwise, <cite>repeats</cite> must be a Python integer, tuple, list, or
+range.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The axis along which to repeat values. If <cite>axis</cite> is <cite>None</cite>, the
+function repeats elements of the flattened array.
+Default: <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array with repeated elements.
+The returned array must have the same data type as <cite>x</cite>, is created
+on the same device as <cite>x</cite> and has the same USM allocation type as
+<cite>x</cite>. If <cite>axis</cite> is <cite>None</cite>, the returned array is one-dimensional,
+otherwise, it has the same shape as <cite>x</cite>, except for the axis along
+which elements were repeated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>usm_narray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1914,6 +2371,33 @@ allocation type as <cite>x</cite>.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.tile">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">tile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#tile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.tile" title="Permalink to this definition"></a></dt>
+<dd><p>Repeat an input array <cite>x</cite> along each axis a number of times given by
+<cite>repetitions</cite>.</p>
+<p>For <cite>N</cite> = len(<cite>repetitions</cite>) and <cite>M</cite> = len(<cite>x.shape</cite>):
+- if <cite>M &lt; N</cite>, <cite>x</cite> will have <cite>N - M</cite> new axes prepended to its shape
+- if <cite>M &gt; N</cite>, <cite>repetitions</cite> will have <cite>M - N</cite> new axes 1 prepended to it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
+<li><p><strong>repetitions</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – The number of repetitions for each dimension.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array with tiled elements.
+The returned array must have the same data type as <cite>x</cite>,
+is created on the same device as <cite>x</cite> and has the same USM
+allocation type as <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>usm_narray</p>
 </dd>
 </dl>
 </dd></dl>

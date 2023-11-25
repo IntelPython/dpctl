@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data-parallel Control (dpctl) 0.14.6dev0+6.gef0f7a1d7 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.g753fbb4bd2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,12 +22,12 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/target-highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=85b7e1e4"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/target-highlight.js?v=df7d332b"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -44,10 +44,10 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+6.gef0f7a1d7
+                0.15.1dev2+20.g753fbb4bd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -94,7 +94,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -217,7 +217,7 @@ underlying <code class="docutils literal notranslate"><span class="pre">MemoryUS
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.T" title="dpctl.tensor.usm_ndarray.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></a></p></td>
-<td><p>Returns tranposed array for 2D array, raises <cite>ValueError</cite> otherwise.</p></td>
+<td><p>Returns transposed array for 2D array, raises <cite>ValueError</cite> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></a></p></td>
 <td><p>Returns data-API object representing residence of the array data.</p></td>
@@ -283,7 +283,7 @@ underlying <code class="docutils literal notranslate"><span class="pre">MemoryUS
 <p class="rubric">Private methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray._set_namespace" title="dpctl.tensor.usm_ndarray._set_namespace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_namespace</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray._set_namespace" title="dpctl.tensor.usm_ndarray._set_namespace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_namespace</span></code></a>(mod)</p></td>
 <td><p>Sets array namespace to given module <cite>mod</cite>.</p></td>
 </tr>
 </tbody>
@@ -295,7 +295,7 @@ underlying <code class="docutils literal notranslate"><span class="pre">MemoryUS
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.T">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">T</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.T" title="Permalink to this definition"></a></dt>
-<dd><p>Returns tranposed array for 2D array, raises <cite>ValueError</cite>
+<dd><p>Returns transposed array for 2D array, raises <cite>ValueError</cite>
 otherwise.</p>
 </dd></dl>
 
@@ -479,7 +479,7 @@ to the target device.</p>
 <h2>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._set_namespace">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_set_namespace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._set_namespace" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_set_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._set_namespace" title="Permalink to this definition"></a></dt>
 <dd><p>Sets array namespace to given module <cite>mod</cite>.</p>
 </dd></dl>
 

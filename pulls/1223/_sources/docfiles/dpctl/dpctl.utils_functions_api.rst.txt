@@ -8,14 +8,16 @@ dpctl.utils Functions
 .. currentmodule:: dpctl.utils
 
 
-Functions
----------
-
-.. autofunction:: get_coerced_usm_type
-.. autofunction:: get_execution_queue
-.. autofunction:: validate_usm_type
-
 Other Functions
 ---------------
 
+.. autofunction:: intel_device_info
+.. autofunction:: intel_device_info_device_id
+.. autofunction:: intel_device_info_gpu_eu_count
+.. autofunction:: intel_device_info_gpu_eu_count_per_subslice
+.. autofunction:: intel_device_info_gpu_eu_simd_width
+.. autofunction:: intel_device_info_gpu_hw_threads_per_eu
+.. autofunction:: intel_device_info_gpu_slices
+.. autofunction:: intel_device_info_gpu_subslices_per_slice
+.. autofunction:: intel_device_info_max_mem_bandwidth
 .. autofunction:: onetrace_enabled

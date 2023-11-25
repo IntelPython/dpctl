@@ -19,6 +19,12 @@ Overview
 	
 	// global functions
 
+	DPCTL_API bool
+	:ref:`DPCTLPlatform_AreEq<doxid-da/dbd/group___platform_interface_1ga47996ef38b50c957739808330bce7d98>`(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef1,
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef2
+		);
+
 	DPCTL_API __dpctl_give :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>`
 	:ref:`DPCTLPlatform_Copy<doxid-da/dbd/group___platform_interface_1ga5bddf303912d4344608af42735dfd6f8>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
@@ -49,6 +55,9 @@ Overview
 	DPCTL_API const __dpctl_give char*
 	:ref:`DPCTLPlatform_GetVersion<doxid-da/dbd/group___platform_interface_1ga794fb8c5be5cf2a48f63c407cb05bc1f>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
+	DPCTL_API size_t
+	:ref:`DPCTLPlatform_Hash<doxid-da/dbd/group___platform_interface_1ga794100dd2667467207af1f3c58ca47aa>`(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` CtxRef);
+
 .. _details-da/dbd/group___platform_interface:
 
 Detailed Documentation
@@ -58,6 +67,43 @@ Detailed Documentation
 
 Global Functions
 ----------------
+
+.. index:: pair: function; DPCTLPlatform_AreEq
+.. _doxid-da/dbd/group___platform_interface_1ga47996ef38b50c957739808330bce7d98:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API bool
+	DPCTLPlatform_AreEq(
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef1,
+		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef2
+		)
+
+Checks if two DPCTLSyclPlatformRef objects point to the same sycl::platform.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef1
+
+		- First opaque pointer to a ``sycl::platform``.
+
+	*
+		- PRef2
+
+		- Second opaque pointer to a ``sycl::platform``.
+
+
+
+.. rubric:: Returns:
+
+True if the underlying sycl::platform are same, false otherwise.
 
 .. index:: pair: function; DPCTLPlatform_Copy
 .. _doxid-da/dbd/group___platform_interface_1ga5bddf303912d4344608af42735dfd6f8:
@@ -318,4 +364,33 @@ Returns the software driver version of the sycl::platform as a C string.
 .. rubric:: Returns:
 
 A C string containing the software driver version of the device associated with the platform.
+
+.. index:: pair: function; DPCTLPlatform_Hash
+.. _doxid-da/dbd/group___platform_interface_1ga794100dd2667467207af1f3c58ca47aa:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	DPCTL_API size_t
+	DPCTLPlatform_Hash(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` CtxRef)
+
+Wrapper over std::hash<sycl::platform>'s operator()
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- PRef
+
+		- The DPCTLSyclPlatformRef pointer.
+
+
+
+.. rubric:: Returns:
+
+Hash value of the underlying ``sycl::platform`` instance.
 

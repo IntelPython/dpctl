@@ -29,19 +29,6 @@ Classes
       - Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object created using SYCL interoperability layer with underlying backends. Only the OpenCL and Level-Zero backends are currently supported.
 
 
-.. _dpctl.program_functions:
-
-Functions
----------
-
-.. list-table::
-    :widths: 25,50
-
-    * - :func:`create_program_from_source()`
-      - Creates a Sycl interoperability program from an OpenCL source string.
-    * - :func:`create_program_from_spirv()`
-      - Creates a Sycl interoperability program from an SPIR-V binary.
-
 
 
 

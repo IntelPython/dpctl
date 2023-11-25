@@ -13,11 +13,6 @@ numpy.dtype
     .. autoautosummary:: numpy.dtype
         :attributes:
 
-    .. rubric:: Public methods:
-
-    .. autoautosummary:: numpy.dtype
-        :methods:
-
 
 Attributes
 ----------
@@ -36,9 +31,4 @@ Attributes
 .. autoattribute:: numpy.dtype.shape
 .. autoattribute:: numpy.dtype.str
 .. autoattribute:: numpy.dtype.subdtype
-
-Public methods
---------------
-
-.. autofunction:: numpy.dtype.newbyteorder
 

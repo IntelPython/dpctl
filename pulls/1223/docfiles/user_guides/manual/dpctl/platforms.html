@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform &mdash; Data-parallel Control (dpctl) 0.14.6dev0+6.gef0f7a1d7 documentation</title>
+  <title>Platform &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.g753fbb4bd2 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,12 +22,12 @@
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../../_static/target-highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=85b7e1e4"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../../_static/target-highlight.js?v=df7d332b"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -44,10 +44,10 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+6.gef0f7a1d7
+                0.15.1dev2+20.g753fbb4bd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -86,7 +86,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -114,7 +114,7 @@ abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en
 <section id="listing-available-platforms">
 <h2>Listing Available Platforms<a class="headerlink" href="#listing-available-platforms" title="Permalink to this heading"></a></h2>
 <p>To require the platforms available on a system, use
-<a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a> function.</p>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code> function.</p>
 <p>It is possible to print out metadata about a platform:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="linenos"> 2</span>
@@ -151,15 +151,15 @@ Intel(R) OpenCL OpenCL 3.0 LINUX
 INFO: ===========================
 
 INFO: Executing example list_available_platforms
-&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7faf99e855f0&gt;
-&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fafa240a430&gt;
+&lt;dpctl.SyclPlatform [Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) Corporation,  OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3] at 0x7fd28ab89530&gt;
+&lt;dpctl.SyclPlatform [Intel(R) OpenCL, Intel(R) Corporation,  OpenCL 3.0 LINUX] at 0x7fd28acc34b0&gt;
 INFO: ===========================
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>To control the verbosity for the output, use the <code class="docutils literal notranslate"><span class="pre">verbosity</span></code>
-keyword argument. Refer to <a class="reference internal" href="../../../dpctl/dpctl_functions_api.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a> for more information.</p>
+keyword argument. Refer to <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code> for more information.</p>
 </div>
 </section>
 </section>

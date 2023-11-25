@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._search_functions &mdash; Data-parallel Control (dpctl) 0.14.6dev0+6.gef0f7a1d7 documentation</title>
+  <title>dpctl.tensor._search_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.g753fbb4bd2 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
@@ -21,12 +21,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/target-highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=85b7e1e4"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -41,10 +41,10 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+6.gef0f7a1d7
+                0.15.1dev2+20.g753fbb4bd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -70,7 +70,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -111,6 +111,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._manipulation_functions</span> <span class="kn">import</span> <span class="n">_broadcast_shapes</span>
 
+<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_empty_like_orderK</span><span class="p">,</span> <span class="n">_empty_like_triple_orderK</span>
 <span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_all_data_types</span><span class="p">,</span> <span class="n">_can_cast</span>
 
 
@@ -213,7 +214,7 @@
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">wait_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">x1_dtype</span> <span class="o">!=</span> <span class="n">dst_dtype</span><span class="p">:</span>
-        <span class="n">_x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">)</span>
+        <span class="n">_x1</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dst_dtype</span><span class="p">)</span>
         <span class="n">ht_copy1_ev</span><span class="p">,</span> <span class="n">copy1_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">_x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
@@ -222,7 +223,7 @@
         <span class="n">wait_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_copy1_ev</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">x2_dtype</span> <span class="o">!=</span> <span class="n">dst_dtype</span><span class="p">:</span>
-        <span class="n">_x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">)</span>
+        <span class="n">_x2</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dst_dtype</span><span class="p">)</span>
         <span class="n">ht_copy2_ev</span><span class="p">,</span> <span class="n">copy2_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">_x2</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
@@ -230,30 +231,13 @@
         <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy2_ev</span><span class="p">)</span>
         <span class="n">wait_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_copy2_ev</span><span class="p">)</span>
 
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">_empty_like_triple_orderK</span><span class="p">(</span>
+        <span class="n">condition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dst_dtype</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">exec_q</span>
+    <span class="p">)</span>
+
     <span class="n">condition</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
     <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
     <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
-
-    <span class="c1"># dst is F-contiguous when all inputs are F contiguous</span>
-    <span class="c1"># otherwise, defaults to C-contiguous</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="p">(</span>
-            <span class="n">condition</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">,</span>
-            <span class="n">x1</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">,</span>
-            <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">):</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
-
-    <span class="n">dst</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">res_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dtype</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
-    <span class="p">)</span>
 
     <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_where</span><span class="p">(</span>
         <span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span>

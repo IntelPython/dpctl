@@ -56,8 +56,6 @@ Array Construction
       - Returns an uninitialized :class:`dpctl.tensor.usm_ndarray` with the same `shape` as the input array `x`.
     * - :func:`eye()`
       - Creates :class:`dpctl.tensor.usm_ndarray` with ones on the `k`-th diagonal.
-    * - :func:`from_dlpack()`
-      - Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python object `obj` that implements `__dlpack__` protocol. The output array is always a zero-copy view of the input.
     * - :func:`from_numpy()`
       - Creates :class:`dpctl.tensor.usm_ndarray` from instance of :class:`numpy.ndarray`.
     * - :func:`full()`
@@ -111,6 +109,8 @@ Array Manipulation
       - Moves axes of an array to new positions.
     * - :func:`permute_dims()`
       - Permute the axes (dimensions) of an array; returns the permuted array as a view.
+    * - :func:`repeat()`
+      - Repeat elements of an array.
     * - :func:`reshape()`
       - Reshapes array `x` into new shape.
     * - :func:`result_type()`
@@ -123,6 +123,8 @@ Array Manipulation
       - Joins a sequence of arrays along a new axis.
     * - :func:`swapaxes()`
       - Interchanges two axes of an array.
+    * - :func:`tile()`
+      - Repeat an input array `x` along each axis a number of times given by `repetitions`.
     * - :func:`unstack()`
       - Splits an array in a sequence of arrays along the given axis.
 
@@ -134,34 +136,62 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`__array_namespace_info__()`
+      - Returns a namespace with Array API namespace inspection utilities.
     * - :func:`all()`
       - Tests whether all input array elements evaluate to True along a given axis.
+    * - :func:`allclose()`
+      - Returns True if two arrays are element-wise equal within tolerances.
     * - :func:`any()`
       - Tests whether any input array elements evaluate to True along a given axis.
+    * - :func:`argmax()`
+      - Returns the indices of the maximum values of the input array `x` along a specified axis.
+    * - :func:`argmin()`
+      - Returns the indices of the minimum values of the input array `x` along a specified axis.
+    * - :func:`clip()`
+      - Clips to the range [`min_i`, `max_i`] for each element `x_i` in `x`.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`get_print_options()`
       - Returns a copy of current options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`isdtype()`
       - Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`.
+    * - :func:`logsumexp()`
+      - Calculates the logarithm of the sum of exponentials of elements in the input array `x`.
+    * - :func:`matrix_transpose()`
+      - Transposes the innermost two dimensions of `x`, where `x` is a 2-dimensional matrix or a stack of 2-dimensional matrices.
+    * - :func:`max()`
+      - Calculates the maximum value of the input array `x`.
+    * - :func:`mean()`
+      - Calculates the arithmetic mean of elements in the input array `x`.
+    * - :func:`min()`
+      - Calculates the minimum value of the input array `x`.
     * - :func:`nonzero()`
       - Return the indices of non-zero elements.
     * - :func:`place()`
       - Change elements of an array based on conditional and input values.
     * - :func:`print_options()`
       - Context manager for print options.
+    * - :func:`prod()`
+      - Calculates the product of elements in the input array `x`.
     * - :func:`put()`
       - Puts values of an array into another array along a given axis.
+    * - :func:`reduce_hypot()`
+      - Calculates the square root of the sum of squares of elements in the input array `x`.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
+    * - :func:`std()`
+      - Calculates the standard deviation of elements in the input array `x`.
     * - :func:`sum()`
-      - Calculates the sum of the input array `x`.
+      - Calculates the sum of elements in the input array `x`.
     * - :func:`take()`
       - Takes elements from array along a given axis.
     * - :func:`usm_ndarray_repr()`
       - Returns a formatted string representing the elements of a :class:`dpctl.tensor.usm_ndarray` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`
       - Returns a string representing the elements of a :class:`dpctl.tensor.usm_ndarray`.
+    * - :func:`var()`
+      - Calculates the variance of elements in the input array `x`.
     * - :func:`where()`
       - Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen from `x1` or `x2` depending on `condition`.
 

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory.MemoryUSMShared &mdash; Data-parallel Control (dpctl) 0.14.6dev0+6.gef0f7a1d7 documentation</title>
+  <title>dpctl.memory.MemoryUSMShared &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.g753fbb4bd2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
@@ -22,12 +22,12 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/target-highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=85b7e1e4"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/target-highlight.js?v=df7d332b"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -44,10 +44,10 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            Data-parallel Control (dpctl)
+            Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.14.6dev0+6.gef0f7a1d7
+                0.15.1dev2+20.g753fbb4bd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -67,7 +67,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="dpctl.memory_pyapi.html#classes">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.memory_pyapi.html#functions">Functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory_pyapi.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
@@ -93,7 +92,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Data-parallel Control (dpctl)</a>
+          <a href="../../index.html">Data Parallel Control (dpctl)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -149,25 +148,25 @@ If <code class="docutils literal notranslate"><span class="pre">queue</span></co
 <p class="rubric">Public methods:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_from_device" title="dpctl.memory.MemoryUSMShared.copy_from_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_device</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_from_device" title="dpctl.memory.MemoryUSMShared.copy_from_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_device</span></code></a>(sycl_usm_ary)</p></td>
 <td><p>Copy SYCL memory underlying the argument object into the memory of the instance</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_from_host" title="dpctl.memory.MemoryUSMShared.copy_from_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_host</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_from_host" title="dpctl.memory.MemoryUSMShared.copy_from_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_host</span></code></a>(obj)</p></td>
 <td><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_to_host" title="dpctl.memory.MemoryUSMShared.copy_to_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_to_host</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_to_host" title="dpctl.memory.MemoryUSMShared.copy_to_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_to_host</span></code></a>([obj])</p></td>
 <td><p>Copy content of instance's memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type" title="dpctl.memory.MemoryUSMShared.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a>([syclobj])</p></td>
 <td><p>Returns the type of USM allocation using Sycl context carried by <cite>syclobj</cite> keyword argument.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="dpctl.memory.MemoryUSMShared.get_usm_type_enum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type_enum</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="dpctl.memory.MemoryUSMShared.get_usm_type_enum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type_enum</span></code></a>([syclobj])</p></td>
 <td><p>get_usm_type(syclobj=None)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.memset" title="dpctl.memory.MemoryUSMShared.memset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memset</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.memset" title="dpctl.memory.MemoryUSMShared.memset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memset</span></code></a>([val])</p></td>
 <td><p>Populates this USM allocation with given value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.tobytes" title="dpctl.memory.MemoryUSMShared.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.tobytes" title="dpctl.memory.MemoryUSMShared.tobytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code></a>()</p></td>
 <td><p>Constructs bytes object populated with copy of USM memory.</p></td>
 </tr>
 </tbody>
@@ -240,20 +239,20 @@ allocated on.</p>
 <h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.copy_from_device">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_from_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_from_device" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_from_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_usm_ary</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_from_device" title="Permalink to this definition"></a></dt>
 <dd><p>Copy SYCL memory underlying the argument object into
 the memory of the instance</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.copy_from_host">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_from_host</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_from_host" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_from_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_from_host" title="Permalink to this definition"></a></dt>
 <dd><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.copy_to_host">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_to_host</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_to_host" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_to_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_to_host" title="Permalink to this definition"></a></dt>
 <dd><p>Copy content of instance’s memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate
 NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd></dl>
@@ -269,7 +268,7 @@ allocation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.get_usm_type_enum">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">get_usm_type_enum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">get_usm_type_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syclobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="Permalink to this definition"></a></dt>
 <dd><p>get_usm_type(syclobj=None)</p>
 <p>Returns the type of USM allocation using Sycl context carried by
 <cite>syclobj</cite> keyword argument. Value of None is understood to query
@@ -279,13 +278,13 @@ allocation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.memset">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">memset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.memset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">memset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.memset" title="Permalink to this definition"></a></dt>
 <dd><p>Populates this USM allocation with given value.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.tobytes">
-<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.tobytes" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.tobytes" title="Permalink to this definition"></a></dt>
 <dd><p>Constructs bytes object populated with copy of USM memory.</p>
 </dd></dl>
 
