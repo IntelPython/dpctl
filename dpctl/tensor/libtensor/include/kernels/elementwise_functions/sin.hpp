@@ -81,11 +81,15 @@ template <typename argT, typename resT> struct SinFunctor
              */
             if (in_re_finite && in_im_finite) {
 #ifdef USE_SYCL_FOR_COMPLEX_TYPES
-                return exprm_ns::sin(
+                resT res = exprm_ns::sin(
                     exprm_ns::complex<realT>(in)); // std::sin(in);
 #else
-                return std::sin(in);
+                resT res = std::sin(in);
 #endif
+                if (in_re == realT(0)) {
+                    res.real(std::copysign(realT(0), in_re));
+                }
+                return res;
             }
 
             /*
@@ -176,8 +180,10 @@ template <typename argT, typename resT> struct SinFunctor
             return resT{sinh_im, -sinh_re};
         }
         else {
-            static_assert(std::is_floating_point_v<argT> ||
-                          std::is_same_v<argT, sycl::half>);
+            static_assert(std::is_same_v<argT, resT>);
+            if (in == 0) {
+                return in;
+            }
             return std::sin(in);
         }
     }

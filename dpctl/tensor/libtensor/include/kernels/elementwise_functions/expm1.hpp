@@ -114,21 +114,22 @@ template <typename argT, typename resT> struct Expm1Functor
             }
 
             // x, y finite numbers
-            realT cosY_val;
-            auto cosY_val_multi_ptr = sycl::address_space_cast<
-                sycl::access::address_space::private_space,
-                sycl::access::decorated::yes>(&cosY_val);
-            const realT sinY_val = sycl::sincos(y, cosY_val_multi_ptr);
-            const realT sinhalfY_val = std::sin(y / 2);
+            const realT cosY_val = std::cos(y);
+            const realT sinY_val = (y == 0) ? y : std::sin(y);
+            const realT sinhalfY_val = (y == 0) ? y : std::sin(y / 2);
 
             const realT res_re =
                 std::expm1(x) * cosY_val - 2 * sinhalfY_val * sinhalfY_val;
-            const realT res_im = std::exp(x) * sinY_val;
+            realT res_im = std::exp(x) * sinY_val;
             return resT{res_re, res_im};
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
+            static_assert(std::is_same_v<argT, resT>);
+            if (in == 0) {
+                return in;
+            }
             return std::expm1(in);
         }
     }
