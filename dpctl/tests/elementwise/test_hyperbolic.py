@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import os
 
 import numpy as np
 import pytest
@@ -272,6 +273,28 @@ def test_hyper_real_special_cases(np_call, dpt_call, dtype):
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_hyper_complex_special_cases_conj_property(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [np.nan, np.inf, -np.inf, +0.0, -0.0, +1.0, -1.0]
+    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
+
+    Xc_np = np.array(xc, dtype=dtype)
+    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
+
+    tol = 50 * dpt.finfo(dtype).resolution
+    Y = dpt_call(Xc)
+    Yc = dpt_call(dpt.conj(Xc))
+
+    dpt.allclose(Y, dpt.conj(Yc), atol=tol, rtol=tol)
+
+
+@pytest.mark.skipif(
+    os.name != "posix", reason="Known to fail on Windows due to bug in NumPy"
+)
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_hyper_complex_special_cases(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -286,9 +309,6 @@ def test_hyper_complex_special_cases(np_call, dpt_call, dtype):
         Ynp = np_call(Xc_np)
 
     tol = 50 * dpt.finfo(dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.real(dpt_call(Xc))), np.real(Ynp), atol=tol, rtol=tol
-    )
-    assert_allclose(
-        dpt.asnumpy(dpt.imag(dpt_call(Xc))), np.imag(Ynp), atol=tol, rtol=tol
-    )
+    Y = dpt_call(Xc)
+    assert_allclose(dpt.asnumpy(dpt.real(Y)), np.real(Ynp), atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(dpt.imag(Y)), np.imag(Ynp), atol=tol, rtol=tol)
