@@ -94,6 +94,20 @@ class UnaryElementwiseFunc:
         return self.result_type_resolver_fn_
 
     @property
+    def nin(self):
+        """
+        Returns the number of arguments treated as inputs.
+        """
+        return 1
+
+    @property
+    def nout(self):
+        """
+        Returns the number of arguments treated as outputs.
+        """
+        return 1
+
+    @property
     def types(self):
         """Returns information about types supported by
         implementation function, using NumPy's character
@@ -530,6 +544,20 @@ class BinaryElementwiseFunc:
         `dpctl.tensor.hypot` with both arrays being of integral data type.
         """
         return self.acceptance_fn_
+
+    @property
+    def nin(self):
+        """
+        Returns the number of arguments treated as inputs.
+        """
+        return 2
+
+    @property
+    def nout(self):
+        """
+        Returns the number of arguments treated as outputs.
+        """
+        return 1
 
     @property
     def types(self):
