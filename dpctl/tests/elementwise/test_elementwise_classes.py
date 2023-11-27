@@ -78,3 +78,27 @@ def test_binary_class_str_repr():
     kl_n = binary_fn.__name__
     assert kl_n in s
     assert kl_n in r
+
+
+def test_unary_class_nin():
+    nin = unary_fn.nin
+    assert isinstance(nin, int)
+    assert nin == 1
+
+
+def test_binary_class_nin():
+    nin = binary_fn.nin
+    assert isinstance(nin, int)
+    assert nin == 2
+
+
+def test_unary_class_nout():
+    nout = unary_fn.nout
+    assert isinstance(nout, int)
+    assert nout == 1
+
+
+def test_binary_class_nout():
+    nout = binary_fn.nout
+    assert isinstance(nout, int)
+    assert nout == 1
