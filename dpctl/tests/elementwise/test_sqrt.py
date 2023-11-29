@@ -178,4 +178,11 @@ def test_sqrt_complex_fp_special_values(dtype):
     expected = dpt.asarray(expected_np, dtype=dtype)
     tol = dpt.finfo(r.dtype).resolution
 
-    assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
+    if not dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True):
+        for i in range(r.shape[0]):
+            assert dpt.allclose(
+                r[i], expected[i], atol=tol, rtol=tol, equal_nan=True
+            ), (
+                f"Test failed for input {z[i]}, i.e. {c_[i]} for index {i}"
+                f", results were {r[i]} vs. {expected[i]}"
+            )
