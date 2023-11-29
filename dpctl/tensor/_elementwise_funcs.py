@@ -1880,7 +1880,7 @@ Args:
 Returns:
     usm_narray:
         An array containing the element-wise reciprocal square-root.
-        The returned array is determined by
+        The returned array has a floating-point data type determined by
         the Type Promotion Rules.
 """
 
