@@ -132,7 +132,7 @@ def _to_device_supported_dtype(dt, dev):
     return dt
 
 
-def _acceptance_fn_default1(arg_dtype, ret_buf_dt, res_dt, sycl_dev):
+def _acceptance_fn_default_unary(arg_dtype, ret_buf_dt, res_dt, sycl_dev):
     return True
 
 
@@ -187,7 +187,7 @@ def _get_device_default_dtype(dt_kind, sycl_dev):
     raise RuntimeError
 
 
-def _acceptance_fn_default2(
+def _acceptance_fn_default_binary(
     arg1_dtype, arg2_dtype, ret_buf1_dt, ret_buf2_dt, res_dt, sycl_dev
 ):
     return True
@@ -254,8 +254,8 @@ __all__ = [
     "_find_buf_dtype",
     "_find_buf_dtype2",
     "_to_device_supported_dtype",
-    "_acceptance_fn_default1",
+    "_acceptance_fn_default_unary",
     "_acceptance_fn_reciprocal",
-    "_acceptance_fn_default2",
+    "_acceptance_fn_default_binary",
     "_acceptance_fn_divide",
 ]

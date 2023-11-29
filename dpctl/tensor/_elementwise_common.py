@@ -28,8 +28,8 @@ from dpctl.utils import ExecutionPlacementError
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._type_utils import (
-    _acceptance_fn_default1,
-    _acceptance_fn_default2,
+    _acceptance_fn_default_binary,
+    _acceptance_fn_default_unary,
     _all_data_types,
     _find_buf_dtype,
     _find_buf_dtype2,
@@ -95,7 +95,7 @@ class UnaryElementwiseFunc:
         if callable(acceptance_fn):
             self.acceptance_fn_ = acceptance_fn
         else:
-            self.acceptance_fn_ = _acceptance_fn_default1
+            self.acceptance_fn_ = _acceptance_fn_default_unary
 
     def __str__(self):
         return f"<{self.__name__} '{self.name_}'>"
@@ -526,7 +526,7 @@ class BinaryElementwiseFunc:
         if callable(acceptance_fn):
             self.acceptance_fn_ = acceptance_fn
         else:
-            self.acceptance_fn_ = _acceptance_fn_default2
+            self.acceptance_fn_ = _acceptance_fn_default_binary
 
     def __str__(self):
         return f"<{self.__name__} '{self.name_}'>"
