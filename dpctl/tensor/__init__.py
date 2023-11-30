@@ -102,6 +102,7 @@ from ._elementwise_funcs import (
     acos,
     acosh,
     add,
+    angle,
     asin,
     asinh,
     atan,
@@ -153,6 +154,7 @@ from ._elementwise_funcs import (
     pow,
     proj,
     real,
+    reciprocal,
     remainder,
     round,
     rsqrt,
@@ -342,4 +344,6 @@ __all__ = [
     "var",
     "__array_api_version__",
     "__array_namespace_info__",
+    "reciprocal",
+    "angle",
 ]

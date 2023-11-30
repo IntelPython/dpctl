@@ -29,6 +29,7 @@
 #include "acos.hpp"
 #include "acosh.hpp"
 #include "add.hpp"
+#include "angle.hpp"
 #include "asin.hpp"
 #include "asinh.hpp"
 #include "atan.hpp"
@@ -79,6 +80,7 @@
 #include "pow.hpp"
 #include "proj.hpp"
 #include "real.hpp"
+#include "reciprocal.hpp"
 #include "remainder.hpp"
 #include "round.hpp"
 #include "rsqrt.hpp"
@@ -110,6 +112,7 @@ void init_elementwise_functions(py::module_ m)
     init_acos(m);
     init_acosh(m);
     init_add(m);
+    init_angle(m);
     init_asin(m);
     init_asinh(m);
     init_atan(m);
@@ -161,6 +164,7 @@ void init_elementwise_functions(py::module_ m)
     init_pow(m);
     init_proj(m);
     init_real(m);
+    init_reciprocal(m);
     init_remainder(m);
     init_round(m);
     init_rsqrt(m);

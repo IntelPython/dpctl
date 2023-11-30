@@ -17,7 +17,7 @@
 import dpctl.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
-from ._type_utils import _acceptance_fn_divide
+from ._type_utils import _acceptance_fn_divide, _acceptance_fn_reciprocal
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = """
@@ -1880,10 +1880,72 @@ Args:
 Returns:
     usm_narray:
         An array containing the element-wise reciprocal square-root.
-        The data type of the returned array is determined by
+        The returned array has a floating-point data type determined by
         the Type Promotion Rules.
 """
 
 rsqrt = UnaryElementwiseFunc(
     "rsqrt", ti._rsqrt_result_type, ti._rsqrt, _rsqrt_docstring_
+)
+
+
+# U42: ==== RECIPROCAL        (x)
+_reciprocal_docstring = """
+reciprocal(x, out=None, order='K')
+
+Computes the reciprocal of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise reciprocals.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+reciprocal = UnaryElementwiseFunc(
+    "reciprocal",
+    ti._reciprocal_result_type,
+    ti._reciprocal,
+    _reciprocal_docstring,
+    acceptance_fn=_acceptance_fn_reciprocal,
+)
+
+
+# U43: ==== ANGLE        (x)
+_angle_docstring = """
+angle(x, out=None, order='K')
+
+Computes the phase angle (also called the argument) of each element `x_i` for
+input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a complex-valued floating-point data type.
+    out ({None, usm_ndarray}, optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+Returns:
+    usm_narray:
+        An array containing the element-wise phase angles.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+angle = UnaryElementwiseFunc(
+    "angle",
+    ti._angle_result_type,
+    ti._angle,
+    _angle_docstring,
 )
