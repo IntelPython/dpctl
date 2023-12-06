@@ -1,7 +1,32 @@
+//=== sorting.hpp -  Implementation of sorting kernels       ---*-C++-*--/===//
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2023 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines kernels for tensor sort/argsort operations.
+//===----------------------------------------------------------------------===//
+
 #pragma once
 
 #include "pybind11/pybind11.h"
 
+#include <cassert>
 #include <functional>
 #include <iterator>
 #include <sycl/sycl.hpp>
@@ -537,115 +562,6 @@ sort_base_step_contig_impl(sycl::queue &q,
     return base_sort;
 }
 
-template <typename T1, typename T2, typename Comp>
-class exp_sort_over_work_group_contig_krn;
-
-template <typename InpAcc, typename OutAcc, typename Comp>
-sycl::event exp_sort_over_work_group_contig_impl(
-    sycl::queue &q,
-    size_t iter_nelems,
-    size_t sort_nelems,
-    const InpAcc input,
-    OutAcc output,
-    const Comp &comp,
-    size_t &conseq_nelems_sorted,
-    const std::vector<sycl::event> &depends = {})
-{
-
-    using inpT = typename GetValueType<InpAcc>::value_type;
-    using outT = typename GetValueType<InpAcc>::value_type;
-    using KernelName = exp_sort_over_work_group_contig_krn<inpT, outT, Comp>;
-
-    const auto &kernel_id = sycl::get_kernel_id<KernelName>();
-
-    auto const &ctx = q.get_context();
-    auto const &dev = q.get_device();
-    auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
-        ctx, {dev}, {kernel_id});
-
-    auto krn = kb.template get_kernel(kernel_id);
-
-    std::uint32_t max_sg_size = krn.template get_info<
-        sycl::info::kernel_device_specific::max_sub_group_size>(dev);
-
-    const size_t lws = 4 * max_sg_size;
-    const std::uint32_t chunk_size = dev.has(sycl::aspect::cpu) ? 8 : 2;
-    conseq_nelems_sorted = chunk_size * lws;
-
-    // This assumption permits doing away with using a loop
-    assert(nelems_wg_sorts % lws == 0);
-
-    sycl::event exp_default_sort_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
-        const size_t n_chunks =
-            quotient_ceil<size_t>(sort_nelems, conseq_nelems_sorted);
-
-        sycl::range<1> global_range{iter_nelems * n_chunks * lws};
-        sycl::range<1> local_range{lws};
-
-        sycl::range<1> slm_size_range{conseq_nelems_sorted};
-
-        using Sorter = sycl::ext::oneapi::experimental::default_sorter<Comp>;
-
-        // calculate required local memory size
-        // MUST pass local_range, not integer.
-        // Have different meanings
-        const size_t temp_memory_size = Sorter::template memory_required<outT>(
-            sycl::memory_scope::work_group, conseq_nelems_sorted);
-
-        sycl::local_accessor<outT, 1> workspace(slm_size_range, cgh);
-        sycl::local_accessor<std::byte, 1> scratch({temp_memory_size}, cgh);
-
-        cgh.parallel_for<KernelName>(
-            sycl::nd_range<1>(global_range, local_range),
-            [=](sycl::nd_item<1> it) {
-                auto sorter_op = Sorter(sycl::span<std::byte>{
-                    scratch
-                        .template get_multi_ptr<sycl::access::decorated::no>()
-                        .get(),
-                    temp_memory_size});
-
-                const size_t gr_id = it.get_group_linear_id();
-                const size_t iter_id = gr_id / n_chunks;
-                const size_t sort_chunk_id = gr_id - iter_id * n_chunks;
-
-                const std::uint32_t lid = it.get_local_linear_id();
-
-                const size_t iter_offset = iter_id * sort_nelems;
-                const size_t chunk_offset =
-                    sort_chunk_id * conseq_nelems_sorted;
-                const size_t global_start_offset = iter_offset + chunk_offset;
-                const size_t workspace_size =
-                    std::min<size_t>(sort_nelems,
-                                     chunk_offset + conseq_nelems_sorted) -
-                    chunk_offset;
-                for (std::uint32_t i = lid; i < workspace_size; i += lws) {
-                    workspace[i] = input[global_start_offset + i];
-                }
-                sycl::group_barrier(it.get_group());
-
-                sycl::ext::oneapi::experimental::joint_sort(
-                    it.get_group(),
-                    workspace
-                        .template get_multi_ptr<sycl::access::decorated::no>()
-                        .get(),
-                    workspace
-                            .template get_multi_ptr<
-                                sycl::access::decorated::no>()
-                            .get() +
-                        workspace_size,
-                    sorter_op);
-
-                for (std::uint32_t i = lid; i < workspace_size; i += lws) {
-                    output[global_start_offset + i] = workspace[i];
-                }
-            });
-    });
-
-    return exp_default_sort_ev;
-}
-
 class vacuous_krn;
 
 inline sycl::event tie_events(sycl::queue &q,
@@ -847,20 +763,11 @@ sycl::event stable_sort_axis1_contig_impl(
         (sort_nelems >= 512) ? 512 : determine_automatically;
 
     // Sort segments of the array
-#if 1
     sycl::event base_sort_ev = sort_detail::sort_over_work_group_contig_impl<
         const argTy *, argTy *, Comp>(
         exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
         sorted_block_size, // modified in place with size of sorted block size
         depends);
-#else
-    sycl::event base_sort_ev =
-        sort_detail::sort_base_step_contig_impl<const argTy *, argTy *, Comp>(
-            exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
-            sorted_block_size, // modified in place with size of sorted block
-                               // size
-            depends);
-#endif
 
     // Merge segments in parallel until all elements are sorted
     sycl::event merges_ev =
