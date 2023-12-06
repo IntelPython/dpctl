@@ -20,14 +20,14 @@ if(NOT Dpctl_FOUND)
   find_package(Python 3.9 REQUIRED
     COMPONENTS Interpreter Development.Module)
 
-  if(PYTHON_EXECUTABLE)
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+  if(Python_EXECUTABLE)
+    execute_process(COMMAND "${Python_EXECUTABLE}"
       -c "import dpctl; print(dpctl.get_include())"
       OUTPUT_VARIABLE _dpctl_include_dir
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET
       )
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}"
+    execute_process(COMMAND "${Python_EXECUTABLE}"
       -c "import dpctl; print(dpctl.__version__)"
       OUTPUT_VARIABLE Dpctl_VERSION
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -38,7 +38,7 @@ endif()
 
 find_path(Dpctl_INCLUDE_DIR
   dpctl_capi.h dpctl4pybind11.hpp dpctl_sycl_interface.h
-  PATHS "${_dpctl_include_dir}" "${PYTHON_INCLUDE_DIR}"
+  PATHS "${_dpctl_include_dir}" "${Python_INCLUDE_DIRS}"
   PATH_SUFFIXES dpctl/include
   )
 get_filename_component(_dpctl_dir ${_dpctl_include_dir} DIRECTORY)
