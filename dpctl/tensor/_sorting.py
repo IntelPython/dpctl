@@ -1,3 +1,19 @@
+#                       Data Parallel Control (dpctl)
+#
+#  Copyright 2020-2023 Intel Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 from numpy.core.numeric import normalize_axis_index
 
 import dpctl
@@ -12,7 +28,32 @@ from ._tensor_sorting_impl import (
 )
 
 
-def sort(x, axis=-1, descending=False, stable=False):
+def sort(x, /, *, axis=-1, descending=False, stable=False):
+    """sort(x, axis=-1, descending=False, stable=False)
+
+    Returns a sorted copy of an input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int]):
+            axis along which to sort. If set to `-1`, the function
+            must sort along the last axis. Default: `-1`.
+        descending (Optional[bool]):
+            sort order. If `True`, the array must be sorted in descending
+            order (by value). If `False`, the array must be sorted in
+            ascending order (by value). Default: `False`.
+        stable (Optional[bool]):
+            sort stability. If `True`, the returned array must maintain the
+            relative order of `x` values which compare as equal. If `False`,
+            the returned array may or may not maintain the relative order of
+            `x` values which compare as equal. Default: `True`.
+
+    Returns:
+        usm_ndarray:
+            a sorted array. The returned array has the same data type and
+            the same shape as the input array `x`.
+    """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
             f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
@@ -60,6 +101,32 @@ def sort(x, axis=-1, descending=False, stable=False):
 
 
 def argsort(x, axis=-1, descending=False, stable=False):
+    """argsort(x, axis=-1, descending=False, stable=False)
+
+    Returns the indices that sort an array `x` along a specified axis.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int]):
+            axis along which to sort. If set to `-1`, the function
+            must sort along the last axis. Default: `-1`.
+        descending (Optional[bool]):
+            sort order. If `True`, the array must be sorted in descending
+            order (by value). If `False`, the array must be sorted in
+            ascending order (by value). Default: `False`.
+        stable (Optional[bool]):
+            sort stability. If `True`, the returned array must maintain the
+            relative order of `x` values which compare as equal. If `False`,
+            the returned array may or may not maintain the relative order of
+            `x` values which compare as equal. Default: `True`.
+
+    Returns:
+        usm_ndarray:
+            an array of indices. The returned array has the  same shape as
+            the input array `x`. The return array has default array index
+            data type.
+    """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
             f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
