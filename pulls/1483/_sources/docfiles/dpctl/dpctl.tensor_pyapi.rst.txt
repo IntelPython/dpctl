@@ -149,7 +149,7 @@ Other Functions
     * - :func:`argmin()`
       - Returns the indices of the minimum values of the input array `x` along a specified axis.
     * - :func:`argsort()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Returns the indices that sort an array `x` along a specified axis.
     * - :func:`clip()`
       - Clips to the range [`min_i`, `max_i`] for each element `x_i` in `x`.
     * - :func:`extract()`
@@ -183,7 +183,7 @@ Other Functions
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`sort()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Returns a sorted copy of an input array `x`.
     * - :func:`std()`
       - Calculates the standard deviation of elements in the input array `x`.
     * - :func:`sum()`

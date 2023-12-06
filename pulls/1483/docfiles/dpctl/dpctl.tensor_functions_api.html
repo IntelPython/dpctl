@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+20.gaf5bf5b3d3 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+23.ga60827e3c3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=90679663"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6b029e99"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev2+20.gaf5bf5b3d3
+                0.15.1dev2+23.ga60827e3c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -244,7 +244,32 @@ default array index data type for the device of <cite>x</cite>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.argsort">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_sorting.html#argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argsort" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the indices that sort an array <cite>x</cite> along a specified axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis along which to sort. If set to <cite>-1</cite>, the function
+must sort along the last axis. Default: <cite>-1</cite>.</p></li>
+<li><p><strong>descending</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort order. If <cite>True</cite>, the array must be sorted in descending
+order (by value). If <cite>False</cite>, the array must be sorted in
+ascending order (by value). Default: <cite>False</cite>.</p></li>
+<li><p><strong>stable</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort stability. If <cite>True</cite>, the returned array must maintain the
+relative order of <cite>x</cite> values which compare as equal. If <cite>False</cite>,
+the returned array may or may not maintain the relative order of
+<cite>x</cite> values which compare as equal. Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array of indices. The returned array has the  same shape as
+the input array <cite>x</cite>. The return array has default array index
+data type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.clip">
@@ -777,7 +802,31 @@ Default: “False”</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.sort">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_sorting.html#sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.sort" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns a sorted copy of an input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis along which to sort. If set to <cite>-1</cite>, the function
+must sort along the last axis. Default: <cite>-1</cite>.</p></li>
+<li><p><strong>descending</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort order. If <cite>True</cite>, the array must be sorted in descending
+order (by value). If <cite>False</cite>, the array must be sorted in
+ascending order (by value). Default: <cite>False</cite>.</p></li>
+<li><p><strong>stable</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort stability. If <cite>True</cite>, the returned array must maintain the
+relative order of <cite>x</cite> values which compare as equal. If <cite>False</cite>,
+the returned array may or may not maintain the relative order of
+<cite>x</cite> values which compare as equal. Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a sorted array. The returned array has the same data type and
+the same shape as the input array <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.std">
