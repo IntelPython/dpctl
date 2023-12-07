@@ -379,6 +379,60 @@ struct GetReadWriteAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 };
 
 template <typename T1, typename T2, typename Comp>
+class sort_base_step_contig_krn;
+
+template <typename InpAcc, typename OutAcc, typename Comp>
+sycl::event
+sort_base_step_contig_impl(sycl::queue &q,
+                           size_t iter_nelems,
+                           size_t sort_nelems,
+                           const InpAcc input,
+                           OutAcc output,
+                           const Comp &comp,
+                           size_t &conseq_nelems_sorted,
+                           const std::vector<sycl::event> &depends = {})
+{
+
+    using inpT = typename GetValueType<InpAcc>::value_type;
+    using outT = typename GetValueType<OutAcc>::value_type;
+    using KernelName = sort_base_step_contig_krn<inpT, outT, Comp>;
+
+    conseq_nelems_sorted = (q.get_device().has(sycl::aspect::cpu) ? 16 : 4);
+
+    size_t n_segments =
+        quotient_ceil<size_t>(sort_nelems, conseq_nelems_sorted);
+
+    sycl::event base_sort = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        sycl::range<1> gRange{iter_nelems * n_segments};
+
+        auto input_acc = GetReadOnlyAccess<InpAcc>{}(input, cgh);
+        auto output_acc = GetWriteDiscardAccess<OutAcc>{}(output, cgh);
+
+        cgh.parallel_for<KernelName>(gRange, [=](sycl::id<1> id) {
+            const size_t iter_id = id[0] / n_segments;
+            const size_t segment_id = id[0] - iter_id * n_segments;
+
+            const size_t iter_offset = iter_id * sort_nelems;
+            const size_t beg_id =
+                iter_offset + segment_id * conseq_nelems_sorted;
+            const size_t end_id =
+                iter_offset +
+                std::min<size_t>((segment_id + 1) * conseq_nelems_sorted,
+                                 sort_nelems);
+            for (size_t i = beg_id; i < end_id; ++i) {
+                output_acc[i] = input_acc[i];
+            }
+
+            leaf_sort_impl(output_acc, beg_id, end_id, comp);
+        });
+    });
+
+    return base_sort;
+}
+
+template <typename T1, typename T2, typename Comp>
 class sort_over_work_group_contig_krn;
 
 template <typename InpAcc, typename OutAcc, typename Comp>
@@ -393,8 +447,8 @@ sort_over_work_group_contig_impl(sycl::queue &q,
                                  const std::vector<sycl::event> &depends = {})
 {
     using inpT = typename GetValueType<InpAcc>::value_type;
-    using outT = typename GetValueType<InpAcc>::value_type;
-    using KernelName = sort_over_work_group_contig_krn<inpT, outT, Comp>;
+    using T = typename GetValueType<OutAcc>::value_type;
+    using KernelName = sort_over_work_group_contig_krn<inpT, T, Comp>;
 
     const auto &kernel_id = sycl::get_kernel_id<KernelName>();
 
@@ -405,12 +459,30 @@ sort_over_work_group_contig_impl(sycl::queue &q,
 
     auto krn = kb.template get_kernel(kernel_id);
 
-    std::uint32_t max_sg_size = krn.template get_info<
+    const std::uint32_t max_sg_size = krn.template get_info<
         sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+    const std::uint64_t device_local_memory_size =
+        dev.get_info<sycl::info::device::local_mem_size>();
 
-    const size_t lws = 4 * max_sg_size;
-    const std::uint32_t chunk_size = dev.has(sycl::aspect::cpu) ? 8 : 2;
-    nelems_wg_sorts = chunk_size * lws;
+    //  leave 512 bytes of local memory for RT
+    const std::uint64_t safety_margin = 512;
+
+    const std::uint64_t nelems_per_slm =
+        (device_local_memory_size - safety_margin) / (2 * sizeof(T));
+
+    constexpr std::uint32_t sub_groups_per_work_group = 4;
+    const std::uint32_t elems_per_wi = dev.has(sycl::aspect::cpu) ? 8 : 2;
+
+    const size_t lws = sub_groups_per_work_group * max_sg_size;
+
+    nelems_wg_sorts = elems_per_wi * lws;
+
+    if (nelems_wg_sorts > nelems_per_slm) {
+        nelems_wg_sorts = 0;
+        return sort_base_step_contig_impl<InpAcc, OutAcc, Comp>(
+            q, iter_nelems, sort_nelems, input, output, comp, nelems_wg_sorts,
+            depends);
+    }
 
     // This assumption permits doing away with using a loop
     assert(nelems_wg_sorts % lws == 0);
@@ -421,11 +493,12 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     sycl::event base_sort_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
+        cgh.use_kernel_bundle(kb);
+
         sycl::range<1> global_range{iter_nelems * n_segments * lws};
         sycl::range<1> local_range{lws};
 
         sycl::range<1> slm_range{nelems_wg_sorts};
-        using T = typename GetValueType<OutAcc>::value_type;
         sycl::local_accessor<T, 1> work_space(slm_range, cgh);
         sycl::local_accessor<T, 1> scratch_space(slm_range, cgh);
 
@@ -510,56 +583,6 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     });
 
     return base_sort_ev;
-}
-
-template <typename T1, typename T2, typename Comp>
-class sort_base_step_contig_krn;
-
-template <typename InpAcc, typename OutAcc, typename Comp>
-sycl::event
-sort_base_step_contig_impl(sycl::queue &q,
-                           size_t iter_nelems,
-                           size_t sort_nelems,
-                           const InpAcc input,
-                           OutAcc output,
-                           const Comp &comp,
-                           size_t &conseq_nelems_sorted,
-                           const std::vector<sycl::event> &depends = {})
-{
-
-    using inpT = typename GetValueType<InpAcc>::value_type;
-    using outT = typename GetValueType<InpAcc>::value_type;
-    using KernelName = sort_base_step_contig_krn<inpT, outT, Comp>;
-
-    conseq_nelems_sorted = (q.get_device().has(sycl::aspect::cpu) ? 16 : 4);
-
-    size_t n_segments =
-        quotient_ceil<size_t>(sort_nelems, conseq_nelems_sorted);
-
-    sycl::event base_sort = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
-        sycl::range<1> gRange{iter_nelems * n_segments};
-        cgh.parallel_for<KernelName>(gRange, [=](sycl::id<1> id) {
-            const size_t iter_id = id[0] / n_segments;
-            const size_t segment_id = id[0] - iter_id * n_segments;
-
-            const size_t iter_offset = iter_id * sort_nelems;
-            const size_t beg_id =
-                iter_offset + segment_id * conseq_nelems_sorted;
-            const size_t end_id =
-                iter_offset +
-                std::min<size_t>((segment_id + 1) * conseq_nelems_sorted,
-                                 sort_nelems);
-            for (size_t i = beg_id; i < end_id; ++i) {
-                output[i] = input[i];
-            }
-
-            leaf_sort_impl(output, beg_id, end_id, comp);
-        });
-    });
-
-    return base_sort;
 }
 
 class vacuous_krn;
