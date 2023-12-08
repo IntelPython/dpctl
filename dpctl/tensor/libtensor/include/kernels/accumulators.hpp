@@ -251,8 +251,10 @@ size_t accumulate_contig_impl(sycl::queue &q,
     if (last_elem_host_usm == nullptr) {
         throw std::bad_alloc();
     }
-    sycl::event copy_e =
-        q.copy<cumsumT>(last_elem, last_elem_host_usm, 1, {comp_ev});
+    sycl::event copy_e = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(comp_ev);
+        cgh.copy<cumsumT>(last_elem, last_elem_host_usm, 1);
+    });
     copy_e.wait();
     size_t return_val = static_cast<size_t>(*last_elem_host_usm);
     sycl::free(last_elem_host_usm, q);
