@@ -126,3 +126,57 @@ def test_argsort_1d(dtype):
 
     s1_idx = dpt.argsort(inp, descending=True)
     assert dpt.all(inp[s1_idx[:-1]] >= inp[s1_idx[1:]])
+
+
+def test_sort_validation():
+    with pytest.raises(TypeError):
+        dpt.sort(dict())
+
+
+def test_argsort_validation():
+    with pytest.raises(TypeError):
+        dpt.argsort(dict())
+
+
+def test_sort_axis0():
+    get_queue_or_skip()
+
+    n, m = 200, 30
+    xf = dpt.arange(n * m, 0, step=-1, dtype="i4")
+    x = dpt.reshape(xf, (n, m))
+    s = dpt.sort(x, axis=0)
+
+    assert dpt.all(s[:-1, :] <= s[1:, :])
+
+
+def test_argsort_axis0():
+    get_queue_or_skip()
+
+    n, m = 200, 30
+    xf = dpt.arange(n * m, 0, step=-1, dtype="i4")
+    x = dpt.reshape(xf, (n, m))
+    idx = dpt.argsort(x, axis=0)
+
+    s = x[idx, dpt.arange(m)[dpt.newaxis, :]]
+
+    assert dpt.all(s[:-1, :] <= s[1:, :])
+
+
+def test_sort_strided():
+    get_queue_or_skip()
+
+    x_orig = dpt.arange(100, dtype="i4")
+    x_flipped = dpt.flip(x_orig, axis=0)
+    s = dpt.sort(x_flipped)
+
+    assert dpt.all(s == x_orig)
+
+
+def test_argsort_strided():
+    get_queue_or_skip()
+
+    x_orig = dpt.arange(100, dtype="i4")
+    x_flipped = dpt.flip(x_orig, axis=0)
+    idx = dpt.argsort(x_flipped)
+
+    assert dpt.all(x_flipped[idx] == x_orig)
