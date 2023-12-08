@@ -412,3 +412,14 @@ def test_where_order():
         condition = dpt.zeros(n, dtype="?", order="C")
         res = dpt.where(condition, ar1, ar2)
         assert res.strides == (20, 1)
+
+
+def test_where_unaligned():
+    get_queue_or_skip()
+
+    x = dpt.ones(513, dtype="i4")
+    a = dpt.full(512, 2, dtype="i4")
+    b = dpt.zeros(512, dtype="i4")
+
+    expected = dpt.full(512, 2, dtype="i4")
+    assert dpt.all(dpt.where(x[1:], a, b) == expected)

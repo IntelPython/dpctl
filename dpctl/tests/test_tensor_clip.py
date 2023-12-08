@@ -625,3 +625,14 @@ def test_clip_max_weak_types():
 
     with pytest.raises(ValueError):
         dpt.clip(x, 2.5, m)
+
+
+def test_clip_unaligned():
+    get_queue_or_skip()
+
+    x = dpt.full(513, 5, dtype="i4")
+    a_min = dpt.zeros(512, dtype="i4")
+    a_max = dpt.full(512, 2, dtype="i4")
+
+    expected = dpt.full(512, 2, dtype="i4")
+    assert dpt.all(dpt.clip(x[1:], a_min, a_max) == expected)
