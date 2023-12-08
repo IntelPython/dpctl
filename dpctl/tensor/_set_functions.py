@@ -15,6 +15,16 @@ from ._tensor_impl import (
 )
 from ._tensor_sorting_impl import _argsort_ascending, _sort_ascending
 
+__all__ = [
+    "unique_values",
+    "unique_counts",
+    "unique_inverse",
+    "unique_all",
+    "UniqueAllResult",
+    "UniqueCountsResult",
+    "UniqueInverseResult",
+]
+
 
 class UniqueAllResult(NamedTuple):
     values: dpt.usm_ndarray
