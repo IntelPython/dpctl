@@ -32,6 +32,7 @@
 #include <pybind11/pybind11.h>
 #include <type_traits>
 
+#include "kernels/alignment.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -50,6 +51,11 @@ namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using namespace dpctl::tensor::offset_utils;
+
+using dpctl::tensor::kernels::alignment_utils::
+    disabled_sg_loadstore_wrapper_krn;
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 template <typename T> T clip(const T &x, const T &min, const T &max)
 {
@@ -73,7 +79,11 @@ template <typename T> T clip(const T &x, const T &min, const T &max)
     }
 }
 
-template <typename T, int vec_sz = 4, int n_vecs = 2> class ClipContigFunctor
+template <typename T,
+          int vec_sz = 4,
+          int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+class ClipContigFunctor
 {
 private:
     size_t nelems = 0;
@@ -96,7 +106,7 @@ public:
     void operator()(sycl::nd_item<1> ndit) const
     {
         using dpctl::tensor::type_utils::is_complex;
-        if constexpr (is_complex<T>::value) {
+        if constexpr (is_complex<T>::value || !enable_sg_loadstore) {
             std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
             size_t base = ndit.get_global_linear_id();
 
@@ -195,10 +205,30 @@ sycl::event clip_contig_impl(sycl::queue &q,
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
 
-        cgh.parallel_for<clip_contig_kernel<T, vec_sz, n_vecs>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            ClipContigFunctor<T, vec_sz, n_vecs>(nelems, x_tp, min_tp, max_tp,
-                                                 dst_tp));
+        if (is_aligned<required_alignment>(x_cp) &&
+            is_aligned<required_alignment>(min_cp) &&
+            is_aligned<required_alignment>(max_cp) &&
+            is_aligned<required_alignment>(dst_cp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                ClipContigFunctor<T, vec_sz, n_vecs, enable_sg_loadstore>(
+                    nelems, x_tp, min_tp, max_tp, dst_tp));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                ClipContigFunctor<T, vec_sz, n_vecs, disable_sg_loadstore>(
+                    nelems, x_tp, min_tp, max_tp, dst_tp));
+        }
     });
 
     return clip_ev;

@@ -29,7 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <utility>
 
-#include "kernels/elementwise_functions/alignment.hpp"
+#include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 
 namespace dpctl

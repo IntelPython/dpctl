@@ -29,7 +29,7 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "kernels/elementwise_functions/alignment.hpp"
+#include "kernels/alignment.hpp"
 
 namespace dpctl
 {

@@ -81,14 +81,14 @@ template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
           unsigned int n_vecs = 2,
-          bool enable_sg_loadstire = true>
+          bool enable_sg_loadstore = true>
 using AngleContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
                                            AngleFunctor<argTy, resTy>,
                                            vec_sz,
                                            n_vecs,
-                                           enable_sg_loadstire>;
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using AngleStridedFunctor = elementwise_common::

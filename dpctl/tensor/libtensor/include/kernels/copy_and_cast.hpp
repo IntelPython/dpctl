@@ -29,6 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
 
@@ -43,6 +44,11 @@ namespace copy_and_cast
 
 namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
+
+using dpctl::tensor::kernels::alignment_utils::
+    disabled_sg_loadstore_wrapper_krn;
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_generic_kernel;
@@ -200,7 +206,8 @@ template <typename srcT,
           typename dstT,
           typename CastFnT,
           int vec_sz = 4,
-          int n_vecs = 2>
+          int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 class ContigCopyFunctor
 {
 private:
@@ -219,7 +226,9 @@ public:
         CastFnT fn{};
 
         using dpctl::tensor::type_utils::is_complex;
-        if constexpr (is_complex<srcT>::value || is_complex<dstT>::value) {
+        if constexpr (!enable_sg_loadstore || is_complex<srcT>::value ||
+                      is_complex<dstT>::value)
+        {
             std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
             size_t base = ndit.get_global_linear_id();
 
@@ -326,10 +335,32 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
 
-        cgh.parallel_for<copy_cast_contig_kernel<srcTy, dstTy, n_vecs, vec_sz>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            ContigCopyFunctor<srcTy, dstTy, Caster<srcTy, dstTy>, vec_sz,
-                              n_vecs>(nelems, src_tp, dst_tp));
+        if (is_aligned<required_alignment>(src_cp) &&
+            is_aligned<required_alignment>(dst_cp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName =
+                copy_cast_contig_kernel<srcTy, dstTy, vec_sz, n_vecs>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                ContigCopyFunctor<srcTy, dstTy, Caster<srcTy, dstTy>, vec_sz,
+                                  n_vecs, enable_sg_loadstore>(nelems, src_tp,
+                                                               dst_tp));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName =
+                copy_cast_contig_kernel<srcTy, dstTy, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                ContigCopyFunctor<srcTy, dstTy, Caster<srcTy, dstTy>, vec_sz,
+                                  n_vecs, disable_sg_loadstore>(nelems, src_tp,
+                                                                dst_tp));
+        }
     });
 
     return copy_and_cast_ev;

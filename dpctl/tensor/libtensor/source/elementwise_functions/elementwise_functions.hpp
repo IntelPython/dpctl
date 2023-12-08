@@ -33,7 +33,7 @@
 #include <vector>
 
 #include "elementwise_functions_type_utils.hpp"
-#include "kernels/elementwise_functions/alignment.hpp"
+#include "kernels/alignment.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
