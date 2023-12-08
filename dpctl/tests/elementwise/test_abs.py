@@ -187,3 +187,18 @@ def test_abs_complex_fp_special_values(dtype):
     tol = dpt.finfo(r.dtype).resolution
 
     assert dpt.allclose(r, expected, atol=tol, rtol=tol, equal_nan=True)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_abs_alignment(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = dpt.ones(512, dtype=dtype)
+    r = dpt.abs(x)
+
+    r2 = dpt.abs(x[1:])
+    assert np.allclose(dpt.asnumpy(r[1:]), dpt.asnumpy(r2))
+
+    dpt.abs(x[:-1], out=r[1:])
+    assert np.allclose(dpt.asnumpy(r[1:]), dpt.asnumpy(r2))
