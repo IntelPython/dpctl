@@ -103,9 +103,15 @@ template <typename argT, typename resT> struct Log2Functor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using Log2ContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, Log2Functor<argTy, resTy>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using Log2ContigFunctor =
+    elementwise_common::UnaryContigFunctor<argTy,
+                                           resTy,
+                                           Log2Functor<argTy, resTy>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using Log2StridedFunctor = elementwise_common::

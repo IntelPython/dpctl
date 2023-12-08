@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "elementwise_functions_type_utils.hpp"
+#include "kernels/elementwise_functions/alignment.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
@@ -47,6 +48,9 @@ namespace tensor
 {
 namespace py_internal
 {
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 /*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
@@ -443,8 +447,6 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     int nd = dst_nd;
     const py::ssize_t *shape = src1_shape;
 
-    // all args except itemsizes and is_?_contig bools can be modified by
-    // reference
     dpctl::tensor::py_internal::simplify_iteration_space_3(
         nd, shape, src1_strides, src2_strides, dst_strides,
         // outputs
@@ -487,16 +489,29 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                     contig_matrix_row_broadcast_dispatch_table[src1_typeid]
                                                               [src2_typeid];
                 if (matrix_row_broadcast_fn != nullptr) {
-                    size_t n0 = simplified_shape[0];
-                    size_t n1 = simplified_shape[1];
-                    sycl::event comp_ev = matrix_row_broadcast_fn(
-                        exec_q, host_tasks, n0, n1, src1_data, src1_offset,
-                        src2_data, src2_offset, dst_data, dst_offset, depends);
+                    int src1_itemsize = src1.get_elemsize();
+                    int src2_itemsize = src2.get_elemsize();
+                    int dst_itemsize = dst.get_elemsize();
 
-                    return std::make_pair(
-                        dpctl::utils::keep_args_alive(exec_q, {src1, src2, dst},
-                                                      host_tasks),
-                        comp_ev);
+                    if (is_aligned<required_alignment>(
+                            src1_data + src1_offset * src1_itemsize) &&
+                        is_aligned<required_alignment>(
+                            src2_data + src2_offset * src2_itemsize) &&
+                        is_aligned<required_alignment>(
+                            dst_data + dst_offset * dst_itemsize))
+                    {
+                        size_t n0 = simplified_shape[0];
+                        size_t n1 = simplified_shape[1];
+                        sycl::event comp_ev = matrix_row_broadcast_fn(
+                            exec_q, host_tasks, n0, n1, src1_data, src1_offset,
+                            src2_data, src2_offset, dst_data, dst_offset,
+                            depends);
+
+                        return std::make_pair(
+                            dpctl::utils::keep_args_alive(
+                                exec_q, {src1, src2, dst}, host_tasks),
+                            comp_ev);
+                    }
                 }
             }
             if (isEqual(simplified_src1_strides, one_zero_strides) &&
@@ -507,16 +522,30 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                     contig_row_matrix_broadcast_dispatch_table[src1_typeid]
                                                               [src2_typeid];
                 if (row_matrix_broadcast_fn != nullptr) {
-                    size_t n0 = simplified_shape[1];
-                    size_t n1 = simplified_shape[0];
-                    sycl::event comp_ev = row_matrix_broadcast_fn(
-                        exec_q, host_tasks, n0, n1, src1_data, src1_offset,
-                        src2_data, src2_offset, dst_data, dst_offset, depends);
 
-                    return std::make_pair(
-                        dpctl::utils::keep_args_alive(exec_q, {src1, src2, dst},
-                                                      host_tasks),
-                        comp_ev);
+                    int src1_itemsize = src1.get_elemsize();
+                    int src2_itemsize = src2.get_elemsize();
+                    int dst_itemsize = dst.get_elemsize();
+
+                    if (is_aligned<required_alignment>(
+                            src1_data + src1_offset * src1_itemsize) &&
+                        is_aligned<required_alignment>(
+                            src2_data + src2_offset * src2_itemsize) &&
+                        is_aligned<required_alignment>(
+                            dst_data + dst_offset * dst_itemsize))
+                    {
+                        size_t n0 = simplified_shape[1];
+                        size_t n1 = simplified_shape[0];
+                        sycl::event comp_ev = row_matrix_broadcast_fn(
+                            exec_q, host_tasks, n0, n1, src1_data, src1_offset,
+                            src2_data, src2_offset, dst_data, dst_offset,
+                            depends);
+
+                        return std::make_pair(
+                            dpctl::utils::keep_args_alive(
+                                exec_q, {src1, src2, dst}, host_tasks),
+                            comp_ev);
+                    }
                 }
             }
         }
@@ -736,8 +765,6 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
     int nd = lhs_nd;
     const py::ssize_t *shape = rhs_shape;
 
-    // all args except itemsizes and is_?_contig bools can be modified by
-    // reference
     dpctl::tensor::py_internal::simplify_iteration_space(
         nd, shape, rhs_strides, lhs_strides,
         // outputs

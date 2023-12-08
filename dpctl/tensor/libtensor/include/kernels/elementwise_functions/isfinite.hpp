@@ -100,9 +100,15 @@ template <typename argT, typename resT> struct IsFiniteFunctor
 template <typename argT,
           typename resT = bool,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using IsFiniteContigFunctor = elementwise_common::
-    UnaryContigFunctor<argT, resT, IsFiniteFunctor<argT, resT>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using IsFiniteContigFunctor =
+    elementwise_common::UnaryContigFunctor<argT,
+                                           resT,
+                                           IsFiniteFunctor<argT, resT>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using IsFiniteStridedFunctor = elementwise_common::

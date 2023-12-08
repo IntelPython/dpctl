@@ -93,14 +93,16 @@ template <typename argT1,
           typename argT2,
           typename resT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using LogicalOrContigFunctor = elementwise_common::BinaryContigFunctor<
     argT1,
     argT2,
     resT,
     LogicalOrFunctor<argT1, argT2, resT>,
     vec_sz,
-    n_vecs>;
+    n_vecs,
+    enable_sg_loadstore>;
 
 template <typename argT1, typename argT2, typename resT, typename IndexerT>
 using LogicalOrStridedFunctor = elementwise_common::BinaryStridedFunctor<

@@ -137,13 +137,15 @@ template <typename argT, typename resT> struct Expm1Functor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using Expm1ContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
                                            Expm1Functor<argTy, resTy>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using Expm1StridedFunctor = elementwise_common::

@@ -77,13 +77,15 @@ template <typename argT, typename resT> struct TruncFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using TruncContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
                                            TruncFunctor<argTy, resTy>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using TruncStridedFunctor = elementwise_common::

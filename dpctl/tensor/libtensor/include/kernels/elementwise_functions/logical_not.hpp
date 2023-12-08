@@ -68,13 +68,15 @@ template <typename argT, typename resT> struct LogicalNotFunctor
 template <typename argT,
           typename resT = bool,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using LogicalNotContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
                                            resT,
                                            LogicalNotFunctor<argT, resT>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using LogicalNotStridedFunctor =

@@ -159,9 +159,15 @@ template <typename argT, typename resT> struct CoshFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using CoshContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, CoshFunctor<argTy, resTy>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using CoshContigFunctor =
+    elementwise_common::UnaryContigFunctor<argTy,
+                                           resTy,
+                                           CoshFunctor<argTy, resTy>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using CoshStridedFunctor = elementwise_common::

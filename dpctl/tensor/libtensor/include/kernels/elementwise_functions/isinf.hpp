@@ -98,9 +98,15 @@ template <typename argT, typename resT> struct IsInfFunctor
 template <typename argT,
           typename resT = bool,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using IsInfContigFunctor = elementwise_common::
-    UnaryContigFunctor<argT, resT, IsInfFunctor<argT, resT>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using IsInfContigFunctor =
+    elementwise_common::UnaryContigFunctor<argT,
+                                           resT,
+                                           IsInfFunctor<argT, resT>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using IsInfStridedFunctor = elementwise_common::

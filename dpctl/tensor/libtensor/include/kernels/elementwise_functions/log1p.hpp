@@ -104,13 +104,15 @@ template <typename argT, typename resT> struct Log1pFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using Log1pContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
                                            Log1pFunctor<argTy, resTy>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using Log1pStridedFunctor = elementwise_common::

@@ -80,13 +80,15 @@ template <typename argT, typename resT> struct AngleFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstire = true>
 using AngleContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
                                            AngleFunctor<argTy, resTy>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstire>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using AngleStridedFunctor = elementwise_common::

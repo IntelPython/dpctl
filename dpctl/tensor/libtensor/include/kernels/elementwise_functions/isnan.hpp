@@ -96,9 +96,15 @@ template <typename argT, typename resT> struct IsNanFunctor
 template <typename argT,
           typename resT = bool,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using IsNanContigFunctor = elementwise_common::
-    UnaryContigFunctor<argT, resT, IsNanFunctor<argT, resT>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using IsNanContigFunctor =
+    elementwise_common::UnaryContigFunctor<argT,
+                                           resT,
+                                           IsNanFunctor<argT, resT>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using IsNanStridedFunctor = elementwise_common::
