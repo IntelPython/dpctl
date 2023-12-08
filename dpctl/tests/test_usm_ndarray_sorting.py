@@ -173,7 +173,8 @@ def test_argsort_axis0():
     x = dpt.reshape(xf, (n, m))
     idx = dpt.argsort(x, axis=0)
 
-    s = x[idx, dpt.arange(m)[dpt.newaxis, :]]
+    conseq_idx = dpt.arange(m, dtype=idx.dtype)
+    s = x[idx, conseq_idx[dpt.newaxis, :]]
 
     assert dpt.all(s[:-1, :] <= s[1:, :])
 

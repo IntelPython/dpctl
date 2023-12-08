@@ -14,22 +14,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
 from typing import NamedTuple
 
-import dpctl
 import dpctl.tensor as dpt
 
-from ._tensor_elementwise_impl import _not_equal, _subtract
 from ._tensor_impl import (
-    _copy_usm_ndarray_into_usm_ndarray,
     _extract,
     _full_usm_ndarray,
     _linspace_step,
-    _take,
     default_device_index_type,
     mask_positions,
 )
-from ._tensor_sorting_impl import _argsort_ascending, _sort_ascending
 
 __all__ = [
     "unique_values",
@@ -80,47 +76,13 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C", copy=False)
-    s = dpt.empty_like(fx, order="C")
-    host_tasks = []
-    if fx.flags.c_contiguous:
-        ht_ev, sort_ev = _sort_ascending(
-            src=fx, trailing_dims_to_sort=1, dst=s, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-    else:
-        tmp = dpt.empty_like(fx, order="C")
-        ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
-            src=fx, dst=tmp, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-        ht_ev, sort_ev = _sort_ascending(
-            src=fx,
-            trailing_dims_to_sort=1,
-            dst=s,
-            sycl_queue=exec_q,
-            depends=[copy_ev],
-        )
-        host_tasks.append(ht_ev)
+    s = dpt.sort(fx)
     unique_mask = dpt.empty(fx.shape, dtype="?", sycl_queue=exec_q)
-    ht_ev, uneq_ev = _not_equal(
-        src1=s[:-1],
-        src2=s[1:],
-        dst=unique_mask[1:],
-        sycl_queue=exec_q,
-        depends=[sort_ev],
-    )
-    host_tasks.append(ht_ev)
-    ht_ev, one_ev = _full_usm_ndarray(
-        fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
+    dpt.not_equal(s[:-1], s[1:], out=unique_mask[1:])
+    unique_mask[0] = True
     cumsum = dpt.empty(s.shape, dtype=dpt.int64)
-    # synchronizing call
-    n_uniques = mask_positions(
-        unique_mask, cumsum, sycl_queue=exec_q, depends=[one_ev, uneq_ev]
-    )
+    n_uniques = mask_positions(unique_mask, cumsum, sycl_queue=exec_q)
     if n_uniques == fx.size:
-        dpctl.SyclEvent.wait_for(host_tasks)
         return s
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
@@ -133,8 +95,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         dst=unique_vals,
         sycl_queue=exec_q,
     )
-    host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
+    ht_ev.wait()
     return unique_vals
 
 
@@ -167,48 +128,15 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C", copy=False)
-    s = dpt.empty_like(fx, order="C")
-    host_tasks = []
-    if fx.flags.c_contiguous:
-        ht_ev, sort_ev = _sort_ascending(
-            src=fx, trailing_dims_to_sort=1, dst=s, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-    else:
-        tmp = dpt.empty_like(fx, order="C")
-        ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
-            src=fx, dst=tmp, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-        ht_ev, sort_ev = _sort_ascending(
-            src=fx,
-            dst=s,
-            trailing_dims_to_sort=1,
-            sycl_queue=exec_q,
-            depends=[copy_ev],
-        )
-        host_tasks.append(ht_ev)
+    s = dpt.sort(x)
     unique_mask = dpt.empty(s.shape, dtype="?", sycl_queue=exec_q)
-    ht_ev, uneq_ev = _not_equal(
-        src1=s[:-1],
-        src2=s[1:],
-        dst=unique_mask[1:],
-        sycl_queue=exec_q,
-        depends=[sort_ev],
-    )
-    host_tasks.append(ht_ev)
-    ht_ev, one_ev = _full_usm_ndarray(
-        fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
+    dpt.not_equal(s[:-1], s[1:], out=unique_mask[1:])
+    unique_mask[0] = True
     ind_dt = default_device_index_type(exec_q)
     cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64)
     # synchronizing call
-    n_uniques = mask_positions(
-        unique_mask, cumsum, sycl_queue=exec_q, depends=[one_ev, uneq_ev]
-    )
+    n_uniques = mask_positions(unique_mask, cumsum, sycl_queue=exec_q)
     if n_uniques == fx.size:
-        dpctl.SyclEvent.wait_for(host_tasks)
         return UniqueCountsResult(s, dpt.ones(n_uniques, dtype=ind_dt))
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
@@ -222,37 +150,23 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         dst=unique_vals,
         sycl_queue=exec_q,
     )
-    host_tasks.append(ht_ev)
+    ht_ev.wait()
     unique_counts = dpt.empty(
         n_uniques + 1, dtype=ind_dt, usm_type=x.usm_type, sycl_queue=exec_q
     )
-    idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
-    ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
-    host_tasks.append(ht_ev)
-    ht_ev, extr_ev = _extract(
+    idx = dpt.arange(x.size, dtype=ind_dt, sycl_queue=exec_q)
+    ht_ev, _ = _extract(
         src=idx,
         cumsum=cumsum,
         axis_start=0,
         axis_end=1,
         dst=unique_counts[:-1],
         sycl_queue=exec_q,
-        depends=[id_ev],
     )
-    host_tasks.append(ht_ev)
-    ht_ev, set_ev = _full_usm_ndarray(
-        x.size, dst=unique_counts[-1], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
+    unique_counts[-1] = fx.size
+    ht_ev.wait()
     _counts = dpt.empty_like(unique_counts[1:])
-    ht_ev, _ = _subtract(
-        src1=unique_counts[1:],
-        src2=unique_counts[:-1],
-        dst=_counts,
-        sycl_queue=exec_q,
-        depends=[set_ev, extr_ev],
-    )
-    host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
+    dpt.subtract(unique_counts[1:], unique_counts[:-1], out=_counts)
     return UniqueCountsResult(unique_vals, _counts)
 
 
@@ -286,68 +200,16 @@ def unique_inverse(x):
     else:
         fx = dpt.reshape(x, (x.size,), order="C", copy=False)
     ind_dt = default_device_index_type(exec_q)
-    sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
-    unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
-    host_tasks = []
-    if fx.flags.c_contiguous:
-        ht_ev, sort_ev = _argsort_ascending(
-            src=fx, trailing_dims_to_sort=1, dst=sorting_ids, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-    else:
-        tmp = dpt.empty_like(fx, order="C")
-        ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
-            src=fx, dst=tmp, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-        ht_ev, sort_ev = _argsort_ascending(
-            src=fx,
-            trailing_dims_to_sort=1,
-            dst=sorting_ids,
-            sycl_queue=exec_q,
-            depends=[copy_ev],
-        )
-        host_tasks.append(ht_ev)
-    ht_ev, _ = _argsort_ascending(
-        src=sorting_ids,
-        trailing_dims_to_sort=1,
-        dst=unsorting_ids,
-        sycl_queue=exec_q,
-        depends=[sort_ev],
-    )
-    host_tasks.append(ht_ev)
-    s = dpt.empty_like(fx)
-    # s = fx[sorting_ids]
-    ht_ev, take_ev = _take(
-        src=fx,
-        ind=(sorting_ids,),
-        dst=s,
-        axis_start=0,
-        mode=0,
-        sycl_queue=exec_q,
-        depends=[sort_ev],
-    )
-    host_tasks.append(ht_ev)
+    sorting_ids = dpt.argsort(fx)
+    unsorting_ids = dpt.argsort(sorting_ids)
+    s = fx[sorting_ids]
     unique_mask = dpt.empty(fx.shape, dtype="?", sycl_queue=exec_q)
-    ht_ev, uneq_ev = _not_equal(
-        src1=s[:-1],
-        src2=s[1:],
-        dst=unique_mask[1:],
-        sycl_queue=exec_q,
-        depends=[take_ev],
-    )
-    host_tasks.append(ht_ev)
-    ht_ev, one_ev = _full_usm_ndarray(
-        fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
+    unique_mask[0] = True
+    dpt.not_equal(s[:-1], s[1:], out=unique_mask[1:])
     cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64)
     # synchronizing call
-    n_uniques = mask_positions(
-        unique_mask, cumsum, sycl_queue=exec_q, depends=[uneq_ev, one_ev]
-    )
+    n_uniques = mask_positions(unique_mask, cumsum, sycl_queue=exec_q)
     if n_uniques == fx.size:
-        dpctl.SyclEvent.wait_for(host_tasks)
         return UniqueInverseResult(s, unsorting_ids)
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
@@ -360,50 +222,35 @@ def unique_inverse(x):
         dst=unique_vals,
         sycl_queue=exec_q,
     )
-    host_tasks.append(ht_ev)
+    ht_ev.wait()
     cum_unique_counts = dpt.empty(
         n_uniques + 1, dtype=ind_dt, usm_type=x.usm_type, sycl_queue=exec_q
     )
     idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
-    host_tasks.append(ht_ev)
-    ht_ev, extr_ev = _extract(
+    ht_ev.wait()
+    ht_ev, _ = _extract(
         src=idx,
         cumsum=cumsum,
         axis_start=0,
         axis_end=1,
         dst=cum_unique_counts[:-1],
         sycl_queue=exec_q,
-        depends=[id_ev],
     )
-    host_tasks.append(ht_ev)
-    ht_ev, set_ev = _full_usm_ndarray(
-        x.size, dst=cum_unique_counts[-1], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
-    _counts = dpt.empty_like(cum_unique_counts[1:])
-    ht_ev, _ = _subtract(
-        src1=cum_unique_counts[1:],
-        src2=cum_unique_counts[:-1],
-        dst=_counts,
-        sycl_queue=exec_q,
-        depends=[set_ev, extr_ev],
-    )
-    host_tasks.append(ht_ev)
+    ht_ev.wait()
+    cum_unique_counts[-1] = fx.size
+    _counts = dpt.subtract(cum_unique_counts[1:], cum_unique_counts[:-1])
     # TODO: when searchsorted is available,
     #   inv = searchsorted(unique_vals, fx)
-    dpctl.SyclEvent.wait_for(host_tasks)
     counts = dpt.asnumpy(_counts).tolist()
     inv = dpt.empty_like(fx, dtype=ind_dt)
     pos = 0
-    host_tasks = []
     for i in range(len(counts)):
         pos_next = pos + counts[i]
         _dst = inv[pos:pos_next]
         ht_ev, _ = _full_usm_ndarray(fill_value=i, dst=_dst, sycl_queue=exec_q)
+        ht_ev.wait()
         pos = pos_next
-        host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
     return UniqueInverseResult(unique_vals, inv[unsorting_ids])
 
 
@@ -447,68 +294,16 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     else:
         fx = dpt.reshape(x, (x.size,), order="C", copy=False)
     ind_dt = default_device_index_type(exec_q)
-    sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
-    unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
-    host_tasks = []
-    if fx.flags.c_contiguous:
-        ht_ev, sort_ev = _argsort_ascending(
-            src=fx, trailing_dims_to_sort=1, dst=sorting_ids, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-    else:
-        tmp = dpt.empty_like(fx, order="C")
-        ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
-            src=fx, dst=tmp, sycl_queue=exec_q
-        )
-        host_tasks.append(ht_ev)
-        ht_ev, sort_ev = _argsort_ascending(
-            src=fx,
-            trailing_dims_to_sort=1,
-            dst=sorting_ids,
-            sycl_queue=exec_q,
-            depends=[copy_ev],
-        )
-        host_tasks.append(ht_ev)
-    ht_ev, _ = _argsort_ascending(
-        src=sorting_ids,
-        trailing_dims_to_sort=1,
-        dst=unsorting_ids,
-        sycl_queue=exec_q,
-        depends=[sort_ev],
-    )
-    host_tasks.append(ht_ev)
-    s = dpt.empty_like(fx)
-    # s = fx[sorting_ids]
-    ht_ev, take_ev = _take(
-        src=fx,
-        ind=(sorting_ids,),
-        dst=s,
-        axis_start=0,
-        mode=0,
-        sycl_queue=exec_q,
-        depends=[sort_ev],
-    )
-    host_tasks.append(ht_ev)
+    sorting_ids = dpt.argsort(fx)
+    unsorting_ids = dpt.argsort(sorting_ids)
+    s = fx[sorting_ids]
     unique_mask = dpt.empty(fx.shape, dtype="?", sycl_queue=exec_q)
-    ht_ev, uneq_ev = _not_equal(
-        src1=s[:-1],
-        src2=s[1:],
-        dst=unique_mask[1:],
-        sycl_queue=exec_q,
-        depends=[take_ev],
-    )
-    host_tasks.append(ht_ev)
-    ht_ev, one_ev = _full_usm_ndarray(
-        fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
+    dpt.not_equal(s[:-1], s[1:], out=unique_mask[1:])
+    unique_mask[0] = True
     cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64)
     # synchronizing call
-    n_uniques = mask_positions(
-        unique_mask, cumsum, sycl_queue=exec_q, depends=[uneq_ev, one_ev]
-    )
+    n_uniques = mask_positions(unique_mask, cumsum, sycl_queue=exec_q)
     if n_uniques == fx.size:
-        dpctl.SyclEvent.wait_for(host_tasks)
         return UniqueInverseResult(s, unsorting_ids)
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
@@ -521,13 +316,11 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         dst=unique_vals,
         sycl_queue=exec_q,
     )
-    host_tasks.append(ht_ev)
+    ht_ev.wait()
     cum_unique_counts = dpt.empty(
         n_uniques + 1, dtype=ind_dt, usm_type=x.usm_type, sycl_queue=exec_q
     )
-    idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
-    ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
-    host_tasks.append(ht_ev)
+    idx = dpt.arange(fx.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, extr_ev = _extract(
         src=idx,
         cumsum=cumsum,
@@ -535,36 +328,21 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         axis_end=1,
         dst=cum_unique_counts[:-1],
         sycl_queue=exec_q,
-        depends=[id_ev],
     )
-    host_tasks.append(ht_ev)
-    ht_ev, set_ev = _full_usm_ndarray(
-        x.size, dst=cum_unique_counts[-1], sycl_queue=exec_q
-    )
-    host_tasks.append(ht_ev)
-    _counts = dpt.empty_like(cum_unique_counts[1:])
-    ht_ev, _ = _subtract(
-        src1=cum_unique_counts[1:],
-        src2=cum_unique_counts[:-1],
-        dst=_counts,
-        sycl_queue=exec_q,
-        depends=[set_ev, extr_ev],
-    )
-    host_tasks.append(ht_ev)
+    ht_ev.wait()
+    cum_unique_counts[-1] = fx.size
+    _counts = cum_unique_counts[1:] - cum_unique_counts[:-1]
     # TODO: when searchsorted is available,
     #   inv = searchsorted(unique_vals, fx)
-    dpctl.SyclEvent.wait_for(host_tasks)
     counts = dpt.asnumpy(_counts).tolist()
     inv = dpt.empty_like(fx, dtype=ind_dt)
     pos = 0
-    host_tasks = []
     for i in range(len(counts)):
         pos_next = pos + counts[i]
         _dst = inv[pos:pos_next]
         ht_ev, _ = _full_usm_ndarray(fill_value=i, dst=_dst, sycl_queue=exec_q)
+        ht_ev.wait()
         pos = pos_next
-        host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
     return UniqueAllResult(
         unique_vals,
         sorting_ids[cum_unique_counts[:-1]],

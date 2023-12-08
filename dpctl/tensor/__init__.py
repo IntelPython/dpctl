@@ -175,7 +175,7 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
-from ._set_functions import (
+from ._set_functions_sync import (
     unique_all,
     unique_counts,
     unique_inverse,
