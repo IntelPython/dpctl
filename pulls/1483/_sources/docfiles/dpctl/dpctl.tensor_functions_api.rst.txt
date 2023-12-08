@@ -38,6 +38,10 @@ Other Functions
 .. autofunction:: std
 .. autofunction:: sum
 .. autofunction:: take
+.. autofunction:: unique_all
+.. autofunction:: unique_counts
+.. autofunction:: unique_inverse
+.. autofunction:: unique_values
 .. autofunction:: usm_ndarray_repr
 .. autofunction:: usm_ndarray_str
 .. autofunction:: var
