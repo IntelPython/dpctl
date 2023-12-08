@@ -27,6 +27,8 @@ from ._tensor_sorting_impl import (
     _sort_descending,
 )
 
+__all__ = ["sort", "argsort"]
+
 
 def sort(x, /, *, axis=-1, descending=False, stable=False):
     """sort(x, axis=-1, descending=False, stable=False)
