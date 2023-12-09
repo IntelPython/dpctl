@@ -384,12 +384,12 @@ class sort_base_step_contig_krn;
 template <typename InpAcc, typename OutAcc, typename Comp>
 sycl::event
 sort_base_step_contig_impl(sycl::queue &q,
-                           size_t iter_nelems,
-                           size_t sort_nelems,
+                           const size_t iter_nelems,
+                           const size_t sort_nelems,
                            const InpAcc input,
                            OutAcc output,
                            const Comp &comp,
-                           size_t &conseq_nelems_sorted,
+                           const size_t conseq_nelems_sorted,
                            const std::vector<sycl::event> &depends = {})
 {
 
@@ -397,15 +397,13 @@ sort_base_step_contig_impl(sycl::queue &q,
     using outT = typename GetValueType<OutAcc>::value_type;
     using KernelName = sort_base_step_contig_krn<inpT, outT, Comp>;
 
-    conseq_nelems_sorted = (q.get_device().has(sycl::aspect::cpu) ? 16 : 4);
-
-    size_t n_segments =
+    const size_t n_segments =
         quotient_ceil<size_t>(sort_nelems, conseq_nelems_sorted);
 
     sycl::event base_sort = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        sycl::range<1> gRange{iter_nelems * n_segments};
+        const sycl::range<1> gRange{iter_nelems * n_segments};
 
         auto input_acc = GetReadOnlyAccess<InpAcc>{}(input, cgh);
         auto output_acc = GetWriteDiscardAccess<OutAcc>{}(output, cgh);
@@ -478,7 +476,8 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     nelems_wg_sorts = elems_per_wi * lws;
 
     if (nelems_wg_sorts > nelems_per_slm) {
-        nelems_wg_sorts = 0;
+        nelems_wg_sorts = (q.get_device().has(sycl::aspect::cpu) ? 16 : 4);
+
         return sort_base_step_contig_impl<InpAcc, OutAcc, Comp>(
             q, iter_nelems, sort_nelems, input, output, comp, nelems_wg_sorts,
             depends);
@@ -781,24 +780,38 @@ sycl::event stable_sort_axis1_contig_impl(
 
     auto comp = Comp{};
 
-    static constexpr size_t determine_automatically = 0;
-    size_t sorted_block_size =
-        (sort_nelems >= 512) ? 512 : determine_automatically;
+    constexpr size_t sequential_sorting_threshold = 64;
 
-    // Sort segments of the array
-    sycl::event base_sort_ev = sort_detail::sort_over_work_group_contig_impl<
-        const argTy *, argTy *, Comp>(
-        exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
-        sorted_block_size, // modified in place with size of sorted block size
-        depends);
+    if (sort_nelems < sequential_sorting_threshold) {
+        // equal work-item sorts entire row
+        sycl::event sequential_sorting_ev =
+            sort_detail::sort_base_step_contig_impl<const argTy *, argTy *,
+                                                    Comp>(
+                exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
+                sort_nelems, depends);
 
-    // Merge segments in parallel until all elements are sorted
-    sycl::event merges_ev =
-        sort_detail::merge_sorted_block_contig_impl<argTy *, Comp>(
-            exec_q, iter_nelems, sort_nelems, res_tp, comp, sorted_block_size,
-            {base_sort_ev});
+        return sequential_sorting_ev;
+    }
+    else {
+        size_t sorted_block_size{};
 
-    return merges_ev;
+        // Sort segments of the array
+        sycl::event base_sort_ev =
+            sort_detail::sort_over_work_group_contig_impl<const argTy *,
+                                                          argTy *, Comp>(
+                exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
+                sorted_block_size, // modified in place with size of sorted
+                                   // block size
+                depends);
+
+        // Merge segments in parallel until all elements are sorted
+        sycl::event merges_ev =
+            sort_detail::merge_sorted_block_contig_impl<argTy *, Comp>(
+                exec_q, iter_nelems, sort_nelems, res_tp, comp,
+                sorted_block_size, {base_sort_ev});
+
+        return merges_ev;
+    }
 }
 
 template <typename T1, typename T2, typename T3>
