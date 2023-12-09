@@ -109,9 +109,15 @@ private:
 template <typename argT,
           typename resT = argT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using SignContigFunctor = elementwise_common::
-    UnaryContigFunctor<argT, resT, SignFunctor<argT, resT>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using SignContigFunctor =
+    elementwise_common::UnaryContigFunctor<argT,
+                                           resT,
+                                           SignFunctor<argT, resT>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename T> struct SignOutputType
 {

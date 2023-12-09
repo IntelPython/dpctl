@@ -92,13 +92,15 @@ template <typename argT, typename resT> struct BitwiseInvertFunctor
 template <typename argT,
           typename resT = argT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using BitwiseInvertContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
                                            resT,
                                            BitwiseInvertFunctor<argT, resT>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using BitwiseInvertStridedFunctor =

@@ -29,6 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <utility>
 
+#include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 
 namespace dpctl
@@ -42,12 +43,18 @@ namespace elementwise_common
 
 namespace py = pybind11;
 
+using dpctl::tensor::kernels::alignment_utils::
+    disabled_sg_loadstore_wrapper_krn;
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 /*! @brief Functor for unary function evaluation on contiguous array */
 template <typename argT,
           typename resT,
           typename UnaryOperatorT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 struct UnaryContigFunctor
 {
 private:
@@ -67,7 +74,8 @@ public:
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: vec_sz must divide sg.max_local_range()[0] */
 
-        if constexpr (UnaryOperatorT::is_constant::value) {
+        if constexpr (enable_sg_loadstore && UnaryOperatorT::is_constant::value)
+        {
             // value of operator is known to be a known constant
             constexpr resT const_val = UnaryOperatorT::constant_value;
 
@@ -98,7 +106,8 @@ public:
                 }
             }
         }
-        else if constexpr (UnaryOperatorT::supports_sg_loadstore::value &&
+        else if constexpr (enable_sg_loadstore &&
+                           UnaryOperatorT::supports_sg_loadstore::value &&
                            UnaryOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
@@ -135,7 +144,8 @@ public:
                 }
             }
         }
-        else if constexpr (UnaryOperatorT::supports_sg_loadstore::value &&
+        else if constexpr (enable_sg_loadstore &&
+                           UnaryOperatorT::supports_sg_loadstore::value &&
                            std::is_same_v<resT, argT>)
         {
             // default: use scalar-value function
@@ -177,7 +187,9 @@ public:
                 }
             }
         }
-        else if constexpr (UnaryOperatorT::supports_sg_loadstore::value) {
+        else if constexpr (enable_sg_loadstore &&
+                           UnaryOperatorT::supports_sg_loadstore::value)
+        {
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
@@ -264,7 +276,11 @@ public:
 template <typename argTy,
           template <typename T>
           class UnaryOutputType,
-          template <typename A, typename R, unsigned int vs, unsigned int nv>
+          template <typename A,
+                    typename R,
+                    unsigned int vs,
+                    unsigned int nv,
+                    bool enable>
           class ContigFunctorT,
           template <typename A, typename R, unsigned int vs, unsigned int nv>
           class kernel_name,
@@ -289,10 +305,28 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
         const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
         resTy *res_tp = reinterpret_cast<resTy *>(res_p);
 
-        cgh.parallel_for<kernel_name<argTy, resTy, vec_sz, n_vecs>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            ContigFunctorT<argTy, resTy, vec_sz, n_vecs>(arg_tp, res_tp,
-                                                         nelems));
+        if (is_aligned<required_alignment>(arg_p) &&
+            is_aligned<required_alignment>(res_p))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                ContigFunctorT<argTy, resTy, vec_sz, n_vecs,
+                               enable_sg_loadstore>(arg_tp, res_tp, nelems));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                ContigFunctorT<argTy, resTy, vec_sz, n_vecs,
+                               disable_sg_loadstore>(arg_tp, res_tp, nelems));
+        }
     });
     return comp_ev;
 }
@@ -341,7 +375,8 @@ template <typename argT1,
           typename resT,
           typename BinaryOperatorT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 struct BinaryContigFunctor
 {
 private:
@@ -364,7 +399,8 @@ public:
         BinaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
 
-        if constexpr (BinaryOperatorT::supports_sg_loadstore::value &&
+        if constexpr (enable_sg_loadstore &&
+                      BinaryOperatorT::supports_sg_loadstore::value &&
                       BinaryOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
@@ -408,7 +444,9 @@ public:
                 }
             }
         }
-        else if constexpr (BinaryOperatorT::supports_sg_loadstore::value) {
+        else if constexpr (enable_sg_loadstore &&
+                           BinaryOperatorT::supports_sg_loadstore::value)
+        {
             auto sg = ndit.get_sub_group();
             std::uint8_t sgSize = sg.get_local_range()[0];
             std::uint8_t maxsgSize = sg.get_max_local_range()[0];
@@ -714,7 +752,8 @@ template <typename argTy1,
                     typename T2,
                     typename T3,
                     unsigned int vs,
-                    unsigned int nv>
+                    unsigned int nv,
+                    bool enable_sg_loadstore>
           class BinaryContigFunctorT,
           template <typename T1,
                     typename T2,
@@ -751,10 +790,31 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
             reinterpret_cast<const argTy2 *>(arg2_p) + arg2_offset;
         resTy *res_tp = reinterpret_cast<resTy *>(res_p) + res_offset;
 
-        cgh.parallel_for<kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs>(
-                arg1_tp, arg2_tp, res_tp, nelems));
+        if (is_aligned<required_alignment>(arg1_tp) &&
+            is_aligned<required_alignment>(arg2_tp) &&
+            is_aligned<required_alignment>(res_tp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName =
+                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
+                                     enable_sg_loadstore>(arg1_tp, arg2_tp,
+                                                          res_tp, nelems));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName =
+                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
+                                     disable_sg_loadstore>(arg1_tp, arg2_tp,
+                                                           res_tp, nelems));
+        }
     });
     return comp_ev;
 }

@@ -70,9 +70,15 @@ template <typename argT, typename resT> struct NegativeFunctor
 template <typename argT,
           typename resT = argT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using NegativeContigFunctor = elementwise_common::
-    UnaryContigFunctor<argT, resT, NegativeFunctor<argT, resT>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using NegativeContigFunctor =
+    elementwise_common::UnaryContigFunctor<argT,
+                                           resT,
+                                           NegativeFunctor<argT, resT>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename T> struct NegativeOutputType
 {

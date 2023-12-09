@@ -102,14 +102,16 @@ template <typename argT1,
           typename argT2,
           typename resT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using BitwiseLeftShiftContigFunctor = elementwise_common::BinaryContigFunctor<
     argT1,
     argT2,
     resT,
     BitwiseLeftShiftFunctor<argT1, argT2, resT>,
     vec_sz,
-    n_vecs>;
+    n_vecs,
+    enable_sg_loadstore>;
 
 template <typename argT1, typename argT2, typename resT, typename IndexerT>
 using BitwiseLeftShiftStridedFunctor = elementwise_common::BinaryStridedFunctor<
@@ -313,14 +315,16 @@ private:
 template <typename argT,
           typename resT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using BitwiseLeftShiftInplaceContigFunctor =
     elementwise_common::BinaryInplaceContigFunctor<
         argT,
         resT,
         BitwiseLeftShiftInplaceFunctor<argT, resT>,
         vec_sz,
-        n_vecs>;
+        n_vecs,
+        enable_sg_loadstore>;
 
 template <typename argT, typename resT, typename IndexerT>
 using BitwiseLeftShiftInplaceStridedFunctor =

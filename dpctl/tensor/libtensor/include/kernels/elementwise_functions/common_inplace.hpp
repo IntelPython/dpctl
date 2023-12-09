@@ -29,6 +29,8 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
+#include "kernels/alignment.hpp"
+
 namespace dpctl
 {
 namespace tensor
@@ -38,11 +40,17 @@ namespace kernels
 namespace elementwise_common
 {
 
+using dpctl::tensor::kernels::alignment_utils::
+    disabled_sg_loadstore_wrapper_krn;
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 template <typename argT,
           typename resT,
           typename BinaryInplaceOperatorT,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 struct BinaryInplaceContigFunctor
 {
 private:
@@ -63,7 +71,8 @@ public:
         BinaryInplaceOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
 
-        if constexpr (BinaryInplaceOperatorT::supports_sg_loadstore::value &&
+        if constexpr (enable_sg_loadstore &&
+                      BinaryInplaceOperatorT::supports_sg_loadstore::value &&
                       BinaryInplaceOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
@@ -103,7 +112,8 @@ public:
                 }
             }
         }
-        else if constexpr (BinaryInplaceOperatorT::supports_sg_loadstore::value)
+        else if constexpr (enable_sg_loadstore &&
+                           BinaryInplaceOperatorT::supports_sg_loadstore::value)
         {
             auto sg = ndit.get_sub_group();
             std::uint8_t sgSize = sg.get_local_range()[0];
@@ -281,7 +291,11 @@ typedef sycl::event (*binary_inplace_row_matrix_broadcast_impl_fn_ptr_t)(
 
 template <typename argTy,
           typename resTy,
-          template <typename T1, typename T2, unsigned int vs, unsigned int nv>
+          template <typename T1,
+                    typename T2,
+                    unsigned int vs,
+                    unsigned int nv,
+                    bool enable_sg_loadstore>
           class BinaryInplaceContigFunctorT,
           template <typename T1, typename T2, unsigned int vs, unsigned int nv>
           class kernel_name,
@@ -309,10 +323,29 @@ binary_inplace_contig_impl(sycl::queue &exec_q,
             reinterpret_cast<const argTy *>(rhs_p) + rhs_offset;
         resTy *res_tp = reinterpret_cast<resTy *>(lhs_p) + lhs_offset;
 
-        cgh.parallel_for<kernel_name<argTy, resTy, vec_sz, n_vecs>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs>(
-                arg_tp, res_tp, nelems));
+        if (is_aligned<required_alignment>(arg_tp) &&
+            is_aligned<required_alignment>(res_tp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
+                                            enable_sg_loadstore>(arg_tp, res_tp,
+                                                                 nelems));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = true;
+            using InnerKernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
+                                            disable_sg_loadstore>(
+                    arg_tp, res_tp, nelems));
+        }
     });
     return comp_ev;
 }

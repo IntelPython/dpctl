@@ -188,3 +188,21 @@ def test_not_equal_canary_mock_array():
     c = Canary()
     with pytest.raises(ValueError):
         dpt.not_equal(a, c)
+
+
+@pytest.mark.parametrize("dtype", _all_dtypes)
+def test_not_equal_alignment(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    n = 256
+    s = dpt.concat((dpt.zeros(n, dtype=dtype), dpt.zeros(n, dtype=dtype)))
+
+    mask = s[:-1] != s[1:]
+    (pos,) = dpt.nonzero(mask)
+    assert dpt.all(pos == n)
+
+    out_arr = dpt.zeros(2 * n, dtype=mask.dtype)
+    dpt.not_equal(s[:-1], s[1:], out=out_arr[1:])
+    (pos,) = dpt.nonzero(mask)
+    assert dpt.all(pos == (n + 1))

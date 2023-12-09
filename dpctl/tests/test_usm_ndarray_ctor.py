@@ -1326,6 +1326,15 @@ def test_copy():
     assert np.array_equal(dpt.asnumpy(Yk), ref)
 
 
+def test_copy_unaligned():
+    get_queue_or_skip()
+
+    x = dpt.ones(513, dtype="i4")
+    r = dpt.astype(x[1:], "f4")
+
+    assert dpt.all(r == 1)
+
+
 def test_ctor_invalid():
     try:
         m = dpm.MemoryUSMShared(12)

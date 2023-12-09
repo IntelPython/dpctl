@@ -80,9 +80,15 @@ template <typename argT, typename resT> struct RealFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using RealContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, RealFunctor<argTy, resTy>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using RealContigFunctor =
+    elementwise_common::UnaryContigFunctor<argTy,
+                                           resTy,
+                                           RealFunctor<argTy, resTy>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using RealStridedFunctor = elementwise_common::

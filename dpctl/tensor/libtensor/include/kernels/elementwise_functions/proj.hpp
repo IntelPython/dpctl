@@ -93,9 +93,15 @@ private:
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using ProjContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, ProjFunctor<argTy, resTy>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using ProjContigFunctor =
+    elementwise_common::UnaryContigFunctor<argTy,
+                                           resTy,
+                                           ProjFunctor<argTy, resTy>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using ProjStridedFunctor = elementwise_common::

@@ -25,14 +25,16 @@
 #pragma once
 #include "pybind11/numpy.h"
 #include "pybind11/stl.h"
-#include "utils/offset_utils.hpp"
-#include "utils/type_utils.hpp"
 #include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <type_traits>
+
+#include "kernels/alignment.hpp"
+#include "utils/offset_utils.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpctl
 {
@@ -47,12 +49,21 @@ namespace py = pybind11;
 
 using namespace dpctl::tensor::offset_utils;
 
+using dpctl::tensor::kernels::alignment_utils::
+    disabled_sg_loadstore_wrapper_krn;
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 template <typename T, typename condT, typename IndexerT>
 class where_strided_kernel;
 template <typename T, typename condT, int vec_sz, int n_vecs>
 class where_contig_kernel;
 
-template <typename T, typename condT, int vec_sz = 4, int n_vecs = 2>
+template <typename T,
+          typename condT,
+          int vec_sz = 4,
+          int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 class WhereContigFunctor
 {
 private:
@@ -76,7 +87,9 @@ public:
     void operator()(sycl::nd_item<1> ndit) const
     {
         using dpctl::tensor::type_utils::is_complex;
-        if constexpr (is_complex<condT>::value || is_complex<T>::value) {
+        if constexpr (!enable_sg_loadstore || is_complex<condT>::value ||
+                      is_complex<T>::value)
+        {
             std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
             size_t base = ndit.get_global_linear_id();
 
@@ -175,10 +188,33 @@ sycl::event where_contig_impl(sycl::queue &q,
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
 
-        cgh.parallel_for<where_contig_kernel<T, condT, vec_sz, n_vecs>>(
-            sycl::nd_range<1>(gws_range, lws_range),
-            WhereContigFunctor<T, condT, vec_sz, n_vecs>(nelems, cond_tp, x1_tp,
+        if (is_aligned<required_alignment>(cond_cp) &&
+            is_aligned<required_alignment>(x1_cp) &&
+            is_aligned<required_alignment>(x2_cp) &&
+            is_aligned<required_alignment>(dst_cp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName = where_contig_kernel<T, condT, vec_sz, n_vecs>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                WhereContigFunctor<T, condT, vec_sz, n_vecs,
+                                   enable_sg_loadstore>(nelems, cond_tp, x1_tp,
+                                                        x2_tp, dst_tp));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName =
+                where_contig_kernel<T, condT, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                WhereContigFunctor<T, condT, vec_sz, n_vecs,
+                                   disable_sg_loadstore>(nelems, cond_tp, x1_tp,
                                                          x2_tp, dst_tp));
+        }
     });
 
     return where_ev;

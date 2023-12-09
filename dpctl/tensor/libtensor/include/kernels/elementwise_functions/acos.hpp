@@ -145,9 +145,15 @@ template <typename argT, typename resT> struct AcosFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using AcosContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, AcosFunctor<argTy, resTy>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using AcosContigFunctor =
+    elementwise_common::UnaryContigFunctor<argTy,
+                                           resTy,
+                                           AcosFunctor<argTy, resTy>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using AcosStridedFunctor = elementwise_common::

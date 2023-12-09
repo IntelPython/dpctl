@@ -143,13 +143,15 @@ template <typename argT, typename resT> struct AsinhFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
 using AsinhContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
                                            AsinhFunctor<argTy, resTy>,
                                            vec_sz,
-                                           n_vecs>;
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using AsinhStridedFunctor = elementwise_common::

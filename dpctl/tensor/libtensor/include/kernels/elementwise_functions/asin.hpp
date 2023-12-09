@@ -169,9 +169,15 @@ template <typename argT, typename resT> struct AsinFunctor
 template <typename argTy,
           typename resTy = argTy,
           unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
-using AsinContigFunctor = elementwise_common::
-    UnaryContigFunctor<argTy, resTy, AsinFunctor<argTy, resTy>, vec_sz, n_vecs>;
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using AsinContigFunctor =
+    elementwise_common::UnaryContigFunctor<argTy,
+                                           resTy,
+                                           AsinFunctor<argTy, resTy>,
+                                           vec_sz,
+                                           n_vecs,
+                                           enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using AsinStridedFunctor = elementwise_common::
