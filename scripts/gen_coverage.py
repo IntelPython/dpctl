@@ -30,6 +30,7 @@ def run(
     run_pytest=False,
     bin_llvm=None,
     gtest_config=None,
+    verbose=False,
 ):
     IS_LIN = False
 
@@ -68,6 +69,10 @@ def run(
         env.update({k: v for k, v in os.environ.items() if k != "PATH"})
     if gtest_config:
         cmake_args += ["-DCMAKE_PREFIX_PATH=" + gtest_config]
+    if verbose:
+        cmake_args += [
+            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+        ]
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
     cmake_build_dir = (
         subprocess.check_output(
@@ -187,6 +192,12 @@ if __name__ == "__main__":
         "--bin-llvm", help="Path to folder where llvm-cov can be found"
     )
     driver.add_argument(
+        "--verbose",
+        help="Build using vebose makefile mode",
+        dest="verbose",
+        action="store_true",
+    )
+    driver.add_argument(
         "--gtest-config",
         help="Path to the GTestConfig.cmake file to locate a "
         + "custom GTest installation.",
@@ -233,4 +244,5 @@ if __name__ == "__main__":
         run_pytest=args.run_pytest,
         bin_llvm=args.bin_llvm,
         gtest_config=args.gtest_config,
+        verbose=args.verbose,
     )
