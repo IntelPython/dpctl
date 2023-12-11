@@ -57,12 +57,12 @@ if (_dpctl_sycl_targets)
 target_compile_options(
     dpctl_c_api_tests
     PRIVATE
-    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
+    -fsycl-targets=${_dpctl_sycl_targets}
 )
 target_link_options(
     dpctl_c_api_tests
     PRIVATE
-    -fsycl-targets=nvptx64-nvidia-cuda,spir64-unknown-unknown
+    -fsycl-targets=${_dpctl_sycl_targets}
 )
 endif()
 
