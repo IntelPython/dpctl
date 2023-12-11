@@ -216,6 +216,11 @@ foreach(python_module_name ${_py_trgts})
         ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
+    if(DPCTL_GENERATE_COVERAGE)
+        target_link_options(${python_module_name}
+            PRIVATE -fprofile-instr-generate -fcoverage-mapping
+        )
+    endif()
     if(_dpctl_sycl_targets)
         # make fat binary
         target_compile_options(
