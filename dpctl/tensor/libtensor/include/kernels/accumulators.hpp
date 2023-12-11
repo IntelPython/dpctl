@@ -112,7 +112,8 @@ sycl::event inclusive_scan_rec(sycl::queue &exec_q,
                                size_t s1,
                                IndexerT indexer,
                                TransformerT transformer,
-                               std::vector<sycl::event> const &depends = {})
+                               std::vector<sycl::event> &host_tasks,
+                               const std::vector<sycl::event> &depends = {})
 {
     size_t n_groups = ceiling_quotient(n_elems, n_wi * wg_size);
 
@@ -188,7 +189,7 @@ sycl::event inclusive_scan_rec(sycl::queue &exec_q,
         auto e2 = inclusive_scan_rec<outputT, outputT, n_wi, NoOpIndexer,
                                      decltype(_no_op_transformer)>(
             exec_q, n_groups - 1, wg_size, output, temp, chunk_size - 1,
-            chunk_size, _no_op_indexer, _no_op_transformer,
+            chunk_size, _no_op_indexer, _no_op_transformer, host_tasks,
             {inc_scan_phase1_ev});
 
         // output[ chunk_size * (i + 1) + j] += temp[i]
@@ -209,8 +210,9 @@ sycl::event inclusive_scan_rec(sycl::queue &exec_q,
             const auto &ctx = exec_q.get_context();
             cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
         });
+        host_tasks.push_back(e4);
 
-        out_event = std::move(e4);
+        out_event = std::move(e3);
     }
 
     return out_event;
@@ -221,14 +223,16 @@ typedef size_t (*accumulate_contig_impl_fn_ptr_t)(
     size_t,
     const char *,
     char *,
-    std::vector<sycl::event> const &);
+    std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
 
 template <typename maskT, typename cumsumT, typename transformerT>
 size_t accumulate_contig_impl(sycl::queue &q,
                               size_t n_elems,
                               const char *mask,
                               char *cumsum,
-                              std::vector<sycl::event> const &depends = {})
+                              std::vector<sycl::event> &host_tasks,
+                              const std::vector<sycl::event> &depends = {})
 {
     constexpr int n_wi = 8;
     const maskT *mask_data_ptr = reinterpret_cast<const maskT *>(mask);
@@ -242,7 +246,7 @@ size_t accumulate_contig_impl(sycl::queue &q,
         inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(flat_indexer),
                            decltype(non_zero_indicator)>(
             q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1,
-            flat_indexer, non_zero_indicator, depends);
+            flat_indexer, non_zero_indicator, host_tasks, depends);
 
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
@@ -307,7 +311,8 @@ typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
     int,
     const py::ssize_t *,
     char *,
-    std::vector<sycl::event> const &);
+    std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
 
 template <typename maskT, typename cumsumT, typename transformerT>
 size_t accumulate_strided_impl(sycl::queue &q,
@@ -316,7 +321,8 @@ size_t accumulate_strided_impl(sycl::queue &q,
                                int nd,
                                const py::ssize_t *shape_strides,
                                char *cumsum,
-                               std::vector<sycl::event> const &depends = {})
+                               std::vector<sycl::event> &host_tasks,
+                               const std::vector<sycl::event> &depends = {})
 {
     constexpr int n_wi = 8;
     const maskT *mask_data_ptr = reinterpret_cast<const maskT *>(mask);
@@ -330,7 +336,7 @@ size_t accumulate_strided_impl(sycl::queue &q,
         inclusive_scan_rec<maskT, cumsumT, n_wi, decltype(strided_indexer),
                            decltype(non_zero_indicator)>(
             q, n_elems, wg_size, mask_data_ptr, cumsum_data_ptr, 0, 1,
-            strided_indexer, non_zero_indicator, depends);
+            strided_indexer, non_zero_indicator, host_tasks, depends);
 
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
