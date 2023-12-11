@@ -21,6 +21,11 @@ pybind11_add_module(${python_module_name} MODULE
   ${_module_src}
 )
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
+if(DPCTL_GENERATE_COVERAGE)
+     target_link_options(${python_module_name}
+         PRIVATE -fprofile-instr-generate -fcoverage-mapping
+     )
+endif()
 if(_dpctl_sycl_targets)
     # make fat binary
     target_compile_options(
