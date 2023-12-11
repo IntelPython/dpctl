@@ -217,9 +217,11 @@ foreach(python_module_name ${_py_trgts})
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
     if(DPCTL_GENERATE_COVERAGE)
-        target_compile_options(${python_module_name}
-            PRIVATE -fprofile-instr-generate -fcoverage-mapping
-        )
+        if(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
+            target_compile_options(${python_module_name}
+                PRIVATE -fprofile-instr-generate -fcoverage-mapping
+            )
+	endif()
         target_link_options(${python_module_name}
             PRIVATE -fprofile-instr-generate -fcoverage-mapping
         )

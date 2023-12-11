@@ -22,9 +22,11 @@ pybind11_add_module(${python_module_name} MODULE
 )
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 if(DPCTL_GENERATE_COVERAGE)
-     target_compile_options(${python_module_name}
-         PRIVATE -fprofile-instr-generate -fcoverage-mapping
-     )
+     if(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
+         target_compile_options(${python_module_name}
+             PRIVATE -fprofile-instr-generate -fcoverage-mapping
+         )
+     endif()
      target_link_options(${python_module_name}
          PRIVATE -fprofile-instr-generate -fcoverage-mapping
      )
