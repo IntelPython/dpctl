@@ -15,8 +15,10 @@
 # limitations under the License.
 
 import os
+import re
 import subprocess
 import sys
+import sysconfig
 
 
 def run(
@@ -28,6 +30,7 @@ def run(
     run_pytest=False,
     bin_llvm=None,
     gtest_config=None,
+    verbose=False,
 ):
     IS_LIN = False
 
@@ -66,6 +69,10 @@ def run(
         env.update({k: v for k, v in os.environ.items() if k != "PATH"})
     if gtest_config:
         cmake_args += ["-DCMAKE_PREFIX_PATH=" + gtest_config]
+    if verbose:
+        cmake_args += [
+            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+        ]
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
     cmake_build_dir = (
         subprocess.check_output(
@@ -105,19 +112,20 @@ def run(
         import os
 
         objects = []
-        for root, _, files in os.walk("_skbuild"):
+        sfx_regexp = sysconfig.get_config_var("EXT_SUFFIX").replace(".", r"\.")
+        regexp1 = re.compile(r"^_tensor_.*impl" + sfx_regexp)
+        regexp2 = re.compile(r"^^_device_queries" + sfx_regexp)
+
+        def is_py_ext(fn):
+            return re.match(regexp1, fn) or re.match(regexp2, fn)
+
+        for root, _, files in os.walk("dpctl"):
             for file in files:
                 if not file.endswith(".so"):
                     continue
-                if os.path.join("libsyclinterface", "tests") in root:
-                    continue
-                if any(
-                    match in root
-                    for match in [
-                        "libsyclinterface",
-                    ]
-                ):
+                if is_py_ext(file) or file.find("DPCTLSyclInterface") != -1:
                     objects.extend(["-object", os.path.join(root, file)])
+        print("Using objects: ", objects)
         return objects
 
     objects = find_objects()
@@ -184,6 +192,12 @@ if __name__ == "__main__":
         "--bin-llvm", help="Path to folder where llvm-cov can be found"
     )
     driver.add_argument(
+        "--verbose",
+        help="Build using vebose makefile mode",
+        dest="verbose",
+        action="store_true",
+    )
+    driver.add_argument(
         "--gtest-config",
         help="Path to the GTestConfig.cmake file to locate a "
         + "custom GTest installation.",
@@ -230,4 +244,5 @@ if __name__ == "__main__":
         run_pytest=args.run_pytest,
         bin_llvm=args.bin_llvm,
         gtest_config=args.gtest_config,
+        verbose=args.verbose,
     )

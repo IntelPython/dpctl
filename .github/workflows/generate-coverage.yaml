@@ -94,7 +94,7 @@ jobs:
         shell: bash -l {0}
         run: |
           source /opt/intel/oneapi/setvars.sh
-          python scripts/gen_coverage.py
+          python scripts/gen_coverage.py --verbose
 
       - name: Install coverall dependencies
         shell: bash -l {0}

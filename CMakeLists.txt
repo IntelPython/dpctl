@@ -17,6 +17,10 @@ option(DPCTL_GENERATE_COVERAGE
     "Build dpctl with coverage instrumentation"
     OFF
 )
+option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
+    "Build dpctl pybind11 offloading extensions with coverage instrumentation"
+    OFF
+)
 option(DPCTL_TARGET_CUDA
     "Build DPCTL to target CUDA devices"
     OFF
