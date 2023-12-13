@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import itertools
+import os
 
 import numpy as np
 import pytest
@@ -93,7 +94,7 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    n_seq = 100
+    n_seq = 256
     n_rep = 137
     low = -9.0
     high = 9.0
@@ -101,7 +102,17 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
     x2 = np.random.uniform(low=low, high=high, size=n_seq)
     Xnp = x1 + 1j * x2
 
-    X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
+    # stay away from poles and branch lines
+    modulus = np.abs(Xnp)
+    sel = np.logical_or(
+        modulus < 0.9,
+        np.logical_and(
+            modulus > 1.2, np.minimum(np.abs(x2), np.abs(x1)) > 0.05
+        ),
+    )
+    Xnp = Xnp[sel]
+
+    X = dpt.repeat(dpt.asarray(Xnp, dtype=dtype, sycl_queue=q), n_rep)
     Y = dpt_call(X)
 
     expected = np.repeat(np_call(Xnp), n_rep)
@@ -234,10 +245,30 @@ def test_trig_complex_strided(np_call, dpt_call, dtype):
 
     low = -9.0
     high = 9.0
+    while True:
+        x1 = np.random.uniform(low=low, high=high, size=2 * sum(sizes))
+        x2 = np.random.uniform(low=low, high=high, size=2 * sum(sizes))
+        Xnp_all = np.array(
+            [complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype
+        )
+
+        # stay away from poles and branch lines
+        modulus = np.abs(Xnp_all)
+        sel = np.logical_or(
+            modulus < 0.9,
+            np.logical_and(
+                modulus > 1.2, np.minimum(np.abs(x2), np.abs(x1)) > 0.05
+            ),
+        )
+        Xnp_all = Xnp_all[sel]
+        if Xnp_all.size > sum(sizes):
+            break
+
+    pos = 0
     for ii in sizes:
-        x1 = np.random.uniform(low=low, high=high, size=ii)
-        x2 = np.random.uniform(low=low, high=high, size=ii)
-        Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
+        pos = pos + ii
+        Xnp = Xnp_all[:pos]
+        Xnp = Xnp[-ii:]
         X = dpt.asarray(Xnp)
         Ynp = np_call(Xnp)
         for jj in strides:
@@ -264,13 +295,36 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
         Y_np = np_call(xf)
 
     tol = 8 * dpt.finfo(dtype).resolution
-    assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
+    Y = dpt_call(yf)
+    assert_allclose(dpt.asnumpy(Y), Y_np, atol=tol, rtol=tol)
 
 
-@pytest.mark.broken_complex
+@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_trig_complex_special_cases_conj_property(np_call, dpt_call, dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [np.nan, np.inf, -np.inf, +0.0, -0.0, +1.0, -1.0]
+    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
+
+    Xc_np = np.array(xc, dtype=dtype)
+    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
+
+    tol = 50 * dpt.finfo(dtype).resolution
+    Y = dpt_call(Xc)
+    Yc = dpt_call(dpt.conj(Xc))
+
+    dpt.allclose(Y, dpt.conj(Yc), atol=tol, rtol=tol)
+
+
+@pytest.mark.skipif(
+    os.name != "posix", reason="Known to fail on Windows due to bug in NumPy"
+)
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_trig_complex_special_cases(np_call, dpt_call, dtype):
+
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -284,9 +338,6 @@ def test_trig_complex_special_cases(np_call, dpt_call, dtype):
         Ynp = np_call(Xc_np)
 
     tol = 50 * dpt.finfo(dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(dpt.real(dpt_call(Xc))), np.real(Ynp), atol=tol, rtol=tol
-    )
-    assert_allclose(
-        dpt.asnumpy(dpt.imag(dpt_call(Xc))), np.imag(Ynp), atol=tol, rtol=tol
-    )
+    Y = dpt_call(Xc)
+    assert_allclose(dpt.asnumpy(dpt.real(Y)), np.real(Ynp), atol=tol, rtol=tol)
+    assert_allclose(dpt.asnumpy(dpt.imag(Y)), np.imag(Ynp), atol=tol, rtol=tol)
