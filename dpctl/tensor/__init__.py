@@ -64,16 +64,12 @@ from dpctl.tensor._linear_algebra_functions import matrix_transpose
 from dpctl.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
-    can_cast,
     concat,
     expand_dims,
-    finfo,
     flip,
-    iinfo,
     moveaxis,
     permute_dims,
     repeat,
-    result_type,
     roll,
     squeeze,
     stack,
@@ -180,6 +176,7 @@ from ._reduction import (
     sum,
 )
 from ._testing import allclose
+from ._type_utils import can_cast, finfo, iinfo, result_type
 
 __all__ = [
     "Device",
