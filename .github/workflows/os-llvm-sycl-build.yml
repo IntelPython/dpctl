@@ -159,8 +159,7 @@ jobs:
       - name: Run dpctl/tests
         shell: bash -l {0}
         env:
-          SYCL_QUEUE_THREAD_POOL_SIZE: 6
+          SYCL_CACHE_PERSISTENT: 1
         run: |
           source set_allvars.sh
-          # skip test due to https://github.com/intel/llvm/issues/9264
-          python -m pytest -v dpctl/tests -k "not test_event_backend"
+          python -m pytest -v dpctl/tests
