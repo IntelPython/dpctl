@@ -922,10 +922,10 @@ def test_can_cast():
     q = get_queue_or_skip()
 
     # incorrect input
-    X = dpt.ones((2, 2), dtype=dpt.int64, sycl_queue=q)
+    X = dpt.ones((2, 2), dtype=dpt.int16, sycl_queue=q)
     pytest.raises(TypeError, dpt.can_cast, X, 1)
     pytest.raises(TypeError, dpt.can_cast, X, X)
-    X_np = np.ones((2, 2), dtype=np.int64)
+    X_np = np.ones((2, 2), dtype=np.int16)
 
     assert dpt.can_cast(X, "float32") == np.can_cast(X_np, "float32")
     assert dpt.can_cast(X, dpt.int32) == np.can_cast(X_np, np.int32)
@@ -935,8 +935,8 @@ def test_can_cast():
 def test_result_type():
     q = get_queue_or_skip()
 
-    X = [dpt.ones((2), dtype=dpt.int64, sycl_queue=q), dpt.int32, "float16"]
-    X_np = [np.ones((2), dtype=np.int64), np.int32, "float16"]
+    X = [dpt.ones((2), dtype=dpt.int16, sycl_queue=q), dpt.int32, "int64"]
+    X_np = [np.ones((2), dtype=np.int16), np.int32, "int64"]
 
     assert dpt.result_type(*X) == np.result_type(*X_np)
 
