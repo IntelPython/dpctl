@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
@@ -13,18 +13,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev1+2.g6704b8213 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/doxyrest-pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+49.g78b5e855b5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=1af1dd7d"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=80ade5dc"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -45,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev1+2.g6704b8213
+                0.15.1dev2+49.g78b5e855b5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -93,6 +95,12 @@
 <span id="dpctl-tensor-functions-api"></span><h1>dpctl.tensor Functions<a class="headerlink" href="#dpctl-tensor-functions" title="Permalink to this heading"></a></h1>
 <section id="other-functions">
 <h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.__array_namespace_info__">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">__array_namespace_info__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_array_api.html#__array_namespace_info__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.__array_namespace_info__" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a namespace with Array API namespace inspection utilities.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.all">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_utility_functions.html#all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.all" title="Permalink to this definition"></a></dt>
@@ -169,7 +177,7 @@ containing the results of the logical OR reduction.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.argmax">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#argmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argmax" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#argmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argmax" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the indices of the maximum values of the input array <cite>x</cite> along a
 specified axis.</p>
 <p>When the maximum value occurs multiple times, the indices corresponding to
@@ -202,7 +210,7 @@ default array index data type for the device of <cite>x</cite>.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.argmin">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#argmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argmin" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#argmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argmin" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the indices of the minimum values of the input array <cite>x</cite> along a
 specified axis.</p>
 <p>When the minimum value occurs multiple times, the indices corresponding to
@@ -409,7 +417,7 @@ vector, use x[:, dpt.newaxis].</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.max">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.max" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.max" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the maximum value of the input array <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -438,8 +446,43 @@ array has the same data type as <cite>x</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.mean">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.mean" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the arithmetic mean of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which the arithmetic means must be computed. If
+a tuple of unique integers, the means are computed over multiple
+axes. If <cite>None</cite>, the mean is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input array according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing the arithmetic means. If the mean was computed
+over the entire array, a zero-dimensional array is returned.</p>
+<p>If <cite>x</cite> has a floating-point data type, the returned array will have
+the same data type as <cite>x</cite>.
+If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.min">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.min" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reduction.html#min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.min" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the minimum value of the input array <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -709,12 +752,12 @@ Default: <cite>“inf”</cite>.</p></li>
 numbers.
 <cite>“-”</cite>: Omit the sign of positive numbers.
 <cite>“+”</cite>: Always print the sign of positive numbers.
-<cite>” “</cite>: Always print a whitespace in place of the</p>
+<cite>“ “</cite>: Always print a whitespace in place of the</p>
 <blockquote>
 <div><p>sign of positive numbers.</p>
 </div></blockquote>
 <p>Raises <cite>ValueError</cite> if sign is not one of
-<cite>“-”</cite>, <cite>“+”</cite>, or <cite>” “</cite>.
+<cite>“-”</cite>, <cite>“+”</cite>, or <cite>“ “</cite>.
 Default: <cite>“-”</cite>.</p>
 </p></li>
 <li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
@@ -722,6 +765,46 @@ options are set, a dictionary of Numpy’s print options
 will be used to initialize dpctl’s print options.
 Default: “False”</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.std">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.std" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the standard deviation of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which the standard deviations must be computed.
+If a tuple of unique integers, the standard deviations are computed
+over multiple axes. If <cite>None</cite>, the standard deviation is computed
+over the entire array. Default: <cite>None</cite>.</p></li>
+<li><p><strong>correction</strong> (<em>Optional</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – degrees of freedom adjustment. The divisor used in calculating the
+standard deviation is <cite>N-correction</cite>, where <cite>N</cite> corresponds to the
+total number of elements over which the standard deviation is
+calculated. Default: <cite>0.0</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input array according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing the standard deviations. If the standard
+deviation was computed over the entire array, a zero-dimensional
+array is returned.</p>
+<p>If <cite>x</cite> has a real-valued floating-point data type, the returned
+array will have the same data type as <cite>x</cite>.
+If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -906,12 +989,12 @@ Default: <cite>False</cite>.</p></li>
 numbers.
 <cite>“-”</cite>: Omit the sign of positive numbers.
 <cite>“+”</cite>: Always print the sign of positive numbers.
-<cite>” “</cite>: Always print a whitespace in place of the</p>
+<cite>“ “</cite>: Always print a whitespace in place of the</p>
 <blockquote>
 <div><p>sign of positive numbers.</p>
 </div></blockquote>
 <p>Raises <cite>ValueError</cite> if sign is not one of
-<cite>“-”</cite>, <cite>“+”</cite>, or <cite>” “</cite>.
+<cite>“-”</cite>, <cite>“+”</cite>, or <cite>“ “</cite>.
 Default: <cite>“-”</cite>.</p>
 </p></li>
 <li><p><strong>numpy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> then before other specified print
@@ -920,7 +1003,7 @@ will be used to initialize dpctl’s print options.
 Default: “False”</p></li>
 <li><p><strong>separator</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted between elements of
 the array string.
-Default: ” “</p></li>
+Default: “ “</p></li>
 <li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to determine spacing to the left
 of the array string.
 Default: “”</p></li>
@@ -934,6 +1017,45 @@ Default: “”</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.var">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.var" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the variance of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis or axes along which the variances must be computed. If a tuple
+of unique integers, the variances are computed over multiple axes.
+If <cite>None</cite>, the variance is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>correction</strong> (<em>Optional</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – degrees of freedom adjustment. The divisor used in calculating the
+variance is <cite>N-correction</cite>, where <cite>N</cite> corresponds to the total
+number of elements over which the variance is calculated.
+Default: <cite>0.0</cite>.</p></li>
+<li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
+as singleton dimensions, so that the returned array remains
+compatible with the input array according to Array Broadcasting
+rules. Otherwise, if <cite>False</cite>, the reduced axes are not included in
+the returned array. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing the variances. If the variance was computed
+over the entire array, a zero-dimensional array is returned.</p>
+<p>If <cite>x</cite> has a real-valued floating-point data type, the returned
+array will have the same data type as <cite>x</cite>.
+If <cite>x</cite> has a boolean or integral data type, the returned array
+will have the default floating point data type for the device
+where input array <cite>x</cite> is allocated.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>

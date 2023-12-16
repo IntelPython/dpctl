@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
     <!-- Google tag (gtag.js) -->
@@ -12,18 +12,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._reduction &mdash; Data Parallel Control (dpctl) 0.15.1dev1+2.g6704b8213 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/doxyrest-pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/doxyrest-sphinx_rtd_theme.css" type="text/css" />
+  <title>dpctl.tensor._reduction &mdash; Data Parallel Control (dpctl) 0.15.1dev2+49.g78b5e855b5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=1af1dd7d"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=80ade5dc"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -44,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev1+2.g6704b8213
+                0.15.1dev2+49.g78b5e855b5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -175,7 +177,6 @@
     <span class="n">_reduction_fn</span><span class="p">,</span>
     <span class="n">_dtype_supported</span><span class="p">,</span>
     <span class="n">_default_reduction_type_fn</span><span class="p">,</span>
-    <span class="n">_identity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -198,26 +199,8 @@
         <span class="n">res_dt</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">_identity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reduction does not support zero-size arrays&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
-                <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">red_nd</span>
-                <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
-                <span class="n">res_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inv_perm</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                <span class="n">dpt</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-                    <span class="n">res_shape</span><span class="p">,</span>
-                    <span class="n">_identity</span><span class="p">,</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">_default_reduction_type_fn</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span>
-                    <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
-                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-                <span class="p">),</span>
-                <span class="n">res_dt</span><span class="p">,</span>
-            <span class="p">)</span>
     <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">_dtype_supported</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
@@ -234,21 +217,51 @@
                 <span class="s2">&quot;Automatically determined reduction data type does not &quot;</span>
                 <span class="s2">&quot;have direct implementation&quot;</span>
             <span class="p">)</span>
-        <span class="n">tmp_dt</span> <span class="o">=</span> <span class="n">_default_reduction_type_fn</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-            <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tmp_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
-        <span class="p">)</span>
-        <span class="n">ht_e_tmp</span><span class="p">,</span> <span class="n">r_e</span> <span class="o">=</span> <span class="n">_reduction_fn</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">red_nd</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
-        <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_tmp</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-            <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
-        <span class="p">)</span>
-        <span class="n">ht_e</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">r_e</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_dtype_supported</span><span class="p">(</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">arr2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">ht_e_cpy</span><span class="p">,</span> <span class="n">cpy_e</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">ht_e_red</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_reduction_fn</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">red_nd</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">cpy_e</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_red</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buf_dt</span> <span class="o">=</span> <span class="n">_default_reduction_type_fn</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">arr2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">ht_e_cpy</span><span class="p">,</span> <span class="n">cpy_e</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">tmp_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="p">)</span>
+            <span class="n">ht_e_red</span><span class="p">,</span> <span class="n">r_e</span> <span class="o">=</span> <span class="n">_reduction_fn</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">red_nd</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">tmp_res</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">cpy_e</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">ht_e_cpy2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp_res</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">r_e</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
         <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">red_nd</span>
@@ -316,7 +329,6 @@
         <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">,</span>
         <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis_dtype_supported</span><span class="p">,</span>
         <span class="n">_default_reduction_dtype</span><span class="p">,</span>
-        <span class="n">_identity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -377,7 +389,6 @@
         <span class="n">tri</span><span class="o">.</span><span class="n">_prod_over_axis</span><span class="p">,</span>
         <span class="n">tri</span><span class="o">.</span><span class="n">_prod_over_axis_dtype_supported</span><span class="p">,</span>
         <span class="n">_default_reduction_dtype</span><span class="p">,</span>
-        <span class="n">_identity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -433,7 +444,6 @@
             <span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span>
         <span class="p">),</span>
         <span class="n">_default_reduction_dtype_fp_types</span><span class="p">,</span>
-        <span class="n">_identity</span><span class="o">=-</span><span class="n">dpt</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -489,7 +499,6 @@
             <span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span>
         <span class="p">),</span>
         <span class="n">_default_reduction_dtype_fp_types</span><span class="p">,</span>
-        <span class="n">_identity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -511,9 +520,19 @@
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reduction does not support zero-size arrays&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;reduction cannot be performed over zero-size axes&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="n">res_shape</span><span class="p">,</span>
@@ -537,7 +556,7 @@
 
 
 <div class="viewcode-block" id="max"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;max(x, axis=None, dtype=None, keepdims=False)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;max(x, axis=None, keepdims=False)</span>
 
 <span class="sd">    Calculates the maximum value of the input array `x`.</span>
 
@@ -565,7 +584,7 @@
 
 
 <div class="viewcode-block" id="min"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.min">[docs]</a><span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;min(x, axis=None, dtype=None, keepdims=False)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;min(x, axis=None, keepdims=False)</span>
 
 <span class="sd">    Calculates the minimum value of the input array `x`.</span>
 
@@ -614,7 +633,17 @@
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reduction does not support zero-size arrays&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;reduction cannot be performed over zero-size axes&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">res_shape</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
@@ -642,7 +671,7 @@
 
 
 <div class="viewcode-block" id="argmax"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.argmax">[docs]</a><span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;argmax(x, axis=None, dtype=None, keepdims=False)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;argmax(x, axis=None, keepdims=False)</span>
 
 <span class="sd">    Returns the indices of the maximum values of the input array `x` along a</span>
 <span class="sd">    specified axis.</span>
@@ -674,7 +703,7 @@
 
 
 <div class="viewcode-block" id="argmin"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.argmin">[docs]</a><span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;argmin(x, axis=None, dtype=None, keepdims=False)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;argmin(x, axis=None, keepdims=False)</span>
 
 <span class="sd">    Returns the indices of the minimum values of the input array `x` along a</span>
 <span class="sd">    specified axis.</span>

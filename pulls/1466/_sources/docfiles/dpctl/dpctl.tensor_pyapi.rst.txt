@@ -136,6 +136,8 @@ Other Functions
 .. list-table::
     :widths: 25,50
 
+    * - :func:`__array_namespace_info__()`
+      - Returns a namespace with Array API namespace inspection utilities.
     * - :func:`all()`
       - Tests whether all input array elements evaluate to True along a given axis.
     * - :func:`allclose()`
@@ -160,6 +162,8 @@ Other Functions
       - Transposes the innermost two dimensions of `x`, where `x` is a 2-dimensional matrix or a stack of 2-dimensional matrices.
     * - :func:`max()`
       - Calculates the maximum value of the input array `x`.
+    * - :func:`mean()`
+      - Calculates the arithmetic mean of elements in the input array `x`.
     * - :func:`min()`
       - Calculates the minimum value of the input array `x`.
     * - :func:`nonzero()`
@@ -176,6 +180,8 @@ Other Functions
       - Calculates the square root of the sum of squares of elements in the input array `x`.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
+    * - :func:`std()`
+      - Calculates the standard deviation of elements in the input array `x`.
     * - :func:`sum()`
       - Calculates the sum of elements in the input array `x`.
     * - :func:`take()`
@@ -184,6 +190,8 @@ Other Functions
       - Returns a formatted string representing the elements of a :class:`dpctl.tensor.usm_ndarray` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`
       - Returns a string representing the elements of a :class:`dpctl.tensor.usm_ndarray`.
+    * - :func:`var()`
+      - Calculates the variance of elements in the input array `x`.
     * - :func:`where()`
       - Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen from `x1` or `x2` depending on `condition`.
 
