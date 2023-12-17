@@ -120,6 +120,7 @@ def _get_dtype(inp_dt, sycl_obj, ref_type=None):
 
 __all__ = [
     "dtype",
+    "_get_dtype",
     "isdtype",
     "bool",
     "int8",

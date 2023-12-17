@@ -17,6 +17,7 @@
 
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 
 list_dtypes = [
@@ -127,3 +128,31 @@ def test_isdtype_kind_tuple_dtypes(dtype_str):
 def test_isdtype_invalid_kind(kind):
     with pytest.raises((TypeError, ValueError)):
         dpt.isdtype(dpt.int32, kind)
+
+
+def test_finfo_array():
+    try:
+        x = dpt.empty(tuple(), dtype="f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Default-selected SYCL device unavailable")
+    o = dpt.finfo(x)
+    assert o.dtype == dpt.float32
+
+
+def test_iinfo_array():
+    try:
+        x = dpt.empty(tuple(), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Default-selected SYCL device unavailable")
+    o = dpt.iinfo(x)
+    assert o.dtype == dpt.int32
+
+
+def test_iinfo_validation():
+    with pytest.raises(ValueError):
+        dpt.iinfo("O")
+
+
+def test_finfo_validation():
+    with pytest.raises(ValueError):
+        dpt.iinfo("O")
