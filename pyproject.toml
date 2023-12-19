@@ -22,7 +22,7 @@ source = [
 omit = [
     "dpctl/tests/*",
     "dpctl/_version.py",
-    "dpctl/tensor/_set_functions_debug.py",
+    "dpctl/tensor/_set_functions_sync.py",
     "*/_cython_api*/stringsource",
 ]
 
@@ -30,7 +30,7 @@ omit = [
 omit = [
     "dpctl/tests/*",
     "dpctl/_version.py",
-    "dpctl/tensor/_set_functions_debug.py",
+    "dpctl/tensor/_set_functions_sync.py",
     "*/_cython_api*/stringsource",
 ]
 
