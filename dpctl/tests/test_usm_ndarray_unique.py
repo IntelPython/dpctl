@@ -16,6 +16,7 @@
 
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -151,3 +152,72 @@ def test_unique_all(dtype):
     assert dpt.all(uv == inp[ind])
     assert dpt.all(inp == uv[inv])
     assert dpt.all(uv_counts == dpt.full(2, n, dtype=uv_counts.dtype))
+
+
+def test_set_functions_empty_input():
+    get_queue_or_skip()
+    x = dpt.ones((10, 0, 1), dtype="i4")
+
+    res = dpt.unique_values(x)
+    assert isinstance(res, dpctl.tensor.usm_ndarray)
+    assert res.size == 0
+    assert res.dtype == x.dtype
+
+    res = dpt.unique_inverse(x)
+    assert type(res).__name__ == "UniqueInverseResult"
+    uv, inv = res
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert uv.size == 0
+    assert isinstance(inv, dpctl.tensor.usm_ndarray)
+    assert inv.size == 0
+
+    res = dpt.unique_counts(x)
+    assert type(res).__name__ == "UniqueCountsResult"
+    uv, uv_counts = res
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert uv.size == 0
+    assert isinstance(uv_counts, dpctl.tensor.usm_ndarray)
+    assert uv_counts.size == 0
+
+    res = dpt.unique_all(x)
+    assert type(res).__name__ == "UniqueAllResult"
+    uv, ind, inv, uv_counts = res
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert uv.size == 0
+    assert isinstance(ind, dpctl.tensor.usm_ndarray)
+    assert ind.size == 0
+    assert isinstance(inv, dpctl.tensor.usm_ndarray)
+    assert inv.size == 0
+    assert isinstance(uv_counts, dpctl.tensor.usm_ndarray)
+    assert uv_counts.size == 0
+
+
+def test_set_function_outputs():
+    get_queue_or_skip()
+    # check standard and early exit paths
+    x1 = dpt.arange(10, dtype="i4")
+    x2 = dpt.ones((10, 10), dtype="i4")
+
+    assert isinstance(dpt.unique_values(x1), dpctl.tensor.usm_ndarray)
+    assert isinstance(dpt.unique_values(x2), dpctl.tensor.usm_ndarray)
+
+    assert type(dpt.unique_inverse(x1)).__name__ == "UniqueInverseResult"
+    assert type(dpt.unique_inverse(x2)).__name__ == "UniqueInverseResult"
+
+    assert type(dpt.unique_counts(x1)).__name__ == "UniqueCountsResult"
+    assert type(dpt.unique_counts(x2)).__name__ == "UniqueCountsResult"
+
+    assert type(dpt.unique_all(x1)).__name__ == "UniqueAllResult"
+    assert type(dpt.unique_all(x2)).__name__ == "UniqueAllResult"
+
+
+def test_set_functions_compute_follows_data():
+    # tests that all intermediate calls and allocations
+    # are compatible with an input with an arbitrary queue
+    q = dpctl.SyclQueue()
+    x = dpt.arange(10, dtype="i4", sycl_queue=q)
+
+    assert isinstance(dpt.unique_values(x), dpctl.tensor.usm_ndarray)
+    assert dpt.unique_counts(x)
+    assert dpt.unique_inverse(x)
+    assert dpt.unique_all(x)

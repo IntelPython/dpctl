@@ -80,6 +80,8 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C")
+    if fx.size == 0:
+        return fx
     s = dpt.empty_like(fx, order="C")
     host_tasks = []
     if fx.flags.c_contiguous:
@@ -114,7 +116,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     host_tasks.append(ht_ev)
-    cumsum = dpt.empty(s.shape, dtype=dpt.int64)
+    cumsum = dpt.empty(s.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[one_ev, uneq_ev]
@@ -163,10 +165,14 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
+    x_usm_type = x.usm_type
     if x.ndim == 1:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C")
+    ind_dt = default_device_index_type(exec_q)
+    if fx.size == 0:
+        return UniqueCountsResult(fx, dpt.empty_like(fx, dtype=ind_dt))
     s = dpt.empty_like(fx, order="C")
     host_tasks = []
     if fx.flags.c_contiguous:
@@ -201,17 +207,21 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     host_tasks.append(ht_ev)
-    ind_dt = default_device_index_type(exec_q)
-    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64)
+    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[one_ev, uneq_ev]
     )
     if n_uniques == fx.size:
         dpctl.SyclEvent.wait_for(host_tasks)
-        return UniqueCountsResult(s, dpt.ones(n_uniques, dtype=ind_dt))
+        return UniqueCountsResult(
+            s,
+            dpt.ones(
+                n_uniques, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
+            ),
+        )
     unique_vals = dpt.empty(
-        n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
+        n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
     # populate unique values
     ht_ev, _ = _extract(
@@ -224,7 +234,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
     )
     host_tasks.append(ht_ev)
     unique_counts = dpt.empty(
-        n_uniques + 1, dtype=ind_dt, usm_type=x.usm_type, sycl_queue=exec_q
+        n_uniques + 1, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
     )
     idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
@@ -281,6 +291,7 @@ def unique_inverse(x):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
+    x_usm_type = x.usm_type
     if x.ndim == 1:
         fx = x
     else:
@@ -288,6 +299,8 @@ def unique_inverse(x):
     ind_dt = default_device_index_type(exec_q)
     sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
     unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
+    if fx.size == 0:
+        return UniqueInverseResult(fx, unsorting_ids)
     host_tasks = []
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _argsort_ascending(
@@ -341,7 +354,7 @@ def unique_inverse(x):
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     host_tasks.append(ht_ev)
-    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64)
+    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[uneq_ev, one_ev]
@@ -350,7 +363,7 @@ def unique_inverse(x):
         dpctl.SyclEvent.wait_for(host_tasks)
         return UniqueInverseResult(s, unsorting_ids)
     unique_vals = dpt.empty(
-        n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
+        n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
     ht_ev, _ = _extract(
         src=s,
@@ -362,7 +375,7 @@ def unique_inverse(x):
     )
     host_tasks.append(ht_ev)
     cum_unique_counts = dpt.empty(
-        n_uniques + 1, dtype=ind_dt, usm_type=x.usm_type, sycl_queue=exec_q
+        n_uniques + 1, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
     )
     idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
@@ -442,13 +455,20 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
+    x_usm_type = x.usm_type
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt.reshape(x, (x.size,), order="C", copy=False)
+        fx = dpt.reshape(x, (x.size,), order="C")
     ind_dt = default_device_index_type(exec_q)
     sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
     unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
+    if fx.size == 0:
+        # original array contains no data
+        # so it can be safely returned as values
+        return UniqueAllResult(
+            fx, sorting_ids, unsorting_ids, dpt.empty_like(fx, dtype=ind_dt)
+        )
     host_tasks = []
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _argsort_ascending(
@@ -502,16 +522,24 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     host_tasks.append(ht_ev)
-    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64)
+    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[uneq_ev, one_ev]
     )
     if n_uniques == fx.size:
         dpctl.SyclEvent.wait_for(host_tasks)
-        return UniqueInverseResult(s, unsorting_ids)
+        _counts = dpt.ones(
+            n_uniques, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
+        )
+        return UniqueAllResult(
+            s,
+            sorting_ids,
+            unsorting_ids,
+            _counts,
+        )
     unique_vals = dpt.empty(
-        n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
+        n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
     ht_ev, _ = _extract(
         src=s,
@@ -523,7 +551,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     )
     host_tasks.append(ht_ev)
     cum_unique_counts = dpt.empty(
-        n_uniques + 1, dtype=ind_dt, usm_type=x.usm_type, sycl_queue=exec_q
+        n_uniques + 1, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
     )
     idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
