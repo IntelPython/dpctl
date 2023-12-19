@@ -94,7 +94,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         )
         host_tasks.append(ht_ev)
         ht_ev, sort_ev = _sort_ascending(
-            src=fx,
+            src=tmp,
             trailing_dims_to_sort=1,
             dst=s,
             sycl_queue=exec_q,
@@ -181,7 +181,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         )
         host_tasks.append(ht_ev)
         ht_ev, sort_ev = _sort_ascending(
-            src=fx,
+            src=tmp,
             dst=s,
             trailing_dims_to_sort=1,
             sycl_queue=exec_q,
@@ -301,7 +301,7 @@ def unique_inverse(x):
         )
         host_tasks.append(ht_ev)
         ht_ev, sort_ev = _argsort_ascending(
-            src=fx,
+            src=tmp,
             trailing_dims_to_sort=1,
             dst=sorting_ids,
             sycl_queue=exec_q,
@@ -462,7 +462,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         )
         host_tasks.append(ht_ev)
         ht_ev, sort_ev = _argsort_ascending(
-            src=fx,
+            src=tmp,
             trailing_dims_to_sort=1,
             dst=sorting_ids,
             sycl_queue=exec_q,
