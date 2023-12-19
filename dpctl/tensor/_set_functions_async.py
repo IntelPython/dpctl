@@ -79,7 +79,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt.reshape(x, (x.size,), order="C", copy=False)
+        fx = dpt.reshape(x, (x.size,), order="C")
     s = dpt.empty_like(fx, order="C")
     host_tasks = []
     if fx.flags.c_contiguous:
@@ -166,7 +166,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt.reshape(x, (x.size,), order="C", copy=False)
+        fx = dpt.reshape(x, (x.size,), order="C")
     s = dpt.empty_like(fx, order="C")
     host_tasks = []
     if fx.flags.c_contiguous:
@@ -284,7 +284,7 @@ def unique_inverse(x):
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt.reshape(x, (x.size,), order="C", copy=False)
+        fx = dpt.reshape(x, (x.size,), order="C")
     ind_dt = default_device_index_type(exec_q)
     sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
     unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
