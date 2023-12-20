@@ -292,11 +292,16 @@ def unique_inverse(x):
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
-    if x.ndim == 1:
+    ind_dt = default_device_index_type(exec_q)
+    if x.ndim == 0:
+        return UniqueInverseResult(
+            dpt.reshape(x, (1,), order="C", copy=True),
+            dpt.zeros_like(x, ind_dt, usm_type=x_usm_type, sycl_queue=exec_q),
+        )
+    elif x.ndim == 1:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C")
-    ind_dt = default_device_index_type(exec_q)
     sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
     unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
     if fx.size == 0:
@@ -456,11 +461,21 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
-    if x.ndim == 1:
+    ind_dt = default_device_index_type(exec_q)
+    if x.ndim == 0:
+        uv = dpt.reshape(x, (1,), order="C", copy=True)
+        return UniqueAllResult(
+            uv,
+            dpt.zeros_like(uv, ind_dt, usm_type=x_usm_type, sycl_queue=exec_q),
+            dpt.zeros_like(x, ind_dt, usm_type=x_usm_type, sycl_queue=exec_q),
+            dpt.ones_like(
+                uv, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
+            ),
+        )
+    elif x.ndim == 1:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C")
-    ind_dt = default_device_index_type(exec_q)
     sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
     unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
     if fx.size == 0:

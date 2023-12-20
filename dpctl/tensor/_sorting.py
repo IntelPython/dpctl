@@ -61,7 +61,11 @@ def sort(x, /, *, axis=-1, descending=False, stable=False):
             f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
         )
     nd = x.ndim
-    axis = normalize_axis_index(axis, ndim=nd, msg_prefix="axis")
+    if nd == 0:
+        axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
+        return dpt.copy(x, order="C")
+    else:
+        axis = normalize_axis_index(axis, ndim=nd, msg_prefix="axis")
     a1 = axis + 1
     if a1 == nd:
         perm = list(range(nd))
@@ -134,7 +138,13 @@ def argsort(x, axis=-1, descending=False, stable=False):
             f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
         )
     nd = x.ndim
-    axis = normalize_axis_index(axis, ndim=nd, msg_prefix="axis")
+    if nd == 0:
+        axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
+        return dpt.zeros_like(
+            x, dtype=ti.default_device_index_type(x.sycl_queue), order="C"
+        )
+    else:
+        axis = normalize_axis_index(axis, ndim=nd, msg_prefix="axis")
     a1 = axis + 1
     if a1 == nd:
         perm = list(range(nd))
