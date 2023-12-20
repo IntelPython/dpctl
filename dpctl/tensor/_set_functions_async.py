@@ -293,19 +293,14 @@ def unique_inverse(x):
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
     ind_dt = default_device_index_type(exec_q)
-    if x.ndim == 0:
-        return UniqueInverseResult(
-            dpt.reshape(x, (1,), order="C", copy=True),
-            dpt.zeros_like(x, ind_dt, usm_type=x_usm_type, sycl_queue=exec_q),
-        )
-    elif x.ndim == 1:
+    if x.ndim == 1:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C")
     sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
     unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
     if fx.size == 0:
-        return UniqueInverseResult(fx, unsorting_ids)
+        return UniqueInverseResult(fx, dpt.reshape(unsorting_ids, x.shape))
     host_tasks = []
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _argsort_ascending(
@@ -366,7 +361,7 @@ def unique_inverse(x):
     )
     if n_uniques == fx.size:
         dpctl.SyclEvent.wait_for(host_tasks)
-        return UniqueInverseResult(s, unsorting_ids)
+        return UniqueInverseResult(s, dpt.reshape(unsorting_ids, x.shape))
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
@@ -422,7 +417,9 @@ def unique_inverse(x):
         pos = pos_next
         host_tasks.append(ht_ev)
     dpctl.SyclEvent.wait_for(host_tasks)
-    return UniqueInverseResult(unique_vals, inv[unsorting_ids])
+    return UniqueInverseResult(
+        unique_vals, dpt.reshape(inv[unsorting_ids], x.shape)
+    )
 
 
 def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
@@ -462,17 +459,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
     ind_dt = default_device_index_type(exec_q)
-    if x.ndim == 0:
-        uv = dpt.reshape(x, (1,), order="C", copy=True)
-        return UniqueAllResult(
-            uv,
-            dpt.zeros_like(uv, ind_dt, usm_type=x_usm_type, sycl_queue=exec_q),
-            dpt.zeros_like(x, ind_dt, usm_type=x_usm_type, sycl_queue=exec_q),
-            dpt.ones_like(
-                uv, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
-            ),
-        )
-    elif x.ndim == 1:
+    if x.ndim == 1:
         fx = x
     else:
         fx = dpt.reshape(x, (x.size,), order="C")
@@ -482,7 +469,10 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         # original array contains no data
         # so it can be safely returned as values
         return UniqueAllResult(
-            fx, sorting_ids, unsorting_ids, dpt.empty_like(fx, dtype=ind_dt)
+            fx,
+            sorting_ids,
+            dpt.reshape(unsorting_ids, x.shape),
+            dpt.empty_like(fx, dtype=ind_dt),
         )
     host_tasks = []
     if fx.flags.c_contiguous:
@@ -550,7 +540,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         return UniqueAllResult(
             s,
             sorting_ids,
-            unsorting_ids,
+            dpt.reshape(unsorting_ids, x.shape),
             _counts,
         )
     unique_vals = dpt.empty(
@@ -611,6 +601,6 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     return UniqueAllResult(
         unique_vals,
         sorting_ids[cum_unique_counts[:-1]],
-        inv[unsorting_ids],
+        dpt.reshape(inv[unsorting_ids], x.shape),
         _counts,
     )

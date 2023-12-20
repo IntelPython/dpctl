@@ -117,6 +117,7 @@ def test_unique_inverse(dtype):
     uv, inv = dpt.unique_inverse(inp)
     assert dpt.all(uv == dpt.arange(2, dtype=dtype))
     assert dpt.all(inp == uv[inv])
+    assert inp.shape == inv.shape
 
 
 @pytest.mark.parametrize(
@@ -151,6 +152,7 @@ def test_unique_all(dtype):
     assert dpt.all(uv == dpt.arange(2, dtype=dtype))
     assert dpt.all(uv == inp[ind])
     assert dpt.all(inp == uv[inv])
+    assert inp.shape == inv.shape
     assert dpt.all(uv_counts == dpt.full(2, n, dtype=uv_counts.dtype))
 
 
