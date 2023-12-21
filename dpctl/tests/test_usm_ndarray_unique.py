@@ -53,6 +53,17 @@ def test_unique_values(dtype):
     assert dpt.all(uv == dpt.arange(2, dtype=dtype))
 
 
+def test_unique_values_strided():
+    get_queue_or_skip()
+
+    n, m = 1000, 20
+    inp = dpt.ones((n, m), dtype="i4", order="F")
+    inp[:, ::2] = 0
+
+    uv = dpt.unique_values(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
@@ -86,6 +97,18 @@ def test_unique_counts(dtype):
     assert dpt.all(uv_counts == dpt.full(2, n, dtype=uv_counts.dtype))
 
 
+def test_unique_counts_strided():
+    get_queue_or_skip()
+
+    n, m = 1000, 20
+    inp = dpt.ones((n, m), dtype="i4", order="F")
+    inp[:, ::2] = 0
+
+    uv, uv_counts = dpt.unique_counts(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+    assert dpt.all(uv_counts == dpt.full(2, n / 2 * m, dtype=uv_counts.dtype))
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
@@ -116,6 +139,19 @@ def test_unique_inverse(dtype):
 
     uv, inv = dpt.unique_inverse(inp)
     assert dpt.all(uv == dpt.arange(2, dtype=dtype))
+    assert dpt.all(inp == uv[inv])
+    assert inp.shape == inv.shape
+
+
+def test_unique_inverse_strided():
+    get_queue_or_skip()
+
+    n, m = 1000, 20
+    inp = dpt.ones((n, m), dtype="i4", order="F")
+    inp[:, ::2] = 0
+
+    uv, inv = dpt.unique_inverse(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
     assert dpt.all(inp == uv[inv])
     assert inp.shape == inv.shape
 
@@ -154,6 +190,21 @@ def test_unique_all(dtype):
     assert dpt.all(inp == uv[inv])
     assert inp.shape == inv.shape
     assert dpt.all(uv_counts == dpt.full(2, n, dtype=uv_counts.dtype))
+
+
+def test_unique_all_strided():
+    get_queue_or_skip()
+
+    n, m = 1000, 20
+    inp = dpt.ones((n, m), dtype="i4", order="F")
+    inp[:, ::2] = 0
+
+    uv, ind, inv, uv_counts = dpt.unique_all(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+    assert dpt.all(uv == dpt.reshape(inp, -1)[ind])
+    assert dpt.all(inp == uv[inv])
+    assert inp.shape == inv.shape
+    assert dpt.all(uv_counts == dpt.full(2, n / 2 * m, dtype=uv_counts.dtype))
 
 
 def test_set_functions_empty_input():
