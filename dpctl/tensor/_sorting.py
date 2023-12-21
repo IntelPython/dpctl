@@ -30,8 +30,8 @@ from ._tensor_sorting_impl import (
 __all__ = ["sort", "argsort"]
 
 
-def sort(x, /, *, axis=-1, descending=False, stable=False):
-    """sort(x, axis=-1, descending=False, stable=False)
+def sort(x, /, *, axis=-1, descending=False, stable=True):
+    """sort(x, axis=-1, descending=False, stable=True)
 
     Returns a sorted copy of an input array `x`.
 
@@ -106,8 +106,8 @@ def sort(x, /, *, axis=-1, descending=False, stable=False):
     return res
 
 
-def argsort(x, axis=-1, descending=False, stable=False):
-    """argsort(x, axis=-1, descending=False, stable=False)
+def argsort(x, axis=-1, descending=False, stable=True):
+    """argsort(x, axis=-1, descending=False, stable=True)
 
     Returns the indices that sort an array `x` along a specified axis.
 
