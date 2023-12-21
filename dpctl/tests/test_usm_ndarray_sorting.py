@@ -197,3 +197,17 @@ def test_argsort_strided():
     idx = dpt.argsort(x_flipped)
 
     assert dpt.all(x_flipped[idx] == x_orig)
+
+
+def test_sort_0d_array():
+    get_queue_or_skip()
+
+    x = dpt.asarray(1, dtype="i4")
+    assert dpt.sort(x) == 1
+
+
+def test_argsort_0d_array():
+    get_queue_or_skip()
+
+    x = dpt.asarray(1, dtype="i4")
+    assert dpt.argsort(x) == 0
