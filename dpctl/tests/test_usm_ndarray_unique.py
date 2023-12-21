@@ -63,6 +63,12 @@ def test_unique_values_strided():
     uv = dpt.unique_values(inp)
     assert dpt.all(uv == dpt.arange(2, dtype="i4"))
 
+    inp = dpt.reshape(inp, -1)
+    inp = dpt.flip(dpt.reshape(inp, -1))
+
+    uv = dpt.unique_values(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+
 
 @pytest.mark.parametrize(
     "dtype",
@@ -103,6 +109,12 @@ def test_unique_counts_strided():
     n, m = 1000, 20
     inp = dpt.ones((n, m), dtype="i4", order="F")
     inp[:, ::2] = 0
+
+    uv, uv_counts = dpt.unique_counts(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+    assert dpt.all(uv_counts == dpt.full(2, n / 2 * m, dtype=uv_counts.dtype))
+
+    inp = dpt.flip(dpt.reshape(inp, -1))
 
     uv, uv_counts = dpt.unique_counts(inp)
     assert dpt.all(uv == dpt.arange(2, dtype="i4"))
@@ -149,6 +161,13 @@ def test_unique_inverse_strided():
     n, m = 1000, 20
     inp = dpt.ones((n, m), dtype="i4", order="F")
     inp[:, ::2] = 0
+
+    uv, inv = dpt.unique_inverse(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+    assert dpt.all(inp == uv[inv])
+    assert inp.shape == inv.shape
+
+    inp = dpt.flip(dpt.reshape(inp, -1))
 
     uv, inv = dpt.unique_inverse(inp)
     assert dpt.all(uv == dpt.arange(2, dtype="i4"))
@@ -202,6 +221,15 @@ def test_unique_all_strided():
     uv, ind, inv, uv_counts = dpt.unique_all(inp)
     assert dpt.all(uv == dpt.arange(2, dtype="i4"))
     assert dpt.all(uv == dpt.reshape(inp, -1)[ind])
+    assert dpt.all(inp == uv[inv])
+    assert inp.shape == inv.shape
+    assert dpt.all(uv_counts == dpt.full(2, n / 2 * m, dtype=uv_counts.dtype))
+
+    inp = dpt.flip(dpt.reshape(inp, -1))
+
+    uv, ind, inv, uv_counts = dpt.unique_all(inp)
+    assert dpt.all(uv == dpt.arange(2, dtype="i4"))
+    assert dpt.all(uv == inp[ind])
     assert dpt.all(inp == uv[inv])
     assert inp.shape == inv.shape
     assert dpt.all(uv_counts == dpt.full(2, n / 2 * m, dtype=uv_counts.dtype))
