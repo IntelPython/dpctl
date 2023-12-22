@@ -450,6 +450,32 @@ struct ThreeZeroOffsets_Indexer
     }
 };
 
+template <typename FirstIndexerT,
+          typename SecondIndexerT,
+          typename ThirdIndexerT>
+struct ThreeOffsets_CombinedIndexer
+{
+private:
+    FirstIndexerT first_indexer_;
+    SecondIndexerT second_indexer_;
+    ThirdIndexerT third_indexer_;
+
+public:
+    ThreeOffsets_CombinedIndexer(const FirstIndexerT &first_indexer,
+                                 const SecondIndexerT &second_indexer,
+                                 const ThirdIndexerT &third_indexer)
+        : first_indexer_(first_indexer), second_indexer_(second_indexer),
+          third_indexer_(third_indexer)
+    {
+    }
+
+    ThreeOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    {
+        return ThreeOffsets<py::ssize_t>(
+            first_indexer_(gid), second_indexer_(gid), third_indexer_(gid));
+    }
+};
+
 template <typename displacementT> struct FourOffsets
 {
     FourOffsets()
