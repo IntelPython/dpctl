@@ -148,6 +148,15 @@ set(_tensor_reductions_impl_sources
     ${_boolean_reduction_sources}
     ${_reduction_sources}
 )
+set(_linalg_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linalg_functions/dot.cpp
+)
+set(_tensor_linalg_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_linalg.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
+    ${_linalg_sources}
+)
 
 set(_py_trgts)
 
@@ -166,6 +175,11 @@ pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sourc
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
 list(APPEND _py_trgts ${python_module_name})
 
+set(python_module_name _tensor_linalg_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_linalg_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_linalg_impl_sources})
+list(APPEND _py_trgts ${python_module_name})
+
 set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
@@ -179,6 +193,7 @@ set(_no_fast_math_sources
 list(APPEND _no_fast_math_sources
      ${_elementwise_sources}
      ${_reduction_sources}
+     ${_linalg_sources}
 )
 
 foreach(_src_fn ${_no_fast_math_sources})
