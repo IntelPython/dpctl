@@ -1,5 +1,5 @@
 {% set required_compiler_version = "2024.0" %}
-{% set max_compiler_version = "2024.0.1" %}
+{% set max_compiler_version = "2025.0a0" %}
 
 package:
     name: dpctl
@@ -31,8 +31,8 @@ requirements:
         - wheel
     run:
         - python
-        - {{ pin_compatible('numpy', min_pin='x.x', upper_bound='1.26') }}
-        - dpcpp-cpp-rt >={{ required_compiler_version }}
+        - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
+        - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
         - level-zero  # [linux]
 
 test:
