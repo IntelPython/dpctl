@@ -72,7 +72,7 @@ def test_matmul_simple(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    n, m = 100, 17
+    n, m = 235, 17
     m1 = dpt.ones((m, n), dtype=dtype)
     m2 = dpt.ones((n, m), dtype=dtype)
 

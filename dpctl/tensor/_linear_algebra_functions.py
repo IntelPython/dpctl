@@ -823,9 +823,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     sycl_queue=exec_q,
                     order=order,
                 )
-        if x1.shape != res_shape:
+        if x1.shape != x1_broadcast_shape:
             x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
-        if x2.shape != res_shape:
+        if x2.shape != x2_broadcast_shape:
             x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
         ht_dot_ev, binary_ev = tli._dot(
             x1=x1,
@@ -875,9 +875,10 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     order=order,
                 )
 
-        if x1.shape != res_shape:
+        if x1.shape != x1_broadcast_shape:
             x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
-        buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
+        if buf2.shape != x2_broadcast_shape:
+            buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
         ht_dot_ev, binary_ev = tli._dot(
             x1=x1,
             x2=buf2,
@@ -929,8 +930,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     order=order,
                 )
 
-        buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
-        if x2.shape != res_shape:
+        if buf1.shape != x1_broadcast_shape:
+            buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
+        if x2.shape != x2_broadcast_shape:
             x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
         ht_dot_ev, binary_ev = tli._dot(
             x1=buf1,
@@ -994,8 +996,10 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 order=order,
             )
 
-    buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
-    buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
+    if buf1.shape != x1_broadcast_shape:
+        buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
+    if buf2.shape != x2_broadcast_shape:
+        buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
     ht_, _ = tli._dot(
         x1=buf1,
         x2=buf2,

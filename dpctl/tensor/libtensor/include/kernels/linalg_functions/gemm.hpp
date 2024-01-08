@@ -533,7 +533,8 @@ public:
                 size_t g_j = g_j0 + lane_id;
                 vec[lane_id] =
                     (g_j < m && g_s < k)
-                        ? static_cast<resT>(rhs[g_s * b_st0 + g_j * b_st1])
+                        ? static_cast<resT>(
+                              rhs[rhs_indexer(g_s * b_st0 + g_j * b_st1)])
                         : resT(0);
             }
 
