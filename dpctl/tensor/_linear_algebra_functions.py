@@ -475,6 +475,8 @@ def vecdot(x1, x2, axis=-1):
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=buf2, sycl_queue=exec_q
         )
+        ht_list.append(ht_copy_ev)
+        deps.append(copy_ev)
         if x1.shape != broadcast_sh:
             x1 = dpt.broadcast_to(x1, broadcast_sh)
         if buf2.shape != broadcast_sh:
