@@ -308,6 +308,9 @@ jobs:
         shell: cmd /C CALL {0}
         run: >-
           conda activate dpctl_test && python -m dpctl -f
+      - name: Run test_matmul_simple2
+        run: |
+          conda activate dpctl_test && python -m pytest -q --pyargs dpctl.tests.test_usm_ndarray_linalg::test_matmul_simple2 -vv || true
       - name: Run tests
         shell: cmd /C CALL {0}
         env:

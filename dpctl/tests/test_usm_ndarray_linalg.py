@@ -19,6 +19,7 @@ import itertools
 import numpy as np
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -79,6 +80,26 @@ def test_matmul_simple(dtype):
     for k in [1, 2, 3, 4, 7, 8, 9, 15, 16, 17]:
         r = dpt.matmul(m1[:k, :], m2[:, :k])
         assert dpt.all(r == dpt.full((k, k), n, dtype=dtype))
+
+
+@pytest.mark.parametrize("dtype", _numeric_types)
+def test_matmul_simple2(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    dev = q.sycl_device
+    if dev.is_cpu:
+        cpu_count = dev.max_compute_units
+        sub_devs = dev.create_sub_devices(partition=min(4, cpu_count // 2))
+        ctx = dpctl.SyclContext(sub_devs[0])
+        q = dpctl.SyclQueue(ctx, sub_devs[0])
+
+    n, m = 235, 17
+    m1 = dpt.ones((m, n), dtype=dtype, sycl_queue=q)
+    m2 = dpt.ones((n, m), dtype=dtype, sycl_queue=q)
+
+    for k in [1, 2, 3, 4, 7, 8, 9, 15, 16, 17]:
+        r = dpt.matmul(m1[:k, :], m2[:, :k])
+        assert dpt.all(r == dpt.full((k, k), n, dtype=dtype, sycl_queue=q))
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
