@@ -1071,10 +1071,9 @@ sycl::event gemm_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -1108,10 +1107,9 @@ sycl::event gemm_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -1239,10 +1237,9 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -1276,10 +1273,9 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -1976,10 +1972,9 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
                 constexpr int m_groups = 1;
 
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 sycl::event gemm_ev;
@@ -2250,10 +2245,9 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
             else {
                 constexpr int m_groups = 2;
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 sycl::event gemm_ev;
@@ -2529,10 +2523,9 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
             constexpr int m_groups = 1;
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             sycl::event gemm_ev;
@@ -3410,10 +3403,9 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
                 constexpr int m_groups = 1;
 
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 sycl::event gemm_ev;
@@ -3663,10 +3655,9 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
             else {
                 constexpr int m_groups = 2;
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 sycl::event gemm_ev;
@@ -3920,10 +3911,9 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
             constexpr int m_groups = 1;
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             sycl::event gemm_ev;
@@ -5476,10 +5466,9 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -5518,10 +5507,9 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -5680,10 +5668,9 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -5722,10 +5709,9 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
             size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
@@ -6506,10 +6492,9 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
             if (m == 1) {
                 constexpr int m_groups = 1;
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 if (k <= (delta_k * n_wi)) {
@@ -6836,10 +6821,9 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                 constexpr int m_groups = 2;
 
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 if (k <= (delta_k * n_wi)) {
@@ -7174,10 +7158,9 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
             constexpr int m_groups = 1;
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             // each group processes delta_k * n_wi
@@ -8212,10 +8195,9 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
             if (m == 1) {
                 constexpr int m_groups = 1;
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 if (k <= (delta_k * n_wi)) {
@@ -8533,10 +8515,9 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
                 constexpr int m_groups = 2;
 
                 gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size,
-                    delta_k, // modified by reference
-                    n_wi,    // modified by reference
-                    delta_n  // modified by reference
+                    local_mem_size, reserved_slm_size, delta_k,
+                    n_wi,   // modified by reference
+                    delta_n // modified by reference
                 );
 
                 if (k <= (delta_k * n_wi)) {
@@ -8857,10 +8838,9 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
             constexpr int m_groups = 1;
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size,
-                delta_k, // modified by reference
-                n_wi,    // modified by reference
-                delta_n  // modified by reference
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
             );
 
             // each group processes delta_k * n_wi
