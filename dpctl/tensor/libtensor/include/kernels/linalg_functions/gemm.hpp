@@ -1067,8 +1067,8 @@ sycl::event gemm_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(64);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1103,8 +1103,8 @@ sycl::event gemm_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(64);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1233,8 +1233,8 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(64);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1269,8 +1269,8 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(64);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1963,8 +1963,8 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
         // items in a column, so no need for allocating
         // temp memory if only one group is needed
         size_t delta_k(4);
-        size_t n_wi(64);
-        size_t delta_n(16);
+        size_t n_wi(4);
+        size_t delta_n(4);
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
@@ -3394,8 +3394,8 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
         // items in a column, so no need for allocating
         // temp memory if only one group is needed
         size_t delta_k(4);
-        size_t n_wi(64);
-        size_t delta_n(16);
+        size_t n_wi(4);
+        size_t delta_n(4);
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
@@ -5462,8 +5462,8 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr int m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(32);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -5503,8 +5503,8 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(32);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -5664,8 +5664,8 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr int m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(32);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -5705,8 +5705,8 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(32);
-            size_t delta_n(16);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -6484,7 +6484,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
 
     if ((k > n && k > m) || m == 1) {
         size_t delta_k(4);
-        size_t n_wi(32);
+        size_t n_wi(4);
         size_t delta_n(4);
 
         using dpctl::tensor::type_utils::is_complex;
@@ -8187,7 +8187,7 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
 
     if ((k > n && k > m) || m == 1) {
         size_t delta_k(4);
-        size_t n_wi(32);
+        size_t n_wi(4);
         size_t delta_n(4);
 
         using dpctl::tensor::type_utils::is_complex;
