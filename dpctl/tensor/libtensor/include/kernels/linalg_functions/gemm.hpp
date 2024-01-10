@@ -1064,7 +1064,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
                                        rhs_shape_strides);
         OuterInnerIndexerT res_indexer(res_outer_nd, 0, res_shape_strides);
 
-        if (m == 1) {
+        if (k > n && k > m || m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -1099,42 +1099,46 @@ sycl::event gemm_impl(sycl::queue &exec_q,
                              lhs_tp, rhs_tp, res_tp, workspace, local_B_block,
                              n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
                              m, lhs_indexer, rhs_indexer, res_indexer));
-        }
-        else if (k > n && k > m) {
-            constexpr size_t m_groups = 2;
-            size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            // }
+            // else if (k > n && k > m) {
+            //     constexpr size_t m_groups = 2;
+            //     size_t delta_k(4);
+            //     size_t n_wi(4);
+            //     size_t delta_n(4);
 
-            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size, delta_k,
-                n_wi,   // modified by reference
-                delta_n // modified by reference
-            );
+            //     gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+            //         local_mem_size, reserved_slm_size, delta_k,
+            //         n_wi,   // modified by reference
+            //         delta_n // modified by reference
+            //     );
 
-            size_t n_blocks = (n + delta_n - 1) / delta_n;
-            size_t m_blocks = (m + m_groups - 1) / m_groups;
-            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            //     size_t n_blocks = (n + delta_n - 1) / delta_n;
+            //     size_t m_blocks = (m + m_groups - 1) / m_groups;
+            //     size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi *
+            //     delta_k);
 
-            size_t lws = delta_n * delta_k;
+            //     size_t lws = delta_n * delta_k;
 
-            auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-            auto lRange = sycl::range<1>(lws);
+            //     auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks *
+            //     lws); auto lRange = sycl::range<1>(lws);
 
-            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+            //     auto ndRange = sycl::nd_range<1>(gRange, lRange);
 
-            using LocAccT = sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-            LocAccT local_B_block(n_wi * delta_k, cgh);
-            LocAccT workspace(delta_n * delta_k, cgh);
+            //     using LocAccT = sycl::local_accessor<sycl::vec<resTy,
+            //     m_groups>, 1>; LocAccT local_B_block(n_wi * delta_k, cgh);
+            //     LocAccT workspace(delta_n * delta_k, cgh);
 
-            using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
-                                                OuterInnerIndexerT, m_groups>;
-            cgh.parallel_for<KernelName>(
-                ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
-                                            OuterInnerIndexerT, m_groups>(
-                             lhs_tp, rhs_tp, res_tp, workspace, local_B_block,
-                             n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
-                             m, lhs_indexer, rhs_indexer, res_indexer));
+            //     using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
+            //                                         OuterInnerIndexerT,
+            //                                         m_groups>;
+            //     cgh.parallel_for<KernelName>(
+            //         ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
+            //                                     OuterInnerIndexerT,
+            //                                     m_groups>(
+            //                      lhs_tp, rhs_tp, res_tp, workspace,
+            //                      local_B_block, n, n_blocks, delta_n, k,
+            //                      k_blocks, delta_k, n_wi, m, lhs_indexer,
+            //                      rhs_indexer, res_indexer));
         }
         else {
             constexpr int wi_delta_n = 2;
@@ -1230,7 +1234,7 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         OuterInnerIndexerT rhs_indexer{};
         OuterInnerIndexerT res_indexer{};
 
-        if (m == 1) {
+        if (k > n && k > m || m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -1266,42 +1270,44 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
                              n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
                              m, lhs_indexer, rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m) {
-            constexpr size_t m_groups = 2;
-            size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+        // else if (k > n && k > m) {
+        //     constexpr size_t m_groups = 2;
+        //     size_t delta_k(4);
+        //     size_t n_wi(4);
+        //     size_t delta_n(4);
 
-            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size, delta_k,
-                n_wi,   // modified by reference
-                delta_n // modified by reference
-            );
+        //     gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+        //         local_mem_size, reserved_slm_size, delta_k,
+        //         n_wi,   // modified by reference
+        //         delta_n // modified by reference
+        //     );
 
-            size_t n_blocks = (n + delta_n - 1) / delta_n;
-            size_t m_blocks = (m + m_groups - 1) / m_groups;
-            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+        //     size_t n_blocks = (n + delta_n - 1) / delta_n;
+        //     size_t m_blocks = (m + m_groups - 1) / m_groups;
+        //     size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
 
-            size_t lws = delta_n * delta_k;
+        //     size_t lws = delta_n * delta_k;
 
-            auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-            auto lRange = sycl::range<1>(lws);
+        //     auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks *
+        //     lws); auto lRange = sycl::range<1>(lws);
 
-            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+        //     auto ndRange = sycl::nd_range<1>(gRange, lRange);
 
-            using LocAccT = sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-            LocAccT local_B_block(n_wi * delta_k, cgh);
-            LocAccT workspace(delta_n * delta_k, cgh);
+        //     using LocAccT = sycl::local_accessor<sycl::vec<resTy, m_groups>,
+        //     1>; LocAccT local_B_block(n_wi * delta_k, cgh); LocAccT
+        //     workspace(delta_n * delta_k, cgh);
 
-            using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
-                                                OuterInnerIndexerT, m_groups>;
-            cgh.parallel_for<KernelName>(
-                ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
-                                            OuterInnerIndexerT, m_groups>(
-                             lhs_tp, rhs_tp, res_tp, workspace, local_B_block,
-                             n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
-                             m, lhs_indexer, rhs_indexer, res_indexer));
-        }
+        //     using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
+        //                                         OuterInnerIndexerT,
+        //                                         m_groups>;
+        //     cgh.parallel_for<KernelName>(
+        //         ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
+        //                                     OuterInnerIndexerT, m_groups>(
+        //                      lhs_tp, rhs_tp, res_tp, workspace,
+        //                      local_B_block, n, n_blocks, delta_n, k,
+        //                      k_blocks, delta_k, n_wi, m, lhs_indexer,
+        //                      rhs_indexer, res_indexer));
+        // }
         else {
             constexpr int wi_delta_n = 2;
             constexpr int wi_delta_m = 4;
