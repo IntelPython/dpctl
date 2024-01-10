@@ -82,7 +82,7 @@ def test_matrix_transpose_arg_validation():
 #         assert dpt.all(r == dpt.full((k, k), n, dtype=dtype))
 
 
-@pytest.mark.parametrize("dtype", _numeric_types)
+@pytest.mark.parametrize("dtype", _numeric_types[::-1])
 def test_matmul_simple2(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
