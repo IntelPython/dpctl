@@ -2623,10 +2623,6 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
     if ((k > n && k > m) || m == 1) {
-        // each group processes delta_k * n_wi
-        // items in a column, so no need for allocating
-        // temp memory if only one group is needed
-
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -3345,10 +3341,6 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
     if ((k > n && k > m) || m == 1) {
-        // each group processes delta_k * n_wi
-        // items in a column, so no need for allocating
-        // temp memory if only one group is needed
-
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
