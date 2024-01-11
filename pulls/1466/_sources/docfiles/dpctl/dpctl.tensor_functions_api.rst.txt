@@ -17,9 +17,12 @@ Other Functions
 .. autofunction:: any
 .. autofunction:: argmax
 .. autofunction:: argmin
+.. autofunction:: can_cast
 .. autofunction:: clip
 .. autofunction:: extract
+.. autofunction:: finfo
 .. autofunction:: get_print_options
+.. autofunction:: iinfo
 .. autofunction:: isdtype
 .. autofunction:: logsumexp
 .. autofunction:: matrix_transpose
@@ -32,6 +35,7 @@ Other Functions
 .. autofunction:: prod
 .. autofunction:: put
 .. autofunction:: reduce_hypot
+.. autofunction:: result_type
 .. autofunction:: set_print_options
 .. autofunction:: std
 .. autofunction:: sum
@@ -70,17 +74,13 @@ Array Manipulation
 
 .. autofunction:: broadcast_arrays
 .. autofunction:: broadcast_to
-.. autofunction:: can_cast
 .. autofunction:: concat
 .. autofunction:: expand_dims
-.. autofunction:: finfo
 .. autofunction:: flip
-.. autofunction:: iinfo
 .. autofunction:: moveaxis
 .. autofunction:: permute_dims
 .. autofunction:: repeat
 .. autofunction:: reshape
-.. autofunction:: result_type
 .. autofunction:: roll
 .. autofunction:: squeeze
 .. autofunction:: stack

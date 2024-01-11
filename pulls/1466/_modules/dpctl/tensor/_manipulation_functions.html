@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+49.g78b5e855b5 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+56.g2c5febd0f1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=80ade5dc"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=75142952"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev2+49.g78b5e855b5
+                0.15.1dev2+56.g2c5febd0f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -121,99 +121,12 @@
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dputils</span>
 
 <span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_broadcast_strides</span>
-<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_to_device_supported_dtype</span>
+<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_supported_dtype</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;Implementation module for array manipulation &quot;</span>
     <span class="s2">&quot;functions in :module:`dpctl.tensor`&quot;</span>
 <span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">finfo_object</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    `numpy.finfo` subclass which returns Python floating-point scalars for</span>
-<span class="sd">    `eps`, `max`, `min`, and `smallest_normal` attributes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
-        <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        number of bits occupied by the real-valued floating-point data type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">bits</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">smallest_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        smallest positive real-valued floating-point number with full</span>
-<span class="sd">        precision.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">smallest_normal</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tiny</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;an alias for `smallest_normal`&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">tiny</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">eps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        difference between 1.0 and the next smallest representable real-valued</span>
-<span class="sd">        floating-point number larger than 1.0 according to the IEEE-754</span>
-<span class="sd">        standard.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">epsneg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        difference between 1.0 and the next smallest representable real-valued</span>
-<span class="sd">        floating-point number smaller than 1.0 according to the IEEE-754</span>
-<span class="sd">        standard.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">epsneg</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;smallest representable real-valued number.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;largest representable real-valued number.&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;the approximate decimal resolution of this type.&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        the approximate number of decimal digits to which this kind of</span>
-<span class="sd">        floating point type is precise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">precision</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        the dtype for which finfo returns information. For complex input, the</span>
-<span class="sd">        returned dtype is the associated floating point dtype for its real and</span>
-<span class="sd">        complex components.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">dtype</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">_broadcast_shape_impl</span><span class="p">(</span><span class="n">shapes</span><span class="p">):</span>
@@ -775,127 +688,6 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="can_cast"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.can_cast">[docs]</a><span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; can_cast(from, to, casting=&quot;safe&quot;)</span>
-
-<span class="sd">    Determines if one data type can be cast to another data type according \</span>
-<span class="sd">        to Type Promotion Rules.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">       from (usm_ndarray, dtype): source data type</span>
-<span class="sd">       to (dtype): target data type</span>
-<span class="sd">       casting ({&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional):</span>
-<span class="sd">           controls what kind of data casting may occur.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        bool:</span>
-<span class="sd">            Gives `True` if cast can occur according to the casting rule.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected dtype type.&quot;</span><span class="p">)</span>
-
-    <span class="n">dtype_to</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">to</span><span class="p">)</span>
-
-    <span class="n">dtype_from</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">from_</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">from_</span><span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">,</span> <span class="n">casting</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="result_type"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.result_type">[docs]</a><span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    result_type(arrays_and_dtypes)</span>
-
-<span class="sd">    Returns the dtype that results from applying the Type Promotion Rules to \</span>
-<span class="sd">        the arguments.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">         arrays_and_dtypes (object):</span>
-<span class="sd">             An arbitrary length sequence of arrays or dtypes.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">         dtype:</span>
-<span class="sd">             The dtype resulting from an operation involving the</span>
-<span class="sd">             input arrays and dtypes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span>
-    <span class="p">]</span>
-
-    <span class="n">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="iinfo"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.iinfo">[docs]</a><span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;iinfo(dtype)</span>
-
-<span class="sd">    Returns machine limits for integer data types.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        dtype (dtype, usm_ndarray):</span>
-<span class="sd">            integer dtype or</span>
-<span class="sd">            an array with integer dtype.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        iinfo_object:</span>
-<span class="sd">            An object with the following attributes</span>
-<span class="sd">            * bits: int</span>
-<span class="sd">                number of bits occupied by the data type</span>
-<span class="sd">            * max: int</span>
-<span class="sd">                largest representable number.</span>
-<span class="sd">            * min: int</span>
-<span class="sd">                smallest representable number.</span>
-<span class="sd">            * dtype: dtype</span>
-<span class="sd">                integer data type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)])</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="finfo"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.finfo">[docs]</a><span class="k">def</span> <span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;finfo(type)</span>
-
-<span class="sd">    Returns machine limits for floating-point data types.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        dtype (dtype, usm_ndarray): floating-point dtype or</span>
-<span class="sd">            an array with floating point data type.</span>
-<span class="sd">            If complex, the information is about its component</span>
-<span class="sd">            data type.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        finfo_object:</span>
-<span class="sd">            an object have the following attributes</span>
-<span class="sd">                * bits: int</span>
-<span class="sd">                    number of bits occupied by dtype.</span>
-<span class="sd">                * eps: float</span>
-<span class="sd">                    difference between 1.0 and the next smallest representable</span>
-<span class="sd">                    real-valued floating-point number larger than 1.0 according</span>
-<span class="sd">                    to the IEEE-754 standard.</span>
-<span class="sd">                * max: float</span>
-<span class="sd">                    largest representable real-valued number.</span>
-<span class="sd">                * min: float</span>
-<span class="sd">                    smallest representable real-valued number.</span>
-<span class="sd">                * smallest_normal: float</span>
-<span class="sd">                    smallest positive real-valued floating-point number with</span>
-<span class="sd">                    full precision.</span>
-<span class="sd">                * dtype: dtype</span>
-<span class="sd">                    real-valued floating-point data type.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)])</span>
-    <span class="k">return</span> <span class="n">finfo_object</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="unstack"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.unstack">[docs]</a><span class="k">def</span> <span class="nf">unstack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;unstack(x, axis=0)</span>
 
@@ -1323,13 +1115,6 @@
         <span class="p">)</span>
         <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span></div>
-
-
-<span class="k">def</span> <span class="nf">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;?bBhHiIlLqQefdFD&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dpctl doesn&#39;t support dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
            </div>

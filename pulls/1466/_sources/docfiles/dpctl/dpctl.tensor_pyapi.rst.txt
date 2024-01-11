@@ -93,18 +93,12 @@ Array Manipulation
       - Broadcasts one or more :class:`dpctl.tensor.usm_ndarrays` against one another.
     * - :func:`broadcast_to()`
       - Broadcast an array to a new `shape`; returns the broadcasted :class:`dpctl.tensor.usm_ndarray` as a view.
-    * - :func:`can_cast()`
-      - Determines if one data type can be cast to another data type according to Type Promotion Rules.
     * - :func:`concat()`
       - Joins a sequence of arrays along an existing axis.
     * - :func:`expand_dims()`
       - Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axis.
-    * - :func:`finfo()`
-      - Returns machine limits for floating-point data types.
     * - :func:`flip()`
       - Reverses the order of elements in an array `x` along the given `axis`.
-    * - :func:`iinfo()`
-      - Returns machine limits for integer data types.
     * - :func:`moveaxis()`
       - Moves axes of an array to new positions.
     * - :func:`permute_dims()`
@@ -113,8 +107,6 @@ Array Manipulation
       - Repeat elements of an array.
     * - :func:`reshape()`
       - Reshapes array `x` into new shape.
-    * - :func:`result_type()`
-      - Returns the dtype that results from applying the Type Promotion Rules to the arguments.
     * - :func:`roll()`
       - Rolls array elements along a specified axis.
     * - :func:`squeeze()`
@@ -148,12 +140,18 @@ Other Functions
       - Returns the indices of the maximum values of the input array `x` along a specified axis.
     * - :func:`argmin()`
       - Returns the indices of the minimum values of the input array `x` along a specified axis.
+    * - :func:`can_cast()`
+      - Determines if one data type can be cast to another data type according to Type Promotion Rules.
     * - :func:`clip()`
       - Clips to the range [`min_i`, `max_i`] for each element `x_i` in `x`.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
+    * - :func:`finfo()`
+      - Returns machine limits for floating-point data types.
     * - :func:`get_print_options()`
       - Returns a copy of current options for printing :class:`dpctl.tensor.usm_ndarray` class.
+    * - :func:`iinfo()`
+      - Returns machine limits for integer data types.
     * - :func:`isdtype()`
       - Returns a boolean indicating whether a provided `dtype` is of a specified data type `kind`.
     * - :func:`logsumexp()`
@@ -178,6 +176,8 @@ Other Functions
       - Puts values of an array into another array along a given axis.
     * - :func:`reduce_hypot()`
       - Calculates the square root of the sum of squares of elements in the input array `x`.
+    * - :func:`result_type()`
+      - Returns the dtype that results from applying the Type Promotion Rules to the arguments.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`std()`

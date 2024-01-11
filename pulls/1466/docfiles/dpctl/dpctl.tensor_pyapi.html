@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.15.1dev2+49.g78b5e855b5 documentation</title>
+  <title>dpctl.tensor &mdash; Data Parallel Control (dpctl) 0.15.1dev2+56.g2c5febd0f1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=80ade5dc"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=75142952"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev2+49.g78b5e855b5
+                0.15.1dev2+56.g2c5febd0f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -227,38 +227,26 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.broadcast_to" title="dpctl.tensor.broadcast_to"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast_to()</span></code></a></p></td>
 <td><p>Broadcast an array to a new <cite>shape</cite>; returns the broadcasted <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> as a view.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.can_cast" title="dpctl.tensor.can_cast"><code class="xref py py-func docutils literal notranslate"><span class="pre">can_cast()</span></code></a></p></td>
-<td><p>Determines if one data type can be cast to another data type according to Type Promotion Rules.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-func docutils literal notranslate"><span class="pre">concat()</span></code></a></p></td>
 <td><p>Joins a sequence of arrays along an existing axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_dims()</span></code></a></p></td>
 <td><p>Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axis.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.finfo" title="dpctl.tensor.finfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">finfo()</span></code></a></p></td>
-<td><p>Returns machine limits for floating-point data types.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.flip" title="dpctl.tensor.flip"><code class="xref py py-func docutils literal notranslate"><span class="pre">flip()</span></code></a></p></td>
 <td><p>Reverses the order of elements in an array <cite>x</cite> along the given <cite>axis</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.iinfo" title="dpctl.tensor.iinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">iinfo()</span></code></a></p></td>
-<td><p>Returns machine limits for integer data types.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.moveaxis" title="dpctl.tensor.moveaxis"><code class="xref py py-func docutils literal notranslate"><span class="pre">moveaxis()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.moveaxis" title="dpctl.tensor.moveaxis"><code class="xref py py-func docutils literal notranslate"><span class="pre">moveaxis()</span></code></a></p></td>
 <td><p>Moves axes of an array to new positions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-func docutils literal notranslate"><span class="pre">permute_dims()</span></code></a></p></td>
 <td><p>Permute the axes (dimensions) of an array; returns the permuted array as a view.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.repeat" title="dpctl.tensor.repeat"><code class="xref py py-func docutils literal notranslate"><span class="pre">repeat()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.repeat" title="dpctl.tensor.repeat"><code class="xref py py-func docutils literal notranslate"><span class="pre">repeat()</span></code></a></p></td>
 <td><p>Repeat elements of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a></p></td>
 <td><p>Reshapes array <cite>x</cite> into new shape.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
-<td><p>Returns the dtype that results from applying the Type Promotion Rules to the arguments.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-func docutils literal notranslate"><span class="pre">roll()</span></code></a></p></td>
 <td><p>Rolls array elements along a specified axis.</p></td>
@@ -307,50 +295,62 @@ implementations that implement Python data API
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.argmin" title="dpctl.tensor.argmin"><code class="xref py py-func docutils literal notranslate"><span class="pre">argmin()</span></code></a></p></td>
 <td><p>Returns the indices of the minimum values of the input array <cite>x</cite> along a specified axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.clip" title="dpctl.tensor.clip"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.can_cast" title="dpctl.tensor.can_cast"><code class="xref py py-func docutils literal notranslate"><span class="pre">can_cast()</span></code></a></p></td>
+<td><p>Determines if one data type can be cast to another data type according to Type Promotion Rules.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.clip" title="dpctl.tensor.clip"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip()</span></code></a></p></td>
 <td><p>Clips to the range [<cite>min_i</cite>, <cite>max_i</cite>] for each element <cite>x_i</cite> in <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.extract" title="dpctl.tensor.extract"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.extract" title="dpctl.tensor.extract"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract()</span></code></a></p></td>
 <td><p>Returns the elements of an array that satisfies the condition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.finfo" title="dpctl.tensor.finfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">finfo()</span></code></a></p></td>
+<td><p>Returns machine limits for floating-point data types.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.get_print_options" title="dpctl.tensor.get_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_print_options()</span></code></a></p></td>
 <td><p>Returns a copy of current options for printing <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.isdtype" title="dpctl.tensor.isdtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">isdtype()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.iinfo" title="dpctl.tensor.iinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">iinfo()</span></code></a></p></td>
+<td><p>Returns machine limits for integer data types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.isdtype" title="dpctl.tensor.isdtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">isdtype()</span></code></a></p></td>
 <td><p>Returns a boolean indicating whether a provided <cite>dtype</cite> is of a specified data type <cite>kind</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.logsumexp" title="dpctl.tensor.logsumexp"><code class="xref py py-func docutils literal notranslate"><span class="pre">logsumexp()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.logsumexp" title="dpctl.tensor.logsumexp"><code class="xref py py-func docutils literal notranslate"><span class="pre">logsumexp()</span></code></a></p></td>
 <td><p>Calculates the logarithm of the sum of exponentials of elements in the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.matrix_transpose" title="dpctl.tensor.matrix_transpose"><code class="xref py py-func docutils literal notranslate"><span class="pre">matrix_transpose()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.matrix_transpose" title="dpctl.tensor.matrix_transpose"><code class="xref py py-func docutils literal notranslate"><span class="pre">matrix_transpose()</span></code></a></p></td>
 <td><p>Transposes the innermost two dimensions of <cite>x</cite>, where <cite>x</cite> is a 2-dimensional matrix or a stack of 2-dimensional matrices.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.max" title="dpctl.tensor.max"><code class="xref py py-func docutils literal notranslate"><span class="pre">max()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.max" title="dpctl.tensor.max"><code class="xref py py-func docutils literal notranslate"><span class="pre">max()</span></code></a></p></td>
 <td><p>Calculates the maximum value of the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.mean" title="dpctl.tensor.mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">mean()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.mean" title="dpctl.tensor.mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">mean()</span></code></a></p></td>
 <td><p>Calculates the arithmetic mean of elements in the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.min" title="dpctl.tensor.min"><code class="xref py py-func docutils literal notranslate"><span class="pre">min()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.min" title="dpctl.tensor.min"><code class="xref py py-func docutils literal notranslate"><span class="pre">min()</span></code></a></p></td>
 <td><p>Calculates the minimum value of the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.nonzero" title="dpctl.tensor.nonzero"><code class="xref py py-func docutils literal notranslate"><span class="pre">nonzero()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.nonzero" title="dpctl.tensor.nonzero"><code class="xref py py-func docutils literal notranslate"><span class="pre">nonzero()</span></code></a></p></td>
 <td><p>Return the indices of non-zero elements.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.place" title="dpctl.tensor.place"><code class="xref py py-func docutils literal notranslate"><span class="pre">place()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.place" title="dpctl.tensor.place"><code class="xref py py-func docutils literal notranslate"><span class="pre">place()</span></code></a></p></td>
 <td><p>Change elements of an array based on conditional and input values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.print_options" title="dpctl.tensor.print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_options()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.print_options" title="dpctl.tensor.print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_options()</span></code></a></p></td>
 <td><p>Context manager for print options.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.prod" title="dpctl.tensor.prod"><code class="xref py py-func docutils literal notranslate"><span class="pre">prod()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.prod" title="dpctl.tensor.prod"><code class="xref py py-func docutils literal notranslate"><span class="pre">prod()</span></code></a></p></td>
 <td><p>Calculates the product of elements in the input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.put" title="dpctl.tensor.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.put" title="dpctl.tensor.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">put()</span></code></a></p></td>
 <td><p>Puts values of an array into another array along a given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reduce_hypot" title="dpctl.tensor.reduce_hypot"><code class="xref py py-func docutils literal notranslate"><span class="pre">reduce_hypot()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reduce_hypot" title="dpctl.tensor.reduce_hypot"><code class="xref py py-func docutils literal notranslate"><span class="pre">reduce_hypot()</span></code></a></p></td>
 <td><p>Calculates the square root of the sum of squares of elements in the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.result_type" title="dpctl.tensor.result_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">result_type()</span></code></a></p></td>
+<td><p>Returns the dtype that results from applying the Type Promotion Rules to the arguments.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.set_print_options" title="dpctl.tensor.set_print_options"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_print_options()</span></code></a></p></td>
 <td><p>Set options for printing <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> class.</p></td>
