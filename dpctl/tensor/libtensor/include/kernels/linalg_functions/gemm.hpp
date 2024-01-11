@@ -2024,6 +2024,9 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -2144,7 +2147,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
         resTy *partially_reduced_tmp2 = nullptr;
 
         if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
+            throw std::runtime_error("Unable to allocate device memory");
         }
         else {
             partially_reduced_tmp2 =
@@ -2360,6 +2363,9 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -2768,6 +2774,9 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -3092,6 +3101,9 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -5254,6 +5266,9 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -5647,6 +5662,9 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -6124,6 +6142,9 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
@@ -6493,6 +6514,9 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
         if (reduction_nelems < wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
                 iter_nelems * reduction_nelems, exec_q);
+            if (!tmp) {
+                throw std::runtime_error("Unable to allocate device memory");
+            }
             sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
