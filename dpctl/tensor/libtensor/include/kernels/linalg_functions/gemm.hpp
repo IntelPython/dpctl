@@ -1953,7 +1953,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                              const py::ssize_t *rhs_outer_inner_shapes_strides,
                              int res_nd,
                              const py::ssize_t *res_shapes_strides,
-                             std::vector<sycl::event> depends)
+                             const std::vector<sycl::event> &depends)
 {
     size_t delta_k(4);
     size_t n_wi(4);
@@ -2272,7 +2272,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                               const py::ssize_t *rhs_outer_inner_shapes_strides,
                               int res_nd,
                               const py::ssize_t *res_shapes_strides,
-                              std::vector<sycl::event> depends)
+                              const std::vector<sycl::event> &depends)
 {
     constexpr int wi_delta_n = 2;
     size_t wg_delta_n(16); // rows of A processed in WG
@@ -2691,6 +2691,659 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
     }
 }
 
+template <typename lhsTy, typename rhsTy, typename resTy, size_t m_groups>
+sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
+                                    const lhsTy *lhs_tp,
+                                    const rhsTy *rhs_tp,
+                                    resTy *res_tp,
+                                    size_t n,
+                                    size_t k,
+                                    size_t m,
+                                    std::vector<sycl::event> const &depends)
+{
+    size_t delta_k(4);
+    size_t n_wi(4);
+    size_t delta_n(4);
+
+    const sycl::device &dev = exec_q.get_device();
+    const size_t local_mem_size =
+        dev.get_info<sycl::info::device::local_mem_size>();
+    const size_t reserved_slm_size = 512;
+
+    gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+        local_mem_size, reserved_slm_size, delta_k,
+        n_wi,   // modified by reference
+        delta_n // modified by reference
+    );
+
+    sycl::event gemm_ev;
+    if (k <= (delta_k * n_wi)) {
+        gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT res_indexer{};
+
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+            size_t lws = delta_n * delta_k;
+
+            auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+            if constexpr (m_groups == 1) {
+                using LocAccT = sycl::local_accessor<resTy, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+                using KernelName =
+                    class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
+                                          OuterInnerDimsIndexerT,
+                                          OuterInnerDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                        n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                        lhs_indexer, rhs_indexer, res_indexer));
+            }
+            else {
+                using LocAccT =
+                    sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+                using KernelName =
+                    class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
+                                          OuterInnerDimsIndexerT,
+                                          OuterInnerDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                        n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                        lhs_indexer, rhs_indexer, res_indexer));
+            }
+        });
+        return gemm_ev;
+    }
+    else {
+        using ReductionOpT = sycl::plus<resTy>;
+        constexpr resTy identity_val =
+            sycl::known_identity<ReductionOpT, resTy>::value;
+
+        size_t iter_nelems = n * m;
+        size_t reduction_nelems = (k + delta_k * n_wi - 1) / (delta_k * n_wi);
+
+        // more than one work-groups is needed, requires a
+        // temporary delta_k * n_wi elements processed along k,
+        // so if more to process use multiple
+        const auto &sg_sizes =
+            dev.get_info<sycl::info::device::sub_group_sizes>();
+        size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+        if (reduction_nelems < wg) {
+            resTy *tmp = sycl::malloc_device<resTy>(
+                iter_nelems * reduction_nelems, exec_q);
+            sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using OuterInnerDimsIndexerT =
+                    dpctl::tensor::offset_utils::NoOpIndexer;
+                OuterInnerDimsIndexerT lhs_indexer{};
+                OuterInnerDimsIndexerT rhs_indexer{};
+                OuterInnerDimsIndexerT res_indexer{};
+
+                size_t n_blocks = (n + delta_n - 1) / delta_n;
+                size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+                size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+                size_t lws = delta_n * delta_k;
+
+                auto gRange =
+                    sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+                auto lRange = sycl::range<1>(lws);
+
+                auto ndRange = sycl::nd_range<1>(gRange, lRange);
+                if constexpr (m_groups == 1) {
+                    using LocAccT = sycl::local_accessor<resTy, 1>;
+                    LocAccT local_B_block(n_wi * delta_k, cgh);
+                    LocAccT workspace(delta_n * delta_k, cgh);
+                    using KernelName =
+                        class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
+                                              OuterInnerDimsIndexerT,
+                                              OuterInnerDimsIndexerT, m_groups>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmNoAtomicFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
+                                                   OuterInnerDimsIndexerT,
+                                                   OuterInnerDimsIndexerT,
+                                                   m_groups>(
+                            lhs_tp, rhs_tp, tmp, workspace, local_B_block, n,
+                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                            lhs_indexer, rhs_indexer, res_indexer));
+                }
+                else {
+                    using LocAccT =
+                        sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                    LocAccT local_B_block(n_wi * delta_k, cgh);
+                    LocAccT workspace(delta_n * delta_k, cgh);
+                    using KernelName =
+                        class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
+                                              OuterInnerDimsIndexerT,
+                                              OuterInnerDimsIndexerT, m_groups>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmNoAtomicFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
+                                                   OuterInnerDimsIndexerT,
+                                                   OuterInnerDimsIndexerT,
+                                                   m_groups>(
+                            lhs_tp, rhs_tp, tmp, workspace, local_B_block, n,
+                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                            lhs_indexer, rhs_indexer, res_indexer));
+                }
+            });
+            sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(gemm_ev);
+
+                using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                using InputOutputIterIndexerT =
+                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                        NoOpIndexerT, NoOpIndexerT>;
+                using ReductionIndexerT =
+                    dpctl::tensor::offset_utils::Strided1DIndexer;
+
+                InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                            NoOpIndexerT{}};
+                ReductionIndexerT reduction_indexer{
+                    0, static_cast<py::ssize_t>(reduction_nelems),
+                    static_cast<py::ssize_t>(iter_nelems)};
+
+                sycl::range<1> iter_range{iter_nelems};
+
+                cgh.parallel_for<class gemm_reduction_seq_strided_krn<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>>(
+                    iter_range, SequentialReduction<resTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                                    tmp, res_tp, ReductionOpT(), identity_val,
+                                    in_out_iter_indexer, reduction_indexer,
+                                    reduction_nelems));
+            });
+            sycl::event cleanup_host_task_event =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(red_ev);
+                    const sycl::context &ctx = exec_q.get_context();
+
+                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                });
+            return cleanup_host_task_event;
+        }
+        // max_max_wg prevents running out of resources on CPU
+        constexpr size_t max_max_wg = 2048;
+        size_t max_wg = std::min(
+            max_max_wg,
+            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+        constexpr size_t preferred_reductions_per_wi = 8;
+        size_t reductions_per_wi(preferred_reductions_per_wi);
+
+        size_t reduction_groups =
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
+        assert(reduction_groups > 1);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (/* temp */ reduction_nelems +
+                           /* first reduction temp */ reduction_groups),
+            exec_q);
+        resTy *partially_reduced_tmp2 = nullptr;
+
+        if (partially_reduced_tmp == nullptr) {
+            throw std::runtime_error("Unable to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+        }
+
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT res_indexer{};
+
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+            size_t lws = delta_n * delta_k;
+
+            auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+            if constexpr (m_groups == 1) {
+                using LocAccT = sycl::local_accessor<resTy, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+                using KernelName =
+                    class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
+                                          OuterInnerDimsIndexerT,
+                                          OuterInnerDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
+                        local_B_block, n, n_blocks, delta_n, k, k_blocks,
+                        delta_k, n_wi, m, lhs_indexer, rhs_indexer,
+                        res_indexer));
+            }
+            else {
+                using LocAccT =
+                    sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+                using KernelName =
+                    class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
+                                          OuterInnerDimsIndexerT,
+                                          OuterInnerDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
+                        local_B_block, n, n_blocks, delta_n, k, k_blocks,
+                        delta_k, n_wi, m, lhs_indexer, rhs_indexer,
+                        res_indexer));
+            }
+        });
+        // tree_reduction_for_gemm_contig returns sycl::event
+        // for reduction
+        sycl::event red_ev =
+            tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
+                exec_q, partially_reduced_tmp, partially_reduced_tmp2, res_tp,
+                identity_val, iter_nelems, reduction_nelems, reduction_groups,
+                wg, max_wg, preferred_reductions_per_wi, reductions_per_wi,
+                {gemm_ev});
+
+        sycl::event cleanup_host_task_event =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(red_ev);
+                const sycl::context &ctx = exec_q.get_context();
+
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
+                });
+            });
+
+        return cleanup_host_task_event;
+    }
+}
+
+template <typename lhsTy, typename rhsTy, typename resTy, size_t wi_delta_m>
+sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
+                                     const lhsTy *lhs_tp,
+                                     const rhsTy *rhs_tp,
+                                     resTy *res_tp,
+                                     size_t n,
+                                     size_t k,
+                                     size_t m,
+                                     std::vector<sycl::event> const &depends)
+{
+    constexpr int wi_delta_n = 2;
+    size_t wg_delta_n(16); // rows of A processed in WG
+    size_t wg_delta_m(16); // rows of B processed in WG
+    size_t wi_delta_k(64); // Elements in K dimension processed by WI
+
+    const sycl::device &dev = exec_q.get_device();
+    const size_t local_mem_size =
+        dev.get_info<sycl::info::device::local_mem_size>();
+    const size_t reserved_slm_size = 512;
+
+    gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
+        local_mem_size, reserved_slm_size, wi_delta_n,
+        wi_delta_k, // modified by reference
+        wg_delta_n, // modified by reference
+        wg_delta_m  // modified by reference
+    );
+
+    // each group processes delta_k items in a column,
+    // so no need to allocate temp memory if one group needed
+    if (k <= wi_delta_k) {
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT res_indexer{};
+
+            size_t lws = wg_delta_n * wg_delta_m;
+
+            size_t n_blocks =
+                ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
+            size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+            size_t m_blocks =
+                ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
+
+            auto gwsRange =
+                sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+            auto lwsRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+            if constexpr (wi_delta_m == 1) {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                LocAccT2 local_B_block(wi_delta_k * wg_delta_m, cgh);
+
+                using KernelName =
+                    class gemm_tree_nm_krn<lhsTy, rhsTy, resTy,
+                                           OuterInnerDimsIndexerT,
+                                           OuterInnerDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, res_tp, local_A_block, local_B_block, n,
+                        wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                        wg_delta_m, lhs_indexer, rhs_indexer, res_indexer));
+            }
+            else {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 =
+                    sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName =
+                    class gemm_tree_nm_krn<lhsTy, rhsTy, resTy,
+                                           OuterInnerDimsIndexerT,
+                                           OuterInnerDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, res_tp, local_A_block, local_B_block, n,
+                        wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                        wg_delta_m, lhs_indexer, rhs_indexer, res_indexer));
+            }
+        });
+        return gemm_ev;
+    }
+    else {
+        using ReductionOpT = sycl::plus<resTy>;
+        constexpr resTy identity_val =
+            sycl::known_identity<ReductionOpT, resTy>::value;
+
+        size_t iter_nelems = n * m;
+        size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
+
+        // more than one work-groups is needed, requires a temporary
+        // wi_delta_k elements processed along k, so if more to
+        // process use multiple
+        const auto &sg_sizes =
+            dev.get_info<sycl::info::device::sub_group_sizes>();
+        size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+        if (reduction_nelems < wg) {
+            resTy *tmp = sycl::malloc_device<resTy>(
+                iter_nelems * reduction_nelems, exec_q);
+            sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using OuterInnerDimsIndexerT =
+                    dpctl::tensor::offset_utils::NoOpIndexer;
+                OuterInnerDimsIndexerT lhs_indexer{};
+                OuterInnerDimsIndexerT rhs_indexer{};
+                OuterInnerDimsIndexerT res_indexer{};
+
+                size_t lws = wg_delta_n * wg_delta_m;
+
+                size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
+                                   (wi_delta_n * wg_delta_n));
+                size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+                size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
+                                   (wi_delta_m * wg_delta_m));
+
+                auto gwsRange =
+                    sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+                auto lwsRange = sycl::range<1>(lws);
+
+                auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+                if constexpr (wi_delta_m == 1) {
+                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                    LocAccT1 local_A_block(
+                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                        cgh);
+                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                    LocAccT2 local_B_block(wi_delta_k * wg_delta_m, cgh);
+
+                    using KernelName = class gemm_tree_nm_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, wi_delta_m>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmNoAtomicFunctorThreadNM<
+                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                            wi_delta_n, wi_delta_m>(
+                            lhs_tp, rhs_tp, tmp, local_A_block, local_B_block,
+                            n, wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                            wg_delta_m, lhs_indexer, rhs_indexer, res_indexer));
+                }
+                else {
+                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                    LocAccT1 local_A_block(
+                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                        cgh);
+                    using LocAccT2 =
+                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                    LocAccT2 local_B_block(
+                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
+
+                    using KernelName = class gemm_tree_nm_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, wi_delta_m>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmNoAtomicFunctorThreadNM<
+                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                            wi_delta_n, wi_delta_m>(
+                            lhs_tp, rhs_tp, tmp, local_A_block, local_B_block,
+                            n, wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                            wg_delta_m, lhs_indexer, rhs_indexer, res_indexer));
+                }
+            });
+            sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(gemm_ev);
+
+                using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                using InputOutputIterIndexerT =
+                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                        NoOpIndexerT, NoOpIndexerT>;
+                using ReductionIndexerT =
+                    dpctl::tensor::offset_utils::Strided1DIndexer;
+
+                InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                            NoOpIndexerT{}};
+                ReductionIndexerT reduction_indexer{
+                    0, static_cast<py::ssize_t>(reduction_nelems),
+                    static_cast<py::ssize_t>(iter_nelems)};
+
+                sycl::range<1> iter_range{iter_nelems};
+
+                cgh.parallel_for<class gemm_reduction_seq_strided_krn<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>>(
+                    iter_range, SequentialReduction<resTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                                    tmp, res_tp, ReductionOpT(), identity_val,
+                                    in_out_iter_indexer, reduction_indexer,
+                                    reduction_nelems));
+            });
+            sycl::event cleanup_host_task_event =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(red_ev);
+                    const sycl::context &ctx = exec_q.get_context();
+
+                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                });
+            return cleanup_host_task_event;
+        }
+
+        // max_max_wg prevents running out of resources on CPU
+        constexpr size_t max_max_wg = 2048;
+        size_t max_wg = std::min(
+            max_max_wg,
+            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+        constexpr size_t preferred_reductions_per_wi = 8;
+        size_t reductions_per_wi(preferred_reductions_per_wi);
+
+        size_t reduction_groups =
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
+        assert(reduction_groups > 1);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (/* temp */ reduction_nelems +
+                           /* first reduction temp */ reduction_groups),
+            exec_q);
+        resTy *partially_reduced_tmp2 = nullptr;
+
+        if (partially_reduced_tmp == nullptr) {
+            throw std::runtime_error("Unable to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+        }
+
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT res_indexer{};
+
+            size_t lws = wg_delta_n * wg_delta_m;
+
+            size_t n_blocks =
+                ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
+            size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+            size_t m_blocks =
+                ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
+
+            auto gwsRange =
+                sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+            auto lwsRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+            if constexpr (wi_delta_m == 1) {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                LocAccT2 local_B_block(wi_delta_k * wg_delta_m, cgh);
+
+                using KernelName =
+                    class gemm_tree_nm_krn<lhsTy, rhsTy, resTy,
+                                           OuterInnerDimsIndexerT,
+                                           OuterInnerDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange, GemmNoAtomicFunctorThreadNM<
+                                 lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                                 OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                                 wi_delta_n, wi_delta_m>(
+                                 lhs_tp, rhs_tp, partially_reduced_tmp,
+                                 local_A_block, local_B_block, n, wg_delta_n, k,
+                                 k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
+                                 lhs_indexer, rhs_indexer, res_indexer));
+            }
+            else {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 =
+                    sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName =
+                    class gemm_tree_nm_krn<lhsTy, rhsTy, resTy,
+                                           OuterInnerDimsIndexerT,
+                                           OuterInnerDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange, GemmNoAtomicFunctorThreadNM<
+                                 lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                                 OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                                 wi_delta_n, wi_delta_m>(
+                                 lhs_tp, rhs_tp, partially_reduced_tmp,
+                                 local_A_block, local_B_block, n, wg_delta_n, k,
+                                 k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
+                                 lhs_indexer, rhs_indexer, res_indexer));
+            }
+        });
+
+        sycl::event red_ev =
+            tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
+                exec_q, partially_reduced_tmp, partially_reduced_tmp2, res_tp,
+                identity_val, iter_nelems, reduction_nelems, reduction_groups,
+                wg, max_wg, preferred_reductions_per_wi, reductions_per_wi,
+                {gemm_ev});
+
+        sycl::event cleanup_host_task_event =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(red_ev);
+                const sycl::context &ctx = exec_q.get_context();
+
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
+                });
+            });
+
+        return cleanup_host_task_event;
+    }
+}
+
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
                                   const char *lhs_cp,
@@ -2705,1310 +3358,36 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
-    const sycl::device &dev = exec_q.get_device();
-    const size_t local_mem_size =
-        dev.get_info<sycl::info::device::local_mem_size>();
-    const size_t reserved_slm_size = 512;
-
     if ((k > n && k > m) || m == 1) {
         // each group processes delta_k * n_wi
         // items in a column, so no need for allocating
         // temp memory if only one group is needed
-        size_t delta_k(4);
-        size_t n_wi(4);
-        size_t delta_n(4);
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
-                constexpr int m_groups = 1;
-
-                gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size, delta_k,
-                    n_wi,   // modified by reference
-                    delta_n // modified by reference
-                );
-
-                sycl::event gemm_ev;
-                if (k <= (delta_k * n_wi)) {
-                    gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(n_blocks * m_blocks *
-                                                     k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-                        using KernelName = class gemm_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                m_groups>(lhs_tp, rhs_tp, res_tp, workspace,
-                                          local_B_block, n, n_blocks, delta_n,
-                                          k, k_blocks, delta_k, n_wi, m,
-                                          lhs_indexer, rhs_indexer,
-                                          res_indexer));
-                    });
-                    return gemm_ev;
-                }
-                else {
-                    using ReductionOpT = sycl::plus<resTy>;
-                    constexpr resTy identity_val =
-                        sycl::known_identity<ReductionOpT, resTy>::value;
-
-                    size_t iter_nelems = n * m;
-                    size_t reduction_nelems =
-                        (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                    // more than one work-groups is needed, requires a
-                    // temporary delta_k * n_wi elements processed along k,
-                    // so if more to process use multiple
-                    const auto &sg_sizes =
-                        dev.get_info<sycl::info::device::sub_group_sizes>();
-                    size_t wg =
-                        choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                    if (reduction_nelems < wg) {
-                        resTy *tmp = sycl::malloc_device<resTy>(
-                            iter_nelems * reduction_nelems, exec_q);
-                        sycl::event gemm_ev =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(depends);
-
-                                using OuterInnerDimsIndexerT =
-                                    dpctl::tensor::offset_utils::NoOpIndexer;
-                                OuterInnerDimsIndexerT lhs_indexer{};
-                                OuterInnerDimsIndexerT rhs_indexer{};
-                                OuterInnerDimsIndexerT res_indexer{};
-
-                                size_t n_blocks = (n + delta_n - 1) / delta_n;
-                                size_t k_blocks =
-                                    (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                                size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                                size_t lws = delta_n * delta_k;
-
-                                auto gRange = sycl::range<1>(
-                                    n_blocks * m_blocks * k_blocks * lws);
-                                auto lRange = sycl::range<1>(lws);
-
-                                auto ndRange =
-                                    sycl::nd_range<1>(gRange, lRange);
-
-                                using LocAccT = sycl::local_accessor<resTy, 1>;
-                                LocAccT local_B_block(n_wi * delta_k, cgh);
-                                LocAccT workspace(delta_n * delta_k, cgh);
-                                using KernelName = class gemm_tree_k_krn<
-                                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                    OuterInnerDimsIndexerT, m_groups>;
-                                cgh.parallel_for<KernelName>(
-                                    ndRange,
-                                    GemmNoAtomicFunctorThreadK<
-                                        lhsTy, rhsTy, resTy, LocAccT,
-                                        OuterInnerDimsIndexerT,
-                                        OuterInnerDimsIndexerT, m_groups>(
-                                        lhs_tp, rhs_tp, tmp, workspace,
-                                        local_B_block, n, n_blocks, delta_n, k,
-                                        k_blocks, delta_k, n_wi, m, lhs_indexer,
-                                        rhs_indexer, res_indexer));
-                            });
-                        sycl::event red_ev = exec_q.submit([&](sycl::handler
-                                                                   &cgh) {
-                            cgh.depends_on(gemm_ev);
-
-                            using NoOpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            using InputOutputIterIndexerT =
-                                dpctl::tensor::offset_utils::
-                                    TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                               NoOpIndexerT>;
-                            using ReductionIndexerT =
-                                dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                            InputOutputIterIndexerT in_out_iter_indexer{
-                                NoOpIndexerT{}, NoOpIndexerT{}};
-                            ReductionIndexerT reduction_indexer{
-                                0, static_cast<py::ssize_t>(reduction_nelems),
-                                static_cast<py::ssize_t>(iter_nelems)};
-
-                            sycl::range<1> iter_range{iter_nelems};
-
-                            cgh.parallel_for<
-                                class gemm_reduction_seq_strided_krn<
-                                    resTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT,
-                                    ReductionIndexerT>>(
-                                iter_range,
-                                SequentialReduction<resTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                                    tmp, res_tp, ReductionOpT(), identity_val,
-                                    in_out_iter_indexer, reduction_indexer,
-                                    reduction_nelems));
-                        });
-                        sycl::event cleanup_host_task_event =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(red_ev);
-                                const sycl::context &ctx = exec_q.get_context();
-
-                                cgh.host_task(
-                                    [ctx, tmp] { sycl::free(tmp, ctx); });
-                            });
-                        return cleanup_host_task_event;
-                    }
-                    // max_max_wg prevents running out of resources on CPU
-                    constexpr size_t max_max_wg = 2048;
-                    size_t max_wg = std::min(
-                        max_max_wg,
-                        dev.get_info<
-                            sycl::info::device::max_work_group_size>() /
-                            2);
-
-                    constexpr size_t preferred_reductions_per_wi = 8;
-                    size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                    size_t reduction_groups =
-                        (reduction_nelems + preferred_reductions_per_wi * wg -
-                         1) /
-                        (preferred_reductions_per_wi * wg);
-                    assert(reduction_groups > 1);
-
-                    resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                        iter_nelems *
-                            (/* temp */ reduction_nelems +
-                             /* first reduction temp */ reduction_groups),
-                        exec_q);
-                    resTy *partially_reduced_tmp2 = nullptr;
-
-                    if (partially_reduced_tmp == nullptr) {
-                        throw std::runtime_error(
-                            "Unable to allocate device_memory");
-                    }
-                    else {
-                        partially_reduced_tmp2 = partially_reduced_tmp +
-                                                 reduction_nelems * iter_nelems;
-                    }
-
-                    sycl::event gemm_ev =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(depends);
-
-                            using OuterInnerDimsIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            OuterInnerDimsIndexerT lhs_indexer{};
-                            OuterInnerDimsIndexerT rhs_indexer{};
-                            OuterInnerDimsIndexerT res_indexer{};
-
-                            size_t n_blocks = (n + delta_n - 1) / delta_n;
-                            size_t k_blocks =
-                                (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                            size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                            size_t lws = delta_n * delta_k;
-
-                            auto gRange = sycl::range<1>(n_blocks * m_blocks *
-                                                         k_blocks * lws);
-                            auto lRange = sycl::range<1>(lws);
-
-                            auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                            using LocAccT = sycl::local_accessor<resTy, 1>;
-                            LocAccT local_B_block(n_wi * delta_k, cgh);
-                            LocAccT workspace(delta_n * delta_k, cgh);
-                            using KernelName = class gemm_tree_k_krn<
-                                lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                OuterInnerDimsIndexerT, m_groups>;
-                            cgh.parallel_for<KernelName>(
-                                ndRange,
-                                GemmNoAtomicFunctorThreadK<
-                                    lhsTy, rhsTy, resTy, LocAccT,
-                                    OuterInnerDimsIndexerT,
-                                    OuterInnerDimsIndexerT, m_groups>(
-                                    lhs_tp, rhs_tp, partially_reduced_tmp,
-                                    workspace, local_B_block, n, n_blocks,
-                                    delta_n, k, k_blocks, delta_k, n_wi, m,
-                                    lhs_indexer, rhs_indexer, res_indexer));
-                        });
-                    // tree_reduction_for_gemm_contig returns sycl::event
-                    // for reduction
-                    sycl::event red_ev =
-                        tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                            exec_q, partially_reduced_tmp,
-                            partially_reduced_tmp2, res_tp, identity_val,
-                            iter_nelems, reduction_nelems, reduction_groups, wg,
-                            max_wg, preferred_reductions_per_wi,
-                            reductions_per_wi, {gemm_ev});
-
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, partially_reduced_tmp] {
-                                sycl::free(partially_reduced_tmp, ctx);
-                            });
-                        });
-
-                    return cleanup_host_task_event;
-                }
+                return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
             }
             else {
-                constexpr int m_groups = 2;
-                gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size, delta_k,
-                    n_wi,   // modified by reference
-                    delta_n // modified by reference
-                );
-
-                sycl::event gemm_ev;
-                if (k <= (delta_k * n_wi)) {
-                    gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(n_blocks * m_blocks *
-                                                     k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT =
-                            sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-                        using KernelName = class gemm_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                m_groups>(lhs_tp, rhs_tp, res_tp, workspace,
-                                          local_B_block, n, n_blocks, delta_n,
-                                          k, k_blocks, delta_k, n_wi, m,
-                                          lhs_indexer, rhs_indexer,
-                                          res_indexer));
-                    });
-                    return gemm_ev;
-                }
-                else {
-                    using ReductionOpT = sycl::plus<resTy>;
-                    constexpr resTy identity_val =
-                        sycl::known_identity<ReductionOpT, resTy>::value;
-
-                    size_t iter_nelems = n * m;
-                    size_t reduction_nelems =
-                        (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                    // more than one work-groups is needed, requires a
-                    // temporary delta_k * n_wi elements processed along k,
-                    // so if more to process use multiple
-                    const auto &sg_sizes =
-                        dev.get_info<sycl::info::device::sub_group_sizes>();
-                    size_t wg =
-                        choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                    if (reduction_nelems < wg) {
-                        resTy *tmp = sycl::malloc_device<resTy>(
-                            iter_nelems * reduction_nelems, exec_q);
-                        sycl::event gemm_ev =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(depends);
-
-                                using OuterInnerDimsIndexerT =
-                                    dpctl::tensor::offset_utils::NoOpIndexer;
-                                OuterInnerDimsIndexerT lhs_indexer{};
-                                OuterInnerDimsIndexerT rhs_indexer{};
-                                OuterInnerDimsIndexerT res_indexer{};
-
-                                size_t n_blocks = (n + delta_n - 1) / delta_n;
-                                size_t k_blocks =
-                                    (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                                size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                                size_t lws = delta_n * delta_k;
-
-                                auto gRange = sycl::range<1>(
-                                    n_blocks * m_blocks * k_blocks * lws);
-                                auto lRange = sycl::range<1>(lws);
-
-                                auto ndRange =
-                                    sycl::nd_range<1>(gRange, lRange);
-
-                                using LocAccT = sycl::local_accessor<
-                                    sycl::vec<resTy, m_groups>, 1>;
-                                LocAccT local_B_block(n_wi * delta_k, cgh);
-                                LocAccT workspace(delta_n * delta_k, cgh);
-                                using KernelName = class gemm_tree_k_krn<
-                                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                    OuterInnerDimsIndexerT, m_groups>;
-                                cgh.parallel_for<KernelName>(
-                                    ndRange,
-                                    GemmNoAtomicFunctorThreadK<
-                                        lhsTy, rhsTy, resTy, LocAccT,
-                                        OuterInnerDimsIndexerT,
-                                        OuterInnerDimsIndexerT, m_groups>(
-                                        lhs_tp, rhs_tp, tmp, workspace,
-                                        local_B_block, n, n_blocks, delta_n, k,
-                                        k_blocks, delta_k, n_wi, m, lhs_indexer,
-                                        rhs_indexer, res_indexer));
-                            });
-                        sycl::event red_ev = exec_q.submit([&](sycl::handler
-                                                                   &cgh) {
-                            cgh.depends_on(gemm_ev);
-
-                            using NoOpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            using InputOutputIterIndexerT =
-                                dpctl::tensor::offset_utils::
-                                    TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                               NoOpIndexerT>;
-                            using ReductionIndexerT =
-                                dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                            InputOutputIterIndexerT in_out_iter_indexer{
-                                NoOpIndexerT{}, NoOpIndexerT{}};
-                            ReductionIndexerT reduction_indexer{
-                                0, static_cast<py::ssize_t>(reduction_nelems),
-                                static_cast<py::ssize_t>(iter_nelems)};
-
-                            sycl::range<1> iter_range{iter_nelems};
-
-                            cgh.parallel_for<
-                                class gemm_reduction_seq_strided_krn<
-                                    resTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT,
-                                    ReductionIndexerT>>(
-                                iter_range,
-                                SequentialReduction<resTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                                    tmp, res_tp, ReductionOpT(), identity_val,
-                                    in_out_iter_indexer, reduction_indexer,
-                                    reduction_nelems));
-                        });
-                        sycl::event cleanup_host_task_event =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(red_ev);
-                                const sycl::context &ctx = exec_q.get_context();
-
-                                cgh.host_task(
-                                    [ctx, tmp] { sycl::free(tmp, ctx); });
-                            });
-                        return cleanup_host_task_event;
-                    }
-                    // max_max_wg prevents running out of resources on CPU
-                    constexpr size_t max_max_wg = 2048;
-                    size_t max_wg = std::min(
-                        max_max_wg,
-                        dev.get_info<
-                            sycl::info::device::max_work_group_size>() /
-                            2);
-
-                    constexpr size_t preferred_reductions_per_wi = 8;
-                    size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                    size_t reduction_groups =
-                        (reduction_nelems + preferred_reductions_per_wi * wg -
-                         1) /
-                        (preferred_reductions_per_wi * wg);
-                    assert(reduction_groups > 1);
-
-                    resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                        iter_nelems *
-                            (/* temp */ reduction_nelems +
-                             /* first reduction temp */ reduction_groups),
-                        exec_q);
-                    resTy *partially_reduced_tmp2 = nullptr;
-
-                    if (partially_reduced_tmp == nullptr) {
-                        throw std::runtime_error(
-                            "Unable to allocate device_memory");
-                    }
-                    else {
-                        partially_reduced_tmp2 = partially_reduced_tmp +
-                                                 reduction_nelems * iter_nelems;
-                    }
-
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(n_blocks * m_blocks *
-                                                     k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT =
-                            sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-                        using KernelName = class gemm_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                m_groups>(lhs_tp, rhs_tp, partially_reduced_tmp,
-                                          workspace, local_B_block, n, n_blocks,
-                                          delta_n, k, k_blocks, delta_k, n_wi,
-                                          m, lhs_indexer, rhs_indexer,
-                                          res_indexer));
-                    });
-
-                    sycl::event red_ev =
-                        tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                            exec_q, partially_reduced_tmp,
-                            partially_reduced_tmp2, res_tp, identity_val,
-                            iter_nelems, reduction_nelems, reduction_groups, wg,
-                            max_wg, preferred_reductions_per_wi,
-                            reductions_per_wi, {gemm_ev});
-
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, partially_reduced_tmp] {
-                                sycl::free(partially_reduced_tmp, ctx);
-                            });
-                        });
-
-                    return cleanup_host_task_event;
-                }
+                return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
             }
         }
         else {
-            constexpr int m_groups = 1;
-
-            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size, delta_k,
-                n_wi,   // modified by reference
-                delta_n // modified by reference
-            );
-
-            sycl::event gemm_ev;
-            if (k <= (delta_k * n_wi)) {
-                gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-
-                    size_t n_blocks = (n + delta_n - 1) / delta_n;
-                    size_t k_blocks =
-                        (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                    size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                    size_t lws = delta_n * delta_k;
-
-                    auto gRange =
-                        sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-                    auto lRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                    using LocAccT = sycl::local_accessor<resTy, 1>;
-                    LocAccT local_B_block(n_wi * delta_k, cgh);
-                    LocAccT workspace(delta_n * delta_k, cgh);
-                    using KernelName =
-                        class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
-                                              OuterInnerDimsIndexerT,
-                                              OuterInnerDimsIndexerT, m_groups>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmNoAtomicFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
-                                                   OuterInnerDimsIndexerT,
-                                                   OuterInnerDimsIndexerT,
-                                                   m_groups>(
-                            lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
-                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
-                            lhs_indexer, rhs_indexer, res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-
-                size_t iter_nelems = n * m;
-                size_t reduction_nelems =
-                    (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                // more than one work-groups is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(depends);
-
-                            using OuterInnerDimsIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            OuterInnerDimsIndexerT lhs_indexer{};
-                            OuterInnerDimsIndexerT rhs_indexer{};
-                            OuterInnerDimsIndexerT res_indexer{};
-
-                            size_t n_blocks = (n + delta_n - 1) / delta_n;
-                            size_t k_blocks =
-                                (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                            size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                            size_t lws = delta_n * delta_k;
-
-                            auto gRange = sycl::range<1>(n_blocks * m_blocks *
-                                                         k_blocks * lws);
-                            auto lRange = sycl::range<1>(lws);
-
-                            auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                            using LocAccT = sycl::local_accessor<resTy, 1>;
-                            LocAccT local_B_block(n_wi * delta_k, cgh);
-                            LocAccT workspace(delta_n * delta_k, cgh);
-                            using KernelName = class gemm_tree_k_krn<
-                                lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                OuterInnerDimsIndexerT, m_groups>;
-                            cgh.parallel_for<KernelName>(
-                                ndRange,
-                                GemmNoAtomicFunctorThreadK<
-                                    lhsTy, rhsTy, resTy, LocAccT,
-                                    OuterInnerDimsIndexerT,
-                                    OuterInnerDimsIndexerT, m_groups>(
-                                    lhs_tp, rhs_tp, tmp, workspace,
-                                    local_B_block, n, n_blocks, delta_n, k,
-                                    k_blocks, delta_k, n_wi, m, lhs_indexer,
-                                    rhs_indexer, res_indexer));
-                        });
-
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           NoOpIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, NoOpIndexerT{}};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 8;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-
-                    size_t n_blocks = (n + delta_n - 1) / delta_n;
-                    size_t k_blocks =
-                        (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                    size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                    size_t lws = delta_n * delta_k;
-
-                    auto gRange =
-                        sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-                    auto lRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                    using LocAccT = sycl::local_accessor<resTy, 1>;
-                    LocAccT local_B_block(n_wi * delta_k, cgh);
-                    LocAccT workspace(delta_n * delta_k, cgh);
-                    using KernelName =
-                        class gemm_tree_k_krn<lhsTy, rhsTy, resTy,
-                                              OuterInnerDimsIndexerT,
-                                              OuterInnerDimsIndexerT, m_groups>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmNoAtomicFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
-                                                   OuterInnerDimsIndexerT,
-                                                   OuterInnerDimsIndexerT,
-                                                   m_groups>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
-                            local_B_block, n, n_blocks, delta_n, k, k_blocks,
-                            delta_k, n_wi, m, lhs_indexer, rhs_indexer,
-                            res_indexer));
-                });
-                // tree_reduction_for_gemm returns sycl::event for reduction
-                sycl::event red_ev =
-                    tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+            return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
     }
     else { // m > 1, n > k or m > k
-        constexpr int wi_delta_n = 2;
-        size_t wg_delta_n(16); // rows of A processed in WG
-        size_t wg_delta_m(16); // rows of B processed in WG
-        size_t wi_delta_k(64); // Elements in K dimension processed by WI
-
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
-            constexpr int wi_delta_m = 4;
-
-            gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-                local_mem_size, reserved_slm_size, wi_delta_n,
-                wi_delta_k, // modified by reference
-                wg_delta_n, // modified by reference
-                wg_delta_m  // modified by reference
-            );
-
-            // each group processes delta_k items in a column,
-            // so no need to allocate temp memory if one group needed
-            if (k <= wi_delta_k) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange =
-                        sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 =
-                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, res_tp, local_A_block,
-                            local_B_block, n, wg_delta_n, k, k_blocks,
-                            wi_delta_k, m, m_blocks, wg_delta_m, lhs_indexer,
-                            rhs_indexer, res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-
-                size_t iter_nelems = n * m;
-                size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
-
-                // more than one work-groups is needed, requires a temporary
-                // wi_delta_k elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-
-                        size_t lws = wg_delta_n * wg_delta_m;
-
-                        size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                           (wi_delta_n * wg_delta_n));
-                        size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                        size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                           (wi_delta_m * wg_delta_m));
-
-                        auto gwsRange = sycl::range<1>(n_blocks * m_blocks *
-                                                       k_blocks * lws);
-                        auto lwsRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                        LocAccT1 local_A_block(
-                            sycl::range<1>((wi_delta_n * wg_delta_n) *
-                                           wi_delta_k),
-                            cgh);
-                        using LocAccT2 =
-                            sycl::local_accessor<sycl::vec<resTy, wi_delta_m>,
-                                                 1>;
-                        LocAccT2 local_B_block(
-                            sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                        using KernelName = class gemm_tree_nm_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, wi_delta_m>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmNoAtomicFunctorThreadNM<
-                                lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                wi_delta_n, wi_delta_m>(
-                                lhs_tp, rhs_tp, tmp, local_A_block,
-                                local_B_block, n, wg_delta_n, k, k_blocks,
-                                wi_delta_k, m, m_blocks, wg_delta_m,
-                                lhs_indexer, rhs_indexer, res_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           NoOpIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, NoOpIndexerT{}};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 8;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange =
-                        sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 =
-                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp,
-                            local_A_block, local_B_block, n, wg_delta_n, k,
-                            k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
-                            lhs_indexer, rhs_indexer, res_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
         else {
-            constexpr int wi_delta_m = 1;
-
-            gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-                local_mem_size, reserved_slm_size, wi_delta_n,
-                wi_delta_k, // modified by reference
-                wg_delta_n, // modified by reference
-                wg_delta_m  // modified by reference
-            );
-
-            // each group processes delta_k items in a column,
-            // so no need to allocate temp memory if one group needed
-            if (k <= wi_delta_k) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange =
-                        sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                    LocAccT2 local_B_block(wi_delta_k * wg_delta_m, cgh);
-
-                    using KernelName = class gemm_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, res_tp, local_A_block,
-                            local_B_block, n, wg_delta_n, k, k_blocks,
-                            wi_delta_k, m, m_blocks, wg_delta_m, lhs_indexer,
-                            rhs_indexer, res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-
-                size_t iter_nelems = n * m;
-                size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
-
-                // more than one work-groups is needed, requires a temporary
-                // wi_delta_k elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-
-                        size_t lws = wg_delta_n * wg_delta_m;
-
-                        size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                           (wi_delta_n * wg_delta_n));
-                        size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                        size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                           (wi_delta_m * wg_delta_m));
-
-                        auto gwsRange = sycl::range<1>(n_blocks * m_blocks *
-                                                       k_blocks * lws);
-                        auto lwsRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                        LocAccT1 local_A_block(
-                            sycl::range<1>((wi_delta_n * wg_delta_n) *
-                                           wi_delta_k),
-                            cgh);
-                        using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                        LocAccT2 local_B_block(wi_delta_k * wg_delta_m, cgh);
-
-                        using KernelName = class gemm_tree_nm_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, wi_delta_m>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmNoAtomicFunctorThreadNM<
-                                lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                wi_delta_n, wi_delta_m>(
-                                lhs_tp, rhs_tp, tmp, local_A_block,
-                                local_B_block, n, wg_delta_n, k, k_blocks,
-                                wi_delta_k, m, m_blocks, wg_delta_m,
-                                lhs_indexer, rhs_indexer, res_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           NoOpIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, NoOpIndexerT{}};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 8;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange =
-                        sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                    LocAccT2 local_B_block(wi_delta_k * wg_delta_m, cgh);
-
-                    using KernelName = class gemm_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp,
-                            local_A_block, local_B_block, n, wg_delta_n, k,
-                            k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
-                            lhs_indexer, rhs_indexer, res_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
     }
 }
