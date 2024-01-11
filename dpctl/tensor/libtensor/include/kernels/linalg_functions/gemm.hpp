@@ -5871,14 +5871,15 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                         m, m_blocks, wg_delta_m, batch_nelems, batch_indexer,
                         lhs_indexer, rhs_indexer, res_indexer));
             }
-                else {
+            else {
                 using LocAccT1 = sycl::local_accessor<resTy, 1>;
                 LocAccT1 local_A_block(
-                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k), cgh);
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
                 using LocAccT2 =
                     sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
                 LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
-                                    cgh);
+                                       cgh);
                 using KernelName = class gemm_batch_tree_nm_krn<
                     lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT, TmpIndexerT,
                     BatchDimsIndexerT, wi_delta_m>;
