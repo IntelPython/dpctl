@@ -261,7 +261,7 @@ def test_matmul_broadcasting():
     assert r.shape == (7, 11, 13)
 
 
-@pytest.mark.parametrize("dtype", ["i4", "i8", "f4", "c8"])
+@pytest.mark.parametrize("dtype", ["i4", "i8", "f4", "c8"][::-1])
 def test_matmul_strided(dtype):
     get_queue_or_skip()
 
