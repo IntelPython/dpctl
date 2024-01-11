@@ -1023,6 +1023,10 @@ sycl::event gemm_impl(sycl::queue &exec_q,
             });
     });
 
+    if (k == 0) {
+        return res_init_ev;
+    }
+
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
         dev.get_info<sycl::info::device::local_mem_size>();
@@ -1194,6 +1198,10 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         cgh.depends_on(depends);
         cgh.fill<resTy>(res_tp, resTy(0), n * m);
     });
+
+    if (k == 0) {
+        return res_init_ev;
+    }
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -2601,6 +2609,8 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
     }
 }
 
+template <typename T1, typename T2, typename T3> class gemm_tree_empty_krn;
+
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event gemm_tree_impl(sycl::queue &exec_q,
                            const char *lhs_cp,
@@ -2621,6 +2631,24 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+
+    if (k == 0) {
+        sycl::event gemm_no_reduction_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+                IndexerT res_indexer(res_nd, 0, res_shapes_strides);
+                using InitKernelName =
+                    class gemm_tree_empty_krn<lhsTy, rhsTy, resTy>;
+                cgh.parallel_for<InitKernelName>(
+                    sycl::range<1>(n * m), [=](sycl::id<1> id) {
+                        auto res_offset = res_indexer(id[0]);
+                        res_tp[res_offset] = resTy(0);
+                    });
+            });
+        return gemm_no_reduction_ev;
+    }
 
     if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
@@ -3339,6 +3367,15 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+
+    if (k == 0) {
+        sycl::event gemm_no_reduction_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+                cgh.fill<resTy>(res_tp, resTy(0), n * m);
+            });
+        return gemm_no_reduction_ev;
+    }
 
     if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
@@ -4123,6 +4160,10 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             });
     });
 
+    if (k == 0) {
+        return res_init_ev;
+    }
+
     sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(res_init_ev);
 
@@ -4320,6 +4361,10 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
         cgh.depends_on(depends);
         cgh.fill<resTy>(res_tp, resTy(0), n * m * batch_nelems);
     });
+
+    if (k == 0) {
+        return res_init_ev;
+    }
 
     sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(res_init_ev);
@@ -5927,6 +5972,9 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
     }
 }
 
+template <typename T1, typename T2, typename T3>
+class gemm_batch_tree_empty_krn;
+
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event
 gemm_batch_tree_impl(sycl::queue &exec_q,
@@ -5955,6 +6003,25 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+
+    if (k == 0) {
+        sycl::event gemm_batch_no_reduction_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+                IndexerT res_indexer(batch_nd + res_outer_nd, res_batch_offset,
+                                     res_shape_strides);
+                using InitKernelName =
+                    class gemm_batch_tree_empty_krn<lhsTy, rhsTy, resTy>;
+                cgh.parallel_for<InitKernelName>(
+                    sycl::range<1>(n * m * batch_nelems), [=](sycl::id<1> id) {
+                        auto res_offset = res_indexer(id[0]);
+                        res_tp[res_offset] = resTy(0);
+                    });
+            });
+        return gemm_batch_no_reduction_ev;
+    }
 
     if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
@@ -6784,6 +6851,15 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
     const rhsTy *rhs_tp =
         reinterpret_cast<const rhsTy *>(rhs_cp) + rhs_batch_offset;
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + res_batch_offset;
+
+    if (k == 0) {
+        sycl::event gemm_batch_no_reduction_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+                cgh.fill<resTy>(res_tp, resTy(0), n * m * batch_nelems);
+            });
+        return gemm_batch_no_reduction_ev;
+    }
 
     if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
