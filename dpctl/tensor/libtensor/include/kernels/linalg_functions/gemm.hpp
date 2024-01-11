@@ -24,7 +24,7 @@ namespace kernels
 namespace gemm_detail
 {
 
-template <typename T, int m_groups>
+template <typename T, size_t m_groups>
 void scale_gemm_k_parameters(const size_t &local_mem_size,
                              const size_t &reserved_slm_size,
                              const size_t delta_k,
@@ -67,32 +67,6 @@ void scale_gemm_nm_parameters(const size_t &local_mem_size,
     }
 }
 } // namespace gemm_detail
-
-// template <typename FirstIndexerT,
-//           typename SecondIndexerT,
-//           typename ThirdIndexerT>
-// struct ThreeOffsets_CombinedIndexer
-// {
-// private:
-//     FirstIndexerT first_indexer_;
-//     SecondIndexerT second_indexer_;
-//     ThirdIndexerT third_indexer_;
-
-// public:
-//     ThreeOffsets_CombinedIndexer(const FirstIndexerT &first_indexer,
-//                                  const SecondIndexerT &second_indexer,
-//                                  const ThirdIndexerT &third_indexer)
-//         : first_indexer_(first_indexer), second_indexer_(second_indexer),
-//           third_indexer_(third_indexer)
-//     {
-//     }
-
-//     ThreeOffsets<py::ssize_t> operator()(py::ssize_t gid) const
-//     {
-//         return ThreeOffsets<py::ssize_t>(
-//             first_indexer_(gid), second_indexer_(gid), third_indexer_(gid));
-//     }
-// };
 
 using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
@@ -426,8 +400,8 @@ template <typename lhsT,
           typename LocAccT1,
           typename LocAccT2,
           typename OuterInnerDimsIndexerT,
-          size_t wi_delta_n,
-          size_t wi_delta_m>
+          int wi_delta_n,
+          int wi_delta_m>
 class GemmFunctorThreadNM
 {
 private:
@@ -586,7 +560,7 @@ template <typename lhsT,
           typename LocAccT1,
           typename LocAccT2,
           typename OuterInnerDimsIndexerT,
-          size_t wi_delta_n>
+          int wi_delta_n>
 class GemmFunctorThreadNM<lhsT,
                           rhsT,
                           resT,
@@ -1367,8 +1341,8 @@ template <typename lhsT,
           typename LocAccT2,
           typename OuterInnerDimsIndexerT,
           typename ResIndexerT,
-          size_t wi_delta_n,
-          size_t wi_delta_m>
+          int wi_delta_n,
+          int wi_delta_m>
 class GemmNoAtomicFunctorThreadNM
 {
 private:
@@ -1524,7 +1498,7 @@ template <typename lhsT,
           typename LocAccT2,
           typename OuterInnerDimsIndexerT,
           typename ResIndexerT,
-          size_t wi_delta_n>
+          int wi_delta_n>
 class GemmNoAtomicFunctorThreadNM<lhsT,
                                   rhsT,
                                   resT,
@@ -2257,7 +2231,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
     }
 }
 
-template <typename lhsTy, typename rhsTy, typename resTy, size_t wi_delta_m>
+template <typename lhsTy, typename rhsTy, typename resTy, int wi_delta_m>
 sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                               const lhsTy *lhs_tp,
                               const rhsTy *rhs_tp,
@@ -2998,7 +2972,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
     }
 }
 
-template <typename lhsTy, typename rhsTy, typename resTy, size_t wi_delta_m>
+template <typename lhsTy, typename rhsTy, typename resTy, int wi_delta_m>
 sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                                      const lhsTy *lhs_tp,
                                      const rhsTy *rhs_tp,
@@ -3399,8 +3373,8 @@ template <typename lhsT,
           typename LocAccT2,
           typename OuterInnerDimsIndexerT,
           typename BatchDimsIndexerT,
-          size_t wi_delta_n,
-          size_t wi_delta_m>
+          int wi_delta_n,
+          int wi_delta_m>
 class GemmBatchFunctorThreadNM
 {
 private:
@@ -3580,7 +3554,7 @@ template <typename lhsT,
           typename LocAccT2,
           typename OuterInnerDimsIndexerT,
           typename BatchDimsIndexerT,
-          size_t wi_delta_n>
+          int wi_delta_n>
 class GemmBatchFunctorThreadNM<lhsT,
                                rhsT,
                                resT,
@@ -4162,7 +4136,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
                                         rhs_batch_offset, res_batch_offset,
                                         batch_shape_strides);
         if (m == 1) {
-            constexpr int m_groups = 1;
+            constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(4);
             size_t delta_n(4);
@@ -4364,7 +4338,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
             Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
                              static_cast<py::ssize_t>(n * m)});
         if (m == 1) {
-            constexpr int m_groups = 1;
+            constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(4);
             size_t delta_n(4);
@@ -4509,8 +4483,8 @@ template <typename lhsT,
           typename OuterInnerDimsIndexerT,
           typename ResIndexerT,
           typename BatchDimsIndexerT,
-          size_t wi_delta_n,
-          size_t wi_delta_m>
+          int wi_delta_n,
+          int wi_delta_m>
 class GemmBatchNoAtomicFunctorThreadNM
 {
 private:
@@ -4686,7 +4660,7 @@ template <typename lhsT,
           typename OuterInnerDimsIndexerT,
           typename ResIndexerT,
           typename BatchDimsIndexerT,
-          size_t wi_delta_n>
+          int wi_delta_n>
 class GemmBatchNoAtomicFunctorThreadNM<lhsT,
                                        rhsT,
                                        resT,
@@ -5150,6 +5124,798 @@ template <typename T1,
           size_t>
 class gemm_batch_tree_nm_krn;
 
+template <typename lhsTy, typename rhsTy, typename resTy, size_t m_groups>
+sycl::event
+gemm_batch_tree_k_impl(sycl::queue &exec_q,
+                       const lhsTy *lhs_tp,
+                       const rhsTy *rhs_tp,
+                       resTy *res_tp,
+                       size_t batch_nelems,
+                       size_t n,
+                       size_t k,
+                       size_t m,
+                       int batch_nd,
+                       const py::ssize_t *batch_shape_strides,
+                       py::ssize_t lhs_batch_offset,
+                       py::ssize_t rhs_batch_offset,
+                       py::ssize_t res_batch_offset,
+                       int inner_nd,
+                       int lhs_outer_nd,
+                       const py::ssize_t *lhs_outer_inner_shapes_strides,
+                       int rhs_outer_nd,
+                       const py::ssize_t *rhs_outer_inner_shapes_strides,
+                       int res_outer_nd,
+                       const py::ssize_t *res_outer_shapes_strides,
+                       const py::ssize_t *res_shape_strides,
+                       std::vector<sycl::event> const &depends)
+{
+    size_t delta_k(4);
+    size_t n_wi(4);
+    size_t delta_n(4);
+
+    const sycl::device &dev = exec_q.get_device();
+    const size_t local_mem_size =
+        dev.get_info<sycl::info::device::local_mem_size>();
+    const size_t reserved_slm_size = 512;
+
+    gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+        local_mem_size, reserved_slm_size, delta_k,
+        n_wi,   // modified by reference
+        delta_n // modified by reference
+    );
+
+    if (k <= (delta_k * n_wi)) {
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::StridedIndexer;
+            OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
+                                               lhs_outer_inner_shapes_strides);
+            OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
+                                               rhs_outer_inner_shapes_strides);
+            OuterInnerDimsIndexerT res_indexer(res_outer_nd, 0,
+                                               res_outer_shapes_strides);
+            using BatchDimsIndexerT =
+                dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            BatchDimsIndexerT batch_indexer(batch_nd, lhs_batch_offset,
+                                            rhs_batch_offset, res_batch_offset,
+                                            batch_shape_strides);
+
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+            size_t lws = delta_n * delta_k;
+
+            auto gRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                         k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+            if constexpr (m_groups == 1) {
+                using LocAccT = sycl::local_accessor<resTy, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
+
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                        n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                        batch_nelems, batch_indexer, lhs_indexer, rhs_indexer,
+                        res_indexer));
+            }
+            else {
+                using LocAccT =
+                    sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
+
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                        n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                        batch_nelems, batch_indexer, lhs_indexer, rhs_indexer,
+                        res_indexer));
+            }
+        });
+        return gemm_ev;
+    }
+    else {
+        using ReductionOpT = sycl::plus<resTy>;
+        constexpr resTy identity_val =
+            sycl::known_identity<ReductionOpT, resTy>::value;
+
+        size_t iter_nelems = batch_nelems * n * m;
+        size_t reduction_nelems = (k + delta_k * n_wi - 1) / (delta_k * n_wi);
+
+        // more than one work-group is needed, requires a
+        // temporary delta_k * n_wi elements processed along k,
+        // so if more to process use multiple
+        const auto &sg_sizes =
+            dev.get_info<sycl::info::device::sub_group_sizes>();
+        size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+        if (reduction_nelems < wg) {
+            resTy *tmp = sycl::malloc_device<resTy>(
+                iter_nelems * reduction_nelems, exec_q);
+            sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using OuterInnerDimsIndexerT =
+                    dpctl::tensor::offset_utils::StridedIndexer;
+                using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                OuterInnerDimsIndexerT lhs_indexer(
+                    inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
+                OuterInnerDimsIndexerT rhs_indexer(
+                    inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
+                TmpIndexerT res_indexer{};
+                using dpctl::tensor::offset_utils::StridedIndexer;
+                using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+                using dpctl::tensor::offset_utils::Strided1DIndexer;
+                using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+                using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                    StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
+                StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
+                                                 batch_shape_strides);
+                UnpackedStridedIndexer rhs_batch_indexer(
+                    batch_nd, rhs_batch_offset, batch_shape_strides,
+                    batch_shape_strides + 2 * batch_nd);
+                Strided1DIndexer tmp_batch_indexer(
+                    0, static_cast<py::ssize_t>(batch_nelems), n * m);
+                BatchDimsIndexerT batch_indexer(
+                    lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
+
+                size_t n_blocks = (n + delta_n - 1) / delta_n;
+                size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+                size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+                size_t lws = delta_n * delta_k;
+
+                auto gRange = sycl::range<1>(batch_nelems * n_blocks *
+                                             m_blocks * k_blocks * lws);
+                auto lRange = sycl::range<1>(lws);
+
+                auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+                if constexpr (m_groups == 1) {
+                    using LocAccT = sycl::local_accessor<resTy, 1>;
+                    LocAccT local_B_block(n_wi * delta_k, cgh);
+                    LocAccT workspace(delta_n * delta_k, cgh);
+
+                    using KernelName = class gemm_batch_tree_k_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        TmpIndexerT, BatchDimsIndexerT, m_groups>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmBatchNoAtomicFunctorThreadK<
+                            lhsTy, rhsTy, resTy, LocAccT,
+                            OuterInnerDimsIndexerT, TmpIndexerT,
+                            BatchDimsIndexerT, m_groups>(
+                            lhs_tp, rhs_tp, tmp, workspace, local_B_block, n,
+                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                            batch_nelems, batch_indexer, lhs_indexer,
+                            rhs_indexer, res_indexer));
+                }
+                else {
+                    using LocAccT =
+                        sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                    LocAccT local_B_block(n_wi * delta_k, cgh);
+                    LocAccT workspace(delta_n * delta_k, cgh);
+
+                    using KernelName = class gemm_batch_tree_k_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        TmpIndexerT, BatchDimsIndexerT, m_groups>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmBatchNoAtomicFunctorThreadK<
+                            lhsTy, rhsTy, resTy, LocAccT,
+                            OuterInnerDimsIndexerT, TmpIndexerT,
+                            BatchDimsIndexerT, m_groups>(
+                            lhs_tp, rhs_tp, tmp, workspace, local_B_block, n,
+                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                            batch_nelems, batch_indexer, lhs_indexer,
+                            rhs_indexer, res_indexer));
+                }
+            });
+            sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(gemm_ev);
+
+                using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+                using InputOutputIterIndexerT =
+                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                        NoOpIndexerT, ResIndexerT>;
+                using ReductionIndexerT =
+                    dpctl::tensor::offset_utils::Strided1DIndexer;
+
+                ResIndexerT res_iter_indexer{
+                    batch_nd + res_outer_nd,
+                    static_cast<py::ssize_t>(res_batch_offset),
+                    res_shape_strides};
+                InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                            res_iter_indexer};
+                ReductionIndexerT reduction_indexer{
+                    0, static_cast<py::ssize_t>(reduction_nelems),
+                    static_cast<py::ssize_t>(iter_nelems)};
+
+                sycl::range<1> iter_range{iter_nelems};
+
+                cgh.parallel_for<class gemm_reduction_seq_strided_krn<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>>(
+                    iter_range, SequentialReduction<resTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                                    tmp, res_tp, ReductionOpT(), identity_val,
+                                    in_out_iter_indexer, reduction_indexer,
+                                    reduction_nelems));
+            });
+            sycl::event cleanup_host_task_event =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(red_ev);
+                    const sycl::context &ctx = exec_q.get_context();
+
+                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                });
+            return cleanup_host_task_event;
+        }
+
+        // max_max_wg prevents running out of resources on CPU
+        constexpr size_t max_max_wg = 2048;
+        size_t max_wg = std::min(
+            max_max_wg,
+            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+        constexpr size_t preferred_reductions_per_wi = 4;
+        size_t reductions_per_wi(preferred_reductions_per_wi);
+
+        size_t reduction_groups =
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
+        assert(reduction_groups > 1);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (/* temp */ reduction_nelems +
+                           /* first reduction temp */ reduction_groups),
+            exec_q);
+        resTy *partially_reduced_tmp2 = nullptr;
+
+        if (partially_reduced_tmp == nullptr) {
+            throw std::runtime_error("Unable to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+        }
+
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::StridedIndexer;
+            using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
+                                               lhs_outer_inner_shapes_strides);
+            OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
+                                               rhs_outer_inner_shapes_strides);
+            TmpIndexerT res_indexer{};
+            using dpctl::tensor::offset_utils::StridedIndexer;
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using BatchDimsIndexerT =
+                ThreeOffsets_CombinedIndexer<StridedIndexer, StridedIndexer,
+                                             Strided1DIndexer>;
+            StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
+                                             batch_shape_strides);
+            StridedIndexer rhs_batch_indexer(
+                batch_nd, rhs_batch_offset, batch_shape_strides + 2 * batch_nd);
+            Strided1DIndexer tmp_batch_indexer(
+                0, static_cast<py::ssize_t>(batch_nelems), n * m);
+            BatchDimsIndexerT batch_indexer(
+                lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
+
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+            size_t lws = delta_n * delta_k;
+
+            auto gRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                         k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+            if constexpr (m_groups == 1) {
+                using LocAccT = sycl::local_accessor<resTy, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT, TmpIndexerT,
+                    BatchDimsIndexerT, m_groups>;
+
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        TmpIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
+                        local_B_block, n, n_blocks, delta_n, k, k_blocks,
+                        delta_k, n_wi, m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, res_indexer));
+            }
+            else {
+                using LocAccT =
+                    sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT, TmpIndexerT,
+                    BatchDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        TmpIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
+                        local_B_block, n, n_blocks, delta_n, k, k_blocks,
+                        delta_k, n_wi, m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, res_indexer));
+            }
+        });
+
+        sycl::event red_ev = tree_reduction_for_gemm<resTy, ReductionOpT>(
+            exec_q, partially_reduced_tmp, partially_reduced_tmp2, res_tp,
+            identity_val, iter_nelems, reduction_nelems, reduction_groups, wg,
+            max_wg, preferred_reductions_per_wi, reductions_per_wi,
+            batch_nd + res_outer_nd, res_batch_offset, res_shape_strides,
+            {gemm_ev});
+
+        sycl::event cleanup_host_task_event =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(red_ev);
+                const sycl::context &ctx = exec_q.get_context();
+
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
+                });
+            });
+
+        return cleanup_host_task_event;
+    }
+}
+
+template <typename lhsTy, typename rhsTy, typename resTy, int wi_delta_m>
+sycl::event
+gemm_batch_tree_nm_impl(sycl::queue &exec_q,
+                        const lhsTy *lhs_tp,
+                        const rhsTy *rhs_tp,
+                        resTy *res_tp,
+                        size_t batch_nelems,
+                        size_t n,
+                        size_t k,
+                        size_t m,
+                        int batch_nd,
+                        const py::ssize_t *batch_shape_strides,
+                        py::ssize_t lhs_batch_offset,
+                        py::ssize_t rhs_batch_offset,
+                        py::ssize_t res_batch_offset,
+                        int inner_nd,
+                        int lhs_outer_nd,
+                        const py::ssize_t *lhs_outer_inner_shapes_strides,
+                        int rhs_outer_nd,
+                        const py::ssize_t *rhs_outer_inner_shapes_strides,
+                        int res_outer_nd,
+                        const py::ssize_t *res_outer_shapes_strides,
+                        const py::ssize_t *res_shape_strides,
+                        std::vector<sycl::event> const &depends)
+{
+    constexpr int wi_delta_n = 2;
+    size_t wg_delta_n(16); // rows of A processed in WG
+    size_t wg_delta_m(16); // rows of B processed in WG
+    size_t wi_delta_k(64); // Elements in K dimension processed by WI
+
+    const sycl::device &dev = exec_q.get_device();
+    const size_t local_mem_size =
+        dev.get_info<sycl::info::device::local_mem_size>();
+    const size_t reserved_slm_size = 512;
+
+    gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
+        local_mem_size, reserved_slm_size, wi_delta_n,
+        wi_delta_k, // modified by reference
+        wg_delta_n, // modified by reference
+        wg_delta_m  // modified by reference
+    );
+
+    // each group processes delta_k * n_wi
+    // items in a column, so no need for allocating
+    // temp memory if only one group is needed
+    if (k <= wi_delta_k) {
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::StridedIndexer;
+            OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
+                                               lhs_outer_inner_shapes_strides);
+            OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
+                                               rhs_outer_inner_shapes_strides);
+            OuterInnerDimsIndexerT res_indexer(res_outer_nd, 0,
+                                               res_outer_shapes_strides);
+            using BatchDimsIndexerT =
+                dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            BatchDimsIndexerT batch_indexer(batch_nd, lhs_batch_offset,
+                                            rhs_batch_offset, res_batch_offset,
+                                            batch_shape_strides);
+
+            size_t lws = wg_delta_n * wg_delta_m;
+
+            size_t n_blocks =
+                ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
+            size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+            size_t m_blocks =
+                ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
+
+            auto gwsRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                           k_blocks * lws);
+            auto lwsRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+            if constexpr (wi_delta_m == 1) {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, res_tp, local_A_block, local_B_block, n,
+                        wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                        wg_delta_m, batch_nelems, batch_indexer, lhs_indexer,
+                        rhs_indexer, res_indexer));
+            }
+            else {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 =
+                    sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, res_tp, local_A_block, local_B_block, n,
+                        wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                        wg_delta_m, batch_nelems, batch_indexer, lhs_indexer,
+                        rhs_indexer, res_indexer));
+            }
+        });
+        return gemm_ev;
+    }
+    else {
+        using ReductionOpT = sycl::plus<resTy>;
+        constexpr resTy identity_val =
+            sycl::known_identity<ReductionOpT, resTy>::value;
+        size_t iter_nelems = batch_nelems * n * m;
+        size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
+
+        // more than one work-group is needed, requires a temporary
+        // delta_k * n_wi elements processed along k, so if more to
+        // process use multiple
+        const auto &sg_sizes =
+            dev.get_info<sycl::info::device::sub_group_sizes>();
+        size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+        if (reduction_nelems < wg) {
+            resTy *tmp = sycl::malloc_device<resTy>(
+                iter_nelems * reduction_nelems, exec_q);
+            sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using OuterInnerDimsIndexerT =
+                    dpctl::tensor::offset_utils::StridedIndexer;
+                using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                OuterInnerDimsIndexerT lhs_indexer(
+                    inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
+                OuterInnerDimsIndexerT rhs_indexer(
+                    inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
+                TmpIndexerT res_indexer{};
+                using dpctl::tensor::offset_utils::StridedIndexer;
+                using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+                using dpctl::tensor::offset_utils::Strided1DIndexer;
+                using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+                using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                    StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
+                StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
+                                                 batch_shape_strides);
+                UnpackedStridedIndexer rhs_batch_indexer(
+                    batch_nd, rhs_batch_offset, batch_shape_strides,
+                    batch_shape_strides + 2 * batch_nd);
+                Strided1DIndexer tmp_batch_indexer(
+                    0, static_cast<py::ssize_t>(batch_nelems), n * m);
+                BatchDimsIndexerT batch_indexer(
+                    lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
+
+                size_t lws = wg_delta_n * wg_delta_m;
+
+                size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
+                                   (wi_delta_n * wg_delta_n));
+                size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+                size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
+                                   (wi_delta_m * wg_delta_m));
+
+                auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
+                                               m_blocks * k_blocks * lws);
+                auto lwsRange = sycl::range<1>(lws);
+
+                auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+                if constexpr (wi_delta_m == 1) {
+                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                    LocAccT1 local_A_block(
+                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                        cgh);
+                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                    LocAccT2 local_B_block(
+                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
+
+                    using KernelName = class gemm_batch_tree_nm_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        TmpIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmBatchNoAtomicFunctorThreadNM<
+                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                            OuterInnerDimsIndexerT, TmpIndexerT,
+                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                            lhs_tp, rhs_tp, tmp, local_A_block, local_B_block,
+                            n, wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                            wg_delta_m, batch_nelems, batch_indexer,
+                            lhs_indexer, rhs_indexer, res_indexer));
+                }
+                else {
+                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                    LocAccT1 local_A_block(
+                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                        cgh);
+                    using LocAccT2 =
+                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                    LocAccT2 local_B_block(
+                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
+
+                    using KernelName = class gemm_batch_tree_nm_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        TmpIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmBatchNoAtomicFunctorThreadNM<
+                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                            OuterInnerDimsIndexerT, TmpIndexerT,
+                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                            lhs_tp, rhs_tp, tmp, local_A_block, local_B_block,
+                            n, wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                            wg_delta_m, batch_nelems, batch_indexer,
+                            lhs_indexer, rhs_indexer, res_indexer));
+                }
+            });
+            sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(gemm_ev);
+
+                using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+                using InputOutputIterIndexerT =
+                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                        NoOpIndexerT, ResIndexerT>;
+                using ReductionIndexerT =
+                    dpctl::tensor::offset_utils::Strided1DIndexer;
+
+                ResIndexerT res_iter_indexer{
+                    batch_nd + res_outer_nd,
+                    static_cast<py::ssize_t>(res_batch_offset),
+                    res_shape_strides};
+                InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                            res_iter_indexer};
+                ReductionIndexerT reduction_indexer{
+                    0, static_cast<py::ssize_t>(reduction_nelems),
+                    static_cast<py::ssize_t>(iter_nelems)};
+
+                sycl::range<1> iter_range{iter_nelems};
+
+                cgh.parallel_for<class gemm_reduction_seq_strided_krn<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>>(
+                    iter_range, SequentialReduction<resTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                                    tmp, res_tp, ReductionOpT(), identity_val,
+                                    in_out_iter_indexer, reduction_indexer,
+                                    reduction_nelems));
+            });
+            sycl::event cleanup_host_task_event =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(red_ev);
+                    const sycl::context &ctx = exec_q.get_context();
+
+                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                });
+            return cleanup_host_task_event;
+        }
+
+        // max_max_wg prevents running out of resources on CPU
+        constexpr size_t max_max_wg = 2048;
+        size_t max_wg = std::min(
+            max_max_wg,
+            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+        constexpr size_t preferred_reductions_per_wi = 4;
+        size_t reductions_per_wi(preferred_reductions_per_wi);
+
+        size_t reduction_groups =
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
+        assert(reduction_groups > 1);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (/* temp */ reduction_nelems +
+                           /* first reduction temp */ reduction_groups),
+            exec_q);
+        resTy *partially_reduced_tmp2 = nullptr;
+
+        if (partially_reduced_tmp == nullptr) {
+            throw std::runtime_error("Unable to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+        }
+
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::StridedIndexer;
+            using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
+                                               lhs_outer_inner_shapes_strides);
+            OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
+                                               rhs_outer_inner_shapes_strides);
+            TmpIndexerT res_indexer{};
+            using dpctl::tensor::offset_utils::StridedIndexer;
+            using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
+            StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
+                                             batch_shape_strides);
+            UnpackedStridedIndexer rhs_batch_indexer(
+                batch_nd, rhs_batch_offset, batch_shape_strides,
+                batch_shape_strides + 2 * batch_nd);
+            Strided1DIndexer tmp_batch_indexer(
+                0, static_cast<py::ssize_t>(batch_nelems), n * m);
+            BatchDimsIndexerT batch_indexer(
+                lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
+
+            size_t lws = wg_delta_n * wg_delta_m;
+
+            size_t n_blocks =
+                ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
+            size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+            size_t m_blocks =
+                ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
+
+            auto gwsRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                           k_blocks * lws);
+            auto lwsRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+            if constexpr (wi_delta_m == 1) {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT, TmpIndexerT,
+                    BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, TmpIndexerT, BatchDimsIndexerT,
+                        wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, local_A_block,
+                        local_B_block, n, wg_delta_n, k, k_blocks, wi_delta_k,
+                        m, m_blocks, wg_delta_m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, res_indexer));
+            }
+                else {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k), cgh);
+                using LocAccT2 =
+                    sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                    cgh);
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT, TmpIndexerT,
+                    BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, TmpIndexerT, BatchDimsIndexerT,
+                        wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, local_A_block,
+                        local_B_block, n, wg_delta_n, k, k_blocks, wi_delta_k,
+                        m, m_blocks, wg_delta_m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, res_indexer));
+            }
+        });
+
+        sycl::event red_ev = tree_reduction_for_gemm<resTy, ReductionOpT>(
+            exec_q, partially_reduced_tmp, partially_reduced_tmp2, res_tp,
+            identity_val, iter_nelems, reduction_nelems, reduction_groups, wg,
+            max_wg, preferred_reductions_per_wi, reductions_per_wi,
+            batch_nd + res_outer_nd, res_batch_offset, res_shape_strides,
+            {gemm_ev});
+
+        sycl::event cleanup_host_task_event =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(red_ev);
+                const sycl::context &ctx = exec_q.get_context();
+
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
+                });
+            });
+
+        return cleanup_host_task_event;
+    }
+}
+
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event
 gemm_batch_tree_impl(sycl::queue &exec_q,
@@ -5179,729 +5945,218 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
+    if ((k > n && k > m) || m == 1) {
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (!is_complex<resTy>::value) {
+            if (m == 1) {
+                return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    batch_nd, batch_shape_strides, lhs_batch_offset,
+                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
+                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_outer_nd,
+                    res_outer_shapes_strides, res_shape_strides, depends);
+            }
+            else {
+                return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    batch_nd, batch_shape_strides, lhs_batch_offset,
+                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
+                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_outer_nd,
+                    res_outer_shapes_strides, res_shape_strides, depends);
+            }
+        }
+        else {
+            return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
+                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
+                res_batch_offset, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_outer_nd,
+                res_outer_shapes_strides, res_shape_strides, depends);
+        }
+    }
+    else { // m > 1, n > k or m > k
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (!is_complex<resTy>::value) {
+            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
+                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
+                res_batch_offset, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_outer_nd,
+                res_outer_shapes_strides, res_shape_strides, depends);
+        }
+        else { // m > 1, n > k or m > k, resTy complex
+            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
+                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
+                res_batch_offset, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_outer_nd,
+                res_outer_shapes_strides, res_shape_strides, depends);
+        }
+    }
+}
+
+template <typename lhsTy, typename rhsTy, typename resTy, size_t m_groups>
+sycl::event
+gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
+                              const lhsTy *lhs_tp,
+                              const rhsTy *rhs_tp,
+                              resTy *res_tp,
+                              size_t batch_nelems,
+                              size_t n,
+                              size_t k,
+                              size_t m,
+                              std::vector<sycl::event> const &depends)
+{
+    size_t delta_k(4);
+    size_t n_wi(4);
+    size_t delta_n(4);
+
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
         dev.get_info<sycl::info::device::local_mem_size>();
     const size_t reserved_slm_size = 512;
 
-    if ((k > n && k > m) || m == 1) {
-        size_t delta_k(4);
-        size_t n_wi(4);
-        size_t delta_n(4);
+    gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+        local_mem_size, reserved_slm_size, delta_k,
+        n_wi,   // modified by reference
+        delta_n // modified by reference
+    );
 
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
-            if (m == 1) {
-                constexpr int m_groups = 1;
-                gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size, delta_k,
-                    n_wi,   // modified by reference
-                    delta_n // modified by reference
-                );
+    if (k <= (delta_k * n_wi)) {
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
 
-                if (k <= (delta_k * n_wi)) {
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT res_indexer{};
+            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            using BatchDimsIndexerT =
+                ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
+                                             Strided1DIndexer>;
 
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT res_indexer(
-                            res_outer_nd, 0, res_outer_shapes_strides);
-                        using BatchDimsIndexerT = dpctl::tensor::offset_utils::
-                            ThreeOffsets_StridedIndexer;
-                        BatchDimsIndexerT batch_indexer(
-                            batch_nd, lhs_batch_offset, rhs_batch_offset,
-                            res_batch_offset, batch_shape_strides);
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            BatchDimsIndexerT batch_indexer(
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * k)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(k * m)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * m)});
 
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
 
-                        size_t lws = delta_n * delta_k;
+            size_t lws = delta_n * delta_k;
 
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
+            auto gRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                         k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
 
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
 
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
+            if constexpr (m_groups == 1) {
+                using LocAccT = sycl::local_accessor<resTy, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
 
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
 
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, res_tp, workspace,
-                                local_B_block, n, n_blocks, delta_n, k,
-                                k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                res_indexer));
-                    });
-                    return gemm_ev;
-                }
-                else {
-                    using ReductionOpT = sycl::plus<resTy>;
-                    constexpr resTy identity_val =
-                        sycl::known_identity<ReductionOpT, resTy>::value;
-
-                    size_t iter_nelems = batch_nelems * n * m;
-                    size_t reduction_nelems =
-                        (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                    // more than one work-group is needed, requires a
-                    // temporary delta_k * n_wi elements processed along k,
-                    // so if more to process use multiple
-                    const auto &sg_sizes =
-                        dev.get_info<sycl::info::device::sub_group_sizes>();
-                    size_t wg =
-                        choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                    if (reduction_nelems < wg) {
-                        resTy *tmp = sycl::malloc_device<resTy>(
-                            iter_nelems * reduction_nelems, exec_q);
-                        sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                    &cgh) {
-                            cgh.depends_on(depends);
-
-                            using OuterInnerDimsIndexerT =
-                                dpctl::tensor::offset_utils::StridedIndexer;
-                            using TmpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            OuterInnerDimsIndexerT lhs_indexer(
-                                inner_nd + lhs_outer_nd, 0,
-                                lhs_outer_inner_shapes_strides);
-                            OuterInnerDimsIndexerT rhs_indexer(
-                                inner_nd + rhs_outer_nd, 0,
-                                rhs_outer_inner_shapes_strides);
-                            TmpIndexerT res_indexer{};
-                            using dpctl::tensor::offset_utils::StridedIndexer;
-                            using dpctl::tensor::offset_utils::
-                                UnpackedStridedIndexer;
-                            using dpctl::tensor::offset_utils::Strided1DIndexer;
-                            using dpctl::tensor::offset_utils::
-                                ThreeOffsets_CombinedIndexer;
-                            using BatchDimsIndexerT =
-                                ThreeOffsets_CombinedIndexer<
-                                    StridedIndexer, UnpackedStridedIndexer,
-                                    Strided1DIndexer>;
-                            StridedIndexer lhs_batch_indexer(
-                                batch_nd, lhs_batch_offset,
-                                batch_shape_strides);
-                            UnpackedStridedIndexer rhs_batch_indexer(
-                                batch_nd, rhs_batch_offset, batch_shape_strides,
-                                batch_shape_strides + 2 * batch_nd);
-                            Strided1DIndexer tmp_batch_indexer(
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                n * m);
-                            BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                            rhs_batch_indexer,
-                                                            tmp_batch_indexer);
-
-                            size_t n_blocks = (n + delta_n - 1) / delta_n;
-                            size_t k_blocks =
-                                (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                            size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                            size_t lws = delta_n * delta_k;
-
-                            auto gRange =
-                                sycl::range<1>(batch_nelems * n_blocks *
-                                               m_blocks * k_blocks * lws);
-                            auto lRange = sycl::range<1>(lws);
-
-                            auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                            using LocAccT = sycl::local_accessor<resTy, 1>;
-                            LocAccT local_B_block(n_wi * delta_k, cgh);
-                            LocAccT workspace(delta_n * delta_k, cgh);
-
-                            using KernelName = class gemm_batch_tree_k_krn<
-                                lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                TmpIndexerT, BatchDimsIndexerT, m_groups>;
-                            cgh.parallel_for<KernelName>(
-                                ndRange,
-                                GemmBatchNoAtomicFunctorThreadK<
-                                    lhsTy, rhsTy, resTy, LocAccT,
-                                    OuterInnerDimsIndexerT, TmpIndexerT,
-                                    BatchDimsIndexerT, m_groups>(
-                                    lhs_tp, rhs_tp, tmp, workspace,
-                                    local_B_block, n, n_blocks, delta_n, k,
-                                    k_blocks, delta_k, n_wi, m, batch_nelems,
-                                    batch_indexer, lhs_indexer, rhs_indexer,
-                                    res_indexer));
-                        });
-                        sycl::event red_ev = exec_q.submit([&](sycl::handler
-                                                                   &cgh) {
-                            cgh.depends_on(gemm_ev);
-
-                            using NoOpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            using ResIndexerT =
-                                dpctl::tensor::offset_utils::StridedIndexer;
-                            using InputOutputIterIndexerT =
-                                dpctl::tensor::offset_utils::
-                                    TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                               ResIndexerT>;
-                            using ReductionIndexerT =
-                                dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                            ResIndexerT res_iter_indexer{
-                                batch_nd + res_outer_nd,
-                                static_cast<py::ssize_t>(res_batch_offset),
-                                res_shape_strides};
-                            InputOutputIterIndexerT in_out_iter_indexer{
-                                NoOpIndexerT{}, res_iter_indexer};
-                            ReductionIndexerT reduction_indexer{
-                                0, static_cast<py::ssize_t>(reduction_nelems),
-                                static_cast<py::ssize_t>(iter_nelems)};
-
-                            sycl::range<1> iter_range{iter_nelems};
-
-                            cgh.parallel_for<
-                                class gemm_reduction_seq_strided_krn<
-                                    resTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT,
-                                    ReductionIndexerT>>(
-                                iter_range,
-                                SequentialReduction<resTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                                    tmp, res_tp, ReductionOpT(), identity_val,
-                                    in_out_iter_indexer, reduction_indexer,
-                                    reduction_nelems));
-                        });
-                        sycl::event cleanup_host_task_event =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(red_ev);
-                                const sycl::context &ctx = exec_q.get_context();
-
-                                cgh.host_task(
-                                    [ctx, tmp] { sycl::free(tmp, ctx); });
-                            });
-                        return cleanup_host_task_event;
-                    }
-
-                    // max_max_wg prevents running out of resources on CPU
-                    constexpr size_t max_max_wg = 2048;
-                    size_t max_wg = std::min(
-                        max_max_wg,
-                        dev.get_info<
-                            sycl::info::device::max_work_group_size>() /
-                            2);
-
-                    constexpr size_t preferred_reductions_per_wi = 4;
-                    size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                    size_t reduction_groups =
-                        (reduction_nelems + preferred_reductions_per_wi * wg -
-                         1) /
-                        (preferred_reductions_per_wi * wg);
-                    assert(reduction_groups > 1);
-
-                    resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                        iter_nelems *
-                            (/* temp */ reduction_nelems +
-                             /* first reduction temp */ reduction_groups),
-                        exec_q);
-                    resTy *partially_reduced_tmp2 = nullptr;
-
-                    if (partially_reduced_tmp == nullptr) {
-                        throw std::runtime_error(
-                            "Unable to allocate device_memory");
-                    }
-                    else {
-                        partially_reduced_tmp2 = partially_reduced_tmp +
-                                                 reduction_nelems * iter_nelems;
-                    }
-
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using TmpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        TmpIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::StridedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                            StridedIndexer, StridedIndexer, Strided1DIndexer>;
-                        StridedIndexer lhs_batch_indexer(
-                            batch_nd, lhs_batch_offset, batch_shape_strides);
-                        StridedIndexer rhs_batch_indexer(
-                            batch_nd, rhs_batch_offset,
-                            batch_shape_strides + 2 * batch_nd);
-                        Strided1DIndexer tmp_batch_indexer(
-                            0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                        BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                        rhs_batch_indexer,
-                                                        tmp_batch_indexer);
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        constexpr int m_groups = 1;
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            TmpIndexerT, BatchDimsIndexerT, m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, TmpIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, partially_reduced_tmp,
-                                workspace, local_B_block, n, n_blocks, delta_n,
-                                k, k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                res_indexer));
-                    });
-
-                    sycl::event red_ev =
-                        tree_reduction_for_gemm<resTy, ReductionOpT>(
-                            exec_q, partially_reduced_tmp,
-                            partially_reduced_tmp2, res_tp, identity_val,
-                            iter_nelems, reduction_nelems, reduction_groups, wg,
-                            max_wg, preferred_reductions_per_wi,
-                            reductions_per_wi, batch_nd + res_outer_nd,
-                            res_batch_offset, res_shape_strides, {gemm_ev});
-
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, partially_reduced_tmp] {
-                                sycl::free(partially_reduced_tmp, ctx);
-                            });
-                        });
-
-                    return cleanup_host_task_event;
-                }
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                        n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                        batch_nelems, batch_indexer, lhs_indexer, rhs_indexer,
+                        res_indexer));
             }
             else {
-                constexpr int m_groups = 2;
+                using LocAccT =
+                    sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
 
-                gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size, delta_k,
-                    n_wi,   // modified by reference
-                    delta_n // modified by reference
-                );
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
 
-                if (k <= (delta_k * n_wi)) {
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT res_indexer(
-                            res_outer_nd, 0, res_outer_shapes_strides);
-                        using BatchDimsIndexerT = dpctl::tensor::offset_utils::
-                            ThreeOffsets_StridedIndexer;
-                        BatchDimsIndexerT batch_indexer(
-                            batch_nd, lhs_batch_offset, rhs_batch_offset,
-                            res_batch_offset, batch_shape_strides);
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT =
-                            sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
-
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, res_tp, workspace,
-                                local_B_block, n, n_blocks, delta_n, k,
-                                k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                res_indexer));
-                    });
-                    return gemm_ev;
-                }
-                else {
-                    using ReductionOpT = sycl::plus<resTy>;
-                    constexpr resTy identity_val =
-                        sycl::known_identity<ReductionOpT, resTy>::value;
-
-                    size_t iter_nelems = batch_nelems * n * m;
-                    size_t reduction_nelems =
-                        (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                    // more than one work-group is needed, requires a
-                    // temporary delta_k * n_wi elements processed along k,
-                    // so if more to process use multiple
-                    const auto &sg_sizes =
-                        dev.get_info<sycl::info::device::sub_group_sizes>();
-                    size_t wg =
-                        choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                    if (reduction_nelems < wg) {
-                        resTy *tmp = sycl::malloc_device<resTy>(
-                            iter_nelems * reduction_nelems, exec_q);
-                        sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                    &cgh) {
-                            cgh.depends_on(depends);
-
-                            using OuterInnerDimsIndexerT =
-                                dpctl::tensor::offset_utils::StridedIndexer;
-                            using TmpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            OuterInnerDimsIndexerT lhs_indexer(
-                                inner_nd + lhs_outer_nd, 0,
-                                lhs_outer_inner_shapes_strides);
-                            OuterInnerDimsIndexerT rhs_indexer(
-                                inner_nd + rhs_outer_nd, 0,
-                                rhs_outer_inner_shapes_strides);
-                            TmpIndexerT res_indexer{};
-                            using dpctl::tensor::offset_utils::StridedIndexer;
-                            using dpctl::tensor::offset_utils::
-                                UnpackedStridedIndexer;
-                            using dpctl::tensor::offset_utils::Strided1DIndexer;
-                            using dpctl::tensor::offset_utils::
-                                ThreeOffsets_CombinedIndexer;
-                            using BatchDimsIndexerT =
-                                ThreeOffsets_CombinedIndexer<
-                                    StridedIndexer, UnpackedStridedIndexer,
-                                    Strided1DIndexer>;
-                            StridedIndexer lhs_batch_indexer(
-                                batch_nd, lhs_batch_offset,
-                                batch_shape_strides);
-                            UnpackedStridedIndexer rhs_batch_indexer(
-                                batch_nd, rhs_batch_offset, batch_shape_strides,
-                                batch_shape_strides + 2 * batch_nd);
-                            Strided1DIndexer tmp_batch_indexer(
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                n * m);
-                            BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                            rhs_batch_indexer,
-                                                            tmp_batch_indexer);
-
-                            size_t n_blocks = (n + delta_n - 1) / delta_n;
-                            size_t k_blocks =
-                                (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                            size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                            size_t lws = delta_n * delta_k;
-
-                            auto gRange =
-                                sycl::range<1>(batch_nelems * n_blocks *
-                                               m_blocks * k_blocks * lws);
-                            auto lRange = sycl::range<1>(lws);
-
-                            auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                            using LocAccT =
-                                sycl::local_accessor<sycl::vec<resTy, m_groups>,
-                                                     1>;
-                            LocAccT local_B_block(n_wi * delta_k, cgh);
-                            LocAccT workspace(delta_n * delta_k, cgh);
-
-                            using KernelName = class gemm_batch_tree_k_krn<
-                                lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                TmpIndexerT, BatchDimsIndexerT, m_groups>;
-                            cgh.parallel_for<KernelName>(
-                                ndRange,
-                                GemmBatchNoAtomicFunctorThreadK<
-                                    lhsTy, rhsTy, resTy, LocAccT,
-                                    OuterInnerDimsIndexerT, TmpIndexerT,
-                                    BatchDimsIndexerT, m_groups>(
-                                    lhs_tp, rhs_tp, tmp, workspace,
-                                    local_B_block, n, n_blocks, delta_n, k,
-                                    k_blocks, delta_k, n_wi, m, batch_nelems,
-                                    batch_indexer, lhs_indexer, rhs_indexer,
-                                    res_indexer));
-                        });
-                        sycl::event red_ev = exec_q.submit([&](sycl::handler
-                                                                   &cgh) {
-                            cgh.depends_on(gemm_ev);
-
-                            using NoOpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            using ResIndexerT =
-                                dpctl::tensor::offset_utils::StridedIndexer;
-                            using InputOutputIterIndexerT =
-                                dpctl::tensor::offset_utils::
-                                    TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                               ResIndexerT>;
-                            using ReductionIndexerT =
-                                dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                            ResIndexerT res_iter_indexer{
-                                batch_nd + res_outer_nd,
-                                static_cast<py::ssize_t>(res_batch_offset),
-                                res_shape_strides};
-                            InputOutputIterIndexerT in_out_iter_indexer{
-                                NoOpIndexerT{}, res_iter_indexer};
-                            ReductionIndexerT reduction_indexer{
-                                0, static_cast<py::ssize_t>(reduction_nelems),
-                                static_cast<py::ssize_t>(iter_nelems)};
-
-                            sycl::range<1> iter_range{iter_nelems};
-
-                            cgh.parallel_for<
-                                class gemm_reduction_seq_strided_krn<
-                                    resTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT,
-                                    ReductionIndexerT>>(
-                                iter_range,
-                                SequentialReduction<resTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                                    tmp, res_tp, ReductionOpT(), identity_val,
-                                    in_out_iter_indexer, reduction_indexer,
-                                    reduction_nelems));
-                        });
-                        sycl::event cleanup_host_task_event =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(red_ev);
-                                const sycl::context &ctx = exec_q.get_context();
-
-                                cgh.host_task(
-                                    [ctx, tmp] { sycl::free(tmp, ctx); });
-                            });
-                        return cleanup_host_task_event;
-                    }
-
-                    // max_max_wg prevents running out of resources on CPU
-                    constexpr size_t max_max_wg = 2048;
-                    size_t max_wg = std::min(
-                        max_max_wg,
-                        dev.get_info<
-                            sycl::info::device::max_work_group_size>() /
-                            2);
-
-                    constexpr size_t preferred_reductions_per_wi = 4;
-                    size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                    size_t reduction_groups =
-                        (reduction_nelems + preferred_reductions_per_wi * wg -
-                         1) /
-                        (preferred_reductions_per_wi * wg);
-                    assert(reduction_groups > 1);
-
-                    resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                        iter_nelems *
-                            (/* temp */ reduction_nelems +
-                             /* first reduction temp */ reduction_groups),
-                        exec_q);
-                    resTy *partially_reduced_tmp2 = nullptr;
-
-                    if (partially_reduced_tmp == nullptr) {
-                        throw std::runtime_error(
-                            "Unable to allocate device_memory");
-                    }
-                    else {
-                        partially_reduced_tmp2 = partially_reduced_tmp +
-                                                 reduction_nelems * iter_nelems;
-                    }
-
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using TmpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        TmpIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::StridedIndexer;
-                        using dpctl::tensor::offset_utils::
-                            UnpackedStridedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                         UnpackedStridedIndexer,
-                                                         Strided1DIndexer>;
-                        StridedIndexer lhs_batch_indexer(
-                            batch_nd, lhs_batch_offset, batch_shape_strides);
-                        UnpackedStridedIndexer rhs_batch_indexer(
-                            batch_nd, rhs_batch_offset, batch_shape_strides,
-                            batch_shape_strides + 2 * batch_nd);
-                        Strided1DIndexer tmp_batch_indexer(
-                            0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                        BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                        rhs_batch_indexer,
-                                                        tmp_batch_indexer);
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT =
-                            sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            TmpIndexerT, BatchDimsIndexerT, m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, TmpIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, partially_reduced_tmp,
-                                workspace, local_B_block, n, n_blocks, delta_n,
-                                k, k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                res_indexer));
-                    });
-
-                    sycl::event red_ev =
-                        tree_reduction_for_gemm<resTy, ReductionOpT>(
-                            exec_q, partially_reduced_tmp,
-                            partially_reduced_tmp2, res_tp, identity_val,
-                            iter_nelems, reduction_nelems, reduction_groups, wg,
-                            max_wg, preferred_reductions_per_wi,
-                            reductions_per_wi, batch_nd + res_outer_nd,
-                            res_batch_offset, res_shape_strides, {gemm_ev});
-
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, partially_reduced_tmp] {
-                                sycl::free(partially_reduced_tmp, ctx);
-                            });
-                        });
-
-                    return cleanup_host_task_event;
-                }
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                        n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                        batch_nelems, batch_indexer, lhs_indexer, rhs_indexer,
+                        res_indexer));
             }
-        }
-        else {
-            constexpr int m_groups = 1;
+        });
+        return gemm_ev;
+    }
+    else {
+        using ReductionOpT = sycl::plus<resTy>;
+        constexpr resTy identity_val =
+            sycl::known_identity<ReductionOpT, resTy>::value;
 
-            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size, delta_k,
-                n_wi,   // modified by reference
-                delta_n // modified by reference
-            );
+        size_t iter_nelems = batch_nelems * n * m;
+        size_t reduction_nelems = (k + delta_k * n_wi - 1) / (delta_k * n_wi);
 
-            // each group processes delta_k * n_wi
-            // items in a column, so no need for allocating
-            // temp memory if only one group is needed
-            if (k <= (delta_k * n_wi)) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
+        // more than one work-group is needed, requires a
+        // temporary delta_k * n_wi elements processed along k,
+        // so if more to process use multiple
+        const auto &sg_sizes =
+            dev.get_info<sycl::info::device::sub_group_sizes>();
+        size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::StridedIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer(
-                        inner_nd + lhs_outer_nd, 0,
-                        lhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT rhs_indexer(
-                        inner_nd + rhs_outer_nd, 0,
-                        rhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT res_indexer(
-                        res_outer_nd, 0, res_outer_shapes_strides);
-                    using BatchDimsIndexerT = dpctl::tensor::offset_utils::
-                        ThreeOffsets_StridedIndexer;
-                    BatchDimsIndexerT batch_indexer(
-                        batch_nd, lhs_batch_offset, rhs_batch_offset,
-                        res_batch_offset, batch_shape_strides);
+        if (reduction_nelems < wg) {
+            resTy *tmp = sycl::malloc_device<resTy>(
+                iter_nelems * reduction_nelems, exec_q);
+            sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
 
-                    size_t n_blocks = (n + delta_n - 1) / delta_n;
-                    size_t k_blocks =
-                        (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                    constexpr int m_groups = 1;
-                    size_t m_blocks = (m + m_groups - 1) / m_groups;
+                using OuterInnerDimsIndexerT =
+                    dpctl::tensor::offset_utils::NoOpIndexer;
+                OuterInnerDimsIndexerT lhs_indexer{};
+                OuterInnerDimsIndexerT rhs_indexer{};
+                OuterInnerDimsIndexerT tmp_indexer{};
+                using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+                using dpctl::tensor::offset_utils::Strided1DIndexer;
+                using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                    Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
 
-                    size_t lws = delta_n * delta_k;
+                BatchDimsIndexerT batch_indexer(
+                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                     static_cast<py::ssize_t>(n * k)},
+                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                     static_cast<py::ssize_t>(k * m)},
+                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                     static_cast<py::ssize_t>(n * m)});
 
-                    auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                 m_blocks * k_blocks * lws);
-                    auto lRange = sycl::range<1>(lws);
+                size_t n_blocks = (n + delta_n - 1) / delta_n;
+                size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+                size_t m_blocks = (m + m_groups - 1) / m_groups;
 
-                    auto ndRange = sycl::nd_range<1>(gRange, lRange);
+                size_t lws = delta_n * delta_k;
 
+                auto gRange = sycl::range<1>(batch_nelems * n_blocks *
+                                             m_blocks * k_blocks * lws);
+                auto lRange = sycl::range<1>(lws);
+
+                auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+                if constexpr (m_groups == 1) {
                     using LocAccT = sycl::local_accessor<resTy, 1>;
                     LocAccT local_B_block(n_wi * delta_k, cgh);
                     LocAccT workspace(delta_n * delta_k, cgh);
@@ -5909,329 +6164,393 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                     using KernelName = class gemm_batch_tree_k_krn<
                         lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
                         OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
-
                     cgh.parallel_for<KernelName>(
                         ndRange,
                         GemmBatchNoAtomicFunctorThreadK<
                             lhsTy, rhsTy, resTy, LocAccT,
                             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
                             BatchDimsIndexerT, m_groups>(
-                            lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
+                            lhs_tp, rhs_tp, tmp, workspace, local_B_block, n,
                             n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
                             batch_nelems, batch_indexer, lhs_indexer,
-                            rhs_indexer, res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-
-                size_t iter_nelems = batch_nelems * n * m;
-                size_t reduction_nelems =
-                    (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                // more than one work-group is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using TmpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        TmpIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::StridedIndexer;
-                        using dpctl::tensor::offset_utils::
-                            UnpackedStridedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                         UnpackedStridedIndexer,
-                                                         Strided1DIndexer>;
-                        StridedIndexer lhs_batch_indexer(
-                            batch_nd, lhs_batch_offset, batch_shape_strides);
-                        UnpackedStridedIndexer rhs_batch_indexer(
-                            batch_nd, rhs_batch_offset, batch_shape_strides,
-                            batch_shape_strides + 2 * batch_nd);
-                        Strided1DIndexer tmp_batch_indexer(
-                            0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                        BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                        rhs_batch_indexer,
-                                                        tmp_batch_indexer);
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        constexpr int m_groups = 1;
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            TmpIndexerT, BatchDimsIndexerT, m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, TmpIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, tmp, workspace, local_B_block,
-                                n, n_blocks, delta_n, k, k_blocks, delta_k,
-                                n_wi, m, batch_nelems, batch_indexer,
-                                lhs_indexer, rhs_indexer, res_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using ResIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           ResIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        ResIndexerT res_iter_indexer{
-                            batch_nd + res_outer_nd,
-                            static_cast<py::ssize_t>(res_batch_offset),
-                            res_shape_strides};
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, res_iter_indexer};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 4;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
+                            rhs_indexer, tmp_indexer));
                 }
                 else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::StridedIndexer;
-                    using TmpIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer(
-                        inner_nd + lhs_outer_nd, 0,
-                        lhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT rhs_indexer(
-                        inner_nd + rhs_outer_nd, 0,
-                        rhs_outer_inner_shapes_strides);
-                    TmpIndexerT res_indexer{};
-                    using dpctl::tensor::offset_utils::StridedIndexer;
-                    using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using BatchDimsIndexerT =
-                        ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                     UnpackedStridedIndexer,
-                                                     Strided1DIndexer>;
-                    StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
-                                                     batch_shape_strides);
-                    UnpackedStridedIndexer rhs_batch_indexer(
-                        batch_nd, rhs_batch_offset, batch_shape_strides,
-                        batch_shape_strides + 2 * batch_nd);
-                    Strided1DIndexer tmp_batch_indexer(
-                        0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                    BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                    rhs_batch_indexer,
-                                                    tmp_batch_indexer);
-
-                    size_t n_blocks = (n + delta_n - 1) / delta_n;
-                    size_t k_blocks =
-                        (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                    constexpr int m_groups = 1;
-                    size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                    size_t lws = delta_n * delta_k;
-
-                    auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                 m_blocks * k_blocks * lws);
-                    auto lRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                    using LocAccT = sycl::local_accessor<resTy, 1>;
+                    using LocAccT =
+                        sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
                     LocAccT local_B_block(n_wi * delta_k, cgh);
                     LocAccT workspace(delta_n * delta_k, cgh);
 
                     using KernelName = class gemm_batch_tree_k_krn<
                         lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        TmpIndexerT, BatchDimsIndexerT, m_groups>;
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
                     cgh.parallel_for<KernelName>(
                         ndRange,
                         GemmBatchNoAtomicFunctorThreadK<
                             lhsTy, rhsTy, resTy, LocAccT,
-                            OuterInnerDimsIndexerT, TmpIndexerT,
+                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
                             BatchDimsIndexerT, m_groups>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
-                            local_B_block, n, n_blocks, delta_n, k, k_blocks,
-                            delta_k, n_wi, m, batch_nelems, batch_indexer,
-                            lhs_indexer, rhs_indexer, res_indexer));
+                            lhs_tp, rhs_tp, tmp, workspace, local_B_block, n,
+                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
+                            batch_nelems, batch_indexer, lhs_indexer,
+                            rhs_indexer, tmp_indexer));
+                }
+            });
+            sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(gemm_ev);
+
+                using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                using InputOutputIterIndexerT =
+                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                        NoOpIndexerT, NoOpIndexerT>;
+                using ReductionIndexerT =
+                    dpctl::tensor::offset_utils::Strided1DIndexer;
+
+                InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                            NoOpIndexerT{}};
+                ReductionIndexerT reduction_indexer{
+                    0, static_cast<py::ssize_t>(reduction_nelems),
+                    static_cast<py::ssize_t>(iter_nelems)};
+
+                sycl::range<1> iter_range{iter_nelems};
+
+                cgh.parallel_for<class gemm_reduction_seq_strided_krn<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>>(
+                    iter_range, SequentialReduction<resTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                                    tmp, res_tp, ReductionOpT(), identity_val,
+                                    in_out_iter_indexer, reduction_indexer,
+                                    reduction_nelems));
+            });
+            sycl::event cleanup_host_task_event =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(red_ev);
+                    const sycl::context &ctx = exec_q.get_context();
+
+                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
                 });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        batch_nd + res_outer_nd, res_batch_offset,
-                        res_shape_strides, {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+            return cleanup_host_task_event;
         }
+
+        // max_max_wg prevents running out of resources on CPU
+        constexpr size_t max_max_wg = 2048;
+        size_t max_wg = std::min(
+            max_max_wg,
+            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+        constexpr size_t preferred_reductions_per_wi = 4;
+        size_t reductions_per_wi(preferred_reductions_per_wi);
+
+        size_t reduction_groups =
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
+        assert(reduction_groups > 1);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (/* temp */ reduction_nelems +
+                           /* first reduction temp */ reduction_groups),
+            exec_q);
+        resTy *partially_reduced_tmp2 = nullptr;
+
+        if (partially_reduced_tmp == nullptr) {
+            throw std::runtime_error("Unable to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+        }
+
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT tmp_indexer{};
+            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            using BatchDimsIndexerT =
+                ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
+                                             Strided1DIndexer>;
+
+            BatchDimsIndexerT batch_indexer(
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * k)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(k * m)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * m)});
+
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+
+            size_t lws = delta_n * delta_k;
+
+            auto gRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                         k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
+
+            if constexpr (m_groups == 1) {
+                using LocAccT = sycl::local_accessor<resTy, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
+                        local_B_block, n, n_blocks, delta_n, k, k_blocks,
+                        delta_k, n_wi, m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, tmp_indexer));
+            }
+            else {
+                using LocAccT =
+                    sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+                LocAccT local_B_block(n_wi * delta_k, cgh);
+                LocAccT workspace(delta_n * delta_k, cgh);
+
+                using KernelName = class gemm_batch_tree_k_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadK<
+                        lhsTy, rhsTy, resTy, LocAccT, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
+                        local_B_block, n, n_blocks, delta_n, k, k_blocks,
+                        delta_k, n_wi, m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, tmp_indexer));
+            }
+        });
+
+        sycl::event red_ev =
+            tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
+                exec_q, partially_reduced_tmp, partially_reduced_tmp2, res_tp,
+                identity_val, iter_nelems, reduction_nelems, reduction_groups,
+                wg, max_wg, preferred_reductions_per_wi, reductions_per_wi,
+                {gemm_ev});
+
+        sycl::event cleanup_host_task_event =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(red_ev);
+                const sycl::context &ctx = exec_q.get_context();
+
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
+                });
+            });
+
+        return cleanup_host_task_event;
     }
-    else { // m > 1, n > k or m > k
-        constexpr int wi_delta_n = 2;
-        size_t wg_delta_n(16); // rows of A processed in WG
-        size_t wg_delta_m(16); // rows of B processed in WG
-        size_t wi_delta_k(64); // Elements in K dimension processed by WI
+}
 
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
-            constexpr int wi_delta_m = 4;
+template <typename lhsTy, typename rhsTy, typename resTy, int wi_delta_m>
+sycl::event
+gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
+                               const lhsTy *lhs_tp,
+                               const rhsTy *rhs_tp,
+                               resTy *res_tp,
+                               size_t batch_nelems,
+                               size_t n,
+                               size_t k,
+                               size_t m,
+                               std::vector<sycl::event> const &depends)
+{
+    constexpr int wi_delta_n = 2;
+    size_t wg_delta_n(16); // rows of A processed in WG
+    size_t wg_delta_m(16); // rows of B processed in WG
+    size_t wi_delta_k(64); // Elements in K dimension processed by WI
 
-            gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-                local_mem_size, reserved_slm_size, wi_delta_n,
-                wi_delta_k, // modified by reference
-                wg_delta_n, // modified by reference
-                wg_delta_m  // modified by reference
-            );
+    const sycl::device &dev = exec_q.get_device();
+    const size_t local_mem_size =
+        dev.get_info<sycl::info::device::local_mem_size>();
+    const size_t reserved_slm_size = 512;
 
-            // each group processes delta_k * n_wi
-            // items in a column, so no need for allocating
-            // temp memory if only one group is needed
-            if (k <= wi_delta_k) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
+    gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
+        local_mem_size, reserved_slm_size, wi_delta_n,
+        wi_delta_k, // modified by reference
+        wg_delta_n, // modified by reference
+        wg_delta_m  // modified by reference
+    );
 
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::StridedIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer(
-                        inner_nd + lhs_outer_nd, 0,
-                        lhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT rhs_indexer(
-                        inner_nd + rhs_outer_nd, 0,
-                        rhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT res_indexer(
-                        res_outer_nd, 0, res_outer_shapes_strides);
-                    using BatchDimsIndexerT = dpctl::tensor::offset_utils::
-                        ThreeOffsets_StridedIndexer;
-                    BatchDimsIndexerT batch_indexer(
-                        batch_nd, lhs_batch_offset, rhs_batch_offset,
-                        res_batch_offset, batch_shape_strides);
+    // each group processes delta_k * n_wi
+    // items in a column, so no need for allocating
+    // temp memory if only one group is needed
+    if (k <= wi_delta_k) {
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
 
-                    size_t lws = wg_delta_n * wg_delta_m;
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT res_indexer{};
+            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            using BatchDimsIndexerT =
+                ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
+                                             Strided1DIndexer>;
 
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
+            BatchDimsIndexerT batch_indexer(
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * k)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(k * m)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * m)});
 
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
+            size_t lws = wg_delta_n * wg_delta_m;
 
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+            size_t n_blocks =
+                ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
+            size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+            size_t m_blocks =
+                ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
 
+            auto gwsRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                           k_blocks * lws);
+            auto lwsRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+            if constexpr (wi_delta_m == 1) {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, res_tp, local_A_block, local_B_block, n,
+                        wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                        wg_delta_m, batch_nelems, batch_indexer, lhs_indexer,
+                        rhs_indexer, res_indexer));
+            }
+            else {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 =
+                    sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, res_tp, local_A_block, local_B_block, n,
+                        wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                        wg_delta_m, batch_nelems, batch_indexer, lhs_indexer,
+                        rhs_indexer, res_indexer));
+            }
+        });
+        return gemm_ev;
+    }
+    else {
+        using ReductionOpT = sycl::plus<resTy>;
+        constexpr resTy identity_val =
+            sycl::known_identity<ReductionOpT, resTy>::value;
+        size_t iter_nelems = batch_nelems * n * m;
+        size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
+
+        // more than one work-group is needed, requires a temporary
+        // delta_k * n_wi elements processed along k, so if more to
+        // process use multiple
+        const auto &sg_sizes =
+            dev.get_info<sycl::info::device::sub_group_sizes>();
+        size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+        if (reduction_nelems < wg) {
+            resTy *tmp = sycl::malloc_device<resTy>(
+                iter_nelems * reduction_nelems, exec_q);
+            sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                using OuterInnerDimsIndexerT =
+                    dpctl::tensor::offset_utils::NoOpIndexer;
+                OuterInnerDimsIndexerT lhs_indexer{};
+                OuterInnerDimsIndexerT rhs_indexer{};
+                OuterInnerDimsIndexerT tmp_indexer{};
+                using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+                using dpctl::tensor::offset_utils::Strided1DIndexer;
+                using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
+                    Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
+
+                BatchDimsIndexerT batch_indexer(
+                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                     static_cast<py::ssize_t>(n * k)},
+                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                     static_cast<py::ssize_t>(k * m)},
+                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                     static_cast<py::ssize_t>(n * m)});
+
+                size_t lws = wg_delta_n * wg_delta_m;
+
+                size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
+                                   (wi_delta_n * wg_delta_n));
+                size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+                size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
+                                   (wi_delta_m * wg_delta_m));
+
+                auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
+                                               m_blocks * k_blocks * lws);
+                auto lwsRange = sycl::range<1>(lws);
+
+                auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+                if constexpr (wi_delta_m == 1) {
+                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                    LocAccT1 local_A_block(
+                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                        cgh);
+                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                    LocAccT2 local_B_block(
+                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
+
+                    using KernelName = class gemm_batch_tree_nm_krn<
+                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                        OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                    cgh.parallel_for<KernelName>(
+                        ndRange,
+                        GemmBatchNoAtomicFunctorThreadNM<
+                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                            lhs_tp, rhs_tp, tmp, local_A_block, local_B_block,
+                            n, wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                            wg_delta_m, batch_nelems, batch_indexer,
+                            lhs_indexer, rhs_indexer, tmp_indexer));
+                }
+                else {
                     using LocAccT1 = sycl::local_accessor<resTy, 1>;
                     LocAccT1 local_A_block(
                         sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
@@ -6250,614 +6569,181 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                             lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
                             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
                             BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, res_tp, local_A_block,
-                            local_B_block, n, wg_delta_n, k, k_blocks,
-                            wi_delta_k, m, m_blocks, wg_delta_m, batch_nelems,
-                            batch_indexer, lhs_indexer, rhs_indexer,
-                            res_indexer));
+                            lhs_tp, rhs_tp, tmp, local_A_block, local_B_block,
+                            n, wg_delta_n, k, k_blocks, wi_delta_k, m, m_blocks,
+                            wg_delta_m, batch_nelems, batch_indexer,
+                            lhs_indexer, rhs_indexer, tmp_indexer));
+                }
+            });
+            sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(gemm_ev);
+
+                using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                using InputOutputIterIndexerT =
+                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                        NoOpIndexerT, NoOpIndexerT>;
+                using ReductionIndexerT =
+                    dpctl::tensor::offset_utils::Strided1DIndexer;
+
+                InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                            NoOpIndexerT{}};
+                ReductionIndexerT reduction_indexer{
+                    0, static_cast<py::ssize_t>(reduction_nelems),
+                    static_cast<py::ssize_t>(iter_nelems)};
+
+                sycl::range<1> iter_range{iter_nelems};
+
+                cgh.parallel_for<class gemm_reduction_seq_strided_krn<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT>>(
+                    iter_range, SequentialReduction<resTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                                    tmp, res_tp, ReductionOpT(), identity_val,
+                                    in_out_iter_indexer, reduction_indexer,
+                                    reduction_nelems));
+            });
+            sycl::event cleanup_host_task_event =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(red_ev);
+                    const sycl::context &ctx = exec_q.get_context();
+
+                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
                 });
-                return gemm_ev;
+            return cleanup_host_task_event;
+        }
+
+        // max_max_wg prevents running out of resources on CPU
+        constexpr size_t max_max_wg = 2048;
+        size_t max_wg = std::min(
+            max_max_wg,
+            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+
+        constexpr size_t preferred_reductions_per_wi = 4;
+        size_t reductions_per_wi(preferred_reductions_per_wi);
+
+        size_t reduction_groups =
+            (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
+            (preferred_reductions_per_wi * wg);
+        assert(reduction_groups > 1);
+
+        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            iter_nelems * (/* temp */ reduction_nelems +
+                           /* first reduction temp */ reduction_groups),
+            exec_q);
+        resTy *partially_reduced_tmp2 = nullptr;
+
+        if (partially_reduced_tmp == nullptr) {
+            throw std::runtime_error("Unable to allocate device_memory");
+        }
+        else {
+            partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+        }
+
+        sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            using OuterInnerDimsIndexerT =
+                dpctl::tensor::offset_utils::NoOpIndexer;
+            OuterInnerDimsIndexerT lhs_indexer{};
+            OuterInnerDimsIndexerT rhs_indexer{};
+            OuterInnerDimsIndexerT tmp_indexer{};
+            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpctl::tensor::offset_utils::Strided1DIndexer;
+            using BatchDimsIndexerT =
+                ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
+                                             Strided1DIndexer>;
+
+            BatchDimsIndexerT batch_indexer(
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * k)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(k * m)},
+                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
+                                 static_cast<py::ssize_t>(n * m)});
+
+            size_t lws = wg_delta_n * wg_delta_m;
+
+            size_t n_blocks =
+                ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
+            size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
+            size_t m_blocks =
+                ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
+
+            auto gwsRange = sycl::range<1>(batch_nelems * n_blocks * m_blocks *
+                                           k_blocks * lws);
+            auto lwsRange = sycl::range<1>(lws);
+
+            auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
+
+            if constexpr (wi_delta_m == 1) {
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 = sycl::local_accessor<resTy, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
+
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, local_A_block,
+                        local_B_block, n, wg_delta_n, k, k_blocks, wi_delta_k,
+                        m, m_blocks, wg_delta_m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, tmp_indexer));
             }
             else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-                size_t iter_nelems = batch_nelems * n * m;
-                size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
+                using LocAccT1 = sycl::local_accessor<resTy, 1>;
+                LocAccT1 local_A_block(
+                    sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
+                    cgh);
+                using LocAccT2 =
+                    sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
+                LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m),
+                                       cgh);
 
-                // more than one work-group is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using TmpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        TmpIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::StridedIndexer;
-                        using dpctl::tensor::offset_utils::
-                            UnpackedStridedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                         UnpackedStridedIndexer,
-                                                         Strided1DIndexer>;
-                        StridedIndexer lhs_batch_indexer(
-                            batch_nd, lhs_batch_offset, batch_shape_strides);
-                        UnpackedStridedIndexer rhs_batch_indexer(
-                            batch_nd, rhs_batch_offset, batch_shape_strides,
-                            batch_shape_strides + 2 * batch_nd);
-                        Strided1DIndexer tmp_batch_indexer(
-                            0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                        BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                        rhs_batch_indexer,
-                                                        tmp_batch_indexer);
-
-                        size_t lws = wg_delta_n * wg_delta_m;
-
-                        size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                           (wi_delta_n * wg_delta_n));
-                        size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                        size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                           (wi_delta_m * wg_delta_m));
-
-                        auto gwsRange =
-                            sycl::range<1>(batch_nelems * n_blocks * m_blocks *
-                                           k_blocks * lws);
-                        auto lwsRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                        LocAccT1 local_A_block(
-                            sycl::range<1>((wi_delta_n * wg_delta_n) *
-                                           wi_delta_k),
-                            cgh);
-                        using LocAccT2 =
-                            sycl::local_accessor<sycl::vec<resTy, wi_delta_m>,
-                                                 1>;
-                        LocAccT2 local_B_block(
-                            sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                        using KernelName = class gemm_batch_tree_nm_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            TmpIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadNM<
-                                lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                OuterInnerDimsIndexerT, TmpIndexerT,
-                                BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                                lhs_tp, rhs_tp, tmp, local_A_block,
-                                local_B_block, n, wg_delta_n, k, k_blocks,
-                                wi_delta_k, m, m_blocks, wg_delta_m,
-                                batch_nelems, batch_indexer, lhs_indexer,
-                                rhs_indexer, res_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using ResIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           ResIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        ResIndexerT res_iter_indexer{
-                            batch_nd + res_outer_nd,
-                            static_cast<py::ssize_t>(res_batch_offset),
-                            res_shape_strides};
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, res_iter_indexer};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 4;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::StridedIndexer;
-                    using TmpIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer(
-                        inner_nd + lhs_outer_nd, 0,
-                        lhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT rhs_indexer(
-                        inner_nd + rhs_outer_nd, 0,
-                        rhs_outer_inner_shapes_strides);
-                    TmpIndexerT res_indexer{};
-                    using dpctl::tensor::offset_utils::StridedIndexer;
-                    using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using BatchDimsIndexerT =
-                        ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                     UnpackedStridedIndexer,
-                                                     Strided1DIndexer>;
-                    StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
-                                                     batch_shape_strides);
-                    UnpackedStridedIndexer rhs_batch_indexer(
-                        batch_nd, rhs_batch_offset, batch_shape_strides,
-                        batch_shape_strides + 2 * batch_nd);
-                    Strided1DIndexer tmp_batch_indexer(
-                        0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                    BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                    rhs_batch_indexer,
-                                                    tmp_batch_indexer);
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 =
-                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        TmpIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, TmpIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp,
-                            local_A_block, local_B_block, n, wg_delta_n, k,
-                            k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
-                            batch_nelems, batch_indexer, lhs_indexer,
-                            rhs_indexer, res_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        batch_nd + res_outer_nd, res_batch_offset,
-                        res_shape_strides, {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
+                using KernelName = class gemm_batch_tree_nm_krn<
+                    lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
+                    OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
+                cgh.parallel_for<KernelName>(
+                    ndRange,
+                    GemmBatchNoAtomicFunctorThreadNM<
+                        lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
+                        OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
+                        BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
+                        lhs_tp, rhs_tp, partially_reduced_tmp, local_A_block,
+                        local_B_block, n, wg_delta_n, k, k_blocks, wi_delta_k,
+                        m, m_blocks, wg_delta_m, batch_nelems, batch_indexer,
+                        lhs_indexer, rhs_indexer, tmp_indexer));
             }
-        }
-        else { // m > 1, n > k or m > k, resTy complex
-            constexpr int wi_delta_m = 1;
+        });
 
-            gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-                local_mem_size, reserved_slm_size, wi_delta_n,
-                wi_delta_k, // modified by reference
-                wg_delta_n, // modified by reference
-                wg_delta_m  // modified by reference
-            );
+        sycl::event red_ev =
+            tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
+                exec_q, partially_reduced_tmp, partially_reduced_tmp2, res_tp,
+                identity_val, iter_nelems, reduction_nelems, reduction_groups,
+                wg, max_wg, preferred_reductions_per_wi, reductions_per_wi,
+                {gemm_ev});
 
-            if (k <= wi_delta_k) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
+        sycl::event cleanup_host_task_event =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(red_ev);
+                const sycl::context &ctx = exec_q.get_context();
 
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::StridedIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer(
-                        inner_nd + lhs_outer_nd, 0,
-                        lhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT rhs_indexer(
-                        inner_nd + rhs_outer_nd, 0,
-                        rhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT res_indexer(
-                        res_outer_nd, 0, res_outer_shapes_strides);
-                    using BatchDimsIndexerT = dpctl::tensor::offset_utils::
-                        ThreeOffsets_StridedIndexer;
-                    BatchDimsIndexerT batch_indexer(
-                        batch_nd, lhs_batch_offset, rhs_batch_offset,
-                        res_batch_offset, batch_shape_strides);
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, res_tp, local_A_block,
-                            local_B_block, n, wg_delta_n, k, k_blocks,
-                            wi_delta_k, m, m_blocks, wg_delta_m, batch_nelems,
-                            batch_indexer, lhs_indexer, rhs_indexer,
-                            res_indexer));
+                cgh.host_task([ctx, partially_reduced_tmp] {
+                    sycl::free(partially_reduced_tmp, ctx);
                 });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-                size_t iter_nelems = batch_nelems * n * m;
-                size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
+            });
 
-                // more than one work-group is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using TmpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer(
-                            inner_nd + lhs_outer_nd, 0,
-                            lhs_outer_inner_shapes_strides);
-                        OuterInnerDimsIndexerT rhs_indexer(
-                            inner_nd + rhs_outer_nd, 0,
-                            rhs_outer_inner_shapes_strides);
-                        TmpIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::StridedIndexer;
-                        using dpctl::tensor::offset_utils::
-                            UnpackedStridedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                         UnpackedStridedIndexer,
-                                                         Strided1DIndexer>;
-                        StridedIndexer lhs_batch_indexer(
-                            batch_nd, lhs_batch_offset, batch_shape_strides);
-                        UnpackedStridedIndexer rhs_batch_indexer(
-                            batch_nd, rhs_batch_offset, batch_shape_strides,
-                            batch_shape_strides + 2 * batch_nd);
-                        Strided1DIndexer tmp_batch_indexer(
-                            0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                        BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                        rhs_batch_indexer,
-                                                        tmp_batch_indexer);
-
-                        size_t lws = wg_delta_n * wg_delta_m;
-
-                        size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                           (wi_delta_n * wg_delta_n));
-                        size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                        size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                           (wi_delta_m * wg_delta_m));
-
-                        auto gwsRange =
-                            sycl::range<1>(batch_nelems * n_blocks * m_blocks *
-                                           k_blocks * lws);
-                        auto lwsRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                        LocAccT1 local_A_block(
-                            sycl::range<1>((wi_delta_n * wg_delta_n) *
-                                           wi_delta_k),
-                            cgh);
-                        using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                        LocAccT2 local_B_block(
-                            sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                        using KernelName = class gemm_batch_tree_nm_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            TmpIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadNM<
-                                lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                OuterInnerDimsIndexerT, TmpIndexerT,
-                                BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                                lhs_tp, rhs_tp, tmp, local_A_block,
-                                local_B_block, n, wg_delta_n, k, k_blocks,
-                                wi_delta_k, m, m_blocks, wg_delta_m,
-                                batch_nelems, batch_indexer, lhs_indexer,
-                                rhs_indexer, res_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using ResIndexerT =
-                            dpctl::tensor::offset_utils::StridedIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           ResIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        ResIndexerT res_iter_indexer{
-                            batch_nd + res_outer_nd,
-                            static_cast<py::ssize_t>(res_batch_offset),
-                            res_shape_strides};
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, res_iter_indexer};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 4;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::StridedIndexer;
-                    using TmpIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer(
-                        inner_nd + lhs_outer_nd, 0,
-                        lhs_outer_inner_shapes_strides);
-                    OuterInnerDimsIndexerT rhs_indexer(
-                        inner_nd + rhs_outer_nd, 0,
-                        rhs_outer_inner_shapes_strides);
-                    TmpIndexerT res_indexer{};
-                    using dpctl::tensor::offset_utils::StridedIndexer;
-                    using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using BatchDimsIndexerT =
-                        ThreeOffsets_CombinedIndexer<StridedIndexer,
-                                                     UnpackedStridedIndexer,
-                                                     Strided1DIndexer>;
-                    StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
-                                                     batch_shape_strides);
-                    UnpackedStridedIndexer rhs_batch_indexer(
-                        batch_nd, rhs_batch_offset, batch_shape_strides,
-                        batch_shape_strides + 2 * batch_nd);
-                    Strided1DIndexer tmp_batch_indexer(
-                        0, static_cast<py::ssize_t>(batch_nelems), n * m);
-                    BatchDimsIndexerT batch_indexer(lhs_batch_indexer,
-                                                    rhs_batch_indexer,
-                                                    tmp_batch_indexer);
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        TmpIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, TmpIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp,
-                            local_A_block, local_B_block, n, wg_delta_n, k,
-                            k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
-                            batch_nelems, batch_indexer, lhs_indexer,
-                            rhs_indexer, res_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        batch_nd + res_outer_nd, res_batch_offset,
-                        res_shape_strides, {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
-        }
+        return cleanup_host_task_event;
     }
 }
 
@@ -6882,1610 +6768,34 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
         reinterpret_cast<const rhsTy *>(rhs_cp) + rhs_batch_offset;
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + res_batch_offset;
 
-    const sycl::device &dev = exec_q.get_device();
-    const size_t local_mem_size =
-        dev.get_info<sycl::info::device::local_mem_size>();
-    const size_t reserved_slm_size = 512;
-
     if ((k > n && k > m) || m == 1) {
-        size_t delta_k(4);
-        size_t n_wi(4);
-        size_t delta_n(4);
-
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
-                constexpr int m_groups = 1;
-                gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size, delta_k,
-                    n_wi,   // modified by reference
-                    delta_n // modified by reference
-                );
-
-                if (k <= (delta_k * n_wi)) {
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
-
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, res_tp, workspace,
-                                local_B_block, n, n_blocks, delta_n, k,
-                                k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                res_indexer));
-                    });
-                    return gemm_ev;
-                }
-                else {
-                    using ReductionOpT = sycl::plus<resTy>;
-                    constexpr resTy identity_val =
-                        sycl::known_identity<ReductionOpT, resTy>::value;
-
-                    size_t iter_nelems = batch_nelems * n * m;
-                    size_t reduction_nelems =
-                        (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                    // more than one work-group is needed, requires a
-                    // temporary delta_k * n_wi elements processed along k,
-                    // so if more to process use multiple
-                    const auto &sg_sizes =
-                        dev.get_info<sycl::info::device::sub_group_sizes>();
-                    size_t wg =
-                        choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                    if (reduction_nelems < wg) {
-                        resTy *tmp = sycl::malloc_device<resTy>(
-                            iter_nelems * reduction_nelems, exec_q);
-                        sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                    &cgh) {
-                            cgh.depends_on(depends);
-
-                            using OuterInnerDimsIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            OuterInnerDimsIndexerT lhs_indexer{};
-                            OuterInnerDimsIndexerT rhs_indexer{};
-                            OuterInnerDimsIndexerT tmp_indexer{};
-                            using dpctl::tensor::offset_utils::
-                                ThreeOffsets_CombinedIndexer;
-                            using dpctl::tensor::offset_utils::Strided1DIndexer;
-                            using BatchDimsIndexerT =
-                                ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                             Strided1DIndexer,
-                                                             Strided1DIndexer>;
-
-                            BatchDimsIndexerT batch_indexer(
-                                Strided1DIndexer{
-                                    0, static_cast<py::ssize_t>(batch_nelems),
-                                    static_cast<py::ssize_t>(n * k)},
-                                Strided1DIndexer{
-                                    0, static_cast<py::ssize_t>(batch_nelems),
-                                    static_cast<py::ssize_t>(k * m)},
-                                Strided1DIndexer{
-                                    0, static_cast<py::ssize_t>(batch_nelems),
-                                    static_cast<py::ssize_t>(n * m)});
-
-                            size_t n_blocks = (n + delta_n - 1) / delta_n;
-                            size_t k_blocks =
-                                (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                            size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                            size_t lws = delta_n * delta_k;
-
-                            auto gRange =
-                                sycl::range<1>(batch_nelems * n_blocks *
-                                               m_blocks * k_blocks * lws);
-                            auto lRange = sycl::range<1>(lws);
-
-                            auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                            using LocAccT = sycl::local_accessor<resTy, 1>;
-                            LocAccT local_B_block(n_wi * delta_k, cgh);
-                            LocAccT workspace(delta_n * delta_k, cgh);
-
-                            using KernelName = class gemm_batch_tree_k_krn<
-                                lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                                m_groups>;
-                            cgh.parallel_for<KernelName>(
-                                ndRange,
-                                GemmBatchNoAtomicFunctorThreadK<
-                                    lhsTy, rhsTy, resTy, LocAccT,
-                                    OuterInnerDimsIndexerT,
-                                    OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                                    m_groups>(lhs_tp, rhs_tp, tmp, workspace,
-                                              local_B_block, n, n_blocks,
-                                              delta_n, k, k_blocks, delta_k,
-                                              n_wi, m, batch_nelems,
-                                              batch_indexer, lhs_indexer,
-                                              rhs_indexer, tmp_indexer));
-                        });
-                        sycl::event red_ev = exec_q.submit([&](sycl::handler
-                                                                   &cgh) {
-                            cgh.depends_on(gemm_ev);
-
-                            using NoOpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            using InputOutputIterIndexerT =
-                                dpctl::tensor::offset_utils::
-                                    TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                               NoOpIndexerT>;
-                            using ReductionIndexerT =
-                                dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                            InputOutputIterIndexerT in_out_iter_indexer{
-                                NoOpIndexerT{}, NoOpIndexerT{}};
-                            ReductionIndexerT reduction_indexer{
-                                0, static_cast<py::ssize_t>(reduction_nelems),
-                                static_cast<py::ssize_t>(iter_nelems)};
-
-                            sycl::range<1> iter_range{iter_nelems};
-
-                            cgh.parallel_for<
-                                class gemm_reduction_seq_strided_krn<
-                                    resTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT,
-                                    ReductionIndexerT>>(
-                                iter_range,
-                                SequentialReduction<resTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                                    tmp, res_tp, ReductionOpT(), identity_val,
-                                    in_out_iter_indexer, reduction_indexer,
-                                    reduction_nelems));
-                        });
-                        sycl::event cleanup_host_task_event =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(red_ev);
-                                const sycl::context &ctx = exec_q.get_context();
-
-                                cgh.host_task(
-                                    [ctx, tmp] { sycl::free(tmp, ctx); });
-                            });
-                        return cleanup_host_task_event;
-                    }
-
-                    // max_max_wg prevents running out of resources on CPU
-                    constexpr size_t max_max_wg = 2048;
-                    size_t max_wg = std::min(
-                        max_max_wg,
-                        dev.get_info<
-                            sycl::info::device::max_work_group_size>() /
-                            2);
-
-                    constexpr size_t preferred_reductions_per_wi = 4;
-                    size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                    size_t reduction_groups =
-                        (reduction_nelems + preferred_reductions_per_wi * wg -
-                         1) /
-                        (preferred_reductions_per_wi * wg);
-                    assert(reduction_groups > 1);
-
-                    resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                        iter_nelems *
-                            (/* temp */ reduction_nelems +
-                             /* first reduction temp */ reduction_groups),
-                        exec_q);
-                    resTy *partially_reduced_tmp2 = nullptr;
-
-                    if (partially_reduced_tmp == nullptr) {
-                        throw std::runtime_error(
-                            "Unable to allocate device_memory");
-                    }
-                    else {
-                        partially_reduced_tmp2 = partially_reduced_tmp +
-                                                 reduction_nelems * iter_nelems;
-                    }
-
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT tmp_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        constexpr int m_groups = 1;
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, partially_reduced_tmp,
-                                workspace, local_B_block, n, n_blocks, delta_n,
-                                k, k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                tmp_indexer));
-                    });
-
-                    sycl::event red_ev =
-                        tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                            exec_q, partially_reduced_tmp,
-                            partially_reduced_tmp2, res_tp, identity_val,
-                            iter_nelems, reduction_nelems, reduction_groups, wg,
-                            max_wg, preferred_reductions_per_wi,
-                            reductions_per_wi, {gemm_ev});
-
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, partially_reduced_tmp] {
-                                sycl::free(partially_reduced_tmp, ctx);
-                            });
-                        });
-
-                    return cleanup_host_task_event;
-                }
+                return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    depends);
             }
             else {
-                constexpr int m_groups = 2;
-
-                gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                    local_mem_size, reserved_slm_size, delta_k,
-                    n_wi,   // modified by reference
-                    delta_n // modified by reference
-                );
-
-                if (k <= (delta_k * n_wi)) {
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT res_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT =
-                            sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
-
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, res_tp, workspace,
-                                local_B_block, n, n_blocks, delta_n, k,
-                                k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                res_indexer));
-                    });
-                    return gemm_ev;
-                }
-                else {
-                    using ReductionOpT = sycl::plus<resTy>;
-                    constexpr resTy identity_val =
-                        sycl::known_identity<ReductionOpT, resTy>::value;
-
-                    size_t iter_nelems = batch_nelems * n * m;
-                    size_t reduction_nelems =
-                        (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                    // more than one work-group is needed, requires a
-                    // temporary delta_k * n_wi elements processed along k,
-                    // so if more to process use multiple
-                    const auto &sg_sizes =
-                        dev.get_info<sycl::info::device::sub_group_sizes>();
-                    size_t wg =
-                        choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                    if (reduction_nelems < wg) {
-                        resTy *tmp = sycl::malloc_device<resTy>(
-                            iter_nelems * reduction_nelems, exec_q);
-                        sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                    &cgh) {
-                            cgh.depends_on(depends);
-
-                            using OuterInnerDimsIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            OuterInnerDimsIndexerT lhs_indexer{};
-                            OuterInnerDimsIndexerT rhs_indexer{};
-                            OuterInnerDimsIndexerT tmp_indexer{};
-                            using dpctl::tensor::offset_utils::
-                                ThreeOffsets_CombinedIndexer;
-                            using dpctl::tensor::offset_utils::Strided1DIndexer;
-                            using BatchDimsIndexerT =
-                                ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                             Strided1DIndexer,
-                                                             Strided1DIndexer>;
-
-                            BatchDimsIndexerT batch_indexer(
-                                Strided1DIndexer{
-                                    0, static_cast<py::ssize_t>(batch_nelems),
-                                    static_cast<py::ssize_t>(n * k)},
-                                Strided1DIndexer{
-                                    0, static_cast<py::ssize_t>(batch_nelems),
-                                    static_cast<py::ssize_t>(k * m)},
-                                Strided1DIndexer{
-                                    0, static_cast<py::ssize_t>(batch_nelems),
-                                    static_cast<py::ssize_t>(n * m)});
-
-                            size_t n_blocks = (n + delta_n - 1) / delta_n;
-                            size_t k_blocks =
-                                (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                            size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                            size_t lws = delta_n * delta_k;
-
-                            auto gRange =
-                                sycl::range<1>(batch_nelems * n_blocks *
-                                               m_blocks * k_blocks * lws);
-                            auto lRange = sycl::range<1>(lws);
-
-                            auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                            using LocAccT =
-                                sycl::local_accessor<sycl::vec<resTy, m_groups>,
-                                                     1>;
-                            LocAccT local_B_block(n_wi * delta_k, cgh);
-                            LocAccT workspace(delta_n * delta_k, cgh);
-
-                            using KernelName = class gemm_batch_tree_k_krn<
-                                lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                                OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                                m_groups>;
-                            cgh.parallel_for<KernelName>(
-                                ndRange,
-                                GemmBatchNoAtomicFunctorThreadK<
-                                    lhsTy, rhsTy, resTy, LocAccT,
-                                    OuterInnerDimsIndexerT,
-                                    OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                                    m_groups>(lhs_tp, rhs_tp, tmp, workspace,
-                                              local_B_block, n, n_blocks,
-                                              delta_n, k, k_blocks, delta_k,
-                                              n_wi, m, batch_nelems,
-                                              batch_indexer, lhs_indexer,
-                                              rhs_indexer, tmp_indexer));
-                        });
-                        sycl::event red_ev = exec_q.submit([&](sycl::handler
-                                                                   &cgh) {
-                            cgh.depends_on(gemm_ev);
-
-                            using NoOpIndexerT =
-                                dpctl::tensor::offset_utils::NoOpIndexer;
-                            using InputOutputIterIndexerT =
-                                dpctl::tensor::offset_utils::
-                                    TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                               NoOpIndexerT>;
-                            using ReductionIndexerT =
-                                dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                            InputOutputIterIndexerT in_out_iter_indexer{
-                                NoOpIndexerT{}, NoOpIndexerT{}};
-                            ReductionIndexerT reduction_indexer{
-                                0, static_cast<py::ssize_t>(reduction_nelems),
-                                static_cast<py::ssize_t>(iter_nelems)};
-
-                            sycl::range<1> iter_range{iter_nelems};
-
-                            cgh.parallel_for<
-                                class gemm_reduction_seq_strided_krn<
-                                    resTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT,
-                                    ReductionIndexerT>>(
-                                iter_range,
-                                SequentialReduction<resTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                                    tmp, res_tp, ReductionOpT(), identity_val,
-                                    in_out_iter_indexer, reduction_indexer,
-                                    reduction_nelems));
-                        });
-                        sycl::event cleanup_host_task_event =
-                            exec_q.submit([&](sycl::handler &cgh) {
-                                cgh.depends_on(red_ev);
-                                const sycl::context &ctx = exec_q.get_context();
-
-                                cgh.host_task(
-                                    [ctx, tmp] { sycl::free(tmp, ctx); });
-                            });
-                        return cleanup_host_task_event;
-                    }
-
-                    // max_max_wg prevents running out of resources on CPU
-                    constexpr size_t max_max_wg = 2048;
-                    size_t max_wg = std::min(
-                        max_max_wg,
-                        dev.get_info<
-                            sycl::info::device::max_work_group_size>() /
-                            2);
-
-                    constexpr size_t preferred_reductions_per_wi = 4;
-                    size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                    size_t reduction_groups =
-                        (reduction_nelems + preferred_reductions_per_wi * wg -
-                         1) /
-                        (preferred_reductions_per_wi * wg);
-                    assert(reduction_groups > 1);
-
-                    resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                        iter_nelems *
-                            (/* temp */ reduction_nelems +
-                             /* first reduction temp */ reduction_groups),
-                        exec_q);
-                    resTy *partially_reduced_tmp2 = nullptr;
-
-                    if (partially_reduced_tmp == nullptr) {
-                        throw std::runtime_error(
-                            "Unable to allocate device_memory");
-                    }
-                    else {
-                        partially_reduced_tmp2 = partially_reduced_tmp +
-                                                 reduction_nelems * iter_nelems;
-                    }
-
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT tmp_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT =
-                            sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, partially_reduced_tmp,
-                                workspace, local_B_block, n, n_blocks, delta_n,
-                                k, k_blocks, delta_k, n_wi, m, batch_nelems,
-                                batch_indexer, lhs_indexer, rhs_indexer,
-                                tmp_indexer));
-                    });
-
-                    sycl::event red_ev =
-                        tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                            exec_q, partially_reduced_tmp,
-                            partially_reduced_tmp2, res_tp, identity_val,
-                            iter_nelems, reduction_nelems, reduction_groups, wg,
-                            max_wg, preferred_reductions_per_wi,
-                            reductions_per_wi, {gemm_ev});
-
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, partially_reduced_tmp] {
-                                sycl::free(partially_reduced_tmp, ctx);
-                            });
-                        });
-
-                    return cleanup_host_task_event;
-                }
+                return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    depends);
             }
         }
         else {
-            constexpr int m_groups = 1;
-
-            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-                local_mem_size, reserved_slm_size, delta_k,
-                n_wi,   // modified by reference
-                delta_n // modified by reference
-            );
-
-            // each group processes delta_k * n_wi
-            // items in a column, so no need for allocating
-            // temp memory if only one group is needed
-            if (k <= (delta_k * n_wi)) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                        Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
-
-                    BatchDimsIndexerT batch_indexer(
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * k)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(k * m)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * m)});
-
-                    size_t n_blocks = (n + delta_n - 1) / delta_n;
-                    size_t k_blocks =
-                        (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                    constexpr int m_groups = 1;
-                    size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                    size_t lws = delta_n * delta_k;
-
-                    auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                 m_blocks * k_blocks * lws);
-                    auto lRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                    using LocAccT = sycl::local_accessor<resTy, 1>;
-                    LocAccT local_B_block(n_wi * delta_k, cgh);
-                    LocAccT workspace(delta_n * delta_k, cgh);
-
-                    using KernelName = class gemm_batch_tree_k_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
-
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadK<
-                            lhsTy, rhsTy, resTy, LocAccT,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, m_groups>(
-                            lhs_tp, rhs_tp, res_tp, workspace, local_B_block, n,
-                            n_blocks, delta_n, k, k_blocks, delta_k, n_wi, m,
-                            batch_nelems, batch_indexer, lhs_indexer,
-                            rhs_indexer, res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-
-                size_t iter_nelems = batch_nelems * n * m;
-                size_t reduction_nelems =
-                    (k + delta_k * n_wi - 1) / (delta_k * n_wi);
-
-                // more than one work-group is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT tmp_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t n_blocks = (n + delta_n - 1) / delta_n;
-                        size_t k_blocks =
-                            (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                        constexpr int m_groups = 1;
-                        size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                        size_t lws = delta_n * delta_k;
-
-                        auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                     m_blocks * k_blocks * lws);
-                        auto lRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                        using LocAccT = sycl::local_accessor<resTy, 1>;
-                        LocAccT local_B_block(n_wi * delta_k, cgh);
-                        LocAccT workspace(delta_n * delta_k, cgh);
-
-                        using KernelName = class gemm_batch_tree_k_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            m_groups>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadK<
-                                lhsTy, rhsTy, resTy, LocAccT,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, m_groups>(
-                                lhs_tp, rhs_tp, tmp, workspace, local_B_block,
-                                n, n_blocks, delta_n, k, k_blocks, delta_k,
-                                n_wi, m, batch_nelems, batch_indexer,
-                                lhs_indexer, rhs_indexer, tmp_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           NoOpIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, NoOpIndexerT{}};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 4;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT tmp_indexer{};
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                        Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
-
-                    BatchDimsIndexerT batch_indexer(
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * k)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(k * m)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * m)});
-
-                    size_t n_blocks = (n + delta_n - 1) / delta_n;
-                    size_t k_blocks =
-                        (k + n_wi * delta_k - 1) / (n_wi * delta_k);
-                    constexpr int m_groups = 1;
-                    size_t m_blocks = (m + m_groups - 1) / m_groups;
-
-                    size_t lws = delta_n * delta_k;
-
-                    auto gRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                 m_blocks * k_blocks * lws);
-                    auto lRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gRange, lRange);
-
-                    using LocAccT = sycl::local_accessor<resTy, 1>;
-                    LocAccT local_B_block(n_wi * delta_k, cgh);
-                    LocAccT workspace(delta_n * delta_k, cgh);
-
-                    using KernelName = class gemm_batch_tree_k_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, m_groups>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadK<
-                            lhsTy, rhsTy, resTy, LocAccT,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, m_groups>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp, workspace,
-                            local_B_block, n, n_blocks, delta_n, k, k_blocks,
-                            delta_k, n_wi, m, batch_nelems, batch_indexer,
-                            lhs_indexer, rhs_indexer, tmp_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+            return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
     }
     else { // m > 1, n > k or m > k
-        constexpr int wi_delta_n = 2;
-        size_t wg_delta_n(16); // rows of A processed in WG
-        size_t wg_delta_m(16); // rows of B processed in WG
-        size_t wi_delta_k(64); // Elements in K dimension processed by WI
-
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
-            constexpr int wi_delta_m = 4;
-
-            gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-                local_mem_size, reserved_slm_size, wi_delta_n,
-                wi_delta_k, // modified by reference
-                wg_delta_n, // modified by reference
-                wg_delta_m  // modified by reference
-            );
-
-            // each group processes delta_k * n_wi
-            // items in a column, so no need for allocating
-            // temp memory if only one group is needed
-            if (k <= wi_delta_k) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                        Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
-
-                    BatchDimsIndexerT batch_indexer(
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * k)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(k * m)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * m)});
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 =
-                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, res_tp, local_A_block,
-                            local_B_block, n, wg_delta_n, k, k_blocks,
-                            wi_delta_k, m, m_blocks, wg_delta_m, batch_nelems,
-                            batch_indexer, lhs_indexer, rhs_indexer,
-                            res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-                size_t iter_nelems = batch_nelems * n * m;
-                size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
-
-                // more than one work-group is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT tmp_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t lws = wg_delta_n * wg_delta_m;
-
-                        size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                           (wi_delta_n * wg_delta_n));
-                        size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                        size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                           (wi_delta_m * wg_delta_m));
-
-                        auto gwsRange =
-                            sycl::range<1>(batch_nelems * n_blocks * m_blocks *
-                                           k_blocks * lws);
-                        auto lwsRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                        LocAccT1 local_A_block(
-                            sycl::range<1>((wi_delta_n * wg_delta_n) *
-                                           wi_delta_k),
-                            cgh);
-                        using LocAccT2 =
-                            sycl::local_accessor<sycl::vec<resTy, wi_delta_m>,
-                                                 1>;
-                        LocAccT2 local_B_block(
-                            sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                        using KernelName = class gemm_batch_tree_nm_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            wi_delta_m>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadNM<
-                                lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                                lhs_tp, rhs_tp, tmp, local_A_block,
-                                local_B_block, n, wg_delta_n, k, k_blocks,
-                                wi_delta_k, m, m_blocks, wg_delta_m,
-                                batch_nelems, batch_indexer, lhs_indexer,
-                                rhs_indexer, tmp_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           NoOpIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, NoOpIndexerT{}};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 4;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT tmp_indexer{};
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                        Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
-
-                    BatchDimsIndexerT batch_indexer(
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * k)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(k * m)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * m)});
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 =
-                        sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp,
-                            local_A_block, local_B_block, n, wg_delta_n, k,
-                            k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
-                            batch_nelems, batch_indexer, lhs_indexer,
-                            rhs_indexer, tmp_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
-        else { // m > 1, n > k or m > k, resTy not complex
-            constexpr int wi_delta_m = 1;
-
-            gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-                local_mem_size, reserved_slm_size, wi_delta_n,
-                wi_delta_k, // modified by reference
-                wg_delta_n, // modified by reference
-                wg_delta_m  // modified by reference
-            );
-
-            if (k <= wi_delta_k) {
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT res_indexer{};
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                        Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
-
-                    BatchDimsIndexerT batch_indexer(
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * k)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(k * m)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * m)});
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, res_tp, local_A_block,
-                            local_B_block, n, wg_delta_n, k, k_blocks,
-                            wi_delta_k, m, m_blocks, wg_delta_m, batch_nelems,
-                            batch_indexer, lhs_indexer, rhs_indexer,
-                            res_indexer));
-                });
-                return gemm_ev;
-            }
-            else {
-                using ReductionOpT = sycl::plus<resTy>;
-                constexpr resTy identity_val =
-                    sycl::known_identity<ReductionOpT, resTy>::value;
-                size_t iter_nelems = batch_nelems * n * m;
-                size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
-
-                // more than one work-group is needed, requires a temporary
-                // delta_k * n_wi elements processed along k, so if more to
-                // process use multiple
-                const auto &sg_sizes =
-                    dev.get_info<sycl::info::device::sub_group_sizes>();
-                size_t wg =
-                    choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-                if (reduction_nelems < wg) {
-                    resTy *tmp = sycl::malloc_device<resTy>(
-                        iter_nelems * reduction_nelems, exec_q);
-                    sycl::event gemm_ev = exec_q.submit([&](sycl::handler
-                                                                &cgh) {
-                        cgh.depends_on(depends);
-
-                        using OuterInnerDimsIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        OuterInnerDimsIndexerT lhs_indexer{};
-                        OuterInnerDimsIndexerT rhs_indexer{};
-                        OuterInnerDimsIndexerT tmp_indexer{};
-                        using dpctl::tensor::offset_utils::
-                            ThreeOffsets_CombinedIndexer;
-                        using dpctl::tensor::offset_utils::Strided1DIndexer;
-                        using BatchDimsIndexerT =
-                            ThreeOffsets_CombinedIndexer<Strided1DIndexer,
-                                                         Strided1DIndexer,
-                                                         Strided1DIndexer>;
-
-                        BatchDimsIndexerT batch_indexer(
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * k)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(k * m)},
-                            Strided1DIndexer{
-                                0, static_cast<py::ssize_t>(batch_nelems),
-                                static_cast<py::ssize_t>(n * m)});
-
-                        size_t lws = wg_delta_n * wg_delta_m;
-
-                        size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                           (wi_delta_n * wg_delta_n));
-                        size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                        size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                           (wi_delta_m * wg_delta_m));
-
-                        auto gwsRange =
-                            sycl::range<1>(batch_nelems * n_blocks * m_blocks *
-                                           k_blocks * lws);
-                        auto lwsRange = sycl::range<1>(lws);
-
-                        auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                        LocAccT1 local_A_block(
-                            sycl::range<1>((wi_delta_n * wg_delta_n) *
-                                           wi_delta_k),
-                            cgh);
-                        using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                        LocAccT2 local_B_block(
-                            sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                        using KernelName = class gemm_batch_tree_nm_krn<
-                            lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                            OuterInnerDimsIndexerT, BatchDimsIndexerT,
-                            wi_delta_m>;
-                        cgh.parallel_for<KernelName>(
-                            ndRange,
-                            GemmBatchNoAtomicFunctorThreadNM<
-                                lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                                BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                                lhs_tp, rhs_tp, tmp, local_A_block,
-                                local_B_block, n, wg_delta_n, k, k_blocks,
-                                wi_delta_k, m, m_blocks, wg_delta_m,
-                                batch_nelems, batch_indexer, lhs_indexer,
-                                rhs_indexer, tmp_indexer));
-                    });
-                    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(gemm_ev);
-
-                        using NoOpIndexerT =
-                            dpctl::tensor::offset_utils::NoOpIndexer;
-                        using InputOutputIterIndexerT =
-                            dpctl::tensor::offset_utils::
-                                TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                           NoOpIndexerT>;
-                        using ReductionIndexerT =
-                            dpctl::tensor::offset_utils::Strided1DIndexer;
-
-                        InputOutputIterIndexerT in_out_iter_indexer{
-                            NoOpIndexerT{}, NoOpIndexerT{}};
-                        ReductionIndexerT reduction_indexer{
-                            0, static_cast<py::ssize_t>(reduction_nelems),
-                            static_cast<py::ssize_t>(iter_nelems)};
-
-                        sycl::range<1> iter_range{iter_nelems};
-
-                        cgh.parallel_for<class gemm_reduction_seq_strided_krn<
-                            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                            ReductionIndexerT>>(
-                            iter_range,
-                            SequentialReduction<resTy, resTy, ReductionOpT,
-                                                InputOutputIterIndexerT,
-                                                ReductionIndexerT>(
-                                tmp, res_tp, ReductionOpT(), identity_val,
-                                in_out_iter_indexer, reduction_indexer,
-                                reduction_nelems));
-                    });
-                    sycl::event cleanup_host_task_event =
-                        exec_q.submit([&](sycl::handler &cgh) {
-                            cgh.depends_on(red_ev);
-                            const sycl::context &ctx = exec_q.get_context();
-
-                            cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
-                        });
-                    return cleanup_host_task_event;
-                }
-
-                // max_max_wg prevents running out of resources on CPU
-                constexpr size_t max_max_wg = 2048;
-                size_t max_wg = std::min(
-                    max_max_wg,
-                    dev.get_info<sycl::info::device::max_work_group_size>() /
-                        2);
-
-                constexpr size_t preferred_reductions_per_wi = 4;
-                size_t reductions_per_wi(preferred_reductions_per_wi);
-
-                size_t reduction_groups =
-                    (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
-                    (preferred_reductions_per_wi * wg);
-                assert(reduction_groups > 1);
-
-                resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                    iter_nelems * (/* temp */ reduction_nelems +
-                                   /* first reduction temp */ reduction_groups),
-                    exec_q);
-                resTy *partially_reduced_tmp2 = nullptr;
-
-                if (partially_reduced_tmp == nullptr) {
-                    throw std::runtime_error(
-                        "Unable to allocate device_memory");
-                }
-                else {
-                    partially_reduced_tmp2 =
-                        partially_reduced_tmp + reduction_nelems * iter_nelems;
-                }
-
-                sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(depends);
-
-                    using OuterInnerDimsIndexerT =
-                        dpctl::tensor::offset_utils::NoOpIndexer;
-                    OuterInnerDimsIndexerT lhs_indexer{};
-                    OuterInnerDimsIndexerT rhs_indexer{};
-                    OuterInnerDimsIndexerT tmp_indexer{};
-                    using dpctl::tensor::offset_utils::
-                        ThreeOffsets_CombinedIndexer;
-                    using dpctl::tensor::offset_utils::Strided1DIndexer;
-                    using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
-                        Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
-
-                    BatchDimsIndexerT batch_indexer(
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * k)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(k * m)},
-                        Strided1DIndexer{0,
-                                         static_cast<py::ssize_t>(batch_nelems),
-                                         static_cast<py::ssize_t>(n * m)});
-
-                    size_t lws = wg_delta_n * wg_delta_m;
-
-                    size_t n_blocks = ((n + wi_delta_n * wg_delta_n - 1) /
-                                       (wi_delta_n * wg_delta_n));
-                    size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-                    size_t m_blocks = ((m + wi_delta_m * wg_delta_m - 1) /
-                                       (wi_delta_m * wg_delta_m));
-
-                    auto gwsRange = sycl::range<1>(batch_nelems * n_blocks *
-                                                   m_blocks * k_blocks * lws);
-                    auto lwsRange = sycl::range<1>(lws);
-
-                    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-                    using LocAccT1 = sycl::local_accessor<resTy, 1>;
-                    LocAccT1 local_A_block(
-                        sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k),
-                        cgh);
-                    using LocAccT2 = sycl::local_accessor<resTy, 1>;
-                    LocAccT2 local_B_block(
-                        sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-                    using KernelName = class gemm_batch_tree_nm_krn<
-                        lhsTy, rhsTy, resTy, OuterInnerDimsIndexerT,
-                        OuterInnerDimsIndexerT, BatchDimsIndexerT, wi_delta_m>;
-                    cgh.parallel_for<KernelName>(
-                        ndRange,
-                        GemmBatchNoAtomicFunctorThreadNM<
-                            lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                            OuterInnerDimsIndexerT, OuterInnerDimsIndexerT,
-                            BatchDimsIndexerT, wi_delta_n, wi_delta_m>(
-                            lhs_tp, rhs_tp, partially_reduced_tmp,
-                            local_A_block, local_B_block, n, wg_delta_n, k,
-                            k_blocks, wi_delta_k, m, m_blocks, wg_delta_m,
-                            batch_nelems, batch_indexer, lhs_indexer,
-                            rhs_indexer, tmp_indexer));
-                });
-
-                sycl::event red_ev =
-                    tree_reduction_for_gemm_contig<resTy, ReductionOpT>(
-                        exec_q, partially_reduced_tmp, partially_reduced_tmp2,
-                        res_tp, identity_val, iter_nelems, reduction_nelems,
-                        reduction_groups, wg, max_wg,
-                        preferred_reductions_per_wi, reductions_per_wi,
-                        {gemm_ev});
-
-                sycl::event cleanup_host_task_event =
-                    exec_q.submit([&](sycl::handler &cgh) {
-                        cgh.depends_on(red_ev);
-                        const sycl::context &ctx = exec_q.get_context();
-
-                        cgh.host_task([ctx, partially_reduced_tmp] {
-                            sycl::free(partially_reduced_tmp, ctx);
-                        });
-                    });
-
-                return cleanup_host_task_event;
-            }
+        else { // m > 1, n > k or m > k, resTy complex
+            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
     }
 }
