@@ -1042,7 +1042,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
                                        rhs_shape_strides);
         OuterInnerIndexerT res_indexer(res_outer_nd, 0, res_shape_strides);
 
-        if ((k > n && k > m) || m == 1) {
+        if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -1077,46 +1077,42 @@ sycl::event gemm_impl(sycl::queue &exec_q,
                              lhs_tp, rhs_tp, res_tp, workspace, local_B_block,
                              n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
                              m, lhs_indexer, rhs_indexer, res_indexer));
-            // }
-            // else if (k > n && k > m) {
-            //     constexpr size_t m_groups = 2;
-            //     size_t delta_k(4);
-            //     size_t n_wi(4);
-            //     size_t delta_n(4);
+        }
+        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
+            constexpr size_t m_groups = 2;
+            size_t delta_k(4);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
-            //     gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-            //         local_mem_size, reserved_slm_size, delta_k,
-            //         n_wi,   // modified by reference
-            //         delta_n // modified by reference
-            //     );
+            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
+            );
 
-            //     size_t n_blocks = (n + delta_n - 1) / delta_n;
-            //     size_t m_blocks = (m + m_groups - 1) / m_groups;
-            //     size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi *
-            //     delta_k);
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
 
-            //     size_t lws = delta_n * delta_k;
+            size_t lws = delta_n * delta_k;
 
-            //     auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks *
-            //     lws); auto lRange = sycl::range<1>(lws);
+            auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
 
-            //     auto ndRange = sycl::nd_range<1>(gRange, lRange);
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
 
-            //     using LocAccT = sycl::local_accessor<sycl::vec<resTy,
-            //     m_groups>, 1>; LocAccT local_B_block(n_wi * delta_k, cgh);
-            //     LocAccT workspace(delta_n * delta_k, cgh);
+            using LocAccT = sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+            LocAccT local_B_block(n_wi * delta_k, cgh);
+            LocAccT workspace(delta_n * delta_k, cgh);
 
-            //     using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
-            //                                         OuterInnerIndexerT,
-            //                                         m_groups>;
-            //     cgh.parallel_for<KernelName>(
-            //         ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
-            //                                     OuterInnerIndexerT,
-            //                                     m_groups>(
-            //                      lhs_tp, rhs_tp, res_tp, workspace,
-            //                      local_B_block, n, n_blocks, delta_n, k,
-            //                      k_blocks, delta_k, n_wi, m, lhs_indexer,
-            //                      rhs_indexer, res_indexer));
+            using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
+                                                OuterInnerIndexerT, m_groups>;
+            cgh.parallel_for<KernelName>(
+                ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
+                                            OuterInnerIndexerT, m_groups>(
+                             lhs_tp, rhs_tp, res_tp, workspace, local_B_block,
+                             n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
+                             m, lhs_indexer, rhs_indexer, res_indexer));
         }
         else {
             constexpr int wi_delta_n = 2;
@@ -1216,7 +1212,7 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         OuterInnerIndexerT rhs_indexer{};
         OuterInnerIndexerT res_indexer{};
 
-        if ((k > n && k > m) || m == 1) {
+        if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -1252,44 +1248,42 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
                              n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
                              m, lhs_indexer, rhs_indexer, res_indexer));
         }
-        // else if (k > n && k > m) {
-        //     constexpr size_t m_groups = 2;
-        //     size_t delta_k(4);
-        //     size_t n_wi(4);
-        //     size_t delta_n(4);
+        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
+            constexpr size_t m_groups = 2;
+            size_t delta_k(4);
+            size_t n_wi(4);
+            size_t delta_n(4);
 
-        //     gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
-        //         local_mem_size, reserved_slm_size, delta_k,
-        //         n_wi,   // modified by reference
-        //         delta_n // modified by reference
-        //     );
+            gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
+                local_mem_size, reserved_slm_size, delta_k,
+                n_wi,   // modified by reference
+                delta_n // modified by reference
+            );
 
-        //     size_t n_blocks = (n + delta_n - 1) / delta_n;
-        //     size_t m_blocks = (m + m_groups - 1) / m_groups;
-        //     size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
+            size_t n_blocks = (n + delta_n - 1) / delta_n;
+            size_t m_blocks = (m + m_groups - 1) / m_groups;
+            size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
 
-        //     size_t lws = delta_n * delta_k;
+            size_t lws = delta_n * delta_k;
 
-        //     auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks *
-        //     lws); auto lRange = sycl::range<1>(lws);
+            auto gRange = sycl::range<1>(n_blocks * m_blocks * k_blocks * lws);
+            auto lRange = sycl::range<1>(lws);
 
-        //     auto ndRange = sycl::nd_range<1>(gRange, lRange);
+            auto ndRange = sycl::nd_range<1>(gRange, lRange);
 
-        //     using LocAccT = sycl::local_accessor<sycl::vec<resTy, m_groups>,
-        //     1>; LocAccT local_B_block(n_wi * delta_k, cgh); LocAccT
-        //     workspace(delta_n * delta_k, cgh);
+            using LocAccT = sycl::local_accessor<sycl::vec<resTy, m_groups>, 1>;
+            LocAccT local_B_block(n_wi * delta_k, cgh);
+            LocAccT workspace(delta_n * delta_k, cgh);
 
-        //     using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
-        //                                         OuterInnerIndexerT,
-        //                                         m_groups>;
-        //     cgh.parallel_for<KernelName>(
-        //         ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
-        //                                     OuterInnerIndexerT, m_groups>(
-        //                      lhs_tp, rhs_tp, res_tp, workspace,
-        //                      local_B_block, n, n_blocks, delta_n, k,
-        //                      k_blocks, delta_k, n_wi, m, lhs_indexer,
-        //                      rhs_indexer, res_indexer));
-        // }
+            using KernelName = class gemm_k_krn<lhsTy, rhsTy, resTy,
+                                                OuterInnerIndexerT, m_groups>;
+            cgh.parallel_for<KernelName>(
+                ndRange, GemmFunctorThreadK<lhsTy, rhsTy, resTy, LocAccT,
+                                            OuterInnerIndexerT, m_groups>(
+                             lhs_tp, rhs_tp, res_tp, workspace, local_B_block,
+                             n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
+                             m, lhs_indexer, rhs_indexer, res_indexer));
+        }
         else {
             constexpr int wi_delta_n = 2;
             constexpr int wi_delta_m = 4;
@@ -2650,7 +2644,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
         return gemm_no_reduction_ev;
     }
 
-    if ((k > n && k > m) || m == 1) {
+    if (exec_q.get_device().is_cpu()) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -2661,7 +2655,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
                     depends);
             }
             else {
-                return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
                     lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
                     rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
@@ -2669,28 +2663,56 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
             }
         }
         else {
-            return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
                 lhs_outer_inner_shapes_strides, rhs_outer_nd,
                 rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
                 depends);
         }
     }
-    else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
-            return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
-                lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
-                depends);
+    else {
+        if ((k > n && k > m) || m == 1) {
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                if (m == 1) {
+                    return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
+                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
+                        rhs_outer_nd, rhs_outer_inner_shapes_strides, res_nd,
+                        res_shapes_strides, depends);
+                }
+                else {
+                    return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
+                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
+                        rhs_outer_nd, rhs_outer_inner_shapes_strides, res_nd,
+                        res_shapes_strides, depends);
+                }
+            }
+            else {
+                return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
+                    lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
+                    depends);
+            }
         }
-        else {
-            return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
-                lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
-                depends);
+        else { // m > 1, n > k or m > k
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
+                    lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
+                    depends);
+            }
+            else {
+                return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
+                    lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
+                    depends);
+            }
         }
     }
 }
@@ -3377,7 +3399,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
         return gemm_no_reduction_ev;
     }
 
-    if ((k > n && k > m) || m == 1) {
+    if (exec_q.get_device().is_cpu()) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -3385,24 +3407,43 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
             }
             else {
-                return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
             }
         }
         else {
-            return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
     }
-    else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
-            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+    else {
+        if ((k > n && k > m) || m == 1) {
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                if (m == 1) {
+                    return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+                }
+                else {
+                    return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+                }
+            }
+            else {
+                return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+            }
         }
-        else {
-            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+        else { // m > 1, n > k or m > k
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+            }
+            else {
+                return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
+            }
         }
     }
 }
@@ -4221,7 +4262,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
                              m, batch_nelems, batch_indexer, lhs_indexer,
                              rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m) {
+        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -4427,7 +4468,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
                              m, batch_nelems, batch_indexer, lhs_indexer,
                              rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m) {
+        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -6023,7 +6064,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
         return gemm_batch_no_reduction_ev;
     }
 
-    if ((k > n && k > m) || m == 1) {
+    if (exec_q.get_device().is_cpu()) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -6036,7 +6077,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                     res_outer_shapes_strides, res_shape_strides, depends);
             }
             else {
-                return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
                     batch_nd, batch_shape_strides, lhs_batch_offset,
                     rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
@@ -6046,7 +6087,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
             }
         }
         else {
-            return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
                 batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
                 res_batch_offset, inner_nd, lhs_outer_nd,
@@ -6055,25 +6096,61 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                 res_outer_shapes_strides, res_shape_strides, depends);
         }
     }
-    else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
-            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
-                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
-                res_batch_offset, inner_nd, lhs_outer_nd,
-                lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                rhs_outer_inner_shapes_strides, res_outer_nd,
-                res_outer_shapes_strides, res_shape_strides, depends);
+    else {
+        if ((k > n && k > m) || m == 1) {
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                if (m == 1) {
+                    return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                        batch_nd, batch_shape_strides, lhs_batch_offset,
+                        rhs_batch_offset, res_batch_offset, inner_nd,
+                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
+                        rhs_outer_nd, rhs_outer_inner_shapes_strides,
+                        res_outer_nd, res_outer_shapes_strides,
+                        res_shape_strides, depends);
+                }
+                else {
+                    return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                        batch_nd, batch_shape_strides, lhs_batch_offset,
+                        rhs_batch_offset, res_batch_offset, inner_nd,
+                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
+                        rhs_outer_nd, rhs_outer_inner_shapes_strides,
+                        res_outer_nd, res_outer_shapes_strides,
+                        res_shape_strides, depends);
+                }
+            }
+            else {
+                return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    batch_nd, batch_shape_strides, lhs_batch_offset,
+                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
+                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_outer_nd,
+                    res_outer_shapes_strides, res_shape_strides, depends);
+            }
         }
-        else { // m > 1, n > k or m > k, resTy complex
-            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
-                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
-                res_batch_offset, inner_nd, lhs_outer_nd,
-                lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                rhs_outer_inner_shapes_strides, res_outer_nd,
-                res_outer_shapes_strides, res_shape_strides, depends);
+        else { // m > 1, n > k or m > k
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    batch_nd, batch_shape_strides, lhs_batch_offset,
+                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
+                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_outer_nd,
+                    res_outer_shapes_strides, res_shape_strides, depends);
+            }
+            else { // m > 1, n > k or m > k, resTy complex
+                return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    batch_nd, batch_shape_strides, lhs_batch_offset,
+                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
+                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                    rhs_outer_inner_shapes_strides, res_outer_nd,
+                    res_outer_shapes_strides, res_shape_strides, depends);
+            }
         }
     }
 }
@@ -6861,7 +6938,7 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
         return gemm_batch_no_reduction_ev;
     }
 
-    if ((k > n && k > m) || m == 1) {
+    if (exec_q.get_device().is_cpu()) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -6870,25 +6947,51 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
                     depends);
             }
             else {
-                return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
+                return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
                     depends);
             }
         }
         else {
-            return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
     }
-    else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
-            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
+    else {
+        if ((k > n && k > m) || m == 1) {
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                if (m == 1) {
+                    return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy,
+                                                         1>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                        depends);
+                }
+                else {
+                    return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy,
+                                                         2>(
+                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                        depends);
+                }
+            }
+            else {
+                return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    depends);
+            }
         }
-        else { // m > 1, n > k or m > k, resTy complex
-            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
+        else { // m > 1, n > k or m > k
+            using dpctl::tensor::type_utils::is_complex;
+            if constexpr (!is_complex<resTy>::value) {
+                return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    depends);
+            }
+            else { // m > 1, n > k or m > k, resTy complex
+                return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
+                    depends);
+            }
         }
     }
 }
