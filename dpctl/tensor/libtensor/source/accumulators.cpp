@@ -150,12 +150,20 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
 
     const bool use_i32 = (cumsum_typeid == int32_typeid);
 
+    std::vector<sycl::event> host_task_events;
+
     if (mask.is_c_contiguous()) {
         auto fn = (use_i32)
                       ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
                       : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
-        return fn(exec_q, mask_size, mask_data, cumsum_data, depends);
+        size_t total_set = fn(exec_q, mask_size, mask_data, cumsum_data,
+                              host_task_events, depends);
+        {
+            py::gil_scoped_release release;
+            sycl::event::wait(host_task_events);
+        }
+        return total_set;
     }
 
     const py::ssize_t *shape = mask.get_shape_raw();
@@ -175,7 +183,6 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     auto strided_fn =
         (use_i32) ? mask_positions_strided_i32_dispatch_vector[mask_typeid]
                   : mask_positions_strided_i64_dispatch_vector[mask_typeid];
-    std::vector<sycl::event> host_task_events;
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
     const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
@@ -189,7 +196,10 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
 
     if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
         copy_shape_ev.wait();
-        sycl::event::wait(host_task_events);
+        {
+            py::gil_scoped_release release;
+            sycl::event::wait(host_task_events);
+        }
         sycl::free(shape_strides, exec_q);
         throw std::runtime_error("Unexpected error");
     }
@@ -200,10 +210,14 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     dependent_events.insert(dependent_events.end(), depends.begin(),
                             depends.end());
 
-    size_t total_set = strided_fn(exec_q, mask_size, mask_data, nd,
-                                  shape_strides, cumsum_data, dependent_events);
+    size_t total_set =
+        strided_fn(exec_q, mask_size, mask_data, nd, shape_strides, cumsum_data,
+                   host_task_events, dependent_events);
 
-    sycl::event::wait(host_task_events);
+    {
+        py::gil_scoped_release release;
+        sycl::event::wait(host_task_events);
+    }
     sycl::free(shape_strides, exec_q);
 
     return total_set;
@@ -283,6 +297,8 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
             "Cumulative sum array must have int64 data-type.");
     }
 
+    std::vector<sycl::event> host_task_events;
+
     if (src.is_c_contiguous()) {
         auto fn = cumsum_1d_contig_dispatch_vector[src_typeid];
         if (fn == nullptr) {
@@ -290,7 +306,13 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
                 "this cumsum requires integer type, got src_typeid=" +
                 std::to_string(src_typeid));
         }
-        return fn(exec_q, src_size, src_data, cumsum_data, depends);
+        size_t total = fn(exec_q, src_size, src_data, cumsum_data,
+                          host_task_events, depends);
+        {
+            py::gil_scoped_release release;
+            sycl::event::wait(host_task_events);
+        }
+        return total;
     }
 
     const py::ssize_t *shape = src.get_shape_raw();
@@ -313,7 +335,6 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
             "this cumsum requires integer type, got src_typeid=" +
             std::to_string(src_typeid));
     }
-    std::vector<sycl::event> host_task_events;
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
     const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
@@ -339,9 +360,12 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
                             depends.end());
 
     size_t total = strided_fn(exec_q, src_size, src_data, nd, shape_strides,
-                              cumsum_data, dependent_events);
+                              cumsum_data, host_task_events, dependent_events);
 
-    sycl::event::wait(host_task_events);
+    {
+        py::gil_scoped_release release;
+        sycl::event::wait(host_task_events);
+    }
     sycl::free(shape_strides, exec_q);
 
     return total;

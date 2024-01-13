@@ -118,6 +118,10 @@ set(_reduction_sources
 set(_boolean_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
 )
+set(_sorting_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/sort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/argsort.cpp
+)
 set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
@@ -148,6 +152,10 @@ set(_tensor_reductions_impl_sources
     ${_boolean_reduction_sources}
     ${_reduction_sources}
 )
+set(_tensor_sorting_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_sorting.cpp
+    ${_sorting_sources}
+)
 
 set(_py_trgts)
 
@@ -166,6 +174,11 @@ pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sourc
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
 list(APPEND _py_trgts ${python_module_name})
 
+set(python_module_name _tensor_sorting_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_sorting_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_sorting_impl_sources})
+list(APPEND _py_trgts ${python_module_name})
+
 set(_clang_prefix "")
 if (WIN32)
   set(_clang_prefix "/clang:")
@@ -179,6 +192,7 @@ set(_no_fast_math_sources
 list(APPEND _no_fast_math_sources
      ${_elementwise_sources}
      ${_reduction_sources}
+     ${_sorting_sources}
 )
 
 foreach(_src_fn ${_no_fast_math_sources})

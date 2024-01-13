@@ -175,6 +175,13 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
+from ._set_functions import (
+    unique_all,
+    unique_counts,
+    unique_inverse,
+    unique_values,
+)
+from ._sorting import argsort, sort
 from ._testing import allclose
 from ._type_utils import can_cast, finfo, iinfo, result_type
 
@@ -343,4 +350,10 @@ __all__ = [
     "__array_namespace_info__",
     "reciprocal",
     "angle",
+    "sort",
+    "argsort",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
 ]
