@@ -62,5 +62,6 @@ about:
 
 extra:
     recipe-maintainers:
-        - diptorup deb
-        - PokhodenkoSA
+        - diptorupd
+        - oleksandr-pavlyk
+        - ndgrigorian
