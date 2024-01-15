@@ -804,12 +804,13 @@ public:
         size_t global_s_offset = i * k + t_shift;
 
         sycl::vec<resT, m_groups> private_sum(identity_);
+        constexpr sycl::vec<resT, m_groups> vec_identity_(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(lhs[lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum += ((i < n) && (t + t_shift < k))
+                               ? (static_cast<resT>(
+                                      lhs[lhs_indexer(global_s_offset + t)]) *
+                                  local_B_block[t])
+                               : vec_identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -936,11 +937,11 @@ public:
 
         resT private_sum(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(lhs[lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum += ((i < n) && (t + t_shift < k))
+                               ? (static_cast<resT>(
+                                      lhs[lhs_indexer(global_s_offset + t)]) *
+                                  local_B_block[t])
+                               : identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -1743,12 +1744,13 @@ public:
         size_t global_s_offset = i * k + t_shift;
 
         sycl::vec<resT, m_groups> private_sum(identity_);
+        constexpr sycl::vec<resT, m_groups> vec_identity_(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(lhs[lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum += ((i < n) && (t + t_shift < k))
+                               ? (static_cast<resT>(
+                                      lhs[lhs_indexer(global_s_offset + t)]) *
+                                  local_B_block[t])
+                               : vec_identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -1872,11 +1874,11 @@ public:
 
         resT private_sum(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(lhs[lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum += ((i < n) && (t + t_shift < k))
+                               ? (static_cast<resT>(
+                                      lhs[lhs_indexer(global_s_offset + t)]) *
+                                  local_B_block[t])
+                               : identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -3923,13 +3925,14 @@ public:
         size_t global_s_offset = i * k + t_shift;
 
         sycl::vec<resT, m_groups> private_sum(identity_);
+        constexpr sycl::vec<resT, m_groups> vec_identity_(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(
-                         lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum +=
+                ((i < n) && (t + t_shift < k))
+                    ? (static_cast<resT>(
+                           lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
+                       local_B_block[t])
+                    : vec_identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -4083,12 +4086,12 @@ public:
 
         resT private_sum(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(
-                         lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum +=
+                ((i < n) && (t + t_shift < k))
+                    ? (static_cast<resT>(
+                           lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
+                       local_B_block[t])
+                    : identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -5024,13 +5027,14 @@ public:
         size_t global_s_offset = i * k + t_shift;
 
         sycl::vec<resT, m_groups> private_sum(identity_);
+        constexpr sycl::vec<resT, m_groups> vec_identity_(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(
-                         lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum +=
+                ((i < n) && (t + t_shift < k))
+                    ? (static_cast<resT>(
+                           lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
+                       local_B_block[t])
+                    : vec_identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
@@ -5171,12 +5175,12 @@ public:
 
         resT private_sum(identity_);
         for (size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            if (t + t_shift < k) {
-                private_sum +=
-                    (static_cast<resT>(
-                         lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
-                     local_B_block[t]);
-            }
+            private_sum +=
+                ((i < n) && ((t + t_shift < k)))
+                    ? (static_cast<resT>(
+                           lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
+                       local_B_block[t])
+                    : identity_;
         }
 
         size_t workspace_i_shift = local_i * delta_k;
