@@ -19,7 +19,6 @@ import itertools
 import numpy as np
 import pytest
 
-import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -68,38 +67,18 @@ def test_matrix_transpose_arg_validation():
     assert isinstance(dpt.matrix_transpose(X), dpt.usm_ndarray)
 
 
-# @pytest.mark.parametrize("dtype", _numeric_types)
-# def test_matmul_simple(dtype):
-#     q = get_queue_or_skip()
-#     skip_if_dtype_not_supported(dtype, q)
-
-#     n, m = 235, 17
-#     m1 = dpt.ones((m, n), dtype=dtype)
-#     m2 = dpt.ones((n, m), dtype=dtype)
-
-#     for k in [1, 2, 3, 4, 7, 8, 9, 15, 16, 17]:
-#         r = dpt.matmul(m1[:k, :], m2[:, :k])
-#         assert dpt.all(r == dpt.full((k, k), n, dtype=dtype))
-
-
-@pytest.mark.parametrize("dtype", _numeric_types[::-1])
-def test_matmul_simple2(dtype):
+@pytest.mark.parametrize("dtype", _numeric_types)
+def test_matmul_simple(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
-    dev = q.sycl_device
-    if dev.is_cpu:
-        cpu_count = dev.max_compute_units
-        sub_devs = dev.create_sub_devices(partition=min(2, cpu_count // 2))
-        ctx = dpctl.SyclContext(sub_devs[0])
-        q = dpctl.SyclQueue(ctx, sub_devs[0])
 
     n, m = 235, 17
-    m1 = dpt.ones((m, n), dtype=dtype, sycl_queue=q)
-    m2 = dpt.ones((n, m), dtype=dtype, sycl_queue=q)
+    m1 = dpt.ones((m, n), dtype=dtype)
+    m2 = dpt.ones((n, m), dtype=dtype)
 
     for k in [1, 2, 3, 4, 7, 8, 9, 15, 16, 17]:
         r = dpt.matmul(m1[:k, :], m2[:, :k])
-        assert dpt.all(r == dpt.full((k, k), n, dtype=dtype, sycl_queue=q))
+        assert dpt.all(r == dpt.full((k, k), n, dtype=dtype))
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
@@ -261,7 +240,7 @@ def test_matmul_broadcasting():
     assert r.shape == (7, 11, 13)
 
 
-@pytest.mark.parametrize("dtype", ["i4", "i8", "f4", "c8"][::-1])
+@pytest.mark.parametrize("dtype", ["i4", "i8", "f4", "c8"])
 def test_matmul_strided(dtype):
     get_queue_or_skip()
 
@@ -271,12 +250,30 @@ def test_matmul_strided(dtype):
         m1_size = m1_size * el
 
     m1 = dpt.remainder(dpt.arange(1, m1_size + 1, dtype="i8"), 13)
-    m1 = dpt.reshape(dpt.astype(m1, dtype), (14, 22, 32))[::2, ::-2, ::2]
-    m2 = dpt.ones((14, 16, 13), dtype=dtype)[::2, :, :]
+    m1_orig = dpt.reshape(dpt.astype(m1, dtype), m1_shape)
+    m2_orig = dpt.ones((14, 16, 13), dtype=dtype)
 
+    m1 = m1_orig[::2, ::-2, ::2]
+    m2 = m2_orig[::2, :, :]
     r = dpt.matmul(m1, m2)
 
-    assert r.shape == (7, 11, 13)
+    assert r.shape == m1.shape[:2] + m2.shape[-1:]
+    ref = np.matmul(dpt.asnumpy(m1), dpt.asnumpy(m2))
+    assert np.allclose(dpt.asnumpy(r), ref)
+
+    m1 = m1_orig[::2, ::2, ::-2]
+    m2 = m2_orig[::2, :, :]
+    r = dpt.matmul(m1, m2)
+
+    assert r.shape == m1.shape[:2] + m2.shape[-1:]
+    ref = np.matmul(dpt.asnumpy(m1), dpt.asnumpy(m2))
+    assert np.allclose(dpt.asnumpy(r), ref)
+
+    m1 = m1_orig[::-2, ::2, ::2]
+    m2 = m2_orig[::-2, :, :]
+    r = dpt.matmul(m1, m2)
+
+    assert r.shape == m1.shape[:2] + m2.shape[-1:]
     ref = np.matmul(dpt.asnumpy(m1), dpt.asnumpy(m2))
     assert np.allclose(dpt.asnumpy(r), ref)
 
