@@ -2653,7 +2653,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
         return gemm_no_reduction_ev;
     }
 
-    if (exec_q.get_device().is_cpu()) {
+    if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -2664,7 +2664,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
                     depends);
             }
             else {
-                return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
                     lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
                     rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
@@ -2672,56 +2672,28 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
             }
         }
         else {
-            return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
                 lhs_outer_inner_shapes_strides, rhs_outer_nd,
                 rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
                 depends);
         }
     }
-    else {
-        if ((k > n && k > m) || m == 1) {
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                if (m == 1) {
-                    return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
-                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
-                        rhs_outer_nd, rhs_outer_inner_shapes_strides, res_nd,
-                        res_shapes_strides, depends);
-                }
-                else {
-                    return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
-                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
-                        rhs_outer_nd, rhs_outer_inner_shapes_strides, res_nd,
-                        res_shapes_strides, depends);
-                }
-            }
-            else {
-                return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
-                    lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                    rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
-                    depends);
-            }
+    else { // m > 1, n > k or m > k
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (!is_complex<resTy>::value) {
+            return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
+                depends);
         }
-        else { // m > 1, n > k or m > k
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
-                    lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                    rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
-                    depends);
-            }
-            else {
-                return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
-                    lhs_outer_nd, lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                    rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
-                    depends);
-            }
+        else {
+            return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
+                depends);
         }
     }
 }
