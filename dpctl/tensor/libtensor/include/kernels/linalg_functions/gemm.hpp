@@ -3512,10 +3512,10 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
 
         const auto &three_offsets_ =
             batch_indexer(static_cast<py::ssize_t>(m_id));
@@ -3700,10 +3700,10 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
 
         const auto &three_offsets_ =
             batch_indexer(static_cast<py::ssize_t>(m_id));
@@ -3871,10 +3871,10 @@ public:
         // batch_nelems) for lhs, offset = m_id * (n * k) for rhs, offset =
         // m_id
         // * (k * m) for res, offset = m_id * (n * m)
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
         const auto &three_offsets_ =
@@ -4034,10 +4034,10 @@ public:
         // batch_nelems) for lhs, offset = m_id * (n * k) for rhs, offset =
         // m_id
         // * (k * m) for res, offset = m_id * (n * m)
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
         const auto &three_offsets_ =
@@ -4631,10 +4631,10 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
 
         const auto &three_offsets_ =
             batch_indexer(static_cast<py::ssize_t>(m_id));
@@ -4816,10 +4816,10 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
 
         const auto &three_offsets_ =
             batch_indexer(static_cast<py::ssize_t>(m_id));
@@ -4978,10 +4978,10 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
         const auto &three_offsets_ =
@@ -5125,10 +5125,10 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        size_t m_id =
-            it.get_global_linear_id() / (it.get_global_range(0) / batch_nelems);
-        size_t gr_id =
-            it.get_group_linear_id() % (it.get_group_range(0) / batch_nelems);
+        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
+        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
+        const size_t gr_id =
+            it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
         const auto &three_offsets_ =
