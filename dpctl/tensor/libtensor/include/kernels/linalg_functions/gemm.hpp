@@ -831,13 +831,16 @@ public:
 
             aout0 += local_sum[0];
 
-            if (j + 1 < m) {
-                sycl::atomic_ref<resT, sycl::memory_order::relaxed,
-                                 sycl::memory_scope::device,
-                                 sycl::access::address_space::global_space>
-                    aout1(res[res_indexer(i * m + j + 1)]);
+#pragma unroll
+            for (size_t vec_id = 1; vec_id < m_groups; ++vec_id) {
+                if (j + vec_id < m) {
+                    sycl::atomic_ref<resT, sycl::memory_order::relaxed,
+                                     sycl::memory_scope::device,
+                                     sycl::access::address_space::global_space>
+                        aout1(res[res_indexer(i * m + j + vec_id)]);
 
-                aout1 += local_sum[1];
+                    aout1 += local_sum[vec_id];
+                }
             }
         }
     }
@@ -1764,11 +1767,15 @@ public:
                 local_sum += workspace[workspace_i_shift + t];
             }
 
-            res[res_indexer(i * m + j) + (block_s * n * m)] = local_sum[0];
+            const size_t res_offset = (block_s * n * m);
+            res[res_indexer(i * m + j) + res_offset] = local_sum[0];
 
-            if (j + 1 < m) {
-                res[res_indexer(i * m + j + 1) + (block_s * n * m)] =
-                    local_sum[1];
+#pragma unroll
+            for (size_t vec_id = 1; vec_id < m_groups; ++vec_id) {
+                if (j + vec_id < m) {
+                    res[res_indexer(i * m + j + vec_id) + res_offset] =
+                        local_sum[vec_id];
+                }
             }
         }
     }
@@ -3953,13 +3960,17 @@ public:
 
             aout0 += local_sum[0];
 
-            if (j + 1 < m) {
-                sycl::atomic_ref<resT, sycl::memory_order::relaxed,
-                                 sycl::memory_scope::device,
-                                 sycl::access::address_space::global_space>
-                    aout1(res[res_offset + res_indexer(i * m + j + 1)]);
+#pragma unroll
+            for (size_t vec_id = 1; vec_id < m_groups; ++vec_id) {
+                if (j + vec_id < m) {
+                    sycl::atomic_ref<resT, sycl::memory_order::relaxed,
+                                     sycl::memory_scope::device,
+                                     sycl::access::address_space::global_space>
+                        aout1(
+                            res[res_offset + res_indexer(i * m + j + vec_id)]);
 
-                aout1 += local_sum[1];
+                    aout1 += local_sum[vec_id];
+                }
             }
         }
     }
@@ -5048,12 +5059,16 @@ public:
                 local_sum += workspace[workspace_i_shift + t];
             }
 
-            res[res_offset + res_indexer(i * m + j) +
-                (block_s * n * m * batch_nelems)] = local_sum[0];
+            const size_t total_offset =
+                res_offset + (block_s * n * m * batch_nelems);
+            res[total_offset + res_indexer(i * m + j)] = local_sum[0];
 
-            if (j + 1 < m) {
-                res[res_offset + res_indexer(i * m + j + 1) +
-                    (block_s * n * m * batch_nelems)] = local_sum[1];
+#pragma unroll
+            for (size_t vec_id = 1; vec_id < m_groups; ++vec_id) {
+                if (j + vec_id < m) {
+                    res[total_offset + res_indexer(i * m + j + vec_id)] =
+                        local_sum[1];
+                }
             }
         }
     }
