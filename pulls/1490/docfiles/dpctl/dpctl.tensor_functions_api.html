@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev2+77.g93961ecdbf documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.15.1dev3+31.g48420fd0f6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=442d4e47"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=aee5802e"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev2+77.g93961ecdbf
+                0.15.1dev3+31.g48420fd0f6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -234,6 +234,36 @@ the returned array. Default: <cite>False</cite>.</p></li>
 minimum values. If the entire array was searched, a
 zero-dimensional array is returned. The returned array has the
 default array index data type for the device of <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.argsort">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_sorting.html#argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.argsort" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the indices that sort an array <cite>x</cite> along a specified axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis along which to sort. If set to <cite>-1</cite>, the function
+must sort along the last axis. Default: <cite>-1</cite>.</p></li>
+<li><p><strong>descending</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort order. If <cite>True</cite>, the array must be sorted in descending
+order (by value). If <cite>False</cite>, the array must be sorted in
+ascending order (by value). Default: <cite>False</cite>.</p></li>
+<li><p><strong>stable</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort stability. If <cite>True</cite>, the returned array must maintain the
+relative order of <cite>x</cite> values which compare as equal. If <cite>False</cite>,
+the returned array may or may not maintain the relative order of
+<cite>x</cite> values which compare as equal. Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array of indices. The returned array has the  same shape as
+the input array <cite>x</cite>. The return array has default array index
+data type.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -988,6 +1018,35 @@ Default: “False”</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.sort">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_sorting.html#sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.sort" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a sorted copy of an input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis along which to sort. If set to <cite>-1</cite>, the function
+must sort along the last axis. Default: <cite>-1</cite>.</p></li>
+<li><p><strong>descending</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort order. If <cite>True</cite>, the array must be sorted in descending
+order (by value). If <cite>False</cite>, the array must be sorted in
+ascending order (by value). Default: <cite>False</cite>.</p></li>
+<li><p><strong>stable</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – sort stability. If <cite>True</cite>, the returned array must maintain the
+relative order of <cite>x</cite> values which compare as equal. If <cite>False</cite>,
+the returned array may or may not maintain the relative order of
+<cite>x</cite> values which compare as equal. Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a sorted array. The returned array has the same data type and
+the same shape as the input array <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.std">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_statistical_functions.html#std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.std" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the standard deviation of elements in the input array <cite>x</cite>.</p>
@@ -1155,6 +1214,122 @@ must have a data type determined by Type Promotion Rules.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.unique_all">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unique_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_set_functions.html#unique_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unique_all" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the unique elements of an input array <cite>x</cite>, the first occurring
+indices for each unique element in <cite>x</cite>, the indices from the set of unique
+elements that reconstruct <cite>x</cite>, and the corresponding counts for each
+unique element in <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>tuple[usm_ndarray, usm_ndarray, usm_ndarray, usm_ndarray]</dt><dd><p>a namedtuple <cite>(values, indices, inverse_indices, counts)</cite> whose</p>
+<ul class="simple">
+<li><p>first element has the field name <cite>values</cite> and is an array
+containing the unique elements of <cite>x</cite>. The array has the same
+data type as <cite>x</cite>.</p></li>
+<li><p>second element has the field name <cite>indices</cite> and is an array
+the indices (of first occurrences) of <cite>x</cite> that result in
+<cite>values</cite>. The array has the same shape as <cite>values</cite> and has the
+default array index data type.</p></li>
+<li><p>third element has the field name <cite>inverse_indices</cite> and is an
+array containing the indices of values that reconstruct <cite>x</cite>.
+The array has the same shape as <cite>x</cite> and has the default array
+index data type.</p></li>
+<li><p>fourth element has the field name <cite>counts</cite> and is an array
+containing the number of times each unique element occurs in <cite>x</cite>.
+This array has the same shape as <cite>values</cite> and has the default
+array index data type.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.unique_counts">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unique_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_set_functions.html#unique_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unique_counts" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the unique elements of an input array <cite>x</cite> and the corresponding
+counts for each unique element in <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>tuple[usm_ndarray, usm_ndarray]</dt><dd><p>a namedtuple <cite>(values, counts)</cite> whose</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>first element is the field name <cite>values</cite> and is an array</dt><dd><p>containing the unique elements of <cite>x</cite>. This array has the
+same data type as <cite>x</cite>.</p>
+</dd>
+</dl>
+</li>
+<li><p>second element has the field name <cite>counts</cite> and is an array
+containing the number of times each unique element occurs in <cite>x</cite>.
+This array has the same shape as <cite>values</cite> and has the default
+array index data type.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.unique_inverse">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unique_inverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_set_functions.html#unique_inverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unique_inverse" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the unique elements of an input array x and the indices from the
+set of unique elements that reconstruct <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>tuple[usm_ndarray, usm_ndarray]</dt><dd><p>a namedtuple <cite>(values, inverse_indices)</cite> whose</p>
+<ul class="simple">
+<li><p>first element has the field name <cite>values</cite> and is an array
+containing the unique elements of <cite>x</cite>. The array has the same
+data type as <cite>x</cite>.</p></li>
+<li><p>second element has the field name <cite>inverse_indices</cite> and is an
+array containing the indices of values that reconstruct <cite>x</cite>.
+The array has the same shape as <cite>x</cite> and has the default array
+index data type.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.unique_values">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unique_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_set_functions.html#unique_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unique_values" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the unique elements of an input array x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>usm_ndarray</dt><dd><p>an array containing the set of unique elements in <cite>x</cite>. The
+returned array has the same data type as <cite>x</cite>.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>

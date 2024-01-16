@@ -140,6 +140,8 @@ Other Functions
       - Returns the indices of the maximum values of the input array `x` along a specified axis.
     * - :func:`argmin()`
       - Returns the indices of the minimum values of the input array `x` along a specified axis.
+    * - :func:`argsort()`
+      - Returns the indices that sort an array `x` along a specified axis.
     * - :func:`can_cast()`
       - Determines if one data type can be cast to another data type according to Type Promotion Rules.
     * - :func:`clip()`
@@ -182,6 +184,8 @@ Other Functions
       - Returns the dtype that results from applying the Type Promotion Rules to the arguments.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
+    * - :func:`sort()`
+      - Returns a sorted copy of an input array `x`.
     * - :func:`std()`
       - Calculates the standard deviation of elements in the input array `x`.
     * - :func:`sum()`
@@ -190,6 +194,14 @@ Other Functions
       - Takes elements from array along a given axis.
     * - :func:`tensordot()`
       - Returns a tensor contraction of `x1` and `x2` over specific axes.
+    * - :func:`unique_all()`
+      - Returns the unique elements of an input array `x`, the first occurring indices for each unique element in `x`, the indices from the set of unique elements that reconstruct `x`, and the corresponding counts for each unique element in `x`.
+    * - :func:`unique_counts()`
+      - Returns the unique elements of an input array `x` and the corresponding counts for each unique element in `x`.
+    * - :func:`unique_inverse()`
+      - unique_inverse Returns the unique elements of an input array x and the indices from the set of unique elements that reconstruct `x`.
+    * - :func:`unique_values()`
+      - Returns the unique elements of an input array x.
     * - :func:`usm_ndarray_repr()`
       - Returns a formatted string representing the elements of a :class:`dpctl.tensor.usm_ndarray` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`

@@ -17,6 +17,7 @@ Other Functions
 .. autofunction:: any
 .. autofunction:: argmax
 .. autofunction:: argmin
+.. autofunction:: argsort
 .. autofunction:: can_cast
 .. autofunction:: clip
 .. autofunction:: extract
@@ -38,10 +39,15 @@ Other Functions
 .. autofunction:: reduce_hypot
 .. autofunction:: result_type
 .. autofunction:: set_print_options
+.. autofunction:: sort
 .. autofunction:: std
 .. autofunction:: sum
 .. autofunction:: take
 .. autofunction:: tensordot
+.. autofunction:: unique_all
+.. autofunction:: unique_counts
+.. autofunction:: unique_inverse
+.. autofunction:: unique_values
 .. autofunction:: usm_ndarray_repr
 .. autofunction:: usm_ndarray_str
 .. autofunction:: var
