@@ -940,6 +940,11 @@ def test_result_type():
 
     assert dpt.result_type(*X) == np.result_type(*X_np)
 
+    X = [dpt.ones((2), dtype=dpt.int16, sycl_queue=q), dpt.int32, "int64", 2]
+    X_np = [np.ones((2), dtype=np.int16), np.int32, "int64", 2]
+
+    assert dpt.result_type(*X) == np.result_type(*X_np)
+
 
 def test_swapaxes_1d():
     get_queue_or_skip()
