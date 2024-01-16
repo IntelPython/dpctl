@@ -1082,7 +1082,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
                              n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
                              m, lhs_indexer, rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
+        else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -1252,7 +1252,7 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
                              n, n_blocks, delta_n, k, k_blocks, delta_k, n_wi,
                              m, lhs_indexer, rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
+        else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -3380,7 +3380,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
         return gemm_no_reduction_ev;
     }
 
-    if (exec_q.get_device().is_cpu()) {
+    if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -3388,43 +3388,24 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
             }
             else {
-                return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
             }
         }
         else {
-            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
     }
-    else {
-        if ((k > n && k > m) || m == 1) {
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                if (m == 1) {
-                    return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
-                }
-                else {
-                    return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
-                }
-            }
-            else {
-                return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
-            }
+    else { // m > 1, n > k or m > k
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (!is_complex<resTy>::value) {
+            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
-        else { // m > 1, n > k or m > k
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
-            }
-            else {
-                return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
-            }
+        else {
+            return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
     }
 }
@@ -4248,7 +4229,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
                              m, batch_nelems, batch_indexer, lhs_indexer,
                              rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
+        else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -4454,7 +4435,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
                              m, batch_nelems, batch_indexer, lhs_indexer,
                              rhs_indexer, res_indexer));
         }
-        else if (k > n && k > m && !exec_q.get_device().is_cpu()) {
+        else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(4);
@@ -6055,7 +6036,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
         return gemm_batch_no_reduction_ev;
     }
 
-    if (exec_q.get_device().is_cpu()) {
+    if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -6068,7 +6049,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                     res_outer_shapes_strides, res_shape_strides, depends);
             }
             else {
-                return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
                     batch_nd, batch_shape_strides, lhs_batch_offset,
                     rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
@@ -6078,7 +6059,7 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
             }
         }
         else {
-            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
                 batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
                 res_batch_offset, inner_nd, lhs_outer_nd,
@@ -6087,61 +6068,25 @@ gemm_batch_tree_impl(sycl::queue &exec_q,
                 res_outer_shapes_strides, res_shape_strides, depends);
         }
     }
-    else {
-        if ((k > n && k > m) || m == 1) {
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                if (m == 1) {
-                    return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                        batch_nd, batch_shape_strides, lhs_batch_offset,
-                        rhs_batch_offset, res_batch_offset, inner_nd,
-                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
-                        rhs_outer_nd, rhs_outer_inner_shapes_strides,
-                        res_outer_nd, res_outer_shapes_strides,
-                        res_shape_strides, depends);
-                }
-                else {
-                    return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                        batch_nd, batch_shape_strides, lhs_batch_offset,
-                        rhs_batch_offset, res_batch_offset, inner_nd,
-                        lhs_outer_nd, lhs_outer_inner_shapes_strides,
-                        rhs_outer_nd, rhs_outer_inner_shapes_strides,
-                        res_outer_nd, res_outer_shapes_strides,
-                        res_shape_strides, depends);
-                }
-            }
-            else {
-                return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                    batch_nd, batch_shape_strides, lhs_batch_offset,
-                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
-                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                    rhs_outer_inner_shapes_strides, res_outer_nd,
-                    res_outer_shapes_strides, res_shape_strides, depends);
-            }
+    else { // m > 1, n > k or m > k
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (!is_complex<resTy>::value) {
+            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
+                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
+                res_batch_offset, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_outer_nd,
+                res_outer_shapes_strides, res_shape_strides, depends);
         }
-        else { // m > 1, n > k or m > k
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                    batch_nd, batch_shape_strides, lhs_batch_offset,
-                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
-                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                    rhs_outer_inner_shapes_strides, res_outer_nd,
-                    res_outer_shapes_strides, res_shape_strides, depends);
-            }
-            else { // m > 1, n > k or m > k, resTy complex
-                return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                    batch_nd, batch_shape_strides, lhs_batch_offset,
-                    rhs_batch_offset, res_batch_offset, inner_nd, lhs_outer_nd,
-                    lhs_outer_inner_shapes_strides, rhs_outer_nd,
-                    rhs_outer_inner_shapes_strides, res_outer_nd,
-                    res_outer_shapes_strides, res_shape_strides, depends);
-            }
+        else { // m > 1, n > k or m > k, resTy complex
+            return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
+                batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
+                res_batch_offset, inner_nd, lhs_outer_nd,
+                lhs_outer_inner_shapes_strides, rhs_outer_nd,
+                rhs_outer_inner_shapes_strides, res_outer_nd,
+                res_outer_shapes_strides, res_shape_strides, depends);
         }
     }
 }
@@ -6929,7 +6874,7 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
         return gemm_batch_no_reduction_ev;
     }
 
-    if (exec_q.get_device().is_cpu()) {
+    if ((k > n && k > m) || m == 1) {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m == 1) {
@@ -6938,51 +6883,25 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
                     depends);
             }
             else {
-                return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 2>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
                     depends);
             }
         }
         else {
-            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+            return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
     }
-    else {
-        if ((k > n && k > m) || m == 1) {
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                if (m == 1) {
-                    return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy,
-                                                         1>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                        depends);
-                }
-                else {
-                    return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy,
-                                                         2>(
-                        exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                        depends);
-                }
-            }
-            else {
-                return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                    depends);
-            }
+    else { // m > 1, n > k or m > k
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (!is_complex<resTy>::value) {
+            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
-        else { // m > 1, n > k or m > k
-            using dpctl::tensor::type_utils::is_complex;
-            if constexpr (!is_complex<resTy>::value) {
-                return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                    depends);
-            }
-            else { // m > 1, n > k or m > k, resTy complex
-                return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
-                    exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
-                    depends);
-            }
+        else { // m > 1, n > k or m > k, resTy complex
+            return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 1>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
     }
 }
