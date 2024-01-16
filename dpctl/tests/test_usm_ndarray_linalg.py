@@ -471,6 +471,25 @@ def test_tensordot_promotion():
     assert r2.dtype == t2.dtype
 
 
+@pytest.mark.parametrize("dt1", _numeric_types)
+@pytest.mark.parametrize("dt2", _numeric_types)
+def test_tensordot_type_promotion2(dt1, dt2):
+    get_queue_or_skip()
+
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt1, q)
+    skip_if_dtype_not_supported(dt2, q)
+
+    m1 = dpt.ones((10, 10), dtype=dt1)
+    m2 = dpt.ones((10, 10), dtype=dt2)
+
+    r = dpt.tensordot(m1, m2, axes=1)
+    assert r.shape == (
+        10,
+        10,
+    )
+
+
 @pytest.mark.parametrize("dtype", _numeric_types)
 def test_vecdot_1d(dtype):
     q = get_queue_or_skip()
