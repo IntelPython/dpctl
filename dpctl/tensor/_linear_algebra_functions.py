@@ -124,9 +124,11 @@ def tensordot(x1, x2, axes=2):
     x1_shape = x1.shape
     x2_shape = x2.shape
     if isinstance(axes, int):
+        if axes < 0:
+            raise ValueError("`axes` integer is expected to be non-negative")
         n_axes1 = axes
         n_axes2 = axes
-        axes1 = tuple(range(-axes, 0))
+        axes1 = normalize_axis_tuple(tuple(range(-axes, 0)), x1_nd)
         axes2 = tuple(range(0, axes))
     elif isinstance(axes, tuple):
         if len(axes) != 2:
@@ -151,9 +153,13 @@ def tensordot(x1, x2, axes=2):
     else:
         same_shapes = True
         for i in range(n_axes1):
-            same_shapes = same_shapes and (
-                x1_shape[axes1[i]] == x2_shape[axes2[i]]
-            )
+            axis1 = axes1[i]
+            if axis1 < 0:
+                raise ValueError("`axes` must be non-negative")
+            axis2 = axes2[i]
+            if axis2 < 0:
+                raise ValueError("`axes` must be non-negative")
+            same_shapes = same_shapes and (x1_shape[axis1] == x2_shape[axis2])
         if not same_shapes:
             raise ValueError("shape mismatch in contracted `tensordot` axes")
         axes1 = normalize_axis_tuple(axes1, x1_nd)
@@ -788,7 +794,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
         if x2.shape != x2_broadcast_shape:
             x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
-        ht_dot_ev, binary_ev = tli._dot(
+        ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
             x2=x2,
             batch_dims=len(res_shape[:-2]),
@@ -804,7 +810,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
-                depends=[binary_ev],
+                depends=[dot_ev],
             )
             ht_copy_out_ev.wait()
             out = orig_out
@@ -840,7 +846,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
         if buf2.shape != x2_broadcast_shape:
             buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
-        ht_dot_ev, binary_ev = tli._dot(
+        ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
             x2=buf2,
             batch_dims=len(res_shape[:-2]),
@@ -857,7 +863,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
-                depends=[binary_ev],
+                depends=[dot_ev],
             )
             ht_copy_out_ev.wait()
             out = orig_out
@@ -895,7 +901,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
         if x2.shape != x2_broadcast_shape:
             x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
-        ht_dot_ev, binary_ev = tli._dot(
+        ht_dot_ev, dot_ev = tli._dot(
             x1=buf1,
             x2=x2,
             batch_dims=len(res_shape[:-2]),
@@ -912,7 +918,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
-                depends=[binary_ev],
+                depends=[dot_ev],
             )
             ht_copy_out_ev.wait()
             out = orig_out
