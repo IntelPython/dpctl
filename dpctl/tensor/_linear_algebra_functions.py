@@ -719,6 +719,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
     else:
         res_dt = dpt.dtype(dtype)
         res_dt = _to_device_supported_dtype(res_dt, sycl_dev)
+        buf1_dt, buf2_dt = None, None
         if x1_dtype != res_dt:
             if dpt.can_cast(x1_dtype, res_dt, casting="same_kind"):
                 buf1_dt = res_dt
