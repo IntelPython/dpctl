@@ -19,6 +19,7 @@ import itertools
 import numpy as np
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -303,6 +304,35 @@ def test_matmul_out():
     assert np.allclose(ref, dpt.asnumpy(res))
 
 
+def test_matmul_dtype():
+    get_queue_or_skip()
+
+    m1 = dpt.ones((10, 10), dtype="i4")
+    m2 = dpt.ones((10, 10), dtype="i8")
+
+    r = dpt.matmul(m1, m2, dtype="f4")
+    assert r.dtype == dpt.float32
+
+
+@pytest.mark.parametrize("dt1", _numeric_types)
+@pytest.mark.parametrize("dt2", _numeric_types)
+def test_matmul_type_promotion(dt1, dt2):
+    get_queue_or_skip()
+
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt1, q)
+    skip_if_dtype_not_supported(dt2, q)
+
+    m1 = dpt.ones((10, 10), dtype=dt1)
+    m2 = dpt.ones((10, 10), dtype=dt2)
+
+    r = dpt.matmul(m1, m2)
+    assert r.shape == (
+        10,
+        10,
+    )
+
+
 @pytest.mark.parametrize("dtype", _numeric_types)
 def test_tensordot_outer(dtype):
     q = get_queue_or_skip()
@@ -371,6 +401,60 @@ def test_tensordot_axes_sequence(dtype):
             tdr = dpt.tensordot(u1, u2, axes=(x1_axes, x2_axes))
             assert tdr.shape == t1.shape[:1] + t2.shape[:1]
             assert dpt.allclose(tdr, dpt.full_like(tdr, fill_value=expected))
+
+
+def test_tensordot_validation():
+    get_queue_or_skip()
+
+    with pytest.raises(TypeError):
+        dpt.tensordot(dict(), dict())
+
+    t1 = dpt.empty((10, 10, 10))
+    with pytest.raises(TypeError):
+        dpt.tensordot(t1, dict())
+
+    t2 = dpt.empty((10, 10, 10))
+    q = dpctl.SyclQueue(t2.sycl_context, t2.sycl_device, property="in_order")
+    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+        dpt.tensordot(t1, t2.to_device(q))
+
+    invalid_axes = (
+        1,
+        2,
+        3,
+    )
+    with pytest.raises(ValueError):
+        dpt.tensordot(t1, t2, axes=invalid_axes)
+
+    invalid_axes = 5.2
+    with pytest.raises(TypeError):
+        dpt.tensordot(t1, t2, axes=invalid_axes)
+
+    invalid_axes = (
+        (1,),
+        (
+            0,
+            2,
+        ),
+    )
+    with pytest.raises(ValueError):
+        dpt.tensordot(t1, t2, axes=invalid_axes)
+
+    with pytest.raises(ValueError):
+        dpt.tensordot(t1[..., :5], t2)
+
+
+def test_tensordot_promotion():
+    get_queue_or_skip()
+
+    t1 = dpt.zeros((10, 10), dtype="i4")
+    t2 = dpt.zeros((10, 10), dtype="i8")
+
+    r1 = dpt.tensordot(t1, t2)
+    assert r1.dtype == t2.dtype
+
+    r2 = dpt.tensordot(t2, t1)
+    assert r2.dtype == t2.dtype
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
@@ -483,6 +567,32 @@ def test_vector_arg_validation():
 
     with pytest.raises(ValueError):
         dpt.vecdot(v1, v2, axis=2)
+
+    q = dpctl.SyclQueue(
+        v2.sycl_context, v2.sycl_device, property="enable_profiling"
+    )
+    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+        dpt.vecdot(v1, v2.to_device(q))
+
+    m1 = dpt.empty((10, 5))
+    m2 = dpt.empty((5, 5))
+    with pytest.raises(ValueError):
+        dpt.vecdot(m1, m2, axis=-1)
+
+
+def test_vecdot_broadcast():
+    get_queue_or_skip()
+
+    for dt1, dt2 in [
+        (dpt.int32, dpt.int32),
+        (dpt.int32, dpt.int64),
+        (dpt.int64, dpt.int32),
+    ]:
+        m1 = dpt.zeros((1, 5), dtype=dt1)
+        m2 = dpt.zeros((5, 5), dtype=dt2)
+        r1 = dpt.vecdot(m1, m2, axis=-1)
+        r2 = dpt.vecdot(m2, m1, axis=-1)
+        assert r1.shape == r2.shape
 
 
 @pytest.mark.parametrize("dt1", _numeric_types)
