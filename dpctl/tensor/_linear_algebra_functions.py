@@ -105,32 +105,18 @@ def tensordot(x1, x2, axes=2):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
-    if q1 is None and q2 is None:
+    exec_q = dpctl.utils.get_execution_queue((q1, q2))
+    if exec_q is None:
         raise ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
-            "from input arguments. "
-            "One of the arguments must represent USM allocation and "
-            "expose `__sycl_usm_array_interface__` property"
+            "from input arguments."
         )
-    if q1 is None:
-        exec_q = q2
-        res_usm_type = x2_usm_type
-    elif q2 is None:
-        exec_q = q1
-        res_usm_type = x1_usm_type
-    else:
-        exec_q = dpctl.utils.get_execution_queue((q1, q2))
-        if exec_q is None:
-            raise ExecutionPlacementError(
-                "Execution placement can not be unambiguously inferred "
-                "from input arguments."
-            )
-        res_usm_type = dpctl.utils.get_coerced_usm_type(
-            (
-                x1_usm_type,
-                x2_usm_type,
-            )
+    res_usm_type = dpctl.utils.get_coerced_usm_type(
+        (
+            x1_usm_type,
+            x2_usm_type,
         )
+    )
     dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
     # handle axes and shapes validation
     x1_nd = x1.ndim
@@ -345,32 +331,18 @@ def vecdot(x1, x2, axis=-1):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
-    if q1 is None and q2 is None:
+    exec_q = dpctl.utils.get_execution_queue((q1, q2))
+    if exec_q is None:
         raise ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
-            "from input arguments. "
-            "One of the arguments must represent USM allocation and "
-            "expose `__sycl_usm_array_interface__` property"
+            "from input arguments."
         )
-    if q1 is None:
-        exec_q = q2
-        res_usm_type = x2_usm_type
-    elif q2 is None:
-        exec_q = q1
-        res_usm_type = x1_usm_type
-    else:
-        exec_q = dpctl.utils.get_execution_queue((q1, q2))
-        if exec_q is None:
-            raise ExecutionPlacementError(
-                "Execution placement can not be unambiguously inferred "
-                "from input arguments."
-            )
-        res_usm_type = dpctl.utils.get_coerced_usm_type(
-            (
-                x1_usm_type,
-                x2_usm_type,
-            )
+    res_usm_type = dpctl.utils.get_coerced_usm_type(
+        (
+            x1_usm_type,
+            x2_usm_type,
         )
+    )
     dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
     # axis and shape validation
     x1_nd = x1.ndim
