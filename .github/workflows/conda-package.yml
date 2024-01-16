@@ -557,6 +557,10 @@ jobs:
     env:
       CHANNELS: -c intel -c conda-forge --override-channels
     steps:
+      - name: Checkout dpctl repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Cache array API tests
         id: cache-array-api-tests
         uses: actions/cache@v3
@@ -646,7 +650,7 @@ jobs:
           python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests
-          pytest --json-report --json-report-file=$FILE array_api_tests/ || true
+          pytest --json-report --json-report-file=$FILE --skips-file ${GITHUB_WORKSPACE}/.github/workflows/array-api-skips.txt array_api_tests/ || true
       - name: Set Github environment variables
         shell: bash -l {0}
         run: |

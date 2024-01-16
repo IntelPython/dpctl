@@ -315,8 +315,10 @@ boolean_reduction_axis1_contig_impl(sycl::queue &exec_q,
         });
     }
     else {
-        sycl::event init_ev = exec_q.fill<resTy>(res_tp, resTy(identity_val),
-                                                 iter_nelems, depends);
+        sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+            cgh.fill<resTy>(res_tp, resTy(identity_val), iter_nelems);
+        });
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(init_ev);
 
@@ -484,8 +486,10 @@ boolean_reduction_axis0_contig_impl(sycl::queue &exec_q,
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     {
-        sycl::event init_ev = exec_q.fill<resTy>(res_tp, resTy(identity_val),
-                                                 iter_nelems, depends);
+        sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+            cgh.fill<resTy>(res_tp, resTy(identity_val), iter_nelems);
+        });
         sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(init_ev);
 
