@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._linear_algebra_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev3+31.g48420fd0f6 documentation</title>
+  <title>dpctl.tensor._linear_algebra_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev3+33.g97fab1fce4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=aee5802e"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=aa07bea0"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev3+31.g48420fd0f6
+                0.15.1dev3+33.g97fab1fce4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -199,32 +199,18 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">q1</span><span class="p">,</span> <span class="n">x1_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="n">q2</span><span class="p">,</span> <span class="n">x2_usm_type</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">usm_type</span>
-    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
             <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-            <span class="s2">&quot;from input arguments. &quot;</span>
-            <span class="s2">&quot;One of the arguments must represent USM allocation and &quot;</span>
-            <span class="s2">&quot;expose `__sycl_usm_array_interface__` property&quot;</span>
+            <span class="s2">&quot;from input arguments.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q2</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x2_usm_type</span>
-    <span class="k">elif</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x1_usm_type</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
-                <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-                <span class="s2">&quot;from input arguments.&quot;</span>
-            <span class="p">)</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">x1_usm_type</span><span class="p">,</span>
-                <span class="n">x2_usm_type</span><span class="p">,</span>
-            <span class="p">)</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">x1_usm_type</span><span class="p">,</span>
+            <span class="n">x2_usm_type</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># handle axes and shapes validation</span>
     <span class="n">x1_nd</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
@@ -439,32 +425,18 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">q1</span><span class="p">,</span> <span class="n">x1_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="n">q2</span><span class="p">,</span> <span class="n">x2_usm_type</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">usm_type</span>
-    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
             <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-            <span class="s2">&quot;from input arguments. &quot;</span>
-            <span class="s2">&quot;One of the arguments must represent USM allocation and &quot;</span>
-            <span class="s2">&quot;expose `__sycl_usm_array_interface__` property&quot;</span>
+            <span class="s2">&quot;from input arguments.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q2</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x2_usm_type</span>
-    <span class="k">elif</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x1_usm_type</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
-                <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-                <span class="s2">&quot;from input arguments.&quot;</span>
-            <span class="p">)</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">x1_usm_type</span><span class="p">,</span>
-                <span class="n">x2_usm_type</span><span class="p">,</span>
-            <span class="p">)</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">x1_usm_type</span><span class="p">,</span>
+            <span class="n">x2_usm_type</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># axis and shape validation</span>
     <span class="n">x1_nd</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
