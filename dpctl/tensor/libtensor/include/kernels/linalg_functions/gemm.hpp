@@ -1049,8 +1049,8 @@ sycl::event gemm_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1085,8 +1085,8 @@ sycl::event gemm_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1219,8 +1219,8 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1255,8 +1255,8 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1941,8 +1941,8 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends)
 {
     size_t delta_k(4);
-    size_t n_wi(4);
-    size_t delta_n(4);
+    size_t n_wi(64);
+    size_t delta_n(16);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -2709,8 +2709,8 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                                     std::vector<sycl::event> const &depends)
 {
     size_t delta_k(4);
-    size_t n_wi(4);
-    size_t delta_n(4);
+    size_t n_wi(64);
+    size_t delta_n(16);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -4191,8 +4191,8 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -4232,8 +4232,8 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -4397,8 +4397,8 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
         if (m == 1) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -4438,8 +4438,8 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
         else if (k > n && k > m) {
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
-            size_t n_wi(4);
-            size_t delta_n(4);
+            size_t n_wi(64);
+            size_t delta_n(16);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -5212,8 +5212,8 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                        std::vector<sycl::event> const &depends)
 {
     size_t delta_k(4);
-    size_t n_wi(4);
-    size_t delta_n(4);
+    size_t n_wi(64);
+    size_t delta_n(16);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -6104,8 +6104,8 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                               std::vector<sycl::event> const &depends)
 {
     size_t delta_k(4);
-    size_t n_wi(4);
-    size_t delta_n(4);
+    size_t n_wi(64);
+    size_t delta_n(16);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
