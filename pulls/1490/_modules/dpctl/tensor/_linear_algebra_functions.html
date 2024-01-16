@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._linear_algebra_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev3+35.g33f19126fb documentation</title>
+  <title>dpctl.tensor._linear_algebra_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev3+38.g2bfe5cbd49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b328dec4"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=9e25c903"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev3+35.g33f19126fb
+                0.15.1dev3+38.g2bfe5cbd49
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -218,9 +218,11 @@
     <span class="n">x1_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">x2_shape</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axes</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axes` integer is expected to be non-negative&quot;</span><span class="p">)</span>
         <span class="n">n_axes1</span> <span class="o">=</span> <span class="n">axes</span>
         <span class="n">n_axes2</span> <span class="o">=</span> <span class="n">axes</span>
-        <span class="n">axes1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">axes</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">axes1</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">axes</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">x1_nd</span><span class="p">)</span>
         <span class="n">axes2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
@@ -245,9 +247,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">same_shapes</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_axes1</span><span class="p">):</span>
-            <span class="n">same_shapes</span> <span class="o">=</span> <span class="n">same_shapes</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="n">x1_shape</span><span class="p">[</span><span class="n">axes1</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">==</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">axes2</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-            <span class="p">)</span>
+            <span class="n">axis1</span> <span class="o">=</span> <span class="n">axes1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">axis1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axes` must be non-negative&quot;</span><span class="p">)</span>
+            <span class="n">axis2</span> <span class="o">=</span> <span class="n">axes2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">axis2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axes` must be non-negative&quot;</span><span class="p">)</span>
+            <span class="n">same_shapes</span> <span class="o">=</span> <span class="n">same_shapes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x1_shape</span><span class="p">[</span><span class="n">axis1</span><span class="p">]</span> <span class="o">==</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">axis2</span><span class="p">])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">same_shapes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;shape mismatch in contracted `tensordot` axes&quot;</span><span class="p">)</span>
         <span class="n">axes1</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes1</span><span class="p">,</span> <span class="n">x1_nd</span><span class="p">)</span>
@@ -732,32 +738,18 @@
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
     <span class="n">q1</span><span class="p">,</span> <span class="n">x1_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="n">q2</span><span class="p">,</span> <span class="n">x2_usm_type</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">usm_type</span>
-    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
             <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-            <span class="s2">&quot;from input arguments. &quot;</span>
-            <span class="s2">&quot;One of the arguments must represent USM allocation and &quot;</span>
-            <span class="s2">&quot;expose `__sycl_usm_array_interface__` property&quot;</span>
+            <span class="s2">&quot;from input arguments.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q2</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x2_usm_type</span>
-    <span class="k">elif</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x1_usm_type</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
-                <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-                <span class="s2">&quot;from input arguments.&quot;</span>
-            <span class="p">)</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">x1_usm_type</span><span class="p">,</span>
-                <span class="n">x2_usm_type</span><span class="p">,</span>
-            <span class="p">)</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">x1_usm_type</span><span class="p">,</span>
+            <span class="n">x2_usm_type</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">x1_nd</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
@@ -896,7 +888,7 @@
             <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x1_broadcast_shape</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2_broadcast_shape</span><span class="p">:</span>
             <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">x2_broadcast_shape</span><span class="p">)</span>
-        <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
+        <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">dot_ev</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
             <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
             <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
             <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span>
@@ -912,7 +904,7 @@
                 <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
                 <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
-                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">dot_ev</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
@@ -948,7 +940,7 @@
             <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x1_broadcast_shape</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">buf2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2_broadcast_shape</span><span class="p">:</span>
             <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">x2_broadcast_shape</span><span class="p">)</span>
-        <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
+        <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">dot_ev</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
             <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
             <span class="n">x2</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
             <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span>
@@ -965,7 +957,7 @@
                 <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
                 <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
-                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">dot_ev</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
@@ -1003,7 +995,7 @@
             <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">x1_broadcast_shape</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2_broadcast_shape</span><span class="p">:</span>
             <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">x2_broadcast_shape</span><span class="p">)</span>
-        <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
+        <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">dot_ev</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
             <span class="n">x1</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span>
             <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
             <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span>
@@ -1020,7 +1012,7 @@
                 <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
                 <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
                 <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
-                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">dot_ev</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
