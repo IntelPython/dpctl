@@ -300,18 +300,32 @@ def test_matmul_out():
     assert dpt.allclose(dpt.zeros_like(res), buf[::-2, 0::3, :])
     assert dpt.allclose(dpt.zeros_like(res), buf[::-2, 2::3, :])
 
-    ref = np.matmul(dpt.asnumpy(m1), dpt.asnumpy(m2))
+    m1_np = dpt.asnumpy(m1)
+    ref = np.matmul(m1_np, dpt.asnumpy(m2))
+    assert np.allclose(ref, dpt.asnumpy(res))
+
+    res = dpt.matmul(m1[:, :10, :10], m1[:, :10, :10].mT, out=m1[:, :10, :10])
+    ref = np.matmul(
+        m1_np[:, :10, :10], np.transpose(m1_np[:, :10, :10], (0, 2, 1))
+    )
     assert np.allclose(ref, dpt.asnumpy(res))
 
 
 def test_matmul_dtype():
     get_queue_or_skip()
 
-    m1 = dpt.ones((10, 10), dtype="i4")
-    m2 = dpt.ones((10, 10), dtype="i8")
+    for dt1, dt2 in [
+        (dpt.int32, dpt.int16),
+        (dpt.int16, dpt.int32),
+        (dpt.float32, dpt.int16),
+        (dpt.int32, dpt.float32),
+    ]:
+        m1 = dpt.ones((10, 10), dtype=dt1)
+        m2 = dpt.ones((10, 10), dtype=dt2)
 
-    r = dpt.matmul(m1, m2, dtype="f4")
-    assert r.dtype == dpt.float32
+        for ord in ["C", "A", "F", "K"]:
+            r = dpt.matmul(m1, m2, dtype=dpt.float32, order=ord)
+            assert r.dtype == dpt.float32
 
 
 @pytest.mark.parametrize("dt1", _numeric_types)
