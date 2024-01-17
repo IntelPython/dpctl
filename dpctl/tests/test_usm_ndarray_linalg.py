@@ -656,7 +656,7 @@ def test_tensordot_promotion():
 
     t3 = dpt.zeros((10, 10), dtype="u4")
     r3 = dpt.tensordot(t1, t3)
-    assert r3.dtype == dpt.result_type(t1.dtype, t3.dtype)
+    assert r3.dtype == dpt.result_type(t1, t3)
 
 
 def test_tensordot_axes_errors():
