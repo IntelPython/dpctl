@@ -992,7 +992,7 @@ cdef class usm_ndarray:
         return dpctl.tensor.less(self, other)
 
     def __matmul__(first, other):
-        return NotImplemented
+        return dpctl.tensor.matmul(first, other)
 
     def __mod__(first, other):
         return dpctl.tensor.remainder(first, other)
@@ -1012,11 +1012,8 @@ cdef class usm_ndarray:
     def __pos__(self):
         return dpctl.tensor.positive(self)
 
-    def __pow__(first, other, mod):
-        if mod is None:
-            return dpctl.tensor.pow(first, other)
-        else:
-            return NotImplemented
+    def __pow__(first, other):
+        return dpctl.tensor.pow(first, other)
 
     def __rshift__(first, other):
         return dpctl.tensor.bitwise_right_shift(first, other)
@@ -1131,7 +1128,7 @@ cdef class usm_ndarray:
         return dpctl.tensor.bitwise_left_shift(other, self)
 
     def __rmatmul__(self, other):
-        return NotImplemented
+        return dpctl.tensor.matmul(other, self)
 
     def __rmod__(self, other):
         return dpctl.tensor.remainder(other, self)
@@ -1170,11 +1167,7 @@ cdef class usm_ndarray:
         return dpctl.tensor.bitwise_left_shift(self, other, out=self)
 
     def __imatmul__(self, other):
-        res = self.__matmul__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.matmul(self, other, out=self)
 
     def __imod__(self, other):
         return dpctl.tensor.remainder(self, other, out=self)
