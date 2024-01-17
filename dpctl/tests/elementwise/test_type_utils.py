@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import numpy as np
 import pytest
 
 import dpctl
@@ -236,3 +237,44 @@ def test_can_cast_device():
     # can't safely cast inexact type to inexact type of lesser precision
     assert not tu._can_cast(dpt.float32, dpt.float16, True, False)
     assert not tu._can_cast(dpt.float64, dpt.float32, False, True)
+
+
+def test_acceptance_fns():
+    """Check type promotion acceptance functions"""
+    dev = dpctl.SyclDevice()
+    assert tu._acceptance_fn_reciprocal(
+        dpt.float32, dpt.float32, dpt.float32, dev
+    )
+
+
+def test_weak_types():
+    wbt = tu.WeakBooleanType(True)
+    assert wbt.get()
+    assert tu._weak_type_num_kind(wbt) == 0
+
+    wit = tu.WeakIntegralType(7)
+    assert wit.get() == 7
+    assert tu._weak_type_num_kind(wit) == 1
+
+    wft = tu.WeakFloatingType(3.1415926)
+    assert wft.get() == 3.1415926
+    assert tu._weak_type_num_kind(wft) == 2
+
+    wct = tu.WeakComplexType(2.0 + 3.0j)
+    assert wct.get() == 2 + 3j
+    assert tu._weak_type_num_kind(wct) == 3
+
+
+def test_arg_validation():
+    with pytest.raises(TypeError):
+        tu._weak_type_num_kind(dict())
+
+    with pytest.raises(TypeError):
+        tu._strong_dtype_num_kind(Ellipsis)
+
+    with pytest.raises(ValueError):
+        tu._strong_dtype_num_kind(np.dtype("O"))
+
+    wt = tu.WeakFloatingType(2.0)
+    with pytest.raises(ValueError):
+        tu._resolve_weak_types(wt, wt, None)
