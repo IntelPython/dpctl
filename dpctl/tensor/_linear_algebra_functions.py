@@ -754,15 +754,13 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 "Input and output allocation queues are not compatible"
             )
 
-        if isinstance(x1, dpt.usm_ndarray):
-            if ti._array_overlap(x1, out) and buf1_dt is None:
-                out = dpt.empty_like(out)
+        if ti._array_overlap(x1, out) and buf1_dt is None:
+            out = dpt.empty_like(out)
 
-        if isinstance(x2, dpt.usm_ndarray):
-            if ti._array_overlap(x2, out) and buf2_dt is None:
-                # should not reach if out is reallocated
-                # after being checked against x1
-                out = dpt.empty_like(out)
+        if ti._array_overlap(x2, out) and buf2_dt is None:
+            # should not reach if out is reallocated
+            # after being checked against x1
+            out = dpt.empty_like(out)
 
     if buf1_dt is None and buf2_dt is None:
         if out is None:
