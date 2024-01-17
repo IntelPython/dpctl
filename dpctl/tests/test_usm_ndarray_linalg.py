@@ -22,6 +22,7 @@ import pytest
 import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
+from dpctl.utils import ExecutionPlacementError
 
 _numeric_types = [
     "i1",
@@ -233,12 +234,17 @@ def test_matmul_dims_validation():
 def test_matmul_broadcasting():
     get_queue_or_skip()
 
-    m1 = dpt.ones((7, 11, 16))
-    m2 = dpt.ones((16, 13))
+    for dt1, dt2 in [
+        (dpt.int16, dpt.int32),
+        (dpt.float32, dpt.int16),
+        (dpt.int32, dpt.uint32),
+    ]:
+        m1 = dpt.ones((7, 11, 16), dtype=dt1)
+        m2 = dpt.ones((16, 13), dtype=dt2)
 
-    r = dpt.matmul(m1, m2[dpt.newaxis, ...])
+        r = dpt.matmul(m1, m2[dpt.newaxis, ...])
 
-    assert r.shape == (7, 11, 13)
+        assert r.shape == (7, 11, 13)
 
 
 @pytest.mark.parametrize("dtype", ["i4", "i8", "f4", "c8"])
@@ -345,6 +351,184 @@ def test_matmul_type_promotion(dt1, dt2):
         10,
         10,
     )
+
+
+def test_matmul_invalid_dtype():
+    get_queue_or_skip()
+
+    m1 = dpt.zeros((10, 10), dtype="f4")
+    m2 = dpt.zeros((10, 10), dtype="f4")
+    m3 = dpt.zeros((10, 10), dtype="i4")
+
+    with pytest.raises(ValueError):
+        dpt.matmul(m1, m2, dtype="i4")
+
+    with pytest.raises(ValueError):
+        dpt.matmul(m1, m3, dtype="i4")
+
+    with pytest.raises(ValueError):
+        dpt.matmul(m3, m1, dtype="i4")
+
+
+def test_matmul_out_errors():
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
+
+    sh = (10, 10)
+    dt = "i4"
+    m1 = dpt.zeros(sh, dtype=dt, sycl_queue=q1)
+    m2 = dpt.zeros(sh, dtype=dt, sycl_queue=q1)
+
+    with pytest.raises(TypeError):
+        dpt.matmul(m1, m2, out=dict())
+
+    with pytest.raises(ValueError):
+        dpt.matmul(m1, m2, out=dpt.empty((10,), dtype=dt, sycl_queue=q1))
+
+    with pytest.raises(ValueError):
+        dpt.matmul(m1, m2, out=dpt.empty(sh, dtype="f4", sycl_queue=q1))
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.matmul(m1, m2, out=dpt.empty(sh, dtype=dt, sycl_queue=q2))
+
+
+def test_matmul_order():
+    get_queue_or_skip()
+
+    sh = (
+        10,
+        10,
+    )
+    sh2 = tuple(2 * dim for dim in sh)
+    n = sh[-1]
+
+    for dt1, dt2 in zip(["i4", "i4", "f4"], ["i4", "f4", "i4"]):
+        ar1 = dpt.ones(sh, dtype=dt1, order="C")
+        ar2 = dpt.ones(sh, dtype=dt2, order="C")
+        r1 = dpt.matmul(ar1, ar2, order="C")
+        assert r1.flags.c_contiguous
+        r2 = dpt.matmul(ar1, ar2, order="F")
+        assert r2.flags.f_contiguous
+        r3 = dpt.matmul(ar1, ar2, order="A")
+        assert r3.flags.c_contiguous
+        r4 = dpt.matmul(ar1, ar2, order="K")
+        assert r4.flags.c_contiguous
+
+        ar1 = dpt.ones(sh, dtype=dt1, order="F")
+        ar2 = dpt.ones(sh, dtype=dt2, order="F")
+        r1 = dpt.matmul(ar1, ar2, order="C")
+        assert r1.flags.c_contiguous
+        r2 = dpt.matmul(ar1, ar2, order="F")
+        assert r2.flags.f_contiguous
+        r3 = dpt.matmul(ar1, ar2, order="A")
+        assert r3.flags.f_contiguous
+        r4 = dpt.matmul(ar1, ar2, order="K")
+        assert r4.flags.f_contiguous
+
+        ar1 = dpt.ones(sh2, dtype=dt1, order="C")[:10, ::-2]
+        ar2 = dpt.ones(sh2, dtype=dt2, order="C")[:10, ::-2]
+        r4 = dpt.matmul(ar1, ar2, order="K")
+        assert r4.strides == (n, -1)
+        r5 = dpt.matmul(ar1, ar2, order="C")
+        assert r5.strides == (n, 1)
+
+        ar1 = dpt.ones(sh2, dtype=dt1, order="C")[:10, ::-2].mT
+        ar2 = dpt.ones(sh2, dtype=dt2, order="C")[:10, ::-2].mT
+        r4 = dpt.matmul(ar1, ar2, order="K")
+        assert r4.strides == (-1, n)
+        r5 = dpt.matmul(ar1, ar2, order="C")
+        assert r5.strides == (n, 1)
+
+
+def test_matmul_invalid_order():
+    get_queue_or_skip()
+
+    sh = (
+        10,
+        10,
+    )
+    dt = "i4"
+
+    ar1 = dpt.ones(sh, dtype=dt, order="C")
+    ar2 = dpt.ones(sh, dtype=dt, order="C")
+    r = dpt.matmul(ar1, ar2, order="invalid")
+    assert r.flags.c_contiguous
+
+    ar1 = dpt.ones(sh, dtype=dt, order="F")
+    ar2 = dpt.ones(sh, dtype=dt, order="F")
+    r = dpt.matmul(ar1, ar2, order="invalid")
+    assert r.flags.f_contiguous
+
+
+def test_matmul_compute_follows_data():
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
+
+    sh = (
+        10,
+        10,
+    )
+    dt = "i4"
+    m1 = dpt.zeros(sh, dtype=dt, sycl_queue=q1)
+    m2 = dpt.zeros(sh, dtype=dt, sycl_queue=q2)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.matmul(m1, m2)
+
+
+def test_matmul_inplace_broadcasting():
+    get_queue_or_skip()
+
+    sh = (3, 5, 5)
+    dt = "i4"
+
+    m1 = dpt.ones((3, 5, 5), dtype=dt)
+    m2 = dpt.ones((1, 5, 5), dtype=dt)
+    m1 @= m2
+    assert dpt.all(m1 == dpt.full(sh, 5, dtype=dt))
+
+
+def test_matmul_prepend_dims():
+    get_queue_or_skip()
+
+    n = 5
+    for dt1, dt2 in [
+        (dpt.int32, dpt.int32),
+        (dpt.int32, dpt.int64),
+        (dpt.int64, dpt.int32),
+        (dpt.int32, dpt.uint32),
+    ]:
+        m = dpt.ones((n, 4), dtype=dt1)
+        v = dpt.ones((4,), dtype=dt2)
+        r = dpt.matmul(m, v)
+        assert r.shape == (n,)
+
+        r = dpt.matmul(v, m.mT)
+        assert r.shape == (n,)
+
+
+def test_matmul_inplace_same_tensors():
+    get_queue_or_skip()
+
+    n = 5
+    sh = (
+        n,
+        n,
+    )
+
+    ar1 = dpt.ones(sh, dtype="i4")
+    ar1 @= ar1
+    assert dpt.all(ar1 == dpt.full(sh, n, dtype="i4"))
+
+    ar1 = dpt.ones(sh, dtype="i8")
+    ar2 = dpt.ones(sh, dtype="i4")
+    dpt.matmul(ar1, ar2, out=ar1)
+    assert dpt.all(ar1 == dpt.full(sh, n, dtype=ar1.dtype))
+
+    ar1 = dpt.ones(sh, dtype="i4")
+    ar2 = dpt.ones(sh, dtype="i8")
+    dpt.matmul(ar1, ar2, out=ar2)
+    assert dpt.all(ar2 == dpt.full(sh, n, dtype=ar2.dtype))
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
@@ -621,6 +805,7 @@ def test_vecdot_broadcast():
         (dpt.int32, dpt.int32),
         (dpt.int32, dpt.int64),
         (dpt.int64, dpt.int32),
+        (dpt.int32, dpt.uint32),
     ]:
         m1 = dpt.zeros((1, 5), dtype=dt1)
         m2 = dpt.zeros((5, 5), dtype=dt2)
