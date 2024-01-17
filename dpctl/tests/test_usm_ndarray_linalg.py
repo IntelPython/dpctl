@@ -336,21 +336,36 @@ def test_matmul_dtype():
 
 @pytest.mark.parametrize("dt1", _numeric_types)
 @pytest.mark.parametrize("dt2", _numeric_types)
-def test_matmul_type_promotion(dt1, dt2):
+@pytest.mark.parametrize("order", ["C", "K"])
+def test_matmul_type_promotion(dt1, dt2, order):
     get_queue_or_skip()
 
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt1, q)
     skip_if_dtype_not_supported(dt2, q)
 
-    m1 = dpt.ones((10, 10), dtype=dt1)
-    m2 = dpt.ones((10, 10), dtype=dt2)
+    b, n, k, m = 8, 10, 17, 10
+    m1 = dpt.ones((1, n, k), dtype=dt1)
+    m2 = dpt.ones((b, k, m), dtype=dt2)
+    expected_dt = dpt.result_type(m1, m2)
 
-    r = dpt.matmul(m1, m2)
-    assert r.shape == (
-        10,
-        10,
-    )
+    r = dpt.matmul(m1, m2, order=order)
+    assert r.shape == (b, n, m)
+    assert r.dtype == expected_dt
+
+    m1 = dpt.ones((b, n, k), dtype=dt1)
+    m2 = dpt.ones((1, k, m), dtype=dt2)
+
+    r = dpt.matmul(m1, m2, order=order)
+    assert r.shape == (b, n, m)
+    assert r.dtype == expected_dt
+
+    m1 = dpt.ones((n, k), dtype=dt1)
+    m2 = dpt.ones((k, m), dtype=dt2)
+
+    r = dpt.matmul(m1, m2, order=order)
+    assert r.shape == (n, m)
+    assert r.dtype == expected_dt
 
 
 def test_matmul_invalid_dtype():
