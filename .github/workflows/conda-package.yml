@@ -191,11 +191,6 @@ jobs:
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
           gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
-      - name: Run test_matmul_strided under gdb
-        run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate test_dpctl
-          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.test_usm_ndarray_linalg::test_matmul_strided -vv || true
       - name: Run tests
         env:
           SYCL_CACHE_PERSISTENT: 1
@@ -313,9 +308,6 @@ jobs:
         shell: cmd /C CALL {0}
         run: >-
           conda activate dpctl_test && python -m dpctl -f
-      - name: Run test_matmul_simple2
-        run: |
-          conda activate dpctl_test && python -m pytest -q --pyargs dpctl.tests.test_usm_ndarray_linalg::test_matmul_simple2 -vv || true
       - name: Run tests
         shell: cmd /C CALL {0}
         env:
