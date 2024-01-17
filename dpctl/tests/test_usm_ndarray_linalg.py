@@ -470,24 +470,25 @@ def test_tensordot_promotion():
     r2 = dpt.tensordot(t2, t1)
     assert r2.dtype == t2.dtype
 
+    t3 = dpt.zeros((10, 10), dtype="u4")
+    r3 = dpt.tensordot(t1, t2)
+    assert r3.dtype == dpt.result_type(t1.dtype, t3.dtype)
 
-@pytest.mark.parametrize("dt1", _numeric_types)
-@pytest.mark.parametrize("dt2", _numeric_types)
-def test_tensordot_type_promotion2(dt1, dt2):
+
+def test_tensordot_axes_errors():
     get_queue_or_skip()
 
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dt1, q)
-    skip_if_dtype_not_supported(dt2, q)
+    m1 = dpt.zeros((10, 10), dtype="i4")
+    m2 = dpt.zeros((10, 10), dtype="i4")
 
-    m1 = dpt.ones((10, 10), dtype=dt1)
-    m2 = dpt.ones((10, 10), dtype=dt2)
+    with pytest.raises(ValueError):
+        dpt.tensordot(m1, m2, axes=-1)
 
-    r = dpt.tensordot(m1, m2, axes=1)
-    assert r.shape == (
-        10,
-        10,
-    )
+    with pytest.raises(ValueError):
+        dpt.tensordot(m1, m2, axes=((-1,), (1,)))
+
+    with pytest.raises(ValueError):
+        dpt.tensordot(m1, m2, axes=((1,), (-1,)))
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
