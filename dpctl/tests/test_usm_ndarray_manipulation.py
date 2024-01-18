@@ -935,10 +935,38 @@ def test_can_cast():
 def test_result_type():
     q = get_queue_or_skip()
 
-    X = [dpt.ones((2), dtype=dpt.int16, sycl_queue=q), dpt.int32, "int64"]
-    X_np = [np.ones((2), dtype=np.int16), np.int32, "int64"]
+    usm_ar = dpt.ones((2), dtype=dpt.int16, sycl_queue=q)
+    np_ar = dpt.asnumpy(usm_ar)
+
+    X = [usm_ar, dpt.int32, "int64", usm_ar]
+    X_np = [np_ar, np.int32, "int64", np_ar]
 
     assert dpt.result_type(*X) == np.result_type(*X_np)
+
+    X = [usm_ar, dpt.int32, "int64", True]
+    X_np = [np_ar, np.int32, "int64", True]
+
+    assert dpt.result_type(*X) == np.result_type(*X_np)
+
+    X = [usm_ar, dpt.int32, "int64", 2]
+    X_np = [np_ar, np.int32, "int64", 2]
+
+    assert dpt.result_type(*X) == np.result_type(*X_np)
+
+    X = [dpt.int32, "int64", 2]
+    X_np = [np.int32, "int64", 2]
+
+    assert dpt.result_type(*X) == np.result_type(*X_np)
+
+    X = [usm_ar, dpt.int32, "int64", 2.0]
+    X_np = [np_ar, np.int32, "int64", 2.0]
+
+    assert dpt.result_type(*X).kind == np.result_type(*X_np).kind
+
+    X = [usm_ar, dpt.int32, "int64", 2.0 + 1j]
+    X_np = [np_ar, np.int32, "int64", 2.0 + 1j]
+
+    assert dpt.result_type(*X).kind == np.result_type(*X_np).kind
 
 
 def test_swapaxes_1d():

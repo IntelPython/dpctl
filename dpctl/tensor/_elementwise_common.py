@@ -28,11 +28,16 @@ from dpctl.utils import ExecutionPlacementError
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._type_utils import (
+    WeakBooleanType,
+    WeakComplexType,
+    WeakFloatingType,
+    WeakIntegralType,
     _acceptance_fn_default_binary,
     _acceptance_fn_default_unary,
     _all_data_types,
     _find_buf_dtype,
     _find_buf_dtype2,
+    _resolve_weak_types,
     _to_device_supported_dtype,
 )
 
@@ -286,46 +291,6 @@ def _get_queue_usm_type(o):
     return None, None
 
 
-class WeakBooleanType:
-    "Python type representing type of Python boolean objects"
-
-    def __init__(self, o):
-        self.o_ = o
-
-    def get(self):
-        return self.o_
-
-
-class WeakIntegralType:
-    "Python type representing type of Python integral objects"
-
-    def __init__(self, o):
-        self.o_ = o
-
-    def get(self):
-        return self.o_
-
-
-class WeakFloatingType:
-    """Python type representing type of Python floating point objects"""
-
-    def __init__(self, o):
-        self.o_ = o
-
-    def get(self):
-        return self.o_
-
-
-class WeakComplexType:
-    """Python type representing type of Python complex floating point objects"""
-
-    def __init__(self, o):
-        self.o_ = o
-
-    def get(self):
-        return self.o_
-
-
 def _get_dtype(o, dev):
     if isinstance(o, dpt.usm_ndarray):
         return o.dtype
@@ -373,87 +338,6 @@ def _validate_dtype(dt) -> bool:
             dpt.complex128,
         ]
     )
-
-
-def _weak_type_num_kind(o):
-    _map = {"?": 0, "i": 1, "f": 2, "c": 3}
-    if isinstance(o, WeakBooleanType):
-        return _map["?"]
-    if isinstance(o, WeakIntegralType):
-        return _map["i"]
-    if isinstance(o, WeakFloatingType):
-        return _map["f"]
-    if isinstance(o, WeakComplexType):
-        return _map["c"]
-    raise TypeError(
-        f"Unexpected type {o} while expecting "
-        "`WeakBooleanType`, `WeakIntegralType`,"
-        "`WeakFloatingType`, or `WeakComplexType`."
-    )
-
-
-def _strong_dtype_num_kind(o):
-    _map = {"b": 0, "i": 1, "u": 1, "f": 2, "c": 3}
-    if not isinstance(o, dpt.dtype):
-        raise TypeError
-    k = o.kind
-    if k in _map:
-        return _map[k]
-    raise ValueError(f"Unrecognized kind {k} for dtype {o}")
-
-
-def _resolve_weak_types(o1_dtype, o2_dtype, dev):
-    "Resolves weak data type per NEP-0050"
-    if isinstance(
-        o1_dtype,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
-        if isinstance(
-            o2_dtype,
-            (
-                WeakBooleanType,
-                WeakIntegralType,
-                WeakFloatingType,
-                WeakComplexType,
-            ),
-        ):
-            raise ValueError
-        o1_kind_num = _weak_type_num_kind(o1_dtype)
-        o2_kind_num = _strong_dtype_num_kind(o2_dtype)
-        if o1_kind_num > o2_kind_num:
-            if isinstance(o1_dtype, WeakIntegralType):
-                return dpt.dtype(ti.default_device_int_type(dev)), o2_dtype
-            if isinstance(o1_dtype, WeakComplexType):
-                if o2_dtype is dpt.float16 or o2_dtype is dpt.float32:
-                    return dpt.complex64, o2_dtype
-                return (
-                    _to_device_supported_dtype(dpt.complex128, dev),
-                    o2_dtype,
-                )
-            return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
-        else:
-            return o2_dtype, o2_dtype
-    elif isinstance(
-        o2_dtype,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
-        o1_kind_num = _strong_dtype_num_kind(o1_dtype)
-        o2_kind_num = _weak_type_num_kind(o2_dtype)
-        if o2_kind_num > o1_kind_num:
-            if isinstance(o2_dtype, WeakIntegralType):
-                return o1_dtype, dpt.dtype(ti.default_device_int_type(dev))
-            if isinstance(o2_dtype, WeakComplexType):
-                if o1_dtype is dpt.float16 or o1_dtype is dpt.float32:
-                    return o1_dtype, dpt.complex64
-                return o1_dtype, _to_device_supported_dtype(dpt.complex128, dev)
-            return (
-                o1_dtype,
-                _to_device_supported_dtype(dpt.float64, dev),
-            )
-        else:
-            return o1_dtype, o1_dtype
-    else:
-        return o1_dtype, o2_dtype
 
 
 def _get_shape(o):

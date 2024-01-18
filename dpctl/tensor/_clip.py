@@ -24,20 +24,23 @@ from dpctl.tensor._copy_utils import (
     _empty_like_triple_orderK,
 )
 from dpctl.tensor._elementwise_common import (
-    WeakBooleanType,
-    WeakComplexType,
-    WeakFloatingType,
-    WeakIntegralType,
     _get_dtype,
     _get_queue_usm_type,
     _get_shape,
-    _strong_dtype_num_kind,
     _validate_dtype,
-    _weak_type_num_kind,
 )
 from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
 from dpctl.tensor._type_utils import _can_cast, _to_device_supported_dtype
 from dpctl.utils import ExecutionPlacementError
+
+from ._type_utils import (
+    WeakBooleanType,
+    WeakComplexType,
+    WeakFloatingType,
+    WeakIntegralType,
+    _strong_dtype_num_kind,
+    _weak_type_num_kind,
+)
 
 
 def _resolve_one_strong_two_weak_types(st_dtype, dtype1, dtype2, dev):
