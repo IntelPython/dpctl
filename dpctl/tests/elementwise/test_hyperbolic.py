@@ -187,7 +187,7 @@ def test_hyper_error_dtype(callable, dtype):
     x = dpt.ones(5, dtype=dtype)
     y = dpt.empty_like(x, dtype="int16")
     assert_raises_regex(
-        TypeError, "Output array of type.*is needed", callable, x, y
+        ValueError, "Output array of type.*is needed", callable, x, y
     )
 
 
