@@ -189,5 +189,10 @@ def test_logaddexp_dtype_error(
 
     y = dpt.zeros_like(ar1, dtype="int8")
     assert_raises_regex(
-        TypeError, "Output array of type.*is needed", dpt.logaddexp, ar1, ar2, y
+        ValueError,
+        "Output array of type.*is needed",
+        dpt.logaddexp,
+        ar1,
+        ar2,
+        y,
     )

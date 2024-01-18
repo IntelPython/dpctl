@@ -211,7 +211,7 @@ def test_subtract_inplace_dtype_matrix(op1_dtype, op2_dtype):
         assert (dpt.asnumpy(ar3) == np.zeros(ar3.shape, dtype=ar3.dtype)).all()
 
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             ar1 -= ar2
 
 

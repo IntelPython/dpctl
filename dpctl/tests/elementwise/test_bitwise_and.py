@@ -123,7 +123,7 @@ def test_bitwise_and_inplace_dtype_matrix(op1_dtype, op2_dtype):
         ar3 &= ar4
         assert dpt.all(ar3 == 1)
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             ar1 &= ar2
             dpt.bitwise_and(ar1, ar2, out=ar1)
 
@@ -139,5 +139,5 @@ def test_bitwise_and_inplace_dtype_matrix(op1_dtype, op2_dtype):
         dpt.bitwise_and(ar3, ar4, out=ar4)
         dpt.all(ar4 == 1)
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpt.bitwise_and(ar1, ar2, out=ar2)
