@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._type_utils &mdash; Data Parallel Control (dpctl) 0.15.1dev3+48.g79e0c4d975 documentation</title>
+  <title>dpctl.tensor._type_utils &mdash; Data Parallel Control (dpctl) 0.15.1dev3+54.g2bd3b098a2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2a166012"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=92df51a1"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev3+48.g79e0c4d975
+                0.15.1dev3+54.g2bd3b098a2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -346,6 +346,127 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
+<span class="k">class</span> <span class="nc">WeakBooleanType</span><span class="p">:</span>
+    <span class="s2">&quot;Python type representing type of Python boolean objects&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
+
+
+<span class="k">class</span> <span class="nc">WeakIntegralType</span><span class="p">:</span>
+    <span class="s2">&quot;Python type representing type of Python integral objects&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
+
+
+<span class="k">class</span> <span class="nc">WeakFloatingType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python type representing type of Python floating point objects&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
+
+
+<span class="k">class</span> <span class="nc">WeakComplexType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python type representing type of Python complex floating point objects&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
+
+
+<span class="k">def</span> <span class="nf">_weak_type_num_kind</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="n">_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;?&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">WeakBooleanType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_map</span><span class="p">[</span><span class="s2">&quot;?&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_map</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_map</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_map</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Unexpected type </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> while expecting &quot;</span>
+        <span class="s2">&quot;`WeakBooleanType`, `WeakIntegralType`,&quot;</span>
+        <span class="s2">&quot;`WeakFloatingType`, or `WeakComplexType`.&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="n">_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">kind</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_map</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_map</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized kind </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> for dtype </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_resolve_weak_types</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+    <span class="s2">&quot;Resolves weak data type per NEP-0050&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">o1_dtype</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">o2_dtype</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">WeakBooleanType</span><span class="p">,</span>
+                <span class="n">WeakIntegralType</span><span class="p">,</span>
+                <span class="n">WeakFloatingType</span><span class="p">,</span>
+                <span class="n">WeakComplexType</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">o1_kind_num</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">)</span>
+        <span class="n">o2_kind_num</span> <span class="o">=</span> <span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">o2_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">o1_kind_num</span> <span class="o">&gt;</span> <span class="n">o2_kind_num</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">)),</span> <span class="n">o2_dtype</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">o2_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">o2_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span> <span class="n">o2_dtype</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span>
+                    <span class="n">o2_dtype</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span> <span class="n">o2_dtype</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">o2_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">o2_dtype</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="n">o1_kind_num</span> <span class="o">=</span> <span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">)</span>
+        <span class="n">o2_kind_num</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">o2_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">o2_kind_num</span> <span class="o">&gt;</span> <span class="n">o1_kind_num</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o2_dtype</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o2_dtype</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">o1_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">o1_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span>
+                <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">o1_dtype</span><span class="p">,</span>
+                <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o1_dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span>
+
+
 <span class="k">class</span> <span class="nc">finfo_object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `numpy.finfo` subclass which returns Python floating-point scalars for</span>
@@ -501,10 +622,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">devices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">weak_dtypes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">arg_i</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_i</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
             <span class="n">devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg_i</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
             <span class="n">dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg_i</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_i</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">weak_dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WeakIntegralType</span><span class="p">(</span><span class="n">arg_i</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_i</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">weak_dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WeakFloatingType</span><span class="p">(</span><span class="n">arg_i</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_i</span><span class="p">,</span> <span class="nb">complex</span><span class="p">):</span>
+            <span class="n">weak_dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WeakComplexType</span><span class="p">(</span><span class="n">arg_i</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_i</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">weak_dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">(</span><span class="n">arg_i</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">arg_i</span><span class="p">)</span>
             <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dt</span><span class="p">])</span>
@@ -512,6 +642,7 @@
 
     <span class="n">has_fp16</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">has_fp64</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">target_dev</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">devices</span><span class="p">:</span>
         <span class="n">inspected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
@@ -529,17 +660,28 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">has_fp16</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
                 <span class="n">has_fp64</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
+                <span class="n">target_dev</span> <span class="o">=</span> <span class="n">d</span>
                 <span class="n">inspected</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">has_fp16</span> <span class="ow">and</span> <span class="n">has_fp64</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_dtype_supported_by_device_impl</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is not supported by &quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Argument </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is not supported by the device&quot;</span>
+                <span class="p">)</span>
         <span class="n">res_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span>
         <span class="n">res_dt</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype_impl</span><span class="p">(</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">res_dt</span>
+        <span class="k">for</span> <span class="n">wdt</span> <span class="ow">in</span> <span class="n">weak_dtypes</span><span class="p">:</span>
+            <span class="n">pair</span> <span class="o">=</span> <span class="n">_resolve_weak_types</span><span class="p">(</span><span class="n">wdt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">target_dev</span><span class="p">)</span>
+            <span class="n">res_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">pair</span><span class="p">)</span>
+            <span class="n">res_dt</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype_impl</span><span class="p">(</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weak_dtypes</span><span class="p">:</span>
+            <span class="n">weak_dt_obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">wdt</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">wdt</span> <span class="ow">in</span> <span class="n">weak_dtypes</span><span class="p">]</span>
+            <span class="n">res_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">res_dt</span><span class="p">,</span> <span class="o">*</span><span class="n">weak_dt_obj</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">res_dt</span></div>
 
 
 <div class="viewcode-block" id="iinfo"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.iinfo">[docs]</a><span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
@@ -622,10 +764,17 @@
     <span class="s2">&quot;_acceptance_fn_reciprocal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_acceptance_fn_default_binary&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_acceptance_fn_divide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_resolve_weak_types&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_weak_type_num_kind&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_strong_dtype_num_kind&quot;</span><span class="p">,</span>
     <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
     <span class="s2">&quot;finfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;iinfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;result_type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WeakBooleanType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WeakIntegralType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WeakFloatingType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WeakComplexType&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 

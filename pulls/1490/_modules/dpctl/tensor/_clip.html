@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._clip &mdash; Data Parallel Control (dpctl) 0.15.1dev3+48.g79e0c4d975 documentation</title>
+  <title>dpctl.tensor._clip &mdash; Data Parallel Control (dpctl) 0.15.1dev3+54.g2bd3b098a2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2a166012"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=92df51a1"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.15.1dev3+48.g79e0c4d975
+                0.15.1dev3+54.g2bd3b098a2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -118,20 +118,23 @@
     <span class="n">_empty_like_triple_orderK</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WeakBooleanType</span><span class="p">,</span>
-    <span class="n">WeakComplexType</span><span class="p">,</span>
-    <span class="n">WeakFloatingType</span><span class="p">,</span>
-    <span class="n">WeakIntegralType</span><span class="p">,</span>
     <span class="n">_get_dtype</span><span class="p">,</span>
     <span class="n">_get_queue_usm_type</span><span class="p">,</span>
     <span class="n">_get_shape</span><span class="p">,</span>
-    <span class="n">_strong_dtype_num_kind</span><span class="p">,</span>
     <span class="n">_validate_dtype</span><span class="p">,</span>
-    <span class="n">_weak_type_num_kind</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._manipulation_functions</span> <span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_can_cast</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span>
 <span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
+
+<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">WeakBooleanType</span><span class="p">,</span>
+    <span class="n">WeakComplexType</span><span class="p">,</span>
+    <span class="n">WeakFloatingType</span><span class="p">,</span>
+    <span class="n">WeakIntegralType</span><span class="p">,</span>
+    <span class="n">_strong_dtype_num_kind</span><span class="p">,</span>
+    <span class="n">_weak_type_num_kind</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_resolve_one_strong_two_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
