@@ -979,13 +979,16 @@ public:
             for (size_t q = 0; q < n_wi * delta_k; q += delta_k) {
                 size_t sq = s + q;
                 size_t sqmj = sq * m + j;
-                local_B_block[local_s + q] = sycl::vec<resT, m_groups>(
-                    (sq < k && j < m)
-                        ? static_cast<resT>(rhs[rhs_indexer(sqmj)])
-                        : identity_,
-                    (sq < k && j + 1 < m)
-                        ? static_cast<resT>(rhs[rhs_indexer(sqmj + 1)])
-                        : identity_);
+                sycl::vec<resT, m_groups> local_B_vec;
+#pragma unroll
+                for (size_t vec_idx = 0; vec_idx < m_groups; ++vec_idx) {
+                    local_B_vec[vec_idx] =
+                        (sq < k && j + vec_idx < m)
+                            ? static_cast<resT>(
+                                  rhs[rhs_indexer(sqmj + vec_idx)])
+                            : identity_;
+                }
+                local_B_block[local_s + q] = local_B_vec;
             }
         }
 
@@ -1241,7 +1244,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1277,7 +1280,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1411,7 +1414,7 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1447,7 +1450,7 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -1922,13 +1925,16 @@ public:
             for (size_t q = 0; q < n_wi * delta_k; q += delta_k) {
                 size_t sq = s + q;
                 size_t sqmj = sq * m + j;
-                local_B_block[local_s + q] = sycl::vec<resT, m_groups>(
-                    (sq < k && j < m)
-                        ? static_cast<resT>(rhs[rhs_indexer(sqmj)])
-                        : identity_,
-                    (sq < k && j + 1 < m)
-                        ? static_cast<resT>(rhs[rhs_indexer(sqmj + 1)])
-                        : identity_);
+                sycl::vec<resT, m_groups> local_B_vec;
+#pragma unroll
+                for (size_t vec_idx = 0; vec_idx < m_groups; ++vec_idx) {
+                    local_B_vec[vec_idx] =
+                        (sq < k && j + vec_idx < m)
+                            ? static_cast<resT>(
+                                  rhs[rhs_indexer(sqmj + vec_idx)])
+                            : identity_;
+                }
+                local_B_block[local_s + q] = local_B_vec;
             }
         }
 
@@ -2130,7 +2136,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
 {
     size_t delta_k(4);
     size_t n_wi(64);
-    size_t delta_n(16);
+    size_t delta_n(32);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -2862,7 +2868,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
 {
     size_t delta_k(4);
     size_t n_wi(64);
-    size_t delta_n(16);
+    size_t delta_n(32);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -3986,14 +3992,16 @@ public:
             for (size_t q = 0; q < n_wi * delta_k; q += delta_k) {
                 size_t sq = s + q;
                 size_t sqmj = sq * m + j;
-                local_B_block[local_s + q] = sycl::vec<resT, m_groups>(
-                    (sq < k && j < m)
-                        ? static_cast<resT>(rhs[rhs_offset + rhs_indexer(sqmj)])
-                        : identity_,
-                    (sq < k && j + 1 < m)
-                        ? static_cast<resT>(
-                              rhs[rhs_offset + rhs_indexer(sqmj + 1)])
-                        : identity_);
+                sycl::vec<resT, m_groups> local_B_vec;
+#pragma unroll
+                for (size_t vec_idx = 0; vec_idx < m_groups; ++vec_idx) {
+                    local_B_vec[vec_idx] =
+                        (sq < k && j + vec_idx < m)
+                            ? static_cast<resT>(
+                                  rhs[rhs_offset + rhs_indexer(sqmj + vec_idx)])
+                            : identity_;
+                }
+                local_B_block[local_s + q] = local_B_vec;
             }
         }
 
@@ -4310,7 +4318,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -4351,7 +4359,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -4516,7 +4524,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -4557,7 +4565,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
             constexpr size_t m_groups = 2;
             size_t delta_k(4);
             size_t n_wi(64);
-            size_t delta_n(16);
+            size_t delta_n(32);
 
             gemm_detail::scale_gemm_k_parameters<resTy, m_groups>(
                 local_mem_size, reserved_slm_size, delta_k,
@@ -5096,10 +5104,16 @@ public:
             for (size_t q = 0; q < n_wi * delta_k; q += delta_k) {
                 size_t sq = s + q;
                 size_t sqmj = sq * m + j;
-                local_B_block[local_s + q] =
-                    (sq < k && j < m)
-                        ? static_cast<resT>(rhs[rhs_offset + rhs_indexer(sqmj)])
-                        : identity_;
+                sycl::vec<resT, m_groups> local_B_vec;
+#pragma unroll
+                for (size_t vec_idx = 0; vec_idx < m_groups; ++vec_idx) {
+                    local_B_vec[vec_idx] =
+                        (sq < k && j + vec_idx < m)
+                            ? static_cast<resT>(
+                                  rhs[rhs_offset + rhs_indexer(sqmj + vec_idx)])
+                            : identity_;
+                }
+                local_B_block[local_s + q] = local_B_vec;
             }
         }
 
@@ -5331,7 +5345,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
 {
     size_t delta_k(4);
     size_t n_wi(64);
-    size_t delta_n(16);
+    size_t delta_n(32);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
@@ -6184,7 +6198,7 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
 {
     size_t delta_k(4);
     size_t n_wi(64);
-    size_t delta_n(16);
+    size_t delta_n(32);
 
     const sycl::device &dev = exec_q.get_device();
     const size_t local_mem_size =
