@@ -41,7 +41,7 @@ template <typename fpT> struct ExtendedRealFPLess
     /* [R, nan] */
     bool operator()(const fpT v1, const fpT v2) const
     {
-        return (!sycl::isnan(v1) && (sycl::isnan(v2) || (v1 < v2)));
+        return (!std::isnan(v1) && (std::isnan(v2) || (v1 < v2)));
     }
 };
 
@@ -49,7 +49,7 @@ template <typename fpT> struct ExtendedRealFPGreater
 {
     bool operator()(const fpT v1, const fpT v2) const
     {
-        return (!sycl::isnan(v2) && (sycl::isnan(v1) || (v2 < v1)));
+        return (!std::isnan(v2) && (std::isnan(v1) || (v2 < v1)));
     }
 };
 
@@ -64,14 +64,14 @@ template <typename cT> struct ExtendedComplexFPLess
         const realT real1 = std::real(v1);
         const realT real2 = std::real(v2);
 
-        const bool r1_nan = sycl::isnan(real1);
-        const bool r2_nan = sycl::isnan(real2);
+        const bool r1_nan = std::isnan(real1);
+        const bool r2_nan = std::isnan(real2);
 
         const realT imag1 = std::imag(v1);
         const realT imag2 = std::imag(v2);
 
-        const bool i1_nan = sycl::isnan(imag1);
-        const bool i2_nan = sycl::isnan(imag2);
+        const bool i1_nan = std::isnan(imag1);
+        const bool i2_nan = std::isnan(imag2);
 
         const int idx1 = ((r1_nan) ? 2 : 0) + ((i1_nan) ? 1 : 0);
         const int idx2 = ((r2_nan) ? 2 : 0) + ((i2_nan) ? 1 : 0);
