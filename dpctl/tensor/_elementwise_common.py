@@ -188,7 +188,7 @@ class UnaryElementwiseFunc:
             acceptance_fn=self.acceptance_fn_,
         )
         if res_dt is None:
-            raise TypeError(
+            raise ValueError(
                 f"function '{self.name_}' does not support input type "
                 f"({x.dtype}), "
                 "and the input could not be safely coerced to any "
@@ -209,7 +209,7 @@ class UnaryElementwiseFunc:
                 )
 
             if res_dt != out.dtype:
-                raise TypeError(
+                raise ValueError(
                     f"Output array of type {res_dt} is needed,"
                     f" got {out.dtype}"
                 )
@@ -587,7 +587,7 @@ class BinaryElementwiseFunc:
         )
 
         if res_dt is None:
-            raise TypeError(
+            raise ValueError(
                 f"function '{self.name_}' does not support input types "
                 f"({o1_dtype}, {o2_dtype}), "
                 "and the inputs could not be safely coerced to any "
@@ -608,7 +608,7 @@ class BinaryElementwiseFunc:
                 )
 
             if res_dt != out.dtype:
-                raise TypeError(
+                raise ValueError(
                     f"Output array of type {res_dt} is needed,"
                     f"got {out.dtype}"
                 )

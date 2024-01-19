@@ -220,7 +220,7 @@ def test_multiply_inplace_dtype_matrix(op1_dtype, op2_dtype):
         ).all()
 
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             ar1 *= ar2
 
 

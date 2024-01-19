@@ -246,7 +246,7 @@ def test_remainder_inplace_dtype_matrix(op1_dtype, op2_dtype):
         assert dpt.all(ar3 == dpt.zeros(ar3.shape, dtype=ar3.dtype))
 
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             ar1 %= ar2
 
 

@@ -100,7 +100,7 @@ def test_floor_ceil_trunc_error_dtype(dpt_call, dtype):
     x = dpt.zeros(5, dtype=dtype)
     y = dpt.empty_like(x, dtype="b1")
     assert_raises_regex(
-        TypeError, "Output array of type.*is needed", dpt_call, x, y
+        ValueError, "Output array of type.*is needed", dpt_call, x, y
     )
 
 

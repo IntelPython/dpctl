@@ -337,7 +337,7 @@ def test_add_dtype_error(
 
     y = dpt.zeros_like(ar1, dtype="int8")
     assert_raises_regex(
-        TypeError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
+        ValueError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
     )
 
 
@@ -384,7 +384,7 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
             dpt.asnumpy(ar3) == np.full(ar3.shape, 2, dtype=ar3.dtype)
         ).all()
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             ar1 += ar2
             dpt.add(ar1, ar2, out=ar1)
 
@@ -404,7 +404,7 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
             dpt.asnumpy(ar4) == np.full(ar4.shape, 2, dtype=ar4.dtype)
         ).all()
     else:
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             dpt.add(ar1, ar2, out=ar2)
 
 
