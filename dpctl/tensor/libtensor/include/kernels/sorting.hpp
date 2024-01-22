@@ -539,34 +539,32 @@ sort_over_work_group_contig_impl(sycl::queue &q,
             sycl::group_barrier(it.get_group());
 
             bool data_in_temp = false;
-            size_t sorted_size = 1;
-            while (true) {
-                const size_t nelems_sorted_so_far = sorted_size * chunk;
-                if (nelems_sorted_so_far < wg_chunk_size) {
-                    const size_t q = (lid / sorted_size);
-                    const size_t start_1 =
-                        sycl::min(2 * nelems_sorted_so_far * q, wg_chunk_size);
-                    const size_t end_1 = sycl::min(
-                        start_1 + nelems_sorted_so_far, wg_chunk_size);
-                    const size_t end_2 =
-                        sycl::min(end_1 + nelems_sorted_so_far, wg_chunk_size);
-                    const size_t offset = chunk * (lid - q * sorted_size);
+            size_t n_chunks_merged = 1;
 
-                    if (data_in_temp) {
-                        merge_impl(offset, scratch_space, work_space, start_1,
-                                   end_1, end_2, start_1, comp, chunk);
-                    }
-                    else {
-                        merge_impl(offset, work_space, scratch_space, start_1,
-                                   end_1, end_2, start_1, comp, chunk);
-                    }
-                    sycl::group_barrier(it.get_group());
+            // merge chunk while n_chunks_merged * chunk < wg_chunk_size
+            const size_t max_chunks_merged = 1 + ((wg_chunk_size - 1) / chunk);
+            for (; n_chunks_merged < max_chunks_merged;
+                 data_in_temp = !data_in_temp, n_chunks_merged *= 2)
+            {
+                const size_t nelems_sorted_so_far = n_chunks_merged * chunk;
+                const size_t q = (lid / n_chunks_merged);
+                const size_t start_1 =
+                    sycl::min(2 * nelems_sorted_so_far * q, wg_chunk_size);
+                const size_t end_1 =
+                    sycl::min(start_1 + nelems_sorted_so_far, wg_chunk_size);
+                const size_t end_2 =
+                    sycl::min(end_1 + nelems_sorted_so_far, wg_chunk_size);
+                const size_t offset = chunk * (lid - q * n_chunks_merged);
 
-                    data_in_temp = !data_in_temp;
-                    sorted_size *= 2;
+                if (data_in_temp) {
+                    merge_impl(offset, scratch_space, work_space, start_1,
+                               end_1, end_2, start_1, comp, chunk);
                 }
-                else
-                    break;
+                else {
+                    merge_impl(offset, work_space, scratch_space, start_1,
+                               end_1, end_2, start_1, comp, chunk);
+                }
+                sycl::group_barrier(it.get_group());
             }
 
             const auto &out_src = (data_in_temp) ? scratch_space : work_space;
