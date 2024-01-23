@@ -907,15 +907,15 @@ cdef class usm_ndarray:
     def __abs__(self):
         return dpctl.tensor.abs(self)
 
-    def __add__(first, other):
+    def __add__(self, other):
         """
         Implementation for operator.add
         """
-        return dpctl.tensor.add(first, other)
+        return dpctl.tensor.add(self, other)
 
-    def __and__(first, other):
+    def __and__(self, other):
         "Implementation for operator.and"
-        return dpctl.tensor.bitwise_and(first, other)
+        return dpctl.tensor.bitwise_and(self, other)
 
     def __dlpack__(self, stream=None):
         """
@@ -963,8 +963,8 @@ cdef class usm_ndarray:
     def __eq__(self, other):
         return dpctl.tensor.equal(self, other)
 
-    def __floordiv__(first, other):
-        return dpctl.tensor.floor_divide(first, other)
+    def __floordiv__(self, other):
+        return dpctl.tensor.floor_divide(self, other)
 
     def __ge__(self, other):
         return dpctl.tensor.greater_equal(self, other)
@@ -984,21 +984,20 @@ cdef class usm_ndarray:
         else:
             raise TypeError("len() of unsized object")
 
-    def __lshift__(first, other):
-        "See comment in __add__"
-        return dpctl.tensor.bitwise_left_shift(first, other)
+    def __lshift__(self, other):
+        return dpctl.tensor.bitwise_left_shift(self, other)
 
     def __lt__(self, other):
         return dpctl.tensor.less(self, other)
 
-    def __matmul__(first, other):
-        return NotImplemented
+    def __matmul__(self, other):
+        return dpctl.tensor.matmul(self, other)
 
-    def __mod__(first, other):
-        return dpctl.tensor.remainder(first, other)
+    def __mod__(self, other):
+        return dpctl.tensor.remainder(self, other)
 
-    def __mul__(first, other):
-        return dpctl.tensor.multiply(first, other)
+    def __mul__(self, other):
+        return dpctl.tensor.multiply(self, other)
 
     def __ne__(self, other):
         return dpctl.tensor.not_equal(self, other)
@@ -1006,20 +1005,17 @@ cdef class usm_ndarray:
     def __neg__(self):
         return dpctl.tensor.negative(self)
 
-    def __or__(first, other):
-        return dpctl.tensor.bitwise_or(first, other)
+    def __or__(self, other):
+        return dpctl.tensor.bitwise_or(self, other)
 
     def __pos__(self):
         return dpctl.tensor.positive(self)
 
-    def __pow__(first, other, mod):
-        if mod is None:
-            return dpctl.tensor.pow(first, other)
-        else:
-            return NotImplemented
+    def __pow__(self, other):
+        return dpctl.tensor.pow(self, other)
 
-    def __rshift__(first, other):
-        return dpctl.tensor.bitwise_right_shift(first, other)
+    def __rshift__(self, other):
+        return dpctl.tensor.bitwise_right_shift(self, other)
 
     def __setitem__(self, key, rhs):
         cdef tuple _meta
@@ -1109,14 +1105,14 @@ cdef class usm_ndarray:
         return
 
 
-    def __sub__(first, other):
-        return dpctl.tensor.subtract(first, other)
+    def __sub__(self, other):
+        return dpctl.tensor.subtract(self, other)
 
-    def __truediv__(first, other):
-        return dpctl.tensor.divide(first, other)
+    def __truediv__(self, other):
+        return dpctl.tensor.divide(self, other)
 
-    def __xor__(first, other):
-        return dpctl.tensor.bitwise_xor(first, other)
+    def __xor__(self, other):
+        return dpctl.tensor.bitwise_xor(self, other)
 
     def __radd__(self, other):
         return dpctl.tensor.add(other, self)
@@ -1131,7 +1127,7 @@ cdef class usm_ndarray:
         return dpctl.tensor.bitwise_left_shift(other, self)
 
     def __rmatmul__(self, other):
-        return NotImplemented
+        return dpctl.tensor.matmul(other, self)
 
     def __rmod__(self, other):
         return dpctl.tensor.remainder(other, self)
@@ -1170,11 +1166,7 @@ cdef class usm_ndarray:
         return dpctl.tensor.bitwise_left_shift(self, other, out=self)
 
     def __imatmul__(self, other):
-        res = self.__matmul__(other)
-        if res is NotImplemented:
-            return res
-        self.__setitem__(Ellipsis, res)
-        return self
+        return dpctl.tensor.matmul(self, other, out=self)
 
     def __imod__(self, other):
         return dpctl.tensor.remainder(self, other, out=self)
