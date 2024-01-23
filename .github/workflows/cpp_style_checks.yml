@@ -9,6 +9,8 @@ on:
   push:
     branches: [master]
 
+permissions: read-all
+
 jobs:
   formatting-check:
     name: clang-format

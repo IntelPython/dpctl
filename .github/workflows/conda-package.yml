@@ -6,6 +6,8 @@ on:
       - master
   pull_request:
 
+permissions: read-all
+
 env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
@@ -539,6 +541,8 @@ jobs:
   array-api-conformity:
     needs: build_linux
     runs-on:  ${{ matrix.runner }}
+    permissions:
+      pull-requests: write
 
     strategy:
       matrix:
