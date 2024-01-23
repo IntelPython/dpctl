@@ -4,10 +4,14 @@ on:
   push:
     branches: [master]
 
+permissions: read-all
+
 jobs:
   generate-coverage:
     name: Generate coverage and push to Coveralls.io
     runs-on: ubuntu-20.04
+    permissions:
+      pull-requests: write
 
     env:
       ONEAPI_ROOT: /opt/intel/oneapi

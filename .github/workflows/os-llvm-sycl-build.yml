@@ -4,6 +4,8 @@ on:
   push:
     branches: [master]
 
+permissions: read-all
+
 jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
