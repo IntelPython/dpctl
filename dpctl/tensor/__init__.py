@@ -51,7 +51,6 @@ from dpctl.tensor._data_types import (
     int16,
     int32,
     int64,
-    isdtype,
     uint8,
     uint16,
     uint32,
@@ -188,7 +187,7 @@ from ._set_functions import (
 )
 from ._sorting import argsort, sort
 from ._testing import allclose
-from ._type_utils import can_cast, finfo, iinfo, result_type
+from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
     "Device",
