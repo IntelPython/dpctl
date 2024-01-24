@@ -81,7 +81,7 @@ jobs:
           mv ../cmake-install/docs/docs ~/docs
           git clean -dfx
       - name: Publish docs
-        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' && github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
