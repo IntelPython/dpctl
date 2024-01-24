@@ -194,6 +194,15 @@ def test_clip_out_need_temporary():
     dpt.clip(x[:6], 2, 3, out=x[-6:])
     assert dpt.all(x[:-6] == 1) and dpt.all(x[-6:] == 2)
 
+    x = dpt.arange(12, dtype="i4")
+    dpt.clip(x[:6], out=x[-6:])
+    expected = dpt.arange(6, dtype="i4")
+    assert dpt.all(x[:-6] == expected) and dpt.all(x[-6:] == expected)
+
+    x = dpt.ones(10, dtype="i4")
+    dpt.clip(x, out=x)
+    assert dpt.all(x == 1)
+
     x = dpt.full(6, 3, dtype="i4")
     a_min = dpt.full(10, 2, dtype="i4")
     a_max = dpt.asarray(4, dtype="i4")
@@ -636,3 +645,11 @@ def test_clip_unaligned():
 
     expected = dpt.full(512, 2, dtype="i4")
     assert dpt.all(dpt.clip(x[1:], a_min, a_max) == expected)
+
+
+def test_clip_none_args():
+    get_queue_or_skip()
+
+    x = dpt.arange(10, dtype="i4")
+    r = dpt.clip(x)
+    assert dpt.all(x == r)
