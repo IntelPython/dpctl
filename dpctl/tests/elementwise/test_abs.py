@@ -71,6 +71,7 @@ def test_abs_usm_type(usm_type):
 
 
 def test_abs_types_prop():
+    get_queue_or_skip()
     types = dpt.abs.types_
     assert types is None
     types = dpt.abs.types

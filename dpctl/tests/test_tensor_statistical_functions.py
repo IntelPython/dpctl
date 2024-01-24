@@ -234,6 +234,7 @@ def test_stat_function_errors():
     with pytest.raises(TypeError):
         dpt.mean(d)
 
+    get_queue_or_skip()
     x = dpt.empty(1, dtype="f4")
     with pytest.raises(TypeError):
         dpt.var(x, axis=d)

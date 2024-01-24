@@ -50,22 +50,29 @@ class MockDevice:
 def test_array_api_inspection_methods():
     info = dpt.__array_namespace_info__()
     assert info.capabilities()
-    assert info.default_device()
+    try:
+        assert info.default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
     assert info.default_dtypes()
     assert info.devices()
     assert info.dtypes()
 
 
 def test_array_api_inspection_default_device():
-    assert (
-        dpt.__array_namespace_info__().default_device()
-        == dpctl.select_default_device()
-    )
+    try:
+        dev = dpctl.select_default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    assert dpt.__array_namespace_info__().default_device() == dev
 
 
 def test_array_api_inspection_devices():
+    try:
+        devices2 = dpctl.get_devices()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
     devices1 = dpt.__array_namespace_info__().devices()
-    devices2 = dpctl.get_devices()
     assert len(devices1) == len(devices2)
     assert devices1 == devices2
 
@@ -77,7 +84,10 @@ def test_array_api_inspection_capabilities():
 
 
 def test_array_api_inspection_default_dtypes():
-    dev = dpctl.select_default_device()
+    try:
+        dev = dpctl.select_default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
 
     int_dt = default_device_int_type(dev)
     ind_dt = default_device_index_type(dev)
@@ -107,7 +117,10 @@ def test_array_api_inspection_default_dtypes():
 
 
 def test_array_api_inspection_default_device_dtypes():
-    dev = dpctl.select_default_device()
+    try:
+        dev = dpctl.select_default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
     dtypes = _dtypes_no_fp16_fp64.copy()
     if dev.has_aspect_fp64:
         dtypes["float64"] = dpt.float64
@@ -128,6 +141,10 @@ def test_array_api_inspection_device_dtypes(fp16, fp64):
 
 def test_array_api_inspection_dtype_kind():
     info = dpt.__array_namespace_info__()
+    try:
+        info.default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
 
     f_dtypes = info.dtypes(kind="real floating")
     assert all([_dt[1].kind == "f" for _dt in f_dtypes.items()])

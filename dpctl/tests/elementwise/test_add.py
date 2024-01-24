@@ -259,6 +259,7 @@ def test_add_canary_mock_array():
 
 
 def test_add_types_property():
+    get_queue_or_skip()
     types = dpt.add.types_
     assert types is None
     types = dpt.add.types

@@ -1302,7 +1302,7 @@ def test_nonzero():
 
 def test_nonzero_f_contig():
     "See gh-1370"
-    get_queue_or_skip
+    get_queue_or_skip()
 
     mask = dpt.zeros((5, 5), dtype="?", order="F")
     mask[2, 3] = True
@@ -1319,7 +1319,7 @@ def test_nonzero_compacting():
     Test with input where dimensionality
     of iteration space is compacted from 3d to 2d
     """
-    get_queue_or_skip
+    get_queue_or_skip()
 
     mask = dpt.zeros((5, 5, 5), dtype="?", order="F")
     mask[3, 2, 1] = True
