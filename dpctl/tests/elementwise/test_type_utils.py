@@ -241,7 +241,10 @@ def test_can_cast_device():
 
 def test_acceptance_fns():
     """Check type promotion acceptance functions"""
-    dev = dpctl.SyclDevice()
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("Default device is not available")
     assert tu._acceptance_fn_reciprocal(
         dpt.float32, dpt.float32, dpt.float32, dev
     )

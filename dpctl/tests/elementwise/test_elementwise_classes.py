@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import dpctl.tensor as dpt
+from dpctl.tests.helper import get_queue_or_skip
 
 unary_fn = dpt.negative
 binary_fn = dpt.divide
@@ -29,6 +30,7 @@ def test_unary_class_getters():
 
 
 def test_unary_class_types_property():
+    get_queue_or_skip()
     loop_types = unary_fn.types
     assert isinstance(loop_types, list)
     assert len(loop_types) > 0
@@ -62,6 +64,7 @@ def test_binary_class_getters():
 
 
 def test_binary_class_types_property():
+    get_queue_or_skip()
     loop_types = binary_fn.types
     assert isinstance(loop_types, list)
     assert len(loop_types) > 0

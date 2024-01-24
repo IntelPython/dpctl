@@ -430,6 +430,7 @@ def test_ctor_invalid_shape():
 
 
 def test_ctor_invalid_order():
+    get_queue_or_skip()
     with pytest.raises(ValueError):
         dpt.usm_ndarray((5, 5, 3), order="Z")
 

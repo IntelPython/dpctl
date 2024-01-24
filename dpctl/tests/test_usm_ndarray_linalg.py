@@ -114,6 +114,7 @@ def test_matmul_nilpotent2(dtype):
 
 
 def test_matmul_null_axis():
+    get_queue_or_skip()
     n = 3
 
     A_mat = dpt.ones((n, 0), dtype="f4")

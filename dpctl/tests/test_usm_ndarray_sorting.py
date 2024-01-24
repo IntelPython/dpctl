@@ -97,6 +97,7 @@ def test_sort_2d(dtype):
 
 
 def test_sort_strides():
+    get_queue_or_skip()
 
     fl = dpt.roll(
         dpt.concat((dpt.ones(10000, dtype="i4"), dpt.zeros(10000, dtype="i4"))),

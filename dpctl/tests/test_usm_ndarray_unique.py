@@ -295,10 +295,29 @@ def test_set_function_outputs():
 def test_set_functions_compute_follows_data():
     # tests that all intermediate calls and allocations
     # are compatible with an input with an arbitrary queue
+    get_queue_or_skip()
     q = dpctl.SyclQueue()
     x = dpt.arange(10, dtype="i4", sycl_queue=q)
 
-    assert isinstance(dpt.unique_values(x), dpctl.tensor.usm_ndarray)
-    assert dpt.unique_counts(x)
-    assert dpt.unique_inverse(x)
-    assert dpt.unique_all(x)
+    uv = dpt.unique_values(x)
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert uv.sycl_queue == q
+    uv, uc = dpt.unique_counts(x)
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert isinstance(uc, dpctl.tensor.usm_ndarray)
+    assert uv.sycl_queue == q
+    assert uc.sycl_queue == q
+    uv, inv_ind = dpt.unique_inverse(x)
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert isinstance(inv_ind, dpctl.tensor.usm_ndarray)
+    assert uv.sycl_queue == q
+    assert inv_ind.sycl_queue == q
+    uv, ind, inv_ind, uc = dpt.unique_all(x)
+    assert isinstance(uv, dpctl.tensor.usm_ndarray)
+    assert isinstance(ind, dpctl.tensor.usm_ndarray)
+    assert isinstance(inv_ind, dpctl.tensor.usm_ndarray)
+    assert isinstance(uc, dpctl.tensor.usm_ndarray)
+    assert uv.sycl_queue == q
+    assert ind.sycl_queue == q
+    assert inv_ind.sycl_queue == q
+    assert uc.sycl_queue == q
