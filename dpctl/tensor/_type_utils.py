@@ -676,7 +676,7 @@ def isdtype(dtype, kind):
     if not isinstance(dtype, np.dtype):
         raise TypeError(f"Expected instance of `dpt.dtype`, got {dtype}")
 
-    if isinstance(kind, dtype):
+    if isinstance(kind, np.dtype):
         return dtype == kind
 
     elif isinstance(kind, str):
