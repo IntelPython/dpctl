@@ -21,7 +21,12 @@ from numpy.testing import assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
-from dpctl.tensor._type_utils import _can_cast
+from dpctl.tensor._elementwise_common import _get_dtype
+from dpctl.tensor._type_utils import (
+    _can_cast,
+    _strong_dtype_num_kind,
+    _weak_type_num_kind,
+)
 from dpctl.utils import ExecutionPlacementError
 
 _all_dtypes = [
@@ -235,6 +240,21 @@ def test_clip_arg_validation():
 
     with pytest.raises(TypeError):
         dpt.clip(check, x1, x2)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x1, check, x2)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x1, check)
+
+    with pytest.raises(TypeError):
+        dpt.clip(x1, x1, x2, out=check)
+
+    with pytest.raises(TypeError):
+        dpt.clip(x1, x2, out=check)
+
+    with pytest.raises(TypeError):
+        dpt.clip(x1, out=check)
 
 
 @pytest.mark.parametrize(
@@ -608,22 +628,40 @@ def test_clip_max_less_than_min():
     assert dpt.all(res == 0)
 
 
-def test_clip_minmax_weak_types():
+@pytest.mark.parametrize("dt", ["?", "i4", "f4", "c8"])
+def test_clip_minmax_weak_types(dt):
     get_queue_or_skip()
 
-    x = dpt.zeros(10, dtype=dpt.bool)
+    x = dpt.zeros(10, dtype=dt)
     min_list = [False, 0, 0.0, 0.0 + 0.0j]
     max_list = [True, 1, 1.0, 1.0 + 0.0j]
+
     for min_v, max_v in zip(min_list, max_list):
-        if isinstance(min_v, bool) and isinstance(max_v, bool):
-            y = dpt.clip(x, min_v, max_v)
-            assert isinstance(y, dpt.usm_ndarray)
+        st_dt = _strong_dtype_num_kind(dpt.dtype(dt))
+        wk_dt1 = _weak_type_num_kind(_get_dtype(min_v, x.sycl_device))
+        wk_dt2 = _weak_type_num_kind(_get_dtype(max_v, x.sycl_device))
+
+        if st_dt >= wk_dt1 and st_dt >= wk_dt2:
+            r = dpt.clip(x, min_v, max_v)
+            assert isinstance(r, dpt.usm_ndarray)
         else:
             with pytest.raises(ValueError):
                 dpt.clip(x, min_v, max_v)
 
+        if st_dt >= wk_dt1:
+            r = dpt.clip(x, min_v)
+            assert isinstance(r, dpt.usm_ndarray)
 
-def test_clip_max_weak_types():
+            r = dpt.clip(x, None, min_v)
+            assert isinstance(r, dpt.usm_ndarray)
+        else:
+            with pytest.raises(ValueError):
+                dpt.clip(x, min_v)
+            with pytest.raises(ValueError):
+                dpt.clip(x, None, max_v)
+
+
+def test_clip_max_weak_type_errors():
     get_queue_or_skip()
 
     x = dpt.zeros(10, dtype="i4")
@@ -634,6 +672,15 @@ def test_clip_max_weak_types():
 
     with pytest.raises(ValueError):
         dpt.clip(x, 2.5, m)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, 2.5)
+
+    with pytest.raises(ValueError):
+        dpt.clip(dpt.astype(x, "?"), 2)
+
+    with pytest.raises(ValueError):
+        dpt.clip(dpt.astype(x, "f4"), complex(2))
 
 
 def test_clip_unaligned():
@@ -653,3 +700,51 @@ def test_clip_none_args():
     x = dpt.arange(10, dtype="i4")
     r = dpt.clip(x)
     assert dpt.all(x == r)
+
+
+def test_clip_shape_errors():
+    get_queue_or_skip()
+
+    x = dpt.ones((4, 4), dtype="i4")
+    a_min = dpt.ones(5, dtype="i4")
+    a_max = dpt.ones(5, dtype="i4")
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, a_min, a_max)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, a_min)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, 0, 1, out=a_min)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, 0, out=a_min)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, out=a_min)
+
+
+def test_clip_compute_follows_data():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    x = dpt.ones(10, dtype="i4", sycl_queue=q1)
+    a_min = dpt.ones(10, dtype="i4", sycl_queue=q2)
+    a_max = dpt.ones(10, dtype="i4", sycl_queue=q1)
+    res = dpt.empty_like(x, sycl_queue=q2)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.clip(x, a_min, a_max)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.clip(x, dpt.ones_like(x), a_max, out=res)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.clip(x, a_min)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.clip(x, None, a_max, out=res)
+
+    with pytest.raises(ExecutionPlacementError):
+        dpt.clip(x, out=res)
