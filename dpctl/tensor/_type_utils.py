@@ -662,6 +662,48 @@ def _supported_dtype(dtypes):
     return True
 
 
+def isdtype(dtype, kind):
+    """isdtype(dtype, kind)
+
+    Returns a boolean indicating whether a provided `dtype` is
+    of a specified data type `kind`.
+
+    See [array API](array_api) for more information.
+
+    [array_api]: https://data-apis.org/array-api/latest/
+    """
+
+    if not isinstance(dtype, np.dtype):
+        raise TypeError(f"Expected instance of `dpt.dtype`, got {dtype}")
+
+    if isinstance(kind, np.dtype):
+        return dtype == kind
+
+    elif isinstance(kind, str):
+        if kind == "bool":
+            return dtype == np.dtype("bool")
+        elif kind == "signed integer":
+            return dtype.kind == "i"
+        elif kind == "unsigned integer":
+            return dtype.kind == "u"
+        elif kind == "integral":
+            return dtype.kind in "iu"
+        elif kind == "real floating":
+            return dtype.kind == "f"
+        elif kind == "complex floating":
+            return dtype.kind == "c"
+        elif kind == "numeric":
+            return dtype.kind in "iufc"
+        else:
+            raise ValueError(f"Unrecognized data type kind: {kind}")
+
+    elif isinstance(kind, tuple):
+        return any(isdtype(dtype, k) for k in kind)
+
+    else:
+        raise TypeError(f"Unsupported data type kind: {kind}")
+
+
 __all__ = [
     "_find_buf_dtype",
     "_find_buf_dtype2",
@@ -676,6 +718,7 @@ __all__ = [
     "can_cast",
     "finfo",
     "iinfo",
+    "isdtype",
     "result_type",
     "WeakBooleanType",
     "WeakIntegralType",
