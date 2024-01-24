@@ -399,10 +399,12 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         x (usm_ndarray): Array containing elements to clip.
             Must be compatible with `min` and `max` according
             to broadcasting rules.
-        min ({None, usm_ndarray}, optional): Array containing minimum values.
+        min ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):
+            Array containing minimum values.
             Must be compatible with `x` and `max` according
             to broadcasting rules.
-        max ({None, usm_ndarray}, optional): Array containing maximum values.
+        max ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):
+            Array containing maximum values.
             Must be compatible with `x` and `min` according
             to broadcasting rules.
         out ({None, usm_ndarray}, optional):
