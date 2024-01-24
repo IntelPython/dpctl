@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7TCKS5BHYE');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl.tensor._statistical_functions &mdash; Data Parallel Control (dpctl) 0.15.1dev3+26.g8bd2470196 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=96432593"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Data Parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.15.1dev3+26.g8bd2470196
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Data Parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../dpctl.html">dpctl</a></li>
+      <li class="breadcrumb-item active">dpctl.tensor._statistical_functions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpctl.tensor._statistical_functions</h1><div class="highlight"><pre>
+<span></span><span class="c1">#                       Data Parallel Control (dpctl)</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright 2020-2023 Intel Corporation</span>
+<span class="c1">#</span>
+<span class="c1">#  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#  you may not use this file except in compliance with the License.</span>
+<span class="c1">#  You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#  Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#  See the License for the specific language governing permissions and</span>
+<span class="c1">#  limitations under the License.</span>
+
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
+
+<span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">tei</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_reductions_impl</span> <span class="k">as</span> <span class="nn">tri</span>
+
+
+<span class="k">def</span> <span class="nf">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">):</span>
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nelems</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="n">perm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nelems</span> <span class="o">*=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">red_nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">perm</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">inp_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">res_dt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">inp_dt</span>
+        <span class="k">if</span> <span class="n">inp_dt</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span>
+        <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">q</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+
+    <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">inp_dt</span> <span class="o">!=</span> <span class="n">res_dt</span><span class="p">:</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">)</span>
+        <span class="n">ht_e_buf</span><span class="p">,</span> <span class="n">c_e1</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_e1</span><span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_buf</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="c1"># calculate mean</span>
+    <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">buf2</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">nd</span> <span class="o">-</span> <span class="n">red_nd</span><span class="p">]</span>
+    <span class="c1"># use keepdims=True path for later broadcasting</span>
+    <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">mean_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="n">ht_e1</span><span class="p">,</span> <span class="n">c_e2</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_e2</span><span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mean_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ht_e1</span><span class="p">,</span> <span class="n">r_e1</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
+            <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">red_nd</span><span class="p">,</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">deps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">)</span>
+        <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e1</span><span class="p">)</span>
+
+        <span class="n">mean_ary_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">red_nd</span>
+        <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+        <span class="n">mean_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">mean_ary_shape</span><span class="p">),</span> <span class="n">inv_perm</span>
+        <span class="p">)</span>
+    <span class="c1"># divide in-place to get mean</span>
+    <span class="n">mean_ary_shape</span> <span class="o">=</span> <span class="n">mean_ary</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">nelems_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">nelems_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mean_ary_shape</span><span class="p">:</span>
+        <span class="n">nelems_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">mean_ary_shape</span><span class="p">)</span>
+    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">d_e1</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">)</span>
+    <span class="c1"># subtract mean from original array to get deviations</span>
+    <span class="n">dev_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mean_ary_shape</span> <span class="o">!=</span> <span class="n">buf</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="n">mean_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">buf</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">ht_e4</span><span class="p">,</span> <span class="n">su_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_subtract</span><span class="p">(</span>
+        <span class="n">src1</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">src2</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">d_e1</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e4</span><span class="p">)</span>
+    <span class="c1"># square deviations</span>
+    <span class="n">ht_e5</span><span class="p">,</span> <span class="n">sq_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_square</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">su_e</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e5</span><span class="p">)</span>
+    <span class="n">deps2</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># take sum of squared deviations</span>
+    <span class="n">dev_ary2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dev_ary</span>
+        <span class="n">deps2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sq_e</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ht_e6</span><span class="p">,</span> <span class="n">r_e2</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">dev_ary2</span><span class="p">,</span>
+            <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">red_nd</span><span class="p">,</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">sq_e</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e6</span><span class="p">)</span>
+        <span class="n">deps2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
+            <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">red_nd</span>
+            <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">),</span> <span class="n">inv_perm</span><span class="p">)</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># when nelems - correction &lt;= 0, yield nans</span>
+    <span class="n">div</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nelems</span> <span class="o">-</span> <span class="n">correction</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">div</span><span class="p">:</span>
+        <span class="n">div</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">div_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">div</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+    <span class="c1"># divide in-place again</span>
+    <span class="k">if</span> <span class="n">div_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+        <span class="n">div_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps2</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">[</span><span class="n">d_e2</span><span class="p">],</span> <span class="n">host_tasks_list</span>
+
+
+<div class="viewcode-block" id="mean"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.mean">[docs]</a><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;mean(x, axis=None, keepdims=False)</span>
+
+<span class="sd">    Calculates the arithmetic mean of elements in the input array `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis or axes along which the arithmetic means must be computed. If</span>
+<span class="sd">            a tuple of unique integers, the means are computed over multiple</span>
+<span class="sd">            axes. If `None`, the mean is computed over the entire array.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        keepdims (Optional[bool]):</span>
+<span class="sd">            if `True`, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">            as singleton dimensions, so that the returned array remains</span>
+<span class="sd">            compatible with the input array according to Array Broadcasting</span>
+<span class="sd">            rules. Otherwise, if `False`, the reduced axes are not included in</span>
+<span class="sd">            the returned array. Default: `False`.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing the arithmetic means. If the mean was computed</span>
+<span class="sd">            over the entire array, a zero-dimensional array is returned.</span>
+
+<span class="sd">            If `x` has a floating-point data type, the returned array will have</span>
+<span class="sd">            the same data type as `x`.</span>
+<span class="sd">            If `x` has a boolean or integral data type, the returned array</span>
+<span class="sd">            will have the default floating point data type for the device</span>
+<span class="sd">            where input array `x` is allocated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nelems</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="n">perm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nelems</span> <span class="o">*=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">sum_nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">perm</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">arr2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">arr2</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">nd</span> <span class="o">-</span> <span class="n">sum_nd</span><span class="p">]</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">inp_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">res_dt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;fc&quot;</span>
+        <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">q</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="k">if</span> <span class="n">sum_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">s_e</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis_dtype_supported</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">ht_e1</span><span class="p">,</span> <span class="n">r_e</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">sum_nd</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">)</span>
+        <span class="n">s_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">arr2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">ht_e_cpy</span><span class="p">,</span> <span class="n">cpy_e</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+        <span class="n">ht_e_red</span><span class="p">,</span> <span class="n">r_e</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+            <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">sum_nd</span><span class="p">,</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">cpy_e</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_red</span><span class="p">)</span>
+        <span class="n">s_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
+        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">sum_nd</span>
+        <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">),</span> <span class="n">inv_perm</span><span class="p">)</span>
+
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># in-place divide</span>
+    <span class="n">den_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">res_dt</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">res_dt</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span> <span class="k">else</span> <span class="n">res_dt</span>
+    <span class="n">nelems_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">den_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">nelems_arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+        <span class="n">nelems_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">s_e</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="var"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.var">[docs]</a><span class="k">def</span> <span class="nf">var</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;var(x, axis=None, correction=0.0, keepdims=False)</span>
+
+<span class="sd">    Calculates the variance of elements in the input array `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis or axes along which the variances must be computed. If a tuple</span>
+<span class="sd">            of unique integers, the variances are computed over multiple axes.</span>
+<span class="sd">            If `None`, the variance is computed over the entire array.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        correction (Optional[float, int]):</span>
+<span class="sd">            degrees of freedom adjustment. The divisor used in calculating the</span>
+<span class="sd">            variance is `N-correction`, where `N` corresponds to the total</span>
+<span class="sd">            number of elements over which the variance is calculated.</span>
+<span class="sd">            Default: `0.0`.</span>
+<span class="sd">        keepdims (Optional[bool]):</span>
+<span class="sd">            if `True`, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">            as singleton dimensions, so that the returned array remains</span>
+<span class="sd">            compatible with the input array according to Array Broadcasting</span>
+<span class="sd">            rules. Otherwise, if `False`, the reduced axes are not included in</span>
+<span class="sd">            the returned array. Default: `False`.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing the variances. If the variance was computed</span>
+<span class="sd">            over the entire array, a zero-dimensional array is returned.</span>
+
+<span class="sd">            If `x` has a real-valued floating-point data type, the returned</span>
+<span class="sd">            array will have the same data type as `x`.</span>
+<span class="sd">            If `x` has a boolean or integral data type, the returned array</span>
+<span class="sd">            will have the default floating point data type for the device</span>
+<span class="sd">            where input array `x` is allocated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">correction</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Expected a Python integer or float for `correction`, got&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`var` does not support complex types&quot;</span><span class="p">)</span>
+
+    <span class="n">res</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="n">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="std"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.std">[docs]</a><span class="k">def</span> <span class="nf">std</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;std(x, axis=None, correction=0.0, keepdims=False)</span>
+
+<span class="sd">    Calculates the standard deviation of elements in the input array `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis or axes along which the standard deviations must be computed.</span>
+<span class="sd">            If a tuple of unique integers, the standard deviations are computed</span>
+<span class="sd">            over multiple axes. If `None`, the standard deviation is computed</span>
+<span class="sd">            over the entire array. Default: `None`.</span>
+<span class="sd">        correction (Optional[float, int]):</span>
+<span class="sd">            degrees of freedom adjustment. The divisor used in calculating the</span>
+<span class="sd">            standard deviation is `N-correction`, where `N` corresponds to the</span>
+<span class="sd">            total number of elements over which the standard deviation is</span>
+<span class="sd">            calculated. Default: `0.0`.</span>
+<span class="sd">        keepdims (Optional[bool]):</span>
+<span class="sd">            if `True`, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">            as singleton dimensions, so that the returned array remains</span>
+<span class="sd">            compatible with the input array according to Array Broadcasting</span>
+<span class="sd">            rules. Otherwise, if `False`, the reduced axes are not included in</span>
+<span class="sd">            the returned array. Default: `False`.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing the standard deviations. If the standard</span>
+<span class="sd">            deviation was computed over the entire array, a zero-dimensional</span>
+<span class="sd">            array is returned.</span>
+
+<span class="sd">            If `x` has a real-valued floating-point data type, the returned</span>
+<span class="sd">            array will have the same data type as `x`.</span>
+<span class="sd">            If `x` has a boolean or integral data type, the returned array</span>
+<span class="sd">            will have the default floating point data type for the device</span>
+<span class="sd">            where input array `x` is allocated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">correction</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Expected a Python integer or float for `correction`,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`std` does not support complex types&quot;</span><span class="p">)</span>
+
+    <span class="n">res</span><span class="p">,</span> <span class="n">deps</span><span class="p">,</span> <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="n">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
