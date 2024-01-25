@@ -9,7 +9,7 @@ permissions: read-all
 jobs:
   generate-coverage:
     name: Generate coverage and push to Coveralls.io
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
 
@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
 
@@ -50,14 +50,14 @@ jobs:
           sudo apt-get install ninja-build
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           architecture: x64
 
       - name: Cache Gtest
         id: cache-gtest
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             /home/runner/work/googletest-1.13.0/install
@@ -81,7 +81,7 @@ jobs:
           make && make install
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
