@@ -300,14 +300,22 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
             src.shape, src.strides, len(common_shape)
         )
         src_same_shape = dpt.usm_ndarray(
-            common_shape, dtype=src.dtype, buffer=src, strides=new_src_strides
+            common_shape,
+            dtype=src.dtype,
+            buffer=src,
+            strides=new_src_strides,
+            offset=src._element_offset,
         )
     elif src.ndim == len(common_shape):
         new_src_strides = _broadcast_strides(
             src.shape, src.strides, len(common_shape)
         )
         src_same_shape = dpt.usm_ndarray(
-            common_shape, dtype=src.dtype, buffer=src, strides=new_src_strides
+            common_shape,
+            dtype=src.dtype,
+            buffer=src,
+            strides=new_src_strides,
+            offset=src._element_offset,
         )
     else:
         # since broadcasting succeeded, src.ndim is greater because of

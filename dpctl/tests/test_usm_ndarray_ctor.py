@@ -1036,12 +1036,23 @@ def test_setitem_same_dtype(dtype, src_usm_type, dst_usm_type):
 
 
 def test_setitem_broadcasting():
+    "See gh-1503"
     get_queue_or_skip()
     dst = dpt.ones((2, 3, 4), dtype="u4")
     src = dpt.zeros((3, 1), dtype=dst.dtype)
     dst[...] = src
     expected = np.zeros(dst.shape, dtype=dst.dtype)
     assert np.array_equal(dpt.asnumpy(dst), expected)
+
+
+def test_setitem_broadcasting_offset():
+    get_queue_or_skip()
+    dt = dpt.int32
+    x = dpt.asarray([[1, 2, 3], [6, 7, 8]], dtype=dt)
+    y = dpt.asarray([4, 5], dtype=dt)
+    x[0] = y[1]
+    expected = dpt.asarray([[5, 5, 5], [6, 7, 8]], dtype=dt)
+    assert dpt.all(x == expected)
 
 
 def test_setitem_broadcasting_empty_dst_validation():
