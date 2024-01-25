@@ -6,14 +6,17 @@
 #
 # ``Dpctl_FOUND``
 #   True if DPCTL was found.
-# ``Dpctl_INCLUDE_DIRS``
-#   The include directories needed to use Dpctl.
+# ``Dpctl_INCLUDE_DIR``
+#   The include directory needed to use dpctl.
+# ``Dpctl_TENSOR_INCLUDE_DIR``
+#   The include directory for tensor kernels implementation.
 # ``Dpctl_VERSION``
-#   The version of DPCTL found.
+#   The version of dpctl found.
 #
-# The module will also explicitly define one cache variable:
+# The module will also explicitly define two cache variables:
 #
 # ``Dpctl_INCLUDE_DIR``
+# ``Dpctl_TENSOR_INCLUDE_DIR``
 #
 
 if(NOT Dpctl_FOUND)

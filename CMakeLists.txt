@@ -71,6 +71,10 @@ file(GLOB _cmake_scripts ${CMAKE_SOURCE_DIR}/cmake/*.cmake)
 install(FILES ${_cmake_scripts}
     DESTINATION dpctl/resources/cmake
 )
+install(FILES
+  ${CMAKE_SOURCE_DIR}/cmake/dpctl-config.cmake
+  DESTINATION lib/cmake/dpctl
+)
 
 if (DPCTL_GENERATE_DOCS)
     add_subdirectory(docs)
