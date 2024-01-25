@@ -531,7 +531,7 @@ def copy(usm_ary, order="K"):
         )
     order = order[0].upper()
     if not isinstance(usm_ary, dpt.usm_ndarray):
-        return TypeError(
+        raise TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
         )
     copy_order = "C"

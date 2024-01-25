@@ -168,9 +168,9 @@ def _resolve_one_strong_one_weak_types(st_dtype, dtype, dev):
                 return dpt.dtype(ti.default_device_int_type(dev))
             if isinstance(dtype, WeakComplexType):
                 if st_dtype is dpt.float16 or st_dtype is dpt.float32:
-                    return st_dtype, dpt.complex64
+                    return dpt.complex64
                 return _to_device_supported_dtype(dpt.complex128, dev)
-            return (_to_device_supported_dtype(dpt.float64, dev),)
+            return _to_device_supported_dtype(dpt.float64, dev)
         else:
             return st_dtype
     else:
@@ -197,8 +197,6 @@ def _check_clip_dtypes(res_dtype, arg1_dtype, arg2_dtype, sycl_dev):
 
 
 def _clip_none(x, val, out, order, _binary_fn):
-    if order not in ["K", "C", "F", "A"]:
-        order = "K"
     q1, x_usm_type = x.sycl_queue, x.usm_type
     q2, val_usm_type = _get_queue_usm_type(val)
     if q2 is None:
@@ -391,9 +389,8 @@ def _clip_none(x, val, out, order, _binary_fn):
         return out
 
 
-# need to handle logic for min or max being None
-def clip(x, min=None, max=None, out=None, order="K"):
-    """clip(x, min, max, out=None, order="K")
+def clip(x, /, min=None, max=None, out=None, order="K"):
+    """clip(x, min=None, max=None, out=None, order="K")
 
     Clips to the range [`min_i`, `max_i`] for each element `x_i`
     in `x`.
@@ -402,14 +399,14 @@ def clip(x, min=None, max=None, out=None, order="K"):
         x (usm_ndarray): Array containing elements to clip.
             Must be compatible with `min` and `max` according
             to broadcasting rules.
-        min ({None, usm_ndarray}, optional): Array containing minimum values.
+        min ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):
+            Array containing minimum values.
             Must be compatible with `x` and `max` according
             to broadcasting rules.
-            Only one of `min` and `max` can be `None`.
-        max ({None, usm_ndarray}, optional): Array containing maximum values.
+        max ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):
+            Array containing maximum values.
             Must be compatible with `x` and `min` according
             to broadcasting rules.
-            Only one of `min` and `max` can be `None`.
         out ({None, usm_ndarray}, optional):
             Output array to populate.
             Array must have the correct shape and the expected data type.
@@ -428,10 +425,67 @@ def clip(x, min=None, max=None, out=None, order="K"):
             "Expected `x` to be of dpctl.tensor.usm_ndarray type, got "
             f"{type(x)}"
         )
+    if order not in ["K", "C", "F", "A"]:
+        order = "K"
     if min is None and max is None:
-        raise ValueError(
-            "only one of `min` and `max` is permitted to be `None`"
+        exec_q = x.sycl_queue
+        orig_out = out
+        if out is not None:
+            if not isinstance(out, dpt.usm_ndarray):
+                raise TypeError(
+                    "output array must be of usm_ndarray type, got "
+                    f"{type(out)}"
+                )
+
+            if out.shape != x.shape:
+                raise ValueError(
+                    "The shape of input and output arrays are "
+                    f"inconsistent. Expected output shape is {x.shape}, "
+                    f"got {out.shape}"
+                )
+
+            if x.dtype != out.dtype:
+                raise ValueError(
+                    f"Output array of type {x.dtype} is needed, "
+                    f"got {out.dtype}"
+                )
+
+            if (
+                dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
+                is None
+            ):
+                raise ExecutionPlacementError(
+                    "Input and output allocation queues are not compatible"
+                )
+
+            if ti._array_overlap(x, out):
+                if not ti._same_logical_tensors(x, out):
+                    out = dpt.empty_like(out)
+                else:
+                    return out
+        else:
+            if order == "K":
+                out = _empty_like_orderK(x, x.dtype)
+            else:
+                if order == "A":
+                    order = "F" if x.flags.f_contiguous else "C"
+                out = dpt.empty_like(x, order=order)
+
+        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=x, dst=out, sycl_queue=exec_q
         )
+        if not (orig_out is None or orig_out is out):
+            # Copy the out data from temporary buffer to original memory
+            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=out,
+                dst=orig_out,
+                sycl_queue=exec_q,
+                depends=[copy_ev],
+            )
+            ht_copy_out_ev.wait()
+            out = orig_out
+        ht_copy_ev.wait()
+        return out
     elif max is None:
         return _clip_none(x, min, out, order, tei._maximum)
     elif min is None:
