@@ -243,7 +243,7 @@ def test_cmakedir():
     assert res.returncode == 0
     assert res.stdout
     cmake_dir = res.stdout.decode("utf-8").strip()
-    assert os.path.exists(os.path.join(cmake_dir, "FindDpctl.cmake"))
+    assert os.path.exists(os.path.join(cmake_dir, "dpctl-config.cmake"))
 
 
 def test_main_full_list():
