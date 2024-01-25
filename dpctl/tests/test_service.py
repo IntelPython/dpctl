@@ -173,13 +173,30 @@ def test_syclinterface():
         raise RuntimeError("Unsupported system")
 
 
+def test_main_include_dir():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--include-dir"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    dir_path = res.stdout.decode("utf-8").strip()
+    assert os.path.exists(dir_path)
+
+
 def test_main_includes():
     res = subprocess.run(
         [sys.executable, "-m", "dpctl", "--includes"], capture_output=True
     )
     assert res.returncode == 0
     assert res.stdout
-    assert res.stdout.decode("utf-8").startswith("-I")
+    flags = res.stdout.decode("utf-8")
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--include-dir"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    dir = res.stdout.decode("utf-8")
+    assert flags == "-I " + dir
 
 
 def test_main_library():
@@ -189,6 +206,34 @@ def test_main_library():
     assert res.returncode == 0
     assert res.stdout
     assert res.stdout.decode("utf-8").startswith("-L")
+
+
+def test_tensor_includes():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--tensor-includes"],
+        capture_output=True,
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    flags = res.stdout.decode("utf-8")
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--tensor-include-dir"],
+        capture_output=True,
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    dir = res.stdout.decode("utf-8")
+    assert flags == "-I " + dir
+
+
+def test_main_library_dir():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpctl", "--library-dir"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    dir_path = res.stdout.decode("utf-8").strip()
+    assert os.path.exists(dir_path)
 
 
 def test_cmakedir():

@@ -22,7 +22,7 @@ if(NOT Dpctl_FOUND)
 
   if(Python_EXECUTABLE)
     execute_process(COMMAND "${Python_EXECUTABLE}"
-      -c "import dpctl; print(dpctl.get_include())"
+      -m dpctl --include-dir
       OUTPUT_VARIABLE _dpctl_include_dir
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET

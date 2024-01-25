@@ -15,42 +15,57 @@
 # limitations under the License.
 
 import argparse
+import importlib
 import os
 import os.path
 import platform
 import sys
 import warnings
 
-import dpctl
-
 
 def _dpctl_dir() -> str:
-    abs_path = os.path.abspath(dpctl.__file__)
-    dpctl_dir = os.path.dirname(abs_path)
-    return dpctl_dir
+    dpctl_dir = importlib.util.find_spec("dpctl").submodule_search_locations[0]
+    abs_dpctl_dir = os.path.abspath(dpctl_dir)
+    return abs_dpctl_dir
 
 
-def print_includes() -> None:
+def get_include_dir() -> str:
     "Prints include flags for dpctl and SyclInterface library"
-    print("-I " + dpctl.get_include())
+    return os.path.join(_dpctl_dir(), "include")
 
 
-def print_tensor_includes() -> None:
+def print_include_flags() -> None:
     "Prints include flags for dpctl and SyclInterface library"
+    print("-I " + get_include_dir())
+
+
+def get_tensor_include_dir() -> str:
     dpctl_dir = _dpctl_dir()
     libtensor_dir = os.path.join(dpctl_dir, "tensor", "libtensor", "include")
+    return libtensor_dir
+
+
+def print_tensor_include_flags() -> None:
+    "Prints include flags for dpctl and SyclInterface library"
+    libtensor_dir = get_tensor_include_dir()
     print("-I " + libtensor_dir)
 
 
 def print_cmake_dir() -> None:
     "Prints directory with FindDpctl.cmake"
     dpctl_dir = _dpctl_dir()
-    print(os.path.join(dpctl_dir, "resources", "cmake"))
+    cmake_dir = os.path.join(dpctl_dir, "resources", "cmake")
+    print(cmake_dir)
+
+
+def get_library_dir() -> str:
+    dpctl_dir = _dpctl_dir()
+    return dpctl_dir
 
 
 def print_library() -> None:
     "Prints linker flags for SyclInterface library"
-    dpctl_dir = _dpctl_dir()
+    dpctl_dir = get_library_dir()
     plt = platform.platform()
     ld_flags = "-L " + dpctl_dir
     if plt != "Windows":
@@ -73,6 +88,8 @@ def _warn_if_any_set(args, li) -> None:
 
 
 def print_lsplatform(verbosity: int) -> None:
+    import dpctl
+
     dpctl.lsplatform(verbosity=verbosity)
 
 
@@ -85,9 +102,19 @@ def main() -> None:
         help="Include flags for dpctl headers.",
     )
     parser.add_argument(
+        "--include-dir",
+        action="store_true",
+        help="Path to dpctl include directory.",
+    )
+    parser.add_argument(
         "--tensor-includes",
         action="store_true",
         help="Include flags for dpctl libtensor headers.",
+    )
+    parser.add_argument(
+        "--tensor-include-dir",
+        action="store_true",
+        help="Path to dpctl libtensor include directory.",
     )
     parser.add_argument(
         "--cmakedir",
@@ -98,6 +125,11 @@ def main() -> None:
         "--library",
         action="store_true",
         help="Linker flags for SyclInterface library.",
+    )
+    parser.add_argument(
+        "--library-dir",
+        action="store_true",
+        help="Path to directory containing DPCTLSyclInterface library",
     )
     parser.add_argument(
         "-f",
@@ -139,13 +171,19 @@ def main() -> None:
         print_lsplatform(0)
         return
     if args.includes:
-        print_includes()
+        print_include_flags()
+    if args.include_dir:
+        print(get_include_dir())
     if args.tensor_includes:
-        print_tensor_includes()
+        print_tensor_include_flags()
+    if args.tensor_include_dir:
+        print(get_tensor_include_dir())
     if args.cmakedir:
         print_cmake_dir()
     if args.library:
         print_library()
+    if args.library_dir:
+        print(get_library_dir())
 
 
 if __name__ == "__main__":
