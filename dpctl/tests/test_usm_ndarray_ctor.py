@@ -1313,6 +1313,20 @@ def test_astype_invalid_order():
         dpt.astype(X, "i4", order="WRONG")
 
 
+def test_astype_device():
+    get_queue_or_skip()
+    q1 = dpctl.SyclQueue()
+    q2 = dpctl.SyclQueue()
+
+    x = dpt.arange(5, dtype="i4", sycl_queue=q1)
+    r = dpt.astype(x, "f4")
+    assert r.sycl_queue == x.sycl_queue
+    assert r.sycl_device == x.sycl_device
+
+    r = dpt.astype(x, "f4", device=q2)
+    assert r.sycl_queue == q2
+
+
 def test_copy():
     try:
         X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
