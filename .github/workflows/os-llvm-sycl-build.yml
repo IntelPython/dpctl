@@ -22,13 +22,13 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
 
       - name: Cache sycl bundle
         id: cache-sycl-bundle
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             /home/runner/work/sycl_bundle
@@ -102,7 +102,7 @@ jobs:
           sudo apt-get install libtinfo5
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           architecture: x64
@@ -113,7 +113,7 @@ jobs:
           pip install numpy"<1.26.0" cython setuptools pytest scikit-build cmake ninja
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 

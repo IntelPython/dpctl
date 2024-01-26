@@ -22,7 +22,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -60,12 +60,12 @@ jobs:
             $CHANNELS \
             conda-recipe
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -79,10 +79,10 @@ jobs:
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           conda-build-version: "*"
@@ -90,7 +90,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -109,12 +109,12 @@ jobs:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: conda build --no-test --python ${{ matrix.python }} -c intel  -c conda-forge --override-channels conda-recipe
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -134,7 +134,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
@@ -161,7 +161,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -219,10 +219,10 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           conda-build-version: '*'
@@ -262,7 +262,7 @@ jobs:
         shell: pwsh
         run: Get-Content -Path .\lockfile
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -326,12 +326,12 @@ jobs:
         python: ['3.9', '3.10', '3.11']
     steps:
       - name: Download conda artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheel artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
@@ -362,16 +362,16 @@ jobs:
         python: ['3.9', '3.10', '3.11']
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheel artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           activate-environment: ""
@@ -411,11 +411,11 @@ jobs:
         # Needed to be able to run conda index
         run: conda install conda-build python=${{ matrix.python }}
       - name: Checkout dpctl repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
@@ -437,7 +437,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -554,12 +554,12 @@ jobs:
       CHANNELS: -c intel -c conda-forge --override-channels
     steps:
       - name: Checkout dpctl repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Cache array API tests
         id: cache-array-api-tests
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           ARRAY_CACHE: 3
         with:
@@ -578,7 +578,7 @@ jobs:
           git clone --recurse-submodules https://github.com/data-apis/array-api-tests array-api-tests
           cd array-api-tests
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
@@ -605,7 +605,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -672,7 +672,7 @@ jobs:
         run: echo "::notice ${{ env.MESSAGE }}"
       - name: Post result to PR
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
-        uses: mshick/add-pr-comment@v1
+        uses: mshick/add-pr-comment@v2
         with:
           message: |
             ${{ env.MESSAGE }}
@@ -688,7 +688,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           run-post: false
           channel-priority: "disabled"
@@ -699,7 +699,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

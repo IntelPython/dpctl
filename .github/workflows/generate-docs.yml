@@ -11,13 +11,13 @@ permissions: read-all
 jobs:
   build-and-deploy:
     name: Build and Deploy Documentation
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Add Intel repository
@@ -46,7 +46,7 @@ jobs:
           sudo apt-get install ninja-build
       - name: Setup Python
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           architecture: x64
@@ -56,7 +56,7 @@ jobs:
         run: |
           pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput sphinxcontrib-googleanalytics
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -98,7 +98,7 @@ jobs:
           git push tokened_docs gh-pages
       - name: Save built docs as an artifact
         if: ${{ github.event.pull_request && github.event.pull_request.head.repo.fork && github.event.action != 'closed'}}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} rendered documentation
           path: ~/docs
@@ -143,7 +143,7 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@v1
+        uses: mshick/add-pr-comment@v2
         with:
           message: |
             View rendered docs @ https://intelpython.github.io/dpctl/pulls/${{ env.PR_NUM }}/index.html
@@ -153,7 +153,7 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@v1
+        uses: mshick/add-pr-comment@v2
         with:
           message: |
             Deleted rendered PR docs from intelpython.github.com/dpctl, latest should be updated shortly. :crossed_fingers:
