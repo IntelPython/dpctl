@@ -632,17 +632,13 @@ def asarray(
                 usm_type=usm_type,
                 order=order,
             )
-
-        raise NotImplementedError(
-            "Converting Python sequences is not implemented"
-        )
     if copy is False:
         raise ValueError(
             f"Converting {type(obj)} to usm_ndarray requires a copy"
         )
     # obj is a scalar, create 0d array
     return _asarray_from_numpy_ndarray(
-        np.asarray(obj),
+        np.asarray(obj, dtype=dtype),
         dtype=dtype,
         usm_type=usm_type,
         sycl_queue=sycl_queue,
