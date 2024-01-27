@@ -164,6 +164,21 @@ def test_asarray_input_validation():
     with pytest.raises(ValueError):
         # sequence is not rectangular
         dpt.asarray([[1], 2])
+    with pytest.raises(OverflowError):
+        # Python int too large for type
+        dpt.asarray(-9223372036854775809, dtype="i4")
+    with pytest.raises(ValueError):
+        # buffer to usm_ndarray requires a copy
+        dpt.asarray(memoryview(np.arange(5)), copy=False)
+    with pytest.raises(ValueError):
+        # Numpy array to usm_ndarray requires a copy
+        dpt.asarray(np.arange(5), copy=False)
+    with pytest.raises(ValueError):
+        # Python sequence to usm_ndarray requires a copy
+        dpt.asarray([1, 2, 3], copy=False)
+    with pytest.raises(ValueError):
+        # Python scalar to usm_ndarray requires a copy
+        dpt.asarray(5, copy=False)
 
 
 def test_asarray_input_validation2():
