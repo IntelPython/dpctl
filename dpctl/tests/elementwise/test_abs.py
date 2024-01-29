@@ -70,10 +70,8 @@ def test_abs_usm_type(usm_type):
     assert np.allclose(dpt.asnumpy(Y), expected_Y)
 
 
-def test_abs_types_prop():
+def test_abs_types_property():
     get_queue_or_skip()
-    types = dpt.abs.types_
-    assert types is None
     types = dpt.abs.types
     assert isinstance(types, list)
     assert len(types) > 0
