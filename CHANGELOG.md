@@ -4,7 +4,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.15.0]
+## [0.16.0] - MMM. DD, 2024
+
+### Added
+
+* Added reduction functions `dpctl.tensor.min`, `dpctl.tensor.max`, `dpctl.tensor.argmin`, `dpctl.tensor.argmax`, and `dpctl.tensor.prod` per Python Array API specifications: [#1399](https://github.com/IntelPython/dpctl/pull/1399)
+* Added dedicated in-place operations for binary elementwise operations and deployed them in Python operators of `dpctl.tensor.usm_ndarray` type: [#1431](https://github.com/IntelPython/dpctl/pull/1431), [#1447](https://github.com/IntelPython/dpctl/pull/1447)
+* Added new elementwise functions `dpctl.tensor.cbrt`, `dpctl.tensor.rsqrt`, `dpctl.tensor.exp2`, `dpctl.tensor.copysign`, `dpctl.tensor.angle`, and `dpctl.tensor.reciprocal`: [#1443](https://github.com/IntelPython/dpctl/pull/1443), [#1474](https://github.com/IntelPython/dpctl/pull/1474)
+* Added statistical functions `dpctl.tensor.mean`, `dpctl.tensor.std`, `dpctl.tensor.var` per Python Array API specifications: [#1465](https://github.com/IntelPython/dpctl/pull/1465)
+* Added sorting functions `dpctl.tensor.sort` and `dpctl.tensor.argsort`, and set functions `dpctl.tensor.unique_values`, `dpctl.tensor.unique_counts`, `dpctl.tensor.unique_inverse`, `dpctl.tensor.unique_all`: [#1483](https://github.com/IntelPython/dpctl/pull/1483)
+* Added linear algebra functions from the Array API namespace `dpctl.tensor.matrix_transpose`, `dpctl.tensor.matmul`, `dpctl.tensor.vecdot`, and `dpctl.tensor.tensordot`: [#1490](https://github.com/IntelPython/dpctl/pull/1490)
+* Added `dpctl.tensor.clip` function: [#1444](https://github.com/IntelPython/dpctl/pull/1444), [#1505](https://github.com/IntelPython/dpctl/pull/1505)
+* Added custom reduction functions `dpt.logsumexp` (reduction using binary function `dpctl.tensor.logaddexp`), `dpt.reduce_hypot` (reduction using binary function `dpctl.tensor.hypot`): [#1446](https://github.com/IntelPython/dpctl/pull/1446)
+* Added inspection API to query capabilities of Python Array API specification implementation: [#1469](https://github.com/IntelPython/dpctl/pull/1469)
+* Support for compilation for NVIDIA(R) sycl target with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/nvidia/home/): [#1411](https://github.com/IntelPython/dpctl/pull/1411), [#1124](https://github.com/IntelPython/dpctl/discussions/1124)
+* Added `dpctl.utils.intel_device_info` function to query additional information about Intel(R) GPU devices: [gh-1428](https://github.com/IntelPython/dpctl/pull/1428) and [gh-1445](https://github.com/IntelPython/dpctl/pull/1445)
+
+### Changed
+
+* Functions `dpctl.tensor.result_type` and `dpctl.tensor.can_cast` became device-aware: [#1488](https://github.com/IntelPython/dpctl/pull/1488), [#1473](https://github.com/IntelPython/dpctl/pull/1473)
+* Implementation of method `dpctl.SyclEvent.wait_for` changed to use ``sycl::event::wait`` instead of ``sycl::event::wait_and_throw``: [gh-1436](https://github.com/IntelPython/dpctl/pull/1436)
+
+
+### Fixed
+
+* Fixed issues with `dpctl.tensor.repeat` support for `axis` keyword: [#1427](https://github.com/IntelPython/dpctl/pull/1427), [#1433](https://github.com/IntelPython/dpctl/pull/1433)
+* Fix for gh-1503 for bug `usm_ndarray.__setitem__`: [#1504](https://github.com/IntelPython/dpctl/pull/1504)
+* Other bug fixes: [#1485](https://github.com/IntelPython/dpctl/pull/1485), [#1477](https://github.com/IntelPython/dpctl/pull/1477)
+
+
+## [0.15.0] - Sep. 29, 2023
 
 ### Added
 
