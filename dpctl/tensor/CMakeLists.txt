@@ -223,7 +223,11 @@ set(_compiler_definitions "USE_SYCL_FOR_COMPLEX_TYPES")
 
 foreach(_src_fn ${_elementwise_sources})
   get_source_file_property(_cmpl_options_defs ${_src_fn} COMPILE_DEFINITIONS)
-  set(_combined_options_defs ${_cmpl_options_defs} "${_compiler_definitions}")
+  if(${_cmpl_options_defs})
+     set(_combined_options_defs ${_cmpl_options_defs} "${_compiler_definitions}")
+  else()
+     set(_combined_options_defs "${_compiler_definitions}")
+  endif()
   set_source_files_properties(
      ${_src_fn}
      PROPERTIES COMPILE_DEFINITIONS "${_combined_options_defs}"
