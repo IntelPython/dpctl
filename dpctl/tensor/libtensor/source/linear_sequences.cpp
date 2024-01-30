@@ -35,6 +35,7 @@
 #include "utils/type_utils.hpp"
 
 #include "linear_sequences.hpp"
+#include "unboxing_helper.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -46,13 +47,121 @@ namespace tensor
 namespace py_internal
 {
 
+// Constructor to populate tensor with linear sequence defined by
+// start and step data
+
+typedef sycl::event (*lin_space_step_fn_ptr_t)(
+    sycl::queue &,
+    size_t, // num_elements
+    const py::object &start,
+    const py::object &step,
+    char *, // dst_data_ptr
+    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified by starting value and increment
+ * given as Python objects.
+ *
+ * @param q  Sycl queue to which the kernel is submitted
+ * @param nelems Length of the sequence
+ * @param start Starting value of the sequence as Python object. Must be
+ * convertible to array element data type `Ty`.
+ * @param step  Increment of the sequence as Python object. Must be convertible
+ * to array element data type `Ty`.
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename Ty>
+sycl::event lin_space_step_impl(sycl::queue &exec_q,
+                                size_t nelems,
+                                const py::object &start,
+                                const py::object &step,
+                                char *array_data,
+                                const std::vector<sycl::event> &depends)
+{
+    Ty start_v;
+    Ty step_v;
+
+    const auto &unboxer = PythonObjectUnboxer<Ty>{};
+    try {
+        start_v = unboxer(start);
+        step_v = unboxer(step);
+    } catch (const py::error_already_set &e) {
+        throw;
+    }
+
+    using dpctl::tensor::kernels::constructors::lin_space_step_impl;
+
+    auto lin_space_step_event = lin_space_step_impl<Ty>(
+        exec_q, nelems, start_v, step_v, array_data, depends);
+
+    return lin_space_step_event;
+}
+
+typedef sycl::event (*lin_space_affine_fn_ptr_t)(
+    sycl::queue &,
+    size_t, // num_elements
+    const py::object &start,
+    const py::object &end,
+    bool include_endpoint,
+    char *, // dst_data_ptr
+    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified  by starting and end values given
+ * as Python objects.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param start Stating value of the sequence as Python object. Must be
+ * convertible to array data element type `Ty`.
+ * @param end   End-value of the sequence as Python object. Must be convertible
+ * to array data element type `Ty`.
+ * @param include_endpoint  Whether the end-value is included in the sequence
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename Ty>
+sycl::event lin_space_affine_impl(sycl::queue &exec_q,
+                                  size_t nelems,
+                                  const py::object &start,
+                                  const py::object &end,
+                                  bool include_endpoint,
+                                  char *array_data,
+                                  const std::vector<sycl::event> &depends)
+{
+    Ty start_v, end_v;
+    const auto &unboxer = PythonObjectUnboxer<Ty>{};
+    try {
+        start_v = unboxer(start);
+        end_v = unboxer(end);
+    } catch (const py::error_already_set &e) {
+        throw;
+    }
+
+    using dpctl::tensor::kernels::constructors::lin_space_affine_impl;
+
+    auto lin_space_affine_event = lin_space_affine_impl<Ty>(
+        exec_q, nelems, start_v, end_v, include_endpoint, array_data, depends);
+
+    return lin_space_affine_event;
+}
+
 using dpctl::utils::keep_args_alive;
 
-using dpctl::tensor::kernels::constructors::lin_space_step_fn_ptr_t;
-
 static lin_space_step_fn_ptr_t lin_space_step_dispatch_vector[td_ns::num_types];
-
-using dpctl::tensor::kernels::constructors::lin_space_affine_fn_ptr_t;
 
 static lin_space_affine_fn_ptr_t
     lin_space_affine_dispatch_vector[td_ns::num_types];
@@ -153,11 +262,36 @@ usm_ndarray_linear_sequence_affine(const py::object &start,
         linspace_affine_event);
 }
 
+/*!
+ * @brief  Factor to get function pointer of type `fnT` for array with elements
+ * of type `Ty`.
+ * @defgroup CtorKernels
+ */
+template <typename fnT, typename Ty> struct LinSpaceStepFactory
+{
+    fnT get()
+    {
+        fnT f = lin_space_step_impl<Ty>;
+        return f;
+    }
+};
+
+/*!
+ * @brief Factory to get function pointer of type `fnT` for array data type
+ * `Ty`.
+ */
+template <typename fnT, typename Ty> struct LinSpaceAffineFactory
+{
+    fnT get()
+    {
+        fnT f = lin_space_affine_impl<Ty>;
+        return f;
+    }
+};
+
 void init_linear_sequences_dispatch_vectors(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::constructors::LinSpaceAffineFactory;
-    using dpctl::tensor::kernels::constructors::LinSpaceStepFactory;
 
     DispatchVectorBuilder<lin_space_step_fn_ptr_t, LinSpaceStepFactory,
                           num_types>

@@ -51,34 +51,6 @@ template <typename Ty> class eye_kernel;
 namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
 
-/* =========== Unboxing Python scalar =============== */
-
-/*!
- * @brief Cast pybind11 class managing Python object to specified type `T`.
- * @defgroup CtorKernels
- */
-template <typename T> T unbox_py_scalar(const py::object &o)
-{
-    return py::cast<T>(o);
-}
-
-template <> inline sycl::half unbox_py_scalar<sycl::half>(const py::object &o)
-{
-    float tmp = py::cast<float>(o);
-    return static_cast<sycl::half>(tmp);
-}
-
-// Constructor to populate tensor with linear sequence defined by
-// start and step data
-
-typedef sycl::event (*lin_space_step_fn_ptr_t)(
-    sycl::queue &,
-    size_t, // num_elements
-    const py::object &start,
-    const py::object &step,
-    char *, // dst_data_ptr
-    const std::vector<sycl::event> &);
-
 template <typename Ty> class LinearSequenceStepFunctor
 {
 private:
@@ -142,73 +114,8 @@ sycl::event lin_space_step_impl(sycl::queue &exec_q,
     return lin_space_step_event;
 }
 
-/*!
- * @brief Function to submit kernel to populate given contiguous memory
- * allocation with linear sequence specified by starting value and increment
- * given as Python objects.
- *
- * @param q  Sycl queue to which the kernel is submitted
- * @param nelems Length of the sequence
- * @param start Starting value of the sequence as Python object. Must be
- * convertible to array element data type `Ty`.
- * @param step  Increment of the sequence as Python object. Must be convertible
- * to array element data type `Ty`.
- * @param array_data Kernel accessible USM pointer to the start of array to be
- * populated.
- * @param depends List of events to wait for before starting computations, if
- * any.
- *
- * @return Event to wait on to ensure that computation completes.
- * @defgroup CtorKernels
- */
-template <typename Ty>
-sycl::event lin_space_step_impl(sycl::queue &exec_q,
-                                size_t nelems,
-                                const py::object &start,
-                                const py::object &step,
-                                char *array_data,
-                                const std::vector<sycl::event> &depends)
-{
-    Ty start_v;
-    Ty step_v;
-    try {
-        start_v = unbox_py_scalar<Ty>(start);
-        step_v = unbox_py_scalar<Ty>(step);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
-
-    auto lin_space_step_event = lin_space_step_impl<Ty>(
-        exec_q, nelems, start_v, step_v, array_data, depends);
-
-    return lin_space_step_event;
-}
-
-/*!
- * @brief  Factor to get function pointer of type `fnT` for array with elements
- * of type `Ty`.
- * @defgroup CtorKernels
- */
-template <typename fnT, typename Ty> struct LinSpaceStepFactory
-{
-    fnT get()
-    {
-        fnT f = lin_space_step_impl<Ty>;
-        return f;
-    }
-};
-
 // Constructor to populate tensor with linear sequence defined by
 // start and and data
-
-typedef sycl::event (*lin_space_affine_fn_ptr_t)(
-    sycl::queue &,
-    size_t, // num_elements
-    const py::object &start,
-    const py::object &end,
-    bool include_endpoint,
-    char *, // dst_data_ptr
-    const std::vector<sycl::event> &);
 
 template <typename Ty, typename wTy> class LinearSequenceAffineFunctor
 {
@@ -312,69 +219,7 @@ sycl::event lin_space_affine_impl(sycl::queue &exec_q,
     return lin_space_affine_event;
 }
 
-/*!
- * @brief Function to submit kernel to populate given contiguous memory
- * allocation with linear sequence specified  by starting and end values given
- * as Python objects.
- *
- * @param exec_q  Sycl queue to which kernel is submitted for execution.
- * @param nelems  Length of the sequence
- * @param start Stating value of the sequence as Python object. Must be
- * convertible to array data element type `Ty`.
- * @param end   End-value of the sequence as Python object. Must be convertible
- * to array data element type `Ty`.
- * @param include_endpoint  Whether the end-value is included in the sequence
- * @param array_data Kernel accessible USM pointer to the start of array to be
- * populated.
- * @param depends  List of events to wait for before starting computations, if
- * any.
- *
- * @return Event to wait on to ensure that computation completes.
- * @defgroup CtorKernels
- */
-template <typename Ty>
-sycl::event lin_space_affine_impl(sycl::queue &exec_q,
-                                  size_t nelems,
-                                  const py::object &start,
-                                  const py::object &end,
-                                  bool include_endpoint,
-                                  char *array_data,
-                                  const std::vector<sycl::event> &depends)
-{
-    Ty start_v, end_v;
-    try {
-        start_v = unbox_py_scalar<Ty>(start);
-        end_v = unbox_py_scalar<Ty>(end);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
-
-    auto lin_space_affine_event = lin_space_affine_impl<Ty>(
-        exec_q, nelems, start_v, end_v, include_endpoint, array_data, depends);
-
-    return lin_space_affine_event;
-}
-
-/*!
- * @brief Factory to get function pointer of type `fnT` for array data type
- * `Ty`.
- */
-template <typename fnT, typename Ty> struct LinSpaceAffineFactory
-{
-    fnT get()
-    {
-        fnT f = lin_space_affine_impl<Ty>;
-        return f;
-    }
-};
-
 /* ================ Full ================== */
-
-typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue &,
-                                            size_t,
-                                            const py::object &,
-                                            char *,
-                                            const std::vector<sycl::event> &);
 
 /*!
  * @brief Function to submit kernel to fill given contiguous memory allocation
@@ -407,51 +252,6 @@ sycl::event full_contig_impl(sycl::queue &q,
 
     return fill_ev;
 }
-
-/*!
- * @brief Function to submit kernel to fill given contiguous memory allocation
- * with specified value.
- *
- * @param exec_q  Sycl queue to which kernel is submitted for execution.
- * @param nelems  Length of the sequence
- * @param py_value Python object representing the value to fill the array with.
- * Must be convertible to `dstTy`.
- * @param dst_p Kernel accessible USM pointer to the start of array to be
- * populated.
- * @param depends  List of events to wait for before starting computations, if
- * any.
- *
- * @return Event to wait on to ensure that computation completes.
- * @defgroup CtorKernels
- */
-template <typename dstTy>
-sycl::event full_contig_impl(sycl::queue &exec_q,
-                             size_t nelems,
-                             const py::object &py_value,
-                             char *dst_p,
-                             const std::vector<sycl::event> &depends)
-{
-    dstTy fill_v;
-    try {
-        fill_v = unbox_py_scalar<dstTy>(py_value);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
-
-    sycl::event fill_ev =
-        full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
-
-    return fill_ev;
-}
-
-template <typename fnT, typename Ty> struct FullContigFactory
-{
-    fnT get()
-    {
-        fnT f = full_contig_impl<Ty>;
-        return f;
-    }
-};
 
 /* ================ Eye ================== */
 
