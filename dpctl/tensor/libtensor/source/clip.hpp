@@ -24,7 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 

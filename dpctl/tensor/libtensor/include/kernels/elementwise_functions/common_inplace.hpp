@@ -26,10 +26,10 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
 #include "kernels/alignment.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
 
 namespace dpctl
 {
@@ -190,7 +190,7 @@ public:
     void operator()(sycl::id<1> wid) const
     {
         const auto &two_offsets_ =
-            two_offsets_indexer_(static_cast<py::ssize_t>(wid.get(0)));
+            two_offsets_indexer_(static_cast<ssize_t>(wid.get(0)));
 
         const auto &inp_offset = two_offsets_.get_first_offset();
         const auto &lhs_offset = two_offsets_.get_second_offset();
@@ -261,20 +261,20 @@ typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
     sycl::queue &,
     size_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_inplace_strided_impl_fn_ptr_t)(
     sycl::queue &,
     size_t,
     int,
-    const py::ssize_t *,
+    const ssize_t *,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -284,9 +284,9 @@ typedef sycl::event (*binary_inplace_row_matrix_broadcast_impl_fn_ptr_t)(
     size_t,
     size_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename argTy,
@@ -305,9 +305,9 @@ sycl::event
 binary_inplace_contig_impl(sycl::queue &exec_q,
                            size_t nelems,
                            const char *rhs_p,
-                           py::ssize_t rhs_offset,
+                           ssize_t rhs_offset,
                            char *lhs_p,
-                           py::ssize_t lhs_offset,
+                           ssize_t lhs_offset,
                            const std::vector<sycl::event> &depends = {})
 {
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -360,11 +360,11 @@ sycl::event
 binary_inplace_strided_impl(sycl::queue &exec_q,
                             size_t nelems,
                             int nd,
-                            const py::ssize_t *shape_and_strides,
+                            const ssize_t *shape_and_strides,
                             const char *rhs_p,
-                            py::ssize_t rhs_offset,
+                            ssize_t rhs_offset,
                             char *lhs_p,
-                            py::ssize_t lhs_offset,
+                            ssize_t lhs_offset,
                             const std::vector<sycl::event> &depends,
                             const std::vector<sycl::event> &additional_depends)
 {
@@ -399,9 +399,9 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
     size_t n0,
     size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
-    py::ssize_t vec_offset,
+    ssize_t vec_offset,
     char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
-    py::ssize_t mat_offset,
+    ssize_t mat_offset,
     const std::vector<sycl::event> &depends = {})
 {
     const argT *vec = reinterpret_cast<const argT *>(vec_p) + vec_offset;

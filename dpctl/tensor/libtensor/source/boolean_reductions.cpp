@@ -37,9 +37,12 @@
 #include "dpctl4pybind11.hpp"
 
 #include "kernels/boolean_reductions.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
 #include "utils/type_utils.hpp"
 
 namespace py = pybind11;
+
+static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
 
 namespace dpctl
 {

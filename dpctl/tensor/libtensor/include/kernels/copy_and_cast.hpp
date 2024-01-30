@@ -25,10 +25,10 @@
 #pragma once
 #include <complex>
 #include <cstdint>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -42,7 +42,6 @@ namespace kernels
 namespace copy_and_cast
 {
 
-namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
 
 using dpctl::tensor::kernels::alignment_utils::
@@ -89,9 +88,9 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        const auto &offsets = indexer_(static_cast<py::ssize_t>(wiid.get(0)));
-        const py::ssize_t &src_offset = offsets.get_first_offset();
-        const py::ssize_t &dst_offset = offsets.get_second_offset();
+        const auto &offsets = indexer_(static_cast<ssize_t>(wiid.get(0)));
+        const ssize_t &src_offset = offsets.get_first_offset();
+        const ssize_t &dst_offset = offsets.get_second_offset();
 
         CastFnT fn{};
         dst_[dst_offset] = fn(src_[src_offset]);
@@ -109,11 +108,11 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     sycl::queue &,
     size_t,
     int,
-    const py::ssize_t *,
+    const ssize_t *,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -155,11 +154,11 @@ sycl::event
 copy_and_cast_generic_impl(sycl::queue &q,
                            size_t nelems,
                            int nd,
-                           const py::ssize_t *shape_and_strides,
+                           const ssize_t *shape_and_strides,
                            const char *src_p,
-                           py::ssize_t src_offset,
+                           ssize_t src_offset,
                            char *dst_p,
-                           py::ssize_t dst_offset,
+                           ssize_t dst_offset,
                            const std::vector<sycl::event> &depends,
                            const std::vector<sycl::event> &additional_depends)
 {
@@ -389,13 +388,13 @@ template <typename fnT, typename D, typename S> struct CopyAndCastContigFactory
 typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     sycl::queue &,
     size_t,
-    const std::array<py::ssize_t, 1>,
-    const std::array<py::ssize_t, 1>,
-    const std::array<py::ssize_t, 1>,
+    const std::array<ssize_t, 1>,
+    const std::array<ssize_t, 1>,
+    const std::array<ssize_t, 1>,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 /*!
@@ -405,13 +404,13 @@ typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
 typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     sycl::queue &,
     size_t,
-    const std::array<py::ssize_t, 2>,
-    const std::array<py::ssize_t, 2>,
-    const std::array<py::ssize_t, 2>,
+    const std::array<ssize_t, 2>,
+    const std::array<ssize_t, 2>,
+    const std::array<ssize_t, 2>,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 /*!
@@ -447,13 +446,13 @@ template <typename dstTy, typename srcTy, int nd>
 sycl::event
 copy_and_cast_nd_specialized_impl(sycl::queue &q,
                                   size_t nelems,
-                                  const std::array<py::ssize_t, nd> shape,
-                                  const std::array<py::ssize_t, nd> src_strides,
-                                  const std::array<py::ssize_t, nd> dst_strides,
+                                  const std::array<ssize_t, nd> shape,
+                                  const std::array<ssize_t, nd> src_strides,
+                                  const std::array<ssize_t, nd> dst_strides,
                                   const char *src_p,
-                                  py::ssize_t src_offset,
+                                  ssize_t src_offset,
                                   char *dst_p,
-                                  py::ssize_t dst_offset,
+                                  ssize_t dst_offset,
                                   const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
@@ -528,9 +527,9 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        const auto &offsets = indexer_(static_cast<py::ssize_t>(wiid.get(0)));
-        const py::ssize_t &src_offset = offsets.get_first_offset();
-        const py::ssize_t &dst_offset = offsets.get_second_offset();
+        const auto &offsets = indexer_(static_cast<ssize_t>(wiid.get(0)));
+        const ssize_t &src_offset = offsets.get_first_offset();
+        const ssize_t &dst_offset = offsets.get_second_offset();
 
         CastFnT fn{};
         dst_[dst_offset] = fn(src_acc_[src_offset]);
@@ -541,13 +540,13 @@ typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
     sycl::queue &,
     size_t,
     int,
-    py::ssize_t *,
+    ssize_t *,
     const char *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -594,17 +593,17 @@ void copy_and_cast_from_host_impl(
     sycl::queue &q,
     size_t nelems,
     int nd,
-    py::ssize_t *shape_and_strides,
+    ssize_t *shape_and_strides,
     const char *host_src_p,
-    py::ssize_t src_offset,
-    py::ssize_t src_min_nelem_offset,
-    py::ssize_t src_max_nelem_offset,
+    ssize_t src_offset,
+    ssize_t src_min_nelem_offset,
+    ssize_t src_max_nelem_offset,
     char *dst_p,
-    py::ssize_t dst_offset,
+    ssize_t dst_offset,
     const std::vector<sycl::event> &depends,
     const std::vector<sycl::event> &additional_depends)
 {
-    py::ssize_t nelems_range = src_max_nelem_offset - src_min_nelem_offset + 1;
+    ssize_t nelems_range = src_max_nelem_offset - src_min_nelem_offset + 1;
 
     dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
     dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
@@ -621,7 +620,7 @@ void copy_and_cast_from_host_impl(
 
         TwoOffsets_StridedIndexer indexer{
             nd, src_offset - src_min_nelem_offset, dst_offset,
-            const_cast<const py::ssize_t *>(shape_and_strides)};
+            const_cast<const ssize_t *>(shape_and_strides)};
 
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
 
@@ -683,8 +682,8 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        const py::ssize_t src_offset = src_indexer_(wiid.get(0));
-        const py::ssize_t dst_offset = dst_indexer_(wiid.get(0));
+        const ssize_t src_offset = src_indexer_(wiid.get(0));
+        const ssize_t dst_offset = dst_indexer_(wiid.get(0));
 
         dst_p[dst_offset] = src_p[src_offset];
     }
@@ -693,12 +692,12 @@ public:
 // define function type
 typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
     sycl::queue &,
-    size_t,        // num_elements
-    int,           // src_nd
-    int,           // dst_nd
-    py::ssize_t *, // packed shapes and strides
-    const char *,  // src_data_ptr
-    char *,        // dst_data_ptr
+    size_t,       // num_elements
+    int,          // src_nd
+    int,          // dst_nd
+    ssize_t *,    // packed shapes and strides
+    const char *, // src_data_ptr
+    char *,       // dst_data_ptr
     const std::vector<sycl::event> &);
 
 /*!
@@ -728,7 +727,7 @@ copy_for_reshape_generic_impl(sycl::queue &q,
                               size_t nelems,
                               int src_nd,
                               int dst_nd,
-                              py::ssize_t *packed_shapes_and_strides,
+                              ssize_t *packed_shapes_and_strides,
                               const char *src_p,
                               char *dst_p,
                               const std::vector<sycl::event> &depends)
@@ -742,12 +741,11 @@ copy_for_reshape_generic_impl(sycl::queue &q,
         //   USM array of size 2*(src_nd + dst_nd)
         //   [ src_shape; src_strides; dst_shape; dst_strides ]
 
-        const py::ssize_t *src_shape_and_strides =
-            const_cast<const py::ssize_t *>(packed_shapes_and_strides);
+        const ssize_t *src_shape_and_strides =
+            const_cast<const ssize_t *>(packed_shapes_and_strides);
 
-        const py::ssize_t *dst_shape_and_strides =
-            const_cast<const py::ssize_t *>(packed_shapes_and_strides +
-                                            (2 * src_nd));
+        const ssize_t *dst_shape_and_strides = const_cast<const ssize_t *>(
+            packed_shapes_and_strides + (2 * src_nd));
 
         StridedIndexer src_indexer{src_nd, 0, src_shape_and_strides};
         StridedIndexer dst_indexer{dst_nd, 0, dst_shape_and_strides};
@@ -820,35 +818,34 @@ private:
 struct RolledNDIndexer
 {
     RolledNDIndexer(int nd,
-                    const py::ssize_t *shape,
-                    const py::ssize_t *strides,
-                    const py::ssize_t *ndshifts,
-                    py::ssize_t starting_offset)
+                    const ssize_t *shape,
+                    const ssize_t *strides,
+                    const ssize_t *ndshifts,
+                    ssize_t starting_offset)
         : nd_(nd), shape_(shape), strides_(strides), ndshifts_(ndshifts),
           starting_offset_(starting_offset)
     {
     }
 
-    py::ssize_t operator()(size_t gid) const
+    ssize_t operator()(size_t gid) const
     {
         return compute_offset(gid);
     }
 
 private:
     int nd_ = -1;
-    const py::ssize_t *shape_ = nullptr;
-    const py::ssize_t *strides_ = nullptr;
-    const py::ssize_t *ndshifts_ = nullptr;
-    py::ssize_t starting_offset_ = 0;
+    const ssize_t *shape_ = nullptr;
+    const ssize_t *strides_ = nullptr;
+    const ssize_t *ndshifts_ = nullptr;
+    ssize_t starting_offset_ = 0;
 
-    py::ssize_t compute_offset(py::ssize_t gid) const
+    ssize_t compute_offset(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd_);
-        py::ssize_t relative_offset_(0);
-        _ind.get_left_rolled_displacement<const py::ssize_t *,
-                                          const py::ssize_t *>(
+        ssize_t relative_offset_(0);
+        _ind.get_left_rolled_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape_,    // shape ptr
             strides_,  // strides ptr
@@ -884,8 +881,8 @@ public:
     {
         const size_t gid = wiid.get(0);
 
-        const py::ssize_t src_offset = src_indexer_(gid);
-        const py::ssize_t dst_offset = dst_indexer_(gid);
+        const ssize_t src_offset = src_indexer_(gid);
+        const ssize_t dst_offset = dst_indexer_(gid);
 
         dst_p[dst_offset] = src_p[src_offset];
     }
@@ -894,14 +891,14 @@ public:
 // define function type
 typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
     sycl::queue &,
-    size_t,              // shift
-    size_t,              // num_elements
-    int,                 // common_nd
-    const py::ssize_t *, // packed shapes and strides
-    const char *,        // src_data_ptr
-    py::ssize_t,         // src_offset
-    char *,              // dst_data_ptr
-    py::ssize_t,         // dst_offset
+    size_t,          // shift
+    size_t,          // num_elements
+    int,             // common_nd
+    const ssize_t *, // packed shapes and strides
+    const char *,    // src_data_ptr
+    ssize_t,         // src_offset
+    char *,          // dst_data_ptr
+    ssize_t,         // dst_offset
     const std::vector<sycl::event> &);
 
 /*!
@@ -929,17 +926,16 @@ typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
  * @ingroup CopyAndCastKernels
  */
 template <typename Ty>
-sycl::event
-copy_for_roll_strided_impl(sycl::queue &q,
-                           size_t shift,
-                           size_t nelems,
-                           int nd,
-                           const py::ssize_t *packed_shapes_and_strides,
-                           const char *src_p,
-                           py::ssize_t src_offset,
-                           char *dst_p,
-                           py::ssize_t dst_offset,
-                           const std::vector<sycl::event> &depends)
+sycl::event copy_for_roll_strided_impl(sycl::queue &q,
+                                       size_t shift,
+                                       size_t nelems,
+                                       int nd,
+                                       const ssize_t *packed_shapes_and_strides,
+                                       const char *src_p,
+                                       ssize_t src_offset,
+                                       char *dst_p,
+                                       ssize_t dst_offset,
+                                       const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
 
@@ -985,9 +981,9 @@ typedef sycl::event (*copy_for_roll_contig_fn_ptr_t)(
     size_t,       // shift
     size_t,       // num_elements
     const char *, // src_data_ptr
-    py::ssize_t,  // src_offset
+    ssize_t,      // src_offset
     char *,       // dst_data_ptr
-    py::ssize_t,  // dst_offset
+    ssize_t,      // dst_offset
     const std::vector<sycl::event> &);
 
 template <typename Ty> class copy_for_roll_contig_kernel;
@@ -1018,9 +1014,9 @@ sycl::event copy_for_roll_contig_impl(sycl::queue &q,
                                       size_t shift,
                                       size_t nelems,
                                       const char *src_p,
-                                      py::ssize_t src_offset,
+                                      ssize_t src_offset,
                                       char *dst_p,
-                                      py::ssize_t dst_offset,
+                                      ssize_t dst_offset,
                                       const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
@@ -1085,13 +1081,13 @@ class copy_for_roll_ndshift_strided_kernel;
 // define function type
 typedef sycl::event (*copy_for_roll_ndshift_strided_fn_ptr_t)(
     sycl::queue &,
-    size_t,              // num_elements
-    int,                 // common_nd
-    const py::ssize_t *, // packed shape, strides, shifts
-    const char *,        // src_data_ptr
-    py::ssize_t,         // src_offset
-    char *,              // dst_data_ptr
-    py::ssize_t,         // dst_offset
+    size_t,          // num_elements
+    int,             // common_nd
+    const ssize_t *, // packed shape, strides, shifts
+    const char *,    // src_data_ptr
+    ssize_t,         // src_offset
+    char *,          // dst_data_ptr
+    ssize_t,         // dst_offset
     const std::vector<sycl::event> &);
 
 template <typename Ty>
@@ -1099,11 +1095,11 @@ sycl::event copy_for_roll_ndshift_strided_impl(
     sycl::queue &q,
     size_t nelems,
     int nd,
-    const py::ssize_t *packed_shapes_and_strides_and_shifts,
+    const ssize_t *packed_shapes_and_strides_and_shifts,
     const char *src_p,
-    py::ssize_t src_offset,
+    ssize_t src_offset,
     char *dst_p,
-    py::ssize_t dst_offset,
+    ssize_t dst_offset,
     const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
@@ -1115,12 +1111,12 @@ sycl::event copy_for_roll_ndshift_strided_impl(
         //   USM array of size 4 * nd
         //   [ common_shape; src_strides; dst_strides; shifts ]
 
-        const py::ssize_t *shape_ptr = packed_shapes_and_strides_and_shifts;
-        const py::ssize_t *src_strides_ptr =
+        const ssize_t *shape_ptr = packed_shapes_and_strides_and_shifts;
+        const ssize_t *src_strides_ptr =
             packed_shapes_and_strides_and_shifts + nd;
-        const py::ssize_t *dst_strides_ptr =
+        const ssize_t *dst_strides_ptr =
             packed_shapes_and_strides_and_shifts + 2 * nd;
-        const py::ssize_t *shifts_ptr =
+        const ssize_t *shifts_ptr =
             packed_shapes_and_strides_and_shifts + 3 * nd;
 
         RolledNDIndexer src_indexer{nd, shape_ptr, src_strides_ptr, shifts_ptr,

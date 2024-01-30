@@ -25,11 +25,11 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <utility>
 
 #include "kernels/alignment.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 
 namespace dpctl
@@ -40,8 +40,6 @@ namespace kernels
 {
 namespace elementwise_common
 {
-
-namespace py = pybind11;
 
 using dpctl::tensor::kernels::alignment_utils::
     disabled_sg_loadstore_wrapper_krn;
@@ -264,8 +262,8 @@ public:
     void operator()(sycl::id<1> wid) const
     {
         const auto &offsets_ = inp_out_indexer_(wid.get(0));
-        const py::ssize_t &inp_offset = offsets_.get_first_offset();
-        const py::ssize_t &res_offset = offsets_.get_second_offset();
+        const ssize_t &inp_offset = offsets_.get_first_offset();
+        const ssize_t &res_offset = offsets_.get_second_offset();
 
         UnaryOpT op{};
 
@@ -342,11 +340,11 @@ sycl::event
 unary_strided_impl(sycl::queue &exec_q,
                    size_t nelems,
                    int nd,
-                   const py::ssize_t *shape_and_strides,
+                   const ssize_t *shape_and_strides,
                    const char *arg_p,
-                   py::ssize_t arg_offset,
+                   ssize_t arg_offset,
                    char *res_p,
-                   py::ssize_t res_offset,
+                   ssize_t res_offset,
                    const std::vector<sycl::event> &depends,
                    const std::vector<sycl::event> &additional_depends)
 {
@@ -533,7 +531,7 @@ public:
     void operator()(sycl::id<1> wid) const
     {
         const auto &three_offsets_ =
-            three_offsets_indexer_(static_cast<py::ssize_t>(wid.get(0)));
+            three_offsets_indexer_(static_cast<ssize_t>(wid.get(0)));
 
         const auto &inp1_offset = three_offsets_.get_first_offset();
         const auto &inp2_offset = three_offsets_.get_second_offset();
@@ -685,11 +683,11 @@ typedef sycl::event (*unary_strided_impl_fn_ptr_t)(
     sycl::queue &,
     size_t,
     int,
-    const py::ssize_t *,
+    const ssize_t *,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -697,24 +695,24 @@ typedef sycl::event (*binary_contig_impl_fn_ptr_t)(
     sycl::queue &,
     size_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_strided_impl_fn_ptr_t)(
     sycl::queue &,
     size_t,
     int,
-    const py::ssize_t *,
+    const ssize_t *,
     const char *,
-    py::ssize_t,
+    ssize_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -724,11 +722,11 @@ typedef sycl::event (*binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t)(
     size_t,
     size_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 typedef sycl::event (*binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
@@ -737,11 +735,11 @@ typedef sycl::event (*binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
     size_t,
     size_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     const char *,
-    py::ssize_t,
+    ssize_t,
     char *,
-    py::ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename argTy1,
@@ -766,11 +764,11 @@ template <typename argTy1,
 sycl::event binary_contig_impl(sycl::queue &exec_q,
                                size_t nelems,
                                const char *arg1_p,
-                               py::ssize_t arg1_offset,
+                               ssize_t arg1_offset,
                                const char *arg2_p,
-                               py::ssize_t arg2_offset,
+                               ssize_t arg2_offset,
                                char *res_p,
-                               py::ssize_t res_offset,
+                               ssize_t res_offset,
                                const std::vector<sycl::event> &depends = {})
 {
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -831,13 +829,13 @@ sycl::event
 binary_strided_impl(sycl::queue &exec_q,
                     size_t nelems,
                     int nd,
-                    const py::ssize_t *shape_and_strides,
+                    const ssize_t *shape_and_strides,
                     const char *arg1_p,
-                    py::ssize_t arg1_offset,
+                    ssize_t arg1_offset,
                     const char *arg2_p,
-                    py::ssize_t arg2_offset,
+                    ssize_t arg2_offset,
                     char *res_p,
-                    py::ssize_t res_offset,
+                    ssize_t res_offset,
                     const std::vector<sycl::event> &depends,
                     const std::vector<sycl::event> &additional_depends)
 {
@@ -877,12 +875,12 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
     size_t n0,
     size_t n1,
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
-    py::ssize_t mat_offset,
+    ssize_t mat_offset,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
-    py::ssize_t vec_offset,
+    ssize_t vec_offset,
     char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
                  //    res[i,j] = op(mat[i,j], vec[j])
-    py::ssize_t res_offset,
+    ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
     const argT1 *mat = reinterpret_cast<const argT1 *>(mat_p) + mat_offset;
@@ -955,12 +953,12 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
     size_t n0,
     size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
-    py::ssize_t vec_offset,
+    ssize_t vec_offset,
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
-    py::ssize_t mat_offset,
+    ssize_t mat_offset,
     char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
                  //    res[i,j] = op(vec[j], mat[i,j])
-    py::ssize_t res_offset,
+    ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
     const argT1 *vec = reinterpret_cast<const argT2 *>(vec_p) + vec_offset;

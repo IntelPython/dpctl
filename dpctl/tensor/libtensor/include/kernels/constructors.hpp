@@ -24,11 +24,11 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 #include <complex>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
 namespace dpctl
@@ -48,7 +48,6 @@ template <typename Ty> class linear_sequence_step_kernel;
 template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
 template <typename Ty> class eye_kernel;
 
-namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename Ty> class LinearSequenceStepFunctor
@@ -257,9 +256,9 @@ sycl::event full_contig_impl(sycl::queue &q,
 
 typedef sycl::event (*eye_fn_ptr_t)(sycl::queue &,
                                     size_t nelems, // num_elements
-                                    py::ssize_t start,
-                                    py::ssize_t end,
-                                    py::ssize_t step,
+                                    ssize_t start,
+                                    ssize_t end,
+                                    ssize_t step,
                                     char *, // dst_data_ptr
                                     const std::vector<sycl::event> &);
 
@@ -267,15 +266,15 @@ template <typename Ty> class EyeFunctor
 {
 private:
     Ty *p = nullptr;
-    py::ssize_t start_v;
-    py::ssize_t end_v;
-    py::ssize_t step_v;
+    ssize_t start_v;
+    ssize_t end_v;
+    ssize_t step_v;
 
 public:
     EyeFunctor(char *dst_p,
-               const py::ssize_t v0,
-               const py::ssize_t v1,
-               const py::ssize_t dv)
+               const ssize_t v0,
+               const ssize_t v1,
+               const ssize_t dv)
         : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1), step_v(dv)
     {
     }
@@ -283,7 +282,7 @@ public:
     void operator()(sycl::id<1> wiid) const
     {
         Ty set_v = 0;
-        py::ssize_t i = static_cast<py::ssize_t>(wiid.get(0));
+        ssize_t i = static_cast<ssize_t>(wiid.get(0));
         if (i >= start_v and i <= end_v) {
             if ((i - start_v) % step_v == 0) {
                 set_v = 1;
@@ -311,9 +310,9 @@ public:
 template <typename Ty>
 sycl::event eye_impl(sycl::queue &exec_q,
                      size_t nelems,
-                     const py::ssize_t start,
-                     const py::ssize_t end,
-                     const py::ssize_t step,
+                     const ssize_t start,
+                     const ssize_t end,
+                     const ssize_t step,
                      char *array_data,
                      const std::vector<sycl::event> &depends)
 {
@@ -345,13 +344,13 @@ template <typename fnT, typename Ty> struct EyeFactory
 
 // define function type
 typedef sycl::event (*tri_fn_ptr_t)(sycl::queue &,
-                                    py::ssize_t,   // inner_range  //py::ssize_t
-                                    py::ssize_t,   // outer_range
-                                    char *,        // src_data_ptr
-                                    char *,        // dst_data_ptr
-                                    py::ssize_t,   // nd
-                                    py::ssize_t *, // shape_and_strides
-                                    py::ssize_t,   // k
+                                    ssize_t,   // inner_range  //ssize_t
+                                    ssize_t,   // outer_range
+                                    char *,    // src_data_ptr
+                                    char *,    // dst_data_ptr
+                                    ssize_t,   // nd
+                                    ssize_t *, // shape_and_strides
+                                    ssize_t,   // k
                                     const std::vector<sycl::event> &,
                                     const std::vector<sycl::event> &);
 
@@ -380,21 +379,21 @@ typedef sycl::event (*tri_fn_ptr_t)(sycl::queue &,
 template <typename Ty, bool> class tri_kernel;
 template <typename Ty, bool upper>
 sycl::event tri_impl(sycl::queue &exec_q,
-                     py::ssize_t inner_range,
-                     py::ssize_t outer_range,
+                     ssize_t inner_range,
+                     ssize_t outer_range,
                      char *src_p,
                      char *dst_p,
-                     py::ssize_t nd,
-                     py::ssize_t *shape_and_strides,
-                     py::ssize_t k,
+                     ssize_t nd,
+                     ssize_t *shape_and_strides,
+                     ssize_t k,
                      const std::vector<sycl::event> &depends,
                      const std::vector<sycl::event> &additional_depends)
 {
     constexpr int d2 = 2;
-    py::ssize_t src_s = nd;
-    py::ssize_t dst_s = 2 * nd;
-    py::ssize_t nd_1 = nd - 1;
-    py::ssize_t nd_2 = nd - 2;
+    ssize_t src_s = nd;
+    ssize_t dst_s = 2 * nd;
+    ssize_t nd_1 = nd - 1;
+    ssize_t nd_2 = nd - 2;
     Ty *src = reinterpret_cast<Ty *>(src_p);
     Ty *dst = reinterpret_cast<Ty *>(dst_p);
 
@@ -406,18 +405,18 @@ sycl::event tri_impl(sycl::queue &exec_q,
 
         cgh.parallel_for<tri_kernel<Ty, upper>>(
             sycl::range<1>(inner_range * outer_range), [=](sycl::id<1> idx) {
-                py::ssize_t outer_gid = idx[0] / inner_range;
-                py::ssize_t inner_gid = idx[0] - inner_range * outer_gid;
+                ssize_t outer_gid = idx[0] / inner_range;
+                ssize_t inner_gid = idx[0] - inner_range * outer_gid;
 
-                py::ssize_t src_inner_offset = 0, dst_inner_offset = 0;
+                ssize_t src_inner_offset = 0, dst_inner_offset = 0;
                 bool to_copy(true);
 
                 {
                     using dpctl::tensor::strides::CIndexer_array;
-                    CIndexer_array<d2, py::ssize_t> indexer_i(
+                    CIndexer_array<d2, ssize_t> indexer_i(
                         {shape_and_strides[nd_2], shape_and_strides[nd_1]});
                     indexer_i.set(inner_gid);
-                    const std::array<py::ssize_t, d2> &inner = indexer_i.get();
+                    const std::array<ssize_t, d2> &inner = indexer_i.get();
                     src_inner_offset =
                         inner[0] * shape_and_strides[src_s + nd_2] +
                         inner[1] * shape_and_strides[src_s + nd_1];
@@ -431,11 +430,11 @@ sycl::event tri_impl(sycl::queue &exec_q,
                         to_copy = (inner[0] + k <= inner[1]);
                 }
 
-                py::ssize_t src_offset = 0;
-                py::ssize_t dst_offset = 0;
+                ssize_t src_offset = 0;
+                ssize_t dst_offset = 0;
                 {
                     using dpctl::tensor::strides::CIndexer_vector;
-                    CIndexer_vector<py::ssize_t> outer(nd - d2);
+                    CIndexer_vector<ssize_t> outer(nd - d2);
                     outer.get_displacement(
                         outer_gid, shape_and_strides, shape_and_strides + src_s,
                         shape_and_strides + dst_s, src_offset, dst_offset);

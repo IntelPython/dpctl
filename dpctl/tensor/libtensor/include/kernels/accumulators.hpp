@@ -26,11 +26,11 @@
 #include <array>
 #include <cstdint>
 #include <limits>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
+#include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -42,8 +42,6 @@ namespace kernels
 {
 namespace accumulators
 {
-
-namespace py = pybind11;
 
 using namespace dpctl::tensor::offset_utils;
 
@@ -437,7 +435,7 @@ typedef size_t (*accumulate_strided_impl_fn_ptr_t)(
     size_t,
     const char *,
     int,
-    const py::ssize_t *,
+    const ssize_t *,
     char *,
     std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
@@ -447,7 +445,7 @@ size_t accumulate_strided_impl(sycl::queue &q,
                                size_t n_elems,
                                const char *mask,
                                int nd,
-                               const py::ssize_t *shape_strides,
+                               const ssize_t *shape_strides,
                                char *cumsum,
                                std::vector<sycl::event> &host_tasks,
                                const std::vector<sycl::event> &depends = {})

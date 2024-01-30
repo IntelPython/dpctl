@@ -46,6 +46,7 @@
 #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
 #include "linear_sequences.hpp"
 #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
@@ -55,6 +56,8 @@
 #include "where.hpp"
 
 namespace py = pybind11;
+
+static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
 
 namespace
 {

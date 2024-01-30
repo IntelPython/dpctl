@@ -1,15 +1,15 @@
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/reductions.hpp"
-#include "pybind11/pybind11.h"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -53,9 +53,9 @@ public:
     {
 
         auto const &batch_offsets = batch_indexer_(id[0]);
-        const py::ssize_t &lhs_batch_offset = batch_offsets.get_first_offset();
-        const py::ssize_t &rhs_batch_offset = batch_offsets.get_second_offset();
-        const py::ssize_t &out_batch_offset = batch_offsets.get_third_offset();
+        const ssize_t &lhs_batch_offset = batch_offsets.get_first_offset();
+        const ssize_t &rhs_batch_offset = batch_offsets.get_second_offset();
+        const ssize_t &out_batch_offset = batch_offsets.get_third_offset();
 
         outT red_val(0);
         for (size_t m = 0; m < reduction_max_gid_; ++m) {
@@ -180,14 +180,14 @@ typedef sycl::event (*dot_product_impl_fn_ptr_t)(
     const char *,
     char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename lhsTy, typename rhsTy, typename resTy>
@@ -198,14 +198,14 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
                              const char *rhs_cp,
                              char *res_cp,
                              int batch_nd,
-                             const py::ssize_t *batch_shape_and_strides,
-                             py::ssize_t batch_lhs_offset,
-                             py::ssize_t batch_rhs_offset,
-                             py::ssize_t batch_res_offset,
+                             const ssize_t *batch_shape_and_strides,
+                             ssize_t batch_lhs_offset,
+                             ssize_t batch_rhs_offset,
+                             ssize_t batch_res_offset,
                              int red_nd,
-                             const py::ssize_t *reduction_shape_stride,
-                             py::ssize_t reduction_lhs_offset,
-                             py::ssize_t reduction_rhs_offset,
+                             const ssize_t *reduction_shape_stride,
+                             ssize_t reduction_lhs_offset,
+                             ssize_t reduction_rhs_offset,
                              const std::vector<sycl::event> &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
@@ -250,8 +250,8 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
             using IndexerT =
                 dpctl::tensor::offset_utils::UnpackedStridedIndexer;
 
-            const py::ssize_t *const &res_shape = batch_shape_and_strides;
-            const py::ssize_t *const &res_strides =
+            const ssize_t *const &res_shape = batch_shape_and_strides;
+            const ssize_t *const &res_strides =
                 batch_shape_and_strides + 3 * batch_nd;
             IndexerT res_indexer(batch_nd, batch_res_offset, res_shape,
                                  res_strides);
@@ -317,11 +317,11 @@ typedef sycl::event (*dot_product_contig_impl_fn_ptr_t)(
     const char *,
     const char *,
     char *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename lhsTy, typename rhsTy, typename resTy>
@@ -332,11 +332,11 @@ dot_product_contig_impl(sycl::queue &exec_q,
                         const char *lhs_cp,
                         const char *rhs_cp,
                         char *res_cp,
-                        py::ssize_t batch_lhs_offset,
-                        py::ssize_t batch_rhs_offset,
-                        py::ssize_t batch_res_offset,
-                        py::ssize_t reduction_lhs_offset,
-                        py::ssize_t reduction_rhs_offset,
+                        ssize_t batch_lhs_offset,
+                        ssize_t batch_rhs_offset,
+                        ssize_t batch_res_offset,
+                        ssize_t reduction_lhs_offset,
+                        ssize_t reduction_rhs_offset,
                         const std::vector<sycl::event> &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp) +
@@ -364,8 +364,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(batches)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(batches)};
             InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
@@ -404,8 +404,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(batches)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(batches)};
             InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
@@ -543,14 +543,14 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                                   const char *rhs_cp,
                                   char *res_cp,
                                   int batch_nd,
-                                  const py::ssize_t *batch_shape_and_strides,
-                                  py::ssize_t batch_lhs_offset,
-                                  py::ssize_t batch_rhs_offset,
-                                  py::ssize_t batch_res_offset,
+                                  const ssize_t *batch_shape_and_strides,
+                                  ssize_t batch_lhs_offset,
+                                  ssize_t batch_rhs_offset,
+                                  ssize_t batch_res_offset,
                                   int red_nd,
-                                  const py::ssize_t *reduction_shape_stride,
-                                  py::ssize_t reduction_lhs_offset,
-                                  py::ssize_t reduction_rhs_offset,
+                                  const ssize_t *reduction_shape_stride,
+                                  ssize_t reduction_lhs_offset,
+                                  ssize_t reduction_rhs_offset,
                                   const std::vector<sycl::event> &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
@@ -743,8 +743,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                         dpctl::tensor::offset_utils::NoOpIndexer;
 
                     InputIndexerT inp_indexer{
-                        0, static_cast<py::ssize_t>(batches),
-                        static_cast<py::ssize_t>(reduction_groups_)};
+                        0, static_cast<ssize_t>(batches),
+                        static_cast<ssize_t>(reduction_groups_)};
                     ResIndexerT res_iter_indexer{};
 
                     InputOutputIterIndexerT in_out_iter_indexer{
@@ -785,8 +785,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(batches),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(batches),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{batch_nd, batch_res_offset,
                                          /* shape */ batch_shape_and_strides,
                                          /* strides */ batch_shape_and_strides +
@@ -842,11 +842,11 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                              const char *lhs_cp,
                              const char *rhs_cp,
                              char *res_cp,
-                             py::ssize_t batch_lhs_offset,
-                             py::ssize_t batch_rhs_offset,
-                             py::ssize_t batch_res_offset,
-                             py::ssize_t reduction_lhs_offset,
-                             py::ssize_t reduction_rhs_offset,
+                             ssize_t batch_lhs_offset,
+                             ssize_t batch_rhs_offset,
+                             ssize_t batch_res_offset,
+                             ssize_t reduction_lhs_offset,
+                             ssize_t reduction_rhs_offset,
                              const std::vector<sycl::event> &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp) +
@@ -874,8 +874,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(batches)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(batches)};
             InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
@@ -916,8 +916,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(batches)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(batches)};
             InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
@@ -994,8 +994,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(batches)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(batches)};
             InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
@@ -1045,8 +1045,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                         dpctl::tensor::offset_utils::NoOpIndexer;
 
                     InputIndexerT inp_indexer{
-                        0, static_cast<py::ssize_t>(batches),
-                        static_cast<py::ssize_t>(reduction_groups_)};
+                        0, static_cast<ssize_t>(batches),
+                        static_cast<ssize_t>(reduction_groups_)};
                     ResIndexerT res_iter_indexer{};
 
                     InputOutputIterIndexerT in_out_iter_indexer{
@@ -1086,8 +1086,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(batches),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(batches),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,

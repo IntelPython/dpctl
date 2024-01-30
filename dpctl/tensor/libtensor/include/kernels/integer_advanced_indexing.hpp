@@ -26,10 +26,10 @@
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
 
@@ -42,7 +42,6 @@ namespace kernels
 namespace indexing
 {
 
-namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename ProjectorT,
@@ -65,10 +64,10 @@ class WrapIndex
 public:
     WrapIndex() = default;
 
-    void operator()(py::ssize_t max_item, py::ssize_t &ind) const
+    void operator()(ssize_t max_item, ssize_t &ind) const
     {
-        max_item = std::max<py::ssize_t>(max_item, 1);
-        ind = std::clamp<py::ssize_t>(ind, -max_item, max_item - 1);
+        max_item = std::max<ssize_t>(max_item, 1);
+        ind = std::clamp<ssize_t>(ind, -max_item, max_item - 1);
         ind = (ind < 0) ? ind + max_item : ind;
         return;
     }
@@ -79,10 +78,10 @@ class ClipIndex
 public:
     ClipIndex() = default;
 
-    void operator()(py::ssize_t max_item, py::ssize_t &ind) const
+    void operator()(ssize_t max_item, ssize_t &ind) const
     {
-        max_item = std::max<py::ssize_t>(max_item, 1);
-        ind = std::clamp<py::ssize_t>(ind, 0, max_item - 1);
+        max_item = std::max<ssize_t>(max_item, 1);
+        ind = std::clamp<ssize_t>(ind, 0, max_item - 1);
         return;
     }
 };
@@ -101,7 +100,7 @@ private:
     char **ind_ = nullptr;
     int k_ = 0;
     size_t ind_nelems_ = 0;
-    const py::ssize_t *axes_shape_and_strides_ = nullptr;
+    const ssize_t *axes_shape_and_strides_ = nullptr;
     OrthogStrider orthog_strider;
     IndicesStrider ind_strider;
     AxesStrider axes_strider;
@@ -112,7 +111,7 @@ public:
                 char **ind_cp,
                 int k,
                 size_t ind_nelems,
-                const py::ssize_t *axes_shape_and_strides,
+                const ssize_t *axes_shape_and_strides,
                 OrthogStrider orthog_strider_,
                 IndicesStrider ind_strider_,
                 AxesStrider axes_strider_)
@@ -129,20 +128,20 @@ public:
         const T *src = reinterpret_cast<const T *>(src_);
         T *dst = reinterpret_cast<T *>(dst_);
 
-        py::ssize_t i_orthog = id / ind_nelems_;
-        py::ssize_t i_along = id - (i_orthog * ind_nelems_);
+        ssize_t i_orthog = id / ind_nelems_;
+        ssize_t i_along = id - (i_orthog * ind_nelems_);
 
         auto orthog_offsets = orthog_strider(i_orthog);
 
-        py::ssize_t src_offset = orthog_offsets.get_first_offset();
-        py::ssize_t dst_offset = orthog_offsets.get_second_offset();
+        ssize_t src_offset = orthog_offsets.get_first_offset();
+        ssize_t dst_offset = orthog_offsets.get_second_offset();
 
         ProjectorT proj{};
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
 
-            py::ssize_t ind_offset = ind_strider(i_along, axis_idx);
-            py::ssize_t i = static_cast<py::ssize_t>(ind_data[ind_offset]);
+            ssize_t ind_offset = ind_strider(i_along, axis_idx);
+            ssize_t i = static_cast<ssize_t>(ind_data[ind_offset]);
 
             proj(axes_shape_and_strides_[axis_idx], i);
 
@@ -161,15 +160,15 @@ typedef sycl::event (*take_fn_ptr_t)(sycl::queue &,
                                      int,
                                      int,
                                      int,
-                                     const py::ssize_t *,
-                                     const py::ssize_t *,
-                                     const py::ssize_t *,
+                                     const ssize_t *,
+                                     const ssize_t *,
+                                     const ssize_t *,
                                      const char *,
                                      char *,
                                      char **,
-                                     py::ssize_t,
-                                     py::ssize_t,
-                                     const py::ssize_t *,
+                                     ssize_t,
+                                     ssize_t,
+                                     const ssize_t *,
                                      const std::vector<sycl::event> &);
 
 template <typename ProjectorT, typename Ty, typename indT>
@@ -179,15 +178,15 @@ sycl::event take_impl(sycl::queue &q,
                       int nd,
                       int ind_nd,
                       int k,
-                      const py::ssize_t *orthog_shape_and_strides,
-                      const py::ssize_t *axes_shape_and_strides,
-                      const py::ssize_t *ind_shape_and_strides,
+                      const ssize_t *orthog_shape_and_strides,
+                      const ssize_t *axes_shape_and_strides,
+                      const ssize_t *ind_shape_and_strides,
                       const char *src_p,
                       char *dst_p,
                       char **ind_p,
-                      py::ssize_t src_offset,
-                      py::ssize_t dst_offset,
-                      const py::ssize_t *ind_offsets,
+                      ssize_t src_offset,
+                      ssize_t dst_offset,
+                      const ssize_t *ind_offsets,
                       const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
@@ -231,7 +230,7 @@ private:
     char **ind_ = nullptr;
     int k_ = 0;
     size_t ind_nelems_ = 0;
-    const py::ssize_t *axes_shape_and_strides_ = nullptr;
+    const ssize_t *axes_shape_and_strides_ = nullptr;
     OrthogStrider orthog_strider;
     IndicesStrider ind_strider;
     AxesStrider axes_strider;
@@ -242,7 +241,7 @@ public:
                char **ind_cp,
                int k,
                size_t ind_nelems,
-               const py::ssize_t *axes_shape_and_strides,
+               const ssize_t *axes_shape_and_strides,
                OrthogStrider orthog_strider_,
                IndicesStrider ind_strider_,
                AxesStrider axes_strider_)
@@ -259,20 +258,20 @@ public:
         T *dst = reinterpret_cast<T *>(dst_);
         const T *val = reinterpret_cast<const T *>(val_);
 
-        py::ssize_t i_orthog = id / ind_nelems_;
-        py::ssize_t i_along = id - (i_orthog * ind_nelems_);
+        ssize_t i_orthog = id / ind_nelems_;
+        ssize_t i_along = id - (i_orthog * ind_nelems_);
 
         auto orthog_offsets = orthog_strider(i_orthog);
 
-        py::ssize_t dst_offset = orthog_offsets.get_first_offset();
-        py::ssize_t val_offset = orthog_offsets.get_second_offset();
+        ssize_t dst_offset = orthog_offsets.get_first_offset();
+        ssize_t val_offset = orthog_offsets.get_second_offset();
 
         ProjectorT proj{};
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
 
-            py::ssize_t ind_offset = ind_strider(i_along, axis_idx);
-            py::ssize_t i = static_cast<py::ssize_t>(ind_data[ind_offset]);
+            ssize_t ind_offset = ind_strider(i_along, axis_idx);
+            ssize_t i = static_cast<ssize_t>(ind_data[ind_offset]);
 
             proj(axes_shape_and_strides_[axis_idx], i);
 
@@ -291,15 +290,15 @@ typedef sycl::event (*put_fn_ptr_t)(sycl::queue &,
                                     int,
                                     int,
                                     int,
-                                    const py::ssize_t *,
-                                    const py::ssize_t *,
-                                    const py::ssize_t *,
+                                    const ssize_t *,
+                                    const ssize_t *,
+                                    const ssize_t *,
                                     char *,
                                     const char *,
                                     char **,
-                                    py::ssize_t,
-                                    py::ssize_t,
-                                    const py::ssize_t *,
+                                    ssize_t,
+                                    ssize_t,
+                                    const ssize_t *,
                                     const std::vector<sycl::event> &);
 
 template <typename ProjectorT, typename Ty, typename indT>
@@ -309,15 +308,15 @@ sycl::event put_impl(sycl::queue &q,
                      int nd,
                      int ind_nd,
                      int k,
-                     const py::ssize_t *orthog_shape_and_strides,
-                     const py::ssize_t *axes_shape_and_strides,
-                     const py::ssize_t *ind_shape_and_strides,
+                     const ssize_t *orthog_shape_and_strides,
+                     const ssize_t *axes_shape_and_strides,
+                     const ssize_t *ind_shape_and_strides,
                      char *dst_p,
                      const char *val_p,
                      char **ind_p,
-                     py::ssize_t dst_offset,
-                     py::ssize_t val_offset,
-                     const py::ssize_t *ind_offsets,
+                     ssize_t dst_offset,
+                     ssize_t val_offset,
+                     const ssize_t *ind_offsets,
                      const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);

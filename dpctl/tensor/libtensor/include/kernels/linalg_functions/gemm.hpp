@@ -1,15 +1,15 @@
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/reductions.hpp"
-#include "pybind11/pybind11.h"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -89,8 +89,8 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
                                       size_t preferred_reductions_per_wi,
                                       size_t reductions_per_wi,
                                       int res_nd,
-                                      py::ssize_t res_offset,
-                                      const py::ssize_t *res_shapes_strides,
+                                      ssize_t res_offset,
+                                      const ssize_t *res_shapes_strides,
                                       const std::vector<sycl::event> &depends)
 {
     sycl::event red_ev;
@@ -110,8 +110,8 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         res_iter_indexer};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             sycl::range<1> iter_range{iter_nelems};
 
@@ -141,8 +141,8 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         res_iter_indexer};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             if (iter_nelems == 1) {
                 // increase GPU occupancy
@@ -205,8 +205,8 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             sycl::range<1> iter_range{iter_nelems};
 
@@ -234,8 +234,8 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             if (iter_nelems == 1) {
                 // increase GPU occupancy
@@ -282,8 +282,8 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
                                     size_t preferred_reductions_per_wi,
                                     size_t reductions_per_wi,
                                     int res_nd,
-                                    py::ssize_t res_offset,
-                                    const py::ssize_t *res_shape_strides,
+                                    ssize_t res_offset,
+                                    const ssize_t *res_shape_strides,
                                     const std::vector<sycl::event> &depends)
 {
 
@@ -305,8 +305,8 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                     NoOpIndexerT{}};
         ReductionIndexerT reduction_indexer{
-            0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-            /* step */ static_cast<py::ssize_t>(iter_nelems)};
+            0, /* size */ static_cast<ssize_t>(reduction_nelems),
+            /* step */ static_cast<ssize_t>(iter_nelems)};
 
         auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
         auto localRange = sycl::range<1>{wg};
@@ -346,9 +346,8 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(reduction_groups_)};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -390,10 +389,10 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
         InputIndexerT inp_indexer{
-            0, static_cast<py::ssize_t>(iter_nelems),
-            static_cast<py::ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{
-            res_nd, static_cast<py::ssize_t>(res_offset), res_shape_strides};
+            0, static_cast<ssize_t>(iter_nelems),
+            static_cast<ssize_t>(remaining_reduction_nelems)};
+        ResIndexerT res_iter_indexer{res_nd, static_cast<ssize_t>(res_offset),
+                                     res_shape_strides};
 
         InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                     res_iter_indexer};
@@ -463,8 +462,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                     NoOpIndexerT{}};
         ReductionIndexerT reduction_indexer{
-            0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-            /* step */ static_cast<py::ssize_t>(iter_nelems)};
+            0, /* size */ static_cast<ssize_t>(reduction_nelems),
+            /* step */ static_cast<ssize_t>(iter_nelems)};
 
         auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
         auto localRange = sycl::range<1>{wg};
@@ -507,9 +506,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
             // n * m = iter_nelems because essentially, this process
             // creates a stack of reduction_nelems 2D matrices and we reduce
             // along the stack axis
-            InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(reduction_groups_)};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -551,8 +549,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
         InputIndexerT inp_indexer{
-            0, static_cast<py::ssize_t>(iter_nelems),
-            static_cast<py::ssize_t>(remaining_reduction_nelems)};
+            0, static_cast<ssize_t>(iter_nelems),
+            static_cast<ssize_t>(remaining_reduction_nelems)};
         ResIndexerT res_iter_indexer{};
 
         InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1172,19 +1170,19 @@ class gemm_nm_krn;
 
 typedef sycl::event (*gemm_impl_fn_ptr_t)(
     sycl::queue &,
-    const char *,        // lhs
-    const char *,        // rhs
-    char *,              // res
-    size_t,              // lhs_outer_nelems (n)
-    size_t,              // inner_nelems (k)
-    size_t,              // rhs_outer_nelems (m)
-    int,                 // inner nd
-    int,                 // lhs outer nd
-    const py::ssize_t *, // lhs shape and strides
-    int,                 // rhs outer nd
-    const py::ssize_t *, // rhs shape and strides
-    int,                 // res outer nd
-    const py::ssize_t *, // res shape and strides
+    const char *,    // lhs
+    const char *,    // rhs
+    char *,          // res
+    size_t,          // lhs_outer_nelems (n)
+    size_t,          // inner_nelems (k)
+    size_t,          // rhs_outer_nelems (m)
+    int,             // inner nd
+    int,             // lhs outer nd
+    const ssize_t *, // lhs shape and strides
+    int,             // rhs outer nd
+    const ssize_t *, // rhs shape and strides
+    int,             // res outer nd
+    const ssize_t *, // res shape and strides
     std::vector<sycl::event> const &);
 
 template <typename lhsTy, typename rhsTy, typename resTy>
@@ -1197,11 +1195,11 @@ sycl::event gemm_impl(sycl::queue &exec_q,
                       size_t m,
                       int inner_nd,
                       int lhs_outer_nd,
-                      const py::ssize_t *lhs_shape_strides,
+                      const ssize_t *lhs_shape_strides,
                       int rhs_outer_nd,
-                      const py::ssize_t *rhs_shape_strides,
+                      const ssize_t *rhs_shape_strides,
                       int res_outer_nd,
-                      const py::ssize_t *res_shape_strides,
+                      const ssize_t *res_shape_strides,
                       std::vector<sycl::event> const &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
@@ -2127,11 +2125,11 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                              size_t m,
                              int inner_nd,
                              int lhs_outer_nd,
-                             const py::ssize_t *lhs_outer_inner_shapes_strides,
+                             const ssize_t *lhs_outer_inner_shapes_strides,
                              int rhs_outer_nd,
-                             const py::ssize_t *rhs_outer_inner_shapes_strides,
+                             const ssize_t *rhs_outer_inner_shapes_strides,
                              int res_nd,
-                             const py::ssize_t *res_shapes_strides,
+                             const ssize_t *res_shapes_strides,
                              const std::vector<sycl::event> &depends)
 {
     size_t delta_k(4);
@@ -2432,11 +2430,11 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                               size_t m,
                               int inner_nd,
                               int lhs_outer_nd,
-                              const py::ssize_t *lhs_outer_inner_shapes_strides,
+                              const ssize_t *lhs_outer_inner_shapes_strides,
                               int rhs_outer_nd,
-                              const py::ssize_t *rhs_outer_inner_shapes_strides,
+                              const ssize_t *rhs_outer_inner_shapes_strides,
                               int res_nd,
-                              const py::ssize_t *res_shapes_strides,
+                              const ssize_t *res_shapes_strides,
                               const std::vector<sycl::event> &depends)
 {
     constexpr int wi_delta_n = 2;
@@ -2782,11 +2780,11 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
                            size_t m,
                            int inner_nd,
                            int lhs_outer_nd,
-                           const py::ssize_t *lhs_outer_inner_shapes_strides,
+                           const ssize_t *lhs_outer_inner_shapes_strides,
                            int rhs_outer_nd,
-                           const py::ssize_t *rhs_outer_inner_shapes_strides,
+                           const ssize_t *rhs_outer_inner_shapes_strides,
                            int res_nd,
-                           const py::ssize_t *res_shapes_strides,
+                           const ssize_t *res_shapes_strides,
                            std::vector<sycl::event> const &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
@@ -3601,8 +3599,7 @@ public:
         const size_t gr_id =
             it.get_group_linear_id() - m_id * n_groups_per_batch;
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
 
         // lift group_id to (block_i, block_j, block_s),
         //    0 <= block_i < n_blocks, 0 <= block_j < m_blocks, 0 <= block_s
@@ -3789,8 +3786,7 @@ public:
         const size_t gr_id =
             it.get_group_linear_id() - m_id * n_groups_per_batch;
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
 
         // lift group_id to (block_i, block_j, block_s),
         //    0 <= block_i < n_blocks, 0 <= block_j < m_blocks, 0 <= block_s
@@ -3961,8 +3957,7 @@ public:
             it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
 
         const auto &lhs_offset = three_offsets_.get_first_offset();
         const auto &rhs_offset = three_offsets_.get_second_offset();
@@ -4130,8 +4125,7 @@ public:
             it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
 
         const auto &lhs_offset = three_offsets_.get_first_offset();
         const auto &rhs_offset = three_offsets_.get_second_offset();
@@ -4225,26 +4219,26 @@ class gemm_batch_nm_krn;
 
 typedef sycl::event (*gemm_batch_impl_fn_ptr_t)(
     sycl::queue &,
-    const char *,        // lhs
-    const char *,        // rhs
-    char *,              // res
-    size_t,              // batch nelems
-    size_t,              // lhs outer nelems (n)
-    size_t,              // inner nelems (k)
-    size_t,              // rhs outer nelems (m)
-    int,                 // batching nd
-    const py::ssize_t *, // batch shape strides
-    py::ssize_t,         // lhs batch offset
-    py::ssize_t,         // rhs batch offset
-    py::ssize_t,         // res batch offset
-    int,                 // inner dims
-    int,                 // lhs outer dims
-    const py::ssize_t *, // lhs outer and inner shape and strides
-    int,                 // rhs outer dims
-    const py::ssize_t *, // rhs outer and inner shape and strides
-    int,                 // res outer dims
-    const py::ssize_t *, // res outer and inner shape and strides
-    const py::ssize_t *, // res full shape and strides
+    const char *,    // lhs
+    const char *,    // rhs
+    char *,          // res
+    size_t,          // batch nelems
+    size_t,          // lhs outer nelems (n)
+    size_t,          // inner nelems (k)
+    size_t,          // rhs outer nelems (m)
+    int,             // batching nd
+    const ssize_t *, // batch shape strides
+    ssize_t,         // lhs batch offset
+    ssize_t,         // rhs batch offset
+    ssize_t,         // res batch offset
+    int,             // inner dims
+    int,             // lhs outer dims
+    const ssize_t *, // lhs outer and inner shape and strides
+    int,             // rhs outer dims
+    const ssize_t *, // rhs outer and inner shape and strides
+    int,             // res outer dims
+    const ssize_t *, // res outer and inner shape and strides
+    const ssize_t *, // res full shape and strides
     std::vector<sycl::event> const &);
 
 template <typename lhsTy, typename rhsTy, typename resTy>
@@ -4257,18 +4251,18 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
                             size_t k,
                             size_t m,
                             int batch_nd,
-                            const py::ssize_t *batch_shape_strides,
-                            py::ssize_t lhs_batch_offset,
-                            py::ssize_t rhs_batch_offset,
-                            py::ssize_t res_batch_offset,
+                            const ssize_t *batch_shape_strides,
+                            ssize_t lhs_batch_offset,
+                            ssize_t rhs_batch_offset,
+                            ssize_t res_batch_offset,
                             int inner_nd,
                             int lhs_outer_nd,
-                            const py::ssize_t *lhs_outer_inner_shapes_strides,
+                            const ssize_t *lhs_outer_inner_shapes_strides,
                             int rhs_outer_nd,
-                            const py::ssize_t *rhs_outer_inner_shapes_strides,
+                            const ssize_t *rhs_outer_inner_shapes_strides,
                             int res_outer_nd,
-                            const py::ssize_t *res_outer_shapes_strides,
-                            const py::ssize_t *res_shape_strides,
+                            const ssize_t *res_outer_shapes_strides,
+                            const ssize_t *res_shape_strides,
                             std::vector<sycl::event> const &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
@@ -4461,9 +4455,9 @@ typedef sycl::event (*gemm_batch_contig_impl_fn_ptr_t)(
     size_t,       // n
     size_t,       // k
     size_t,       // m
-    py::ssize_t,  // lhs batch offset
-    py::ssize_t,  // rhs batch offset
-    py::ssize_t,  // res batch offset
+    ssize_t,      // lhs batch offset
+    ssize_t,      // rhs batch offset
+    ssize_t,      // res batch offset
     std::vector<sycl::event> const &);
 
 template <typename lhsTy, typename rhsTy, typename resTy>
@@ -4475,9 +4469,9 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
                                    size_t n,
                                    size_t k,
                                    size_t m,
-                                   py::ssize_t lhs_batch_offset,
-                                   py::ssize_t rhs_batch_offset,
-                                   py::ssize_t res_batch_offset,
+                                   ssize_t lhs_batch_offset,
+                                   ssize_t rhs_batch_offset,
+                                   ssize_t res_batch_offset,
                                    std::vector<sycl::event> const &depends = {})
 {
     const lhsTy *lhs_tp =
@@ -4514,12 +4508,12 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
                                          Strided1DIndexer>;
 
         BatchDimsIndexerT batch_indexer(
-            Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                             static_cast<py::ssize_t>(n * k)},
-            Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                             static_cast<py::ssize_t>(k * m)},
-            Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                             static_cast<py::ssize_t>(n * m)});
+            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                             static_cast<ssize_t>(n * k)},
+            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                             static_cast<ssize_t>(k * m)},
+            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                             static_cast<ssize_t>(n * m)});
         if (m < 4) {
             constexpr size_t m_groups = 1;
             size_t delta_k(4);
@@ -4726,8 +4720,7 @@ public:
         const size_t gr_id =
             it.get_group_linear_id() - m_id * n_groups_per_batch;
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
 
         // lift group_id to (block_i, block_j, block_s),
         //    0 <= block_i < n_blocks, 0 <= block_j < m_blocks, 0 <= block_s
@@ -4911,8 +4904,7 @@ public:
         const size_t gr_id =
             it.get_group_linear_id() - m_id * n_groups_per_batch;
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
 
         // lift group_id to (block_i, block_j, block_s),
         //    0 <= block_i < n_blocks, 0 <= block_j < m_blocks, 0 <= block_s
@@ -5074,8 +5066,7 @@ public:
             it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
         const auto &lhs_offset = three_offsets_.get_first_offset();
         const auto &rhs_offset = three_offsets_.get_second_offset();
         const auto &res_offset = three_offsets_.get_third_offset();
@@ -5231,8 +5222,7 @@ public:
             it.get_group_linear_id() - m_id * n_groups_per_batch;
         size_t lid = it.get_local_linear_id();
 
-        const auto &three_offsets_ =
-            batch_indexer(static_cast<py::ssize_t>(m_id));
+        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
         const auto &lhs_offset = three_offsets_.get_first_offset();
         const auto &rhs_offset = three_offsets_.get_second_offset();
         const auto &res_offset = three_offsets_.get_third_offset();
@@ -5329,18 +5319,18 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                        size_t k,
                        size_t m,
                        int batch_nd,
-                       const py::ssize_t *batch_shape_strides,
-                       py::ssize_t lhs_batch_offset,
-                       py::ssize_t rhs_batch_offset,
-                       py::ssize_t res_batch_offset,
+                       const ssize_t *batch_shape_strides,
+                       ssize_t lhs_batch_offset,
+                       ssize_t rhs_batch_offset,
+                       ssize_t res_batch_offset,
                        int inner_nd,
                        int lhs_outer_nd,
-                       const py::ssize_t *lhs_outer_inner_shapes_strides,
+                       const ssize_t *lhs_outer_inner_shapes_strides,
                        int rhs_outer_nd,
-                       const py::ssize_t *rhs_outer_inner_shapes_strides,
+                       const ssize_t *rhs_outer_inner_shapes_strides,
                        int res_outer_nd,
-                       const py::ssize_t *res_outer_shapes_strides,
-                       const py::ssize_t *res_shape_strides,
+                       const ssize_t *res_outer_shapes_strides,
+                       const ssize_t *res_shape_strides,
                        std::vector<sycl::event> const &depends)
 {
     size_t delta_k(4);
@@ -5488,7 +5478,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                     batch_nd, rhs_batch_offset, batch_shape_strides,
                     batch_shape_strides + 2 * batch_nd);
                 Strided1DIndexer tmp_batch_indexer(
-                    0, static_cast<py::ssize_t>(batch_nelems), n * m);
+                    0, static_cast<ssize_t>(batch_nelems), n * m);
                 BatchDimsIndexerT batch_indexer(
                     lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -5601,7 +5591,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                                                  batch_shape_strides +
                                                      2 * batch_nd);
                 Strided1DIndexer tmp_batch_indexer(
-                    0, static_cast<py::ssize_t>(batch_nelems), n * m);
+                    0, static_cast<ssize_t>(batch_nelems), n * m);
                 BatchDimsIndexerT batch_indexer(
                     lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -5692,18 +5682,18 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                         size_t k,
                         size_t m,
                         int batch_nd,
-                        const py::ssize_t *batch_shape_strides,
-                        py::ssize_t lhs_batch_offset,
-                        py::ssize_t rhs_batch_offset,
-                        py::ssize_t res_batch_offset,
+                        const ssize_t *batch_shape_strides,
+                        ssize_t lhs_batch_offset,
+                        ssize_t rhs_batch_offset,
+                        ssize_t res_batch_offset,
                         int inner_nd,
                         int lhs_outer_nd,
-                        const py::ssize_t *lhs_outer_inner_shapes_strides,
+                        const ssize_t *lhs_outer_inner_shapes_strides,
                         int rhs_outer_nd,
-                        const py::ssize_t *rhs_outer_inner_shapes_strides,
+                        const ssize_t *rhs_outer_inner_shapes_strides,
                         int res_outer_nd,
-                        const py::ssize_t *res_outer_shapes_strides,
-                        const py::ssize_t *res_shape_strides,
+                        const ssize_t *res_outer_shapes_strides,
+                        const ssize_t *res_shape_strides,
                         std::vector<sycl::event> const &depends)
 {
     constexpr int wi_delta_n = 2;
@@ -5865,7 +5855,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                     batch_nd, rhs_batch_offset, batch_shape_strides,
                     batch_shape_strides + 2 * batch_nd);
                 Strided1DIndexer tmp_batch_indexer(
-                    0, static_cast<py::ssize_t>(batch_nelems), n * m);
+                    0, static_cast<ssize_t>(batch_nelems), n * m);
                 BatchDimsIndexerT batch_indexer(
                     lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -5988,7 +5978,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                     batch_nd, rhs_batch_offset, batch_shape_strides,
                     batch_shape_strides + 2 * batch_nd);
                 Strided1DIndexer tmp_batch_indexer(
-                    0, static_cast<py::ssize_t>(batch_nelems), n * m);
+                    0, static_cast<ssize_t>(batch_nelems), n * m);
                 BatchDimsIndexerT batch_indexer(
                     lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -6082,29 +6072,28 @@ template <typename T1, typename T2, typename T3>
 class gemm_batch_tree_empty_krn;
 
 template <typename lhsTy, typename rhsTy, typename resTy>
-sycl::event
-gemm_batch_tree_impl(sycl::queue &exec_q,
-                     const char *lhs_cp,
-                     const char *rhs_cp,
-                     char *res_cp,
-                     size_t batch_nelems,
-                     size_t n,
-                     size_t k,
-                     size_t m,
-                     int batch_nd,
-                     const py::ssize_t *batch_shape_strides,
-                     py::ssize_t lhs_batch_offset,
-                     py::ssize_t rhs_batch_offset,
-                     py::ssize_t res_batch_offset,
-                     int inner_nd,
-                     int lhs_outer_nd,
-                     const py::ssize_t *lhs_outer_inner_shapes_strides,
-                     int rhs_outer_nd,
-                     const py::ssize_t *rhs_outer_inner_shapes_strides,
-                     int res_outer_nd,
-                     const py::ssize_t *res_outer_shapes_strides,
-                     const py::ssize_t *res_shape_strides,
-                     std::vector<sycl::event> const &depends = {})
+sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
+                                 const char *lhs_cp,
+                                 const char *rhs_cp,
+                                 char *res_cp,
+                                 size_t batch_nelems,
+                                 size_t n,
+                                 size_t k,
+                                 size_t m,
+                                 int batch_nd,
+                                 const ssize_t *batch_shape_strides,
+                                 ssize_t lhs_batch_offset,
+                                 ssize_t rhs_batch_offset,
+                                 ssize_t res_batch_offset,
+                                 int inner_nd,
+                                 int lhs_outer_nd,
+                                 const ssize_t *lhs_outer_inner_shapes_strides,
+                                 int rhs_outer_nd,
+                                 const ssize_t *rhs_outer_inner_shapes_strides,
+                                 int res_outer_nd,
+                                 const ssize_t *res_outer_shapes_strides,
+                                 const ssize_t *res_shape_strides,
+                                 std::vector<sycl::event> const &depends = {})
 {
     const lhsTy *lhs_tp = reinterpret_cast<const lhsTy *>(lhs_cp);
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
@@ -6228,12 +6217,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
 
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             BatchDimsIndexerT batch_indexer(
-                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                 static_cast<py::ssize_t>(n * k)},
-                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                 static_cast<py::ssize_t>(k * m)},
-                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                 static_cast<py::ssize_t>(n * m)});
+                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                 static_cast<ssize_t>(n * k)},
+                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                 static_cast<ssize_t>(k * m)},
+                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                 static_cast<ssize_t>(n * m)});
 
             size_t n_blocks = (n + delta_n - 1) / delta_n;
             size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
@@ -6337,12 +6326,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                     Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
 
                 BatchDimsIndexerT batch_indexer(
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * k)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(k * m)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * m)});
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * k)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(k * m)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * m)});
 
                 size_t n_blocks = (n + delta_n - 1) / delta_n;
                 size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
@@ -6443,12 +6432,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                     Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
 
                 BatchDimsIndexerT batch_indexer(
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * k)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(k * m)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * m)});
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * k)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(k * m)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * m)});
 
                 size_t n_blocks = (n + delta_n - 1) / delta_n;
                 size_t k_blocks = (k + n_wi * delta_k - 1) / (n_wi * delta_k);
@@ -6573,12 +6562,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                                              Strided1DIndexer>;
 
             BatchDimsIndexerT batch_indexer(
-                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                 static_cast<py::ssize_t>(n * k)},
-                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                 static_cast<py::ssize_t>(k * m)},
-                Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                 static_cast<py::ssize_t>(n * m)});
+                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                 static_cast<ssize_t>(n * k)},
+                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                 static_cast<ssize_t>(k * m)},
+                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                 static_cast<ssize_t>(n * m)});
 
             size_t lws = wg_delta_n * wg_delta_m;
 
@@ -6691,12 +6680,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                     Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
 
                 BatchDimsIndexerT batch_indexer(
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * k)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(k * m)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * m)});
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * k)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(k * m)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * m)});
 
                 size_t lws = wg_delta_n * wg_delta_m;
 
@@ -6807,12 +6796,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                     Strided1DIndexer, Strided1DIndexer, Strided1DIndexer>;
 
                 BatchDimsIndexerT batch_indexer(
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * k)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(k * m)},
-                    Strided1DIndexer{0, static_cast<py::ssize_t>(batch_nelems),
-                                     static_cast<py::ssize_t>(n * m)});
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * k)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(k * m)},
+                    Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
+                                     static_cast<ssize_t>(n * m)});
 
                 size_t lws = wg_delta_n * wg_delta_m;
 
@@ -6911,9 +6900,9 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
                             size_t n,
                             size_t k,
                             size_t m,
-                            py::ssize_t lhs_batch_offset,
-                            py::ssize_t rhs_batch_offset,
-                            py::ssize_t res_batch_offset,
+                            ssize_t lhs_batch_offset,
+                            ssize_t rhs_batch_offset,
+                            ssize_t res_batch_offset,
                             std::vector<sycl::event> const &depends = {})
 {
     const lhsTy *lhs_tp =

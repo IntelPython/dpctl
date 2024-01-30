@@ -25,9 +25,9 @@
 
 #pragma once
 #include "dpctl4pybind11.hpp"
-#include <CL/sycl.hpp>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 
 #include "utils/type_dispatch.hpp"
 

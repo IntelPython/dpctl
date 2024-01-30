@@ -23,8 +23,8 @@
 //===--------------------------------------------------------------------===//
 
 #pragma once
-#include <CL/sycl.hpp>
 #include <complex>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
 #include "utils/type_utils.hpp"
