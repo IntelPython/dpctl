@@ -35,6 +35,7 @@
 #include "utils/type_utils.hpp"
 
 #include "full_ctor.hpp"
+#include "unboxing_helper.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -48,7 +49,60 @@ namespace py_internal
 
 using dpctl::utils::keep_args_alive;
 
-using dpctl::tensor::kernels::constructors::full_contig_fn_ptr_t;
+typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue &,
+                                            size_t,
+                                            const py::object &,
+                                            char *,
+                                            const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to submit kernel to fill given contiguous memory allocation
+ * with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence
+ * @param py_value Python object representing the value to fill the array with.
+ * Must be convertible to `dstTy`.
+ * @param dst_p Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename dstTy>
+sycl::event full_contig_impl(sycl::queue &exec_q,
+                             size_t nelems,
+                             const py::object &py_value,
+                             char *dst_p,
+                             const std::vector<sycl::event> &depends)
+{
+    dstTy fill_v;
+
+    PythonObjectUnboxer<dstTy> unboxer{};
+    try {
+        fill_v = unboxer(py_value);
+    } catch (const py::error_already_set &e) {
+        throw;
+    }
+
+    using dpctl::tensor::kernels::constructors::full_contig_impl;
+
+    sycl::event fill_ev =
+        full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
+
+    return fill_ev;
+}
+
+template <typename fnT, typename Ty> struct FullContigFactory
+{
+    fnT get()
+    {
+        fnT f = full_contig_impl<Ty>;
+        return f;
+    }
+};
 
 static full_contig_fn_ptr_t full_contig_dispatch_vector[td_ns::num_types];
 
@@ -99,7 +153,6 @@ usm_ndarray_full(const py::object &py_value,
 void init_full_ctor_dispatch_vectors(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::constructors::FullContigFactory;
 
     DispatchVectorBuilder<full_contig_fn_ptr_t, FullContigFactory, num_types>
         dvb;

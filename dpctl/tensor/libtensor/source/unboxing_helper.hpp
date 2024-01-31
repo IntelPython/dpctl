@@ -1,4 +1,4 @@
-//===----------- Implementation of _tensor_impl module  ---------*-C++-*-/===//
+//===-- ------------ Implementation of _tensor_impl module  ----*-C++-*-/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -16,23 +16,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//===----------------------------------------------------------------------===//
+//===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file declares functions for looking of supported types in elementwise
-/// functions.
-//===----------------------------------------------------------------------===//
+/// This file defines functions of dpctl.tensor._tensor_impl extensions
+//===--------------------------------------------------------------------===//
 
 #pragma once
-#include "dpctl4pybind11.hpp"
-#include <pybind11/numpy.h>
+
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
-
-#include "utils/type_dispatch.hpp"
-
-namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace dpctl
 {
@@ -40,17 +33,21 @@ namespace tensor
 {
 namespace py_internal
 {
-namespace type_utils
+
+template <typename T> struct PythonObjectUnboxer
 {
+    T operator()(const py::object &o) const
+    {
+        if constexpr (std::is_same_v<T, sycl::half>) {
+            float tmp = py::cast<float>(o);
+            return static_cast<sycl::half>(tmp);
+        }
+        else {
+            return py::cast<T>(o);
+        }
+    }
+};
 
-/*! @brief Produce dtype from a type number */
-extern py::dtype _dtype_from_typenum(td_ns::typenum_t);
-
-/*! @brief Lookup typeid of the result from typeid of
- *         argument and the mapping table */
-extern int _result_typeid(int, const int *);
-
-} // namespace type_utils
 } // namespace py_internal
 } // namespace tensor
 } // namespace dpctl

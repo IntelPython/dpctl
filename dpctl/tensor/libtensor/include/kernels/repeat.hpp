@@ -26,10 +26,10 @@
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
 
@@ -42,7 +42,6 @@ namespace kernels
 namespace repeat
 {
 
-namespace py = pybind11;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename OrthogIndexer,
@@ -117,15 +116,15 @@ typedef sycl::event (*repeat_by_sequence_fn_ptr_t)(
     const char *,
     const char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T, typename repT>
@@ -138,15 +137,15 @@ repeat_by_sequence_impl(sycl::queue &q,
                         const char *reps_cp,
                         const char *cumsum_cp,
                         int orthog_nd,
-                        const py::ssize_t *orthog_src_dst_shape_and_strides,
-                        py::ssize_t src_offset,
-                        py::ssize_t dst_offset,
-                        py::ssize_t src_axis_shape,
-                        py::ssize_t src_axis_stride,
-                        py::ssize_t dst_axis_shape,
-                        py::ssize_t dst_axis_stride,
-                        py::ssize_t reps_shape,
-                        py::ssize_t reps_stride,
+                        const ssize_t *orthog_src_dst_shape_and_strides,
+                        ssize_t src_offset,
+                        ssize_t dst_offset,
+                        ssize_t src_axis_shape,
+                        ssize_t src_axis_stride,
+                        ssize_t dst_axis_shape,
+                        ssize_t dst_axis_stride,
+                        ssize_t reps_shape,
+                        ssize_t reps_stride,
                         const std::vector<sycl::event> &depends)
 {
     sycl::event repeat_ev = q.submit([&](sycl::handler &cgh) {
@@ -200,11 +199,11 @@ typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
     const char *,
     const char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T, typename repT>
@@ -215,11 +214,11 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
                                        const char *reps_cp,
                                        const char *cumsum_cp,
                                        int src_nd,
-                                       const py::ssize_t *src_shape_strides,
-                                       py::ssize_t dst_shape,
-                                       py::ssize_t dst_stride,
-                                       py::ssize_t reps_shape,
-                                       py::ssize_t reps_stride,
+                                       const ssize_t *src_shape_strides,
+                                       ssize_t dst_shape,
+                                       ssize_t dst_stride,
+                                       ssize_t reps_shape,
+                                       ssize_t reps_stride,
                                        const std::vector<sycl::event> &depends)
 {
     sycl::event repeat_ev = q.submit([&](sycl::handler &cgh) {
@@ -277,7 +276,7 @@ class RepeatScalarFunctor
 private:
     const T *src = nullptr;
     T *dst = nullptr;
-    const py::ssize_t reps = 1;
+    const ssize_t reps = 1;
     size_t dst_axis_nelems = 0;
     OrthogIndexer orthog_strider;
     SrcAxisIndexer src_axis_strider;
@@ -286,7 +285,7 @@ private:
 public:
     RepeatScalarFunctor(const T *src_,
                         T *dst_,
-                        const py::ssize_t reps_,
+                        const ssize_t reps_,
                         size_t dst_axis_nelems_,
                         OrthogIndexer orthog_strider_,
                         SrcAxisIndexer src_axis_strider_,
@@ -319,15 +318,15 @@ typedef sycl::event (*repeat_by_scalar_fn_ptr_t)(
     size_t,
     const char *,
     char *,
-    const py::ssize_t,
+    const ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T>
@@ -336,15 +335,15 @@ sycl::event repeat_by_scalar_impl(sycl::queue &q,
                                   size_t dst_axis_nelems,
                                   const char *src_cp,
                                   char *dst_cp,
-                                  const py::ssize_t reps,
+                                  const ssize_t reps,
                                   int orthog_nd,
-                                  const py::ssize_t *orthog_shape_and_strides,
-                                  py::ssize_t src_offset,
-                                  py::ssize_t dst_offset,
-                                  py::ssize_t src_axis_shape,
-                                  py::ssize_t src_axis_stride,
-                                  py::ssize_t dst_axis_shape,
-                                  py::ssize_t dst_axis_stride,
+                                  const ssize_t *orthog_shape_and_strides,
+                                  ssize_t src_offset,
+                                  ssize_t dst_offset,
+                                  ssize_t src_axis_shape,
+                                  ssize_t src_axis_stride,
+                                  ssize_t dst_axis_shape,
+                                  ssize_t dst_axis_stride,
                                   const std::vector<sycl::event> &depends)
 {
     sycl::event repeat_ev = q.submit([&](sycl::handler &cgh) {
@@ -388,11 +387,11 @@ typedef sycl::event (*repeat_by_scalar_1d_fn_ptr_t)(
     size_t,
     const char *,
     char *,
-    const py::ssize_t,
+    const ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T>
@@ -400,11 +399,11 @@ sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
                                      size_t dst_nelems,
                                      const char *src_cp,
                                      char *dst_cp,
-                                     const py::ssize_t reps,
+                                     const ssize_t reps,
                                      int src_nd,
-                                     const py::ssize_t *src_shape_strides,
-                                     py::ssize_t dst_shape,
-                                     py::ssize_t dst_stride,
+                                     const ssize_t *src_shape_strides,
+                                     ssize_t dst_shape,
+                                     ssize_t dst_stride,
                                      const std::vector<sycl::event> &depends)
 {
     sycl::event repeat_ev = q.submit([&](sycl::handler &cgh) {

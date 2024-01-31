@@ -23,19 +23,16 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include "pybind11/numpy.h"
-#include "pybind11/stl.h"
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl
@@ -46,9 +43,6 @@ namespace kernels
 {
 namespace clip
 {
-
-namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
 
 using namespace dpctl::tensor::offset_utils;
 
@@ -257,7 +251,7 @@ public:
     void operator()(sycl::id<1> id) const
     {
         size_t gid = id[0];
-        auto offsets = indexer(static_cast<py::ssize_t>(gid));
+        auto offsets = indexer(static_cast<ssize_t>(gid));
         dst_p[offsets.get_fourth_offset()] = clip(
             x_p[offsets.get_first_offset()], min_p[offsets.get_second_offset()],
             max_p[offsets.get_third_offset()]);
@@ -274,11 +268,11 @@ typedef sycl::event (*clip_strided_impl_fn_ptr_t)(
     const char *,
     const char *,
     char *,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T>
@@ -289,11 +283,11 @@ sycl::event clip_strided_impl(sycl::queue &q,
                               const char *min_cp,
                               const char *max_cp,
                               char *dst_cp,
-                              const py::ssize_t *shape_strides,
-                              py::ssize_t x_offset,
-                              py::ssize_t min_offset,
-                              py::ssize_t max_offset,
-                              py::ssize_t dst_offset,
+                              const ssize_t *shape_strides,
+                              ssize_t x_offset,
+                              ssize_t min_offset,
+                              ssize_t max_offset,
+                              ssize_t dst_offset,
                               const std::vector<sycl::event> &depends)
 {
     const T *x_tp = reinterpret_cast<const T *>(x_cp);

@@ -25,13 +25,13 @@
 #pragma once
 #include <cstdint>
 #include <limits>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
+#include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 namespace dpctl
 {
@@ -41,8 +41,6 @@ namespace kernels
 {
 namespace indexing
 {
-
-namespace py = pybind11;
 
 using namespace dpctl::tensor::offset_utils;
 
@@ -90,7 +88,7 @@ struct MaskedExtractStridedFunctor
         // + 1 : 1)
         if (mask_set) {
             auto orthog_offsets =
-                orthog_src_dst_indexer(static_cast<py::ssize_t>(orthog_i));
+                orthog_src_dst_indexer(static_cast<ssize_t>(orthog_i));
 
             size_t total_src_offset = masked_src_indexer(masked_i) +
                                       orthog_offsets.get_first_offset();
@@ -161,7 +159,7 @@ struct MaskedPlaceStridedFunctor
         // + 1 : 1)
         if (mask_set) {
             auto orthog_offsets =
-                orthog_dst_rhs_indexer(static_cast<py::ssize_t>(orthog_i));
+                orthog_dst_rhs_indexer(static_cast<ssize_t>(orthog_i));
 
             size_t total_dst_offset = masked_dst_indexer(masked_i) +
                                       orthog_offsets.get_first_offset();
@@ -199,28 +197,28 @@ class masked_extract_all_slices_strided_impl_krn;
 
 typedef sycl::event (*masked_extract_all_slices_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    py::ssize_t,
+    ssize_t,
     const char *,
     const char *,
     char *,
     int,
-    py::ssize_t const *,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t const *,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename dataT, typename indT>
 sycl::event masked_extract_all_slices_strided_impl(
     sycl::queue &exec_q,
-    py::ssize_t iteration_size,
+    ssize_t iteration_size,
     const char *src_p,
     const char *cumsum_p,
     char *dst_p,
     int nd,
-    const py::ssize_t
+    const ssize_t
         *packed_src_shape_strides, // [src_shape, src_strides], length 2*nd
-    py::ssize_t dst_size,          // dst is 1D
-    py::ssize_t dst_stride,
+    ssize_t dst_size,              // dst is 1D
+    ssize_t dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
     //  using MaskedExtractStridedFunctor;
@@ -230,7 +228,7 @@ sycl::event masked_extract_all_slices_strided_impl(
 
     TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
 
-    /* StridedIndexer(int _nd, py::ssize_t _offset, py::ssize_t const
+    /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
     StridedIndexer masked_src_indexer(nd, 0, packed_src_shape_strides);
     Strided1DIndexer masked_dst_indexer(0, dst_size, dst_stride);
@@ -254,19 +252,19 @@ sycl::event masked_extract_all_slices_strided_impl(
 
 typedef sycl::event (*masked_extract_some_slices_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
     const char *,
     const char *,
     char *,
     int,
-    py::ssize_t const *,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t const *,
+    ssize_t,
+    ssize_t,
     int,
-    py::ssize_t const *,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t const *,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename OrthoIndexerT,
@@ -279,24 +277,24 @@ class masked_extract_some_slices_strided_impl_krn;
 template <typename dataT, typename indT>
 sycl::event masked_extract_some_slices_strided_impl(
     sycl::queue &exec_q,
-    py::ssize_t orthog_nelems,
-    py::ssize_t masked_nelems,
+    ssize_t orthog_nelems,
+    ssize_t masked_nelems,
     const char *src_p,
     const char *cumsum_p,
     char *dst_p,
     int orthog_nd,
-    const py::ssize_t
+    const ssize_t
         *packed_ortho_src_dst_shape_strides, // [ortho_shape, ortho_src_strides,
                                              // ortho_dst_strides], length
                                              // 3*ortho_nd
-    py::ssize_t ortho_src_offset,
-    py::ssize_t ortho_dst_offset,
+    ssize_t ortho_src_offset,
+    ssize_t ortho_dst_offset,
     int masked_nd,
-    const py::ssize_t *packed_masked_src_shape_strides, // [masked_src_shape,
-                                                        // masked_src_strides],
-                                                        // length 2*masked_nd
-    py::ssize_t masked_dst_size,                        // mask_dst is 1D
-    py::ssize_t masked_dst_stride,
+    const ssize_t *packed_masked_src_shape_strides, // [masked_src_shape,
+                                                    // masked_src_strides],
+                                                    // length 2*masked_nd
+    ssize_t masked_dst_size,                        // mask_dst is 1D
+    ssize_t masked_dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
     //  using MaskedExtractStridedFunctor;
@@ -381,33 +379,33 @@ class masked_place_all_slices_strided_impl_krn;
 
 typedef sycl::event (*masked_place_all_slices_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    py::ssize_t,
+    ssize_t,
     char *,
     const char *,
     const char *,
     int,
-    py::ssize_t const *,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t const *,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename dataT, typename indT>
 sycl::event masked_place_all_slices_strided_impl(
     sycl::queue &exec_q,
-    py::ssize_t iteration_size,
+    ssize_t iteration_size,
     char *dst_p,
     const char *cumsum_p,
     const char *rhs_p,
     int nd,
-    const py::ssize_t
+    const ssize_t
         *packed_dst_shape_strides, // [dst_shape, dst_strides], length 2*nd
-    py::ssize_t rhs_size,          // rhs is 1D
-    py::ssize_t rhs_stride,
+    ssize_t rhs_size,              // rhs is 1D
+    ssize_t rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
     TwoZeroOffsets_Indexer orthog_dst_rhs_indexer{};
 
-    /* StridedIndexer(int _nd, py::ssize_t _offset, py::ssize_t const
+    /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
     StridedIndexer masked_dst_indexer(nd, 0, packed_dst_shape_strides);
     Strided1DCyclicIndexer masked_rhs_indexer(0, rhs_size, rhs_stride);
@@ -431,19 +429,19 @@ sycl::event masked_place_all_slices_strided_impl(
 
 typedef sycl::event (*masked_place_some_slices_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
     char *,
     const char *,
     const char *,
     int,
-    py::ssize_t const *,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t const *,
+    ssize_t,
+    ssize_t,
     int,
-    py::ssize_t const *,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t const *,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename OrthoIndexerT,
@@ -456,31 +454,31 @@ class masked_place_some_slices_strided_impl_krn;
 template <typename dataT, typename indT>
 sycl::event masked_place_some_slices_strided_impl(
     sycl::queue &exec_q,
-    py::ssize_t orthog_nelems,
-    py::ssize_t masked_nelems,
+    ssize_t orthog_nelems,
+    ssize_t masked_nelems,
     char *dst_p,
     const char *cumsum_p,
     const char *rhs_p,
     int orthog_nd,
-    const py::ssize_t
+    const ssize_t
         *packed_ortho_dst_rhs_shape_strides, // [ortho_shape, ortho_dst_strides,
                                              // ortho_rhs_strides], length
                                              // 3*ortho_nd
-    py::ssize_t ortho_dst_offset,
-    py::ssize_t ortho_rhs_offset,
+    ssize_t ortho_dst_offset,
+    ssize_t ortho_rhs_offset,
     int masked_nd,
-    const py::ssize_t *packed_masked_dst_shape_strides, // [masked_dst_shape,
-                                                        // masked_dst_strides],
-                                                        // length 2*masked_nd
-    py::ssize_t masked_rhs_size,                        // mask_dst is 1D
-    py::ssize_t masked_rhs_stride,
+    const ssize_t *packed_masked_dst_shape_strides, // [masked_dst_shape,
+                                                    // masked_dst_strides],
+                                                    // length 2*masked_nd
+    ssize_t masked_rhs_size,                        // mask_dst is 1D
+    ssize_t masked_rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
     TwoOffsets_StridedIndexer orthog_dst_rhs_indexer{
         orthog_nd, ortho_dst_offset, ortho_rhs_offset,
         packed_ortho_dst_rhs_shape_strides};
 
-    /* StridedIndexer(int _nd, py::ssize_t _offset, py::ssize_t const
+    /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
     StridedIndexer masked_dst_indexer{masked_nd, 0,
                                       packed_masked_dst_shape_strides};
@@ -550,22 +548,22 @@ template <typename T1, typename T2> class non_zero_indexes_krn;
 
 typedef sycl::event (*non_zero_indexes_fn_ptr_t)(
     sycl::queue &,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
     int,
     const char *,
     char *,
-    const py::ssize_t *,
+    const ssize_t *,
     std::vector<sycl::event> const &);
 
 template <typename indT1, typename indT2>
 sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
-                                  py::ssize_t iter_size,
-                                  py::ssize_t nz_elems,
+                                  ssize_t iter_size,
+                                  ssize_t nz_elems,
                                   int nd,
                                   const char *cumsum_cp,
                                   char *indexes_cp,
-                                  const py::ssize_t *mask_shape,
+                                  const ssize_t *mask_shape,
                                   std::vector<sycl::event> const &depends)
 {
     const indT1 *cumsum_data = reinterpret_cast<const indT1 *>(cumsum_cp);
@@ -582,11 +580,11 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
             auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
             bool cond = (cs_curr_val == cs_prev_val);
 
-            py::ssize_t i_ = static_cast<py::ssize_t>(i);
+            ssize_t i_ = static_cast<ssize_t>(i);
             for (int dim = nd; --dim > 0;) {
                 auto sd = mask_shape[dim];
-                py::ssize_t q = i_ / sd;
-                py::ssize_t r = (i_ - q * sd);
+                ssize_t q = i_ / sd;
+                ssize_t r = (i_ - q * sd);
                 if (cond) {
                     indexes_data[cs_curr_val + dim * nz_elems] =
                         static_cast<indT2>(r);

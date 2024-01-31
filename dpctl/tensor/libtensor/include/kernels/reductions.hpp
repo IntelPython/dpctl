@@ -31,14 +31,13 @@
 #include <utility>
 #include <vector>
 
-#include "pybind11/pybind11.h"
+#include "dpctl_tensor_types.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace su_ns = dpctl::tensor::sycl_utils;
 
@@ -98,17 +97,15 @@ public:
     {
 
         auto const &inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
-        const py::ssize_t &inp_iter_offset =
+        const ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
-        const py::ssize_t &out_iter_offset =
+        const ssize_t &out_iter_offset =
             inp_out_iter_offsets_.get_second_offset();
 
         outT red_val(identity_);
         for (size_t m = 0; m < reduction_max_gid_; ++m) {
-            const py::ssize_t inp_reduction_offset =
-                inp_reduced_dims_indexer_(m);
-            const py::ssize_t inp_offset =
-                inp_iter_offset + inp_reduction_offset;
+            const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
+            const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
             outT val = convert_impl<outT, argT>(inp_[inp_offset]);
@@ -334,12 +331,12 @@ typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     const char *,
     char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -396,12 +393,12 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
     const char *arg_cp,
     char *res_cp,
     int iter_nd,
-    const py::ssize_t *iter_shape_and_strides,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
+    const ssize_t *iter_shape_and_strides,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
     int red_nd,
-    const py::ssize_t *reduction_shape_stride,
-    py::ssize_t reduction_arg_offset,
+    const ssize_t *reduction_shape_stride,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
@@ -445,8 +442,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             using IndexerT =
                 dpctl::tensor::offset_utils::UnpackedStridedIndexer;
 
-            const py::ssize_t *const &res_shape = iter_shape_and_strides;
-            const py::ssize_t *const &res_strides =
+            const ssize_t *const &res_shape = iter_shape_and_strides;
+            const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
             IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
                                  res_strides);
@@ -536,9 +533,9 @@ typedef sycl::event (*reduction_contig_impl_fn_ptr)(
     size_t,
     const char *,
     char *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 /* @brief Reduce rows in a matrix */
@@ -551,9 +548,9 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                              // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t reduction_arg_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -579,8 +576,8 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -610,9 +607,8 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                     RowsIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
-            RowsIndexerT rows_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(reduction_nelems)};
+            RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_nelems)};
             NoOpIndexerT result_indexer{};
             InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
                                                         result_indexer};
@@ -680,9 +676,9 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
                              // number of rows)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t reduction_arg_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -709,8 +705,8 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             using KernelName =
                 class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
@@ -748,8 +744,8 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{
-                0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-                /* step */ static_cast<py::ssize_t>(iter_nelems)};
+                0, /* size */ static_cast<ssize_t>(reduction_nelems),
+                /* step */ static_cast<ssize_t>(iter_nelems)};
 
             constexpr size_t preferred_reductions_per_wi = 8;
             size_t reductions_per_wi =
@@ -989,12 +985,12 @@ typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     const char *,
     char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -1109,12 +1105,12 @@ sycl::event reduction_over_group_temps_strided_impl(
     const char *arg_cp,
     char *res_cp,
     int iter_nd,
-    const py::ssize_t *iter_shape_and_strides,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
+    const ssize_t *iter_shape_and_strides,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
     int red_nd,
-    const py::ssize_t *reduction_shape_stride,
-    py::ssize_t reduction_arg_offset,
+    const ssize_t *reduction_shape_stride,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
@@ -1127,8 +1123,8 @@ sycl::event reduction_over_group_temps_strided_impl(
             using IndexerT =
                 dpctl::tensor::offset_utils::UnpackedStridedIndexer;
 
-            const py::ssize_t *const &res_shape = iter_shape_and_strides;
-            const py::ssize_t *const &res_strides =
+            const ssize_t *const &res_shape = iter_shape_and_strides;
+            const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
             IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
                                  res_strides);
@@ -1369,8 +1365,8 @@ sycl::event reduction_over_group_temps_strided_impl(
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
                 InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
+                    0, static_cast<ssize_t>(iter_nelems),
+                    static_cast<ssize_t>(reduction_groups_)};
                 ResIndexerT res_iter_indexer{};
 
                 InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1433,8 +1429,8 @@ sycl::event reduction_over_group_temps_strided_impl(
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{iter_nd, iter_res_offset,
                                          /* shape */ iter_shape_and_strides,
                                          /* strides */ iter_shape_and_strides +
@@ -1517,9 +1513,9 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                              // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t reduction_arg_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -1552,8 +1548,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -1592,8 +1588,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -1684,9 +1680,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                     RowsIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
-            RowsIndexerT rows_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(reduction_nelems)};
+            RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_nelems)};
             NoOpIndexerT noop_tmp_indexer{};
             InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
                                                         noop_tmp_indexer};
@@ -1758,8 +1753,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
                 InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
+                    0, static_cast<ssize_t>(iter_nelems),
+                    static_cast<ssize_t>(reduction_groups_)};
                 ResIndexerT res_iter_indexer{};
 
                 InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1821,8 +1816,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1902,9 +1897,9 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                              // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t reduction_arg_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -1938,8 +1933,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             using KernelName =
                 class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
@@ -1984,8 +1979,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{
-                0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-                /* step */ static_cast<py::ssize_t>(iter_nelems)};
+                0, /* size */ static_cast<ssize_t>(reduction_nelems),
+                /* step */ static_cast<ssize_t>(iter_nelems)};
 
             if (iter_nelems == 1) {
                 // increase GPU occupancy
@@ -2079,8 +2074,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
                                                         noop_tmp_indexer};
             ReductionIndexerT reduction_indexer{
-                0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-                /* step */ static_cast<py::ssize_t>(iter_nelems)};
+                0, /* size */ static_cast<ssize_t>(reduction_nelems),
+                /* step */ static_cast<ssize_t>(iter_nelems)};
 
             auto globalRange =
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
@@ -2148,8 +2143,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
                 InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
+                    0, static_cast<ssize_t>(iter_nelems),
+                    static_cast<ssize_t>(reduction_groups_)};
                 ResIndexerT res_iter_indexer{};
 
                 InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -2211,8 +2206,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -3522,18 +3517,16 @@ public:
     {
 
         auto const &inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
-        const py::ssize_t &inp_iter_offset =
+        const ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
-        const py::ssize_t &out_iter_offset =
+        const ssize_t &out_iter_offset =
             inp_out_iter_offsets_.get_second_offset();
 
         argT red_val(identity_);
         outT idx_val(idx_identity_);
         for (size_t m = 0; m < reduction_max_gid_; ++m) {
-            const py::ssize_t inp_reduction_offset =
-                inp_reduced_dims_indexer_(m);
-            const py::ssize_t inp_offset =
-                inp_iter_offset + inp_reduction_offset;
+            const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
+            const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             argT val = inp_[inp_offset];
             if (val == red_val) {
@@ -3997,12 +3990,12 @@ typedef sycl::event (*search_strided_impl_fn_ptr)(
     const char *,
     char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T1,
@@ -4225,12 +4218,12 @@ sycl::event search_over_group_temps_strided_impl(
     const char *arg_cp,
     char *res_cp,
     int iter_nd,
-    const py::ssize_t *iter_shape_and_strides,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
+    const ssize_t *iter_shape_and_strides,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
     int red_nd,
-    const py::ssize_t *reduction_shape_stride,
-    py::ssize_t reduction_arg_offset,
+    const ssize_t *reduction_shape_stride,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
@@ -4244,8 +4237,8 @@ sycl::event search_over_group_temps_strided_impl(
             using IndexerT =
                 dpctl::tensor::offset_utils::UnpackedStridedIndexer;
 
-            const py::ssize_t *const &res_shape = iter_shape_and_strides;
-            const py::ssize_t *const &res_strides =
+            const ssize_t *const &res_shape = iter_shape_and_strides;
+            const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
             IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
                                  res_strides);
@@ -4506,8 +4499,8 @@ sycl::event search_over_group_temps_strided_impl(
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
                 InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
+                    0, static_cast<ssize_t>(iter_nelems),
+                    static_cast<ssize_t>(reduction_groups_)};
                 ResIndexerT res_iter_indexer{};
 
                 InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -4577,8 +4570,8 @@ sycl::event search_over_group_temps_strided_impl(
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{iter_nd, iter_res_offset,
                                          /* shape */ iter_shape_and_strides,
                                          /* strides */ iter_shape_and_strides +
@@ -4664,9 +4657,9 @@ typedef sycl::event (*search_contig_impl_fn_ptr)(
     size_t,
     const char *,
     char *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename argTy,
@@ -4681,9 +4674,9 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                              // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t reduction_arg_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -4717,8 +4710,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -4759,8 +4752,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -4865,8 +4858,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -4943,8 +4936,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
                 InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
+                    0, static_cast<ssize_t>(iter_nelems),
+                    static_cast<ssize_t>(reduction_groups_)};
                 ResIndexerT res_iter_indexer{};
 
                 InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -5013,8 +5006,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -5103,9 +5096,9 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                              // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t reduction_arg_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -5140,8 +5133,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                         NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             using KernelName =
                 class search_seq_contig_krn<argTy, resTy, ReductionOpT,
@@ -5188,8 +5181,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{
-                0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-                /* step */ static_cast<py::ssize_t>(iter_nelems)};
+                0, /* size */ static_cast<ssize_t>(reduction_nelems),
+                /* step */ static_cast<ssize_t>(iter_nelems)};
 
             if (iter_nelems == 1) {
                 // increase GPU occupancy
@@ -5295,8 +5288,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{
-                0, /* size */ static_cast<py::ssize_t>(reduction_nelems),
-                /* step */ static_cast<py::ssize_t>(iter_nelems)};
+                0, /* size */ static_cast<ssize_t>(reduction_nelems),
+                /* step */ static_cast<ssize_t>(iter_nelems)};
 
             auto globalRange =
                 sycl::range<1>{iter_nelems * reduction_groups * wg};
@@ -5371,8 +5364,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
                 InputIndexerT inp_indexer{
-                    0, static_cast<py::ssize_t>(iter_nelems),
-                    static_cast<py::ssize_t>(reduction_groups_)};
+                    0, static_cast<ssize_t>(iter_nelems),
+                    static_cast<ssize_t>(reduction_groups_)};
                 ResIndexerT res_iter_indexer{};
 
                 InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -5441,8 +5434,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
             InputIndexerT inp_indexer{
-                0, static_cast<py::ssize_t>(iter_nelems),
-                static_cast<py::ssize_t>(remaining_reduction_nelems)};
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(remaining_reduction_nelems)};
             ResIndexerT res_iter_indexer{};
 
             InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,

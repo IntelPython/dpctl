@@ -29,13 +29,13 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
-#include <pybind11/pybind11.h>
 
 namespace dpctl
 {
@@ -46,7 +46,6 @@ namespace kernels
 namespace subtract
 {
 
-namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
@@ -180,11 +179,11 @@ template <typename argTy1, typename argTy2>
 sycl::event subtract_contig_impl(sycl::queue &exec_q,
                                  size_t nelems,
                                  const char *arg1_p,
-                                 py::ssize_t arg1_offset,
+                                 ssize_t arg1_offset,
                                  const char *arg2_p,
-                                 py::ssize_t arg2_offset,
+                                 ssize_t arg2_offset,
                                  char *res_p,
-                                 py::ssize_t res_offset,
+                                 ssize_t res_offset,
                                  const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_impl<
@@ -229,13 +228,13 @@ sycl::event
 subtract_strided_impl(sycl::queue &exec_q,
                       size_t nelems,
                       int nd,
-                      const py::ssize_t *shape_and_strides,
+                      const ssize_t *shape_and_strides,
                       const char *arg1_p,
-                      py::ssize_t arg1_offset,
+                      ssize_t arg1_offset,
                       const char *arg2_p,
-                      py::ssize_t arg2_offset,
+                      ssize_t arg2_offset,
                       char *res_p,
-                      py::ssize_t res_offset,
+                      ssize_t res_offset,
                       const std::vector<sycl::event> &depends,
                       const std::vector<sycl::event> &additional_depends)
 {
@@ -293,12 +292,12 @@ sycl::event subtract_contig_matrix_contig_row_broadcast_impl(
     size_t n0,
     size_t n1,
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
-    py::ssize_t mat_offset,
+    ssize_t mat_offset,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
-    py::ssize_t vec_offset,
+    ssize_t vec_offset,
     char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
                  //    res[i,j] = mat[i,j] - vec[j]
-    py::ssize_t res_offset,
+    ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_matrix_contig_row_broadcast_impl<
@@ -346,12 +345,12 @@ sycl::event subtract_contig_row_contig_matrix_broadcast_impl(
     size_t n0,
     size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
-    py::ssize_t vec_offset,
+    ssize_t vec_offset,
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
-    py::ssize_t mat_offset,
+    ssize_t mat_offset,
     char *res_p, // typeless pointer to (n0, n1) result C-contig. matrix,
                  //    res[i,j] = op(vec[j], mat[i,j])
-    py::ssize_t res_offset,
+    ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_row_contig_matrix_broadcast_impl<
@@ -443,9 +442,9 @@ sycl::event
 subtract_inplace_contig_impl(sycl::queue &exec_q,
                              size_t nelems,
                              const char *arg_p,
-                             py::ssize_t arg_offset,
+                             ssize_t arg_offset,
                              char *res_p,
-                             py::ssize_t res_offset,
+                             ssize_t res_offset,
                              const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_inplace_contig_impl<
@@ -481,11 +480,11 @@ sycl::event subtract_inplace_strided_impl(
     sycl::queue &exec_q,
     size_t nelems,
     int nd,
-    const py::ssize_t *shape_and_strides,
+    const ssize_t *shape_and_strides,
     const char *arg_p,
-    py::ssize_t arg_offset,
+    ssize_t arg_offset,
     char *res_p,
-    py::ssize_t res_offset,
+    ssize_t res_offset,
     const std::vector<sycl::event> &depends,
     const std::vector<sycl::event> &additional_depends)
 {
@@ -532,9 +531,9 @@ sycl::event subtract_inplace_row_matrix_broadcast_impl(
     size_t n0,
     size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
-    py::ssize_t vec_offset,
+    ssize_t vec_offset,
     char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
-    py::ssize_t mat_offset,
+    ssize_t mat_offset,
     const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_inplace_row_matrix_broadcast_impl<

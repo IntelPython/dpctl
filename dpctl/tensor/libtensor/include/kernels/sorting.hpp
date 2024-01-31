@@ -24,14 +24,14 @@
 
 #pragma once
 
-#include "pybind11/pybind11.h"
-
 #include <cassert>
 #include <functional>
 #include <iterator>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
+
+#include "dpctl_tensor_types.hpp"
 
 namespace dpctl
 {
@@ -750,10 +750,10 @@ typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
                                             size_t,
                                             const char *,
                                             char *,
-                                            py::ssize_t,
-                                            py::ssize_t,
-                                            py::ssize_t,
-                                            py::ssize_t,
+                                            ssize_t,
+                                            ssize_t,
+                                            ssize_t,
+                                            ssize_t,
                                             const std::vector<sycl::event> &);
 
 template <typename argTy, typename Comp = std::less<argTy>>
@@ -765,10 +765,10 @@ sycl::event stable_sort_axis1_contig_impl(
                         // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t sort_arg_offset,
-    py::ssize_t sort_res_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t sort_arg_offset,
+    ssize_t sort_res_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -837,10 +837,10 @@ sycl::event stable_argsort_axis1_contig_impl(
                         // number of columns)
     const char *arg_cp,
     char *res_cp,
-    py::ssize_t iter_arg_offset,
-    py::ssize_t iter_res_offset,
-    py::ssize_t sort_arg_offset,
-    py::ssize_t sort_res_offset,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t sort_arg_offset,
+    ssize_t sort_res_offset,
     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +

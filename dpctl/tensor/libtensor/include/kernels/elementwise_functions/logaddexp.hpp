@@ -31,13 +31,13 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
-#include <pybind11/pybind11.h>
 
 namespace dpctl
 {
@@ -48,7 +48,6 @@ namespace kernels
 namespace logaddexp
 {
 
-namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
@@ -145,11 +144,11 @@ template <typename argTy1, typename argTy2>
 sycl::event logaddexp_contig_impl(sycl::queue &exec_q,
                                   size_t nelems,
                                   const char *arg1_p,
-                                  py::ssize_t arg1_offset,
+                                  ssize_t arg1_offset,
                                   const char *arg2_p,
-                                  py::ssize_t arg2_offset,
+                                  ssize_t arg2_offset,
                                   char *res_p,
-                                  py::ssize_t res_offset,
+                                  ssize_t res_offset,
                                   const std::vector<sycl::event> &depends = {})
 {
     return elementwise_common::binary_contig_impl<
@@ -195,13 +194,13 @@ sycl::event
 logaddexp_strided_impl(sycl::queue &exec_q,
                        size_t nelems,
                        int nd,
-                       const py::ssize_t *shape_and_strides,
+                       const ssize_t *shape_and_strides,
                        const char *arg1_p,
-                       py::ssize_t arg1_offset,
+                       ssize_t arg1_offset,
                        const char *arg2_p,
-                       py::ssize_t arg2_offset,
+                       ssize_t arg2_offset,
                        char *res_p,
-                       py::ssize_t res_offset,
+                       ssize_t res_offset,
                        const std::vector<sycl::event> &depends,
                        const std::vector<sycl::event> &additional_depends)
 {

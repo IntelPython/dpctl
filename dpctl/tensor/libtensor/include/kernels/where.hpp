@@ -23,15 +23,13 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include "pybind11/numpy.h"
-#include "pybind11/stl.h"
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -44,8 +42,6 @@ namespace kernels
 {
 namespace search
 {
-
-namespace py = pybind11;
 
 using namespace dpctl::tensor::offset_utils;
 
@@ -244,7 +240,7 @@ public:
     void operator()(sycl::id<1> id) const
     {
         size_t gid = id[0];
-        auto offsets = indexer(static_cast<py::ssize_t>(gid));
+        auto offsets = indexer(static_cast<ssize_t>(gid));
 
         using dpctl::tensor::type_utils::convert_impl;
         bool check =
@@ -264,11 +260,11 @@ typedef sycl::event (*where_strided_impl_fn_ptr_t)(
     const char *,
     const char *,
     char *,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T, typename condT>
@@ -279,11 +275,11 @@ sycl::event where_strided_impl(sycl::queue &q,
                                const char *x1_cp,
                                const char *x2_cp,
                                char *dst_cp,
-                               const py::ssize_t *shape_strides,
-                               py::ssize_t x1_offset,
-                               py::ssize_t x2_offset,
-                               py::ssize_t cond_offset,
-                               py::ssize_t dst_offset,
+                               const ssize_t *shape_strides,
+                               ssize_t x1_offset,
+                               ssize_t x2_offset,
+                               ssize_t cond_offset,
+                               ssize_t dst_offset,
                                const std::vector<sycl::event> &depends)
 {
     const condT *cond_tp = reinterpret_cast<const condT *>(cond_cp);

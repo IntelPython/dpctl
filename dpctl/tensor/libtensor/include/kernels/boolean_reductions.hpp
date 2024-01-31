@@ -31,14 +31,11 @@
 #include <utility>
 #include <vector>
 
-#include "pybind11/pybind11.h"
-
+#include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
-
-namespace py = pybind11;
 
 namespace dpctl
 {
@@ -179,16 +176,16 @@ public:
     {
 
         auto const &inp_out_iter_offsets_ = inp_out_iter_indexer_(id[0]);
-        const py::ssize_t &inp_iter_offset =
+        const ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
-        const py::ssize_t &out_iter_offset =
+        const ssize_t &out_iter_offset =
             inp_out_iter_offsets_.get_second_offset();
 
         outT red_val(identity_);
         for (size_t m = 0; m < reduction_max_gid_; ++m) {
-            py::ssize_t inp_reduction_offset =
-                static_cast<py::ssize_t>(inp_reduced_dims_indexer_(m));
-            py::ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
+            ssize_t inp_reduction_offset =
+                static_cast<ssize_t>(inp_reduced_dims_indexer_(m));
+            ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             // must convert to boolean first to handle nans
             using dpctl::tensor::type_utils::convert_impl;
@@ -249,9 +246,9 @@ typedef sycl::event (*boolean_reduction_contig_impl_fn_ptr)(
     size_t,
     const char *,
     char *,
-    py::ssize_t,
-    py::ssize_t,
-    py::ssize_t,
+    ssize_t,
+    ssize_t,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename T1, typename T2, typename T3>
@@ -269,9 +266,9 @@ boolean_reduction_axis1_contig_impl(sycl::queue &exec_q,
                                     size_t reduction_nelems,
                                     const char *arg_cp,
                                     char *res_cp,
-                                    py::ssize_t iter_arg_offset,
-                                    py::ssize_t iter_res_offset,
-                                    py::ssize_t red_arg_offset,
+                                    ssize_t iter_arg_offset,
+                                    ssize_t iter_res_offset,
+                                    ssize_t red_arg_offset,
                                     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -298,8 +295,8 @@ boolean_reduction_axis1_contig_impl(sycl::queue &exec_q,
             using ReductionIndexerT = NoOpIndexerT;
 
             InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<py::ssize_t>(iter_nelems),
-                                  static_cast<py::ssize_t>(reduction_nelems)},
+                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                                  static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
             ReductionIndexerT reduction_indexer{};
 
@@ -425,9 +422,9 @@ public:
         const size_t wg_size = it.get_local_range(0);
 
         auto inp_out_iter_offsets_ = inp_out_iter_indexer_(reduction_id);
-        const py::ssize_t &inp_iter_offset =
+        const ssize_t &inp_iter_offset =
             inp_out_iter_offsets_.get_first_offset();
-        const py::ssize_t &out_iter_offset =
+        const ssize_t &out_iter_offset =
             inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
@@ -438,9 +435,9 @@ public:
         for (size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg_size)
         {
-            py::ssize_t inp_reduction_offset = static_cast<py::ssize_t>(
-                inp_reduced_dims_indexer_(arg_reduce_gid));
-            py::ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
+            ssize_t inp_reduction_offset =
+                static_cast<ssize_t>(inp_reduced_dims_indexer_(arg_reduce_gid));
+            ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             // must convert to boolean first to handle nans
             using dpctl::tensor::type_utils::convert_impl;
@@ -470,9 +467,9 @@ boolean_reduction_axis0_contig_impl(sycl::queue &exec_q,
                                     size_t reduction_nelems,
                                     const char *arg_cp,
                                     char *res_cp,
-                                    py::ssize_t iter_arg_offset,
-                                    py::ssize_t iter_res_offset,
-                                    py::ssize_t red_arg_offset,
+                                    ssize_t iter_arg_offset,
+                                    ssize_t iter_res_offset,
+                                    ssize_t red_arg_offset,
                                     const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
@@ -507,8 +504,8 @@ boolean_reduction_axis0_contig_impl(sycl::queue &exec_q,
             InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
                                                         result_indexer};
             ReductionIndexerT reduction_indexer{
-                0, static_cast<py::ssize_t>(reduction_nelems),
-                static_cast<py::ssize_t>(iter_nelems)};
+                0, static_cast<ssize_t>(reduction_nelems),
+                static_cast<ssize_t>(iter_nelems)};
 
             constexpr size_t preferred_reductions_per_wi = 4;
             size_t reductions_per_wi =
@@ -582,12 +579,12 @@ typedef sycl::event (*boolean_reduction_strided_impl_fn_ptr)(
     const char *,
     char *,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
     int,
-    const py::ssize_t *,
-    py::ssize_t,
+    const ssize_t *,
+    ssize_t,
     const std::vector<sycl::event> &);
 
 template <typename argTy, typename resTy, typename RedOpT, typename GroupOpT>
@@ -598,12 +595,12 @@ boolean_reduction_strided_impl(sycl::queue &exec_q,
                                const char *arg_cp,
                                char *res_cp,
                                int iter_nd,
-                               const py::ssize_t *iter_shape_and_strides,
-                               py::ssize_t iter_arg_offset,
-                               py::ssize_t iter_res_offset,
+                               const ssize_t *iter_shape_and_strides,
+                               ssize_t iter_arg_offset,
+                               ssize_t iter_res_offset,
                                int red_nd,
-                               const py::ssize_t *reduction_shape_stride,
-                               py::ssize_t reduction_arg_offset,
+                               const ssize_t *reduction_shape_stride,
+                               ssize_t reduction_arg_offset,
                                const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
@@ -647,8 +644,8 @@ boolean_reduction_strided_impl(sycl::queue &exec_q,
             using IndexerT =
                 dpctl::tensor::offset_utils::UnpackedStridedIndexer;
 
-            const py::ssize_t *const &res_shape = iter_shape_and_strides;
-            const py::ssize_t *const &res_strides =
+            const ssize_t *const &res_shape = iter_shape_and_strides;
+            const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
             IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
                                  res_strides);

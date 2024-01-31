@@ -34,6 +34,7 @@
 
 #include "elementwise_functions_type_utils.hpp"
 #include "kernels/alignment.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
@@ -41,6 +42,8 @@
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+
+static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
 
 namespace dpctl
 {

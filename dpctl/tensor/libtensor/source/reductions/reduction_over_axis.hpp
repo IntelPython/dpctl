@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <algorithm>
 #include <cstdint>
+#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <utility>
 #include <vector>
