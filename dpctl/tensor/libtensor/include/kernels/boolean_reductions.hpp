@@ -34,7 +34,7 @@
 #include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl

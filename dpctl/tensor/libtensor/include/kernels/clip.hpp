@@ -33,7 +33,6 @@
 #include "kernels/alignment.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl
@@ -44,8 +43,6 @@ namespace kernels
 {
 namespace clip
 {
-
-namespace td_ns = dpctl::tensor::type_dispatch;
 
 using namespace dpctl::tensor::offset_utils;
 

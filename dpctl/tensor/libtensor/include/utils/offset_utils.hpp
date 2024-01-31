@@ -27,14 +27,12 @@
 #pragma once
 
 #include <algorithm>
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 #include <tuple>
 #include <vector>
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "utils/strided_iters.hpp"
-
-namespace py = pybind11;
 
 namespace dpctl
 {
@@ -85,7 +83,7 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 
 template <typename indT, typename... Vs>
 std::tuple<indT *, size_t, sycl::event>
-device_allocate_and_pack(sycl::queue q,
+device_allocate_and_pack(sycl::queue &q,
                          std::vector<sycl::event> &host_task_events,
                          Vs &&...vs)
 {
@@ -137,35 +135,35 @@ struct NoOpIndexer
 struct StridedIndexer
 {
     StridedIndexer(int _nd,
-                   py::ssize_t _offset,
-                   py::ssize_t const *_packed_shape_strides)
+                   ssize_t _offset,
+                   ssize_t const *_packed_shape_strides)
         : nd(_nd), starting_offset(_offset),
           shape_strides(_packed_shape_strides)
     {
     }
 
-    py::ssize_t operator()(py::ssize_t gid) const
+    ssize_t operator()(ssize_t gid) const
     {
         return compute_offset(gid);
     }
 
-    py::ssize_t operator()(size_t gid) const
+    ssize_t operator()(size_t gid) const
     {
-        return compute_offset(static_cast<py::ssize_t>(gid));
+        return compute_offset(static_cast<ssize_t>(gid));
     }
 
 private:
     int nd;
-    py::ssize_t starting_offset;
-    py::ssize_t const *shape_strides;
+    ssize_t starting_offset;
+    ssize_t const *shape_strides;
 
-    py::ssize_t compute_offset(py::ssize_t gid) const
+    ssize_t compute_offset(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
-        py::ssize_t relative_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+        ssize_t relative_offset(0);
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape_strides,      // shape ptr
             shape_strides + nd, // strides ptr
@@ -178,36 +176,36 @@ private:
 struct UnpackedStridedIndexer
 {
     UnpackedStridedIndexer(int _nd,
-                           py::ssize_t _offset,
-                           py::ssize_t const *_shape,
-                           py::ssize_t const *_strides)
+                           ssize_t _offset,
+                           ssize_t const *_shape,
+                           ssize_t const *_strides)
         : nd(_nd), starting_offset(_offset), shape(_shape), strides(_strides)
     {
     }
 
-    py::ssize_t operator()(py::ssize_t gid) const
+    ssize_t operator()(ssize_t gid) const
     {
         return compute_offset(gid);
     }
 
-    py::ssize_t operator()(size_t gid) const
+    ssize_t operator()(size_t gid) const
     {
-        return compute_offset(static_cast<py::ssize_t>(gid));
+        return compute_offset(static_cast<ssize_t>(gid));
     }
 
 private:
     int nd;
-    py::ssize_t starting_offset;
-    py::ssize_t const *shape;
-    py::ssize_t const *strides;
+    ssize_t starting_offset;
+    ssize_t const *shape;
+    ssize_t const *strides;
 
-    py::ssize_t compute_offset(py::ssize_t gid) const
+    ssize_t compute_offset(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
         py::ssize_t relative_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape,   // shape ptr
             strides, // strides ptr
@@ -218,41 +216,39 @@ private:
 
 struct Strided1DIndexer
 {
-    Strided1DIndexer(py::ssize_t _offset, py::ssize_t _size, py::ssize_t _step)
+    Strided1DIndexer(ssize_t _offset, ssize_t _size, ssize_t _step)
         : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
     {
     }
 
-    py::ssize_t operator()(size_t gid) const
+    ssize_t operator()(size_t gid) const
     {
         // ensure 0 <= gid < size
         return offset + std::min<size_t>(gid, size - 1) * step;
     }
 
 private:
-    py::ssize_t offset = 0;
+    ssize_t offset = 0;
     size_t size = 1;
-    py::ssize_t step = 1;
+    ssize_t step = 1;
 };
 
 struct Strided1DCyclicIndexer
 {
-    Strided1DCyclicIndexer(py::ssize_t _offset,
-                           py::ssize_t _size,
-                           py::ssize_t _step)
+    Strided1DCyclicIndexer(ssize_t _offset, ssize_t _size, ssize_t _step)
         : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
     {
     }
 
-    py::ssize_t operator()(size_t gid) const
+    ssize_t operator()(size_t gid) const
     {
         return offset + (gid % size) * step;
     }
 
 private:
-    py::ssize_t offset = 0;
+    ssize_t offset = 0;
     size_t size = 1;
-    py::ssize_t step = 1;
+    ssize_t step = 1;
 };
 
 template <typename displacementT> struct TwoOffsets
@@ -281,45 +277,45 @@ private:
 struct TwoOffsets_StridedIndexer
 {
     TwoOffsets_StridedIndexer(int common_nd,
-                              py::ssize_t first_offset_,
-                              py::ssize_t second_offset_,
-                              py::ssize_t const *_packed_shape_strides)
+                              ssize_t first_offset_,
+                              ssize_t second_offset_,
+                              ssize_t const *_packed_shape_strides)
         : nd(common_nd), starting_first_offset(first_offset_),
           starting_second_offset(second_offset_),
           shape_strides(_packed_shape_strides)
     {
     }
 
-    TwoOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    TwoOffsets<ssize_t> operator()(ssize_t gid) const
     {
         return compute_offsets(gid);
     }
 
-    TwoOffsets<py::ssize_t> operator()(size_t gid) const
+    TwoOffsets<ssize_t> operator()(size_t gid) const
     {
-        return compute_offsets(static_cast<py::ssize_t>(gid));
+        return compute_offsets(static_cast<ssize_t>(gid));
     }
 
 private:
     int nd;
-    py::ssize_t starting_first_offset;
-    py::ssize_t starting_second_offset;
-    py::ssize_t const *shape_strides;
+    ssize_t starting_first_offset;
+    ssize_t starting_second_offset;
+    ssize_t const *shape_strides;
 
-    TwoOffsets<py::ssize_t> compute_offsets(py::ssize_t gid) const
+    TwoOffsets<ssize_t> compute_offsets(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
-        py::ssize_t relative_first_offset(0);
-        py::ssize_t relative_second_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+        ssize_t relative_first_offset(0);
+        ssize_t relative_second_offset(0);
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape_strides,          // shape ptr
             shape_strides + nd,     // strides ptr
             shape_strides + 2 * nd, // strides ptr
             relative_first_offset, relative_second_offset);
-        return TwoOffsets<py::ssize_t>(
+        return TwoOffsets<ssize_t>(
             starting_first_offset + relative_first_offset,
             starting_second_offset + relative_second_offset);
     }
@@ -329,9 +325,9 @@ struct TwoZeroOffsets_Indexer
 {
     TwoZeroOffsets_Indexer() {}
 
-    TwoOffsets<py::ssize_t> operator()(py::ssize_t) const
+    TwoOffsets<ssize_t> operator()(ssize_t) const
     {
-        return TwoOffsets<py::ssize_t>();
+        return TwoOffsets<ssize_t>();
     }
 };
 
@@ -389,10 +385,10 @@ private:
 struct ThreeOffsets_StridedIndexer
 {
     ThreeOffsets_StridedIndexer(int common_nd,
-                                py::ssize_t first_offset_,
-                                py::ssize_t second_offset_,
-                                py::ssize_t third_offset_,
-                                py::ssize_t const *_packed_shape_strides)
+                                ssize_t first_offset_,
+                                ssize_t second_offset_,
+                                ssize_t third_offset_,
+                                ssize_t const *_packed_shape_strides)
         : nd(common_nd), starting_first_offset(first_offset_),
           starting_second_offset(second_offset_),
           starting_third_offset(third_offset_),
@@ -400,32 +396,32 @@ struct ThreeOffsets_StridedIndexer
     {
     }
 
-    ThreeOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    ThreeOffsets<ssize_t> operator()(ssize_t gid) const
     {
         return compute_offsets(gid);
     }
 
-    ThreeOffsets<py::ssize_t> operator()(size_t gid) const
+    ThreeOffsets<ssize_t> operator()(size_t gid) const
     {
-        return compute_offsets(static_cast<py::ssize_t>(gid));
+        return compute_offsets(static_cast<ssize_t>(gid));
     }
 
 private:
     int nd;
-    py::ssize_t starting_first_offset;
-    py::ssize_t starting_second_offset;
-    py::ssize_t starting_third_offset;
-    py::ssize_t const *shape_strides;
+    ssize_t starting_first_offset;
+    ssize_t starting_second_offset;
+    ssize_t starting_third_offset;
+    ssize_t const *shape_strides;
 
-    ThreeOffsets<py::ssize_t> compute_offsets(py::ssize_t gid) const
+    ThreeOffsets<ssize_t> compute_offsets(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
-        py::ssize_t relative_first_offset(0);
-        py::ssize_t relative_second_offset(0);
-        py::ssize_t relative_third_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+        ssize_t relative_first_offset(0);
+        ssize_t relative_second_offset(0);
+        ssize_t relative_third_offset(0);
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape_strides,          // shape ptr
             shape_strides + nd,     // strides ptr
@@ -433,7 +429,7 @@ private:
             shape_strides + 3 * nd, // strides ptr
             relative_first_offset, relative_second_offset,
             relative_third_offset);
-        return ThreeOffsets<py::ssize_t>(
+        return ThreeOffsets<ssize_t>(
             starting_first_offset + relative_first_offset,
             starting_second_offset + relative_second_offset,
             starting_third_offset + relative_third_offset);
@@ -469,10 +465,10 @@ public:
     {
     }
 
-    ThreeOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    ThreeOffsets<ssize_t> operator()(ssize_t gid) const
     {
-        return ThreeOffsets<py::ssize_t>(
-            first_indexer_(gid), second_indexer_(gid), third_indexer_(gid));
+        return ThreeOffsets<ssize_t>(first_indexer_(gid), second_indexer_(gid),
+                                     third_indexer_(gid));
     }
 };
 
@@ -518,11 +514,11 @@ private:
 struct FourOffsets_StridedIndexer
 {
     FourOffsets_StridedIndexer(int common_nd,
-                               py::ssize_t first_offset_,
-                               py::ssize_t second_offset_,
-                               py::ssize_t third_offset_,
-                               py::ssize_t fourth_offset_,
-                               py::ssize_t const *_packed_shape_strides)
+                               ssize_t first_offset_,
+                               ssize_t second_offset_,
+                               ssize_t third_offset_,
+                               ssize_t fourth_offset_,
+                               ssize_t const *_packed_shape_strides)
         : nd(common_nd), starting_first_offset(first_offset_),
           starting_second_offset(second_offset_),
           starting_third_offset(third_offset_),
@@ -531,34 +527,34 @@ struct FourOffsets_StridedIndexer
     {
     }
 
-    FourOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    FourOffsets<ssize_t> operator()(ssize_t gid) const
     {
         return compute_offsets(gid);
     }
 
-    FourOffsets<py::ssize_t> operator()(size_t gid) const
+    FourOffsets<ssize_t> operator()(size_t gid) const
     {
-        return compute_offsets(static_cast<py::ssize_t>(gid));
+        return compute_offsets(static_cast<ssize_t>(gid));
     }
 
 private:
     int nd;
-    py::ssize_t starting_first_offset;
-    py::ssize_t starting_second_offset;
-    py::ssize_t starting_third_offset;
-    py::ssize_t starting_fourth_offset;
-    py::ssize_t const *shape_strides;
+    ssize_t starting_first_offset;
+    ssize_t starting_second_offset;
+    ssize_t starting_third_offset;
+    ssize_t starting_fourth_offset;
+    ssize_t const *shape_strides;
 
-    FourOffsets<py::ssize_t> compute_offsets(py::ssize_t gid) const
+    FourOffsets<py::ssize_t> compute_offsets(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
-        py::ssize_t relative_first_offset(0);
-        py::ssize_t relative_second_offset(0);
-        py::ssize_t relative_third_offset(0);
-        py::ssize_t relative_fourth_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+        ssize_t relative_first_offset(0);
+        ssize_t relative_second_offset(0);
+        ssize_t relative_third_offset(0);
+        ssize_t relative_fourth_offset(0);
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape_strides,          // shape ptr
             shape_strides + nd,     // strides ptr
@@ -567,7 +563,7 @@ private:
             shape_strides + 4 * nd, // strides ptr
             relative_first_offset, relative_second_offset,
             relative_third_offset, relative_fourth_offset);
-        return FourOffsets<py::ssize_t>(
+        return FourOffsets<ssize_t>(
             starting_first_offset + relative_first_offset,
             starting_second_offset + relative_second_offset,
             starting_third_offset + relative_third_offset,
@@ -579,26 +575,26 @@ struct FourZeroOffsets_Indexer
 {
     FourZeroOffsets_Indexer() {}
 
-    FourOffsets<py::ssize_t> operator()(py::ssize_t) const
+    FourOffsets<ssize_t> operator()(ssize_t) const
     {
-        return FourOffsets<py::ssize_t>();
+        return FourOffsets<ssize_t>();
     }
 };
 
 struct NthStrideOffset
 {
     NthStrideOffset(int common_nd,
-                    py::ssize_t const *_offsets,
-                    py::ssize_t const *_packed_shape_strides)
+                    ssize_t const *_offsets,
+                    ssize_t const *_packed_shape_strides)
         : _ind(common_nd), nd(common_nd), offsets(_offsets),
           shape_strides(_packed_shape_strides)
     {
     }
 
-    size_t operator()(py::ssize_t gid, int n) const
+    size_t operator()(ssize_t gid, int n) const
     {
-        py::ssize_t relative_offset(0);
-        _ind.get_displacement<const py::ssize_t *, const py::ssize_t *>(
+        ssize_t relative_offset(0);
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid, shape_strides, shape_strides + ((n + 1) * nd),
             relative_offset);
 
@@ -606,29 +602,29 @@ struct NthStrideOffset
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_vector<py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_vector<ssize_t> _ind;
 
     int nd;
-    py::ssize_t const *offsets;
-    py::ssize_t const *shape_strides;
+    ssize_t const *offsets;
+    ssize_t const *shape_strides;
 };
 
 template <int nd> struct FixedDimStridedIndexer
 {
-    FixedDimStridedIndexer(const std::array<py::ssize_t, nd> _shape,
-                           const std::array<py::ssize_t, nd> _strides,
-                           py::ssize_t _offset)
+    FixedDimStridedIndexer(const std::array<ssize_t, nd> _shape,
+                           const std::array<ssize_t, nd> _strides,
+                           ssize_t _offset)
         : _ind(_shape), strides(_strides), starting_offset(_offset)
     {
     }
     size_t operator()(size_t gid) const
     {
-        dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> local_indexer(
+        dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
         local_indexer.set(gid);
         auto mi = local_indexer.get();
 
-        py::ssize_t relative_offset = 0;
+        ssize_t relative_offset = 0;
 
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
@@ -638,112 +634,110 @@ template <int nd> struct FixedDimStridedIndexer
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
-    const std::array<py::ssize_t, nd> strides;
-    py::ssize_t starting_offset;
+    const std::array<ssize_t, nd> strides;
+    ssize_t starting_offset;
 };
 
 template <int nd> struct TwoOffsets_FixedDimStridedIndexer
 {
-    TwoOffsets_FixedDimStridedIndexer(
-        const std::array<py::ssize_t, nd> _shape,
-        const std::array<py::ssize_t, nd> _strides1,
-        const std::array<py::ssize_t, nd> _strides2,
-        py::ssize_t _offset1,
-        py::ssize_t _offset2)
+    TwoOffsets_FixedDimStridedIndexer(const std::array<ssize_t, nd> _shape,
+                                      const std::array<ssize_t, nd> _strides1,
+                                      const std::array<ssize_t, nd> _strides2,
+                                      ssize_t _offset1,
+                                      ssize_t _offset2)
         : _ind(_shape), strides1(_strides1), strides2(_strides2),
           starting_offset1(_offset1), starting_offset2(_offset2)
     {
     }
 
-    TwoOffsets<py::ssize_t> operator()(size_t gid) const
+    TwoOffsets<ssize_t> operator()(size_t gid) const
     {
-        dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> local_indexer(
+        dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
         local_indexer.set(gid);
         auto mi = local_indexer.get();
 
-        py::ssize_t relative_offset1 = 0;
+        ssize_t relative_offset1 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset1 += mi[i] * strides1[i];
         }
 
-        py::ssize_t relative_offset2 = 0;
+        ssize_t relative_offset2 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset2 += mi[i] * strides2[i];
         }
 
-        return TwoOffsets<py::ssize_t>(starting_offset1 + relative_offset1,
-                                       starting_offset2 + relative_offset2);
+        return TwoOffsets<ssize_t>(starting_offset1 + relative_offset1,
+                                   starting_offset2 + relative_offset2);
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
-    const std::array<py::ssize_t, nd> strides1;
-    const std::array<py::ssize_t, nd> strides2;
-    py::ssize_t starting_offset1;
-    py::ssize_t starting_offset2;
+    const std::array<ssize_t, nd> strides1;
+    const std::array<ssize_t, nd> strides2;
+    ssize_t starting_offset1;
+    ssize_t starting_offset2;
 };
 
 template <int nd> struct ThreeOffsets_FixedDimStridedIndexer
 {
-    ThreeOffsets_FixedDimStridedIndexer(
-        const std::array<py::ssize_t, nd> _shape,
-        const std::array<py::ssize_t, nd> _strides1,
-        const std::array<py::ssize_t, nd> _strides2,
-        const std::array<py::ssize_t, nd> _strides3,
-        py::ssize_t _offset1,
-        py::ssize_t _offset2,
-        py::ssize_t _offset3)
+    ThreeOffsets_FixedDimStridedIndexer(const std::array<ssize_t, nd> _shape,
+                                        const std::array<ssize_t, nd> _strides1,
+                                        const std::array<ssize_t, nd> _strides2,
+                                        const std::array<ssize_t, nd> _strides3,
+                                        ssize_t _offset1,
+                                        ssize_t _offset2,
+                                        ssize_t _offset3)
         : _ind(_shape), strides1(_strides1), strides2(_strides2),
           strides3(_strides3), starting_offset1(_offset1),
           starting_offset2(_offset2), starting_offset3(_offset3)
     {
     }
 
-    ThreeOffsets<py::ssize_t> operator()(size_t gid) const
+    ThreeOffsets<ssize_t> operator()(size_t gid) const
     {
-        dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> local_indexer(
+        dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
         local_indexer.set(gid);
         auto mi = local_indexer.get();
 
-        py::ssize_t relative_offset1 = 0;
+        ssize_t relative_offset1 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset1 += mi[i] * strides1[i];
         }
 
-        py::ssize_t relative_offset2 = 0;
+        ssize_t relative_offset2 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset2 += mi[i] * strides2[i];
         }
 
-        py::ssize_t relative_offset3 = 0;
+        ssize_t relative_offset3 = 0;
 #pragma unroll
         for (int i = 0; i < nd; ++i) {
             relative_offset3 += mi[i] * strides3[i];
         }
 
-        return ThreeOffsets<py::ssize_t>(starting_offset1 + relative_offset1,
-                                         starting_offset2 + relative_offset2,
-                                         starting_offset3 + relative_offset3);
+        return ThreeOffsets<ssize_t>(starting_offset1 + relative_offset1,
+                                     starting_offset2 + relative_offset2,
+                                     starting_offset3 + relative_offset3);
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_array<nd, py::ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
-    const std::array<py::ssize_t, nd> strides1;
-    const std::array<py::ssize_t, nd> strides2;
-    const std::array<py::ssize_t, nd> strides3;
-    py::ssize_t starting_offset1;
-    py::ssize_t starting_offset2;
-    py::ssize_t starting_offset3;
+    const std::array<ssize_t, nd> strides1;
+    const std::array<ssize_t, nd> strides2;
+    const std::array<ssize_t, nd> strides3;
+    ssize_t starting_offset1;
+    ssize_t starting_offset2;
+    ssize_t starting_offset3;
 };
 
 } // namespace offset_utils

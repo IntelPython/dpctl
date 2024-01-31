@@ -31,7 +31,7 @@
 
 #include "sycl_complex.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
