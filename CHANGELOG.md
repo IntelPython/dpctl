@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.16.0] - MMM. DD, 2024
 
+This release reaches milestone of 100% compliance of `dpctl.tensor` functions with Python Array API 2022.12 standard for the main namespace.
+
 ### Added
 
 * Added reduction functions `dpctl.tensor.min`, `dpctl.tensor.max`, `dpctl.tensor.argmin`, `dpctl.tensor.argmax`, and `dpctl.tensor.prod` per Python Array API specifications: [#1399](https://github.com/IntelPython/dpctl/pull/1399)
@@ -24,13 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Functions `dpctl.tensor.result_type` and `dpctl.tensor.can_cast` became device-aware: [#1488](https://github.com/IntelPython/dpctl/pull/1488), [#1473](https://github.com/IntelPython/dpctl/pull/1473)
 * Implementation of method `dpctl.SyclEvent.wait_for` changed to use ``sycl::event::wait`` instead of ``sycl::event::wait_and_throw``: [gh-1436](https://github.com/IntelPython/dpctl/pull/1436)
-
+* `dpctl.tensor.astype` was changed to support `device` keyword as per Python Array API specification: [#1511](https://github.com/IntelPython/dpctl/pull/1511)
+* C++ header files in `libtensor/include/kernels` containing implementations of SYCL kernels no longer depends on "pybind11.h": [#1516](https://github.com/IntelPython/dpctl/pull/1516)
 
 ### Fixed
 
 * Fixed issues with `dpctl.tensor.repeat` support for `axis` keyword: [#1427](https://github.com/IntelPython/dpctl/pull/1427), [#1433](https://github.com/IntelPython/dpctl/pull/1433)
 * Fix for gh-1503 for bug `usm_ndarray.__setitem__`: [#1504](https://github.com/IntelPython/dpctl/pull/1504)
-* Other bug fixes: [#1485](https://github.com/IntelPython/dpctl/pull/1485), [#1477](https://github.com/IntelPython/dpctl/pull/1477)
+* Other bug fixes: [#1485](https://github.com/IntelPython/dpctl/pull/1485), [#1477](https://github.com/IntelPython/dpctl/pull/1477), [#1512](https://github.com/IntelPython/dpctl/pull/1512)
 
 
 ## [0.15.0] - Sep. 29, 2023
