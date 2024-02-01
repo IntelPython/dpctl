@@ -41,6 +41,20 @@ _numeric_types = [
 ]
 
 
+def _map_int_to_type(n, dt):
+    assert isinstance(n, int)
+    assert n > 0
+    if dt == dpt.int8:
+        return ((n + 128) % 256) - 128
+    elif dt == dpt.uint8:
+        return n % 256
+    elif dt == dpt.int16:
+        return ((n + 32768) % 65536) - 32768
+    elif dt == dpt.uint16:
+        return n % 65536
+    return n
+
+
 def test_matrix_transpose():
     get_queue_or_skip()
 
@@ -702,8 +716,8 @@ def test_vecdot_1d(dtype):
     v2 = dpt.ones(n, dtype=dtype)
 
     r = dpt.vecdot(v1, v2)
-
-    assert r == n
+    expected_value = _map_int_to_type(n, r.dtype)
+    assert r == expected_value
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
@@ -722,7 +736,8 @@ def test_vecdot_3d(dtype):
         m1,
         m2,
     )
-    assert dpt.all(r == n)
+    expected_value = _map_int_to_type(n, r.dtype)
+    assert dpt.all(r == expected_value)
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
@@ -741,7 +756,8 @@ def test_vecdot_axis(dtype):
         m1,
         m2,
     )
-    assert dpt.all(r == n)
+    expected_value = _map_int_to_type(n, r.dtype)
+    assert dpt.all(r == expected_value)
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
@@ -775,6 +791,7 @@ def test_vecdot_strided(dtype):
         m1,
         m2,
     )
+    ref = _map_int_to_type(ref, r.dtype)
     assert dpt.all(r == ref)
 
 
