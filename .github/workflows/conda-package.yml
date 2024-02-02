@@ -22,7 +22,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
@@ -79,7 +79,7 @@ jobs:
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -411,7 +411,7 @@ jobs:
         # Needed to be able to run conda index
         run: conda install conda-build python=${{ matrix.python }}
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
       - name: Download artifact
@@ -554,7 +554,7 @@ jobs:
       CHANNELS: -c intel -c conda-forge --override-channels
     steps:
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
       - name: Cache array API tests
@@ -698,7 +698,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0
