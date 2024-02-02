@@ -642,11 +642,10 @@ jobs:
           FILE=/home/runner/work/.report.json
           . $CONDA/etc/profile.d/conda.sh
           conda activate test_dpctl
-          # echo "libintelocl.so" | tee /etc/OpenCL/vendors/intel-cpu.icd
-          python -c "import dpctl; dpctl.lsplatform()"
-          export ARRAY_API_TESTS_MODULE=dpctl.tensor
           cd /home/runner/work/array-api-tests
-          pytest --json-report --json-report-file=$FILE --disable-deadline --skips-file ${GITHUB_WORKSPACE}/.github/workflows/array-api-skips.txt array_api_tests/ || true
+          ${CONDA_PREFIX}/bin/python -c "import dpctl; dpctl.lsplatform()"
+          export ARRAY_API_TESTS_MODULE=dpctl.tensor
+          ${CONDA_PREFIX}/bin/python -m pytest --json-report --json-report-file=$FILE --disable-deadline --skips-file ${GITHUB_WORKSPACE}/.github/workflows/array-api-skips.txt array_api_tests/ || true
       - name: Set Github environment variables
         shell: bash -l {0}
         run: |
@@ -707,5 +706,5 @@ jobs:
       - name: Cleanup old packages
         run: |
           python scripts/cleanup-old-packages.py \
-          --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
-          --package dppy/${{ env.PACKAGE_NAME }} --label dev
+            --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
+            --package dppy/${{ env.PACKAGE_NAME }} --label dev
