@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7TCKS5BHYE');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl.utils &mdash; Data Parallel Control (dpctl) 0.15.1dev3+71.g3acbd51888 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=9bc4ce41"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/target-highlight.js?v=df7d332b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.15.1dev3+71.g3acbd51888
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docfiles/libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../dpctl.html">dpctl</a></li>
+      <li class="breadcrumb-item active">dpctl.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpctl.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1">#                      Data Parallel Control (dpctl)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2020-2022 Intel Corporation</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A collection of utility functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.._sycl_device</span> <span class="kn">import</span> <span class="n">SyclDevice</span>
+<span class="kn">from</span> <span class="nn">._compute_follows_data</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ExecutionPlacementError</span><span class="p">,</span>
+    <span class="n">get_coerced_usm_type</span><span class="p">,</span>
+    <span class="n">get_execution_queue</span><span class="p">,</span>
+    <span class="n">validate_usm_type</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._device_queries</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">intel_device_info_device_id</span><span class="p">,</span>
+    <span class="n">intel_device_info_gpu_eu_count</span><span class="p">,</span>
+    <span class="n">intel_device_info_gpu_eu_count_per_subslice</span><span class="p">,</span>
+    <span class="n">intel_device_info_gpu_eu_simd_width</span><span class="p">,</span>
+    <span class="n">intel_device_info_gpu_hw_threads_per_eu</span><span class="p">,</span>
+    <span class="n">intel_device_info_gpu_slices</span><span class="p">,</span>
+    <span class="n">intel_device_info_gpu_subslices_per_slice</span><span class="p">,</span>
+    <span class="n">intel_device_info_max_mem_bandwidth</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._onetrace_context</span> <span class="kn">import</span> <span class="n">onetrace_enabled</span>
+
+
+<div class="viewcode-block" id="intel_device_info"><a class="viewcode-back" href="../../docfiles/dpctl/dpctl.utils_functions_api.html#dpctl.utils.intel_device_info">[docs]</a><span class="k">def</span> <span class="nf">intel_device_info</span><span class="p">(</span><span class="n">dev</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;intel_device_info(sycl_device)</span>
+
+<span class="sd">    For Intel(R) GPU devices returns a dictionary</span>
+<span class="sd">    with device architectural details, and an empty</span>
+<span class="sd">    dictionary otherwise. The dictionary contains</span>
+<span class="sd">    the following keys:</span>
+
+<span class="sd">        device_id: 32-bits device PCI identifier</span>
+<span class="sd">        gpu_eu_count: Total number of execution units</span>
+<span class="sd">        gpu_hw_threads_per_eu: Number of thread contexts in EU</span>
+<span class="sd">        gpu_eu_simd_width: Physical SIMD width of EU</span>
+<span class="sd">        gpu_slices: Total number of slices</span>
+<span class="sd">        gpu_subslices_per_slice: Number of sub-slices per slice</span>
+<span class="sd">        gpu_eu_count_per_subslice: Number of EUs in subslice</span>
+<span class="sd">        max_mem_bandwidth: Maximum memory bandwidth in bytes/second</span>
+
+<span class="sd">    Unsupported descriptors are omitted from the dictionary.</span>
+<span class="sd">    Descriptors other than PCI identifier are supported only for</span>
+<span class="sd">    SyclDevices with Leve-Zero backend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">SyclDevice</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclDevice, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">dev_id</span> <span class="o">=</span> <span class="n">intel_device_info_device_id</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dev_id</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;device_id&quot;</span><span class="p">:</span> <span class="n">dev_id</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_gpu</span><span class="p">:</span>
+            <span class="n">eu_count</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_count</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">eu_count</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eu_count</span>
+            <span class="n">hw_threads</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_hw_threads_per_eu</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">hw_threads</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_hw_threads_per_eu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hw_threads</span>
+            <span class="n">simd_w</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_simd_width</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">simd_w</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_simd_width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simd_w</span>
+            <span class="n">n_slices</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_slices</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_slices</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_slices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_slices</span>
+            <span class="n">n_subslices</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_subslices_per_slice</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_subslices</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_subslices_per_slice&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_subslices</span>
+            <span class="n">n_eu_per_subslice</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_count_per_subslice</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_eu_per_subslice</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_count_per_subslice&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_eu_per_subslice</span>
+        <span class="n">bw</span> <span class="o">=</span> <span class="n">intel_device_info_max_mem_bandwidth</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bw</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;max_mem_bandwidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bw</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;get_execution_queue&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_coerced_usm_type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;validate_usm_type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;onetrace_enabled&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intel_device_info&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ExecutionPlacementError&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
