@@ -546,7 +546,7 @@ cdef class usm_ndarray:
                 PyMem_Free(self.shape_)
             if (self.strides_):
                 PyMem_Free(self.strides_)
-            self.flags_ = contig_flag
+            self.flags_ = (contig_flag | (self.flags_ & USM_ARRAY_WRITABLE))
             self.nd_ = new_nd
             self.shape_ = shape_ptr
             self.strides_ = strides_ptr
@@ -725,13 +725,13 @@ cdef class usm_ndarray:
             buffer=self.base_,
             offset=_meta[2]
         )
-        res.flags_ |= (self.flags_ & USM_ARRAY_WRITABLE)
         res.array_namespace_ = self.array_namespace_
 
         adv_ind = _meta[3]
         adv_ind_start_p = _meta[4]
 
         if adv_ind_start_p < 0:
+            res.flags_ ^= (~self.flags_ & USM_ARRAY_WRITABLE)
             return res
 
         from ._copy_utils import _extract_impl, _nonzero_impl, _take_multi_index
@@ -749,6 +749,7 @@ cdef class usm_ndarray:
             if not matching:
                 raise IndexError("boolean index did not match indexed array in dimensions")
             res = _extract_impl(res, key_, axis=adv_ind_start_p)
+            res.flags_ ^= (~self.flags_ & USM_ARRAY_WRITABLE)
             return res
 
         if any(ind.dtype == dpt_bool for ind in adv_ind):
@@ -758,10 +759,13 @@ cdef class usm_ndarray:
                     adv_ind_int.extend(_nonzero_impl(ind))
                 else:
                     adv_ind_int.append(ind)
-            return _take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
+            res = _take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
+            res.flags_ ^= (~self.flags_ & USM_ARRAY_WRITABLE)
+            return res
 
-        return _take_multi_index(res, adv_ind, adv_ind_start_p)
-
+        res = _take_multi_index(res, adv_ind, adv_ind_start_p)
+        res.flags_ ^= (~self.flags_ & USM_ARRAY_WRITABLE)
+        return res
 
     def to_device(self, target, stream=None):
         """ to_device(target_device)
@@ -1040,8 +1044,7 @@ cdef class usm_ndarray:
             buffer=self.base_,
             offset=_meta[2],
         )
-        # set flags and namespace
-        Xv.flags_ |= (self.flags_ & USM_ARRAY_WRITABLE)
+        # set namespace
         Xv.array_namespace_ = self.array_namespace_
 
         from ._copy_utils import (
@@ -1225,7 +1228,7 @@ cdef usm_ndarray _real_view(usm_ndarray ary):
         offset=offset_elems,
         order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
+    r.flags_ ^= (~ary.flags_ & USM_ARRAY_WRITABLE)
     r.array_namespace_ = ary.array_namespace_
     return r
 
@@ -1257,7 +1260,7 @@ cdef usm_ndarray _imag_view(usm_ndarray ary):
         offset=offset_elems,
         order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
+    r.flags_ ^= (~ary.flags_ & USM_ARRAY_WRITABLE)
     r.array_namespace_ = ary.array_namespace_
     return r
 
@@ -1277,7 +1280,7 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
+    r.flags_ ^= (~ary.flags_ & USM_ARRAY_WRITABLE)
     return r
 
 
@@ -1294,7 +1297,7 @@ cdef usm_ndarray _m_transpose(usm_ndarray ary):
         order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
         offset=ary.get_offset()
     )
-    r.flags_ |= (ary.flags_ & USM_ARRAY_WRITABLE)
+    r.flags_ ^= (~ary.flags_ & USM_ARRAY_WRITABLE)
     return r
 
 

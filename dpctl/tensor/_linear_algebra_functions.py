@@ -738,6 +738,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 f"output array must be of usm_ndarray type, got {type(out)}"
             )
 
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
         if out.shape != res_shape:
             raise ValueError(
                 "The shape of input and output arrays are inconsistent. "

@@ -202,6 +202,9 @@ class UnaryElementwiseFunc:
                     f"output array must be of usm_ndarray type, got {type(out)}"
                 )
 
+            if not out.flags.writable:
+                raise ValueError("provided `out` array is read-only")
+
             if out.shape != x.shape:
                 raise ValueError(
                     "The shape of input and output arrays are inconsistent. "
@@ -600,6 +603,9 @@ class BinaryElementwiseFunc:
                 raise TypeError(
                     f"output array must be of usm_ndarray type, got {type(out)}"
                 )
+
+            if not out.flags.writable:
+                raise ValueError("provided `out` array is read-only")
 
             if out.shape != res_shape:
                 raise ValueError(
