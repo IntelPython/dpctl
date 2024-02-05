@@ -62,7 +62,7 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
 
 cdef int _copy_writable(int lhs_flags, int rhs_flags):
     "Copy the WRITABLE flag to lhs_flags from rhs_flags"
-    return (lhs_flag & ~USM_ARRAY_WRITABLE) | (rhs_flag & USM_ARRAY_WRITABLE)
+    return (lhs_flags & ~USM_ARRAY_WRITABLE) | (rhs_flags & USM_ARRAY_WRITABLE)
 
 cdef class usm_ndarray:
     """ usm_ndarray(shape, dtype=None, strides=None, buffer="device", \
