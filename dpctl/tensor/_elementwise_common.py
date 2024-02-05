@@ -687,6 +687,19 @@ class BinaryElementwiseFunc:
         else:
             src2 = dpt.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
 
+        if order == "A":
+            order = (
+                "F"
+                if all(
+                    arr.flags.f_contiguous
+                    for arr in (
+                        src1,
+                        src2,
+                    )
+                )
+                else "C"
+            )
+
         if buf1_dt is None and buf2_dt is None:
             if out is None:
                 if order == "K":
@@ -694,18 +707,6 @@ class BinaryElementwiseFunc:
                         src1, src2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
-                    if order == "A":
-                        order = (
-                            "F"
-                            if all(
-                                arr.flags.f_contiguous
-                                for arr in (
-                                    src1,
-                                    src2,
-                                )
-                            )
-                            else "C"
-                        )
                     out = dpt.empty(
                         res_shape,
                         dtype=res_dt,
@@ -736,8 +737,6 @@ class BinaryElementwiseFunc:
             if order == "K":
                 buf2 = _empty_like_orderK(src2, buf2_dt)
             else:
-                if order == "A":
-                    order = "F" if src1.flags.f_contiguous else "C"
                 buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=src2, dst=buf2, sycl_queue=exec_q
@@ -783,8 +782,6 @@ class BinaryElementwiseFunc:
             if order == "K":
                 buf1 = _empty_like_orderK(src1, buf1_dt)
             else:
-                if order == "A":
-                    order = "F" if src1.flags.f_contiguous else "C"
                 buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=src1, dst=buf1, sycl_queue=exec_q
@@ -827,13 +824,11 @@ class BinaryElementwiseFunc:
             ht_binary_ev.wait()
             return out
 
-        if order in ["K", "A"]:
+        if order == "K":
             if src1.flags.f_contiguous and src2.flags.f_contiguous:
                 order = "F"
             elif src1.flags.c_contiguous and src2.flags.c_contiguous:
                 order = "C"
-            else:
-                order = "C" if order == "A" else "K"
         if order == "K":
             buf1 = _empty_like_orderK(src1, buf1_dt)
         else:
