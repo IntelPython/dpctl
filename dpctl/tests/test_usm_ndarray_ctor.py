@@ -129,6 +129,25 @@ def test_usm_ndarray_flags_bug_gh_1334():
     assert r.flags["F"] and r.flags["C"]
 
 
+def test_usm_ndarray_writable_flag_views():
+    get_queue_or_skip()
+    a = dpt.arange(10, dtype="f4")
+    a.flags["W"] = False
+
+    a.shape = (5, 2)
+    assert not a.flags.writable
+    assert not a.T.flags.writable
+    assert not a.mT.flags.writable
+    assert not a.real.flags.writable
+    assert not a[0:3].flags.writable
+
+    a = dpt.arange(10, dtype="c8")
+    a.flags["W"] = False
+
+    assert not a.real.flags.writable
+    assert not a.imag.flags.writable
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
