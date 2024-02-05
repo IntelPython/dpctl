@@ -296,14 +296,14 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
     const char *x2_data = x2.get_data();
     char *dst_data = dst.get_data();
 
-    auto x1_shape_vec = x1.get_shape_vector();
-    auto x1_strides_vec = x1.get_strides_vector();
+    const auto &x1_shape_vec = x1.get_shape_vector();
+    const auto &x1_strides_vec = x1.get_strides_vector();
 
-    auto x2_shape_vec = x2.get_shape_vector();
-    auto x2_strides_vec = x2.get_strides_vector();
+    const auto &x2_shape_vec = x2.get_shape_vector();
+    const auto &x2_strides_vec = x2.get_strides_vector();
 
-    auto dst_shape_vec = dst.get_shape_vector();
-    auto dst_strides_vec = dst.get_strides_vector();
+    const auto &dst_shape_vec = dst.get_shape_vector();
+    const auto &dst_strides_vec = dst.get_strides_vector();
 
     bool is_x1_c_contig = x1.is_c_contiguous();
     bool is_x1_f_contig = x1.is_f_contiguous();
