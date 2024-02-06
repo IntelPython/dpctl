@@ -748,3 +748,22 @@ def test_clip_compute_follows_data():
 
     with pytest.raises(ExecutionPlacementError):
         dpt.clip(x, out=res)
+
+
+def test_clip_readonly_out():
+    get_queue_or_skip()
+    x = dpt.arange(32, dtype=dpt.int32)
+    r = dpt.empty_like(x)
+    r.flags["W"] = False
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, min=0, max=10, out=r)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, max=10, out=r)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, min=0, out=r)
+
+    with pytest.raises(ValueError):
+        dpt.clip(x, out=r)
