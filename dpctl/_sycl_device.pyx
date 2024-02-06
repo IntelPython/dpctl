@@ -44,7 +44,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetImage3dMaxHeight,
     DPCTLDevice_GetImage3dMaxWidth,
     DPCTLDevice_GetLocalMemSize,
+    DPCTLDevice_GetMaxClockFrequency,
     DPCTLDevice_GetMaxComputeUnits,
+    DPCTLDevice_GetMaxMemAllocSize,
     DPCTLDevice_GetMaxNumSubGroups,
     DPCTLDevice_GetMaxReadImageArgs,
     DPCTLDevice_GetMaxWorkGroupSize,
@@ -1293,6 +1295,30 @@ cdef class SyclDevice(_SyclDevice):
         if (timer_res == 0):
             raise RuntimeError("Failed to get device timer resolution.")
         return timer_res
+
+    @property
+    def max_clock_frequency(self):
+        """ Maximal clock frequency in MHz.
+
+        Returns:
+            int: Frequency in MHz
+        """
+        cdef uint32_t clock_fr = DPCTLDevice_GetMaxClockFrequency(
+            self._device_ref
+	)
+        return clock_fr
+
+    @property
+    def max_mem_alloc_size(self):
+        """ Maximum size of memory object than can be allocated.
+
+        Returns:
+            int: Maximum size of memory object in bytes
+        """
+        cdef uint64_t max_alloc_sz = DPCTLDevice_GetMaxMemAllocSize(
+            self._device_ref
+	)
+        return max_alloc_sz
 
     @property
     def global_mem_cache_type(self):
