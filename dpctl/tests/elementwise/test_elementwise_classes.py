@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import pytest
+
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip
 
@@ -47,6 +49,15 @@ def test_unary_class_str_repr():
     kl_n = unary_fn.__name__
     assert kl_n in s
     assert kl_n in r
+
+
+def test_unary_read_only_out():
+    get_queue_or_skip()
+    x = dpt.arange(32, dtype=dpt.int32)
+    r = dpt.empty_like(x)
+    r.flags["W"] = False
+    with pytest.raises(ValueError):
+        unary_fn(x, out=r)
 
 
 def test_binary_class_getters():
@@ -105,3 +116,13 @@ def test_binary_class_nout():
     nout = binary_fn.nout
     assert isinstance(nout, int)
     assert nout == 1
+
+
+def test_biary_read_only_out():
+    get_queue_or_skip()
+    x1 = dpt.ones(32, dtype=dpt.float32)
+    x2 = dpt.ones_like(x1)
+    r = dpt.empty_like(x1)
+    r.flags["W"] = False
+    with pytest.raises(ValueError):
+        binary_fn(x1, x2, out=r)
