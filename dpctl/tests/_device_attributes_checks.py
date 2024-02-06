@@ -622,6 +622,18 @@ def check_device_type(device):
     assert type(dt) is dpctl.device_type
 
 
+def check_max_clock_frequency(device):
+    freq = device.max_clock_frequency
+    assert isinstance(freq, int)
+    assert freq > 0
+
+
+def check_max_mem_alloc_size(device):
+    mmas = device.max_mem_alloc_size
+    assert isinstance(mmas, int)
+    assert mmas > 0
+
+
 def check_global_mem_cache_type(device):
     gmc_ty = device.global_mem_cache_type
     assert type(gmc_ty) is dpctl.global_mem_cache_type
@@ -719,6 +731,8 @@ list_of_checks = [
     check_global_mem_cache_type,
     check_global_mem_cache_size,
     check_global_mem_cache_line_size,
+    check_max_clock_frequency,
+    check_max_mem_alloc_size,
 ]
 
 
