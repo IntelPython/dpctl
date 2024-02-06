@@ -262,6 +262,9 @@ def _clip_none(x, val, out, order, _binary_fn):
                 f"output array must be of usm_ndarray type, got {type(out)}"
             )
 
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
         if out.shape != res_shape:
             raise ValueError(
                 "The shape of input and output arrays are inconsistent. "
@@ -437,6 +440,9 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     f"{type(out)}"
                 )
 
+            if not out.flags.writable:
+                raise ValueError("provided `out` array is read-only")
+
             if out.shape != x.shape:
                 raise ValueError(
                     "The shape of input and output arrays are "
@@ -599,6 +605,9 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     "output array must be of usm_ndarray type, got "
                     f"{type(out)}"
                 )
+
+            if not out.flags.writable:
+                raise ValueError("provided `out` array is read-only")
 
             if out.shape != res_shape:
                 raise ValueError(
