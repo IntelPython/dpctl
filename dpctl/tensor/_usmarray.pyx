@@ -586,10 +586,8 @@ cdef class usm_ndarray:
         return _flags.Flags(self, self.flags_)
 
     cdef _set_writable_flag(self, int flag):
-        cdef int arr_fl = self.flags_
-        arr_fl ^= (arr_fl & USM_ARRAY_WRITABLE)  # unset WRITABLE flag
-        arr_fl |= (USM_ARRAY_WRITABLE if flag else 0)
-        self.flags_ = arr_fl
+        cdef int mask = (USM_ARRAY_WRITABLE if flag else 0)
+        self.flags_ = _copy_writable(self.flags_, mask)
 
     @property
     def usm_type(self):
