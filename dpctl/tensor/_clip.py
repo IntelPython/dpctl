@@ -440,6 +440,9 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     f"{type(out)}"
                 )
 
+            if not out.flags.writable:
+                raise ValueError("provided `out` array is read-only")
+
             if out.shape != x.shape:
                 raise ValueError(
                     "The shape of input and output arrays are "
