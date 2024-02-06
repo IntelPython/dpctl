@@ -495,6 +495,13 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetProfilingTimerResolution)
     EXPECT_TRUE(res != 0);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxMemAllocSize)
+{
+    uint64_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxMemAllocSize(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheSize)
 {
     uint64_t res = 0;
@@ -506,6 +513,13 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheLineSize)
 {
     uint32_t res = 0;
     EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetGlobalMemCacheLineSize(DRef));
+    EXPECT_TRUE(res != 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGetMaxClockFrequency)
+{
+    uint32_t res = 0;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxClockFrequency(DRef));
     EXPECT_TRUE(res != 0);
 }
 
@@ -833,6 +847,13 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetProfilingTimerResolution)
     ASSERT_TRUE(res == 0);
 }
 
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxMemAllocSize)
+{
+    uint64_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxMemAllocSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheSize)
 {
     uint64_t res = 1;
@@ -845,6 +866,13 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetGlobalMemCacheLineSize)
     uint32_t res = 1;
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTLDevice_GetGlobalMemCacheLineSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxClockFrequency)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxClockFrequency(Null_DRef));
     ASSERT_TRUE(res == 0);
 }
 
