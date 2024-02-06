@@ -332,6 +332,16 @@ def test_matmul_out():
     assert np.allclose(ref, dpt.asnumpy(res))
 
 
+def test_matmul_readonly_out():
+    get_queue_or_skip()
+    m = dpt.ones((10, 10), dtype=dpt.int32)
+    r = dpt.empty_like(m)
+    r.flags["W"] = False
+
+    with pytest.raises(ValueError):
+        dpt.matmul(m, m, out=r)
+
+
 def test_matmul_dtype():
     get_queue_or_skip()
 
