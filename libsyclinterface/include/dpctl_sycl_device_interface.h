@@ -711,6 +711,28 @@ uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(
 
 /*!
  * @brief Wrapper over
+ * device.get_info<info::device::max_clock_frequency>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum clock frequency in MHz as uint32_t.
+ */
+DPCTL_API
+uint32_t
+DPCTLDevice_GetMaxClockFrequency(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::max_mem_alloc_size>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns the maximum size of memory object in bytes as uint64_t.
+ */
+DPCTL_API
+uint64_t
+DPCTLDevice_GetMaxMemAllocSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
  * device.get_info<info::device::global_mem_cache_size>
  *
  * @param    DRef           Opaque pointer to a sycl::device

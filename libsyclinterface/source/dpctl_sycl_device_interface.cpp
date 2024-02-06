@@ -718,6 +718,32 @@ uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(
     }
 }
 
+uint32_t
+DPCTLDevice_GetMaxClockFrequency(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap<device>(DRef);
+        return D->get_info<info::device::max_clock_frequency>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
+
+uint64_t
+DPCTLDevice_GetMaxMemAllocSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap<device>(DRef);
+        return D->get_info<info::device::max_mem_alloc_size>();
+    }
+    else {
+        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
+        return 0;
+    }
+}
+
 uint64_t
 DPCTLDevice_GetGlobalMemCacheSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
