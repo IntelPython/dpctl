@@ -625,7 +625,8 @@ def check_device_type(device):
 def check_max_clock_frequency(device):
     freq = device.max_clock_frequency
     assert isinstance(freq, int)
-    assert freq > 0
+    # FIXME: Change to freq > 0 after transition to 2024.1
+    assert freq >= 0
 
 
 def check_max_mem_alloc_size(device):
