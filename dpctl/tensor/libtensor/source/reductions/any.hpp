@@ -1,5 +1,4 @@
-//===-- tensor_reductions.cpp -                              --*-C++-*-/===//
-//   Implementation of _tensor_reductions_impl module
+//===-- ------------ Implementation of _tensor_impl module  ----*-C++-*-/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -17,19 +16,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//===----------------------------------------------------------------------===//
+//===--------------------------------------------------------------------===//
 ///
 /// \file
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
-//===----------------------------------------------------------------------===//
+//===--------------------------------------------------------------------===//
 
+#pragma once
 #include <pybind11/pybind11.h>
-
-#include "reductions/reduction_common.hpp"
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_tensor_reductions_impl, m)
+namespace dpctl
 {
-    dpctl::tensor::py_internal::init_reduction_functions(m);
-}
+namespace tensor
+{
+namespace py_internal
+{
+
+extern void init_any(py::module_ m);
+
+} // namespace py_internal
+} // namespace tensor
+} // namespace dpctl
