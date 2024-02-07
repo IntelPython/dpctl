@@ -677,7 +677,6 @@ jobs:
             ${{ env.MESSAGE }}
           allow-repeats: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]'
 
   cleanup_packages:
     name: Clean up anaconda packages
