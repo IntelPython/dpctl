@@ -297,9 +297,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthDouble)
         EXPECT_TRUE(vector_width_double != 0);
     }
     else {
-        // FIXME: DPC++ 2023 RT must have a bug, since it returns 1 for
-        // devices without aspect::fp64
-        // EXPECT_TRUE(vector_width_double == 0);
+        EXPECT_TRUE(vector_width_double == 0);
     }
 }
 
@@ -311,7 +309,9 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthHalf)
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("fp16"))))
     {
-        EXPECT_TRUE(vector_width_half != 0);
+        // FIXME: zero value incorrectly returned for CPU in 2024.1,
+        // even though aspect::fp16 is true
+        EXPECT_TRUE(vector_width_half != 0 || DPCTLDevice_IsCPU(DRef));
     }
     else {
         EXPECT_TRUE(vector_width_half == 0);
@@ -384,13 +384,14 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetNativeVectorWidthHalf)
     if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
                                         DPCTL_StrToAspectType("fp16"))))
     {
-        EXPECT_TRUE(vector_width_half != 0);
+        // FIXME: zero value incorrectly returned for CPU in 2024.1,
+        // even though aspect::fp16 is true
+        EXPECT_TRUE(vector_width_half != 0 || DPCTLDevice_IsCPU(DRef));
     }
     else {
         EXPECT_TRUE(vector_width_half == 0);
     }
 }
-//
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxReadImageArgs)
 {
