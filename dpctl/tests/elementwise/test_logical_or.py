@@ -75,20 +75,22 @@ def test_logical_or_complex_matrix(op_dtype):
     sz = 127
     ar1_np_real = np.random.randint(0, 2, sz)
     ar1_np_imag = np.random.randint(0, 2, sz)
-    ar1 = dpt.asarray(ar1_np_real + 1j * ar1_np_imag, dtype=op_dtype)
+    ar1_np = ar1_np_real + 1j * ar1_np_imag
+    ar1 = dpt.asarray(ar1_np, dtype=op_dtype)
 
     ar2_np_real = np.random.randint(0, 2, sz)
     ar2_np_imag = np.random.randint(0, 2, sz)
-    ar2 = dpt.asarray(ar2_np_real + 1j * ar2_np_imag, dtype=op_dtype)
+    ar2_np = ar2_np_real + 1j * ar2_np_imag
+    ar2 = dpt.asarray(ar2_np, dtype=op_dtype)
 
     r = dpt.logical_or(ar1, ar2)
-    expected = np.logical_or(dpt.asnumpy(ar1), dpt.asnumpy(ar2))
+    expected = np.logical_or(ar1_np, ar2_np)
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == expected.shape
     assert (dpt.asnumpy(r) == expected).all()
 
     r1 = dpt.logical_or(ar1[::-2], ar2[::2])
-    expected1 = np.logical_or(dpt.asnumpy(ar1[::-2]), dpt.asnumpy(ar2[::2]))
+    expected1 = np.logical_or(ar1_np[::-2], ar2_np[::2])
     assert _compare_dtypes(r.dtype, expected1.dtype, sycl_queue=q)
     assert r1.shape == expected1.shape
     assert (dpt.asnumpy(r1) == expected1).all()
@@ -106,14 +108,18 @@ def test_logical_or_complex_matrix(op_dtype):
         dtype=op_dtype,
     )
     ar4 = dpt.full(ar3.shape, fill_value=1.0 + 2j, dtype=op_dtype)
+
+    ar3_np = dpt.asnumpy(ar3)
+    ar4_np = dpt.asnumpy(ar4)
+
     r2 = dpt.logical_or(ar3, ar4)
     with np.errstate(invalid="ignore"):
-        expected2 = np.logical_or(dpt.asnumpy(ar3), dpt.asnumpy(ar4))
+        expected2 = np.logical_or(ar3_np, ar4_np)
     assert (dpt.asnumpy(r2) == expected2).all()
 
     r3 = dpt.logical_or(ar4, ar4)
     with np.errstate(invalid="ignore"):
-        expected3 = np.logical_or(dpt.asnumpy(ar4), dpt.asnumpy(ar4))
+        expected3 = np.logical_or(ar4_np, ar4_np)
     assert (dpt.asnumpy(r3) == expected3).all()
 
 
@@ -123,12 +129,15 @@ def test_logical_or_complex_float():
     ar1 = dpt.asarray([1j, 1.0 + 9j, 2.0 + 0j, 2.0 + 1j], dtype="c8")
     ar2 = dpt.full(ar1.shape, 2, dtype="f4")
 
+    ar1_np = dpt.asnumpy(ar1)
+    ar2_np = dpt.asnumpy(ar2)
+
     r = dpt.logical_or(ar1, ar2)
-    expected = np.logical_or(dpt.asnumpy(ar1), dpt.asnumpy(ar2))
+    expected = np.logical_or(ar1_np, ar2_np)
     assert (dpt.asnumpy(r) == expected).all()
 
     r1 = dpt.logical_or(ar2, ar1)
-    expected1 = np.logical_or(dpt.asnumpy(ar2), dpt.asnumpy(ar1))
+    expected1 = np.logical_or(ar2_np, ar1_np)
     assert (dpt.asnumpy(r1) == expected1).all()
     with np.errstate(invalid="ignore"):
         for tp in [
@@ -140,12 +149,14 @@ def test_logical_or_complex_float():
             -dpt.inf * 1j,
         ]:
             ar3 = dpt.full(ar1.shape, tp)
+            ar3_np = dpt.asnumpy(ar3)
+
             r2 = dpt.logical_or(ar1, ar3)
-            expected2 = np.logical_or(dpt.asnumpy(ar1), dpt.asnumpy(ar3))
+            expected2 = np.logical_or(ar1_np, ar3_np)
             assert (dpt.asnumpy(r2) == expected2).all()
 
             r3 = dpt.logical_or(ar3, ar1)
-            expected3 = np.logical_or(dpt.asnumpy(ar3), dpt.asnumpy(ar1))
+            expected3 = np.logical_or(ar3_np, ar1_np)
             assert (dpt.asnumpy(r3) == expected3).all()
 
 
