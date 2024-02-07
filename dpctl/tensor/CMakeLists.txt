@@ -106,6 +106,8 @@ set(_elementwise_sources
 )
 set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduction_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/all.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/any.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/logsumexp.cpp
@@ -114,9 +116,6 @@ set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/prod.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduce_hypot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/sum.cpp
-)
-set(_boolean_reduction_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_reductions.cpp
 )
 set(_sorting_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/sort.cpp
@@ -149,7 +148,6 @@ set(_tensor_elementwise_impl_sources
 set(_tensor_reductions_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_reductions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
-    ${_boolean_reduction_sources}
     ${_reduction_sources}
 )
 set(_tensor_sorting_impl_sources
@@ -210,7 +208,6 @@ list(APPEND _no_fast_math_sources
      ${_reduction_sources}
      ${_sorting_sources}
      ${_linalg_sources}
-     ${_boolean_reduction_soruces}
 )
 
 foreach(_src_fn ${_no_fast_math_sources})
