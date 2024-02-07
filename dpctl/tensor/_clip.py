@@ -298,6 +298,18 @@ def _clip_none(x, val, out, order, _binary_fn):
     else:
         val_ary = dpt.asarray(val, dtype=val_dtype, sycl_queue=exec_q)
 
+    if order == "A":
+        order = (
+            "F"
+            if all(
+                arr.flags.f_contiguous
+                for arr in (
+                    x,
+                    val_ary,
+                )
+            )
+            else "C"
+        )
     if val_dtype == res_dt:
         if out is None:
             if order == "K":
@@ -305,18 +317,6 @@ def _clip_none(x, val, out, order, _binary_fn):
                     x, val_ary, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                if order == "A":
-                    order = (
-                        "F"
-                        if all(
-                            arr.flags.f_contiguous
-                            for arr in (
-                                x,
-                                val_ary,
-                            )
-                        )
-                        else "C"
-                    )
                 out = dpt.empty(
                     res_shape,
                     dtype=res_dt,
@@ -347,8 +347,6 @@ def _clip_none(x, val, out, order, _binary_fn):
         if order == "K":
             buf = _empty_like_orderK(val_ary, res_dt)
         else:
-            if order == "A":
-                order = "F" if x.flags.f_contiguous else "C"
             buf = dpt.empty_like(val_ary, dtype=res_dt, order=order)
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=val_ary, dst=buf, sycl_queue=exec_q
@@ -473,8 +471,6 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             if order == "K":
                 out = _empty_like_orderK(x, x.dtype)
             else:
-                if order == "A":
-                    order = "F" if x.flags.f_contiguous else "C"
                 out = dpt.empty_like(x, order=order)
 
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -659,6 +655,19 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         else:
             a_max = dpt.asarray(max, dtype=max_dtype, sycl_queue=exec_q)
 
+        if order == "A":
+            order = (
+                "F"
+                if all(
+                    arr.flags.f_contiguous
+                    for arr in (
+                        x,
+                        a_min,
+                        a_max,
+                    )
+                )
+                else "C"
+            )
         if buf1_dt is None and buf2_dt is None:
             if out is None:
                 if order == "K":
@@ -672,19 +681,6 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         exec_q,
                     )
                 else:
-                    if order == "A":
-                        order = (
-                            "F"
-                            if all(
-                                arr.flags.f_contiguous
-                                for arr in (
-                                    x,
-                                    a_min,
-                                    a_max,
-                                )
-                            )
-                            else "C"
-                        )
                     out = dpt.empty(
                         res_shape,
                         dtype=res_dt,
@@ -718,18 +714,6 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             if order == "K":
                 buf2 = _empty_like_orderK(a_max, buf2_dt)
             else:
-                if order == "A":
-                    order = (
-                        "F"
-                        if all(
-                            arr.flags.f_contiguous
-                            for arr in (
-                                x,
-                                a_min,
-                            )
-                        )
-                        else "C"
-                    )
                 buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_max, dst=buf2, sycl_queue=exec_q
@@ -784,18 +768,6 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             if order == "K":
                 buf1 = _empty_like_orderK(a_min, buf1_dt)
             else:
-                if order == "A":
-                    order = (
-                        "F"
-                        if all(
-                            arr.flags.f_contiguous
-                            for arr in (
-                                x,
-                                a_max,
-                            )
-                        )
-                        else "C"
-                    )
                 buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_min, dst=buf1, sycl_queue=exec_q
@@ -846,7 +818,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             ht_binary_ev.wait()
             return out
 
-        if order in ["K", "A"]:
+        if order == "K":
             if (
                 x.flags.f_contiguous
                 and a_min.flags.f_contiguous
@@ -859,8 +831,6 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 and a_max.flags.c_contiguous
             ):
                 order = "C"
-            else:
-                order = "C" if order == "A" else "K"
         if order == "K":
             buf1 = _empty_like_orderK(a_min, buf1_dt)
         else:
