@@ -125,11 +125,14 @@ device_allocate_and_pack(sycl::queue &q,
 
 struct NoOpIndexer
 {
-    size_t operator()(size_t gid) const
+    constexpr NoOpIndexer() {}
+    constexpr size_t operator()(size_t gid) const
     {
         return gid;
     }
 };
+
+using dpctl::tensor::ssize_t;
 
 /* @brief Indexer with shape and strides arrays of same size are packed */
 struct StridedIndexer
@@ -204,7 +207,7 @@ private:
         using dpctl::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
-        py::ssize_t relative_offset(0);
+        ssize_t relative_offset(0);
         _ind.get_displacement<const ssize_t *, const ssize_t *>(
             gid,
             shape,   // shape ptr
@@ -253,18 +256,18 @@ private:
 
 template <typename displacementT> struct TwoOffsets
 {
-    TwoOffsets() : first_offset(0), second_offset(0) {}
-    TwoOffsets(const displacementT &first_offset_,
-               const displacementT &second_offset_)
+    constexpr TwoOffsets() : first_offset(0), second_offset(0) {}
+    constexpr TwoOffsets(const displacementT &first_offset_,
+                         const displacementT &second_offset_)
         : first_offset(first_offset_), second_offset(second_offset_)
     {
     }
 
-    displacementT get_first_offset() const
+    constexpr displacementT get_first_offset() const
     {
         return first_offset;
     }
-    displacementT get_second_offset() const
+    constexpr displacementT get_second_offset() const
     {
         return second_offset;
     }
@@ -323,9 +326,9 @@ private:
 
 struct TwoZeroOffsets_Indexer
 {
-    TwoZeroOffsets_Indexer() {}
+    constexpr TwoZeroOffsets_Indexer() {}
 
-    TwoOffsets<ssize_t> operator()(ssize_t) const
+    constexpr TwoOffsets<ssize_t> operator()(ssize_t) const
     {
         return TwoOffsets<ssize_t>();
     }
@@ -339,39 +342,41 @@ private:
     SecondIndexerT second_indexer_;
 
 public:
-    TwoOffsets_CombinedIndexer(const FirstIndexerT &first_indexer,
-                               const SecondIndexerT &second_indexer)
+    constexpr TwoOffsets_CombinedIndexer(const FirstIndexerT &first_indexer,
+                                         const SecondIndexerT &second_indexer)
         : first_indexer_(first_indexer), second_indexer_(second_indexer)
     {
     }
 
-    TwoOffsets<py::ssize_t> operator()(py::ssize_t gid) const
+    constexpr TwoOffsets<ssize_t> operator()(ssize_t gid) const
     {
-        return TwoOffsets<py::ssize_t>(first_indexer_(gid),
-                                       second_indexer_(gid));
+        return TwoOffsets<ssize_t>(first_indexer_(gid), second_indexer_(gid));
     }
 };
 
 template <typename displacementT> struct ThreeOffsets
 {
-    ThreeOffsets() : first_offset(0), second_offset(0), third_offset(0) {}
-    ThreeOffsets(const displacementT &first_offset_,
-                 const displacementT &second_offset_,
-                 const displacementT &third_offset_)
+    constexpr ThreeOffsets()
+        : first_offset(0), second_offset(0), third_offset(0)
+    {
+    }
+    constexpr ThreeOffsets(const displacementT &first_offset_,
+                           const displacementT &second_offset_,
+                           const displacementT &third_offset_)
         : first_offset(first_offset_), second_offset(second_offset_),
           third_offset(third_offset_)
     {
     }
 
-    displacementT get_first_offset() const
+    constexpr displacementT get_first_offset() const
     {
         return first_offset;
     }
-    displacementT get_second_offset() const
+    constexpr displacementT get_second_offset() const
     {
         return second_offset;
     }
-    displacementT get_third_offset() const
+    constexpr displacementT get_third_offset() const
     {
         return third_offset;
     }
@@ -438,11 +443,11 @@ private:
 
 struct ThreeZeroOffsets_Indexer
 {
-    ThreeZeroOffsets_Indexer() {}
+    constexpr ThreeZeroOffsets_Indexer() {}
 
-    ThreeOffsets<py::ssize_t> operator()(py::ssize_t) const
+    constexpr ThreeOffsets<ssize_t> operator()(ssize_t) const
     {
-        return ThreeOffsets<py::ssize_t>();
+        return ThreeOffsets<ssize_t>();
     }
 };
 
@@ -457,15 +462,15 @@ private:
     ThirdIndexerT third_indexer_;
 
 public:
-    ThreeOffsets_CombinedIndexer(const FirstIndexerT &first_indexer,
-                                 const SecondIndexerT &second_indexer,
-                                 const ThirdIndexerT &third_indexer)
+    constexpr ThreeOffsets_CombinedIndexer(const FirstIndexerT &first_indexer,
+                                           const SecondIndexerT &second_indexer,
+                                           const ThirdIndexerT &third_indexer)
         : first_indexer_(first_indexer), second_indexer_(second_indexer),
           third_indexer_(third_indexer)
     {
     }
 
-    ThreeOffsets<ssize_t> operator()(ssize_t gid) const
+    constexpr ThreeOffsets<ssize_t> operator()(ssize_t gid) const
     {
         return ThreeOffsets<ssize_t>(first_indexer_(gid), second_indexer_(gid),
                                      third_indexer_(gid));
@@ -474,32 +479,32 @@ public:
 
 template <typename displacementT> struct FourOffsets
 {
-    FourOffsets()
+    constexpr FourOffsets()
         : first_offset(0), second_offset(0), third_offset(0), fourth_offset(0)
     {
     }
-    FourOffsets(const displacementT &first_offset_,
-                const displacementT &second_offset_,
-                const displacementT &third_offset_,
-                const displacementT &fourth_offset_)
+    constexpr FourOffsets(const displacementT &first_offset_,
+                          const displacementT &second_offset_,
+                          const displacementT &third_offset_,
+                          const displacementT &fourth_offset_)
         : first_offset(first_offset_), second_offset(second_offset_),
           third_offset(third_offset_), fourth_offset(fourth_offset_)
     {
     }
 
-    displacementT get_first_offset() const
+    constexpr displacementT get_first_offset() const
     {
         return first_offset;
     }
-    displacementT get_second_offset() const
+    constexpr displacementT get_second_offset() const
     {
         return second_offset;
     }
-    displacementT get_third_offset() const
+    constexpr displacementT get_third_offset() const
     {
         return third_offset;
     }
-    displacementT get_fourth_offset() const
+    constexpr displacementT get_fourth_offset() const
     {
         return fourth_offset;
     }
@@ -513,12 +518,12 @@ private:
 
 struct FourOffsets_StridedIndexer
 {
-    FourOffsets_StridedIndexer(int common_nd,
-                               ssize_t first_offset_,
-                               ssize_t second_offset_,
-                               ssize_t third_offset_,
-                               ssize_t fourth_offset_,
-                               ssize_t const *_packed_shape_strides)
+    constexpr FourOffsets_StridedIndexer(int common_nd,
+                                         ssize_t first_offset_,
+                                         ssize_t second_offset_,
+                                         ssize_t third_offset_,
+                                         ssize_t fourth_offset_,
+                                         ssize_t const *_packed_shape_strides)
         : nd(common_nd), starting_first_offset(first_offset_),
           starting_second_offset(second_offset_),
           starting_third_offset(third_offset_),
@@ -527,12 +532,12 @@ struct FourOffsets_StridedIndexer
     {
     }
 
-    FourOffsets<ssize_t> operator()(ssize_t gid) const
+    constexpr FourOffsets<ssize_t> operator()(ssize_t gid) const
     {
         return compute_offsets(gid);
     }
 
-    FourOffsets<ssize_t> operator()(size_t gid) const
+    constexpr FourOffsets<ssize_t> operator()(size_t gid) const
     {
         return compute_offsets(static_cast<ssize_t>(gid));
     }
@@ -545,7 +550,7 @@ private:
     ssize_t starting_fourth_offset;
     ssize_t const *shape_strides;
 
-    FourOffsets<py::ssize_t> compute_offsets(ssize_t gid) const
+    FourOffsets<ssize_t> compute_offsets(ssize_t gid) const
     {
         using dpctl::tensor::strides::CIndexer_vector;
 
@@ -573,9 +578,9 @@ private:
 
 struct FourZeroOffsets_Indexer
 {
-    FourZeroOffsets_Indexer() {}
+    constexpr FourZeroOffsets_Indexer() {}
 
-    FourOffsets<ssize_t> operator()(ssize_t) const
+    constexpr FourOffsets<ssize_t> operator()(ssize_t) const
     {
         return FourOffsets<ssize_t>();
     }
