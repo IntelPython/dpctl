@@ -287,7 +287,8 @@ void leaf_sort_impl(Iter first,
                     const size_t end,
                     Compare comp)
 {
-    return insertion_sort_impl<Iter, Compare>(first, begin, end, comp);
+    return insertion_sort_impl<Iter, Compare>(
+        std::move(first), std::move(begin), std::move(end), std::move(comp));
 }
 } // namespace
 
