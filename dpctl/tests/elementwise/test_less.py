@@ -68,34 +68,40 @@ def test_less_complex_matrix(op_dtype):
     sz = 127
     ar1_np_real = np.random.randint(0, 10, sz)
     ar1_np_imag = np.random.randint(0, 10, sz)
-    ar1 = dpt.asarray(ar1_np_real + 1j * ar1_np_imag, dtype=op_dtype)
+    ar1_np = ar1_np_real + 1j * ar1_np_imag
+    ar1 = dpt.asarray(ar1_np, dtype=op_dtype)
 
     ar2_np_real = np.random.randint(0, 10, sz)
     ar2_np_imag = np.random.randint(0, 10, sz)
-    ar2 = dpt.asarray(ar2_np_real + 1j * ar2_np_imag, dtype=op_dtype)
+    ar2_np = ar2_np_real + 1j * ar2_np_imag
+    ar2 = dpt.asarray(ar2_np, dtype=op_dtype)
 
     r = dpt.less(ar1, ar2)
-    expected = np.less(dpt.asnumpy(ar1), dpt.asnumpy(ar2))
+    expected = np.less(ar1_np, ar2_np)
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == expected.shape
     assert (dpt.asnumpy(r) == expected).all()
 
     r1 = dpt.less(ar1[::-2], ar2[::2])
-    expected1 = np.less(dpt.asnumpy(ar1[::-2]), dpt.asnumpy(ar2[::2]))
+    expected1 = np.less(ar1_np[::-2], ar2_np[::2])
     assert _compare_dtypes(r.dtype, expected1.dtype, sycl_queue=q)
     assert r1.shape == expected1.shape
     assert (dpt.asnumpy(r1) == expected1).all()
 
     ar3 = dpt.asarray([1.0 + 9j, 2.0 + 0j, 2.0 + 1j, 2.0 + 2j], dtype=op_dtype)
     ar4 = dpt.asarray([2.0 + 0j, dpt.nan, dpt.inf, -dpt.inf], dtype=op_dtype)
+
+    ar3_np = dpt.asnumpy(ar3)
+    ar4_np = dpt.asnumpy(ar4)
+
     r2 = dpt.less(ar3, ar4)
     with np.errstate(invalid="ignore"):
-        expected2 = np.less(dpt.asnumpy(ar3), dpt.asnumpy(ar4))
+        expected2 = np.less(ar3_np, ar4_np)
     assert (dpt.asnumpy(r2) == expected2).all()
 
     r3 = dpt.less(ar4, ar4)
     with np.errstate(invalid="ignore"):
-        expected3 = np.less(dpt.asnumpy(ar4), dpt.asnumpy(ar4))
+        expected3 = np.less(ar4_np, ar4_np)
     assert (dpt.asnumpy(r3) == expected3).all()
 
 
@@ -105,23 +111,28 @@ def test_less_complex_float():
     ar1 = dpt.asarray([1.0 + 9j, 2.0 + 0j, 2.0 + 1j, 2.0 + 2j], dtype="c8")
     ar2 = dpt.full((4,), 2, dtype="f4")
 
+    ar1_np = dpt.asnumpy(ar1)
+    ar2_np = dpt.asnumpy(ar2)
+
     r = dpt.less(ar1, ar2)
-    expected = np.less(dpt.asnumpy(ar1), dpt.asnumpy(ar2))
+    expected = np.less(ar1_np, ar2_np)
     assert (dpt.asnumpy(r) == expected).all()
 
     r1 = dpt.less(ar2, ar1)
-    expected1 = np.less(dpt.asnumpy(ar2), dpt.asnumpy(ar1))
+    expected1 = np.less(ar2_np, ar1_np)
     assert (dpt.asnumpy(r1) == expected1).all()
     with np.errstate(invalid="ignore"):
         for tp in [dpt.nan, dpt.inf, -dpt.inf]:
 
             ar3 = dpt.full((4,), tp)
+            ar3_np = dpt.asnumpy(ar3)
+
             r2 = dpt.less(ar1, ar3)
-            expected2 = np.less(dpt.asnumpy(ar1), dpt.asnumpy(ar3))
+            expected2 = np.less(ar1_np, ar3_np)
             assert (dpt.asnumpy(r2) == expected2).all()
 
             r3 = dpt.less(ar3, ar1)
-            expected3 = np.less(dpt.asnumpy(ar3), dpt.asnumpy(ar1))
+            expected3 = np.less(ar3_np, ar1_np)
             assert (dpt.asnumpy(r3) == expected3).all()
 
 

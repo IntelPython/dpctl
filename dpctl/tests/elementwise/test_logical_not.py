@@ -29,12 +29,13 @@ def test_logical_not_dtype_matrix(op_dtype):
     skip_if_dtype_not_supported(op_dtype, q)
 
     sz = 7
-    ar1 = dpt.asarray(np.random.randint(0, 2, sz), dtype=op_dtype)
+    ar1_np = np.random.randint(0, 2, sz)
+    ar1 = dpt.asarray(ar1_np, dtype=op_dtype)
 
     r = dpt.logical_not(ar1)
     assert isinstance(r, dpt.usm_ndarray)
 
-    expected = np.logical_not(dpt.asnumpy(ar1))
+    expected = np.logical_not(ar1_np)
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar1.shape
     assert (dpt.asnumpy(r) == expected).all()
@@ -74,16 +75,17 @@ def test_logical_not_complex_matrix(op_dtype):
     sz = 127
     ar1_np_real = np.random.randint(0, 2, sz)
     ar1_np_imag = np.random.randint(0, 2, sz)
-    ar1 = dpt.asarray(ar1_np_real + 1j * ar1_np_imag, dtype=op_dtype)
+    ar1_np = ar1_np_real + 1j * ar1_np_imag
+    ar1 = dpt.asarray(ar1_np, dtype=op_dtype)
 
     r = dpt.logical_not(ar1)
-    expected = np.logical_not(dpt.asnumpy(ar1))
+    expected = np.logical_not(ar1_np)
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == expected.shape
     assert (dpt.asnumpy(r) == expected).all()
 
     r1 = dpt.logical_not(ar1[::-2])
-    expected1 = np.logical_not(dpt.asnumpy(ar1[::-2]))
+    expected1 = np.logical_not(ar1_np[::-2])
     assert _compare_dtypes(r.dtype, expected1.dtype, sycl_queue=q)
     assert r1.shape == expected1.shape
     assert (dpt.asnumpy(r1) == expected1).all()
@@ -100,9 +102,10 @@ def test_logical_not_complex_matrix(op_dtype):
         ],
         dtype=op_dtype,
     )
+    ar2_np = dpt.asnumpy(ar2)
     r2 = dpt.logical_not(ar2)
     with np.errstate(invalid="ignore"):
-        expected2 = np.logical_not(dpt.asnumpy(ar2))
+        expected2 = np.logical_not(ar2_np)
     assert (dpt.asnumpy(r2) == expected2).all()
 
 
