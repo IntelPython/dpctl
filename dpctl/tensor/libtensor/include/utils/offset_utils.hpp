@@ -449,6 +449,11 @@ struct ThreeZeroOffsets_Indexer
     {
         return ThreeOffsets<ssize_t>();
     }
+
+    constexpr ThreeOffsets<ssize_t> operator()(std::size_t) const
+    {
+        return ThreeOffsets<ssize_t>();
+    }
 };
 
 template <typename FirstIndexerT,
