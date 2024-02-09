@@ -591,8 +591,12 @@ def test_matmul_largish(dtype, random_matrix):
     x1 = dpt.matmul(m.mT, m)
     x2 = dpt.matmul(mT, m)
 
-    assert dpt.allclose(x1, x2)
-    assert dpt.allclose(x1, dpt.asarray(x_np))
+    tol = 0
+    if dpt.isdtype(x2.dtype, ("real floating", "complex floating")):
+        tol = 32 * dpt.finfo(x2.dtype).eps
+
+    assert dpt.allclose(x1, x2, atol=tol, rtol=tol)
+    assert dpt.allclose(x1, dpt.asarray(x_np), atol=tol, rtol=tol)
 
     m_np = m_np[:-1, :-1]
     x_np = np.matmul(m_np.T, m_np)
@@ -602,8 +606,8 @@ def test_matmul_largish(dtype, random_matrix):
     x1 = dpt.matmul(m.mT, m)
     x2 = dpt.matmul(mT, m)
 
-    assert dpt.allclose(x1, x2)
-    assert dpt.allclose(x1, dpt.asarray(x_np))
+    assert dpt.allclose(x1, x2, atol=tol, rtol=tol)
+    assert dpt.allclose(x1, dpt.asarray(x_np), atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
