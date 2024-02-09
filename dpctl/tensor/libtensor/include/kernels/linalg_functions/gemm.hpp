@@ -1914,11 +1914,6 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             batch_indexer, lhs_indexer, rhs_indexer, res_indexer, depends);
     }
 
-    const sycl::device &dev = exec_q.get_device();
-    const size_t local_mem_size =
-        dev.get_info<sycl::info::device::local_mem_size>();
-    const size_t reserved_slm_size = 512;
-
     sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
