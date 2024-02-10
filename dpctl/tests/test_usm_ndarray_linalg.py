@@ -579,7 +579,7 @@ def random_matrix():
 
 
 @pytest.mark.parametrize("dtype", _numeric_types)
-def test_matmul_largish(dtype, random_matrix):
+def test_matmul_largish_square(dtype, random_matrix):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -598,12 +598,47 @@ def test_matmul_largish(dtype, random_matrix):
     assert dpt.allclose(x1, x2, atol=tol, rtol=tol)
     assert dpt.allclose(x1, dpt.asarray(x_np), atol=tol, rtol=tol)
 
+    # check stided input
     m_np = m_np[:-1, :-1]
     x_np = np.matmul(m_np.T, m_np)
 
     m = m[:-1, :-1]
     mT = dpt.asarray(m.mT, copy=True, order="C")
     x1 = dpt.matmul(m.mT, m)
+    x2 = dpt.matmul(mT, m)
+
+    assert dpt.allclose(x1, x2, atol=tol, rtol=tol)
+    assert dpt.allclose(x1, dpt.asarray(x_np), atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("dtype", _numeric_types)
+def test_matmul_largish_rect(dtype, random_matrix):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    m_np = random_matrix.astype(dtype)[:, :-1]
+    x_np = np.matmul(m_np.T[:-2, :], m_np)
+
+    m = dpt.asarray(m_np)
+    mmT = m.mT[:-2, :]
+    mT = dpt.asarray(mmT, copy=True, order="C")
+    x1 = dpt.matmul(mmT, m)
+    x2 = dpt.matmul(mT, m)
+
+    tol = 0
+    if dpt.isdtype(x2.dtype, ("real floating", "complex floating")):
+        tol = 32 * dpt.finfo(x2.dtype).eps
+
+    assert dpt.allclose(x1, x2, atol=tol, rtol=tol)
+    assert dpt.allclose(x1, dpt.asarray(x_np), atol=tol, rtol=tol)
+
+    m_np = m_np[:-1, :-1]
+    x_np = np.matmul(m_np.T[:-2, :], m_np)
+
+    m = m[:-1, :-1]
+    mmT = m.mT[:-2, :]
+    mT = dpt.asarray(mmT, copy=True, order="C")
+    x1 = dpt.matmul(mmT, m)
     x2 = dpt.matmul(mT, m)
 
     assert dpt.allclose(x1, x2, atol=tol, rtol=tol)
