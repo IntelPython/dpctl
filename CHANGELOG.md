@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.16.0] - MMM. DD, YYYY
 
-This release will require DPC++ 2024.1.0, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th and older generations.
-Feature wise this release is equivalent to 0.15.1.
+This release will require DPC++ 2024.1.0, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th generation and older.
+Featurewise, this release is identical to 0.15.1.
 
 ## [0.15.1] - Feb. 10, 2024
 
