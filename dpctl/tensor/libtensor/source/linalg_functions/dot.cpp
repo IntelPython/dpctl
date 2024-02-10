@@ -350,10 +350,10 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
         int inner_nd = inner_dims;
         const py::ssize_t *inner_shape_ptr = x1_shape_ptr + batch_dims;
         using shT = std::vector<py::ssize_t>;
-        shT inner_x1_strides(std::begin(x1_strides_vec) + batch_dims,
-                             std::end(x1_strides_vec));
-        shT inner_x2_strides(std::begin(x2_strides_vec) + batch_dims,
-                             std::end(x2_strides_vec));
+        const shT inner_x1_strides(std::begin(x1_strides_vec) + batch_dims,
+                                   std::end(x1_strides_vec));
+        const shT inner_x2_strides(std::begin(x2_strides_vec) + batch_dims,
+                                   std::end(x2_strides_vec));
 
         shT simplified_inner_shape;
         shT simplified_inner_x1_strides;
@@ -369,10 +369,10 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
 
         const py::ssize_t *batch_shape_ptr = x1_shape_ptr;
 
-        shT batch_x1_strides(std::begin(x1_strides_vec),
-                             std::begin(x1_strides_vec) + batch_dims);
-        shT batch_x2_strides(std::begin(x2_strides_vec),
-                             std::begin(x2_strides_vec) + batch_dims);
+        const shT batch_x1_strides(std::begin(x1_strides_vec),
+                                   std::begin(x1_strides_vec) + batch_dims);
+        const shT batch_x2_strides(std::begin(x2_strides_vec),
+                                   std::begin(x2_strides_vec) + batch_dims);
         shT const &batch_dst_strides = dst_strides_vec;
 
         shT simplified_batch_shape;
@@ -551,9 +551,10 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             }
             sycl::event copy_shapes_strides_ev =
                 std::get<2>(ptr_size_event_tuple1);
-            py::ssize_t *x1_shape_strides = packed_shapes_strides;
-            py::ssize_t *x2_shape_strides = packed_shapes_strides + 2 * (x1_nd);
-            py::ssize_t *dst_shape_strides =
+            const py::ssize_t *x1_shape_strides = packed_shapes_strides;
+            const py::ssize_t *x2_shape_strides =
+                packed_shapes_strides + 2 * (x1_nd);
+            const py::ssize_t *dst_shape_strides =
                 packed_shapes_strides + 2 * (x1_nd + x2_nd);
 
             std::vector<sycl::event> all_deps;
@@ -619,9 +620,10 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             shT outer_inner_x1_strides;
             dpctl::tensor::py_internal::split_iteration_space(
                 x1_shape_vec, x1_strides_vec, batch_dims,
-                batch_dims + x1_outer_inner_dims, batch_x1_shape,
-                outer_inner_x1_shape, // 4 vectors modified
-                batch_x1_strides, outer_inner_x1_strides);
+                batch_dims + x1_outer_inner_dims,
+                // 4 vectors modified
+                batch_x1_shape, outer_inner_x1_shape, batch_x1_strides,
+                outer_inner_x1_strides);
 
             shT batch_x2_shape;
             shT outer_inner_x2_shape;
@@ -629,9 +631,10 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             shT outer_inner_x2_strides;
             dpctl::tensor::py_internal::split_iteration_space(
                 x2_shape_vec, x2_strides_vec, batch_dims,
-                batch_dims + x2_outer_inner_dims, batch_x2_shape,
-                outer_inner_x2_shape, // 4 vectors modified
-                batch_x2_strides, outer_inner_x2_strides);
+                batch_dims + x2_outer_inner_dims,
+                // 4 vectors modified
+                batch_x2_shape, outer_inner_x2_shape, batch_x2_strides,
+                outer_inner_x2_strides);
 
             shT batch_dst_shape;
             shT outer_inner_dst_shape;
@@ -639,9 +642,10 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             shT outer_inner_dst_strides;
             dpctl::tensor::py_internal::split_iteration_space(
                 dst_shape_vec, dst_strides_vec, batch_dims,
-                batch_dims + dst_outer_inner_dims, batch_dst_shape,
-                outer_inner_dst_shape, // 4 vectors modified
-                batch_dst_strides, outer_inner_dst_strides);
+                batch_dims + dst_outer_inner_dims,
+                // 4 vectors modified
+                batch_dst_shape, outer_inner_dst_shape, batch_dst_strides,
+                outer_inner_dst_strides);
 
             using shT = std::vector<py::ssize_t>;
             shT simplified_batch_shape;
@@ -746,16 +750,16 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             sycl::event copy_shapes_strides_ev =
                 std::get<2>(ptr_size_event_tuple1);
 
-            auto batch_shape_strides = packed_shapes_strides;
-            auto x1_outer_inner_shapes_strides =
+            const auto batch_shape_strides = packed_shapes_strides;
+            const auto x1_outer_inner_shapes_strides =
                 packed_shapes_strides + 4 * batch_dims;
-            auto x2_outer_inner_shapes_strides = packed_shapes_strides +
-                                                 4 * batch_dims +
-                                                 2 * (x1_outer_inner_dims);
-            auto dst_outer_shapes_strides =
+            const auto x2_outer_inner_shapes_strides =
+                packed_shapes_strides + 4 * batch_dims +
+                2 * (x1_outer_inner_dims);
+            const auto dst_outer_shapes_strides =
                 packed_shapes_strides + 4 * batch_dims +
                 2 * (x1_outer_inner_dims) + 2 * (x2_outer_inner_dims);
-            auto dst_full_shape_strides =
+            const auto dst_full_shape_strides =
                 packed_shapes_strides + 4 * batch_dims +
                 2 * (x1_outer_inner_dims) + 2 * (x2_outer_inner_dims) +
                 2 * (dst_outer_inner_dims);
