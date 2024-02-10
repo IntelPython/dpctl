@@ -1490,8 +1490,8 @@ template <typename resT> struct GemmBatchFunctorThreadNM_vecm_HyperParameters
 template <typename T>
 struct GemmBatchFunctorThreadNM_vecm_HyperParameters<std::complex<T>>
 {
-    static constexpr std::uint32_t wi_delta_n = 4;
-    static constexpr std::uint32_t wi_delta_m_vecs = 4;
+    static constexpr std::uint32_t wi_delta_n = 2;
+    static constexpr std::uint32_t wi_delta_m_vecs = 2;
     static constexpr std::uint32_t m_vec_size = 1;
 };
 
@@ -1527,7 +1527,7 @@ get_wg_delta_m_and_wi_delta_k(const size_t slm_byte_size,
             ? 64
             : 32 * static_cast<std::uint32_t>(slm_max_rows / 32);
 
-    if (!wi_delta_k) {
+    for (std::uint32_t it = 0; !wi_delta_k && (it < 4); ++it) {
         wg_delta_m /= 2;
 
         const size_t slm_max_rows =
@@ -1539,7 +1539,9 @@ get_wg_delta_m_and_wi_delta_k(const size_t slm_byte_size,
                 ? 64
                 : ((slm_max_rows >= 32)
                        ? 32
-                       : 16 * static_cast<std::uint32_t>(slm_max_rows / 16));
+                       : (slm_max_rows >= 16 ? 16
+                                             : 8 * static_cast<std::uint32_t>(
+                                                       slm_max_rows / 8)));
     }
 
     if (!wi_delta_k) {
