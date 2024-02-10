@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.0] - MMM. DD, 2024
+## [0.16.0] - MMM. DD, YYYY
+
+This release will require DPC++ 2024.1.0, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th and older generations.
+Feature wise this release is equivalent to 0.15.1.
+
+## [0.15.1] - Feb. 10, 2024
 
 This release reaches milestone of 100% compliance of `dpctl.tensor` functions with Python Array API 2022.12 standard for the main namespace.
 
@@ -15,12 +20,13 @@ This release reaches milestone of 100% compliance of `dpctl.tensor` functions wi
 * Added new elementwise functions `dpctl.tensor.cbrt`, `dpctl.tensor.rsqrt`, `dpctl.tensor.exp2`, `dpctl.tensor.copysign`, `dpctl.tensor.angle`, and `dpctl.tensor.reciprocal`: [#1443](https://github.com/IntelPython/dpctl/pull/1443), [#1474](https://github.com/IntelPython/dpctl/pull/1474)
 * Added statistical functions `dpctl.tensor.mean`, `dpctl.tensor.std`, `dpctl.tensor.var` per Python Array API specifications: [#1465](https://github.com/IntelPython/dpctl/pull/1465)
 * Added sorting functions `dpctl.tensor.sort` and `dpctl.tensor.argsort`, and set functions `dpctl.tensor.unique_values`, `dpctl.tensor.unique_counts`, `dpctl.tensor.unique_inverse`, `dpctl.tensor.unique_all`: [#1483](https://github.com/IntelPython/dpctl/pull/1483)
-* Added linear algebra functions from the Array API namespace `dpctl.tensor.matrix_transpose`, `dpctl.tensor.matmul`, `dpctl.tensor.vecdot`, and `dpctl.tensor.tensordot`: [#1490](https://github.com/IntelPython/dpctl/pull/1490)
+* Added linear algebra functions from the Array API namespace `dpctl.tensor.matrix_transpose`, `dpctl.tensor.matmul`, `dpctl.tensor.vecdot`, and `dpctl.tensor.tensordot`: [#1490](https://github.com/IntelPython/dpctl/pull/1490), [#1525](https://github.com/IntelPython/dpctl/pull/1525), [#1541](https://github.com/IntelPython/dpctl/pull/1541)
 * Added `dpctl.tensor.clip` function: [#1444](https://github.com/IntelPython/dpctl/pull/1444), [#1505](https://github.com/IntelPython/dpctl/pull/1505)
 * Added custom reduction functions `dpt.logsumexp` (reduction using binary function `dpctl.tensor.logaddexp`), `dpt.reduce_hypot` (reduction using binary function `dpctl.tensor.hypot`): [#1446](https://github.com/IntelPython/dpctl/pull/1446)
 * Added inspection API to query capabilities of Python Array API specification implementation: [#1469](https://github.com/IntelPython/dpctl/pull/1469)
 * Support for compilation for NVIDIA(R) sycl target with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/nvidia/home/): [#1411](https://github.com/IntelPython/dpctl/pull/1411), [#1124](https://github.com/IntelPython/dpctl/discussions/1124)
 * Added `dpctl.utils.intel_device_info` function to query additional information about Intel(R) GPU devices: [gh-1428](https://github.com/IntelPython/dpctl/pull/1428) and [gh-1445](https://github.com/IntelPython/dpctl/pull/1445)
+* Added support for two new device descriptors, `dpctl.SyclDevice.max_mem_alloc_size` and `dpctl.SyclDevice.max_clock_frequency`: [#1530](https://github.com/IntelPython/dpctl/pull/1530)
 
 ### Changed
 
