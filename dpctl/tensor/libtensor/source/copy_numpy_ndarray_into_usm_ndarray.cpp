@@ -89,18 +89,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         return;
     }
 
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements of source
-    // array
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < src_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error("Execution queue is not compatible with the "

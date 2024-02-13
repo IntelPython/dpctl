@@ -37,16 +37,35 @@ namespace tensor
 namespace validation
 {
 
-/*! @brief Raises a value error if a function would attempt to write
-    to an array which is read-only.
+/*! @brief Raises a value error if an array is read-only.
 
-    This should always be called on an array before it will be written to.*/
+    This should be called with an array before writing.*/
 struct CheckWritable
 {
     static void throw_if_not_writable(const dpctl::tensor::usm_ndarray &arr)
     {
         if (!arr.is_writable()) {
             throw py::value_error("output array is read-only.");
+        }
+        return;
+    }
+};
+
+/*! @brief Raises a value error if an array's memory is not sufficiently ample
+    to accommodate an input number of elements.
+
+    This should be called with an array before writing.*/
+struct AmpleMemory
+{
+    template <typename T>
+    static void throw_if_not_ample(const dpctl::tensor::usm_ndarray &arr,
+                                   T nelems)
+    {
+        auto arr_offsets = arr.get_minmax_offsets();
+        T range = static_cast<T>(arr_offsets.second - arr_offsets.first);
+        if (range + 1 < nelems) {
+            throw py::value_error("Memory addressed by the output array is not "
+                                  "sufficiently ample.");
         }
         return;
     }

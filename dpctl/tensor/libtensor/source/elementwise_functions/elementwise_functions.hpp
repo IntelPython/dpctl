@@ -118,18 +118,7 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accommodate all elements
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < src_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check memory overlap
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
@@ -376,18 +365,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accommodate all elements
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < src_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
@@ -702,18 +680,7 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accommodate all elements
-    auto lhs_offsets = lhs.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(lhs_offsets.second - lhs_offsets.first);
-        if (range + 1 < rhs_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(rhs, rhs_nelems);
 
     // check memory overlap
     auto const &same_logical_tensors =

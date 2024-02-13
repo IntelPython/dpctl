@@ -174,19 +174,8 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Inconsistent array dimensions");
     }
 
-    // ensure that dst is sufficiently ample
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < static_cast<size_t>(ortho_nelems * masked_dst_nelems)) {
-            throw py::value_error(
-                "Memory addressed by the destination array can not "
-                "accommodate all the "
-                "array elements.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        dst, ortho_nelems * masked_dst_nelems);
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, not with cumsum.
@@ -507,19 +496,8 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
         throw py::value_error("Inconsistent array dimensions");
     }
 
-    // ensure that dst is sufficiently ample
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < static_cast<size_t>(ortho_nelems * masked_dst_nelems)) {
-            throw py::value_error(
-                "Memory addressed by the destination array can not "
-                "accommodate all the "
-                "array elements.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        dst, ortho_nelems * masked_dst_nelems);
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, not with cumsum.
@@ -794,18 +772,8 @@ py_nonzero(const dpctl::tensor::usm_ndarray
         throw py::value_error("Arrays are expected to ave no memory overlap");
     }
 
-    // ensure that dst is sufficiently ample
-    auto indexes_offsets = indexes.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(indexes_offsets.second - indexes_offsets.first);
-        if (range + 1 < static_cast<size_t>(nz_elems * _ndim)) {
-            throw py::value_error(
-                "Memory addressed by the destination array can not "
-                "accommodate all the array elements.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        indexes, nz_elems * _ndim);
 
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);

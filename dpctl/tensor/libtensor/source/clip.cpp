@@ -155,19 +155,7 @@ py_clip(const dpctl::tensor::usm_ndarray &src,
                               "have the same data type");
     }
 
-    // ensure that dst is sufficiently ample
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < static_cast<size_t>(nelems)) {
-            throw py::value_error(
-                "Memory addressed by the destination array can not "
-                "accommodate all the "
-                "array elements.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
 
     char *src_data = src.get_data();
     char *min_data = min.get_data();

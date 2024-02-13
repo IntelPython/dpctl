@@ -224,17 +224,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < dst_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -576,17 +566,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < dst_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -873,17 +853,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < dst_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -1160,18 +1130,7 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Arrays are expected to have no memory overlap");
     }
 
-    // ensure that dst is sufficiently ample
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < static_cast<size_t>(dst_nelems)) {
-            throw py::value_error(
-                "Memory addressed by the destination array can not "
-                "accommodate all the array elements.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     const char *src_data = src.get_data();
     char *dst_data = dst.get_data();

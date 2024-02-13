@@ -248,19 +248,7 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
         throw py::value_error("dst shape and size mismatch");
     }
 
-    // ensure that dst is sufficiently ample
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < dst_nelems) {
-            throw py::value_error(
-                "Memory addressed by the destination array can not "
-                "accommodate all the "
-                "array elements.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with x1 or x2

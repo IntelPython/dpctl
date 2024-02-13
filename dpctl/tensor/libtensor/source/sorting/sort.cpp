@@ -108,17 +108,8 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < sort_nelems * iter_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        dst, sort_nelems * iter_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
