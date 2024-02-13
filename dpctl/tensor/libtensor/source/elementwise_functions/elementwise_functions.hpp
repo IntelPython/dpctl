@@ -680,7 +680,7 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(rhs, rhs_nelems);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(lhs, rhs_nelems);
 
     // check memory overlap
     auto const &same_logical_tensors =
