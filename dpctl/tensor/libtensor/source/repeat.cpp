@@ -35,6 +35,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -128,6 +129,8 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     size_t reps_sz = reps.get_size();
     size_t cumsum_sz = cumsum.get_size();
@@ -402,6 +405,8 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
             "Execution queue is not compatible with allocation queues");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     size_t src_sz = src.get_size();
     size_t reps_sz = reps.get_size();
     size_t cumsum_sz = cumsum.get_size();
@@ -548,6 +553,8 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
@@ -778,6 +785,8 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     size_t src_sz = src.get_size();
     size_t dst_sz = dst.get_size();

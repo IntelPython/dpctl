@@ -37,6 +37,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -86,6 +87,8 @@ py_clip(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int nd = src.get_ndim();
     int min_nd = min.get_ndim();

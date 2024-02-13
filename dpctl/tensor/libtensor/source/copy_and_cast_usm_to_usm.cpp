@@ -37,6 +37,7 @@
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -117,6 +118,8 @@ copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();

@@ -31,6 +31,7 @@
 #include <pybind11/pybind11.h>
 
 #include "kernels/copy_and_cast.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -105,6 +106,8 @@ void copy_numpy_ndarray_into_usm_ndarray(
         throw py::value_error("Execution queue is not compatible with the "
                               "allocation queue");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // here we assume that NumPy's type numbers agree with ours for types
     // supported in both

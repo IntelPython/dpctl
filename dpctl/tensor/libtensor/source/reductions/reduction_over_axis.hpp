@@ -42,6 +42,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -203,6 +204,8 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     size_t dst_nelems = dst.get_size();
 
@@ -554,6 +557,8 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
             "Execution queue is not compatible with allocation queues");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     size_t dst_nelems = dst.get_size();
 
     if (dst_nelems == 0) {
@@ -849,6 +854,8 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
             "Execution queue is not compatible with allocation queues");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     size_t dst_nelems = dst.get_size();
 
     if (dst_nelems == 0) {
@@ -1138,6 +1145,8 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     size_t dst_nelems = dst.get_size();
 

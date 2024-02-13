@@ -36,6 +36,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "where.hpp"
 
@@ -72,6 +73,8 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int nd = condition.get_ndim();
     int x1_nd = x1.get_ndim();

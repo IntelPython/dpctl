@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "kernels/constructors.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -191,6 +192,8 @@ usm_ndarray_linear_sequence_step(const py::object &start,
             "Execution queue is not compatible with the allocation queue");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
@@ -238,6 +241,8 @@ usm_ndarray_linear_sequence_affine(const py::object &start,
         throw py::value_error(
             "Execution queue context is not the same as allocation context");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();

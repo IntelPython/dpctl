@@ -17,6 +17,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 
 namespace dpctl
 {
@@ -175,18 +176,15 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
        sycl::queue &exec_q,
        const std::vector<sycl::event> &depends)
 {
-
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
-
-    if (inner_dims == 0) {
-        throw py::value_error("No inner dimension for dot");
-    }
-
     if (!dpctl::utils::queues_are_compatible(exec_q, {x1, x2, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
+    if (inner_dims == 0) {
+        throw py::value_error("No inner dimension for dot");
     }
 
     int x1_nd = x1.get_ndim();

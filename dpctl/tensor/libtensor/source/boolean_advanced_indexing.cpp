@@ -37,6 +37,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -118,6 +119,8 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
            sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     int src_nd = src.get_ndim();
     if ((axis_start < 0 || axis_end > src_nd || axis_start >= axis_end)) {
         throw py::value_error("Specified axes_start and axes_end are invalid.");
@@ -452,6 +455,8 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
          sycl::queue &exec_q,
          const std::vector<sycl::event> &depends)
 {
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     int dst_nd = dst.get_ndim();
     if ((axis_start < 0 || axis_end > dst_nd || axis_start >= axis_end)) {
         throw py::value_error("Specified axes_start and axes_end are invalid.");
@@ -725,6 +730,8 @@ py_nonzero(const dpctl::tensor::usm_ndarray
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(indexes);
 
     int cumsum_nd = cumsum.get_ndim();
     if (cumsum_nd != 1 || !cumsum.is_c_contiguous()) {

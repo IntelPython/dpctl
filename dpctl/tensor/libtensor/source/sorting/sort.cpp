@@ -29,6 +29,7 @@
 
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/sorting.hpp"
@@ -93,6 +94,8 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if ((iter_nelems == 0) || (sort_nelems == 0)) {
         // Nothing to do

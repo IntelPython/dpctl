@@ -35,6 +35,7 @@
 #include "dpctl4pybind11.hpp"
 #include "kernels/integer_advanced_indexing.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -258,6 +259,8 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
     if (mode != 0 && mode != 1) {
         throw py::value_error("Mode must be 0 or 1.");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
 
@@ -570,9 +573,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
         throw py::value_error("Mode must be 0 or 1.");
     }
 
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
 

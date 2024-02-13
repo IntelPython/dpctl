@@ -29,6 +29,7 @@
 #include "copy_for_reshape.hpp"
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
@@ -104,6 +105,8 @@ copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if (src_nelems == 1) {
         // handle special case of 1-element array

@@ -32,6 +32,7 @@
 #include "kernels/constructors.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
@@ -116,6 +117,8 @@ usm_ndarray_triul(sycl::queue &exec_q,
         throw py::value_error(
             "Execution queue context is not the same as allocation contexts");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto src_strides = src.get_strides_vector();
     auto dst_strides = dst.get_strides_vector();
