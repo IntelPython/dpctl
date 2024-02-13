@@ -148,7 +148,6 @@ jobs:
           message: |
             View rendered docs @ https://intelpython.github.io/dpctl/pulls/${{ env.PR_NUM }}/index.html
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]'
       - name: Comment with URL about removal of PR docs
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed' }}
         env:
@@ -158,4 +157,3 @@ jobs:
           message: |
             Deleted rendered PR docs from intelpython.github.com/dpctl, latest should be updated shortly. :crossed_fingers:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]'
