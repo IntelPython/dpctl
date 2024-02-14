@@ -585,215 +585,6 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
 template <typename lhsT,
           typename rhsT,
           typename resT,
-          typename LocAccT1,
-          typename LocAccT2,
-          typename OuterInnerDimsIndexerT,
-          typename BatchDimsIndexerT,
-          int wi_delta_n,
-          int wi_delta_m>
-class GemmBatchFunctorThreadNM
-{
-private:
-    const lhsT *lhs = nullptr;
-    const rhsT *rhs = nullptr;
-    resT *res = nullptr;
-    LocAccT1 local_A_block;
-    LocAccT2 local_B_block;
-    size_t n = 0;
-    size_t wg_delta_n = 0;
-    size_t k = 0;
-    size_t k_blocks = 0;
-    size_t wi_delta_k = 0;
-    size_t m = 0;
-    size_t m_blocks = 0;
-    size_t wg_delta_m = 0;
-    size_t batch_nelems;
-    const BatchDimsIndexerT batch_indexer;
-    const OuterInnerDimsIndexerT lhs_indexer;
-    const OuterInnerDimsIndexerT rhs_indexer;
-    const OuterInnerDimsIndexerT res_indexer;
-
-public:
-    GemmBatchFunctorThreadNM(const lhsT *lhs_,
-                             const rhsT *rhs_,
-                             resT *res_,
-                             LocAccT1 local_A_block_,
-                             LocAccT2 local_B_block_,
-                             size_t n_,
-                             size_t wg_delta_n_,
-                             size_t k_,
-                             size_t k_blocks_,
-                             size_t wi_delta_k_,
-                             size_t m_,
-                             size_t m_blocks_,
-                             size_t wg_delta_m_,
-                             size_t batch_nelems_,
-                             const BatchDimsIndexerT &batch_indexer_,
-                             const OuterInnerDimsIndexerT &lhs_indexer_,
-                             const OuterInnerDimsIndexerT &rhs_indexer_,
-                             const OuterInnerDimsIndexerT &res_indexer_)
-        : lhs(lhs_), rhs(rhs_), res(res_), local_A_block(local_A_block_),
-          local_B_block(local_B_block_), n(n_), wg_delta_n(wg_delta_n_), k(k_),
-          k_blocks(k_blocks_), wi_delta_k(wi_delta_k_), m(m_),
-          m_blocks(m_blocks_), wg_delta_m(wg_delta_m_),
-          batch_nelems(batch_nelems_), batch_indexer(batch_indexer_),
-          lhs_indexer(lhs_indexer_), rhs_indexer(rhs_indexer_),
-          res_indexer(res_indexer_)
-    {
-    }
-
-    void operator()(sycl::nd_item<1> it) const
-    {
-        const size_t n_groups_per_batch = it.get_group_range(0) / batch_nelems;
-        const size_t m_id = it.get_group_linear_id() / n_groups_per_batch;
-        const size_t gr_id =
-            it.get_group_linear_id() - m_id * n_groups_per_batch;
-
-        const auto &three_offsets_ = batch_indexer(static_cast<ssize_t>(m_id));
-
-        // lift group_id to (block_i, block_j, block_s),
-        //    0 <= block_i < n_blocks, 0 <= block_j < m_blocks,
-        //    0 <= block_s < k_blocks
-
-        const auto &lhs_offset = three_offsets_.get_first_offset();
-        const auto &rhs_offset = three_offsets_.get_second_offset();
-        const auto &res_offset = three_offsets_.get_third_offset();
-
-        size_t block_i = gr_id / (m_blocks * k_blocks);
-        size_t block_r = gr_id - block_i * (m_blocks * k_blocks);
-        size_t block_j = block_r / k_blocks;
-        size_t block_s = block_r - block_j * k_blocks;
-
-        size_t lid = it.get_local_linear_id();
-        size_t local_i = lid / wg_delta_m;           // 0<= local_i < wg_delta_n
-        size_t local_j = lid - local_i * wg_delta_m; // 0<= local_j < wg_delta_m
-
-        // load A block and B blocks into SLM
-
-        size_t i = block_i * wi_delta_n * wg_delta_n;
-        size_t j = block_j * wi_delta_m * wg_delta_m;
-        size_t s = block_s * wi_delta_k;
-
-        const std::int64_t a_st0 = k;
-        const std::int64_t a_st1 = 1;
-
-        const std::int64_t b_st0 = m;
-        const std::int64_t b_st1 = 1;
-
-        const std::int64_t c_st0 = m;
-        const std::int64_t c_st1 = 1;
-
-        size_t lws = it.get_local_range(0);
-
-        for (size_t vid = lid; vid < local_A_block.size(); vid += lws) {
-            size_t v_i = vid / wi_delta_k; // 0<= v_i < wg_delta_n * wi_delta_n
-            size_t v_s = vid - v_i * wi_delta_k; // 0<= v_s < wi_delta_k
-
-            size_t g_i = i + v_i;
-            size_t g_s = s + v_s;
-
-            local_A_block[vid] =
-                (g_i < n && g_s < k)
-                    ? static_cast<resT>(
-                          lhs[lhs_offset +
-                              lhs_indexer(g_i * a_st0 + g_s * a_st1)])
-                    : resT(0);
-        }
-
-        using slmB_t = typename LocAccT2::value_type;
-
-        for (size_t vid = lid; vid < local_B_block.size(); vid += lws) {
-            size_t v_j = vid / wi_delta_k;       // 0<= v_i < wg_delta_m
-            size_t v_s = vid - v_j * wi_delta_k; // 0<= v_s < wi_delta_k
-
-            size_t g_j = j + v_j * wi_delta_m;
-            size_t g_s = s + v_s;
-
-            if constexpr (wi_delta_m == 1 && std::is_same_v<slmB_t, resT>) {
-                local_B_block[vid] =
-                    (g_j < m && g_s < k)
-                        ? static_cast<resT>(
-                              rhs[rhs_offset +
-                                  rhs_indexer(g_s * b_st0 + g_j * b_st1)])
-                        : resT(0);
-            }
-            else {
-                slmB_t vec{};
-#pragma unroll
-                for (std::uint8_t lane_id = 0; lane_id < wi_delta_m; ++lane_id)
-                {
-                    const size_t g_j1 = g_j + lane_id;
-                    vec[lane_id] =
-                        (g_j1 < m && g_s < k)
-                            ? static_cast<resT>(
-                                  rhs[rhs_offset +
-                                      rhs_indexer(g_s * b_st0 + g_j1 * b_st1)])
-                            : resT(0);
-                }
-
-                local_B_block[vid] = vec;
-            }
-        }
-
-        it.barrier(sycl::access::fence_space::local_space);
-
-        i += local_i * wi_delta_n;
-        j += local_j * wi_delta_m;
-
-        size_t a_offset = local_i * wi_delta_k * wi_delta_n;
-        size_t b_offset = local_j * wi_delta_k;
-
-        constexpr resT identity_(0);
-
-        for (std::uint8_t private_i = 0; private_i < wi_delta_n; ++private_i) {
-            size_t a_pr_offset = private_i * wi_delta_k;
-
-            slmB_t local_sum(identity_);
-            for (size_t private_s = 0; private_s < wi_delta_k; ++private_s) {
-                local_sum = local_sum +
-                            (local_A_block[a_offset + a_pr_offset + private_s] *
-                             local_B_block[b_offset + private_s]);
-            }
-
-            size_t gl_i = i + private_i;
-
-            if constexpr (wi_delta_m == 1 && std::is_same_v<slmB_t, resT>) {
-                const size_t gl_j = j;
-                if (gl_i < n && gl_j < m) {
-                    sycl::atomic_ref<resT, sycl::memory_order::relaxed,
-                                     sycl::memory_scope::device,
-                                     sycl::access::address_space::global_space>
-                        aout(res[res_offset +
-                                 res_indexer(gl_i * c_st0 + gl_j * c_st1)]);
-
-                    aout += local_sum;
-                }
-            }
-            else {
-#pragma unroll
-                for (std::uint8_t lane_id = 0; lane_id < wi_delta_m; ++lane_id)
-                {
-                    const size_t gl_j = j + lane_id;
-
-                    if (gl_i < n && gl_j < m) {
-                        sycl::atomic_ref<
-                            resT, sycl::memory_order::relaxed,
-                            sycl::memory_scope::device,
-                            sycl::access::address_space::global_space>
-                            aout(res[res_offset +
-                                     res_indexer(gl_i * c_st0 + gl_j * c_st1)]);
-
-                        aout += local_sum[lane_id];
-                    }
-                }
-            }
-        }
-    }
-};
-
-template <typename lhsT,
-          typename rhsT,
-          typename resT,
           typename LocAccT,
           typename OuterInnerDimsIndexerT,
           typename BatchDimsIndexerT,
@@ -1010,100 +801,19 @@ template <typename lhsTy,
           typename LhsIndexerT,
           typename RhsIndexerT,
           typename ResIndexerT>
-sycl::event _gemm_old_nm_impl(sycl::queue &exec_q,
-                              const lhsTy *lhs_tp,
-                              const rhsTy *rhs_tp,
-                              resTy *res_tp,
-                              const size_t batch_nelems,
-                              const size_t n,
-                              const size_t k,
-                              const size_t m,
-                              const BatchIndexerT &batch_indexer,
-                              const LhsIndexerT &lhs_indexer,
-                              const RhsIndexerT &rhs_indexer,
-                              const ResIndexerT &res_indexer,
-                              const std::vector<sycl::event> &depends)
-{
-    static_assert(std::is_same_v<LhsIndexerT, RhsIndexerT>);
-    static_assert(std::is_same_v<LhsIndexerT, ResIndexerT>);
-
-    constexpr int wi_delta_n = 2;
-    constexpr int wi_delta_m = 4;
-    size_t wg_delta_n(16); // rows of A processed in WG
-    size_t wg_delta_m(16); // rows of B processed in WG
-    size_t wi_delta_k(64); // Elements in K dimension processed by WI
-
-    const sycl::device &dev = exec_q.get_device();
-    const size_t local_mem_size =
-        dev.get_info<sycl::info::device::local_mem_size>();
-    const size_t reserved_slm_size = 512;
-
-    gemm_detail::scale_gemm_nm_parameters<resTy, wi_delta_m>(
-        local_mem_size, reserved_slm_size, wi_delta_n,
-        wi_delta_k, // modified by reference
-        wg_delta_n, // modified by reference
-        wg_delta_m  // modified by reference
-    );
-
-    const size_t lws = wg_delta_n * wg_delta_m;
-
-    const size_t n_blocks =
-        ((n + wi_delta_n * wg_delta_n - 1) / (wi_delta_n * wg_delta_n));
-    const size_t m_blocks =
-        ((m + wi_delta_m * wg_delta_m - 1) / (wi_delta_m * wg_delta_m));
-    const size_t k_blocks = ((k + wi_delta_k - 1) / wi_delta_k);
-
-    auto gwsRange =
-        sycl::range<1>(batch_nelems * n_blocks * m_blocks * k_blocks * lws);
-    auto lwsRange = sycl::range<1>(lws);
-
-    auto ndRange = sycl::nd_range<1>(gwsRange, lwsRange);
-
-    sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
-        using LocAccT1 = sycl::local_accessor<resTy, 1>;
-        LocAccT1 local_A_block(
-            sycl::range<1>((wi_delta_n * wg_delta_n) * wi_delta_k), cgh);
-        using LocAccT2 = sycl::local_accessor<sycl::vec<resTy, wi_delta_m>, 1>;
-        LocAccT2 local_B_block(sycl::range<1>(wi_delta_k * wg_delta_m), cgh);
-
-        using KernelName =
-            class gemm_batch_nm_krn<lhsTy, rhsTy, resTy, LhsIndexerT,
-                                    BatchIndexerT, wi_delta_m>;
-        cgh.parallel_for<KernelName>(
-            ndRange,
-            GemmBatchFunctorThreadNM<lhsTy, rhsTy, resTy, LocAccT1, LocAccT2,
-                                     LhsIndexerT, BatchIndexerT, wi_delta_n,
-                                     wi_delta_m>(
-                lhs_tp, rhs_tp, res_tp, std::move(local_A_block),
-                std::move(local_B_block), n, wg_delta_n, k, k_blocks,
-                wi_delta_k, m, m_blocks, wg_delta_m, batch_nelems,
-                batch_indexer, lhs_indexer, rhs_indexer, res_indexer));
-    });
-    return gemm_ev;
-}
-
-template <typename lhsTy,
-          typename rhsTy,
-          typename resTy,
-          typename BatchIndexerT,
-          typename LhsIndexerT,
-          typename RhsIndexerT,
-          typename ResIndexerT>
-sycl::event _gemm_old_k_impl(sycl::queue &exec_q,
-                             const lhsTy *lhs_tp,
-                             const rhsTy *rhs_tp,
-                             resTy *res_tp,
-                             const size_t batch_nelems,
-                             const size_t n,
-                             const size_t k,
-                             const size_t m,
-                             const BatchIndexerT &batch_indexer,
-                             const LhsIndexerT &lhs_indexer,
-                             const RhsIndexerT &rhs_indexer,
-                             const ResIndexerT &res_indexer,
-                             const std::vector<sycl::event> &depends)
+sycl::event _gemm_k_impl(sycl::queue &exec_q,
+                         const lhsTy *lhs_tp,
+                         const rhsTy *rhs_tp,
+                         resTy *res_tp,
+                         const size_t batch_nelems,
+                         const size_t n,
+                         const size_t k,
+                         const size_t m,
+                         const BatchIndexerT &batch_indexer,
+                         const LhsIndexerT &lhs_indexer,
+                         const RhsIndexerT &rhs_indexer,
+                         const ResIndexerT &res_indexer,
+                         const std::vector<sycl::event> &depends)
 {
     constexpr size_t m_groups = 4;
     const size_t delta_k(4);
@@ -1165,19 +875,19 @@ template <typename lhsTy,
           typename LhsIndexerT,
           typename RhsIndexerT,
           typename ResIndexerT>
-sycl::event _gemm_old_small_m_impl(sycl::queue &exec_q,
-                                   const lhsTy *lhs_tp,
-                                   const rhsTy *rhs_tp,
-                                   resTy *res_tp,
-                                   const size_t batch_nelems,
-                                   const size_t n,
-                                   const size_t k,
-                                   const size_t m,
-                                   const BatchIndexerT &batch_indexer,
-                                   const LhsIndexerT &lhs_indexer,
-                                   const RhsIndexerT &rhs_indexer,
-                                   const ResIndexerT &res_indexer,
-                                   const std::vector<sycl::event> &depends)
+sycl::event _gemm_small_m_impl(sycl::queue &exec_q,
+                               const lhsTy *lhs_tp,
+                               const rhsTy *rhs_tp,
+                               resTy *res_tp,
+                               const size_t batch_nelems,
+                               const size_t n,
+                               const size_t k,
+                               const size_t m,
+                               const BatchIndexerT &batch_indexer,
+                               const LhsIndexerT &lhs_indexer,
+                               const RhsIndexerT &rhs_indexer,
+                               const ResIndexerT &res_indexer,
+                               const std::vector<sycl::event> &depends)
 {
     constexpr size_t m_groups = 1;
     const size_t delta_k(4);
@@ -1613,19 +1323,19 @@ template <typename lhsTy,
           typename LhsIndexerT,
           typename RhsIndexerT,
           typename ResIndexerT>
-sycl::event _gemm_batch_new_nm_impl(sycl::queue &exec_q,
-                                    const lhsTy *lhs_tp,
-                                    const rhsTy *rhs_tp,
-                                    resTy *res_tp,
-                                    const size_t batch_nelems,
-                                    const size_t n,
-                                    const size_t k,
-                                    const size_t m,
-                                    const BatchIndexerT &batch_indexer,
-                                    const LhsIndexerT &lhs_indexer,
-                                    const RhsIndexerT &rhs_indexer,
-                                    const ResIndexerT &res_indexer,
-                                    std::vector<sycl::event> const &depends)
+sycl::event _gemm_batch_nm_impl(sycl::queue &exec_q,
+                                const lhsTy *lhs_tp,
+                                const rhsTy *rhs_tp,
+                                resTy *res_tp,
+                                const size_t batch_nelems,
+                                const size_t n,
+                                const size_t k,
+                                const size_t m,
+                                const BatchIndexerT &batch_indexer,
+                                const LhsIndexerT &lhs_indexer,
+                                const RhsIndexerT &rhs_indexer,
+                                const ResIndexerT &res_indexer,
+                                std::vector<sycl::event> const &depends)
 {
     constexpr GemmBatchFunctorThreadNM_vecm_HyperParametersSelector<resTy>
         selector{};
@@ -1771,7 +1481,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
     const size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_detail::_gemm_batch_new_nm_impl<
+        return gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
             OuterInnerIndexerT, OuterInnerIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
@@ -1797,22 +1507,22 @@ sycl::event gemm_impl(sycl::queue &exec_q,
 
     if ((max_nm < 64)) {
         if (m < 4) {
-            return gemm_detail::_gemm_old_small_m_impl<
+            return gemm_detail::_gemm_small_m_impl<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
                 OuterInnerIndexerT, OuterInnerIndexerT>(
                 exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
                 batch_indexer, lhs_indexer, rhs_indexer, res_indexer,
                 {res_init_ev});
         }
-        return gemm_detail::_gemm_old_k_impl<
-            lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
-            OuterInnerIndexerT, OuterInnerIndexerT>(
+        return gemm_detail::_gemm_k_impl<lhsTy, rhsTy, resTy, BatchIndexerT,
+                                         OuterInnerIndexerT, OuterInnerIndexerT,
+                                         OuterInnerIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
             batch_indexer, lhs_indexer, rhs_indexer, res_indexer,
             {res_init_ev});
     }
 
-    return gemm_detail::_gemm_old_nm_impl<
+    return gemm_detail::_gemm_batch_nm_impl<
         lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
         OuterInnerIndexerT, OuterInnerIndexerT>(
         exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
@@ -1856,7 +1566,7 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
     const size_t min_nm = std::min(n, m);
     const size_t max_nm = std::max(n, m);
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_detail::_gemm_batch_new_nm_impl<
+        return gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
             OuterInnerIndexerT, OuterInnerIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
@@ -1874,22 +1584,22 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
 
     if (max_nm < 64) {
         if (m < 4) {
-            return gemm_detail::_gemm_old_small_m_impl<
+            return gemm_detail::_gemm_small_m_impl<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
                 OuterInnerIndexerT, OuterInnerIndexerT>(
                 exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
                 batch_indexer, lhs_indexer, rhs_indexer, res_indexer,
                 {res_init_ev});
         }
-        return gemm_detail::_gemm_old_k_impl<
-            lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
-            OuterInnerIndexerT, OuterInnerIndexerT>(
+        return gemm_detail::_gemm_k_impl<lhsTy, rhsTy, resTy, BatchIndexerT,
+                                         OuterInnerIndexerT, OuterInnerIndexerT,
+                                         OuterInnerIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
             batch_indexer, lhs_indexer, rhs_indexer, res_indexer,
             {res_init_ev});
     }
 
-    return gemm_detail::_gemm_old_nm_impl<
+    return gemm_detail::_gemm_batch_nm_impl<
         lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerIndexerT,
         OuterInnerIndexerT, OuterInnerIndexerT>(
         exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
@@ -1967,7 +1677,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
     const size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_detail::_gemm_batch_new_nm_impl<
+        return gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -1993,7 +1703,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
     }
 
     if (m < 4) {
-        return gemm_detail::_gemm_old_small_m_impl<
+        return gemm_detail::_gemm_small_m_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2001,7 +1711,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             {res_init_ev});
     }
     else if (k > n && k > m) {
-        return gemm_detail::_gemm_old_k_impl<
+        return gemm_detail::_gemm_k_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2009,7 +1719,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
             {res_init_ev});
     }
     else {
-        return gemm_detail::_gemm_old_nm_impl<
+        return gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2075,7 +1785,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
     const size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_detail::_gemm_batch_new_nm_impl<
+        return gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2093,14 +1803,14 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
 
     if (max_nm < 64) {
         if (m < 4) {
-            return gemm_detail::_gemm_old_small_m_impl<
+            return gemm_detail::_gemm_small_m_impl<
                 lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
                 OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
                 batch_indexer, lhs_indexer, rhs_indexer, res_indexer,
                 {res_init_ev});
         }
-        return gemm_detail::_gemm_old_k_impl<
+        return gemm_detail::_gemm_k_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2108,7 +1818,7 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
             {res_init_ev});
     }
 
-    return gemm_detail::_gemm_old_nm_impl<
+    return gemm_detail::_gemm_batch_nm_impl<
         lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
         OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
         exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_indexer,
@@ -3094,29 +2804,28 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
 }
 
 template <typename lhsTy, typename rhsTy, typename resTy>
-sycl::event
-gemm_batch_new_nm_impl(sycl::queue &exec_q,
-                       const lhsTy *lhs_tp,
-                       const rhsTy *rhs_tp,
-                       resTy *res_tp,
-                       size_t batch_nelems,
-                       size_t n,
-                       size_t k,
-                       size_t m,
-                       int batch_nd,
-                       const ssize_t *batch_shape_strides,
-                       ssize_t lhs_batch_offset,
-                       ssize_t rhs_batch_offset,
-                       ssize_t res_batch_offset,
-                       int inner_nd,
-                       int lhs_outer_nd,
-                       const ssize_t *lhs_outer_inner_shapes_strides,
-                       int rhs_outer_nd,
-                       const ssize_t *rhs_outer_inner_shapes_strides,
-                       int res_outer_nd,
-                       const ssize_t *res_outer_shapes_strides,
-                       const ssize_t *res_shape_strides,
-                       std::vector<sycl::event> const &depends = {})
+sycl::event gemm_batch_nm_impl(sycl::queue &exec_q,
+                               const lhsTy *lhs_tp,
+                               const rhsTy *rhs_tp,
+                               resTy *res_tp,
+                               size_t batch_nelems,
+                               size_t n,
+                               size_t k,
+                               size_t m,
+                               int batch_nd,
+                               const ssize_t *batch_shape_strides,
+                               ssize_t lhs_batch_offset,
+                               ssize_t rhs_batch_offset,
+                               ssize_t res_batch_offset,
+                               int inner_nd,
+                               int lhs_outer_nd,
+                               const ssize_t *lhs_outer_inner_shapes_strides,
+                               int rhs_outer_nd,
+                               const ssize_t *rhs_outer_inner_shapes_strides,
+                               int res_outer_nd,
+                               const ssize_t *res_outer_shapes_strides,
+                               const ssize_t *res_shape_strides,
+                               std::vector<sycl::event> const &depends = {})
 {
 
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
@@ -3133,7 +2842,7 @@ gemm_batch_new_nm_impl(sycl::queue &exec_q,
                                           rhs_batch_offset, res_batch_offset,
                                           batch_shape_strides);
 
-    sycl::event gemm_ev = gemm_detail::_gemm_batch_new_nm_impl<
+    sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
         lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
         OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
         exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_indexer,
@@ -3177,7 +2886,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
     const size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_batch_new_nm_impl<lhsTy, rhsTy, resTy>(
+        return gemm_batch_nm_impl<lhsTy, rhsTy, resTy>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
             batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
             res_batch_offset, inner_nd, lhs_outer_nd,
@@ -3668,21 +3377,21 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
 }
 
 template <typename lhsTy, typename rhsTy, typename resTy>
-sycl::event gemm_new_nm_impl(sycl::queue &exec_q,
-                             const lhsTy *lhs_tp,
-                             const rhsTy *rhs_tp,
-                             resTy *res_tp,
-                             size_t n,
-                             size_t k,
-                             size_t m,
-                             int inner_nd,
-                             int lhs_outer_nd,
-                             const ssize_t *lhs_shape_strides,
-                             int rhs_outer_nd,
-                             const ssize_t *rhs_shape_strides,
-                             int res_outer_nd,
-                             const ssize_t *res_shape_strides,
-                             std::vector<sycl::event> const &depends = {})
+sycl::event gemm_nm_impl(sycl::queue &exec_q,
+                         const lhsTy *lhs_tp,
+                         const rhsTy *rhs_tp,
+                         resTy *res_tp,
+                         size_t n,
+                         size_t k,
+                         size_t m,
+                         int inner_nd,
+                         int lhs_outer_nd,
+                         const ssize_t *lhs_shape_strides,
+                         int rhs_outer_nd,
+                         const ssize_t *rhs_shape_strides,
+                         int res_outer_nd,
+                         const ssize_t *res_shape_strides,
+                         std::vector<sycl::event> const &depends = {})
 {
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
@@ -3698,7 +3407,7 @@ sycl::event gemm_new_nm_impl(sycl::queue &exec_q,
 
     constexpr size_t single_batch_nelems = 1;
 
-    sycl::event gemm_ev = gemm_detail::_gemm_batch_new_nm_impl<
+    sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
         lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
         OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
         exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
@@ -3709,15 +3418,15 @@ sycl::event gemm_new_nm_impl(sycl::queue &exec_q,
 
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event
-gemm_batch_new_nm_contig_impl(sycl::queue &exec_q,
-                              const lhsTy *lhs_tp,
-                              const rhsTy *rhs_tp,
-                              resTy *res_tp,
-                              const size_t batch_nelems,
-                              const size_t n,
-                              const size_t k,
-                              const size_t m,
-                              std::vector<sycl::event> const &depends = {})
+gemm_batch_nm_contig_impl(sycl::queue &exec_q,
+                          const lhsTy *lhs_tp,
+                          const rhsTy *rhs_tp,
+                          resTy *res_tp,
+                          size_t batch_nelems,
+                          size_t n,
+                          size_t k,
+                          size_t m,
+                          std::vector<sycl::event> const &depends = {})
 {
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
     constexpr OuterInnerDimsIndexerT lhs_indexer{};
@@ -3725,13 +3434,12 @@ gemm_batch_new_nm_contig_impl(sycl::queue &exec_q,
     constexpr OuterInnerDimsIndexerT res_indexer{};
 
     constexpr size_t single_batch_nelems = 1;
-
     if (batch_nelems == single_batch_nelems) {
         using BatchDimsIndexerT =
             dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
         constexpr BatchDimsIndexerT batch_indexer{};
 
-        sycl::event gemm_ev = gemm_detail::_gemm_batch_new_nm_impl<
+        sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
@@ -3754,7 +3462,7 @@ gemm_batch_new_nm_contig_impl(sycl::queue &exec_q,
             Strided1DIndexer{0, ss_batch_nelems, static_cast<ssize_t>(k * m)},
             Strided1DIndexer{0, ss_batch_nelems, static_cast<ssize_t>(n * m)});
 
-        sycl::event gemm_ev = gemm_detail::_gemm_batch_new_nm_impl<
+        sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
             OuterInnerDimsIndexerT, OuterInnerDimsIndexerT>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -3789,7 +3497,7 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
     const size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_batch_new_nm_contig_impl<lhsTy, rhsTy, resTy>(
+        return gemm_batch_nm_contig_impl<lhsTy, rhsTy, resTy>(
             exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
     }
 
@@ -4210,7 +3918,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
     const size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        return gemm_new_nm_impl<lhsTy, rhsTy, resTy>(
+        return gemm_nm_impl<lhsTy, rhsTy, resTy>(
             exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
             lhs_outer_inner_shapes_strides, rhs_outer_nd,
             rhs_outer_inner_shapes_strides, res_nd, res_shapes_strides,
@@ -4603,7 +4311,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
         constexpr size_t single_batch_nelems = 1;
-        return gemm_batch_new_nm_contig_impl<lhsTy, rhsTy, resTy>(
+        return gemm_batch_nm_contig_impl<lhsTy, rhsTy, resTy>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
             depends);
     }
