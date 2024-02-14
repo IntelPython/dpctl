@@ -35,6 +35,7 @@
 #include "dpctl4pybind11.hpp"
 #include "kernels/integer_advanced_indexing.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -259,6 +260,8 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Mode must be 0 or 1.");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
 
     int src_nd = src.get_ndim();
@@ -349,17 +352,8 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
         }
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if ((range + 1) < (orthog_nelems * ind_nelems)) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        dst, orthog_nelems * ind_nelems);
 
     int ind_sh_elems = std::max<int>(ind_nd, 1);
 
@@ -570,9 +564,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
         throw py::value_error("Mode must be 0 or 1.");
     }
 
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     const dpctl::tensor::usm_ndarray ind_rep = ind[0];
 
@@ -640,17 +632,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
     py::ssize_t dst_offset = py::ssize_t(0);
     py::ssize_t val_offset = py::ssize_t(0);
 
-    // destination must be ample enough to accommodate all possible elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if ((range + 1) < dst_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int dst_typenum = dst.get_typenum();
     int val_typenum = val.get_typenum();

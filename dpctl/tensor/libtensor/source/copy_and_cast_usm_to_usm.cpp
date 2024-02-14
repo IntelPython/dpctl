@@ -37,6 +37,7 @@
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -100,23 +101,15 @@ copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < src_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();

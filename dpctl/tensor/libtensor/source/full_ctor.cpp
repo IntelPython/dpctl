@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "kernels/constructors.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -125,6 +126,8 @@ usm_ndarray_full(const py::object &py_value,
         throw py::value_error(
             "Execution queue is not compatible with the allocation queue");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();

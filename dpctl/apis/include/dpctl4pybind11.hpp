@@ -1072,7 +1072,7 @@ bool queues_are_compatible(const sycl::queue &exec_q,
     return true;
 }
 
-/*! @brief Check if all allocation queues of  usm_ndarays are the same as
+/*! @brief Check if all allocation queues of usm_ndarays are the same as
     the execution queue */
 template <std::size_t num>
 bool queues_are_compatible(const sycl::queue &exec_q,

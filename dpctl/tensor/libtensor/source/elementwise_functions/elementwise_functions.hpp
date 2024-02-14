@@ -38,6 +38,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
@@ -69,10 +70,6 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
                const contig_dispatchT &contig_dispatch_vector,
                const strided_dispatchT &strided_dispatch_vector)
 {
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
-
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
@@ -93,6 +90,8 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check that dimensions are the same
     int src_nd = src.get_ndim();
@@ -119,18 +118,7 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accommodate all elements
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < src_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check memory overlap
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
@@ -324,9 +312,6 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const contig_row_matrix_dispatchT
         &contig_row_matrix_broadcast_dispatch_table)
 {
-    if (!dst.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
@@ -349,6 +334,8 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check shapes, broadcasting is assumed done by caller
     // check that dimensions are the same
@@ -378,18 +365,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accommodate all elements
-    auto dst_offsets = dst.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < src_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
@@ -655,9 +631,7 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
                         const contig_row_matrix_dispatchT
                             &contig_row_matrix_broadcast_dispatch_table)
 {
-    if (!lhs.is_writable()) {
-        throw py::value_error("Output array is read-only.");
-    }
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(lhs);
 
     // check type_nums
     int rhs_typenum = rhs.get_typenum();
@@ -706,18 +680,7 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // ensure that output is ample enough to accommodate all elements
-    auto lhs_offsets = lhs.get_minmax_offsets();
-    // destination must be ample enough to accommodate all elements
-    {
-        size_t range =
-            static_cast<size_t>(lhs_offsets.second - lhs_offsets.first);
-        if (range + 1 < rhs_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(lhs, rhs_nelems);
 
     // check memory overlap
     auto const &same_logical_tensors =

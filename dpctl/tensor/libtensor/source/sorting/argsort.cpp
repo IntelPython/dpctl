@@ -29,6 +29,7 @@
 
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "argsort.hpp"
@@ -94,6 +95,8 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
             "Execution queue is not compatible with allocation queues");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
     if ((iter_nelems == 0) || (sort_nelems == 0)) {
         // Nothing to do
         return std::make_pair(sycl::event(), sycl::event());
@@ -105,17 +108,8 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    // destination must be ample enough to accommodate all elements
-    {
-        auto dst_offsets = dst.get_minmax_offsets();
-        size_t range =
-            static_cast<size_t>(dst_offsets.second - dst_offsets.first);
-        if (range + 1 < sort_nelems * iter_nelems) {
-            throw py::value_error(
-                "Destination array can not accommodate all the "
-                "elements of source array.");
-        }
-    }
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        dst, sort_nelems * iter_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
