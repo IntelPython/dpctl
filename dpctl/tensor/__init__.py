@@ -15,10 +15,12 @@
 # limitations under the License.
 
 """
-    **Data Parallel Tensor Collection** is a collection of tensor
-    implementations that implement Python data API
-    (https://data-apis.github.io/array-api/latest/) standard.
+    **Data Parallel Tensor** provides an N-dimensional array container
+    backed by typed USM allocations and implements operations to
+    create and manipulate such arrays, as well as perform various operations
+    on arrays in conformance with Python Array API standard.
 
+    [ArrayAPI] https://data-apis.org/array-api
 """
 
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
