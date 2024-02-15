@@ -17,7 +17,7 @@
 """
     **Data Parallel Tensor** provides an N-dimensional array container
     backed by typed USM allocations and implements operations to
-    create and manipulate such arrays, as well as perform various operations
+    create and manipulate such arrays, as well as perform operations
     on arrays in conformance with Python Array API standard.
 
     [ArrayAPI] https://data-apis.org/array-api
