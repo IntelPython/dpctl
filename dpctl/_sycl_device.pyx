@@ -760,12 +760,13 @@ cdef class SyclDevice(_SyclDevice):
             used to enqueue a kernel on the device.
         """
         cdef size_t *max_work_item_sizes1d = NULL
+        cdef size_t s0
         max_work_item_sizes1d = DPCTLDevice_GetMaxWorkItemSizes1d(
             self._device_ref
         )
-        res = (max_work_item_sizes1d[0], )
+        s0 = max_work_item_sizes1d[0]
         DPCTLSize_t_Array_Delete(max_work_item_sizes1d)
-        return res
+        return (s0, )
 
     @property
     def max_work_item_sizes2d(self):
@@ -779,12 +780,15 @@ cdef class SyclDevice(_SyclDevice):
             dimension of a 2D range used to enqueue a kernel on the device.
         """
         cdef size_t *max_work_item_sizes2d = NULL
+        cdef size_t s0
+        cdef size_t s1
         max_work_item_sizes2d = DPCTLDevice_GetMaxWorkItemSizes2d(
             self._device_ref
         )
-        res = (max_work_item_sizes2d[0], max_work_item_sizes2d[1],)
+        s0 = max_work_item_sizes2d[0]
+        s1 = max_work_item_sizes2d[1]
         DPCTLSize_t_Array_Delete(max_work_item_sizes2d)
-        return res
+        return (s0, s1,)
 
     @property
     def max_work_item_sizes3d(self):
