@@ -37,7 +37,7 @@ import extlinks_gen as urlgen
 # -- Project information -----------------------------------------------------
 
 project = "Data Parallel Control (dpctl)"
-copyright = "2020-21, Intel Corp."
+copyright = "2020-2024, Intel Corp."
 author = "Intel Corp."
 
 version = dpctl.__version__.strip(".dirty")
