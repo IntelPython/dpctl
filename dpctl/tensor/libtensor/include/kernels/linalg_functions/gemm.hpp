@@ -2353,7 +2353,10 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
@@ -2651,7 +2654,10 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
         size_t iter_nelems = batch_nelems * n * m;
@@ -3032,7 +3038,10 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
             depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
@@ -3233,7 +3242,10 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
         size_t iter_nelems = batch_nelems * n * m;
@@ -3615,7 +3627,10 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             res_indexer, depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
@@ -3782,7 +3797,10 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
@@ -4033,7 +4051,10 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
             res_indexer, depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
@@ -4187,7 +4208,10 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 

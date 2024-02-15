@@ -518,8 +518,12 @@ public:
         }
 
         auto work_group = it.get_group();
+
+        using RedOpT = typename std::conditional<std::is_same_v<outT, bool>,
+                                                 sycl::logical_or<outT>,
+                                                 sycl::plus<outT>>::type;
         outT red_val_over_wg = sycl::reduce_over_group(
-            work_group, local_red_val, outT(0), sycl::plus<outT>());
+            work_group, local_red_val, outT(0), RedOpT());
 
         if (work_group.leader()) {
             // each group writes to a different memory location
@@ -642,7 +646,10 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
@@ -952,7 +959,10 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
     else {
-        using ReductionOpT = sycl::plus<resTy>;
+        using ReductionOpT =
+            typename std::conditional<std::is_same_v<resTy, bool>,
+                                      sycl::logical_or<resTy>,
+                                      sycl::plus<resTy>>::type;
         constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
