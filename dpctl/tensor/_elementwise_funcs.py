@@ -17,7 +17,11 @@
 import dpctl.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
-from ._type_utils import _acceptance_fn_divide, _acceptance_fn_reciprocal
+from ._type_utils import (
+    _acceptance_fn_divide,
+    _acceptance_fn_negative,
+    _acceptance_fn_reciprocal,
+)
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = """
@@ -1294,7 +1298,11 @@ Return:
 """
 
 negative = UnaryElementwiseFunc(
-    "negative", ti._negative_result_type, ti._negative, _negative_docstring_
+    "negative",
+    ti._negative_result_type,
+    ti._negative,
+    _negative_docstring_,
+    acceptance_fn=_acceptance_fn_negative,
 )
 
 # B20: ==== NOT_EQUAL   (x1, x2)

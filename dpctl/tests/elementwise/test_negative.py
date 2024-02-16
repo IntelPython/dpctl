@@ -39,6 +39,13 @@ def test_negative_out_type(dtype):
     assert np.allclose(dpt.asnumpy(r), dpt.asnumpy(dpt.negative(X)))
 
 
+def test_negative_bool():
+    get_queue_or_skip()
+    x = dpt.ones(64, dtype="?")
+    with pytest.raises(ValueError):
+        dpt.negative(x)
+
+
 @pytest.mark.parametrize("usm_type", _usm_types)
 def test_negative_usm_type(usm_type):
     q = get_queue_or_skip()

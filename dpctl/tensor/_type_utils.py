@@ -155,6 +155,18 @@ def _acceptance_fn_reciprocal(arg_dtype, buf_dt, res_dt, sycl_dev):
         return True
 
 
+def _acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
+    # negative is not defined for boolean data type
+    if arg_dtype.char == "?":
+        raise ValueError(
+            "The `negative` function, the `-` operator, is not supported "
+            "for inputs of data type bool, use the `~` operator or the "
+            "`logical_not` function instead"
+        )
+    else:
+        return True
+
+
 def _find_buf_dtype(arg_dtype, query_fn, sycl_dev, acceptance_fn):
     res_dt = query_fn(arg_dtype)
     if res_dt:
