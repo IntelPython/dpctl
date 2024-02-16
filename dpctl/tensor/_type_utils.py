@@ -173,7 +173,7 @@ def _acceptance_fn_subtract(
     # subtract is not defined for boolean data type
     if arg1_dtype.char == "?" and arg2_dtype.char == "?":
         raise ValueError(
-            "The `negative` function, the `-` operator, is not supported "
+            "The `subtract` function, the `-` operator, is not supported "
             "for inputs of data type bool, use the `^` operator,  the "
             "`bitwise_xor`, or the `logical_xor` function instead"
         )
