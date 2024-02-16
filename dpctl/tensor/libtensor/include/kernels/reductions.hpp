@@ -51,8 +51,11 @@ namespace kernels
 template <typename ReductionOpT, typename T> struct needs_workaround
 {
     static constexpr bool value =
-        std::is_same_v<ReductionOpT, sycl::multiplies<T>> &&
-        (std::is_same_v<T, std::int64_t> || std::is_same_v<T, std::uint64_t>);
+        (std::is_same_v<ReductionOpT, sycl::multiplies<T>> &&
+         (std::is_same_v<T, std::int64_t> ||
+          std::is_same_v<T, std::uint64_t>)) ||
+        (__LIBSYCL_MAJOR_VERSION < 7 && std::is_same_v<T, bool> &&
+         std::is_same_v<ReductionOpT, sycl::logical_or<T>>);
 };
 
 template <typename ReductionOpT, typename T> struct can_use_reduce_over_group
