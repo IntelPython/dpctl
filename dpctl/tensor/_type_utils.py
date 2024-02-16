@@ -167,7 +167,9 @@ def _acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
         return True
 
 
-def _acceptance_fn_subtract(arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev):
+def _acceptance_fn_subtract(
+    arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev
+):
     # subtract is not defined for boolean data type
     if arg1_dtype.char == "?" and arg2_dtype.char == "?":
         raise ValueError(

@@ -71,8 +71,8 @@ def test_subtract_dtype_matrix(op1_dtype, op2_dtype):
 
 def test_subtract_bool():
     get_queue_or_skip()
-    ar1 = dpt.ones(127, dtype='?')
-    ar2 = dpt.ones_like(ar1, dtype='?')
+    ar1 = dpt.ones(127, dtype="?")
+    ar2 = dpt.ones_like(ar1, dtype="?")
     with pytest.raises(ValueError):
         dpt.subtract(ar1, ar2)
 
