@@ -167,6 +167,18 @@ def _acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
         return True
 
 
+def _acceptance_fn_subtract(arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev):
+    # subtract is not defined for boolean data type
+    if arg1_dtype.char == "?" and arg2_dtype.char == "?":
+        raise ValueError(
+            "The `negative` function, the `-` operator, is not supported "
+            "for inputs of data type bool, use the `^` operator,  the "
+            "`bitwise_xor`, or the `logical_xor` function instead"
+        )
+    else:
+        return True
+
+
 def _find_buf_dtype(arg_dtype, query_fn, sycl_dev, acceptance_fn):
     res_dt = query_fn(arg_dtype)
     if res_dt:

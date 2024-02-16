@@ -69,6 +69,14 @@ def test_subtract_dtype_matrix(op1_dtype, op2_dtype):
     assert (dpt.asnumpy(r2) == np.full(r2.shape, 0, dtype=r2.dtype)).all()
 
 
+def test_subtract_bool():
+    get_queue_or_skip()
+    ar1 = dpt.ones(127, dtype='?')
+    ar2 = dpt.ones_like(ar1, dtype='?')
+    with pytest.raises(ValueError):
+        dpt.subtract(ar1, ar2)
+
+
 @pytest.mark.parametrize("op1_usm_type", _usm_types)
 @pytest.mark.parametrize("op2_usm_type", _usm_types)
 def test_subtract_usm_type_matrix(op1_usm_type, op2_usm_type):
@@ -151,7 +159,7 @@ def test_subtract_broadcasting():
     ).all()
 
 
-@pytest.mark.parametrize("arr_dt", _all_dtypes)
+@pytest.mark.parametrize("arr_dt", _all_dtypes[1:])
 def test_subtract_python_scalar(arr_dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arr_dt, q)
