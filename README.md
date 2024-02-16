@@ -29,8 +29,8 @@ classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.ht
 
 `dpctl` features classes for [SYCL Unified Shared Memory
 (USM)](https://link.springer.com/chapter/10.1007/978-1-4842-5574-2_6)
-management and implements a tensor [array
-API](https://data-apis.org/array-api/latest/).
+management and implements a tensor library conforming to [Python Array
+API](https://data-apis.org/array-api/latest/) standard.
 
 The library helps authors of Python native extensions written
 in C, Cython, or pybind11 to access `dpctl` objects representing SYCL
@@ -83,7 +83,7 @@ python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
 Installing the bleeding edge
 ------------------------
 
-To try out the current master, install it from our
+To try out the latest features, install `dpctl` from our
 development channel on Anaconda cloud:
 
 ```bash
@@ -117,8 +117,8 @@ To run the tests, use:
 pytest --pyargs dpctl
 ```
 
-Running full test suite requires working C++ compiler. To run the test suite without one, use:
+Running full test suite requires working C/C++ compiler. To run the test suite without one, use:
 
 ```bash
-pytest --pyargs dpctl -k "not test_cython_api"
+pytest --pyargs dpctl -k "not test_cython_api and not test_c_headers"
 ```
