@@ -248,6 +248,7 @@ def test_acceptance_fns():
     assert tu._acceptance_fn_reciprocal(
         dpt.float32, dpt.float32, dpt.float32, dev
     )
+    assert tu._acceptance_fn_negative(dpt.int8, dpt.int16, dpt.int16, dev)
 
 
 def test_weak_types():
