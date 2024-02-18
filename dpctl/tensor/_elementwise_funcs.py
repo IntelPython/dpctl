@@ -21,6 +21,7 @@ from ._type_utils import (
     _acceptance_fn_divide,
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
+    _acceptance_fn_subtract,
 )
 
 # U01: ==== ABS    (x)
@@ -1676,6 +1677,7 @@ subtract = BinaryElementwiseFunc(
     ti._subtract,
     _subtract_docstring_,
     binary_inplace_fn=ti._subtract_inplace,
+    acceptance_fn=_acceptance_fn_subtract,
 )
 
 
