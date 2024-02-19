@@ -330,13 +330,7 @@ public:
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class reduction_over_group_with_atomics_krn;
 
-template <typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5,
-          typename T6>
-class custom_reduction_over_group_with_atomics_krn;
+template <typename BasedKernelName> class custom_reduction_wrapper;
 
 template <typename T1, typename T2, typename T3>
 class reduction_over_group_with_atomics_init_krn;
@@ -347,11 +341,14 @@ class reduction_seq_strided_krn;
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class reduction_seq_contig_krn;
 
-template <typename argTy,
-          typename resTy,
-          typename ReductionOpT,
-          typename InputOutputIterIndexerT,
-          typename ReductionIndexerT>
+template <
+    typename argTy,
+    typename resTy,
+    typename ReductionOpT,
+    typename InputOutputIterIndexerT,
+    typename ReductionIndexerT,
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    class kernel_name_token>
 sycl::event
 submit_atomic_reduction(sycl::queue &exec_q,
                         const argTy *arg,
@@ -374,9 +371,10 @@ submit_atomic_reduction(sycl::queue &exec_q,
         auto ndRange = sycl::nd_range<1>(globalRange, localRange);
 
         if constexpr (can_use_reduce_over_group<ReductionOpT, resTy>::value) {
-            using KernelName = class reduction_over_group_with_atomics_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>;
+            using KernelName =
+                class kernel_name_token<argTy, resTy, ReductionOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
@@ -391,10 +389,9 @@ submit_atomic_reduction(sycl::queue &exec_q,
             using SlmT = sycl::local_accessor<resTy, 1>;
             SlmT local_memory = SlmT(localRange, cgh);
 
-            using KernelName =
-                class custom_reduction_over_group_with_atomics_krn<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, SlmT>;
+            using KernelName = class custom_reduction_wrapper<
+                kernel_name_token<argTy, resTy, ReductionOpT,
+                                  InputOutputIterIndexerT, ReductionIndexerT>>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
@@ -521,7 +518,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
 
         sycl::event comp_ev =
             submit_atomic_reduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                                    InputOutputIterIndexerT, ReductionIndexerT,
+                                    reduction_over_group_with_atomics_krn>(
                 exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
                 reduction_nelems, reductions_per_wi, reduction_groups,
                 in_out_iter_indexer, reduction_indexer, {res_init_ev});
@@ -627,7 +625,8 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
 
         sycl::event comp_ev =
             submit_atomic_reduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                                    InputOutputIterIndexerT, ReductionIndexerT,
+                                    reduction_over_group_with_atomics_krn>(
                 exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
                 reduction_nelems, reductions_per_wi, reduction_groups,
                 in_out_iter_indexer, reduction_indexer, {res_init_ev});
@@ -725,7 +724,8 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
 
         sycl::event comp_ev =
             submit_atomic_reduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
+                                    InputOutputIterIndexerT, ReductionIndexerT,
+                                    reduction_over_group_with_atomics_krn>(
                 exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
                 reduction_nelems, reductions_per_wi, reduction_groups,
                 in_out_iter_indexer, reduction_indexer, {res_init_ev});
@@ -931,22 +931,17 @@ typedef sycl::event (*reduction_strided_impl_fn_ptr)(
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class reduction_over_group_temps_krn;
 
-template <typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5,
-          typename T6>
-class custom_reduction_over_group_temps_krn;
-
 template <typename T1, typename T2, typename T3>
 class reduction_over_group_temps_empty_krn;
 
-template <typename argTy,
-          typename resTy,
-          typename ReductionOpT,
-          typename InputOutputIterIndexerT,
-          typename ReductionIndexerT>
+template <
+    typename argTy,
+    typename resTy,
+    typename ReductionOpT,
+    typename InputOutputIterIndexerT,
+    typename ReductionIndexerT,
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    class kernel_name_token>
 sycl::event
 submit_no_atomic_reduction(sycl::queue &exec_q,
                            const argTy *arg,
@@ -970,9 +965,9 @@ submit_no_atomic_reduction(sycl::queue &exec_q,
 
         if constexpr (can_use_reduce_over_group<ReductionOpT, resTy>::value) {
             using KernelName =
-                class reduction_over_group_temps_krn<argTy, resTy, ReductionOpT,
-                                                     InputOutputIterIndexerT,
-                                                     ReductionIndexerT>;
+                class kernel_name_token<argTy, resTy, ReductionOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
@@ -986,9 +981,9 @@ submit_no_atomic_reduction(sycl::queue &exec_q,
         else {
             using SlmT = sycl::local_accessor<resTy, 1>;
             SlmT local_memory = SlmT(localRange, cgh);
-            using KernelName = class custom_reduction_over_group_temps_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT, SlmT>;
+            using KernelName = class custom_reduction_wrapper<
+                kernel_name_token<argTy, resTy, ReductionOpT,
+                                  InputOutputIterIndexerT, ReductionIndexerT>>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
@@ -1115,13 +1110,12 @@ sycl::event reduction_over_group_temps_strided_impl(
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        sycl::event comp_ev =
-            submit_no_atomic_reduction<argTy, resTy, ReductionOpT,
-                                       InputOutputIterIndexerT,
-                                       ReductionIndexerT>(
-                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
-                reduction_nelems, reductions_per_wi, reduction_groups,
-                in_out_iter_indexer, reduction_indexer, depends);
+        sycl::event comp_ev = submit_no_atomic_reduction<
+            argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+            ReductionIndexerT, reduction_over_group_temps_krn>(
+            exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
+            reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, depends);
 
         return comp_ev;
     }
@@ -1172,14 +1166,13 @@ sycl::event reduction_over_group_temps_strided_impl(
             ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                 reduction_shape_stride};
 
-            first_reduction_ev =
-                submit_no_atomic_reduction<argTy, resTy, ReductionOpT,
-                                           InputOutputIterIndexerT,
-                                           ReductionIndexerT>(
-                    exec_q, arg_tp, partially_reduced_tmp, identity_val, wg,
-                    iter_nelems, reduction_nelems, preferred_reductions_per_wi,
-                    reduction_groups, in_out_iter_indexer, reduction_indexer,
-                    depends);
+            first_reduction_ev = submit_no_atomic_reduction<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, reduction_over_group_temps_krn>(
+                exec_q, arg_tp, partially_reduced_tmp, identity_val, wg,
+                iter_nelems, reduction_nelems, preferred_reductions_per_wi,
+                reduction_groups, in_out_iter_indexer, reduction_indexer,
+                depends);
         }
 
         size_t remaining_reduction_nelems = reduction_groups;
@@ -1216,14 +1209,13 @@ sycl::event reduction_over_group_temps_strided_impl(
                                                             res_iter_indexer};
                 ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev =
-                    submit_no_atomic_reduction<resTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>(
-                        exec_q, temp_arg, temp2_arg, identity_val, wg,
-                        iter_nelems, remaining_reduction_nelems,
-                        preferred_reductions_per_wi, reduction_groups_,
-                        in_out_iter_indexer, reduction_indexer, {dependent_ev});
+                partial_reduction_ev = submit_no_atomic_reduction<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT, reduction_over_group_temps_krn>(
+                    exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                    remaining_reduction_nelems, preferred_reductions_per_wi,
+                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                    {dependent_ev});
             }
 
             remaining_reduction_nelems = reduction_groups_;
@@ -1260,14 +1252,13 @@ sycl::event reduction_over_group_temps_strided_impl(
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        sycl::event final_reduction_ev =
-            submit_no_atomic_reduction<resTy, resTy, ReductionOpT,
-                                       InputOutputIterIndexerT,
-                                       ReductionIndexerT>(
-                exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
-                remaining_reduction_nelems, reductions_per_wi,
-                final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-                {dependent_ev});
+        sycl::event final_reduction_ev = submit_no_atomic_reduction<
+            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+            ReductionIndexerT, reduction_over_group_temps_krn>(
+            exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
+            remaining_reduction_nelems, reductions_per_wi,
+            final_reduction_groups, in_out_iter_indexer, reduction_indexer,
+            {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -1384,13 +1375,12 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        sycl::event comp_ev =
-            submit_no_atomic_reduction<argTy, resTy, ReductionOpT,
-                                       InputOutputIterIndexerT,
-                                       ReductionIndexerT>(
-                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
-                reduction_nelems, reductions_per_wi, reduction_groups,
-                in_out_iter_indexer, reduction_indexer, depends);
+        sycl::event comp_ev = submit_no_atomic_reduction<
+            argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+            ReductionIndexerT, reduction_over_group_temps_krn>(
+            exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
+            reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, depends);
 
         return comp_ev;
     }
@@ -1434,14 +1424,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                                                         noop_tmp_indexer};
             ReductionIndexerT reduction_indexer{};
 
-            first_reduction_ev =
-                submit_no_atomic_reduction<argTy, resTy, ReductionOpT,
-                                           InputOutputIterIndexerT,
-                                           ReductionIndexerT>(
-                    exec_q, arg_tp, partially_reduced_tmp, identity_val, wg,
-                    iter_nelems, reduction_nelems, preferred_reductions_per_wi,
-                    reduction_groups, in_out_iter_indexer, reduction_indexer,
-                    depends);
+            first_reduction_ev = submit_no_atomic_reduction<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, reduction_over_group_temps_krn>(
+                exec_q, arg_tp, partially_reduced_tmp, identity_val, wg,
+                iter_nelems, reduction_nelems, preferred_reductions_per_wi,
+                reduction_groups, in_out_iter_indexer, reduction_indexer,
+                depends);
         }
 
         size_t remaining_reduction_nelems = reduction_groups;
@@ -1478,14 +1467,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                                                             res_iter_indexer};
                 ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev =
-                    submit_no_atomic_reduction<resTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>(
-                        exec_q, temp_arg, temp2_arg, identity_val, wg,
-                        iter_nelems, remaining_reduction_nelems,
-                        preferred_reductions_per_wi, reduction_groups_,
-                        in_out_iter_indexer, reduction_indexer, {dependent_ev});
+                partial_reduction_ev = submit_no_atomic_reduction<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT, reduction_over_group_temps_krn>(
+                    exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                    remaining_reduction_nelems, preferred_reductions_per_wi,
+                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                    {dependent_ev});
             }
 
             remaining_reduction_nelems = reduction_groups_;
@@ -1519,14 +1507,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        sycl::event final_reduction_ev =
-            submit_no_atomic_reduction<resTy, resTy, ReductionOpT,
-                                       InputOutputIterIndexerT,
-                                       ReductionIndexerT>(
-                exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
-                remaining_reduction_nelems, reductions_per_wi,
-                final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-                {dependent_ev});
+        sycl::event final_reduction_ev = submit_no_atomic_reduction<
+            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+            ReductionIndexerT, reduction_over_group_temps_krn>(
+            exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
+            remaining_reduction_nelems, reductions_per_wi,
+            final_reduction_groups, in_out_iter_indexer, reduction_indexer,
+            {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -1649,13 +1636,12 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        sycl::event comp_ev =
-            submit_no_atomic_reduction<argTy, resTy, ReductionOpT,
-                                       InputOutputIterIndexerT,
-                                       ReductionIndexerT>(
-                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
-                reduction_nelems, reductions_per_wi, reduction_groups,
-                in_out_iter_indexer, reduction_indexer, depends);
+        sycl::event comp_ev = submit_no_atomic_reduction<
+            argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+            ReductionIndexerT, reduction_over_group_temps_krn>(
+            exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
+            reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, depends);
 
         return comp_ev;
     }
@@ -1700,14 +1686,13 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                 0, /* size */ static_cast<ssize_t>(reduction_nelems),
                 /* step */ static_cast<ssize_t>(iter_nelems)};
 
-            first_reduction_ev =
-                submit_no_atomic_reduction<argTy, resTy, ReductionOpT,
-                                           InputOutputIterIndexerT,
-                                           ReductionIndexerT>(
-                    exec_q, arg_tp, partially_reduced_tmp, identity_val, wg,
-                    iter_nelems, reduction_nelems, preferred_reductions_per_wi,
-                    reduction_groups, in_out_iter_indexer, reduction_indexer,
-                    depends);
+            first_reduction_ev = submit_no_atomic_reduction<
+                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, reduction_over_group_temps_krn>(
+                exec_q, arg_tp, partially_reduced_tmp, identity_val, wg,
+                iter_nelems, reduction_nelems, preferred_reductions_per_wi,
+                reduction_groups, in_out_iter_indexer, reduction_indexer,
+                depends);
         }
 
         size_t remaining_reduction_nelems = reduction_groups;
@@ -1744,14 +1729,13 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                                                             res_iter_indexer};
                 ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev =
-                    submit_no_atomic_reduction<resTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>(
-                        exec_q, temp_arg, temp2_arg, identity_val, wg,
-                        iter_nelems, remaining_reduction_nelems,
-                        preferred_reductions_per_wi, reduction_groups_,
-                        in_out_iter_indexer, reduction_indexer, {dependent_ev});
+                partial_reduction_ev = submit_no_atomic_reduction<
+                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT, reduction_over_group_temps_krn>(
+                    exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                    remaining_reduction_nelems, preferred_reductions_per_wi,
+                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                    {dependent_ev});
             }
 
             remaining_reduction_nelems = reduction_groups_;
@@ -1785,14 +1769,13 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        sycl::event final_reduction_ev =
-            submit_no_atomic_reduction<resTy, resTy, ReductionOpT,
-                                       InputOutputIterIndexerT,
-                                       ReductionIndexerT>(
-                exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
-                remaining_reduction_nelems, reductions_per_wi,
-                final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-                {dependent_ev});
+        sycl::event final_reduction_ev = submit_no_atomic_reduction<
+            resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+            ReductionIndexerT, reduction_over_group_temps_krn>(
+            exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
+            remaining_reduction_nelems, reductions_per_wi,
+            final_reduction_groups, in_out_iter_indexer, reduction_indexer,
+            {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
