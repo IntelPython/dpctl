@@ -141,36 +141,24 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(iter_nelems)};
 
-        red_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        if (iter_nelems == 1) {
+            // increase GPU occupancy
+            wg = max_wg;
+        }
+        reductions_per_wi =
+            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-            if (iter_nelems == 1) {
-                // increase GPU occupancy
-                wg = max_wg;
-            }
-            reductions_per_wi =
-                std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+        size_t reduction_groups =
+            (reduction_nelems + reductions_per_wi * wg - 1) /
+            (reductions_per_wi * wg);
+        assert(reduction_groups == 1);
 
-            size_t reduction_groups =
-                (reduction_nelems + reductions_per_wi * wg - 1) /
-                (reductions_per_wi * wg);
-            assert(reduction_groups == 1);
-
-            auto globalRange =
-                sycl::range<1>{iter_nelems * reduction_groups * wg};
-            auto localRange = sycl::range<1>{wg};
-
-            using KernelName = class gemm_tree_reduction_krn<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-            cgh.parallel_for<KernelName>(
-                sycl::nd_range<1>(globalRange, localRange),
-                ReductionOverGroupNoAtomicFunctor<T, T, ReductionOpT,
-                                                  InputOutputIterIndexerT,
-                                                  ReductionIndexerT>(
-                    tmp_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
-                    iter_nelems, reductions_per_wi));
-        });
+        red_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
+            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+            gemm_tree_reduction_krn>(
+            exec_q, tmp_tp, res_tp, identity_val, wg, iter_nelems,
+            reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, depends);
     }
     return red_ev;
 }
@@ -232,36 +220,24 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(iter_nelems)};
 
-        red_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        if (iter_nelems == 1) {
+            // increase GPU occupancy
+            wg = max_wg;
+        }
+        reductions_per_wi =
+            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-            if (iter_nelems == 1) {
-                // increase GPU occupancy
-                wg = max_wg;
-            }
-            reductions_per_wi =
-                std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+        size_t reduction_groups =
+            (reduction_nelems + reductions_per_wi * wg - 1) /
+            (reductions_per_wi * wg);
+        assert(reduction_groups == 1);
 
-            size_t reduction_groups =
-                (reduction_nelems + reductions_per_wi * wg - 1) /
-                (reductions_per_wi * wg);
-            assert(reduction_groups == 1);
-
-            auto globalRange =
-                sycl::range<1>{iter_nelems * reduction_groups * wg};
-            auto localRange = sycl::range<1>{wg};
-
-            using KernelName = class gemm_tree_reduction_krn<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-            cgh.parallel_for<KernelName>(
-                sycl::nd_range<1>(globalRange, localRange),
-                ReductionOverGroupNoAtomicFunctor<T, T, ReductionOpT,
-                                                  InputOutputIterIndexerT,
-                                                  ReductionIndexerT>(
-                    tmp_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems,
-                    iter_nelems, reductions_per_wi));
-        });
+        red_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
+            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+            gemm_tree_reduction_krn>(
+            exec_q, tmp_tp, res_tp, identity_val, wg, iter_nelems,
+            reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, depends);
     }
     return red_ev;
 }
@@ -284,19 +260,13 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
                                     const ssize_t *res_shape_strides,
                                     const std::vector<sycl::event> &depends)
 {
-    sycl::event first_reduction_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
+    sycl::event first_reduction_ev;
+    {
         using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-
-        // Only 2*iter_nd entries describing shape and strides of
-        // iterated dimensions of input array from
-        // iter_shape_and_strides are going to be accessed by
-        // inp_indexer
 
         constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                               NoOpIndexerT{}};
@@ -304,19 +274,13 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
             0, /* size */ static_cast<ssize_t>(reduction_nelems),
             /* step */ static_cast<ssize_t>(iter_nelems)};
 
-        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
-        auto localRange = sycl::range<1>{wg};
-
-        using KernelName = class gemm_tree_reduction_krn<
-            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-        cgh.parallel_for<KernelName>(
-            sycl::nd_range<1>(globalRange, localRange),
-            ReductionOverGroupNoAtomicFunctor<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>(
-                partially_reduced_tmp, partially_reduced_tmp2, ReductionOpT(),
-                identity_val, in_out_iter_indexer, reduction_indexer,
-                reduction_nelems, iter_nelems, reductions_per_wi));
-    });
+        first_reduction_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
+            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+            gemm_tree_reduction_krn>(
+            exec_q, partially_reduced_tmp, partially_reduced_tmp2, identity_val,
+            wg, iter_nelems, reduction_nelems, reductions_per_wi,
+            reduction_groups, in_out_iter_indexer, reduction_indexer, depends);
+    }
 
     size_t remaining_reduction_nelems = reduction_groups;
 
@@ -331,56 +295,8 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         assert(reduction_groups_ > 1);
 
         // keep reducing
-        sycl::event partial_reduction_ev = exec_q.submit([&](sycl::handler
-                                                                 &cgh) {
-            cgh.depends_on(dependent_ev);
-
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-
-            const InputIndexerT inp_indexer{
-                0, static_cast<ssize_t>(iter_nelems),
-                static_cast<ssize_t>(reduction_groups_)};
-            constexpr ResIndexerT res_iter_indexer{};
-
-            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                              res_iter_indexer};
-
-            constexpr ReductionIndexerT reduction_indexer{};
-
-            auto globalRange =
-                sycl::range<1>{iter_nelems * reduction_groups_ * wg};
-            auto localRange = sycl::range<1>{wg};
-
-            using KernelName = class gemm_tree_reduction_krn<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-
-            cgh.parallel_for<KernelName>(
-                sycl::nd_range<1>(globalRange, localRange),
-                ReductionOverGroupNoAtomicFunctor<T, T, ReductionOpT,
-                                                  InputOutputIterIndexerT,
-                                                  ReductionIndexerT>(
-                    temp_arg, temp2_arg, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer,
-                    remaining_reduction_nelems, iter_nelems,
-                    reductions_per_wi));
-        });
-
-        remaining_reduction_nelems = reduction_groups_;
-        std::swap(temp_arg, temp2_arg);
-        dependent_ev = std::move(partial_reduction_ev);
-    }
-
-    // final reduction to res
-    sycl::event final_reduction_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(dependent_ev);
-
         using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
@@ -388,36 +304,62 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
 
         const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
-            static_cast<ssize_t>(remaining_reduction_nelems)};
-        const ResIndexerT res_iter_indexer{
-            res_nd, static_cast<ssize_t>(res_offset), res_shape_strides};
+            static_cast<ssize_t>(reduction_groups_)};
+        constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
+
         constexpr ReductionIndexerT reduction_indexer{};
 
-        wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        sycl::event partial_reduction_ev =
+            dpctl::tensor::kernels::submit_no_atomic_reduction<
+                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+                gemm_tree_reduction_krn>(
+                exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                remaining_reduction_nelems, reductions_per_wi,
+                reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                {dependent_ev});
 
-        size_t reduction_groups =
-            (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
-            (reductions_per_wi * wg);
-        assert(reduction_groups == 1);
+        remaining_reduction_nelems = reduction_groups_;
+        std::swap(temp_arg, temp2_arg);
+        dependent_ev = std::move(partial_reduction_ev);
+    }
 
-        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
-        auto localRange = sycl::range<1>{wg};
+    // final reduction to res
+    using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+    using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using InputOutputIterIndexerT =
+        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<InputIndexerT,
+                                                                ResIndexerT>;
+    using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        using KernelName = class gemm_tree_reduction_krn<
-            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-        cgh.parallel_for<KernelName>(
-            sycl::nd_range<1>(globalRange, localRange),
-            ReductionOverGroupNoAtomicFunctor<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>(
-                temp_arg, res_tp, ReductionOpT(), identity_val,
-                in_out_iter_indexer, reduction_indexer,
-                remaining_reduction_nelems, iter_nelems, reductions_per_wi));
-    });
+    const InputIndexerT inp_indexer{
+        0, static_cast<ssize_t>(iter_nelems),
+        static_cast<ssize_t>(remaining_reduction_nelems)};
+    const ResIndexerT res_iter_indexer{res_nd, static_cast<ssize_t>(res_offset),
+                                       res_shape_strides};
+
+    const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                      res_iter_indexer};
+    constexpr ReductionIndexerT reduction_indexer{};
+
+    wg = max_wg;
+    reductions_per_wi =
+        std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+
+    reduction_groups =
+        (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
+        (reductions_per_wi * wg);
+    assert(reduction_groups == 1);
+
+    sycl::event final_reduction_ev =
+        dpctl::tensor::kernels::submit_no_atomic_reduction<
+            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+            gemm_tree_reduction_krn>(
+            exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
+            remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
     return final_reduction_ev;
 }
@@ -441,41 +383,25 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
                                size_t reductions_per_wi,
                                const std::vector<sycl::event> &depends)
 {
+    using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using InputOutputIterIndexerT =
+        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexerT,
+                                                                NoOpIndexerT>;
+    using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-    const sycl::event &first_reduction_ev = exec_q.submit([&](sycl::handler
-                                                                  &cgh) {
-        cgh.depends_on(depends);
+    constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
+    const ReductionIndexerT reduction_indexer{
+        0, /* size */ static_cast<ssize_t>(reduction_nelems),
+        /* step */ static_cast<ssize_t>(iter_nelems)};
 
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-
-        // Only 2*iter_nd entries describing shape and strides of
-        // iterated dimensions of input array from
-        // iter_shape_and_strides are going to be accessed by
-        // inp_indexer
-
-        constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                              NoOpIndexerT{}};
-        const ReductionIndexerT reduction_indexer{
-            0, /* size */ static_cast<ssize_t>(reduction_nelems),
-            /* step */ static_cast<ssize_t>(iter_nelems)};
-
-        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
-        auto localRange = sycl::range<1>{wg};
-
-        using KernelName = class gemm_reduction_over_group_temps_contig_krn<
-            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-        cgh.parallel_for<KernelName>(
-            sycl::nd_range<1>(globalRange, localRange),
-            ReductionOverGroupNoAtomicFunctor<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>(
-                partially_reduced_tmp, partially_reduced_tmp2, ReductionOpT(),
-                identity_val, in_out_iter_indexer, reduction_indexer,
-                reduction_nelems, iter_nelems, reductions_per_wi));
-    });
+    const sycl::event &first_reduction_ev =
+        dpctl::tensor::kernels::submit_no_atomic_reduction<
+            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+            gemm_reduction_over_group_temps_contig_krn>(
+            exec_q, partially_reduced_tmp, partially_reduced_tmp2, identity_val,
+            wg, iter_nelems, reduction_nelems, reductions_per_wi,
+            reduction_groups, in_out_iter_indexer, reduction_indexer, depends);
 
     size_t remaining_reduction_nelems = reduction_groups;
 
@@ -490,46 +416,34 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         assert(reduction_groups_ > 1);
 
         // keep reducing
-        sycl::event partial_reduction_ev = exec_q.submit([&](sycl::handler
-                                                                 &cgh) {
-            cgh.depends_on(dependent_ev);
+        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                InputIndexerT, ResIndexerT>;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        // n * m = iter_nelems because essentially, this process
+        // creates a stack of reduction_nelems 2D matrices and we reduce
+        // along the stack axis
+        const InputIndexerT inp_indexer{
+            0, static_cast<ssize_t>(iter_nelems),
+            static_cast<ssize_t>(reduction_groups_)};
+        constexpr ResIndexerT res_iter_indexer{};
 
-            // n * m = iter_nelems because essentially, this process
-            // creates a stack of reduction_nelems 2D matrices and we reduce
-            // along the stack axis
-            const InputIndexerT inp_indexer{
-                0, static_cast<ssize_t>(iter_nelems),
-                static_cast<ssize_t>(reduction_groups_)};
-            constexpr ResIndexerT res_iter_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                              res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
-            constexpr ReductionIndexerT reduction_indexer{};
-
-            auto globalRange =
-                sycl::range<1>{iter_nelems * reduction_groups_ * wg};
-            auto localRange = sycl::range<1>{wg};
-
-            using KernelName = class gemm_reduction_over_group_temps_contig_krn<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-            cgh.parallel_for<KernelName>(
-                sycl::nd_range<1>(globalRange, localRange),
-                ReductionOverGroupNoAtomicFunctor<T, T, ReductionOpT,
-                                                  InputOutputIterIndexerT,
-                                                  ReductionIndexerT>(
-                    temp_arg, temp2_arg, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer,
-                    remaining_reduction_nelems, iter_nelems,
-                    reductions_per_wi));
-        });
+        sycl::event partial_reduction_ev =
+            dpctl::tensor::kernels::submit_no_atomic_reduction<
+                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+                gemm_reduction_over_group_temps_contig_krn>(
+                exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                remaining_reduction_nelems, reductions_per_wi,
+                reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                {dependent_ev});
 
         remaining_reduction_nelems = reduction_groups_;
         std::swap(temp_arg, temp2_arg);
@@ -537,9 +451,7 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
     }
 
     // final reduction to res
-    sycl::event final_reduction_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(dependent_ev);
-
+    {
         using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
         using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
@@ -565,21 +477,16 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
-        auto localRange = sycl::range<1>{wg};
+        sycl::event final_reduction_ev =
+            dpctl::tensor::kernels::submit_no_atomic_reduction<
+                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
+                gemm_reduction_over_group_temps_contig_krn>(
+                exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
+                remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+                in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
-        using KernelName = class gemm_reduction_over_group_temps_contig_krn<
-            T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>;
-        cgh.parallel_for<KernelName>(
-            sycl::nd_range<1>(globalRange, localRange),
-            ReductionOverGroupNoAtomicFunctor<
-                T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT>(
-                temp_arg, res_tp, ReductionOpT(), identity_val,
-                in_out_iter_indexer, reduction_indexer,
-                remaining_reduction_nelems, iter_nelems, reductions_per_wi));
-    });
-
-    return final_reduction_ev;
+        return final_reduction_ev;
+    }
 }
 
 template <typename lhsT,
