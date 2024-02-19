@@ -1079,10 +1079,10 @@ sycl::event reduction_over_group_temps_strided_impl(
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
-    constexpr size_t max_max_wg = 2048;
-    size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    // prevents running out of resources on CPU
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1340,10 +1340,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
-    constexpr size_t max_max_wg = 2048;
-    size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    // prevents running out of resources on CPU
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1599,10 +1599,10 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
-    constexpr size_t max_max_wg = 2048;
-    size_t max_wg = std::min(
-        max_max_wg, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    // prevents running out of resources on CPU
+    size_t max_wg =
+        std::min(size_t(2048),
+                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -3703,7 +3703,7 @@ sycl::event search_over_group_temps_strided_impl(
     }
 
     constexpr size_t preferred_reductions_per_wi = 4;
-    // max_max_wg prevents running out of resources on CPU
+    // prevents running out of resources on CPU
     size_t max_wg =
         std::min(size_t(2048),
                  d.get_info<sycl::info::device::max_work_group_size>() / 2);
@@ -3803,10 +3803,6 @@ sycl::event search_over_group_temps_strided_impl(
                                                         noop_tmp_indexer};
             ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                 reduction_shape_stride};
-
-            auto globalRange =
-                sycl::range<1>{iter_nelems * reduction_groups * wg};
-            auto localRange = sycl::range<1>{wg};
 
             first_reduction_ev =
                 submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
@@ -4009,7 +4005,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
+    // prevents running out of resources on CPU
     size_t max_wg =
         std::min(size_t(2048),
                  d.get_info<sycl::info::device::max_work_group_size>() / 2);
@@ -4299,7 +4295,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
-    // max_max_wg prevents running out of resources on CPU
+    // prevents running out of resources on CPU
     size_t max_wg =
         std::min(size_t(2048),
                  d.get_info<sycl::info::device::max_work_group_size>() / 2);
