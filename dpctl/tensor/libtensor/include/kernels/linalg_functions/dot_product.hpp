@@ -88,9 +88,9 @@ private:
     const lhsT *lhs_ = nullptr;
     const rhsT *rhs_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOpT reduction_op_;
-    BatchIndexerT batch_indexer_;
-    RedIndexerT reduced_dims_indexer_;
+    const ReductionOpT reduction_op_;
+    const BatchIndexerT batch_indexer_;
+    const RedIndexerT reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
     size_t batches_ = 1;
     size_t reductions_per_wi = 16;
@@ -99,9 +99,9 @@ public:
     DotProductFunctor(const lhsT *lhs,
                       const rhsT *rhs,
                       outT *res,
-                      ReductionOpT reduction_op,
-                      BatchIndexerT batch_indexer,
-                      RedIndexerT arg_reduced_dims_indexer,
+                      const ReductionOpT &reduction_op,
+                      const BatchIndexerT &batch_indexer,
+                      const RedIndexerT &arg_reduced_dims_indexer,
                       size_t reduction_size,
                       size_t iteration_size,
                       size_t reduction_size_per_wi)
@@ -127,7 +127,7 @@ public:
         // for 0 <= m < reductions_per_wi
         // for each input
 
-        auto batch_offsets_ = batch_indexer_(batch_id);
+        const auto &batch_offsets_ = batch_indexer_(batch_id);
         const auto &lhs_batch_offset = batch_offsets_.get_first_offset();
         const auto &rhs_batch_offset = batch_offsets_.get_second_offset();
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
@@ -183,9 +183,9 @@ private:
     const lhsT *lhs_ = nullptr;
     const rhsT *rhs_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOpT reduction_op_;
-    BatchIndexerT batch_indexer_;
-    RedIndexerT reduced_dims_indexer_;
+    const ReductionOpT reduction_op_;
+    const BatchIndexerT batch_indexer_;
+    const RedIndexerT reduced_dims_indexer_;
     SlmT local_mem_;
     size_t reduction_max_gid_ = 0;
     size_t batches_ = 1;
@@ -195,9 +195,9 @@ public:
     DotProductCustomFunctor(const lhsT *lhs,
                             const rhsT *rhs,
                             outT *res,
-                            ReductionOpT reduction_op,
-                            BatchIndexerT batch_indexer,
-                            RedIndexerT arg_reduced_dims_indexer,
+                            const ReductionOpT &reduction_op,
+                            const BatchIndexerT &batch_indexer,
+                            const RedIndexerT &arg_reduced_dims_indexer,
                             SlmT local_mem,
                             size_t reduction_size,
                             size_t iteration_size,
@@ -224,7 +224,7 @@ public:
         // for 0 <= m < reductions_per_wi
         // for each input
 
-        auto batch_offsets_ = batch_indexer_(batch_id);
+        const auto &batch_offsets_ = batch_indexer_(batch_id);
         const auto &lhs_batch_offset = batch_offsets_.get_first_offset();
         const auto &rhs_batch_offset = batch_offsets_.get_second_offset();
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
@@ -397,12 +397,12 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
             using ReductionIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-            InputOutputBatchIndexerT in_out_batch_indexer{
+            const InputOutputBatchIndexerT in_out_batch_indexer{
                 batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
                 batch_shape_and_strides};
-            ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
-                                                reduction_rhs_offset,
-                                                reduction_shape_stride};
+            const ReductionIndexerT reduction_indexer{
+                red_nd, reduction_lhs_offset, reduction_rhs_offset,
+                reduction_shape_stride};
 
             cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
                                                        InputOutputBatchIndexerT,
@@ -425,8 +425,8 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
             const ssize_t *const &res_shape = batch_shape_and_strides;
             const ssize_t *const &res_strides =
                 batch_shape_and_strides + 3 * batch_nd;
-            IndexerT res_indexer(batch_nd, batch_res_offset, res_shape,
-                                 res_strides);
+            const IndexerT res_indexer(batch_nd, batch_res_offset, res_shape,
+                                       res_strides);
             using InitKernelName =
                 class dot_product_init_krn<lhsTy, rhsTy, resTy>;
             cgh.depends_on(depends);
@@ -445,12 +445,12 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
         using ReductionIndexerT =
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-        BatchIndexerT batch_indexer{batch_nd, batch_lhs_offset,
-                                    batch_rhs_offset, batch_res_offset,
-                                    batch_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
-                                            reduction_rhs_offset,
-                                            reduction_shape_stride};
+        const BatchIndexerT batch_indexer{batch_nd, batch_lhs_offset,
+                                          batch_rhs_offset, batch_res_offset,
+                                          batch_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
+                                                  reduction_rhs_offset,
+                                                  reduction_shape_stride};
 
         constexpr size_t preferred_reductions_per_wi =
             4; // determined experimentally
@@ -528,12 +528,13 @@ dot_product_contig_impl(sycl::queue &exec_q,
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     NoOpIndexerT, NoOpIndexerT>;
 
-            InputBatchIndexerT inp_batch_indexer{
+            const InputBatchIndexerT inp_batch_indexer{
                 0, static_cast<ssize_t>(reduction_nelems),
                 static_cast<ssize_t>(batches)};
-            InputOutputBatchIndexerT inp_out_batch_indexer{
+            const InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-            ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
+            constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
 
             cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
                                                        InputOutputBatchIndexerT,
@@ -567,12 +568,13 @@ dot_product_contig_impl(sycl::queue &exec_q,
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
-        InputBatchIndexerT inp_batch_indexer{
+        const InputBatchIndexerT inp_batch_indexer{
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(batches)};
-        InputOutputBatchIndexerT inp_out_batch_indexer{
+        const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                      NoOpIndexerT{}};
 
         constexpr size_t preferred_reductions_per_wi =
             4; // determined experimentally
@@ -609,9 +611,9 @@ private:
     const lhsT *lhs_ = nullptr;
     const rhsT *rhs_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOpT reduction_op_;
-    BatchIndexerT batch_indexer_;
-    RedIndexerT reduced_dims_indexer_;
+    const ReductionOpT reduction_op_;
+    const BatchIndexerT batch_indexer_;
+    const RedIndexerT reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
     size_t batches_ = 1;
     size_t reductions_per_wi = 16;
@@ -620,9 +622,9 @@ public:
     DotProductNoAtomicFunctor(const lhsT *lhs,
                               const rhsT *rhs,
                               outT *res,
-                              ReductionOpT reduction_op,
-                              BatchIndexerT batch_indexer,
-                              RedIndexerT arg_reduced_dims_indexer,
+                              const ReductionOpT &reduction_op,
+                              const BatchIndexerT &batch_indexer,
+                              const RedIndexerT &arg_reduced_dims_indexer,
                               size_t reduction_size,
                               size_t iteration_size,
                               size_t reduction_size_per_wi)
@@ -649,7 +651,7 @@ public:
         // for 0 <= m < reductions_per_wi
         // for each input
 
-        auto batch_offsets_ = batch_indexer_(batch_id);
+        const auto &batch_offsets_ = batch_indexer_(batch_id);
         const auto &lhs_batch_offset = batch_offsets_.get_first_offset();
         const auto &rhs_batch_offset = batch_offsets_.get_second_offset();
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
@@ -707,9 +709,9 @@ private:
     const lhsT *lhs_ = nullptr;
     const rhsT *rhs_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOpT reduction_op_;
-    BatchIndexerT batch_indexer_;
-    RedIndexerT reduced_dims_indexer_;
+    const ReductionOpT reduction_op_;
+    const BatchIndexerT batch_indexer_;
+    const RedIndexerT reduced_dims_indexer_;
     SlmT local_mem_;
     size_t reduction_max_gid_ = 0;
     size_t batches_ = 1;
@@ -719,9 +721,9 @@ public:
     DotProductNoAtomicCustomFunctor(const lhsT *lhs,
                                     const rhsT *rhs,
                                     outT *res,
-                                    ReductionOpT reduction_op,
-                                    BatchIndexerT batch_indexer,
-                                    RedIndexerT arg_reduced_dims_indexer,
+                                    const ReductionOpT &reduction_op,
+                                    const BatchIndexerT &batch_indexer,
+                                    const RedIndexerT &arg_reduced_dims_indexer,
                                     SlmT local_mem,
                                     size_t reduction_size,
                                     size_t iteration_size,
@@ -749,7 +751,7 @@ public:
         // for 0 <= m < reductions_per_wi
         // for each input
 
-        auto batch_offsets_ = batch_indexer_(batch_id);
+        const auto &batch_offsets_ = batch_indexer_(batch_id);
         const auto &lhs_batch_offset = batch_offsets_.get_first_offset();
         const auto &rhs_batch_offset = batch_offsets_.get_second_offset();
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
@@ -904,12 +906,12 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             using ReductionIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-            InputOutputBatchIndexerT in_out_batch_indexer{
+            const InputOutputBatchIndexerT in_out_batch_indexer{
                 batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
                 batch_shape_and_strides};
-            ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
-                                                reduction_rhs_offset,
-                                                reduction_shape_stride};
+            const ReductionIndexerT reduction_indexer{
+                red_nd, reduction_lhs_offset, reduction_rhs_offset,
+                reduction_shape_stride};
 
             cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
                                                        InputOutputBatchIndexerT,
@@ -942,12 +944,12 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         using ReductionIndexerT =
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-        BatchIndexerT batch_indexer{batch_nd, batch_lhs_offset,
-                                    batch_rhs_offset, batch_res_offset,
-                                    batch_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
-                                            reduction_rhs_offset,
-                                            reduction_shape_stride};
+        const BatchIndexerT batch_indexer{batch_nd, batch_lhs_offset,
+                                          batch_rhs_offset, batch_res_offset,
+                                          batch_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
+                                                  reduction_rhs_offset,
+                                                  reduction_shape_stride};
 
         if (batches == 1) {
             // increase GPU occupancy
@@ -1010,18 +1012,18 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             using ReductionIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-            LhsIndexerT lhs_indexer(batch_nd, batch_lhs_offset,
-                                    batch_shape_and_strides);
-            RhsIndexerT rhs_indexer(batch_nd, batch_rhs_offset,
-                                    batch_shape_and_strides,
-                                    batch_shape_and_strides + 2 * batch_nd);
-            ResIndexerT noop_tmp_indexer{};
+            const LhsIndexerT lhs_indexer(batch_nd, batch_lhs_offset,
+                                          batch_shape_and_strides);
+            const RhsIndexerT rhs_indexer(
+                batch_nd, batch_rhs_offset, batch_shape_and_strides,
+                batch_shape_and_strides + 2 * batch_nd);
+            constexpr ResIndexerT noop_tmp_indexer{};
 
-            InputOutputBatchIndexerT in_out_iter_indexer{
+            const InputOutputBatchIndexerT in_out_iter_indexer{
                 lhs_indexer, rhs_indexer, noop_tmp_indexer};
-            ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
-                                                reduction_rhs_offset,
-                                                reduction_shape_stride};
+            const ReductionIndexerT reduction_indexer{
+                red_nd, reduction_lhs_offset, reduction_rhs_offset,
+                reduction_shape_stride};
 
             first_reduction_ev = submit_no_atomic_dot_product<
                 lhsTy, rhsTy, resTy, ReductionOpT, InputOutputBatchIndexerT,
@@ -1051,13 +1053,14 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(batches),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(batches),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -1081,17 +1084,17 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(batches),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{batch_nd, batch_res_offset,
-                                     /* shape */ batch_shape_and_strides,
-                                     /* strides */ batch_shape_and_strides +
-                                         2 * batch_nd};
+        const ResIndexerT res_iter_indexer{
+            batch_nd, batch_res_offset,
+            /* shape */ batch_shape_and_strides,
+            /* strides */ batch_shape_and_strides + 2 * batch_nd};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
@@ -1164,12 +1167,13 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     NoOpIndexerT, NoOpIndexerT>;
 
-            InputBatchIndexerT inp_batch_indexer{
+            const InputBatchIndexerT inp_batch_indexer{
                 0, static_cast<ssize_t>(reduction_nelems),
                 static_cast<ssize_t>(batches)};
-            InputOutputBatchIndexerT inp_out_batch_indexer{
+            const InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-            ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
+            constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
 
             cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
                                                        InputOutputBatchIndexerT,
@@ -1207,12 +1211,13 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
-        InputBatchIndexerT inp_batch_indexer{
+        const InputBatchIndexerT inp_batch_indexer{
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(batches)};
-        InputOutputBatchIndexerT inp_out_batch_indexer{
+        const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                      NoOpIndexerT{}};
 
         if (batches == 1) {
             // increase GPU occupancy
@@ -1274,12 +1279,13 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     NoOpIndexerT, NoOpIndexerT>;
 
-            InputBatchIndexerT inp_batch_indexer{
+            const InputBatchIndexerT inp_batch_indexer{
                 0, static_cast<ssize_t>(reduction_nelems),
                 static_cast<ssize_t>(batches)};
-            InputOutputBatchIndexerT inp_out_batch_indexer{
+            const InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-            ReductionIndexerT reduction_indexer{NoOpIndexerT{}, NoOpIndexerT{}};
+            constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
 
             first_reduction_ev = submit_no_atomic_dot_product<
                 lhsTy, rhsTy, resTy, ReductionOpT, InputOutputBatchIndexerT,
@@ -1309,13 +1315,14 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(batches),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(batches),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -1339,14 +1346,14 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(batches),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{};
+        constexpr ResIndexerT res_iter_indexer{};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
