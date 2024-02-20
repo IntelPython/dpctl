@@ -1100,7 +1100,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1110,9 +1110,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT, dot_product_tree_reduction_krn>(
                 exec_q, temp_arg, res_tp, identity_val, wg, batches,
-                remaining_reduction_nelems, reductions_per_wi,
-                final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-                {dependent_ev});
+                remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+                in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -1359,7 +1358,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1369,9 +1368,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT, dot_product_tree_reduction_krn>(
                 exec_q, temp_arg, res_tp, identity_val, wg, batches,
-                remaining_reduction_nelems, reductions_per_wi,
-                final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-                {dependent_ev});
+                remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+                in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {

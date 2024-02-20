@@ -1247,7 +1247,7 @@ sycl::event reduction_over_group_temps_strided_impl(
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1256,9 +1256,8 @@ sycl::event reduction_over_group_temps_strided_impl(
             resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
             ReductionIndexerT, reduction_over_group_temps_krn>(
             exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
-            remaining_reduction_nelems, reductions_per_wi,
-            final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-            {dependent_ev});
+            remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -1447,34 +1446,28 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            sycl::event partial_reduction_ev;
-            {
-                using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-                using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                        InputIndexerT, ResIndexerT>;
-                using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIndexerT, ResIndexerT>;
+            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
-                    0, static_cast<ssize_t>(iter_nelems),
-                    static_cast<ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
+            ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                        res_iter_indexer};
+            ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev = submit_no_atomic_reduction<
-                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, reduction_over_group_temps_krn>(
-                    exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
-                    remaining_reduction_nelems, preferred_reductions_per_wi,
-                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
-                    {dependent_ev});
-            }
+            sycl::event partial_reduction_ev = submit_no_atomic_reduction<
+                resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, reduction_over_group_temps_krn>(
+                exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                remaining_reduction_nelems, preferred_reductions_per_wi,
+                reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                {dependent_ev});
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
@@ -1502,7 +1495,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1511,9 +1504,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
             ReductionIndexerT, reduction_over_group_temps_krn>(
             exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
-            remaining_reduction_nelems, reductions_per_wi,
-            final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-            {dependent_ev});
+            remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -1709,34 +1701,28 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            sycl::event partial_reduction_ev;
-            {
-                using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-                using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                        InputIndexerT, ResIndexerT>;
-                using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIndexerT, ResIndexerT>;
+            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
-                    0, static_cast<ssize_t>(iter_nelems),
-                    static_cast<ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
+            ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                        res_iter_indexer};
+            ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev = submit_no_atomic_reduction<
-                    resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, reduction_over_group_temps_krn>(
-                    exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
-                    remaining_reduction_nelems, preferred_reductions_per_wi,
-                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
-                    {dependent_ev});
-            }
+            sycl::event partial_reduction_ev = submit_no_atomic_reduction<
+                resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                ReductionIndexerT, reduction_over_group_temps_krn>(
+                exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
+                remaining_reduction_nelems, preferred_reductions_per_wi,
+                reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                {dependent_ev});
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
@@ -1764,7 +1750,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1773,9 +1759,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
             ReductionIndexerT, reduction_over_group_temps_krn>(
             exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
-            remaining_reduction_nelems, reductions_per_wi,
-            final_reduction_groups, in_out_iter_indexer, reduction_indexer,
-            {dependent_ev});
+            remaining_reduction_nelems, reductions_per_wi, reduction_groups,
+            in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
             exec_q.submit([&](sycl::handler &cgh) {
@@ -3833,36 +3818,31 @@ sycl::event search_over_group_temps_strided_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            sycl::event partial_reduction_ev;
-            {
-                using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-                using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                        InputIndexerT, ResIndexerT>;
-                using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIndexerT, ResIndexerT>;
+            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
-                    0, static_cast<ssize_t>(iter_nelems),
-                    static_cast<ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
+            ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                        res_iter_indexer};
+            ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev =
-                    submit_search_reduction<argTy, resTy, ReductionOpT,
-                                            IndexOpT, InputOutputIterIndexerT,
-                                            ReductionIndexerT, false, false>(
-                        exec_q, vals_temp_arg, vals_temp2_arg, temp_arg,
-                        temp2_arg, identity_val, idx_identity_val, wg,
-                        iter_nelems, remaining_reduction_nelems,
-                        preferred_reductions_per_wi, reduction_groups_,
-                        in_out_iter_indexer, reduction_indexer, {dependent_ev});
-            }
+            sycl::event partial_reduction_ev =
+                submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT, false, false>(
+                    exec_q, vals_temp_arg, vals_temp2_arg, temp_arg, temp2_arg,
+                    identity_val, idx_identity_val, wg, iter_nelems,
+                    remaining_reduction_nelems, preferred_reductions_per_wi,
+                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                    {dependent_ev});
+
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
             std::swap(vals_temp_arg, vals_temp2_arg);
@@ -3893,7 +3873,7 @@ sycl::event search_over_group_temps_strided_impl(
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -3904,7 +3884,7 @@ sycl::event search_over_group_temps_strided_impl(
                                     false, true>(
                 exec_q, vals_temp_arg, nullptr, temp_arg, res_tp, identity_val,
                 idx_identity_val, wg, iter_nelems, remaining_reduction_nelems,
-                reductions_per_wi, final_reduction_groups, in_out_iter_indexer,
+                reductions_per_wi, reduction_groups, in_out_iter_indexer,
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
@@ -4131,37 +4111,31 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                                        (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
-            sycl::event partial_reduction_ev;
-            {
-                // keep reducing
-                using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-                using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                        InputIndexerT, ResIndexerT>;
-                using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+            // keep reducing
+            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIndexerT, ResIndexerT>;
+            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
-                    0, static_cast<ssize_t>(iter_nelems),
-                    static_cast<ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
+            ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                        res_iter_indexer};
+            ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev =
-                    submit_search_reduction<argTy, resTy, ReductionOpT,
-                                            IndexOpT, InputOutputIterIndexerT,
-                                            ReductionIndexerT, false, false>(
-                        exec_q, vals_temp_arg, vals_temp2_arg, temp_arg,
-                        temp2_arg, identity_val, idx_identity_val, wg,
-                        iter_nelems, remaining_reduction_nelems,
-                        preferred_reductions_per_wi, reduction_groups_,
-                        in_out_iter_indexer, reduction_indexer, {dependent_ev});
-            }
+            sycl::event partial_reduction_ev =
+                submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT, false, false>(
+                    exec_q, vals_temp_arg, vals_temp2_arg, temp_arg, temp2_arg,
+                    identity_val, idx_identity_val, wg, iter_nelems,
+                    remaining_reduction_nelems, preferred_reductions_per_wi,
+                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                    {dependent_ev});
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
@@ -4190,7 +4164,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -4201,7 +4175,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                                     false, true>(
                 exec_q, vals_temp_arg, nullptr, temp_arg, res_tp, identity_val,
                 idx_identity_val, wg, iter_nelems, remaining_reduction_nelems,
-                reductions_per_wi, final_reduction_groups, in_out_iter_indexer,
+                reductions_per_wi, reduction_groups, in_out_iter_indexer,
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
@@ -4425,36 +4399,30 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            sycl::event partial_reduction_ev;
-            {
-                using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-                using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                        InputIndexerT, ResIndexerT>;
-                using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputOutputIterIndexerT =
+                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    InputIndexerT, ResIndexerT>;
+            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
-                    0, static_cast<ssize_t>(iter_nelems),
-                    static_cast<ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                      static_cast<ssize_t>(reduction_groups_)};
+            ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                        res_iter_indexer};
+            ReductionIndexerT reduction_indexer{};
 
-                partial_reduction_ev =
-                    submit_search_reduction<argTy, resTy, ReductionOpT,
-                                            IndexOpT, InputOutputIterIndexerT,
-                                            ReductionIndexerT, false, false>(
-                        exec_q, vals_temp_arg, vals_temp2_arg, temp_arg,
-                        temp2_arg, identity_val, idx_identity_val, wg,
-                        iter_nelems, remaining_reduction_nelems,
-                        preferred_reductions_per_wi, reduction_groups_,
-                        in_out_iter_indexer, reduction_indexer, {dependent_ev});
-            }
+            sycl::event partial_reduction_ev =
+                submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT, false, false>(
+                    exec_q, vals_temp_arg, vals_temp2_arg, temp_arg, temp2_arg,
+                    identity_val, idx_identity_val, wg, iter_nelems,
+                    remaining_reduction_nelems, preferred_reductions_per_wi,
+                    reduction_groups_, in_out_iter_indexer, reduction_indexer,
+                    {dependent_ev});
 
             remaining_reduction_nelems = reduction_groups_;
             std::swap(temp_arg, temp2_arg);
@@ -4483,7 +4451,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         reductions_per_wi =
             std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
 
-        size_t final_reduction_groups =
+        reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -4494,7 +4462,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                                     false, true>(
                 exec_q, vals_temp_arg, nullptr, temp_arg, res_tp, identity_val,
                 idx_identity_val, wg, iter_nelems, remaining_reduction_nelems,
-                reductions_per_wi, final_reduction_groups, in_out_iter_indexer,
+                reductions_per_wi, reduction_groups, in_out_iter_indexer,
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
