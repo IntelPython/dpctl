@@ -75,19 +75,19 @@ struct SequentialReduction
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
+    const ReductionOp reduction_op_;
     outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
 
 public:
     SequentialReduction(const argT *inp,
                         outT *res,
-                        ReductionOp reduction_op,
+                        const ReductionOp &reduction_op,
                         const outT &identity_val,
-                        InputOutputIterIndexerT arg_res_iter_indexer,
-                        InputRedIndexerT arg_reduced_dims_indexer,
+                        const InputOutputIterIndexerT &arg_res_iter_indexer,
+                        const InputRedIndexerT &arg_reduced_dims_indexer,
                         size_t reduction_size)
         : inp_(inp), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
@@ -136,10 +136,10 @@ struct ReductionOverGroupWithAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
-    outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const ReductionOp reduction_op_;
+    const outT identity_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
     size_t iter_gws_ = 1;
     size_t reductions_per_wi = 16;
@@ -148,10 +148,10 @@ public:
     ReductionOverGroupWithAtomicFunctor(
         const argT *data,
         outT *res,
-        ReductionOp reduction_op,
+        const ReductionOp &reduction_op,
         const outT &identity_val,
-        InputOutputIterIndexerT arg_res_iter_indexer,
-        InputRedIndexerT arg_reduced_dims_indexer,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
         size_t reduction_size,
         size_t iteration_size,
         size_t reduction_size_per_wi)
@@ -176,7 +176,7 @@ public:
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
 
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
         const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
@@ -244,10 +244,10 @@ struct CustomReductionOverGroupWithAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
+    const ReductionOp reduction_op_;
     outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
     size_t reduction_max_gid_ = 0;
     size_t iter_gws_ = 1;
@@ -257,10 +257,10 @@ public:
     CustomReductionOverGroupWithAtomicFunctor(
         const argT *data,
         outT *res,
-        ReductionOp reduction_op,
+        const ReductionOp &reduction_op,
         const outT &identity_val,
-        InputOutputIterIndexerT arg_res_iter_indexer,
-        InputRedIndexerT arg_reduced_dims_indexer,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
         SlmT local_mem,
         size_t reduction_size,
         size_t iteration_size,
@@ -286,7 +286,7 @@ public:
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
 
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
         const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
@@ -455,10 +455,10 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
         using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                            reduction_shape_stride};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
@@ -483,8 +483,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             const ssize_t *const &res_shape = iter_shape_and_strides;
             const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
-            IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
-                                 res_strides);
+            const IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
+                                       res_strides);
             using InitKernelName =
                 class reduction_over_group_with_atomics_init_krn<resTy, argTy,
                                                                  ReductionOpT>;
@@ -501,10 +501,10 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
         using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                            reduction_shape_stride};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
         constexpr size_t preferred_reductions_per_wi = 8;
         size_t reductions_per_wi =
@@ -574,11 +574,11 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
                               static_cast<ssize_t>(reduction_nelems)},
             NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
@@ -606,12 +606,12 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                 RowsIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
-        RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                  static_cast<ssize_t>(reduction_nelems)};
-        NoOpIndexerT result_indexer{};
-        InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
-                                                    result_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                        static_cast<ssize_t>(reduction_nelems)};
+        constexpr NoOpIndexerT result_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
+                                                          result_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         constexpr size_t preferred_reductions_per_wi = 8;
         size_t reductions_per_wi =
@@ -667,9 +667,9 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                    NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
+        const ReductionIndexerT reduction_indexer{
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(iter_nelems)};
 
@@ -704,11 +704,11 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = ColsIndexerT;
 
-        NoOpIndexerT columns_indexer{};
-        NoOpIndexerT result_indexer{};
-        InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
-                                                    result_indexer};
-        ReductionIndexerT reduction_indexer{
+        constexpr NoOpIndexerT columns_indexer{};
+        constexpr NoOpIndexerT result_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                          result_indexer};
+        const ReductionIndexerT reduction_indexer{
             0, /* size */ static_cast<ssize_t>(reduction_nelems),
             /* step */ static_cast<ssize_t>(iter_nelems)};
 
@@ -746,10 +746,10 @@ struct ReductionOverGroupNoAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
-    outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const ReductionOp reduction_op_;
+    const outT identity_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
     size_t iter_gws_ = 1;
     size_t reductions_per_wi = 16;
@@ -758,10 +758,10 @@ public:
     ReductionOverGroupNoAtomicFunctor(
         const argT *data,
         outT *res,
-        ReductionOp reduction_op,
+        const ReductionOp &reduction_op,
         const outT &identity_val,
-        InputOutputIterIndexerT arg_res_iter_indexer,
-        InputRedIndexerT arg_reduced_dims_indexer,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
         size_t reduction_size,
         size_t iteration_size,
         size_t reduction_size_per_wi)
@@ -787,7 +787,7 @@ public:
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
 
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
         const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
@@ -835,10 +835,10 @@ struct CustomReductionOverGroupNoAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
+    const ReductionOp reduction_op_;
     outT identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
     size_t reduction_max_gid_ = 0;
     size_t iter_gws_ = 1;
@@ -848,10 +848,10 @@ public:
     CustomReductionOverGroupNoAtomicFunctor(
         const argT *data,
         outT *res,
-        ReductionOp reduction_op,
+        const ReductionOp &reduction_op,
         const outT &identity_val,
-        InputOutputIterIndexerT arg_res_iter_indexer,
-        InputRedIndexerT arg_reduced_dims_indexer,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
         SlmT local_mem,
         size_t reduction_size,
         size_t iteration_size,
@@ -998,6 +998,16 @@ submit_no_atomic_reduction(sycl::queue &exec_q,
     return red_ev;
 }
 
+namespace detail
+{
+inline size_t get_work_group_size(const sycl::device &d)
+{
+    // prevents running out of resources on CPU
+    return std::min<std::size_t>(
+        2048, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+}
+} // namespace detail
+
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_over_group_temps_strided_impl(
     sycl::queue &exec_q,
@@ -1029,8 +1039,8 @@ sycl::event reduction_over_group_temps_strided_impl(
             const ssize_t *const &res_shape = iter_shape_and_strides;
             const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
-            IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
-                                 res_strides);
+            const IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
+                                       res_strides);
             using InitKernelName =
                 class reduction_over_group_temps_empty_krn<resTy, argTy,
                                                            ReductionOpT>;
@@ -1059,11 +1069,11 @@ sycl::event reduction_over_group_temps_strided_impl(
             using ReductionIndexerT =
                 dpctl::tensor::offset_utils::StridedIndexer;
 
-            InputOutputIterIndexerT in_out_iter_indexer{
+            const InputOutputIterIndexerT in_out_iter_indexer{
                 iter_nd, iter_arg_offset, iter_res_offset,
                 iter_shape_and_strides};
-            ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                                reduction_shape_stride};
+            const ReductionIndexerT reduction_indexer{
+                red_nd, reduction_arg_offset, reduction_shape_stride};
 
             cgh.parallel_for<class reduction_seq_strided_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1080,9 +1090,7 @@ sycl::event reduction_over_group_temps_strided_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1093,10 +1101,10 @@ sycl::event reduction_over_group_temps_strided_impl(
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
         using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                            reduction_shape_stride};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
         if (iter_nelems == 1) {
             // increase GPU occupancy
@@ -1157,14 +1165,14 @@ sycl::event reduction_over_group_temps_strided_impl(
             // iterated dimensions of input array from
             // iter_shape_and_strides are going to be accessed by
             // inp_indexer
-            InputIndexerT inp_indexer(iter_nd, iter_arg_offset,
-                                      iter_shape_and_strides);
-            ResIndexerT noop_tmp_indexer{};
+            const InputIndexerT inp_indexer(iter_nd, iter_arg_offset,
+                                            iter_shape_and_strides);
+            constexpr ResIndexerT noop_tmp_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        noop_tmp_indexer};
-            ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                                reduction_shape_stride};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              noop_tmp_indexer};
+            const ReductionIndexerT reduction_indexer{
+                red_nd, reduction_arg_offset, reduction_shape_stride};
 
             first_reduction_ev = submit_no_atomic_reduction<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1200,14 +1208,14 @@ sycl::event reduction_over_group_temps_strided_impl(
                 using ReductionIndexerT =
                     dpctl::tensor::offset_utils::NoOpIndexer;
 
-                InputIndexerT inp_indexer{
+                const InputIndexerT inp_indexer{
                     0, static_cast<ssize_t>(iter_nelems),
                     static_cast<ssize_t>(reduction_groups_)};
-                ResIndexerT res_iter_indexer{};
+                constexpr ResIndexerT res_iter_indexer{};
 
-                InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                            res_iter_indexer};
-                ReductionIndexerT reduction_indexer{};
+                const InputOutputIterIndexerT in_out_iter_indexer{
+                    inp_indexer, res_iter_indexer};
+                constexpr ReductionIndexerT reduction_indexer{};
 
                 partial_reduction_ev = submit_no_atomic_reduction<
                     resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1231,17 +1239,17 @@ sycl::event reduction_over_group_temps_strided_impl(
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{iter_nd, iter_res_offset,
-                                     /* shape */ iter_shape_and_strides,
-                                     /* strides */ iter_shape_and_strides +
-                                         2 * iter_nd};
+        const ResIndexerT res_iter_indexer{
+            iter_nd, iter_res_offset,
+            /* shape */ iter_shape_and_strides,
+            /* strides */ iter_shape_and_strides + 2 * iter_nd};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
@@ -1319,11 +1327,11 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                     InputIterIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
-            InputOutputIterIndexerT in_out_iter_indexer{
+            const InputOutputIterIndexerT in_out_iter_indexer{
                 InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
                                   static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
-            ReductionIndexerT reduction_indexer{};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             cgh.parallel_for<class reduction_seq_contig_krn<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1340,9 +1348,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1356,11 +1362,11 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
                               static_cast<ssize_t>(reduction_nelems)},
             NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         if (iter_nelems == 1) {
             // increase GPU occupancy
@@ -1416,12 +1422,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                     RowsIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
-            RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                      static_cast<ssize_t>(reduction_nelems)};
-            NoOpIndexerT noop_tmp_indexer{};
-            InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
-                                                        noop_tmp_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const RowsIndexerT rows_indexer{
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(reduction_nelems)};
+            constexpr NoOpIndexerT noop_tmp_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
+                                                              noop_tmp_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             first_reduction_ev = submit_no_atomic_reduction<
                 argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1453,13 +1460,14 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev = submit_no_atomic_reduction<
                 resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1482,14 +1490,14 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{};
+        constexpr ResIndexerT res_iter_indexer{};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
@@ -1566,9 +1574,9 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             using ReductionIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
 
-            InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                        NoOpIndexerT{}};
-            ReductionIndexerT reduction_indexer{
+            const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                              NoOpIndexerT{}};
+            const ReductionIndexerT reduction_indexer{
                 0, static_cast<ssize_t>(reduction_nelems),
                 static_cast<ssize_t>(iter_nelems)};
 
@@ -1592,9 +1600,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1608,11 +1614,11 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = ColsIndexerT;
 
-        NoOpIndexerT columns_indexer{};
-        NoOpIndexerT result_indexer{};
-        InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
-                                                    result_indexer};
-        ReductionIndexerT reduction_indexer{
+        constexpr NoOpIndexerT columns_indexer{};
+        constexpr NoOpIndexerT result_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                          result_indexer};
+        const ReductionIndexerT reduction_indexer{
             0, /* size */ static_cast<ssize_t>(reduction_nelems),
             /* step */ static_cast<ssize_t>(iter_nelems)};
 
@@ -1670,11 +1676,11 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                     NoOpIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = ColsIndexerT;
 
-            NoOpIndexerT columns_indexer{};
-            NoOpIndexerT noop_tmp_indexer{};
-            InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
-                                                        noop_tmp_indexer};
-            ReductionIndexerT reduction_indexer{
+            constexpr NoOpIndexerT columns_indexer{};
+            constexpr NoOpIndexerT noop_tmp_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                              noop_tmp_indexer};
+            const ReductionIndexerT reduction_indexer{
                 0, /* size */ static_cast<ssize_t>(reduction_nelems),
                 /* step */ static_cast<ssize_t>(iter_nelems)};
 
@@ -1708,13 +1714,14 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev = submit_no_atomic_reduction<
                 resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
@@ -1737,14 +1744,14 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{};
+        constexpr ResIndexerT res_iter_indexer{};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
@@ -2987,24 +2994,25 @@ struct SequentialSearchReduction
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
+    const ReductionOp reduction_op_;
     argT identity_;
-    IdxReductionOp idx_reduction_op_;
+    const IdxReductionOp idx_reduction_op_;
     outT idx_identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
 
 public:
-    SequentialSearchReduction(const argT *inp,
-                              outT *res,
-                              ReductionOp reduction_op,
-                              const argT &identity_val,
-                              IdxReductionOp idx_reduction_op,
-                              const outT &idx_identity_val,
-                              InputOutputIterIndexerT arg_res_iter_indexer,
-                              InputRedIndexerT arg_reduced_dims_indexer,
-                              size_t reduction_size)
+    SequentialSearchReduction(
+        const argT *inp,
+        outT *res,
+        const ReductionOp &reduction_op,
+        const argT &identity_val,
+        const IdxReductionOp &idx_reduction_op,
+        const outT &idx_identity_val,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
+        size_t reduction_size)
         : inp_(inp), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), idx_reduction_op_(idx_reduction_op),
           idx_identity_(idx_identity_val),
@@ -3112,12 +3120,12 @@ private:
     argT *vals_ = nullptr;
     const outT *inds_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
-    argT identity_;
-    IdxReductionOp idx_reduction_op_;
-    outT idx_identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const ReductionOp reduction_op_;
+    const argT identity_;
+    const IdxReductionOp idx_reduction_op_;
+    const outT idx_identity_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     size_t reduction_max_gid_ = 0;
     size_t iter_gws_ = 1;
     size_t reductions_per_wi = 16;
@@ -3127,12 +3135,12 @@ public:
                     argT *vals,
                     const outT *inds,
                     outT *res,
-                    ReductionOp reduction_op,
+                    const ReductionOp &reduction_op,
                     const argT &identity_val,
-                    IdxReductionOp idx_reduction_op,
+                    const IdxReductionOp &idx_reduction_op,
                     const outT &idx_identity_val,
-                    InputOutputIterIndexerT arg_res_iter_indexer,
-                    InputRedIndexerT arg_reduced_dims_indexer,
+                    const InputOutputIterIndexerT &arg_res_iter_indexer,
+                    const InputRedIndexerT &arg_reduced_dims_indexer,
                     size_t reduction_size,
                     size_t iteration_size,
                     size_t reduction_size_per_wi)
@@ -3160,7 +3168,7 @@ public:
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
 
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
         const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
@@ -3266,12 +3274,12 @@ private:
     argT *vals_ = nullptr;
     const outT *inds_ = nullptr;
     outT *out_ = nullptr;
-    ReductionOp reduction_op_;
-    argT identity_;
-    IdxReductionOp idx_reduction_op_;
-    outT idx_identity_;
-    InputOutputIterIndexerT inp_out_iter_indexer_;
-    InputRedIndexerT inp_reduced_dims_indexer_;
+    const ReductionOp reduction_op_;
+    const argT identity_;
+    const IdxReductionOp idx_reduction_op_;
+    const outT idx_identity_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
     size_t reduction_max_gid_ = 0;
     size_t iter_gws_ = 1;
@@ -3282,12 +3290,12 @@ public:
                           argT *vals,
                           outT *inds,
                           outT *res,
-                          ReductionOp reduction_op,
+                          const ReductionOp &reduction_op,
                           const argT &identity_val,
-                          IdxReductionOp idx_reduction_op,
+                          const IdxReductionOp &idx_reduction_op,
                           const outT &idx_identity_val,
-                          InputOutputIterIndexerT arg_res_iter_indexer,
-                          InputRedIndexerT arg_reduced_dims_indexer,
+                          const InputOutputIterIndexerT &arg_res_iter_indexer,
+                          const InputRedIndexerT &arg_reduced_dims_indexer,
                           SlmT local_mem,
                           size_t reduction_size,
                           size_t iteration_size,
@@ -3316,7 +3324,7 @@ public:
         //   + reduction_lid
         // for 0 <= m < reductions_per_wi
 
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
         const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
@@ -3639,8 +3647,8 @@ sycl::event search_over_group_temps_strided_impl(
             const ssize_t *const &res_shape = iter_shape_and_strides;
             const ssize_t *const &res_strides =
                 iter_shape_and_strides + 2 * iter_nd;
-            IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
-                                 res_strides);
+            const IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
+                                       res_strides);
             using InitKernelName =
                 class search_empty_krn<resTy, argTy, ReductionOpT>;
             cgh.depends_on(depends);
@@ -3664,10 +3672,10 @@ sycl::event search_over_group_temps_strided_impl(
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
         using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                            reduction_shape_stride};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
@@ -3689,9 +3697,7 @@ sycl::event search_over_group_temps_strided_impl(
 
     constexpr size_t preferred_reductions_per_wi = 4;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -3702,10 +3708,10 @@ sycl::event search_over_group_temps_strided_impl(
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
         using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                            reduction_shape_stride};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
         if (iter_nelems == 1) {
             // increase GPU occupancy
@@ -3780,14 +3786,14 @@ sycl::event search_over_group_temps_strided_impl(
             // Only 2*iter_nd entries describing shape and strides of iterated
             // dimensions of input array from iter_shape_and_strides are going
             // to be accessed by inp_indexer
-            InputIndexerT inp_indexer(iter_nd, iter_arg_offset,
-                                      iter_shape_and_strides);
-            ResIndexerT noop_tmp_indexer{};
+            const InputIndexerT inp_indexer(iter_nd, iter_arg_offset,
+                                            iter_shape_and_strides);
+            constexpr ResIndexerT noop_tmp_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        noop_tmp_indexer};
-            ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                                reduction_shape_stride};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              noop_tmp_indexer};
+            const ReductionIndexerT reduction_indexer{
+                red_nd, reduction_arg_offset, reduction_shape_stride};
 
             first_reduction_ev =
                 submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
@@ -3825,13 +3831,14 @@ sycl::event search_over_group_temps_strided_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
@@ -3857,17 +3864,17 @@ sycl::event search_over_group_temps_strided_impl(
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{iter_nd, iter_res_offset,
-                                     /* shape */ iter_shape_and_strides,
-                                     /* strides */ iter_shape_and_strides +
-                                         2 * iter_nd};
+        const ResIndexerT res_iter_indexer{
+            iter_nd, iter_res_offset,
+            /* shape */ iter_shape_and_strides,
+            /* strides */ iter_shape_and_strides + 2 * iter_nd};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
@@ -3960,11 +3967,11 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
                               static_cast<ssize_t>(reduction_nelems)},
             NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
@@ -3986,9 +3993,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -4001,11 +4006,11 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
-        InputOutputIterIndexerT in_out_iter_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{
             InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
                               static_cast<ssize_t>(reduction_nelems)},
             NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         if (iter_nelems == 1) {
             // increase GPU occupancy
@@ -4077,11 +4082,11 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                     InputIterIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
-            InputOutputIterIndexerT in_out_iter_indexer{
+            const InputOutputIterIndexerT in_out_iter_indexer{
                 InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
                                   static_cast<ssize_t>(reduction_nelems)},
                 NoOpIndexerT{}};
-            ReductionIndexerT reduction_indexer{};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             first_reduction_ev =
                 submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
@@ -4119,13 +4124,14 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
@@ -4151,14 +4157,14 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{};
+        constexpr ResIndexerT res_iter_indexer{};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
@@ -4239,9 +4245,9 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-        InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                    NoOpIndexerT{}};
-        ReductionIndexerT reduction_indexer{
+        const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
+        const ReductionIndexerT reduction_indexer{
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(iter_nelems)};
 
@@ -4270,9 +4276,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -4285,11 +4289,11 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = ColsIndexerT;
 
-        NoOpIndexerT columns_indexer{};
-        NoOpIndexerT result_indexer{};
-        InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
-                                                    result_indexer};
-        ReductionIndexerT reduction_indexer{
+        constexpr NoOpIndexerT columns_indexer{};
+        constexpr NoOpIndexerT result_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                          result_indexer};
+        const ReductionIndexerT reduction_indexer{
             0, /* size */ static_cast<ssize_t>(reduction_nelems),
             /* step */ static_cast<ssize_t>(iter_nelems)};
 
@@ -4362,11 +4366,11 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                     NoOpIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = ColsIndexerT;
 
-            NoOpIndexerT columns_indexer{};
-            NoOpIndexerT result_indexer{};
-            InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
-                                                        result_indexer};
-            ReductionIndexerT reduction_indexer{
+            constexpr NoOpIndexerT columns_indexer{};
+            constexpr NoOpIndexerT result_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                              result_indexer};
+            const ReductionIndexerT reduction_indexer{
                 0, /* size */ static_cast<ssize_t>(reduction_nelems),
                 /* step */ static_cast<ssize_t>(iter_nelems)};
 
@@ -4406,13 +4410,14 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            InputIndexerT inp_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                      static_cast<ssize_t>(reduction_groups_)};
-            ResIndexerT res_iter_indexer{};
+            const InputIndexerT inp_indexer{
+                0, static_cast<ssize_t>(iter_nelems),
+                static_cast<ssize_t>(reduction_groups_)};
+            constexpr ResIndexerT res_iter_indexer{};
 
-            InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                        res_iter_indexer};
-            ReductionIndexerT reduction_indexer{};
+            const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                              res_iter_indexer};
+            constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 submit_search_reduction<argTy, resTy, ReductionOpT, IndexOpT,
@@ -4438,14 +4443,14 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        InputIndexerT inp_indexer{
+        const InputIndexerT inp_indexer{
             0, static_cast<ssize_t>(iter_nelems),
             static_cast<ssize_t>(remaining_reduction_nelems)};
-        ResIndexerT res_iter_indexer{};
+        constexpr ResIndexerT res_iter_indexer{};
 
-        InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
-                                                    res_iter_indexer};
-        ReductionIndexerT reduction_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
+                                                          res_iter_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi =
