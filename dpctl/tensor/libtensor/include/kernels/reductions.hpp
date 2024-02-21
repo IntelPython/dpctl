@@ -48,6 +48,18 @@ namespace tensor
 namespace kernels
 {
 
+namespace reduction_detail
+{
+
+inline size_t get_work_group_size(const sycl::device &d)
+{
+    // prevents running out of resources on CPU
+    return std::min<std::size_t>(
+        2048, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+}
+
+} // namespace reduction_detail
+
 template <typename ReductionOpT, typename T> struct needs_workaround
 {
     static constexpr bool value =
@@ -327,415 +339,6 @@ public:
     }
 };
 
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_over_group_with_atomics_krn;
-
-template <typename BasedKernelName> class custom_reduction_wrapper;
-
-template <typename T1, typename T2, typename T3>
-class reduction_over_group_with_atomics_init_krn;
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_seq_strided_krn;
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_seq_contig_krn;
-
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
-sycl::event
-submit_atomic_reduction(sycl::queue &exec_q,
-                        const argTy *arg,
-                        resTy *res,
-                        resTy identity_val,
-                        size_t wg,
-                        size_t iter_nelems,
-                        size_t reduction_nelems,
-                        size_t reductions_per_wi,
-                        size_t reduction_groups,
-                        const InputOutputIterIndexerT &in_out_iter_indexer,
-                        const ReductionIndexerT &reduction_indexer,
-                        const std::vector<sycl::event> &depends)
-{
-    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
-        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
-        auto localRange = sycl::range<1>{wg};
-        auto ndRange = sycl::nd_range<1>(globalRange, localRange);
-
-        if constexpr (can_use_reduce_over_group<ReductionOpT, resTy>::value) {
-            using KernelName =
-                class kernel_name_token<argTy, resTy, ReductionOpT,
-                                        InputOutputIterIndexerT,
-                                        ReductionIndexerT>;
-
-            cgh.parallel_for<KernelName>(
-                ndRange,
-                ReductionOverGroupWithAtomicFunctor<argTy, resTy, ReductionOpT,
-                                                    InputOutputIterIndexerT,
-                                                    ReductionIndexerT>(
-                    arg, res, ReductionOpT(), identity_val, in_out_iter_indexer,
-                    reduction_indexer, reduction_nelems, iter_nelems,
-                    reductions_per_wi));
-        }
-        else {
-            using SlmT = sycl::local_accessor<resTy, 1>;
-            SlmT local_memory = SlmT(localRange, cgh);
-
-            using KernelName = class custom_reduction_wrapper<
-                kernel_name_token<argTy, resTy, ReductionOpT,
-                                  InputOutputIterIndexerT, ReductionIndexerT>>;
-
-            cgh.parallel_for<KernelName>(
-                ndRange,
-                CustomReductionOverGroupWithAtomicFunctor<
-                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                    ReductionIndexerT, SlmT>(
-                    arg, res, ReductionOpT(), identity_val, in_out_iter_indexer,
-                    reduction_indexer, local_memory, reduction_nelems,
-                    iter_nelems, reductions_per_wi));
-        }
-    });
-    return red_ev;
-}
-
-typedef sycl::event (*reduction_strided_impl_fn_ptr)(
-    sycl::queue &,
-    size_t,
-    size_t,
-    const char *,
-    char *,
-    int,
-    const ssize_t *,
-    ssize_t,
-    ssize_t,
-    int,
-    const ssize_t *,
-    ssize_t,
-    const std::vector<sycl::event> &);
-
-using dpctl::tensor::sycl_utils::choose_workgroup_size;
-
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_over_group_with_atomics_strided_impl(
-    sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
-    const char *arg_cp,
-    char *res_cp,
-    int iter_nd,
-    const ssize_t *iter_shape_and_strides,
-    ssize_t iter_arg_offset,
-    ssize_t iter_res_offset,
-    int red_nd,
-    const ssize_t *reduction_shape_stride,
-    ssize_t reduction_arg_offset,
-    const std::vector<sycl::event> &depends)
-{
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
-
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
-
-    const sycl::device &d = exec_q.get_device();
-    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-    if (reduction_nelems < wg) {
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
-
-        const InputOutputIterIndexerT in_out_iter_indexer{
-            iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                                  reduction_shape_stride};
-
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            cgh.parallel_for<class reduction_seq_strided_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
-
-        return comp_ev;
-    }
-    else {
-        sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
-            using IndexerT =
-                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
-
-            const ssize_t *const &res_shape = iter_shape_and_strides;
-            const ssize_t *const &res_strides =
-                iter_shape_and_strides + 2 * iter_nd;
-            const IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
-                                       res_strides);
-            using InitKernelName =
-                class reduction_over_group_with_atomics_init_krn<resTy, argTy,
-                                                                 ReductionOpT>;
-            cgh.depends_on(depends);
-
-            cgh.parallel_for<InitKernelName>(
-                sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
-                    auto res_offset = res_indexer(id[0]);
-                    res_tp[res_offset] = identity_val;
-                });
-        });
-
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
-
-        const InputOutputIterIndexerT in_out_iter_indexer{
-            iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
-        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
-                                                  reduction_shape_stride};
-
-        constexpr size_t preferred_reductions_per_wi = 8;
-        size_t reductions_per_wi =
-            (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
-                : preferred_reductions_per_wi;
-
-        size_t reduction_groups =
-            (reduction_nelems + reductions_per_wi * wg - 1) /
-            (reductions_per_wi * wg);
-
-        sycl::event comp_ev =
-            submit_atomic_reduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT,
-                                    reduction_over_group_with_atomics_krn>(
-                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
-                reduction_nelems, reductions_per_wi, reduction_groups,
-                in_out_iter_indexer, reduction_indexer, {res_init_ev});
-
-        return comp_ev;
-    }
-}
-
-// Contig
-
-typedef sycl::event (*reduction_contig_impl_fn_ptr)(
-    sycl::queue &,
-    size_t,
-    size_t,
-    const char *,
-    char *,
-    ssize_t,
-    ssize_t,
-    ssize_t,
-    const std::vector<sycl::event> &);
-
-/* @brief Reduce rows in a matrix */
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
-    sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
-    const char *arg_cp,
-    char *res_cp,
-    ssize_t iter_arg_offset,
-    ssize_t iter_res_offset,
-    ssize_t reduction_arg_offset,
-    const std::vector<sycl::event> &depends)
-{
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
-                          iter_arg_offset + reduction_arg_offset;
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
-
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
-
-    const sycl::device &d = exec_q.get_device();
-    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-    if (reduction_nelems < wg) {
-        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                InputIterIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = NoOpIndexerT;
-
-        const InputOutputIterIndexerT in_out_iter_indexer{
-            InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
-                              static_cast<ssize_t>(reduction_nelems)},
-            NoOpIndexerT{}};
-        constexpr ReductionIndexerT reduction_indexer{};
-
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            cgh.parallel_for<class reduction_seq_contig_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
-
-        return comp_ev;
-    }
-    else {
-        sycl::event res_init_ev = exec_q.fill<resTy>(
-            res_tp, resTy(identity_val), iter_nelems, depends);
-
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using RowsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                RowsIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = NoOpIndexerT;
-
-        const RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
-                                        static_cast<ssize_t>(reduction_nelems)};
-        constexpr NoOpIndexerT result_indexer{};
-        const InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
-                                                          result_indexer};
-        constexpr ReductionIndexerT reduction_indexer{};
-
-        constexpr size_t preferred_reductions_per_wi = 8;
-        size_t reductions_per_wi =
-            (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
-                : preferred_reductions_per_wi;
-
-        size_t reduction_groups =
-            (reduction_nelems + reductions_per_wi * wg - 1) /
-            (reductions_per_wi * wg);
-
-        sycl::event comp_ev =
-            submit_atomic_reduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT,
-                                    reduction_over_group_with_atomics_krn>(
-                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
-                reduction_nelems, reductions_per_wi, reduction_groups,
-                in_out_iter_indexer, reduction_indexer, {res_init_ev});
-
-        return comp_ev;
-    }
-}
-
-/* @brief Reduce rows in a matrix */
-template <typename argTy, typename resTy, typename ReductionOpT>
-sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
-    sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of cols in a matrix
-                        // when reducing over cols)
-    size_t reduction_nelems, // size of each reduction  (length of cols, i.e.
-                             // number of rows)
-    const char *arg_cp,
-    char *res_cp,
-    ssize_t iter_arg_offset,
-    ssize_t iter_res_offset,
-    ssize_t reduction_arg_offset,
-    const std::vector<sycl::event> &depends)
-{
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
-                          iter_arg_offset + reduction_arg_offset;
-    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
-
-    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
-
-    const sycl::device &d = exec_q.get_device();
-    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
-
-    if (reduction_nelems < wg) {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-
-        const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                          NoOpIndexerT{}};
-        const ReductionIndexerT reduction_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(iter_nelems)};
-
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            using KernelName =
-                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>;
-
-            sycl::range<1> iter_range{iter_nelems};
-
-            cgh.parallel_for<KernelName>(
-                iter_range,
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
-
-        return comp_ev;
-    }
-    else {
-        sycl::event res_init_ev = exec_q.fill<resTy>(
-            res_tp, resTy(identity_val), iter_nelems, depends);
-
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = ColsIndexerT;
-
-        constexpr NoOpIndexerT columns_indexer{};
-        constexpr NoOpIndexerT result_indexer{};
-        const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
-                                                          result_indexer};
-        const ReductionIndexerT reduction_indexer{
-            0, /* size */ static_cast<ssize_t>(reduction_nelems),
-            /* step */ static_cast<ssize_t>(iter_nelems)};
-
-        constexpr size_t preferred_reductions_per_wi = 8;
-        size_t reductions_per_wi =
-            (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
-                : preferred_reductions_per_wi;
-
-        size_t reduction_groups =
-            (reduction_nelems + reductions_per_wi * wg - 1) /
-            (reductions_per_wi * wg);
-
-        sycl::event comp_ev =
-            submit_atomic_reduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT,
-                                    reduction_over_group_with_atomics_krn>(
-                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
-                reduction_nelems, reductions_per_wi, reduction_groups,
-                in_out_iter_indexer, reduction_indexer, {res_init_ev});
-
-        return comp_ev;
-    }
-}
-
-/* = Reduction, using sycl::reduce_over_group, but not using atomic_ref = */
-
 template <typename argT,
           typename outT,
           typename ReductionOp,
@@ -913,6 +516,119 @@ public:
     }
 };
 
+template <
+    typename argTy,
+    typename resTy,
+    typename ReductionOpT,
+    typename InputOutputIterIndexerT,
+    typename ReductionIndexerT,
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    class kernel_name_token>
+sycl::event
+sequential_reduction(sycl::queue &exec_q,
+                     const argTy *arg,
+                     resTy *res,
+                     resTy identity_val,
+                     size_t iter_nelems,
+                     size_t reduction_nelems,
+                     const InputOutputIterIndexerT &in_out_iter_indexer,
+                     const ReductionIndexerT &reduction_indexer,
+                     const std::vector<sycl::event> &depends)
+{
+    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using KernelName =
+            class kernel_name_token<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>;
+
+        cgh.parallel_for<KernelName>(
+            sycl::range<1>(iter_nelems),
+            SequentialReduction<argTy, resTy, ReductionOpT,
+                                InputOutputIterIndexerT, ReductionIndexerT>(
+                arg, res, ReductionOpT(), identity_val, in_out_iter_indexer,
+                reduction_indexer, reduction_nelems));
+    });
+
+    return red_ev;
+}
+
+template <typename BasedKernelName> class custom_reduction_wrapper;
+
+template <
+    typename argTy,
+    typename resTy,
+    typename ReductionOpT,
+    typename InputOutputIterIndexerT,
+    typename ReductionIndexerT,
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    class kernel_name_token>
+sycl::event
+submit_atomic_reduction(sycl::queue &exec_q,
+                        const argTy *arg,
+                        resTy *res,
+                        resTy identity_val,
+                        size_t wg,
+                        size_t iter_nelems,
+                        size_t reduction_nelems,
+                        size_t reductions_per_wi,
+                        size_t reduction_groups,
+                        const InputOutputIterIndexerT &in_out_iter_indexer,
+                        const ReductionIndexerT &reduction_indexer,
+                        const std::vector<sycl::event> &depends)
+{
+    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        auto globalRange = sycl::range<1>{iter_nelems * reduction_groups * wg};
+        auto localRange = sycl::range<1>{wg};
+        auto ndRange = sycl::nd_range<1>(globalRange, localRange);
+
+        if constexpr (can_use_reduce_over_group<ReductionOpT, resTy>::value) {
+            using KernelName =
+                class kernel_name_token<argTy, resTy, ReductionOpT,
+                                        InputOutputIterIndexerT,
+                                        ReductionIndexerT>;
+
+            cgh.parallel_for<KernelName>(
+                ndRange,
+                ReductionOverGroupWithAtomicFunctor<argTy, resTy, ReductionOpT,
+                                                    InputOutputIterIndexerT,
+                                                    ReductionIndexerT>(
+                    arg, res, ReductionOpT(), identity_val, in_out_iter_indexer,
+                    reduction_indexer, reduction_nelems, iter_nelems,
+                    reductions_per_wi));
+        }
+        else {
+            using SlmT = sycl::local_accessor<resTy, 1>;
+            SlmT local_memory = SlmT(localRange, cgh);
+
+            using KernelName = class custom_reduction_wrapper<
+                kernel_name_token<argTy, resTy, ReductionOpT,
+                                  InputOutputIterIndexerT, ReductionIndexerT>>;
+
+            cgh.parallel_for<KernelName>(
+                ndRange,
+                CustomReductionOverGroupWithAtomicFunctor<
+                    argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
+                    ReductionIndexerT, SlmT>(
+                    arg, res, ReductionOpT(), identity_val, in_out_iter_indexer,
+                    reduction_indexer, local_memory, reduction_nelems,
+                    iter_nelems, reductions_per_wi));
+        }
+    });
+    return red_ev;
+}
+
+template <typename T1, typename T2, typename T3>
+class reduction_over_group_with_atomics_init_krn;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class reduction_seq_krn;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class reduction_over_group_with_atomics_krn;
+
 typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     sycl::queue &,
     size_t,
@@ -928,11 +644,300 @@ typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     ssize_t,
     const std::vector<sycl::event> &);
 
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_over_group_temps_krn;
+using dpctl::tensor::sycl_utils::choose_workgroup_size;
 
-template <typename T1, typename T2, typename T3>
-class reduction_over_group_temps_empty_krn;
+template <typename argTy, typename resTy, typename ReductionOpT>
+sycl::event reduction_over_group_with_atomics_strided_impl(
+    sycl::queue &exec_q,
+    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
+                        // when reducing over rows)
+    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
+                             // number of columns)
+    const char *arg_cp,
+    char *res_cp,
+    int iter_nd,
+    const ssize_t *iter_shape_and_strides,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    int red_nd,
+    const ssize_t *reduction_shape_stride,
+    ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
+
+    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+
+    const sycl::device &d = exec_q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    if (reduction_nelems < wg) {
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
+
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
+
+        return comp_ev;
+    }
+    else {
+        sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
+            using IndexerT =
+                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+
+            const ssize_t *const &res_shape = iter_shape_and_strides;
+            const ssize_t *const &res_strides =
+                iter_shape_and_strides + 2 * iter_nd;
+            const IndexerT res_indexer(iter_nd, iter_res_offset, res_shape,
+                                       res_strides);
+            using InitKernelName =
+                class reduction_over_group_with_atomics_init_krn<resTy, argTy,
+                                                                 ReductionOpT>;
+            cgh.depends_on(depends);
+
+            cgh.parallel_for<InitKernelName>(
+                sycl::range<1>(iter_nelems), [=](sycl::id<1> id) {
+                    auto res_offset = res_indexer(id[0]);
+                    res_tp[res_offset] = identity_val;
+                });
+        });
+
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
+
+        constexpr size_t preferred_reductions_per_wi = 8;
+        size_t reductions_per_wi =
+            (reduction_nelems < preferred_reductions_per_wi * wg)
+                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                : preferred_reductions_per_wi;
+
+        size_t reduction_groups =
+            (reduction_nelems + reductions_per_wi * wg - 1) /
+            (reductions_per_wi * wg);
+
+        sycl::event comp_ev =
+            submit_atomic_reduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT,
+                                    reduction_over_group_with_atomics_krn>(
+                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
+                reduction_nelems, reductions_per_wi, reduction_groups,
+                in_out_iter_indexer, reduction_indexer, {res_init_ev});
+
+        return comp_ev;
+    }
+}
+
+// Contig
+
+typedef sycl::event (*reduction_contig_impl_fn_ptr)(
+    sycl::queue &,
+    size_t,
+    size_t,
+    const char *,
+    char *,
+    ssize_t,
+    ssize_t,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+/* @brief Reduce rows in a matrix */
+template <typename argTy, typename resTy, typename ReductionOpT>
+sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
+    sycl::queue &exec_q,
+    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
+                        // when reducing over rows)
+    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
+                             // number of columns)
+    const char *arg_cp,
+    char *res_cp,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
+
+    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+
+    const sycl::device &d = exec_q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    if (reduction_nelems < wg) {
+        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                InputIterIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = NoOpIndexerT;
+
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                              static_cast<ssize_t>(reduction_nelems)},
+            NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{};
+
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
+
+        return comp_ev;
+    }
+    else {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(identity_val), iter_nelems, depends);
+
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using RowsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                RowsIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = NoOpIndexerT;
+
+        const RowsIndexerT rows_indexer{0, static_cast<ssize_t>(iter_nelems),
+                                        static_cast<ssize_t>(reduction_nelems)};
+        constexpr NoOpIndexerT result_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{rows_indexer,
+                                                          result_indexer};
+        constexpr ReductionIndexerT reduction_indexer{};
+
+        constexpr size_t preferred_reductions_per_wi = 8;
+        size_t reductions_per_wi =
+            (reduction_nelems < preferred_reductions_per_wi * wg)
+                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                : preferred_reductions_per_wi;
+
+        size_t reduction_groups =
+            (reduction_nelems + reductions_per_wi * wg - 1) /
+            (reductions_per_wi * wg);
+
+        sycl::event comp_ev =
+            submit_atomic_reduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT,
+                                    reduction_over_group_with_atomics_krn>(
+                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
+                reduction_nelems, reductions_per_wi, reduction_groups,
+                in_out_iter_indexer, reduction_indexer, {res_init_ev});
+
+        return comp_ev;
+    }
+}
+
+/* @brief Reduce rows in a matrix */
+template <typename argTy, typename resTy, typename ReductionOpT>
+sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
+    sycl::queue &exec_q,
+    size_t iter_nelems, // number of reductions    (num. of cols in a matrix
+                        // when reducing over cols)
+    size_t reduction_nelems, // size of each reduction  (length of cols, i.e.
+                             // number of rows)
+    const char *arg_cp,
+    char *res_cp,
+    ssize_t iter_arg_offset,
+    ssize_t iter_res_offset,
+    ssize_t reduction_arg_offset,
+    const std::vector<sycl::event> &depends)
+{
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
+                          iter_arg_offset + reduction_arg_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + iter_res_offset;
+
+    constexpr resTy identity_val = su_ns::Identity<ReductionOpT, resTy>::value;
+
+    const sycl::device &d = exec_q.get_device();
+    const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
+    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+
+    if (reduction_nelems < wg) {
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                NoOpIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+
+        const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
+        const ReductionIndexerT reduction_indexer{
+            0, static_cast<ssize_t>(reduction_nelems),
+            static_cast<ssize_t>(iter_nelems)};
+
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
+
+        return comp_ev;
+    }
+    else {
+        sycl::event res_init_ev = exec_q.fill<resTy>(
+            res_tp, resTy(identity_val), iter_nelems, depends);
+
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                NoOpIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = ColsIndexerT;
+
+        constexpr NoOpIndexerT columns_indexer{};
+        constexpr NoOpIndexerT result_indexer{};
+        const InputOutputIterIndexerT in_out_iter_indexer{columns_indexer,
+                                                          result_indexer};
+        const ReductionIndexerT reduction_indexer{
+            0, /* size */ static_cast<ssize_t>(reduction_nelems),
+            /* step */ static_cast<ssize_t>(iter_nelems)};
+
+        constexpr size_t preferred_reductions_per_wi = 8;
+        size_t reductions_per_wi =
+            (reduction_nelems < preferred_reductions_per_wi * wg)
+                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                : preferred_reductions_per_wi;
+
+        size_t reduction_groups =
+            (reduction_nelems + reductions_per_wi * wg - 1) /
+            (reductions_per_wi * wg);
+
+        sycl::event comp_ev =
+            submit_atomic_reduction<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT,
+                                    reduction_over_group_with_atomics_krn>(
+                exec_q, arg_tp, res_tp, identity_val, wg, iter_nelems,
+                reduction_nelems, reductions_per_wi, reduction_groups,
+                in_out_iter_indexer, reduction_indexer, {res_init_ev});
+
+        return comp_ev;
+    }
+}
+
+/* = Reduction, using sycl::reduce_over_group, but not using atomic_ref = */
 
 template <
     typename argTy,
@@ -998,15 +1003,26 @@ submit_no_atomic_reduction(sycl::queue &exec_q,
     return red_ev;
 }
 
-namespace detail
-{
-inline size_t get_work_group_size(const sycl::device &d)
-{
-    // prevents running out of resources on CPU
-    return std::min<std::size_t>(
-        2048, d.get_info<sycl::info::device::max_work_group_size>() / 2);
-}
-} // namespace detail
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class reduction_over_group_temps_krn;
+
+typedef sycl::event (*reduction_strided_impl_fn_ptr)(
+    sycl::queue &,
+    size_t,
+    size_t,
+    const char *,
+    char *,
+    int,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    int,
+    const ssize_t *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename T1, typename T2, typename T3>
+class reduction_over_group_temps_empty_krn;
 
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_over_group_temps_strided_impl(
@@ -1061,36 +1077,29 @@ sycl::event reduction_over_group_temps_strided_impl(
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{
-                iter_nd, iter_arg_offset, iter_res_offset,
-                iter_shape_and_strides};
-            const ReductionIndexerT reduction_indexer{
-                red_nd, reduction_arg_offset, reduction_shape_stride};
-
-            cgh.parallel_for<class reduction_seq_strided_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1316,39 +1325,33 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                InputIterIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = NoOpIndexerT;
 
-            using InputIterIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    InputIterIndexerT, NoOpIndexerT>;
-            using ReductionIndexerT = NoOpIndexerT;
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                              static_cast<ssize_t>(reduction_nelems)},
+            NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
-                                  static_cast<ssize_t>(reduction_nelems)},
-                NoOpIndexerT{}};
-            constexpr ReductionIndexerT reduction_indexer{};
-
-            cgh.parallel_for<class reduction_seq_contig_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1564,43 +1567,32 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                NoOpIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    NoOpIndexerT, NoOpIndexerT>;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
+        const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
+        const ReductionIndexerT reduction_indexer{
+            0, static_cast<ssize_t>(reduction_nelems),
+            static_cast<ssize_t>(iter_nelems)};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                              NoOpIndexerT{}};
-            const ReductionIndexerT reduction_indexer{
-                0, static_cast<ssize_t>(reduction_nelems),
-                static_cast<ssize_t>(iter_nelems)};
-
-            using KernelName =
-                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>;
-
-            sycl::range<1> iter_range{iter_nelems};
-
-            cgh.parallel_for<KernelName>(
-                iter_range,
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -3697,7 +3689,7 @@ sycl::event search_over_group_temps_strided_impl(
 
     constexpr size_t preferred_reductions_per_wi = 4;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -3993,7 +3985,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -4276,7 +4268,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {

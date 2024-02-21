@@ -267,9 +267,42 @@ public:
     }
 };
 
+template <
+    typename lhsTy,
+    typename rhsTy,
+    typename resTy,
+    typename BatchIndexerT,
+    typename RedIndexerT,
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    class kernel_name_token>
+sycl::event sequential_dot_product(sycl::queue &exec_q,
+                                   const lhsTy *lhs,
+                                   const rhsTy *rhs,
+                                   resTy *res,
+                                   size_t batches,
+                                   size_t reduction_nelems,
+                                   const BatchIndexerT &batch_indexer,
+                                   const RedIndexerT &reduction_indexer,
+                                   const std::vector<sycl::event> &depends)
+{
+    sycl::event dot_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        cgh.parallel_for<
+            kernel_name_token<lhsTy, rhsTy, resTy, BatchIndexerT, RedIndexerT>>(
+            sycl::range<1>(batches),
+            SequentialDotProduct<lhsTy, rhsTy, resTy, BatchIndexerT,
+                                 RedIndexerT>(lhs, rhs, res, batch_indexer,
+                                              reduction_indexer,
+                                              reduction_nelems));
+    });
+
+    return dot_ev;
+}
+
 template <typename lhsTy,
           typename rhsTy,
-          typename outTy,
+          typename resTy,
           typename ReductionOpT,
           typename BatchIndexerT,
           typename RedIndexerT,
@@ -283,7 +316,7 @@ template <typename lhsTy,
 sycl::event submit_atomic_dot_product(sycl::queue &exec_q,
                                       const lhsTy *lhs,
                                       const rhsTy *rhs,
-                                      outTy *res,
+                                      resTy *res,
                                       size_t wg,
                                       size_t batches,
                                       size_t reduction_nelems,
@@ -300,28 +333,28 @@ sycl::event submit_atomic_dot_product(sycl::queue &exec_q,
         auto localRange = sycl::range<1>{wg};
         auto ndRange = sycl::nd_range<1>(globalRange, localRange);
 
-        if constexpr (can_use_reduce_over_group<ReductionOpT, outTy>::value) {
+        if constexpr (can_use_reduce_over_group<ReductionOpT, resTy>::value) {
             using KernelName =
-                class kernel_name_token<lhsTy, rhsTy, outTy, ReductionOpT,
+                class kernel_name_token<lhsTy, rhsTy, resTy, ReductionOpT,
                                         BatchIndexerT, RedIndexerT>;
 
             cgh.parallel_for<KernelName>(
-                ndRange, DotProductFunctor<lhsTy, rhsTy, outTy, ReductionOpT,
+                ndRange, DotProductFunctor<lhsTy, rhsTy, resTy, ReductionOpT,
                                            BatchIndexerT, RedIndexerT>(
                              lhs, rhs, res, ReductionOpT(), batch_indexer,
                              reduction_indexer, reduction_nelems, batches,
                              reductions_per_wi));
         }
         else {
-            using SlmT = sycl::local_accessor<outTy, 1>;
+            using SlmT = sycl::local_accessor<resTy, 1>;
             SlmT local_memory = SlmT(localRange, cgh);
 
             using KernelName = class custom_reduction_wrapper<kernel_name_token<
-                lhsTy, rhsTy, outTy, ReductionOpT, BatchIndexerT, RedIndexerT>>;
+                lhsTy, rhsTy, resTy, ReductionOpT, BatchIndexerT, RedIndexerT>>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
-                DotProductCustomFunctor<lhsTy, rhsTy, outTy, ReductionOpT,
+                DotProductCustomFunctor<lhsTy, rhsTy, resTy, ReductionOpT,
                                         BatchIndexerT, RedIndexerT, SlmT>(
                     lhs, rhs, res, ReductionOpT(), batch_indexer,
                     reduction_indexer, local_memory, reduction_nelems, batches,
@@ -389,31 +422,24 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event dot_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputOutputBatchIndexerT =
+            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+        using ReductionIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-            using InputOutputBatchIndexerT =
-                dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        const InputOutputBatchIndexerT inp_out_batch_indexer{
+            batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
+            batch_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
+                                                  reduction_rhs_offset,
+                                                  reduction_shape_stride};
 
-            const InputOutputBatchIndexerT in_out_batch_indexer{
-                batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
-                batch_shape_and_strides};
-            const ReductionIndexerT reduction_indexer{
-                red_nd, reduction_lhs_offset, reduction_rhs_offset,
-                reduction_shape_stride};
-
-            cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
-                                                       InputOutputBatchIndexerT,
-                                                       ReductionIndexerT>>(
-                sycl::range<1>(batches),
-                SequentialDotProduct<lhsTy, rhsTy, resTy,
-                                     InputOutputBatchIndexerT,
-                                     ReductionIndexerT>(
-                    lhs_tp, rhs_tp, res_tp, in_out_batch_indexer,
-                    reduction_indexer, reduction_nelems));
-        });
+        sycl::event dot_ev =
+            sequential_dot_product<lhsTy, rhsTy, resTy,
+                                   InputOutputBatchIndexerT, ReductionIndexerT,
+                                   dot_product_seq_krn>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batches, reduction_nelems,
+                inp_out_batch_indexer, reduction_indexer, depends);
 
         return dot_ev;
     }
@@ -515,37 +541,30 @@ dot_product_contig_impl(sycl::queue &exec_q,
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event dot_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputBatchIndexerT =
+            dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputBatchIndexerT =
+            dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+                InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                NoOpIndexerT, NoOpIndexerT>;
 
-            using InputBatchIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputBatchIndexerT =
-                dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
-                    InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    NoOpIndexerT, NoOpIndexerT>;
+        const InputBatchIndexerT inp_batch_indexer{
+            0, static_cast<ssize_t>(reduction_nelems),
+            static_cast<ssize_t>(batches)};
+        const InputOutputBatchIndexerT inp_out_batch_indexer{
+            inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                      NoOpIndexerT{}};
 
-            const InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<ssize_t>(reduction_nelems),
-                static_cast<ssize_t>(batches)};
-            const InputOutputBatchIndexerT inp_out_batch_indexer{
-                inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-            constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                          NoOpIndexerT{}};
-
-            cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
-                                                       InputOutputBatchIndexerT,
-                                                       ReductionIndexerT>>(
-                sycl::range<1>(batches),
-                SequentialDotProduct<lhsTy, rhsTy, resTy,
-                                     InputOutputBatchIndexerT,
-                                     ReductionIndexerT>(
-                    lhs_tp, rhs_tp, res_tp, inp_out_batch_indexer,
-                    reduction_indexer, reduction_nelems));
-        });
+        sycl::event dot_ev =
+            sequential_dot_product<lhsTy, rhsTy, resTy,
+                                   InputOutputBatchIndexerT, ReductionIndexerT,
+                                   dot_product_seq_krn>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batches, reduction_nelems,
+                inp_out_batch_indexer, reduction_indexer, depends);
 
         return dot_ev;
     }
@@ -795,7 +814,7 @@ public:
 
 template <typename lhsTy,
           typename rhsTy,
-          typename outTy,
+          typename resTy,
           typename ReductionOpT,
           typename BatchIndexerT,
           typename RedIndexerT,
@@ -810,7 +829,7 @@ sycl::event
 submit_no_atomic_dot_product(sycl::queue &exec_q,
                              const lhsTy *lhs,
                              const rhsTy *rhs,
-                             outTy *res,
+                             resTy *res,
                              size_t wg,
                              size_t batches,
                              size_t reduction_nelems,
@@ -827,29 +846,29 @@ submit_no_atomic_dot_product(sycl::queue &exec_q,
         auto localRange = sycl::range<1>{wg};
         auto ndRange = sycl::nd_range<1>(globalRange, localRange);
 
-        if constexpr (can_use_reduce_over_group<ReductionOpT, outTy>::value) {
+        if constexpr (can_use_reduce_over_group<ReductionOpT, resTy>::value) {
             using KernelName =
-                class kernel_name_token<lhsTy, rhsTy, outTy, ReductionOpT,
+                class kernel_name_token<lhsTy, rhsTy, resTy, ReductionOpT,
                                         BatchIndexerT, RedIndexerT>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
-                DotProductNoAtomicFunctor<lhsTy, rhsTy, outTy, ReductionOpT,
+                DotProductNoAtomicFunctor<lhsTy, rhsTy, resTy, ReductionOpT,
                                           BatchIndexerT, RedIndexerT>(
                     lhs, rhs, res, ReductionOpT(), batch_indexer,
                     reduction_indexer, reduction_nelems, batches,
                     reductions_per_wi));
         }
         else {
-            using SlmT = sycl::local_accessor<outTy, 1>;
+            using SlmT = sycl::local_accessor<resTy, 1>;
             SlmT local_memory = SlmT(localRange, cgh);
 
             using KernelName = class custom_reduction_wrapper<kernel_name_token<
-                lhsTy, rhsTy, outTy, ReductionOpT, BatchIndexerT, RedIndexerT>>;
+                lhsTy, rhsTy, resTy, ReductionOpT, BatchIndexerT, RedIndexerT>>;
 
             cgh.parallel_for<KernelName>(
                 ndRange,
-                DotProductNoAtomicCustomFunctor<lhsTy, rhsTy, outTy,
+                DotProductNoAtomicCustomFunctor<lhsTy, rhsTy, resTy,
                                                 ReductionOpT, BatchIndexerT,
                                                 RedIndexerT, SlmT>(
                     lhs, rhs, res, ReductionOpT(), batch_indexer,
@@ -898,40 +917,31 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event dot_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputOutputBatchIndexerT =
+            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+        using ReductionIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-            using InputOutputBatchIndexerT =
-                dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        const InputOutputBatchIndexerT inp_out_batch_indexer{
+            batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
+            batch_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_lhs_offset,
+                                                  reduction_rhs_offset,
+                                                  reduction_shape_stride};
 
-            const InputOutputBatchIndexerT in_out_batch_indexer{
-                batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
-                batch_shape_and_strides};
-            const ReductionIndexerT reduction_indexer{
-                red_nd, reduction_lhs_offset, reduction_rhs_offset,
-                reduction_shape_stride};
-
-            cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
-                                                       InputOutputBatchIndexerT,
-                                                       ReductionIndexerT>>(
-                sycl::range<1>(batches),
-                SequentialDotProduct<lhsTy, rhsTy, resTy,
-                                     InputOutputBatchIndexerT,
-                                     ReductionIndexerT>(
-                    lhs_tp, rhs_tp, res_tp, in_out_batch_indexer,
-                    reduction_indexer, reduction_nelems));
-        });
+        sycl::event dot_ev =
+            sequential_dot_product<lhsTy, rhsTy, resTy,
+                                   InputOutputBatchIndexerT, ReductionIndexerT,
+                                   dot_product_seq_krn>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batches, reduction_nelems,
+                inp_out_batch_indexer, reduction_indexer, depends);
 
         return dot_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
                                                    sycl::logical_or<resTy>,
@@ -1153,46 +1163,37 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event dot_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputBatchIndexerT =
+            dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputBatchIndexerT =
+            dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+                InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                NoOpIndexerT, NoOpIndexerT>;
 
-            using InputBatchIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputBatchIndexerT =
-                dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
-                    InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    NoOpIndexerT, NoOpIndexerT>;
+        const InputBatchIndexerT inp_batch_indexer{
+            0, static_cast<ssize_t>(reduction_nelems),
+            static_cast<ssize_t>(batches)};
+        const InputOutputBatchIndexerT inp_out_batch_indexer{
+            inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                      NoOpIndexerT{}};
 
-            const InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<ssize_t>(reduction_nelems),
-                static_cast<ssize_t>(batches)};
-            const InputOutputBatchIndexerT inp_out_batch_indexer{
-                inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-            constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                          NoOpIndexerT{}};
-
-            cgh.parallel_for<class dot_product_seq_krn<lhsTy, rhsTy, resTy,
-                                                       InputOutputBatchIndexerT,
-                                                       ReductionIndexerT>>(
-                sycl::range<1>(batches),
-                SequentialDotProduct<lhsTy, rhsTy, resTy,
-                                     InputOutputBatchIndexerT,
-                                     ReductionIndexerT>(
-                    lhs_tp, rhs_tp, res_tp, inp_out_batch_indexer,
-                    reduction_indexer, reduction_nelems));
-        });
+        sycl::event dot_ev =
+            sequential_dot_product<lhsTy, rhsTy, resTy,
+                                   InputOutputBatchIndexerT, ReductionIndexerT,
+                                   dot_product_seq_krn>(
+                exec_q, lhs_tp, rhs_tp, res_tp, batches, reduction_nelems,
+                inp_out_batch_indexer, reduction_indexer, depends);
 
         return dot_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg =
-        std::min(size_t(2048),
-                 d.get_info<sycl::info::device::max_work_group_size>() / 2);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
                                                    sycl::logical_or<resTy>,
