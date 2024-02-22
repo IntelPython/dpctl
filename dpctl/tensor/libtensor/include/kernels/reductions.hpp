@@ -124,9 +124,8 @@ public:
 
             using dpctl::tensor::type_utils::convert_impl;
             outT val;
-            if constexpr (std::is_same_v<ReductionOp,
-                                         sycl::logical_and<outT>> ||
-                          std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+            if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
             {
                 val = convert_impl<bool, argT>(inp_[inp_offset]);
             }
@@ -216,9 +215,8 @@ public:
 
             using dpctl::tensor::type_utils::convert_impl;
             outT val;
-            if constexpr (std::is_same_v<ReductionOp,
-                                         sycl::logical_and<outT>> ||
-                          std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+            if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
             {
                 // handle nans
                 val = convert_impl<bool, argT>(inp_[inp_offset]);
@@ -233,12 +231,11 @@ public:
         auto work_group = it.get_group();
         // This only works if reduction_op_ is from small set of operators
         outT red_val_over_wg;
-        if constexpr (std::is_same_v<ReductionOp, sycl::logical_and<outT>>) {
+        if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
             red_val_over_wg = static_cast<outT>(
                 sycl::all_of_group(work_group, local_red_val));
         }
-        else if constexpr (std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
-        {
+        else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
             red_val_over_wg = static_cast<outT>(
                 sycl::any_of_group(work_group, local_red_val));
         }
@@ -255,20 +252,16 @@ public:
             if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
                 res_ref += red_val_over_wg;
             }
-            else if constexpr (std::is_same_v<ReductionOp, sycl::maximum<outT>>)
-            {
+            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
                 res_ref.fetch_max(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp, sycl::minimum<outT>>)
-            {
+            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
                 res_ref.fetch_min(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp,
-                                              sycl::logical_and<outT>>) {
+            else if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
                 res_ref.fetch_and(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp,
-                                              sycl::logical_or<outT>>) {
+            else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
                 res_ref.fetch_or(red_val_over_wg);
             }
             else {
@@ -356,9 +349,8 @@ public:
 
             using dpctl::tensor::type_utils::convert_impl;
             outT val;
-            if constexpr (std::is_same_v<ReductionOp,
-                                         sycl::logical_and<outT>> ||
-                          std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+            if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
             {
                 // handle nans
                 val = convert_impl<bool, argT>(inp_[inp_offset]);
@@ -382,20 +374,16 @@ public:
             if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
                 res_ref += red_val_over_wg;
             }
-            else if constexpr (std::is_same_v<ReductionOp, sycl::maximum<outT>>)
-            {
+            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
                 res_ref.fetch_max(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp, sycl::minimum<outT>>)
-            {
+            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
                 res_ref.fetch_min(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp,
-                                              sycl::logical_and<outT>>) {
+            else if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
                 res_ref.fetch_and(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp,
-                                              sycl::logical_or<outT>>) {
+            else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
                 res_ref.fetch_or(red_val_over_wg);
             }
             else {
@@ -477,10 +465,8 @@ public:
 
                 using dpctl::tensor::type_utils::convert_impl;
                 outT val;
-                if constexpr (std::is_same_v<ReductionOp,
-                                             sycl::logical_and<outT>> ||
-                              std::is_same_v<ReductionOp,
-                                             sycl::logical_or<outT>>)
+                if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                              su_ns::IsLogicalOr<outT, ReductionOp>::value)
                 {
                     // handle nans
                     val = convert_impl<bool, argT>(inp_[inp_offset]);
@@ -496,11 +482,10 @@ public:
         auto work_group = it.get_group();
         // This only works if reduction_op_ is from small set of operators
         outT red_val_over_wg;
-        if constexpr (std::is_same_v<ReductionOp, sycl::logical_and<outT>>) {
+        if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
             red_val_over_wg = sycl::all_of_group(work_group, local_red_val);
         }
-        else if constexpr (std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
-        {
+        else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
             red_val_over_wg = sycl::any_of_group(work_group, local_red_val);
         }
         else {
