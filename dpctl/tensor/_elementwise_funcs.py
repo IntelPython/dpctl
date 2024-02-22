@@ -491,7 +491,7 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the element-wise ceiling results.
+        An array containing the element-wise ceiling.
 """
 
 ceil = UnaryElementwiseFunc(
@@ -702,7 +702,7 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the element-wise floor results.
+        An array containing the element-wise floor.
 """
 
 floor = UnaryElementwiseFunc(
@@ -1507,7 +1507,7 @@ integer to `x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1516,7 +1516,7 @@ Args:
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the element-wise rounded results.
+        An array containing the element-wise rounded values.
 """
 
 round = UnaryElementwiseFunc(
@@ -1770,7 +1770,7 @@ signed number `x` is discarded.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
