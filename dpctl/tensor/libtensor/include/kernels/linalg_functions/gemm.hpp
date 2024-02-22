@@ -2584,11 +2584,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
@@ -2666,17 +2662,20 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::StridedIndexer;
             using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+
             const OuterInnerDimsIndexerT lhs_indexer(
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
             constexpr TmpIndexerT res_indexer{};
+
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::StridedIndexer;
             using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
             using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
                 StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
+
             const StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
                                                    batch_shape_strides);
             const UnpackedStridedIndexer rhs_batch_indexer(
@@ -2969,11 +2968,7 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
@@ -3172,11 +3167,7 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
@@ -3558,11 +3549,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
@@ -3728,11 +3715,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
@@ -3982,11 +3965,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(
@@ -4139,11 +4118,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        // max_max_wg prevents running out of resources on CPU
-        constexpr size_t max_max_wg = 2048;
-        size_t max_wg = std::min(
-            max_max_wg,
-            dev.get_info<sycl::info::device::max_work_group_size>() / 2);
+        size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             resTy *tmp = sycl::malloc_device<resTy>(

@@ -27,11 +27,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
+#include <type_traits>
 #include <vector>
 
 #include "kernels/reductions.hpp"
 #include "reduction_over_axis.hpp"
-#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 namespace py = pybind11;
 
@@ -61,24 +62,178 @@ static search_contig_impl_fn_ptr
     argmin_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
 
+template <typename argTy, typename outTy>
+struct TypePairSupportForArgminReductionTemps
+{
+
+    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
+                                                         // feature, supported
+                                                         // by DPC++ input bool
+        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
+        // input int8_t
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
+
+        // input uint8_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
+
+        // input int16_t
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
+
+        // input uint16_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
+
+        // input int32_t
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
+        // input uint32_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
+
+        // input int64_t
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
+
+        // input uint32_t
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::int64_t>,
+
+        // input half
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, std::int64_t>,
+
+        // input float
+        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::int64_t>,
+
+        // input double
+        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::int64_t>,
+
+        // input std::complex
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<float>,
+                                    outTy,
+                                    std::int64_t>,
+
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<double>,
+                                    outTy,
+                                    std::int64_t>,
+
+        // fall-through
+        td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct ArgminOverAxisTempsStridedFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportForArgminReductionTemps<srcTy,
+                                                             dstTy>::is_defined)
+        {
+            if constexpr (std::is_integral_v<srcTy> &&
+                          !std::is_same_v<srcTy, bool>) {
+                // op for values
+                using ReductionOpT = sycl::minimum<srcTy>;
+                // op for indices
+                using IndexOpT = sycl::minimum<dstTy>;
+                return dpctl::tensor::kernels::
+                    search_over_group_temps_strided_impl<
+                        srcTy, dstTy, ReductionOpT, IndexOpT>;
+            }
+            else {
+                // op for values
+                using ReductionOpT = su_ns::Minimum<srcTy>;
+                // op for indices
+                using IndexOpT = sycl::minimum<dstTy>;
+                return dpctl::tensor::kernels::
+                    search_over_group_temps_strided_impl<
+                        srcTy, dstTy, ReductionOpT, IndexOpT>;
+            }
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct ArgminOverAxis1TempsContigFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportForArgminReductionTemps<srcTy,
+                                                             dstTy>::is_defined)
+        {
+            if constexpr (std::is_integral_v<srcTy> &&
+                          !std::is_same_v<srcTy, bool>) {
+                // op for values
+                using ReductionOpT = sycl::minimum<srcTy>;
+                // op for indices
+                using IndexOpT = sycl::minimum<dstTy>;
+                return dpctl::tensor::kernels::
+                    search_axis1_over_group_temps_contig_impl<
+                        srcTy, dstTy, ReductionOpT, IndexOpT>;
+            }
+            else {
+                // op for values
+                using ReductionOpT = su_ns::Minimum<srcTy>;
+                // op for indices
+                using IndexOpT = sycl::minimum<dstTy>;
+                return dpctl::tensor::kernels::
+                    search_axis1_over_group_temps_contig_impl<
+                        srcTy, dstTy, ReductionOpT, IndexOpT>;
+            }
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+template <typename fnT, typename srcTy, typename dstTy>
+struct ArgminOverAxis0TempsContigFactory
+{
+    fnT get() const
+    {
+        if constexpr (TypePairSupportForArgminReductionTemps<srcTy,
+                                                             dstTy>::is_defined)
+        {
+            if constexpr (std::is_integral_v<srcTy> &&
+                          !std::is_same_v<srcTy, bool>) {
+                // op for values
+                using ReductionOpT = sycl::minimum<srcTy>;
+                // op for indices
+                using IndexOpT = sycl::minimum<dstTy>;
+                return dpctl::tensor::kernels::
+                    search_axis0_over_group_temps_contig_impl<
+                        srcTy, dstTy, ReductionOpT, IndexOpT>;
+            }
+            else {
+                // op for values
+                using ReductionOpT = su_ns::Minimum<srcTy>;
+                // op for indices
+                using IndexOpT = sycl::minimum<dstTy>;
+                return dpctl::tensor::kernels::
+                    search_axis0_over_group_temps_contig_impl<
+                        srcTy, dstTy, ReductionOpT, IndexOpT>;
+            }
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
 void populate_argmin_over_axis_dispatch_tables(void)
 {
     using dpctl::tensor::kernels::search_strided_impl_fn_ptr;
     using td_ns::DispatchTableBuilder;
 
-    using dpctl::tensor::kernels::ArgminOverAxisTempsStridedFactory;
     DispatchTableBuilder<search_strided_impl_fn_ptr,
                          ArgminOverAxisTempsStridedFactory, td_ns::num_types>
         dtb1;
     dtb1.populate_dispatch_table(argmin_over_axis_strided_temps_dispatch_table);
 
-    using dpctl::tensor::kernels::ArgminOverAxis1TempsContigFactory;
     DispatchTableBuilder<search_contig_impl_fn_ptr,
                          ArgminOverAxis1TempsContigFactory, td_ns::num_types>
         dtb2;
     dtb2.populate_dispatch_table(argmin_over_axis1_contig_temps_dispatch_table);
 
-    using dpctl::tensor::kernels::ArgminOverAxis0TempsContigFactory;
     DispatchTableBuilder<search_contig_impl_fn_ptr,
                          ArgminOverAxis0TempsContigFactory, td_ns::num_types>
         dtb3;

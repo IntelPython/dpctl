@@ -48,6 +48,18 @@ namespace tensor
 namespace kernels
 {
 
+namespace reduction_detail
+{
+
+inline size_t get_work_group_size(const sycl::device &d)
+{
+    // prevents running out of resources on CPU
+    return std::min<std::size_t>(
+        2048, d.get_info<sycl::info::device::max_work_group_size>() / 2);
+}
+
+} // namespace reduction_detail
+
 template <typename ReductionOpT, typename T> struct needs_workaround
 {
     static constexpr bool value =
@@ -111,7 +123,15 @@ public:
             const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            outT val;
+            if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
+            {
+                val = convert_impl<bool, argT>(inp_[inp_offset]);
+            }
+            else {
+                val = convert_impl<outT, argT>(inp_[inp_offset]);
+            }
             red_val = reduction_op_(red_val, val);
         }
 
@@ -194,15 +214,35 @@ public:
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            outT val;
+            if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
+            {
+                // handle nans
+                val = convert_impl<bool, argT>(inp_[inp_offset]);
+            }
+            else {
+                val = convert_impl<outT, argT>(inp_[inp_offset]);
+            }
 
             local_red_val = reduction_op_(local_red_val, val);
         }
 
         auto work_group = it.get_group();
         // This only works if reduction_op_ is from small set of operators
-        outT red_val_over_wg = sycl::reduce_over_group(
-            work_group, local_red_val, identity_, reduction_op_);
+        outT red_val_over_wg;
+        if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
+            red_val_over_wg = static_cast<outT>(
+                sycl::all_of_group(work_group, local_red_val));
+        }
+        else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
+            red_val_over_wg = static_cast<outT>(
+                sycl::any_of_group(work_group, local_red_val));
+        }
+        else {
+            red_val_over_wg = sycl::reduce_over_group(work_group, local_red_val,
+                                                      identity_, reduction_op_);
+        }
 
         if (work_group.leader()) {
             sycl::atomic_ref<outT, sycl::memory_order::relaxed,
@@ -212,13 +252,17 @@ public:
             if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
                 res_ref += red_val_over_wg;
             }
-            else if constexpr (std::is_same_v<ReductionOp, sycl::maximum<outT>>)
-            {
+            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
                 res_ref.fetch_max(red_val_over_wg);
             }
-            else if constexpr (std::is_same_v<ReductionOp, sycl::minimum<outT>>)
-            {
+            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
                 res_ref.fetch_min(red_val_over_wg);
+            }
+            else if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
+                res_ref.fetch_and(red_val_over_wg);
+            }
+            else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
+                res_ref.fetch_or(red_val_over_wg);
             }
             else {
                 outT read_val = res_ref.load();
@@ -304,7 +348,16 @@ public:
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            outT val;
+            if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
+            {
+                // handle nans
+                val = convert_impl<bool, argT>(inp_[inp_offset]);
+            }
+            else {
+                val = convert_impl<outT, argT>(inp_[inp_offset]);
+            }
 
             local_red_val = reduction_op_(local_red_val, val);
         }
@@ -318,28 +371,280 @@ public:
                              sycl::memory_scope::device,
                              sycl::access::address_space::global_space>
                 res_ref(out_[out_iter_offset]);
-            outT read_val = res_ref.load();
-            outT new_val{};
-            do {
-                new_val = reduction_op_(read_val, red_val_over_wg);
-            } while (!res_ref.compare_exchange_strong(read_val, new_val));
+            // retain these checks in case a reduce_over_group work-around is
+            // needed
+            if constexpr (su_ns::IsSyclPlus<outT, ReductionOp>::value) {
+                res_ref += red_val_over_wg;
+            }
+            else if constexpr (su_ns::IsSyclMaximum<outT, ReductionOp>::value) {
+                res_ref.fetch_max(red_val_over_wg);
+            }
+            else if constexpr (su_ns::IsSyclMinimum<outT, ReductionOp>::value) {
+                res_ref.fetch_min(red_val_over_wg);
+            }
+            else if constexpr (su_ns::IsSyclLogicalAnd<outT,
+                                                       ReductionOp>::value) {
+                res_ref.fetch_and(red_val_over_wg);
+            }
+            else if constexpr (su_ns::IsSyclLogicalOr<outT, ReductionOp>::value)
+            {
+                res_ref.fetch_or(red_val_over_wg);
+            }
+            else {
+                outT read_val = res_ref.load();
+                outT new_val{};
+                do {
+                    new_val = reduction_op_(read_val, red_val_over_wg);
+                } while (!res_ref.compare_exchange_strong(read_val, new_val));
+            }
         }
     }
 };
 
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_over_group_with_atomics_krn;
+template <typename argT,
+          typename outT,
+          typename ReductionOp,
+          typename InputOutputIterIndexerT,
+          typename InputRedIndexerT>
+struct ReductionOverGroupNoAtomicFunctor
+{
+private:
+    const argT *inp_ = nullptr;
+    outT *out_ = nullptr;
+    const ReductionOp reduction_op_;
+    const outT identity_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
+    size_t reduction_max_gid_ = 0;
+    size_t iter_gws_ = 1;
+    size_t reductions_per_wi = 16;
+
+public:
+    ReductionOverGroupNoAtomicFunctor(
+        const argT *data,
+        outT *res,
+        const ReductionOp &reduction_op,
+        const outT &identity_val,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
+        size_t reduction_size,
+        size_t iteration_size,
+        size_t reduction_size_per_wi)
+        : inp_(data), out_(res), reduction_op_(reduction_op),
+          identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
+          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
+          reduction_max_gid_(reduction_size), iter_gws_(iteration_size),
+          reductions_per_wi(reduction_size_per_wi)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> it) const
+    {
+        const size_t reduction_lid = it.get_local_id(0);
+        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+
+        const size_t iter_gid = it.get_group(0) % iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+
+        // work-items operates over input with indices
+        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
+        //   + reduction_lid
+        // for 0 <= m < reductions_per_wi
+
+        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
+        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
+
+        outT local_red_val(identity_);
+        size_t arg_reduce_gid0 =
+            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
+        for (size_t m = 0; m < reductions_per_wi; ++m) {
+            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+
+            if (arg_reduce_gid < reduction_max_gid_) {
+                auto inp_reduction_offset =
+                    inp_reduced_dims_indexer_(arg_reduce_gid);
+                auto inp_offset = inp_iter_offset + inp_reduction_offset;
+
+                using dpctl::tensor::type_utils::convert_impl;
+                outT val;
+                if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
+                              su_ns::IsLogicalOr<outT, ReductionOp>::value)
+                {
+                    // handle nans
+                    val = convert_impl<bool, argT>(inp_[inp_offset]);
+                }
+                else {
+                    val = convert_impl<outT, argT>(inp_[inp_offset]);
+                }
+
+                local_red_val = reduction_op_(local_red_val, val);
+            }
+        }
+
+        auto work_group = it.get_group();
+        // This only works if reduction_op_ is from small set of operators
+        outT red_val_over_wg;
+        if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
+            red_val_over_wg = sycl::all_of_group(work_group, local_red_val);
+        }
+        else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
+            red_val_over_wg = sycl::any_of_group(work_group, local_red_val);
+        }
+        else {
+            red_val_over_wg = sycl::reduce_over_group(work_group, local_red_val,
+                                                      identity_, reduction_op_);
+        }
+
+        if (work_group.leader()) {
+            // each group writes to a different memory location
+            out_[out_iter_offset * n_reduction_groups + reduction_batch_id] =
+                red_val_over_wg;
+        }
+    }
+};
+
+/* = Reduction, using custom_reduce_over_group and not using atomic_ref*/
+
+template <typename argT,
+          typename outT,
+          typename ReductionOp,
+          typename InputOutputIterIndexerT,
+          typename InputRedIndexerT,
+          typename SlmT>
+struct CustomReductionOverGroupNoAtomicFunctor
+{
+private:
+    const argT *inp_ = nullptr;
+    outT *out_ = nullptr;
+    const ReductionOp reduction_op_;
+    outT identity_;
+    const InputOutputIterIndexerT inp_out_iter_indexer_;
+    const InputRedIndexerT inp_reduced_dims_indexer_;
+    SlmT local_mem_;
+    size_t reduction_max_gid_ = 0;
+    size_t iter_gws_ = 1;
+    size_t reductions_per_wi = 16;
+
+public:
+    CustomReductionOverGroupNoAtomicFunctor(
+        const argT *data,
+        outT *res,
+        const ReductionOp &reduction_op,
+        const outT &identity_val,
+        const InputOutputIterIndexerT &arg_res_iter_indexer,
+        const InputRedIndexerT &arg_reduced_dims_indexer,
+        SlmT local_mem,
+        size_t reduction_size,
+        size_t iteration_size,
+        size_t reduction_size_per_wi)
+        : inp_(data), out_(res), reduction_op_(reduction_op),
+          identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
+          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
+          local_mem_(local_mem), reduction_max_gid_(reduction_size),
+          iter_gws_(iteration_size), reductions_per_wi(reduction_size_per_wi)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> it) const
+    {
+        const size_t reduction_lid = it.get_local_id(0);
+        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+
+        const size_t iter_gid = it.get_group(0) % iter_gws_;
+        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+
+        // work-items operates over input with indices
+        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
+        //   + reduction_lid
+        // for 0 <= m < reductions_per_wi
+
+        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
+        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
+        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
+
+        outT local_red_val(identity_);
+        size_t arg_reduce_gid0 =
+            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
+        for (size_t m = 0; m < reductions_per_wi; ++m) {
+            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+
+            if (arg_reduce_gid < reduction_max_gid_) {
+                auto inp_reduction_offset =
+                    inp_reduced_dims_indexer_(arg_reduce_gid);
+                auto inp_offset = inp_iter_offset + inp_reduction_offset;
+
+                using dpctl::tensor::type_utils::convert_impl;
+                outT val;
+                if constexpr (std::is_same_v<ReductionOp,
+                                             sycl::logical_and<outT>> ||
+                              std::is_same_v<ReductionOp,
+                                             sycl::logical_or<outT>>)
+                {
+                    // handle nans
+                    val = convert_impl<bool, argT>(inp_[inp_offset]);
+                }
+                else {
+                    val = convert_impl<outT, argT>(inp_[inp_offset]);
+                }
+
+                local_red_val = reduction_op_(local_red_val, val);
+            }
+        }
+
+        auto work_group = it.get_group();
+        // This only works if reduction_op_ is from small set of operators
+        outT red_val_over_wg = su_ns::custom_reduce_over_group(
+            work_group, local_mem_, local_red_val, reduction_op_);
+
+        if (work_group.leader()) {
+            // each group writes to a different memory location
+            out_[out_iter_offset * n_reduction_groups + reduction_batch_id] =
+                red_val_over_wg;
+        }
+    }
+};
+
+template <
+    typename argTy,
+    typename resTy,
+    typename ReductionOpT,
+    typename InputOutputIterIndexerT,
+    typename ReductionIndexerT,
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    class kernel_name_token>
+sycl::event
+sequential_reduction(sycl::queue &exec_q,
+                     const argTy *arg,
+                     resTy *res,
+                     resTy identity_val,
+                     size_t iter_nelems,
+                     size_t reduction_nelems,
+                     const InputOutputIterIndexerT &in_out_iter_indexer,
+                     const ReductionIndexerT &reduction_indexer,
+                     const std::vector<sycl::event> &depends)
+{
+    sycl::event red_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using KernelName =
+            class kernel_name_token<argTy, resTy, ReductionOpT,
+                                    InputOutputIterIndexerT, ReductionIndexerT>;
+
+        cgh.parallel_for<KernelName>(
+            sycl::range<1>(iter_nelems),
+            SequentialReduction<argTy, resTy, ReductionOpT,
+                                InputOutputIterIndexerT, ReductionIndexerT>(
+                arg, res, ReductionOpT(), identity_val, in_out_iter_indexer,
+                reduction_indexer, reduction_nelems));
+    });
+
+    return red_ev;
+}
 
 template <typename BasedKernelName> class custom_reduction_wrapper;
-
-template <typename T1, typename T2, typename T3>
-class reduction_over_group_with_atomics_init_krn;
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_seq_strided_krn;
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_seq_contig_krn;
 
 template <
     typename argTy,
@@ -406,6 +711,15 @@ submit_atomic_reduction(sycl::queue &exec_q,
     return red_ev;
 }
 
+template <typename T1, typename T2, typename T3>
+class reduction_over_group_with_atomics_init_krn;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class reduction_seq_krn;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class reduction_over_group_with_atomics_krn;
+
 typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     sycl::queue &,
     size_t,
@@ -460,18 +774,13 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
         const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                   reduction_shape_stride};
 
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            cgh.parallel_for<class reduction_seq_strided_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
@@ -580,18 +889,13 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
             NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{};
 
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            cgh.parallel_for<class reduction_seq_contig_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
@@ -673,23 +977,13 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
             0, static_cast<ssize_t>(reduction_nelems),
             static_cast<ssize_t>(iter_nelems)};
 
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            using KernelName =
-                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>;
-
-            sycl::range<1> iter_range{iter_nelems};
-
-            cgh.parallel_for<KernelName>(
-                iter_range,
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
@@ -735,204 +1029,6 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
 }
 
 /* = Reduction, using sycl::reduce_over_group, but not using atomic_ref = */
-
-template <typename argT,
-          typename outT,
-          typename ReductionOp,
-          typename InputOutputIterIndexerT,
-          typename InputRedIndexerT>
-struct ReductionOverGroupNoAtomicFunctor
-{
-private:
-    const argT *inp_ = nullptr;
-    outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
-    const outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
-
-public:
-    ReductionOverGroupNoAtomicFunctor(
-        const argT *data,
-        outT *res,
-        const ReductionOp &reduction_op,
-        const outT &identity_val,
-        const InputOutputIterIndexerT &arg_res_iter_indexer,
-        const InputRedIndexerT &arg_reduced_dims_indexer,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
-        : inp_(data), out_(res), reduction_op_(reduction_op),
-          identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
-          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          reduction_max_gid_(reduction_size), iter_gws_(iteration_size),
-          reductions_per_wi(reduction_size_per_wi)
-    {
-    }
-
-    void operator()(sycl::nd_item<1> it) const
-    {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
-
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-
-        // work-items operates over input with indices
-        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
-        //   + reduction_lid
-        // for 0 <= m < reductions_per_wi
-
-        const auto &inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
-        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
-        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
-
-        outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
-            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
-
-            if (arg_reduce_gid < reduction_max_gid_) {
-                auto inp_reduction_offset =
-                    inp_reduced_dims_indexer_(arg_reduce_gid);
-                auto inp_offset = inp_iter_offset + inp_reduction_offset;
-
-                using dpctl::tensor::type_utils::convert_impl;
-                outT val = convert_impl<outT, argT>(inp_[inp_offset]);
-
-                local_red_val = reduction_op_(local_red_val, val);
-            }
-        }
-
-        auto work_group = it.get_group();
-        // This only works if reduction_op_ is from small set of operators
-        outT red_val_over_wg = sycl::reduce_over_group(
-            work_group, local_red_val, identity_, reduction_op_);
-
-        if (work_group.leader()) {
-            // each group writes to a different memory location
-            out_[out_iter_offset * n_reduction_groups + reduction_batch_id] =
-                red_val_over_wg;
-        }
-    }
-};
-
-/* = Reduction, using custom_reduce_over_group and not using atomic_ref*/
-
-template <typename argT,
-          typename outT,
-          typename ReductionOp,
-          typename InputOutputIterIndexerT,
-          typename InputRedIndexerT,
-          typename SlmT>
-struct CustomReductionOverGroupNoAtomicFunctor
-{
-private:
-    const argT *inp_ = nullptr;
-    outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
-    outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
-    SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
-
-public:
-    CustomReductionOverGroupNoAtomicFunctor(
-        const argT *data,
-        outT *res,
-        const ReductionOp &reduction_op,
-        const outT &identity_val,
-        const InputOutputIterIndexerT &arg_res_iter_indexer,
-        const InputRedIndexerT &arg_reduced_dims_indexer,
-        SlmT local_mem,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
-        : inp_(data), out_(res), reduction_op_(reduction_op),
-          identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
-          inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
-          local_mem_(local_mem), reduction_max_gid_(reduction_size),
-          iter_gws_(iteration_size), reductions_per_wi(reduction_size_per_wi)
-    {
-    }
-
-    void operator()(sycl::nd_item<1> it) const
-    {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
-
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
-
-        // work-items operates over input with indices
-        //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
-        //   + reduction_lid
-        // for 0 <= m < reductions_per_wi
-
-        auto inp_out_iter_offsets_ = inp_out_iter_indexer_(iter_gid);
-        const auto &inp_iter_offset = inp_out_iter_offsets_.get_first_offset();
-        const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
-
-        outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
-            reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
-
-            if (arg_reduce_gid < reduction_max_gid_) {
-                auto inp_reduction_offset =
-                    inp_reduced_dims_indexer_(arg_reduce_gid);
-                auto inp_offset = inp_iter_offset + inp_reduction_offset;
-
-                using dpctl::tensor::type_utils::convert_impl;
-                outT val = convert_impl<outT, argT>(inp_[inp_offset]);
-
-                local_red_val = reduction_op_(local_red_val, val);
-            }
-        }
-
-        auto work_group = it.get_group();
-        // This only works if reduction_op_ is from small set of operators
-        outT red_val_over_wg = su_ns::custom_reduce_over_group(
-            work_group, local_mem_, local_red_val, reduction_op_);
-
-        if (work_group.leader()) {
-            // each group writes to a different memory location
-            out_[out_iter_offset * n_reduction_groups + reduction_batch_id] =
-                red_val_over_wg;
-        }
-    }
-};
-
-typedef sycl::event (*reduction_strided_impl_fn_ptr)(
-    sycl::queue &,
-    size_t,
-    size_t,
-    const char *,
-    char *,
-    int,
-    const ssize_t *,
-    ssize_t,
-    ssize_t,
-    int,
-    const ssize_t *,
-    ssize_t,
-    const std::vector<sycl::event> &);
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class reduction_over_group_temps_krn;
-
-template <typename T1, typename T2, typename T3>
-class reduction_over_group_temps_empty_krn;
 
 template <
     typename argTy,
@@ -998,15 +1094,26 @@ submit_no_atomic_reduction(sycl::queue &exec_q,
     return red_ev;
 }
 
-namespace detail
-{
-inline size_t get_work_group_size(const sycl::device &d)
-{
-    // prevents running out of resources on CPU
-    return std::min<std::size_t>(
-        2048, d.get_info<sycl::info::device::max_work_group_size>() / 2);
-}
-} // namespace detail
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class reduction_over_group_temps_krn;
+
+typedef sycl::event (*reduction_strided_impl_fn_ptr)(
+    sycl::queue &,
+    size_t,
+    size_t,
+    const char *,
+    char *,
+    int,
+    const ssize_t *,
+    ssize_t,
+    ssize_t,
+    int,
+    const ssize_t *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename T1, typename T2, typename T3>
+class reduction_over_group_temps_empty_krn;
 
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_over_group_temps_strided_impl(
@@ -1061,36 +1168,29 @@ sycl::event reduction_over_group_temps_strided_impl(
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
 
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
+        const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
+                                                  reduction_shape_stride};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{
-                iter_nd, iter_arg_offset, iter_res_offset,
-                iter_shape_and_strides};
-            const ReductionIndexerT reduction_indexer{
-                red_nd, reduction_arg_offset, reduction_shape_stride};
-
-            cgh.parallel_for<class reduction_seq_strided_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1316,39 +1416,33 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                InputIterIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = NoOpIndexerT;
 
-            using InputIterIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    InputIterIndexerT, NoOpIndexerT>;
-            using ReductionIndexerT = NoOpIndexerT;
+        const InputOutputIterIndexerT in_out_iter_indexer{
+            InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
+                              static_cast<ssize_t>(reduction_nelems)},
+            NoOpIndexerT{}};
+        constexpr ReductionIndexerT reduction_indexer{};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{
-                InputIterIndexerT{0, static_cast<ssize_t>(iter_nelems),
-                                  static_cast<ssize_t>(reduction_nelems)},
-                NoOpIndexerT{}};
-            constexpr ReductionIndexerT reduction_indexer{};
-
-            cgh.parallel_for<class reduction_seq_contig_krn<
-                argTy, resTy, ReductionOpT, InputOutputIterIndexerT,
-                ReductionIndexerT>>(
-                sycl::range<1>(iter_nelems),
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1564,43 +1658,32 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputOutputIterIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                NoOpIndexerT, NoOpIndexerT>;
+        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                    NoOpIndexerT, NoOpIndexerT>;
-            using ReductionIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
+        const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
+                                                          NoOpIndexerT{}};
+        const ReductionIndexerT reduction_indexer{
+            0, static_cast<ssize_t>(reduction_nelems),
+            static_cast<ssize_t>(iter_nelems)};
 
-            const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                              NoOpIndexerT{}};
-            const ReductionIndexerT reduction_indexer{
-                0, static_cast<ssize_t>(reduction_nelems),
-                static_cast<ssize_t>(iter_nelems)};
-
-            using KernelName =
-                class reduction_seq_contig_krn<argTy, resTy, ReductionOpT,
-                                               InputOutputIterIndexerT,
-                                               ReductionIndexerT>;
-
-            sycl::range<1> iter_range{iter_nelems};
-
-            cgh.parallel_for<KernelName>(
-                iter_range,
-                SequentialReduction<argTy, resTy, ReductionOpT,
-                                    InputOutputIterIndexerT, ReductionIndexerT>(
-                    arg_tp, res_tp, ReductionOpT(), identity_val,
-                    in_out_iter_indexer, reduction_indexer, reduction_nelems));
-        });
+        sycl::event comp_ev =
+            sequential_reduction<argTy, resTy, ReductionOpT,
+                                 InputOutputIterIndexerT, ReductionIndexerT,
+                                 reduction_seq_krn>(
+                exec_q, arg_tp, res_tp, identity_val, iter_nelems,
+                reduction_nelems, in_out_iter_indexer, reduction_indexer,
+                depends);
 
         return comp_ev;
     }
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1785,1199 +1868,6 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         return cleanup_host_task_event;
     }
 }
-
-/* @brief Types supported by comparison-reduction code based on atomic_ref */
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForCompReductionAtomic
-{
-
-    /* value is true if a kernel for <argTy, outTy> must be instantiated, false
-     * otherwise */
-    // disjunction is C++17 feature, supported by DPC++
-    static constexpr bool is_defined = std::disjunction<
-        // input int32
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
-        // input uint32
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
-        // input int64
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        // input uint64
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForCompReductionTemps
-{
-
-    // disjunction is C++17 feature, supported by DPC++
-    static constexpr bool is_defined = std::disjunction<
-        // input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, bool>,
-        // input int8_t
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
-        // input uint8_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
-
-        // input int16_t
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
-        // input uint16_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
-
-        // input int32_t
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
-
-        // input int64_t
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
-
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-
-        // input std::complex
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
-                                    outTy,
-                                    std::complex<float>>,
-
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
-                                    outTy,
-                                    std::complex<double>>,
-
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxisAtomicStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxis1AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxis0AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MaxOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxisAtomicStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_with_atomics_strided_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                            ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxis1AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxis0AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_floating_point<dstTy>::value) {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_with_atomics_contig_impl<
-                        srcTy, dstTy, ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct MinOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForCompReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
-                using ReductionOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-            else {
-                using ReductionOpT = su_ns::Minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                                 ReductionOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-// Sum
-
-/* @brief Types supported by plus-reduction code based on atomic_ref */
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForSumReductionAtomic
-{
-
-    /* value if true a kernel for <argTy, outTy> must be instantiated, false
-     * otherwise */
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
-        // input int8
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-        // input uint8
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
-        // input int16
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-        // input uint16
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
-        // input int32
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        // input uint32
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
-        // input int64
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        // input uint64
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForSumReductionTemps
-{
-
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int8_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint8_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint16_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
-
-        // input int8_t
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
-
-        // input uint8_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
-
-        // input int16_t
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
-
-        // input uint16_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
-
-        // input int32_t
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
-
-        // input int64_t
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
-
-        // input uint64_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
-        td_ns::
-            TypePairDefinedEntry<argTy, sycl::half, outTy, std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy,
-                                    sycl::half,
-                                    outTy,
-                                    std::complex<double>>,
-
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<double>>,
-
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::complex<double>>,
-
-        // input std::complex
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
-                                    outTy,
-                                    std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
-                                    outTy,
-                                    std::complex<double>>,
-
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
-                                    outTy,
-                                    std::complex<double>>,
-
-        // fall-throug
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxisAtomicStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSumReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::plus<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_over_group_with_atomics_strided_impl<srcTy, dstTy,
-                                                               ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSumReductionTemps<
-                          srcTy, dstTy>::is_defined) {
-            using ReductionOpT = sycl::plus<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                        ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxis1AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSumReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::plus<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis1_over_group_with_atomics_contig_impl<
-                    srcTy, dstTy, ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxis0AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSumReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::plus<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis0_over_group_with_atomics_contig_impl<
-                    srcTy, dstTy, ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSumReductionTemps<
-                          srcTy, dstTy>::is_defined) {
-            using ReductionOpT = sycl::plus<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct SumOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSumReductionTemps<
-                          srcTy, dstTy>::is_defined) {
-            using ReductionOpT = sycl::plus<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-// Product
-
-/* @brief Types supported by plus-reduction code based on atomic_ref */
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForProductReductionAtomic
-{
-
-    /* value if true a kernel for <argTy, outTy> must be instantiated, false
-     * otherwise */
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
-        // input int8
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-        // input uint8
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
-        // input int16
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-        // input uint16
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
-        // input int32
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        // input uint32
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
-        // input int64
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        // input uint64
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForProductReductionTemps
-{
-
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int8_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint8_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint16_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
-
-        // input int8_t
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int8_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
-
-        // input uint8_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint8_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
-
-        // input int16_t
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
-
-        // input uint16_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint16_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
-
-        // input int32_t
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint32_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
-
-        // input int64_t
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::uint64_t>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
-        td_ns::
-            TypePairDefinedEntry<argTy, sycl::half, outTy, std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy,
-                                    sycl::half,
-                                    outTy,
-                                    std::complex<double>>,
-
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<double>>,
-
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::complex<double>>,
-
-        // input std::complex
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
-                                    outTy,
-                                    std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
-                                    outTy,
-                                    std::complex<double>>,
-
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
-                                    outTy,
-                                    std::complex<double>>,
-
-        // fall-throug
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ProductOverAxisAtomicStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForProductReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::multiplies<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_over_group_with_atomics_strided_impl<srcTy, dstTy,
-                                                               ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ProductOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForProductReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::multiplies<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                        ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ProductOverAxis1AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForProductReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::multiplies<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis1_over_group_with_atomics_contig_impl<
-                    srcTy, dstTy, ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ProductOverAxis0AtomicContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForProductReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::multiplies<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis0_over_group_with_atomics_contig_impl<
-                    srcTy, dstTy, ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ProductOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForProductReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::multiplies<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ProductOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForProductReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = sycl::multiplies<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForHypotReductionTemps
-{
-
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
-
-        // input int8_t
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
-
-        // input uint8_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
-
-        // input int16_t
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
-
-        // input uint16_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
-
-        // input int32_t
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
-
-        // input int64_t
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
-
-        // input uint64_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
-
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct HypotOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForHypotReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = su_ns::Hypot<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                        ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct HypotOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForHypotReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = su_ns::Hypot<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct HypotOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForHypotReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = su_ns::Hypot<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForLogSumExpReductionTemps
-{
-
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
-
-        // input int8_t
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, double>,
-
-        // input uint8_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, double>,
-
-        // input int16_t
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, double>,
-
-        // input uint16_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, double>,
-
-        // input int32_t
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, double>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, double>,
-
-        // input int64_t
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, double>,
-
-        // input uint64_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
-
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct LogSumExpOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForLogSumExpReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = su_ns::LogSumExp<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_over_group_temps_strided_impl<srcTy, dstTy,
-                                                        ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct LogSumExpOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForLogSumExpReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = su_ns::LogSumExp<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct LogSumExpOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForLogSumExpReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            using ReductionOpT = su_ns::LogSumExp<dstTy>;
-            return dpctl::tensor::kernels::
-                reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
-                                                             ReductionOpT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
 
 // Argmax and Argmin
 
@@ -3697,7 +2587,7 @@ sycl::event search_over_group_temps_strided_impl(
 
     constexpr size_t preferred_reductions_per_wi = 4;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -3993,7 +2883,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -4276,7 +3166,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
     constexpr size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = detail::get_work_group_size(d);
+    size_t max_wg = reduction_detail::get_work_group_size(d);
 
     size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -4488,265 +3378,6 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         return cleanup_host_task_event;
     }
 }
-
-template <typename argTy, typename outTy>
-struct TypePairSupportDataForSearchReductionTemps
-{
-
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
-        td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
-        // input int8_t
-        td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,
-
-        // input uint8_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, outTy, std::int64_t>,
-
-        // input int16_t
-        td_ns::TypePairDefinedEntry<argTy, std::int16_t, outTy, std::int64_t>,
-
-        // input uint16_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, outTy, std::int64_t>,
-
-        // input int32_t
-        td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int64_t>,
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, outTy, std::int64_t>,
-
-        // input int64_t
-        td_ns::TypePairDefinedEntry<argTy, std::int64_t, outTy, std::int64_t>,
-
-        // input uint32_t
-        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, std::int64_t>,
-
-        // input half
-        td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, std::int64_t>,
-
-        // input float
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::int64_t>,
-
-        // input double
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::int64_t>,
-
-        // input std::complex
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
-                                    outTy,
-                                    std::int64_t>,
-
-        td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
-                                    outTy,
-                                    std::int64_t>,
-
-        // fall-through
-        td_ns::NotDefinedEntry>::is_defined;
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ArgmaxOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSearchReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
-                // op for values
-                using ReductionOpT = sycl::maximum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_over_group_temps_strided_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-            else {
-                // op for values
-                using ReductionOpT = su_ns::Maximum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_over_group_temps_strided_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ArgmaxOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSearchReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
-                // op for values
-                using ReductionOpT = sycl::maximum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis1_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-            else {
-                // op for values
-                using ReductionOpT = su_ns::Maximum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis1_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ArgmaxOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSearchReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
-                // op for values
-                using ReductionOpT = sycl::maximum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis0_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-            else {
-                // op for values
-                using ReductionOpT = su_ns::Maximum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis0_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ArgminOverAxisTempsStridedFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSearchReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
-                // op for values
-                using ReductionOpT = sycl::minimum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_over_group_temps_strided_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-            else {
-                // op for values
-                using ReductionOpT = su_ns::Minimum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_over_group_temps_strided_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ArgminOverAxis1TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSearchReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
-                // op for values
-                using ReductionOpT = sycl::minimum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis1_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-            else {
-                // op for values
-                using ReductionOpT = su_ns::Minimum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis1_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-template <typename fnT, typename srcTy, typename dstTy>
-struct ArgminOverAxis0TempsContigFactory
-{
-    fnT get() const
-    {
-        if constexpr (TypePairSupportDataForSearchReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
-            if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
-                // op for values
-                using ReductionOpT = sycl::minimum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis0_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-            else {
-                // op for values
-                using ReductionOpT = su_ns::Minimum<srcTy>;
-                // op for indices
-                using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
-                    search_axis0_over_group_temps_contig_impl<
-                        srcTy, dstTy, ReductionOpT, IndexOpT>;
-            }
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
 
 } // namespace kernels
 } // namespace tensor
