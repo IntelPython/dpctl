@@ -26,6 +26,7 @@ __all__ = [
     "device_type",
     "backend_type",
     "event_status_type",
+    "kernel_arg_type",
 ]
 
 

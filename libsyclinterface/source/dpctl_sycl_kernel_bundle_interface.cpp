@@ -530,7 +530,7 @@ _GetKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
     else {
         error_handler("Kernel named " + std::string(kernel_name) +
                           " could not be found.",
-                      __FILE__, __func__, __LINE__);
+                      __FILE__, __func__, __LINE__, error_level::error);
         return nullptr;
     }
 }
@@ -541,7 +541,7 @@ bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
     auto zeKernelCreateFn = get_zeKernelCreate();
     if (zeKernelCreateFn == nullptr) {
         error_handler("Could not load zeKernelCreate function.", __FILE__,
-                      __func__, __LINE__);
+                      __func__, __LINE__, error_level::error);
         return false;
     }
 
@@ -564,7 +564,7 @@ bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
             if (ze_status != ZE_RESULT_ERROR_INVALID_KERNEL_NAME) {
                 error_handler("zeKernelCreate failed: " +
                                   _GetErrorCode_ze_impl(ze_status),
-                              __FILE__, __func__, __LINE__);
+                              __FILE__, __func__, __LINE__, error_level::error);
                 return false;
             }
         }

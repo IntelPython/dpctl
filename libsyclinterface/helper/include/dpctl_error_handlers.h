@@ -20,7 +20,7 @@
 ///
 /// \file
 /// A functor to use for passing an error handler callback function to sycl
-/// context and queue contructors.
+/// context and queue constructors.
 //===----------------------------------------------------------------------===//
 
 #pragma once
