@@ -32,15 +32,15 @@ Calculates the absolute value for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise absolute values.
         For complex input, the absolute value is its magnitude.
         If `x` has a real-valued data type, the returned array has the
@@ -59,15 +59,15 @@ Computes inverse cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse cosine, in radians
         and in the closed interval `[-pi/2, pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
@@ -85,18 +85,18 @@ Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise inverse hyperbolic cosine.
-        The data type of the returned array is determined by
-        the Type Promotion Rules.
+    usm_ndarray:
+        An array containing the element-wise inverse hyperbolic cosine, in
+        radians and in the half-closed interval `[0, inf)`. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 acosh = UnaryElementwiseFunc(
@@ -113,17 +113,17 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise sums. The data type of the
         returned array is determined by the Type Promotion Rules.
 """
@@ -143,15 +143,15 @@ Computes inverse sine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse sine, in radians
         and in the closed interval `[-pi/2, pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
@@ -169,15 +169,15 @@ Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse hyperbolic sine.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -195,15 +195,15 @@ Computes inverse tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise inverse tangent, in radians
         and in the closed interval `[-pi/2, pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
@@ -230,12 +230,12 @@ Args:
         floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the inverse tangent of the quotient `x1`/`x2`.
         The returned array must have a real-valued floating-point data type
         determined by Type Promotion Rules.
@@ -253,15 +253,15 @@ Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic inverse tangent.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -287,12 +287,12 @@ Args:
         type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -321,12 +321,12 @@ Args:
         Each element must be greater than or equal to 0.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -351,12 +351,12 @@ Args:
         Input array, expected to have integer or boolean data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results.
         The data type of the returned array is same as the data type of the
         input array.
@@ -385,12 +385,12 @@ Args:
         type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -418,12 +418,12 @@ Args:
         Each element must be greater than or equal to 0.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -453,12 +453,12 @@ Args:
         type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -477,21 +477,21 @@ _ceil_docstring = """
 ceil(x, out=None, order='K')
 
 Returns the ceiling for each element `x_i` for input array `x`.
-The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+
+The ceil of `x_i` is the smallest integer `n`, such that `n >= x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise ceiling of input array.
-        The returned array has the same data type as `x`.
+    usm_ndarray:
+        An array containing the element-wise ceiling.
 """
 
 ceil = UnaryElementwiseFunc(
@@ -506,17 +506,16 @@ Computes conjugate of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise conjugate values.
-        The returned array has the same data type as `x`.
 """
 
 conj = UnaryElementwiseFunc(
@@ -531,15 +530,15 @@ Computes cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise cosine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -554,15 +553,15 @@ Computes hyperbolic cosine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic cosine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -580,17 +579,17 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a floating-point data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise division. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -613,17 +612,17 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise equality comparison.
         The returned array has a data type of `bool`.
 """
@@ -636,19 +635,19 @@ equal = BinaryElementwiseFunc(
 _exp_docstring = """
 exp(x, out=None, order='K')
 
-Computes exponential for each element `x_i` of input array `x`.
+Computes the exponential for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise exponential of x.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -659,10 +658,14 @@ exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
 # U14: ==== EXPM1         (x)
 _expm1_docstring = """
 expm1(x, out=None, order='K')
-Computes an approximation of exp(x)-1 element-wise.
+
+Computes the exponential minus 1 for each element `x_i` of input array `x`.
+
+This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -671,7 +674,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise exp(x)-1 values.
+        An array containing the element-wise `exp(x) - 1` results.
         The data type of the returned array is determined by the Type
         Promotion Rules.
 """
@@ -685,21 +688,21 @@ _floor_docstring = """
 floor(x, out=None, order='K')
 
 Returns the floor for each element `x_i` for input array `x`.
-The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise floor of input array.
-        The returned array has the same data type as `x`.
+    usm_ndarray:
+        An array containing the element-wise floor.
 """
 
 floor = UnaryElementwiseFunc(
@@ -716,12 +719,13 @@ integer-value number that is not greater than the division result.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a real-valued or boolean data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a real-valued or boolean data
+        type.
 Returns:
-    usm_narray:
-        an array containing the result of element-wise floor division.
+    usm_ndarray:
+        An array containing the result of element-wise floor of division.
         The data type of the returned array is determined by the Type
         Promotion Rules.
 """
@@ -737,21 +741,23 @@ floor_divide = BinaryElementwiseFunc(
 # B11: ==== GREATER       (x1, x2)
 _greater_docstring_ = """
 greater(x1, x2, out=None, order='K')
+
 Computes the greater-than test results for each element `x1_i` of
 the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise greater-than comparison.
         The returned array has a data type of `bool`.
 """
@@ -763,21 +769,23 @@ greater = BinaryElementwiseFunc(
 # B12: ==== GREATER_EQUAL (x1, x2)
 _greater_equal_docstring_ = """
 greater_equal(x1, x2, out=None, order='K')
+
 Computes the greater-than or equal-to test results for each element `x1_i` of
 the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise greater-than or equal-to
         comparison.
         The returned array has a data type of `bool`.
@@ -798,18 +806,18 @@ Computes imaginary part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise imaginary component of input.
         If the input is a real-valued data type, the returned array has
-        the same datat type. If the input is a complex floating-point
+        the same data type. If the input is a complex floating-point
         data type, the returned array has a floating-point data type
         with the same floating-point precision as complex input.
 """
@@ -822,19 +830,19 @@ imag = UnaryElementwiseFunc(
 _isfinite_docstring_ = """
 isfinite(x, out=None, order='K')
 
-Checks if each element of input array is a finite number.
+Test if each element of input array is a finite number.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array which is True where `x` is not positive infinity,
         negative infinity, or NaN, False otherwise.
         The data type of the returned array is `bool`.
@@ -848,19 +856,19 @@ isfinite = UnaryElementwiseFunc(
 _isinf_docstring_ = """
 isinf(x, out=None, order='K')
 
-Checks if each element of input array is an infinity.
+Test if each element of input array is an infinity.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array which is True where `x` is positive or negative infinity,
         False otherwise. The data type of the returned array is `bool`.
 """
@@ -873,19 +881,19 @@ isinf = UnaryElementwiseFunc(
 _isnan_docstring_ = """
 isnan(x, out=None, order='K')
 
-Checks if each element of an input array is a NaN.
+Test if each element of an input array is a NaN.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array which is True where x is NaN, False otherwise.
         The data type of the returned array is `bool`.
 """
@@ -903,17 +911,17 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise less-than comparison.
         The returned array has a data type of `bool`.
 """
@@ -925,21 +933,23 @@ less = BinaryElementwiseFunc(
 # B14: ==== LESS_EQUAL  (x1, x2)
 _less_equal_docstring_ = """
 less_equal(x1, x2, out=None, order='K')
+
 Computes the less-than or equal-to test results for each element `x1_i` of
 the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise less-than or equal-to
         comparison. The returned array has a data type of `bool`.
 """
@@ -954,10 +964,12 @@ less_equal = BinaryElementwiseFunc(
 # U20: ==== LOG         (x)
 _log_docstring = """
 log(x, out=None, order='K')
-Computes the natural logarithm element-wise.
+
+Computes the natural logarithm for each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -976,10 +988,15 @@ log = UnaryElementwiseFunc("log", ti._log_result_type, ti._log, _log_docstring)
 # U21: ==== LOG1P       (x)
 _log1p_docstring = """
 log1p(x, out=None, order='K')
-Computes an approximation of log(1+x) element-wise.
+
+Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
+array `x`.
+
+This function calculates `log(1 + x)` more accurately for small values of `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -988,7 +1005,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the element-wise log(1+x) values. The data type
+        An array containing the element-wise `log(1 + x)` results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
@@ -1004,16 +1021,16 @@ Computes the base-2 logarithm for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the base-2 logarithm of `x`.
+    usm_ndarray:
+        An array containing the element-wise base-2 logarithm of `x`.
         The data type of the returned array is determined by the
         Type Promotion Rules.
 """
@@ -1030,16 +1047,16 @@ Computes the base-10 logarithm for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the base-1- logarithm of `x`.
+    usm_ndarray:
+        An array containing the element-wise base-10 logarithm of `x`.
         The data type of the returned array is determined by the
         Type Promotion Rules.
 """
@@ -1052,23 +1069,29 @@ log10 = UnaryElementwiseFunc(
 _logaddexp_docstring_ = """
 logaddexp(x1, x2, out=None, order='K')
 
-Calculates the ratio for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
+Calculates the natural logarithm of the sum of exponentials for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a real-valued data type.
+        First input array, expected to have a real-valued floating-point data
+        type.
     x2 (usm_ndarray):
-        Second input array, also expected to have real-valued data type.
+        Second input array, also expected to have a real-valued floating-point
+        data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the result of element-wise division. The data type
+    usm_ndarray:
+        An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
@@ -1080,8 +1103,8 @@ logaddexp = BinaryElementwiseFunc(
 _logical_and_docstring_ = """
 logical_and(x1, x2, out=None, order='K')
 
-Computes the logical AND for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Computes the logical AND for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
@@ -1090,12 +1113,12 @@ Args:
         Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise logical AND results.
 """
 logical_and = BinaryElementwiseFunc(
@@ -1108,7 +1131,9 @@ logical_and = BinaryElementwiseFunc(
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = """
 logical_not(x, out=None, order='K')
+
 Computes the logical NOT for each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
         Input array.
@@ -1144,12 +1169,12 @@ Args:
         Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise logical OR results.
 """
 logical_or = BinaryElementwiseFunc(
@@ -1173,12 +1198,12 @@ Args:
         Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise logical XOR results.
 """
 logical_xor = BinaryElementwiseFunc(
@@ -1192,22 +1217,22 @@ logical_xor = BinaryElementwiseFunc(
 _maximum_docstring_ = """
 maximum(x1, x2, out=None, order='K')
 
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise maxima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise maxima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -1222,22 +1247,22 @@ maximum = BinaryElementwiseFunc(
 _minimum_docstring_ = """
 minimum(x1, x2, out=None, order='K')
 
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise minima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise minima. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -1252,22 +1277,22 @@ minimum = BinaryElementwiseFunc(
 _multiply_docstring_ = """
 multiply(x1, x2, out=None, order='K')
 
-Calculates the product for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise products. The data type of
         the returned array is determined by the Type Promotion Rules.
 """
@@ -1284,9 +1309,10 @@ _negative_docstring_ = """
 negative(x, out=None, order='K')
 
 Computes the numerical negative for each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -1315,18 +1341,18 @@ input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        an array containing the result of element-wise inequality comparison.
+    usm_ndarray:
+        An array containing the result of element-wise inequality comparison.
         The returned array has a data type of `bool`.
 """
 
@@ -1341,7 +1367,7 @@ positive(x, out=None, order='K')
 Computes the numerical positive for each element `x_i` of input array `x`.
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -1350,7 +1376,7 @@ Args:
         Default: "K".
 Return:
     usm_ndarray:
-        An array containing the values of `x`.
+        An array containing the positive of `x`.
 """
 
 positive = UnaryElementwiseFunc(
@@ -1371,8 +1397,9 @@ Args:
         Second input array, also expected to have a numeric data type.
 Returns:
     usm_ndarray:
-        an array containing the element-wise result. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the bases in `x1` raised to the exponents in `x2`
+        element-wise. The data type of the returned array is determined by the
+        Type Promotion Rules.
 """
 pow = BinaryElementwiseFunc(
     "pow",
@@ -1390,17 +1417,16 @@ Computes projection of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a complex data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise projection.
-        The returned array has the same data type as `x`.
 """
 
 proj = UnaryElementwiseFunc(
@@ -1415,18 +1441,18 @@ Computes real part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise real component of input.
         If the input is a real-valued data type, the returned array has
-        the same datat type. If the input is a complex floating-point
+        the same data type. If the input is a complex floating-point
         data type, the returned array has a floating-point data type
         with the same floating-point precision as complex input.
 """
@@ -1451,14 +1477,15 @@ Args:
         Second input array, also expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
     usm_ndarray:
-        an array containing the element-wise remainders. The data type of
-        the returned array is determined by the Type Promotion Rules.
+        An array containing the element-wise remainders. Each remainder has the
+        same sign as respective element `x2_i`. The data type of the returned
+        array is determined by the Type Promotion Rules.
 """
 remainder = BinaryElementwiseFunc(
     "remainder",
@@ -1475,19 +1502,21 @@ round(x, out=None, order='K')
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
 
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
+
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise rounded value. The data type
-        of the returned array is determined by the Type Promotion Rules.
+    usm_ndarray:
+        An array containing the element-wise rounded values.
 """
 
 round = UnaryElementwiseFunc(
@@ -1509,14 +1538,15 @@ Args:
         Input array, expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise results. The data type of the
-        returned array is determined by the Type Promotion Rules.
+    usm_ndarray:
+        An array containing the element-wise result of the signum function. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
 """
 
 sign = UnaryElementwiseFunc(
@@ -1532,16 +1562,16 @@ input array `x` is set.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a numeric data type.
+        Input array, expected to have a real-valued floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise results. The returned array
+    usm_ndarray:
+        An array containing the element-wise signbit results. The returned array
         must have a data type of `bool`.
 """
 
@@ -1557,15 +1587,15 @@ Computes sine for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise sine. The data type of the
         returned array is determined by the Type Promotion Rules.
 """
@@ -1580,15 +1610,15 @@ Computes hyperbolic sine for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic sine. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1601,21 +1631,21 @@ sinh = UnaryElementwiseFunc(
 _square_docstring_ = """
 square(x, out=None, order='K')
 
-Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Squares each element `x_i` of input array `x`.
+
 Args:
     x (usm_ndarray):
         Input array, expected to have numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
     usm_ndarray:
-        An array containing the square `x`.
-        The data type of the returned array is determined by
-        the Type Promotion Rules.
+        An array containing the element-wise squares of `x`. The data type of
+        the returned array is determined by the Type Promotion Rules.
 """
 
 square = UnaryElementwiseFunc(
@@ -1626,22 +1656,22 @@ square = UnaryElementwiseFunc(
 _sqrt_docstring_ = """
 sqrt(x, out=None, order='K')
 
-Computes positive square-root for each element `x_i` for input array `x`.
+Computes the positive square-root for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise positive square-root.
-        The data type of the returned array is determined by
-        the Type Promotion Rules.
+    usm_ndarray:
+        An array containing the element-wise positive square-roots of `x`. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
 """
 
 sqrt = UnaryElementwiseFunc(
@@ -1657,17 +1687,17 @@ array `x1` and the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a numeric data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a numeric data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise differences. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1680,7 +1710,6 @@ subtract = BinaryElementwiseFunc(
     acceptance_fn=_acceptance_fn_subtract,
 )
 
-
 # U34: ==== TAN         (x)
 _tan_docstring = """
 tan(x, out=None, order='K')
@@ -1689,15 +1718,15 @@ Computes tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise tangent. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1712,15 +1741,15 @@ Computes hyperbolic tangent for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a floating-point data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise hyperbolic tangent. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1734,21 +1763,22 @@ _trunc_docstring = """
 trunc(x, out=None, order='K')
 
 Returns the truncated value for each element `x_i` for input array `x`.
+
 The truncated value of the scalar `x` is the nearest integer i which is
- closer to zero than `x` is. In short, the fractional part of the
- signed number `x` is discarded.
+closer to zero than `x` is. In short, the fractional part of the
+signed number `x` is discarded.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array, expected to have a real-valued data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the result of element-wise division. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1761,24 +1791,26 @@ trunc = UnaryElementwiseFunc(
 _hypot_docstring_ = """
 hypot(x1, x2, out=None, order='K')
 
-Calculates the ratio for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
+Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
+input arrays `x1` and `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have numeric data type.
+        First input array, expected to have a real-valued floating-point data
+        type.
     x2 (usm_ndarray):
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a real-valued floating-point
+        data type.
     out ({None, usm_ndarray}, optional):
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
     order ("C","F","A","K", optional):
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
-        An array containing the element-wise truncated value of input array.
-        The returned array has the same data type as `x`.
+    usm_ndarray:
+        An array containing the element-wise hypotenuse. The data type
+        of the returned array is determined by the Type Promotion Rules.
 """
 
 hypot = BinaryElementwiseFunc(
@@ -1802,7 +1834,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise positive cube-root.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -1829,7 +1861,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise base-2 exponentials.
         The data type of the returned array is determined by
         the Type Promotion Rules.
@@ -1860,7 +1892,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise results. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
@@ -1888,7 +1920,7 @@ Args:
         Memory layout of the newly output array, if parameter `out` is `None`.
         Default: "K".
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise reciprocal square-root.
         The returned array has a floating-point data type determined by
         the Type Promotion Rules.
