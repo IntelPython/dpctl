@@ -37,7 +37,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "kernels/boolean_reductions.hpp"
 #include "kernels/reductions.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
@@ -1074,7 +1073,9 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
 
 /*! @brief Template implementing Python API for boolean reductions over an axis
  */
-template <typename contig_dispatchT, typename strided_dispatchT>
+template <typename contig_dispatchT,
+          typename strided_dispatchT,
+          typename atomic_support_fnT>
 std::pair<sycl::event, sycl::event>
 py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
                      int trailing_dims_to_reduce,
@@ -1083,7 +1084,8 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
                      const std::vector<sycl::event> &depends,
                      const contig_dispatchT &axis1_contig_dispatch_vector,
                      const contig_dispatchT &axis0_contig_dispatch_vector,
-                     const strided_dispatchT &strided_dispatch_vector)
+                     const strided_dispatchT &strided_dispatch_vector,
+                     const atomic_support_fnT check_atomic_support)
 {
     int src_nd = src.get_ndim();
     int iter_nd = src_nd - trailing_dims_to_reduce;
@@ -1152,7 +1154,7 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
     const auto &ctx = exec_q.get_context();
     auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
 
-    bool supports_atomics = check_atomic_support[dst_typeid](exec_q, usm_type);
+    bool supports_atomics = check_atomic_support(exec_q, usm_type);
     if (!supports_atomics) {
         throw py::value_error(
             "This reduction is not supported for this device and usm_type.");

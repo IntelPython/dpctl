@@ -326,6 +326,32 @@ struct GetIdentity<Op, T, std::enable_if_t<IsHypot<T, Op>::value>>
     static constexpr T value = 0;
 };
 
+// Logical_And
+
+template <typename T, class Op>
+using IsLogicalAnd =
+    std::bool_constant<std::is_same_v<Op, sycl::logical_and<T>> ||
+                       std::is_same_v<Op, std::logical_and<T>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsLogicalAnd<T, Op>::value>>
+{
+    static constexpr T value = static_cast<T>(1);
+};
+
+// Logical_Or
+
+template <typename T, class Op>
+using IsLogicalOr =
+    std::bool_constant<std::is_same_v<Op, sycl::logical_or<T>> ||
+                       std::is_same_v<Op, std::logical_or<T>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsLogicalOr<T, Op>::value>>
+{
+    static constexpr T value = static_cast<T>(0);
+};
+
 // Identity
 
 template <typename Op, typename T, typename = void> struct Identity

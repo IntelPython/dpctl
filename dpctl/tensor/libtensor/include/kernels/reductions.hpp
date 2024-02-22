@@ -123,7 +123,16 @@ public:
             const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            outT val;
+            if constexpr (std::is_same_v<ReductionOp,
+                                         sycl::logical_and<outT>> ||
+                          std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+            {
+                val = convert_impl<bool, argT>(inp_[inp_offset]);
+            }
+            else {
+                val = convert_impl<outT, argT>(inp_[inp_offset]);
+            }
             red_val = reduction_op_(red_val, val);
         }
 
@@ -206,15 +215,37 @@ public:
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            outT val;
+            if constexpr (std::is_same_v<ReductionOp,
+                                         sycl::logical_and<outT>> ||
+                          std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+            {
+                // handle nans
+                val = convert_impl<bool, argT>(inp_[inp_offset]);
+            }
+            else {
+                val = convert_impl<outT, argT>(inp_[inp_offset]);
+            }
 
             local_red_val = reduction_op_(local_red_val, val);
         }
 
         auto work_group = it.get_group();
         // This only works if reduction_op_ is from small set of operators
-        outT red_val_over_wg = sycl::reduce_over_group(
-            work_group, local_red_val, identity_, reduction_op_);
+        outT red_val_over_wg;
+        if constexpr (std::is_same_v<ReductionOp, sycl::logical_and<outT>>) {
+            red_val_over_wg = static_cast<outT>(
+                sycl::all_of_group(work_group, local_red_val));
+        }
+        else if constexpr (std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+        {
+            red_val_over_wg = static_cast<outT>(
+                sycl::any_of_group(work_group, local_red_val));
+        }
+        else {
+            red_val_over_wg = sycl::reduce_over_group(work_group, local_red_val,
+                                                      identity_, reduction_op_);
+        }
 
         if (work_group.leader()) {
             sycl::atomic_ref<outT, sycl::memory_order::relaxed,
@@ -231,6 +262,14 @@ public:
             else if constexpr (std::is_same_v<ReductionOp, sycl::minimum<outT>>)
             {
                 res_ref.fetch_min(red_val_over_wg);
+            }
+            else if constexpr (std::is_same_v<ReductionOp,
+                                              sycl::logical_and<outT>>) {
+                res_ref.fetch_and(red_val_over_wg);
+            }
+            else if constexpr (std::is_same_v<ReductionOp,
+                                              sycl::logical_or<outT>>) {
+                res_ref.fetch_or(red_val_over_wg);
             }
             else {
                 outT read_val = res_ref.load();
@@ -316,7 +355,17 @@ public:
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
             using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+            outT val;
+            if constexpr (std::is_same_v<ReductionOp,
+                                         sycl::logical_and<outT>> ||
+                          std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+            {
+                // handle nans
+                val = convert_impl<bool, argT>(inp_[inp_offset]);
+            }
+            else {
+                val = convert_impl<outT, argT>(inp_[inp_offset]);
+            }
 
             local_red_val = reduction_op_(local_red_val, val);
         }
@@ -330,11 +379,32 @@ public:
                              sycl::memory_scope::device,
                              sycl::access::address_space::global_space>
                 res_ref(out_[out_iter_offset]);
-            outT read_val = res_ref.load();
-            outT new_val{};
-            do {
-                new_val = reduction_op_(read_val, red_val_over_wg);
-            } while (!res_ref.compare_exchange_strong(read_val, new_val));
+            if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
+                res_ref += red_val_over_wg;
+            }
+            else if constexpr (std::is_same_v<ReductionOp, sycl::maximum<outT>>)
+            {
+                res_ref.fetch_max(red_val_over_wg);
+            }
+            else if constexpr (std::is_same_v<ReductionOp, sycl::minimum<outT>>)
+            {
+                res_ref.fetch_min(red_val_over_wg);
+            }
+            else if constexpr (std::is_same_v<ReductionOp,
+                                              sycl::logical_and<outT>>) {
+                res_ref.fetch_and(red_val_over_wg);
+            }
+            else if constexpr (std::is_same_v<ReductionOp,
+                                              sycl::logical_or<outT>>) {
+                res_ref.fetch_or(red_val_over_wg);
+            }
+            else {
+                outT read_val = res_ref.load();
+                outT new_val{};
+                do {
+                    new_val = reduction_op_(read_val, red_val_over_wg);
+                } while (!res_ref.compare_exchange_strong(read_val, new_val));
+            }
         }
     }
 };
@@ -406,7 +476,18 @@ public:
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
                 using dpctl::tensor::type_utils::convert_impl;
-                outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+                outT val;
+                if constexpr (std::is_same_v<ReductionOp,
+                                             sycl::logical_and<outT>> ||
+                              std::is_same_v<ReductionOp,
+                                             sycl::logical_or<outT>>)
+                {
+                    // handle nans
+                    val = convert_impl<bool, argT>(inp_[inp_offset]);
+                }
+                else {
+                    val = convert_impl<outT, argT>(inp_[inp_offset]);
+                }
 
                 local_red_val = reduction_op_(local_red_val, val);
             }
@@ -414,8 +495,18 @@ public:
 
         auto work_group = it.get_group();
         // This only works if reduction_op_ is from small set of operators
-        outT red_val_over_wg = sycl::reduce_over_group(
-            work_group, local_red_val, identity_, reduction_op_);
+        outT red_val_over_wg;
+        if constexpr (std::is_same_v<ReductionOp, sycl::logical_and<outT>>) {
+            red_val_over_wg = sycl::all_of_group(work_group, local_red_val);
+        }
+        else if constexpr (std::is_same_v<ReductionOp, sycl::logical_or<outT>>)
+        {
+            red_val_over_wg = sycl::any_of_group(work_group, local_red_val);
+        }
+        else {
+            red_val_over_wg = sycl::reduce_over_group(work_group, local_red_val,
+                                                      identity_, reduction_op_);
+        }
 
         if (work_group.leader()) {
             // each group writes to a different memory location
@@ -497,7 +588,18 @@ public:
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
                 using dpctl::tensor::type_utils::convert_impl;
-                outT val = convert_impl<outT, argT>(inp_[inp_offset]);
+                outT val;
+                if constexpr (std::is_same_v<ReductionOp,
+                                             sycl::logical_and<outT>> ||
+                              std::is_same_v<ReductionOp,
+                                             sycl::logical_or<outT>>)
+                {
+                    // handle nans
+                    val = convert_impl<bool, argT>(inp_[inp_offset]);
+                }
+                else {
+                    val = convert_impl<outT, argT>(inp_[inp_offset]);
+                }
 
                 local_red_val = reduction_op_(local_red_val, val);
             }
