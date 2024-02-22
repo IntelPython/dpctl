@@ -214,6 +214,9 @@ template <typename T, class Op>
 using IsMaximum = std::bool_constant<std::is_same_v<Op, sycl::maximum<T>> ||
                                      std::is_same_v<Op, Maximum<T>>>;
 
+template <typename T, class Op>
+using IsSyclMaximum = std::bool_constant<std::is_same_v<Op, sycl::maximum<T>>>;
+
 template <typename Op, typename T>
 struct GetIdentity<Op, T, std::enable_if_t<IsMaximum<T, Op>::value>>
 {
@@ -244,6 +247,9 @@ template <typename T, class Op>
 using IsMinimum = std::bool_constant<std::is_same_v<Op, sycl::minimum<T>> ||
                                      std::is_same_v<Op, Minimum<T>>>;
 
+template <typename T, class Op>
+using IsSyclMinimum = std::bool_constant<std::is_same_v<Op, sycl::minimum<T>>>;
+
 template <typename Op, typename T>
 struct GetIdentity<Op, T, std::enable_if_t<IsMinimum<T, Op>::value>>
 {
@@ -273,12 +279,20 @@ struct GetIdentity<Op,
 template <typename T, class Op>
 using IsPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>> ||
                                   std::is_same_v<Op, std::plus<T>>>;
+
+template <typename T, class Op>
+using IsSyclPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>>>;
+
 // Multiplies
 
 template <typename T, class Op>
 using IsMultiplies =
     std::bool_constant<std::is_same_v<Op, sycl::multiplies<T>> ||
                        std::is_same_v<Op, std::multiplies<T>>>;
+
+template <typename T, class Op>
+using IsSyclMultiplies =
+    std::bool_constant<std::is_same_v<Op, sycl::multiplies<T>>>;
 
 template <typename Op, typename T>
 struct GetIdentity<Op, T, std::enable_if_t<IsMultiplies<T, Op>::value>>
@@ -333,6 +347,10 @@ using IsLogicalAnd =
     std::bool_constant<std::is_same_v<Op, sycl::logical_and<T>> ||
                        std::is_same_v<Op, std::logical_and<T>>>;
 
+template <typename T, class Op>
+using IsSyclLogicalAnd =
+    std::bool_constant<std::is_same_v<Op, sycl::logical_and<T>>>;
+
 template <typename Op, typename T>
 struct GetIdentity<Op, T, std::enable_if_t<IsLogicalAnd<T, Op>::value>>
 {
@@ -345,6 +363,10 @@ template <typename T, class Op>
 using IsLogicalOr =
     std::bool_constant<std::is_same_v<Op, sycl::logical_or<T>> ||
                        std::is_same_v<Op, std::logical_or<T>>>;
+
+template <typename T, class Op>
+using IsSyclLogicalOr =
+    std::bool_constant<std::is_same_v<Op, sycl::logical_or<T>>>;
 
 template <typename Op, typename T>
 struct GetIdentity<Op, T, std::enable_if_t<IsLogicalOr<T, Op>::value>>

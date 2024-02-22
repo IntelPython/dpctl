@@ -371,19 +371,23 @@ public:
                              sycl::memory_scope::device,
                              sycl::access::address_space::global_space>
                 res_ref(out_[out_iter_offset]);
-            if constexpr (su_ns::IsPlus<outT, ReductionOp>::value) {
+            // retain these checks in case a reduce_over_group work-around is
+            // needed
+            if constexpr (su_ns::IsSyclPlus<outT, ReductionOp>::value) {
                 res_ref += red_val_over_wg;
             }
-            else if constexpr (su_ns::IsMaximum<outT, ReductionOp>::value) {
+            else if constexpr (su_ns::IsSyclMaximum<outT, ReductionOp>::value) {
                 res_ref.fetch_max(red_val_over_wg);
             }
-            else if constexpr (su_ns::IsMinimum<outT, ReductionOp>::value) {
+            else if constexpr (su_ns::IsSyclMinimum<outT, ReductionOp>::value) {
                 res_ref.fetch_min(red_val_over_wg);
             }
-            else if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value) {
+            else if constexpr (su_ns::IsSyclLogicalAnd<outT,
+                                                       ReductionOp>::value) {
                 res_ref.fetch_and(red_val_over_wg);
             }
-            else if constexpr (su_ns::IsLogicalOr<outT, ReductionOp>::value) {
+            else if constexpr (su_ns::IsSyclLogicalOr<outT, ReductionOp>::value)
+            {
                 res_ref.fetch_or(red_val_over_wg);
             }
             else {
