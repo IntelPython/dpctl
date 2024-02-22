@@ -1148,6 +1148,16 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
             "Unexpected data type of destination array, expecting 'int32'");
     }
 
+    void *data_ptr = dst.get_data();
+    const auto &ctx = exec_q.get_context();
+    auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
+
+    bool supports_atomics = check_atomic_support[dst_typeid](exec_q, usm_type);
+    if (!supports_atomics) {
+        throw py::value_error(
+            "This reduction is not supported for this device and usm_type.");
+    }
+
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_src_f_contig = src.is_f_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
