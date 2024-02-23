@@ -225,8 +225,17 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
     auto P = unwrap<platform>(PRef);
     if (P) {
-        const auto &default_ctx = P->ext_oneapi_get_default_context();
-        return wrap<context>(new context(default_ctx));
+#ifdef SYCL_EXT_ONEAPI_DEFAULT_CONTEXT
+        try {
+            const auto &default_ctx = P->ext_oneapi_get_default_context();
+            return wrap<context>(new context(default_ctx));
+        } catch (const std::exception &ex) {
+            error_handler(ex, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+#else
+        return nullptr;
+#endif
     }
     else {
         error_handler(
