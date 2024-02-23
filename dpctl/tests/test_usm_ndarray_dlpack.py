@@ -197,3 +197,35 @@ def test_from_dlpack_fortran_contig_array_roundtripping():
 
     assert dpt.all(dpt.equal(ar2d_f, ar2d_r))
     assert dpt.all(dpt.equal(ar2d_c, ar2d_r))
+
+
+def test_dlpack_from_subdevice():
+    """
+    This test checks that array allocated on a sub-device,
+    with memory bound to platform-default SyclContext can be
+    exported and imported via DLPack.
+    """
+    n = 64
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    try:
+        sdevs = dev.create_sub_devices(partition="next_partitionable")
+    except dpctl.SyclSubDeviceCreationError:
+        sdevs = None
+    try:
+        sdevs = (
+            dev.create_sub_devices(partition=[1, 1]) if sdevs is None else sdevs
+        )
+    except dpctl.SyclSubDeviceCreationError:
+        pytest.skip("Default device can not be partitioned")
+    assert isinstance(sdevs, list) and len(sdevs) > 0
+    try:
+        q = dpctl.SyclQueue(sdevs[0].sycl_platform.default_context, sdevs[0])
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default device can not be partitioned")
+
+    ar = dpt.arange(n, dtype=dpt.int32, sycl_queue=q)
+    ar2 = dpt.from_dlpack(ar)
+    assert ar2.sycl_device == sdevs[0]
