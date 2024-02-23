@@ -222,9 +222,13 @@ def test_dlpack_from_subdevice():
         pytest.skip("Default device can not be partitioned")
     assert isinstance(sdevs, list) and len(sdevs) > 0
     try:
-        q = dpctl.SyclQueue(sdevs[0].sycl_platform.default_context, sdevs[0])
+        ctx = sdevs[0].sycl_platform.default_context
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Platform's default_context is not available")
+    try:
+        q = dpctl.SyclQueue(ctx, sdevs[0])
     except dpctl.SyclQueueCreationError:
-        pytest.skip("Default device can not be partitioned")
+        pytest.skip("Queue could not be created")
 
     ar = dpt.arange(n, dtype=dpt.int32, sycl_queue=q)
     ar2 = dpt.from_dlpack(ar)
