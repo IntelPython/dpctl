@@ -267,14 +267,20 @@ cdef class SyclPlatform(_SyclPlatform):
         """Returns the default platform context for this platform
 
         Returns:
-            SyclContext: The default context for the platform.
+            SyclContext
+                The default context for the platform.
+        Raises:
+            SyclContextCreationError
+                If default_context is not supported
         """
         cdef DPCTLSyclContextRef CRef = (
             DPCTLPlatform_GetDefaultContext(self._platform_ref)
         )
 
         if (CRef == NULL):
-            raise RuntimeError("Getting default error ran into a problem")
+            raise SyclContextCreationError(
+                "Getting default_context ran into a problem"
+            )
         else:
             return SyclContext._create(CRef)
 
