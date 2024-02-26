@@ -18,6 +18,7 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+from .._sycl_device cimport SyclDevice
 from ._usmarray cimport usm_ndarray
 
 
@@ -31,6 +32,8 @@ cpdef object to_dlpack_capsule(usm_ndarray array) except +
 cpdef usm_ndarray from_dlpack_capsule(object dltensor) except +
 
 cpdef from_dlpack(array)
+
+cdef int get_parent_device_ordinal_id(SyclDevice dev) except *
 
 cdef class DLPackCreationError(Exception):
     """
