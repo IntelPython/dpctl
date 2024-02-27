@@ -11,6 +11,7 @@ permissions: read-all
 env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
+  TEST_ENV_NAME: test_dpctl
   VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpctl'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
 
@@ -155,7 +156,7 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -176,13 +177,13 @@ jobs:
           export CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export TEST_DEPENDENCIES="pytest pytest-cov cython"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python=${{ matrix.python }} ${CHANNELS}
+          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python=${{ matrix.python }} ${CHANNELS}
           # Test installed packages
-          conda list -n test_dpctl
+          conda list -n ${{ env.TEST_ENV_NAME }}
       - name: Smoke test
         run: |
           . $CONDA/etc/profile.d/conda.sh
-          conda activate test_dpctl
+          conda activate ${{ env.TEST_ENV_NAME }}
           python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
       - name: Install gdb
         run: |
@@ -191,14 +192,19 @@ jobs:
       - name: Run test_elementwise under gdb
         run: |
           . $CONDA/etc/profile.d/conda.sh
-          conda activate test_dpctl
+          conda activate ${{ env.TEST_ENV_NAME }}
           gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
+      - name: Create test temp dir
+        # create temporary empty folder to runs tests from
+        # https://github.com/pytest-dev/pytest/issues/11904
+        run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
       - name: Run tests
+        working-directory: ${{ github.workspace }}/test_tmp
         env:
           SYCL_CACHE_PERSISTENT: 1
         run: |
           . $CONDA/etc/profile.d/conda.sh
-          conda activate test_dpctl
+          conda activate ${{ env.TEST_ENV_NAME }}
           python -m pytest -v --pyargs $MODULE_NAME
 
   test_windows:
@@ -227,7 +233,7 @@ jobs:
           auto-update-conda: true
           conda-build-version: '*'
           miniconda-version: 'latest'
-          activate-environment: dpctl_test
+          activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
@@ -257,7 +263,7 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install -n dpctl_test ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
       - name: Display lockfile content
         shell: pwsh
         run: Get-Content -Path .\lockfile
@@ -274,7 +280,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install opencl_rt
         shell: cmd /C CALL {0}
-        run: conda install -n dpctl_test opencl_rt -c intel --override-channels
+        run: conda install -n ${{ env.TEST_ENV_NAME }} opencl_rt -c intel --override-channels
       - name: Install dpctl
         shell: cmd /C CALL {0}
         run: |
@@ -287,13 +293,13 @@ jobs:
              SET PACKAGE_VERSION=%%F
           )
           SET "TEST_DEPENDENCIES=pytest pytest-cov cython"
-          conda install -n dpctl_test ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
           echo "Value of CONDA enviroment variable was: " %CONDA%
           echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
-          conda info && conda list -n dpctl_test
+          conda info && conda list -n ${{ env.TEST_ENV_NAME }}
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
@@ -305,17 +311,27 @@ jobs:
       - name: Smoke test, step 1
         shell: cmd /C CALL {0}
         run: >-
-          conda activate dpctl_test && python -c "import sys; print(sys.executable)"
+          conda activate ${{ env.TEST_ENV_NAME }} && python -c "import sys; print(sys.executable)"
       - name: Smoke test, step 2
         shell: cmd /C CALL {0}
         run: >-
-          conda activate dpctl_test && python -m dpctl -f
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
+      - name: Create empty temporary directory to run tests from
+        shell: cmd /C CALL {0}
+        # create temporary empty folder to runs tests from
+        # https://github.com/pytest-dev/pytest/issues/11904
+        run: >-
+          mkdir "${{ env.workdir }}\test_tmp"
+      - name: List content of workdir folder
+        shell: cmd /C CALL {0}
+        run: dir "${{ env.workdir }}"
       - name: Run tests
         shell: cmd /C CALL {0}
         env:
           SYCL_CACHE_PERSISTENT: 1
+        working-directory: ${{ env.workdir }}\test_tmp
         run: >-
-          conda activate dpctl_test && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux
@@ -405,6 +421,8 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c conda-forge --override-channels
+      EXAMPLES_ENV_NAME: examples
+      BUILD_ENV_NAME: build_env
 
     steps:
       - name: Install conda-build
@@ -454,24 +472,24 @@ jobs:
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
-          conda create -n examples -y pytest python=${{ matrix.python }} $CHANNELS
-          conda install -n examples -y cmake">=3.22" $CHANNELS || exit 1
-          conda install -n examples -y ninja $CHANNELS || exit 1
-          conda install -n examples -y pybind11 cython scikit-build $CHANNELS || exit 1
-          conda install -n examples -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
-          conda create -y -n build_env $CHANNELS gcc_linux-64 gxx_linux-64 ${{ env.DPCPP_CMPLR }} sysroot_linux-64">=2.28"
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} $CHANNELS
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake">=3.22" $CHANNELS || exit 1
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ninja $CHANNELS || exit 1
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
+          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 ${{ env.DPCPP_CMPLR }} sysroot_linux-64">=2.28"
       - name: Install dpctl
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
           CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c intel -c conda-forge --override-channels"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda install -n examples -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp">=0.10.1" || exit 1
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp || exit 1
       - name: Build and run examples of pybind11 extensions
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda activate examples
+          conda activate ${{ env.EXAMPLES_ENV_NAME }}
           conda list
           cd examples/pybind11
           for d in $(find . -maxdepth 1 -type d -not -path ".")
@@ -498,13 +516,13 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda activate examples
+          conda activate ${{ env.EXAMPLES_ENV_NAME }}
           conda list
           cd examples/cython
           for d in $(find . -maxdepth 1 -type d -not -path ".")
           do
             pushd $d
-            conda activate --stack build_env
+            conda activate --stack ${{ env.BUILD_ENV_NAME }}
             python setup.py build_ext --inplace || exit 1
             conda deactivate
             python -m pytest tests || exit 1
@@ -514,13 +532,13 @@ jobs:
         shell: bash -l {0}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda activate examples
+          conda activate ${{ env.EXAMPLES_ENV_NAME }}
           conda list
           cd examples/c
           for d in $(find . -maxdepth 1 -type d -not -path ".")
           do
             pushd $d
-            conda activate --stack build_env
+            conda activate --stack ${{ env.BUILD_ENV_NAME }}
             python setup.py build_ext --inplace || exit 1
             conda deactivate
             python -m pytest tests || exit 1
@@ -531,7 +549,7 @@ jobs:
         run: |
           cd examples/python
           source $CONDA/etc/profile.d/conda.sh
-          conda activate examples
+          conda activate ${{ env.EXAMPLES_ENV_NAME }}
           for script in $(find . \( -not -name "_*" -and -name "*.py" \))
           do
             echo "Executing ${script}"
@@ -599,7 +617,7 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -619,14 +637,14 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n test_dpctl $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
+          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} pytest python=${{ matrix.python }} $CHANNELS
           # Test installed packages
           conda list
       - name: Install array API test dependencies
         shell: bash -l {0}
         run: |
           . $CONDA/etc/profile.d/conda.sh
-          conda activate test_dpctl
+          conda activate ${{ env.TEST_ENV_NAME }}
           cd /home/runner/work/array-api-tests
           pip install -r requirements.txt
       - name: Install jq
@@ -641,7 +659,7 @@ jobs:
         run: |
           FILE=/home/runner/work/.report.json
           . $CONDA/etc/profile.d/conda.sh
-          conda activate test_dpctl
+          conda activate ${{ env.TEST_ENV_NAME }}
           cd /home/runner/work/array-api-tests
           ${CONDA_PREFIX}/bin/python -c "import dpctl; dpctl.lsplatform()"
           export ARRAY_API_TESTS_MODULE=dpctl.tensor
