@@ -292,7 +292,7 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          SET "TEST_DEPENDENCIES=pytest pytest-cov cython"
+          SET TEST_DEPENDENCIES=pytest"<8" pytest-cov cython
           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
       - name: Report content of test environment
         shell: cmd /C CALL {0}
