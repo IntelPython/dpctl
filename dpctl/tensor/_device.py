@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import dpctl
+from dpctl._sycl_device_factory import _cached_default_device
 from dpctl._sycl_queue_manager import get_device_cached_queue
 
 __doc__ = "Implementation of array API mandated Device class"
@@ -73,7 +74,7 @@ class Device:
                 )
         else:
             if dev is None:
-                _dev = dpctl.SyclDevice()
+                _dev = _cached_default_device()
             else:
                 _dev = dpctl.SyclDevice(dev)
             obj.sycl_queue_ = get_device_cached_queue(_dev)
