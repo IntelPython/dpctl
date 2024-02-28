@@ -1272,10 +1272,13 @@ sycl::event _gemm_batch_nm_impl(sycl::queue &exec_q,
     const std::uint32_t max_sg_size = krn.template get_info<
         sycl::info::kernel_device_specific::max_sub_group_size>(dev);
 
+    const size_t k_wg_sz = krn.template get_info<
+        sycl::info::kernel_device_specific::work_group_size>(dev);
+
     // Limit work-group size
     constexpr size_t wg_sz_limit(2048);
-    const size_t max_wg_sz = std::min<size_t>(
-        dev.get_info<sycl::info::device::max_work_group_size>(), wg_sz_limit);
+    const size_t max_wg_sz = std::min(wg_sz_limit, k_wg_sz);
+
     const std::uint32_t max_subgroups_per_wg =
         static_cast<std::uint32_t>(max_wg_sz / max_sg_size);
 
