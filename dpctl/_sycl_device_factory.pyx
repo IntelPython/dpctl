@@ -45,6 +45,8 @@ from ._backend cimport (  # noqa: E211
     _device_type,
 )
 
+from contextvars import ContextVar
+
 from ._sycl_device import SyclDeviceCreationError
 from .enum_types import backend_type
 from .enum_types import device_type as device_type_t
@@ -59,6 +61,7 @@ __all__ = [
     "has_cpu_devices",
     "has_gpu_devices",
     "has_accelerator_devices",
+    "_cached_default_device",
 ]
 
 
@@ -355,3 +358,48 @@ cpdef SyclDevice select_gpu_device():
         raise SyclDeviceCreationError("Device unavailable.")
     Device = SyclDevice._create(DRef)
     return Device
+
+
+cdef class _DefaultDeviceCache:
+    cdef dict __device_map__
+
+    def __cinit__(self):
+        self.__device_map__ = dict()
+
+    cdef get_or_create(self):
+        """Return instance of SyclDevice and indicator if cache
+        has been modified"""
+        key = 0
+        if key in self.__device_map__:
+            return self.__device_map__[key], False
+        dev = select_default_device()
+        self.__device_map__[key] = dev
+        return dev, True
+
+    cdef _update_map(self, dev_map):
+        self.__device_map__.update(dev_map)
+
+    def __copy__(self):
+        cdef _DefaultDeviceCache _copy = _DefaultDeviceCache.__new__(
+            _DefaultDeviceCache)
+        _copy._update_map(self.__device_map__)
+        return _copy
+
+
+_global_default_device_cache = ContextVar(
+    'global_default_device_cache',
+    default=_DefaultDeviceCache()
+)
+
+
+cpdef SyclDevice _cached_default_device():
+    """Returns a cached devide selected by default selector.
+
+    Returns:
+        :class:`dpctl.SyclDevice`: A cached default-selected SYCL device.
+
+    """
+    cdef _DefaultDeviceCache _cache = _global_default_device_cache.get()
+    d_, changed_ = _cache.get_or_create()
+    if changed_: _global_default_device_cache.set(_cache)
+    return d_
