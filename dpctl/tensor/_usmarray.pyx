@@ -36,6 +36,8 @@ cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 cimport dpctl.tensor._dlpack as c_dlpack
 
+from .._sycl_device_factory cimport _cached_default_device
+
 import dpctl.tensor._flags as _flags
 from dpctl.tensor._tensor_impl import default_device_fp_type
 
@@ -208,7 +210,7 @@ cdef class usm_ndarray:
             if q is not None:
                 dtype = default_device_fp_type(q)
             else:
-                dev = dpctl.select_default_device()
+                dev = _cached_default_device()
                 dtype = "f8" if dev.has_aspect_fp64 else "f4"
         typenum = dtype_to_typenum(dtype)
         if (typenum < 0):
