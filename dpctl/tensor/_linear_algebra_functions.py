@@ -154,11 +154,7 @@ def tensordot(x1, x2, axes=2):
         same_shapes = True
         for i in range(n_axes1):
             axis1 = axes1[i]
-            if axis1 < 0:
-                raise ValueError("`axes` must be non-negative")
             axis2 = axes2[i]
-            if axis2 < 0:
-                raise ValueError("`axes` must be non-negative")
             same_shapes = same_shapes and (x1_shape[axis1] == x2_shape[axis2])
         if not same_shapes:
             raise ValueError("shape mismatch in contracted `tensordot` axes")
@@ -361,7 +357,7 @@ def vecdot(x1, x2, axis=-1):
     elif x2_nd > x1_nd:
         x1_shape = (1,) * (x2_nd - x1_nd) + x1_shape
         x1_nd = len(x1_shape)
-    axis = normalize_axis_index(operator.index(axis), x1_nd)
+    axis = normalize_axis_index(operator.index(axis), min(x1_nd, x2_nd))
     if x1_shape[axis] != x2_shape[axis]:
         raise ValueError(
             "given axis must have the same shape for `x1` and `x2`"
@@ -427,7 +423,7 @@ def vecdot(x1, x2, axis=-1):
         ht_dot_ev, _ = tli._dot(
             x1=x1,
             x2=x2,
-            batch_dims=len(x1.shape[:-1]),
+            batch_dims=len(res_sh),
             x1_outer_dims=0,
             x2_outer_dims=0,
             inner_dims=1,
@@ -471,7 +467,7 @@ def vecdot(x1, x2, axis=-1):
         ht_dot_ev, _ = tli._dot(
             x1=x1,
             x2=buf2,
-            batch_dims=len(x1.shape[:-1]),
+            batch_dims=len(res_sh),
             x1_outer_dims=0,
             x2_outer_dims=0,
             inner_dims=1,
@@ -513,7 +509,7 @@ def vecdot(x1, x2, axis=-1):
         ht_dot_ev, _ = tli._dot(
             x1=buf1,
             x2=x2,
-            batch_dims=len(x1.shape[:-1]),
+            batch_dims=len(res_sh),
             x1_outer_dims=0,
             x2_outer_dims=0,
             inner_dims=1,
@@ -560,7 +556,7 @@ def vecdot(x1, x2, axis=-1):
     ht_dot_ev, _ = tli._dot(
         x1=buf1,
         x2=buf2,
-        batch_dims=len(x1.shape[:-1]),
+        batch_dims=len(res_sh),
         x1_outer_dims=0,
         x2_outer_dims=0,
         inner_dims=1,
