@@ -25,7 +25,7 @@ function(setup_coverage_generation)
     string(CONCAT PROFILE_FLAGS
         "-fprofile-instr-generate "
         "-fcoverage-mapping "
-#        "-fno-sycl-use-footer "
+        "-fno-sycl-use-footer "
 #        "-save-temps=obj "
     )
 
