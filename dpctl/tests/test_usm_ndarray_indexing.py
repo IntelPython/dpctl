@@ -164,7 +164,7 @@ def test_basic_slice10():
 
 
 def _all_equal(it1, it2):
-    return all(dpt.asnumpy(x) == dpt.asnumpy(y) for x, y in zip(it1, it2))
+    return all(bool(x == y) for x, y in zip(it1, it2))
 
 
 def test_advanced_slice1():
@@ -175,8 +175,6 @@ def test_advanced_slice1():
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == ii.shape
     assert y.strides == (1,)
-    # FIXME, once usm_ndarray.__equal__ is implemented,
-    # use of asnumpy should be removed
     assert _all_equal(
         (x[ii[k]] for k in range(ii.shape[0])),
         (y[k] for k in range(ii.shape[0])),
@@ -185,8 +183,6 @@ def test_advanced_slice1():
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == ii.shape
     assert y.strides == (1,)
-    # FIXME, once usm_ndarray.__equal__ is implemented,
-    # use of asnumpy should be removed
     assert _all_equal(
         (x[ii[k]] for k in range(ii.shape[0])),
         (y[k] for k in range(ii.shape[0])),
@@ -201,8 +197,6 @@ def test_advanced_slice1_negative_strides():
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == ii.shape
     assert y.strides == (1,)
-    # FIXME, once usm_ndarray.__equal__ is implemented,
-    # use of asnumpy should be removed
     assert _all_equal(
         (x[ii[k]] for k in range(ii.shape[0])),
         (y[k] for k in range(ii.shape[0])),
@@ -400,6 +394,16 @@ def test_advanced_slice13():
     assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
 
 
+def test_boolean_indexing_validation():
+    get_queue_or_skip()
+    x = dpt.zeros(10, dtype="i4")
+    ii = dpt.ones((2, 5), dtype="?")
+    with pytest.raises(IndexError):
+        x[ii]
+    with pytest.raises(IndexError):
+        x[ii[0, :]]
+
+
 def test_integer_indexing_1d():
     get_queue_or_skip()
     x = dpt.arange(10, dtype="i4")
@@ -480,6 +484,32 @@ def test_TrueFalse_indexing():
         y3 = x[..., ind]
         assert y3.shape == (n0, n1, 0)
         assert y3._pointer == x._pointer
+
+
+def test_mixed_index_getitem():
+    get_queue_or_skip()
+    x = dpt.reshape(dpt.arange(1000, dtype="i4"), (10, 10, 10))
+    i1b = dpt.ones(10, dtype="?")
+    info = x.__array_namespace__().__array_namespace_info__()
+    ind_dt = info.default_dtypes(x.device)["indexing"]
+    i0 = dpt.asarray([0, 2, 3], dtype=ind_dt)[:, dpt.newaxis]
+    i2 = dpt.asarray([3, 4, 7], dtype=ind_dt)[:, dpt.newaxis]
+    y = x[i0, i1b, i2]
+    assert y.shape == (3, dpt.sum(i1b, dtype="i8"))
+
+
+def test_mixed_index_setitem():
+    get_queue_or_skip()
+    x = dpt.reshape(dpt.arange(1000, dtype="i4"), (10, 10, 10))
+    i1b = dpt.ones(10, dtype="?")
+    info = x.__array_namespace__().__array_namespace_info__()
+    ind_dt = info.default_dtypes(x.device)["indexing"]
+    i0 = dpt.asarray([0, 2, 3], dtype=ind_dt)[:, dpt.newaxis]
+    i2 = dpt.asarray([3, 4, 7], dtype=ind_dt)[:, dpt.newaxis]
+    v_shape = (3, int(dpt.sum(i1b, dtype="i8")))
+    canary = 7
+    x[i0, i1b, i2] = dpt.full(v_shape, canary, dtype=x.dtype)
+    assert x[0, 0, 3] == canary
 
 
 @pytest.mark.parametrize(

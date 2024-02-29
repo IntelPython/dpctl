@@ -462,12 +462,16 @@ def test_ctor_buffer_kwarg():
     with pytest.raises(ValueError):
         dpt.usm_ndarray(10, buffer="invalid_param")
     Xusm = dpt.usm_ndarray((10, 5), dtype="c8")
+    Xusm[...] = 1
     X2 = dpt.usm_ndarray(Xusm.shape, buffer=Xusm, dtype=Xusm.dtype)
-    assert np.array_equal(
-        Xusm.usm_data.copy_to_host(), X2.usm_data.copy_to_host()
-    )
+    Horig_copy = Xusm.usm_data.copy_to_host()
+    H2_copy = X2.usm_data.copy_to_host()
+    assert np.array_equal(Horig_copy, H2_copy)
     with pytest.raises(ValueError):
         dpt.usm_ndarray(10, dtype="i4", buffer=dict())
+    # use device-specific default fp data type
+    X3 = dpt.usm_ndarray(Xusm.shape, buffer=Xusm)
+    assert np.array_equal(Horig_copy, X3.usm_data.copy_to_host())
 
 
 def test_usm_ndarray_props():
