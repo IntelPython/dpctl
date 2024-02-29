@@ -185,11 +185,11 @@ DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return nullptr;
     }
 
-    auto entry = cache.find(*Device);
+    const auto &entry = cache.find(*Device);
     if (entry != cache.end()) {
         context *ContextPtr = nullptr;
         try {
-            ContextPtr = new context(std::move(entry->second));
+            ContextPtr = new context(entry->second);
             CRef = wrap<context>(ContextPtr);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
