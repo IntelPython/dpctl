@@ -236,6 +236,55 @@ def test_main_library_dir():
     assert os.path.exists(dir_path)
 
 
+def _run_main_lsplatform(flags: list) -> subprocess.CompletedProcess:
+    status = subprocess.run(
+        [sys.executable, "-m", "dpctl"] + flags, capture_output=True
+    )
+    return status
+
+
+def _check_completed_process(cp: subprocess.CompletedProcess):
+    assert cp.returncode == 0
+    if cp.stdout:
+        assert cp.stdout.decode("utf-8").strip()
+    else:
+        # Listing may be empty due to no devices known to DPC++ RT
+        # or due to a bug in CPU RT
+        assert dpctl.get_num_devices() == 0 or (
+            dpctl.get_num_devices() == 1 and dpctl.has_cpu_devices()
+        )
+
+
+def _check_main_lsplatform(mode):
+    # List platform using subprocess
+    status = _run_main_lsplatform([mode])
+    _check_completed_process(status)
+
+
+def test_main_full_list():
+    _check_main_lsplatform("-f")
+
+
+def test_main_long_list():
+    _check_main_lsplatform("-l")
+
+
+def test_main_summary():
+    _check_main_lsplatform("-s")
+
+
+def test_main_warnings():
+    res = _run_main_lsplatform(["-s", "--includes"])
+    _check_completed_process(res)
+    assert "UserWarning" in res.stderr.decode("utf-8")
+    assert "is being ignored." in res.stderr.decode("utf-8")
+
+    res = _run_main_lsplatform(["-s", "--includes", "--cmakedir"])
+    _check_completed_process(res)
+    assert "UserWarning" in res.stderr.decode("utf-8")
+    assert "are being ignored." in res.stderr.decode("utf-8")
+
+
 def test_cmakedir():
     res = subprocess.run(
         [sys.executable, "-m", "dpctl", "--cmakedir"], capture_output=True
@@ -244,52 +293,3 @@ def test_cmakedir():
     assert res.stdout
     cmake_dir = res.stdout.decode("utf-8").strip()
     assert os.path.exists(os.path.join(cmake_dir, "dpctl-config.cmake"))
-
-
-def test_main_full_list():
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "-f"], capture_output=True
-    )
-    assert res.returncode == 0
-    if dpctl.get_num_devices() > 0:
-        assert res.stdout
-        assert res.stdout.decode("utf-8")
-
-
-def test_main_long_list():
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "-l"], capture_output=True
-    )
-    assert res.returncode == 0
-    if dpctl.get_num_devices() > 0:
-        assert res.stdout
-        assert res.stdout.decode("utf-8")
-
-
-def test_main_summary():
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "-s"], capture_output=True
-    )
-    assert res.returncode == 0
-    if dpctl.get_num_devices() > 0:
-        assert res.stdout
-        assert res.stdout.decode("utf-8")
-
-
-def test_main_warnings():
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "-s", "--includes"], capture_output=True
-    )
-    assert res.returncode == 0
-    assert res.stdout or dpctl.get_num_devices() == 0
-    assert "UserWarning" in res.stderr.decode("utf-8")
-    assert "is being ignored." in res.stderr.decode("utf-8")
-
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "-s", "--includes", "--cmakedir"],
-        capture_output=True,
-    )
-    assert res.returncode == 0
-    assert res.stdout or dpctl.get_num_devices() == 0
-    assert "UserWarning" in res.stderr.decode("utf-8")
-    assert "are being ignored." in res.stderr.decode("utf-8")
