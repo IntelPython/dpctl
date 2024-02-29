@@ -67,7 +67,8 @@ def _array_info_dispatch(obj):
 
 
 def _array_info_sequence(li):
-    assert isinstance(li, (list, tuple, range))
+    if not isinstance(li, (list, tuple, range)):
+        raise TypeError(f"Expected list, tuple, or range, got {type(li)}")
     n = len(li)
     dim = None
     dt = None
