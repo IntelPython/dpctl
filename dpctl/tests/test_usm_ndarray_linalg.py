@@ -782,12 +782,6 @@ def test_tensordot_axes_errors():
     with pytest.raises(ValueError):
         dpt.tensordot(m1, m2, axes=-1)
 
-    with pytest.raises(ValueError):
-        dpt.tensordot(m1, m2, axes=((-1,), (1,)))
-
-    with pytest.raises(ValueError):
-        dpt.tensordot(m1, m2, axes=((1,), (-1,)))
-
 
 @pytest.mark.parametrize("dtype", _numeric_types)
 def test_vecdot_1d(dtype):
@@ -834,7 +828,7 @@ def test_vecdot_axis(dtype):
 
     v2 = dpt.ones((m1, n, m2), dtype=dtype)
 
-    r = dpt.vecdot(v1, v2, axis=1)
+    r = dpt.vecdot(v1, v2, axis=-2)
 
     assert r.shape == (
         m1,
@@ -864,7 +858,7 @@ def test_vecdot_strided(dtype):
         :, :n, ::-1
     ]
 
-    r = dpt.vecdot(v1, v2, axis=1)
+    r = dpt.vecdot(v1, v2, axis=-2)
 
     ref = sum(
         el1 * el2
@@ -902,6 +896,9 @@ def test_vector_arg_validation():
 
     with pytest.raises(ValueError):
         dpt.vecdot(v1, v2, axis=2)
+
+    with pytest.raises(ValueError):
+        dpt.vecdot(v1, v2, axis=-2)
 
     q = dpctl.SyclQueue(
         v2.sycl_context, v2.sycl_device, property="enable_profiling"
