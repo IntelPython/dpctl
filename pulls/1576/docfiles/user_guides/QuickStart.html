@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Control (dpctl) 0.17.0dev0+52.g49270ffbc0 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Control (dpctl) 0.17.0dev0+53.gbdf0691b20 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=345e8ee4"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=2f4eb53c"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+52.g49270ffbc0
+                0.17.0dev0+53.gbdf0691b20
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -318,24 +318,27 @@ library.</p>
 <span class="nb">set</span><span class="w"> </span>+xe
 rm<span class="w"> </span>-rf<span class="w"> </span>build
 mkdir<span class="w"> </span>build
-<span class="nb">pushd</span><span class="w"> </span>build
+<span class="nb">pushd</span><span class="w"> </span>build<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 
-<span class="nv">INSTALL_PREFIX</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/../install
+<span class="nv">INSTALL_PREFIX</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/../install
 rm<span class="w"> </span>-rf<span class="w"> </span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
 <span class="nv">DPCPP_ROOT</span><span class="o">=</span><span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/compiler/latest/linux
 
 cmake<span class="w">                                                       </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w">                              </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Debug<span class="w">                                </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_C_COMPILER<span class="o">=</span>icx<span class="w">                                  </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_CXX_COMPILER<span class="o">=</span>dpcpp<span class="w">                              </span><span class="se">\</span>
 <span class="w">    </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="w">                </span><span class="se">\</span>
 <span class="w">    </span>-DCMAKE_PREFIX_PATH<span class="o">=</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="w">                   </span><span class="se">\</span>
-<span class="w">    </span>-DDPCPP_INSTALL_DIR<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span><span class="w">                       </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/icx<span class="w">           </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="si">${</span><span class="nv">DPCPP_ROOT</span><span class="si">}</span>/bin/dpcpp<span class="w">       </span><span class="se">\</span>
+<span class="w">    </span>-DDPCTL_ENABLE_L0_PROGRAM_CREATION<span class="o">=</span>ON<span class="w">                   </span><span class="se">\</span>
 <span class="w">    </span>-DDPCTL_BUILD_CAPI_TESTS<span class="o">=</span>ON<span class="w">                             </span><span class="se">\</span>
+<span class="w">    </span>-DDPCTL_GENERATE_COVERAGE<span class="o">=</span>ON<span class="w">                            </span><span class="se">\</span>
 <span class="w">    </span>..
 
 make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-n<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>check<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
+
+<span class="nb">popd</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 </pre></div>
 </div>
 </section>
