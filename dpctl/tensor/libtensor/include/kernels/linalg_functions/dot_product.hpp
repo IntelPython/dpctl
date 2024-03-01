@@ -552,8 +552,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(batches)};
+            0, static_cast<ssize_t>(batches),
+            static_cast<ssize_t>(reduction_nelems)};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -588,8 +588,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(batches)};
+            0, static_cast<ssize_t>(batches),
+            static_cast<ssize_t>(reduction_nelems)};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1174,8 +1174,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(batches)};
+            0, static_cast<ssize_t>(batches),
+            static_cast<ssize_t>(reduction_nelems)};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1212,8 +1212,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(batches)};
+            0, static_cast<ssize_t>(batches),
+            static_cast<ssize_t>(reduction_nelems)};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1280,8 +1280,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             const InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<ssize_t>(reduction_nelems),
-                static_cast<ssize_t>(batches)};
+                0, static_cast<ssize_t>(batches),
+                static_cast<ssize_t>(reduction_nelems)};
             const InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
