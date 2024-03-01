@@ -1,6 +1,7 @@
 {% set required_compiler_version = "2024.0" %}
 {% set excluded_compiler_version1 = "2024.0.1" %}
 {% set excluded_compiler_version2 = "2024.0.2" %}
+{% set excluded_compiler_version3 = "2024.0.3" %}
 
 package:
     name: dpctl
@@ -18,7 +19,7 @@ build:
 requirements:
     build:
         - {{ compiler('cxx') }}
-        - {{ compiler('dpcpp') }} >={{ required_compiler_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }}  # [not osx]
+        - {{ compiler('dpcpp') }} >={{ required_compiler_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }},!={{ excluded_compiler_version3 }}  # [not osx]
         - sysroot_linux-64 >=2.28  # [linux]
     host:
         - setuptools
