@@ -29,7 +29,6 @@
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_event_interface.h"
 #include "dpctl_sycl_queue_interface.h"
-#include "dpctl_sycl_queue_manager.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
 #include <cstring>
@@ -95,67 +94,68 @@ struct TestDPCTLSyclUSMInterface : public ::testing::Test
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocShared)
 {
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    sycl::queue q;
+    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
     ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLmalloc_shared(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
     common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_SHARED);
     DPCTLfree_with_queue(Ptr, Q);
-    DPCTLQueue_Delete(Q);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocDevice)
 {
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    sycl::queue q;
+    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
     ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLmalloc_device(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
     common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
     DPCTLfree_with_queue(Ptr, Q);
-    DPCTLQueue_Delete(Q);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocHost)
 {
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    sycl::queue q;
+    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
     ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLmalloc_host(nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
     common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_HOST);
     DPCTLfree_with_queue(Ptr, Q);
-    DPCTLQueue_Delete(Q);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocShared)
 {
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    sycl::queue q;
+    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
     ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLaligned_alloc_shared(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
     common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_SHARED);
     DPCTLfree_with_queue(Ptr, Q);
-    DPCTLQueue_Delete(Q);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocDevice)
 {
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    sycl::queue q;
+    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
     ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLaligned_alloc_device(64, nbytes, Q);
     EXPECT_TRUE(bool(Ptr));
     common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
     DPCTLfree_with_queue(Ptr, Q);
-    DPCTLQueue_Delete(Q);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocHost)
 {
-    auto Q = DPCTLQueueMgr_GetCurrentQueue();
+    sycl::queue q;
+    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
     ASSERT_TRUE(Q);
     const size_t nbytes = SIZE;
     auto Ptr = DPCTLaligned_alloc_host(64, nbytes, Q);
