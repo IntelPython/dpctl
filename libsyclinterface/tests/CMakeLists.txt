@@ -84,6 +84,20 @@ target_include_directories(dpctl_c_api_tests
     ${LEVEL_ZERO_INCLUDE_DIR}
 )
 
+if(_dpctl_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        dpctl_c_api_tests
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+    target_link_options(
+        dpctl_c_api_tests
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+endif()
+
 if(DPCTL_GENERATE_COVERAGE)
     set(object_arg "-object;")
     add_custom_target(run-c-api-tests
