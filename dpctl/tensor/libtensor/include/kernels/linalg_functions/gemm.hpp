@@ -2190,7 +2190,7 @@ public:
                 for (size_t vec_id = 1; vec_id < m_groups; ++vec_id) {
                     if (j + vec_id < m) {
                         res[total_offset + res_indexer(i * m + j + vec_id)] =
-                            local_sum[1];
+                            local_sum[vec_id];
                     }
                 }
             }
