@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7TCKS5BHYE');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl &mdash; Data Parallel Control (dpctl) 0.17.0dev0+49.g470d8f92bb documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=d1c541a8"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../../_static/target-highlight.js?v=df7d332b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Basic Concepts" href="basic_concepts.html" />
+    <link rel="prev" title="User Manual" href="../../UserManual.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Data Parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.17.0dev0+49.g470d8f92bb
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../UserManual.html">User Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../UserManual.html#table-of-contents">Table of Contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpctl</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="basic_concepts.html">Basic Concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="device_selection.html">Device Selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="platforms.html">Platform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="devices.html">Device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="queues.html">Queue</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Data Parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../UserManual.html">User Manual</a></li>
+      <li class="breadcrumb-item active">dpctl</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/docfiles/user_guides/manual/dpctl/intro.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpctl">
+<span id="intro"></span><h1>dpctl<a class="headerlink" href="#dpctl" title="Permalink to this heading"></a></h1>
+<p>The Data Parallel Control (dpctl) package provides a Python runtime to access a
+data-parallel computing resource or <em>XPU</em> from another Python application or
+library, alleviating the need for the other Python packages to develop such a
+runtime themselves. The term XPU denotes a diverse range of computing
+architectures such as a CPU, GPU, FPGA, and more. They are available to programmers on a
+modern heterogeneous system.</p>
+<p>The dpctl runtime is built on top of the C++ SYCL standard and is designed to be
+both vendor and architecture agnostic. If the underlying SYCL runtime supports
+a type of architecture, the dpctl runtime allows accessing that architecture
+from Python.</p>
+<p>In its current form, dpctl relies on certain DPC++ extensions of the SYCL standard.
+Moreover, the binary distribution of dpctl uses the proprietary Intel(R) oneAPI
+DPC++ runtime bundled as part of oneAPI and supports Intel(R) XPU devices only.
+However, dpctl is compatible with the runtime of the open-source DPC++ SYCL bundle
+that can be compiled to support a wide range of architectures including CUDA,
+AMD* ROC, and HIP*.</p>
+<p>The user guide introduces the core features of dpctl and the underlying
+concepts. The guide is meant primarily for users of the Python package. Library
+and native extension developers should refer to the programmer guide.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_concepts.html">Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device_selection.html">Device Selection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="device_selection.html#selecting-a-specific-type-of-device">Selecting a Specific Type of Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_selection.html#selecting-a-device-using-a-filter-string">Selecting a Device Using a Filter String</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device_selection.html#advanced-device-selection">Advanced Device Selection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="platforms.html">Platform</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="platforms.html#listing-available-platforms">Listing Available Platforms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="devices.html">Device</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devices.html#creating-devices">Creating Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices.html#listing-devices">Listing Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices.html#device-aspects-and-information-descriptors">Device Aspects and Information Descriptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices.html#sub-devices">Sub-devices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="queues.html">Queue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="queues.html#types-of-queues">Types of Queues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues.html#creating-a-new-queue">Creating a New Queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues.html#profiling-a-task-submitted-to-a-queue">Profiling a Task Submitted to a Queue</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../UserManual.html" class="btn btn-neutral float-left" title="User Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_concepts.html" class="btn btn-neutral float-right" title="Basic Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2024, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
