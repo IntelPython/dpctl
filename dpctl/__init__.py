@@ -19,16 +19,7 @@
 
     Dpctl implements a subset of SYCL's API providing wrappers for the
     SYCL runtime classes described in :sycl_runtime_classes:`Section 4.6 <>` of
-    the :sycl_spec_2020:`SYCL 2020 spec <>`. Note that the SYCL
-    ``device_selector`` class is not implemented, instead there are device
-    selection helper functions that can be used to simulate the same behavior.
-    Dpctl implements the ``ONEPI::filter_selector`` extension that is included
-    in Intel's DPC++ SYCL compiler.
-
-    The module also includes a global SYCL queue manager. The queue manager
-    provides convenience functions to create a global instance of
-    a :class:`dpctl.SyclQueue`, to create a nested stack of queue objects, and
-    to create a queue object for use only within a specific scope.
+    the :sycl_spec_2020:`SYCL 2020 spec <>`.
 """
 __author__ = "Intel Corp."
 
@@ -61,17 +52,7 @@ from ._sycl_queue import (
     SyclQueue,
     SyclQueueCreationError,
 )
-from ._sycl_queue_manager import (
-    device_context,
-    get_current_backend,
-    get_current_device_type,
-    get_current_queue,
-    get_device_cached_queue,
-    get_num_activated_queues,
-    is_in_device_context,
-    nested_context_factories,
-    set_global_queue,
-)
+from ._sycl_queue_manager import get_device_cached_queue
 from ._sycl_timer import SyclTimer
 from ._version import get_versions
 from .enum_types import (
@@ -120,15 +101,7 @@ __all__ += [
     "SyclQueueCreationError",
 ]
 __all__ += [
-    "device_context",
-    "get_current_backend",
-    "get_current_device_type",
-    "get_current_queue",
     "get_device_cached_queue",
-    "get_num_activated_queues",
-    "is_in_device_context",
-    "nested_context_factories",
-    "set_global_queue",
 ]
 __all__ += [
     "device_type",
