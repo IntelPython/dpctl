@@ -65,17 +65,6 @@ Classes
       - Python class to measure device time of execution of commands submitted to :class:`dpctl.SyclQueue` as well as the wall-time.
 
 
-.. _dpctl_queue_management_functions:
-
-Queue Management Functions
---------------------------
-
-.. list-table::
-    :widths: 25,50
-
-    * - :func:`device_context()`
-      - Yields a SYCL queue corresponding to the input queue object, device object, or device filter selector string.
-
 .. _dpctl_device_selection_functions:
 
 Device Selection Functions

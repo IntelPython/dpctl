@@ -8,11 +8,6 @@ dpctl Functions
 .. currentmodule:: dpctl
 
 
-Queue Management Functions
---------------------------
-
-.. autofunction:: device_context
-
 Other Functions
 ---------------
 

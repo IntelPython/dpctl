@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+49.g470d8f92bb documentation</title>
+  <title>dpctl Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+50.g42c56868b4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d1c541a8"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=76990154"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+49.g470d8f92bb
+                0.17.0dev0+50.g42c56868b4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -93,59 +93,6 @@
              
   <section id="dpctl-functions">
 <span id="dpctl-functions-api"></span><h1>dpctl Functions<a class="headerlink" href="#dpctl-functions" title="Permalink to this heading"></a></h1>
-<section id="queue-management-functions">
-<h2>Queue Management Functions<a class="headerlink" href="#queue-management-functions" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="dpctl.device_context">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.device_context" title="Permalink to this definition"></a></dt>
-<dd><p>Yields a SYCL queue corresponding to the input queue object, device object,
-or device filter selector string.</p>
-<p>This context manager “activates”, <em>i.e.</em>, sets as the currently usable
-queue, the SYCL queue defined by the argument <cite>arg</cite>.
-The activated queue is yielded by the context manager and can also be
-accessed by any subsequent call to <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.get_current_queue()</span></code> inside
-the context manager’s scope. The yielded queue is removed as the currently
-usable queue on exiting the context manager.</p>
-<p>You can register context factory in the list of factories.
-This context manager uses context factories to create and activate nested contexts.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arg</strong> – A <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object, or a <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>
-object, or a filter selector string.</p>
-</dd>
-<dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> –</p>
-<dl class="simple">
-<dt>A SYCL queue corresponding to the specified</dt><dd><p>input device, queue, or filter string.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpctl_exception_api.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – If the SYCL queue creation failed.</p>
-</dd>
-<dt class="field-even">Example<span class="colon">:</span></dt>
-<dd class="field-even"><p>The following example sets current queue targeting specific device
-indicated with filter selector string in the scope of <cite>with</cite> block:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="k">with</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_context</span><span class="p">(</span><span class="s2">&quot;level0:gpu:0&quot;</span><span class="p">):</span>
-    <span class="n">do_something_on_gpu0</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The following example registers nested context factory:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dctl</span>
-
-<span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="k">return</span> <span class="n">context</span>
-
-<span class="n">dpctl</span><span class="o">.</span><span class="n">nested_context_factories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
 <section id="other-functions">
 <h2>Other Functions<a class="headerlink" href="#other-functions" title="Permalink to this heading"></a></h2>
 <dl class="py function">
