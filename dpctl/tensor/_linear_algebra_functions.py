@@ -351,17 +351,19 @@ def vecdot(x1, x2, axis=-1):
     x2_nd = x2.ndim
     x1_shape = x1.shape
     x2_shape = x2.shape
-    if x1_nd > x2_nd:
-        x2_shape = (1,) * (x1_nd - x2_nd) + x2_shape
-        x2_nd = len(x2_shape)
-    elif x2_nd > x1_nd:
-        x1_shape = (1,) * (x2_nd - x1_nd) + x1_shape
-        x1_nd = len(x1_shape)
-    axis = normalize_axis_index(operator.index(axis), min(x1_nd, x2_nd))
-    if x1_shape[axis] != x2_shape[axis]:
+    if axis >= 0:
+        raise ValueError("`axis` must be negative")
+    axis = operator.index(axis)
+    x1_axis = normalize_axis_index(axis, x1_nd)
+    x2_axis = normalize_axis_index(axis, x2_nd)
+    if x1_shape[x1_axis] != x2_shape[x2_axis]:
         raise ValueError(
             "given axis must have the same shape for `x1` and `x2`"
         )
+    if x1_nd > x2_nd:
+        x2_shape = (1,) * (x1_nd - x2_nd) + x2_shape
+    elif x2_nd > x1_nd:
+        x1_shape = (1,) * (x2_nd - x1_nd) + x1_shape
     try:
         broadcast_sh = _broadcast_shape_impl(
             [
@@ -371,8 +373,10 @@ def vecdot(x1, x2, axis=-1):
         )
     except ValueError:
         raise ValueError("mismatch in `vecdot` dimensions")
+    broadcast_nd = len(broadcast_sh)
+    contracted_axis = normalize_axis_index(axis, broadcast_nd)
     res_sh = tuple(
-        [broadcast_sh[i] for i in range(len(broadcast_sh)) if i != axis]
+        [broadcast_sh[i] for i in range(broadcast_nd) if i != contracted_axis]
     )
     # type validation
     sycl_dev = exec_q.sycl_device
@@ -410,9 +414,8 @@ def vecdot(x1, x2, axis=-1):
             x1 = dpt.broadcast_to(x1, broadcast_sh)
         if x2.shape != broadcast_sh:
             x2 = dpt.broadcast_to(x2, broadcast_sh)
-        x1 = dpt.moveaxis(x1, axis, -1)
-        x2 = dpt.moveaxis(x2, axis, -1)
-
+        x1 = dpt.moveaxis(x1, contracted_axis, -1)
+        x2 = dpt.moveaxis(x2, contracted_axis, -1)
         out = dpt.empty(
             res_sh,
             dtype=res_dt,
@@ -455,8 +458,8 @@ def vecdot(x1, x2, axis=-1):
             x1 = dpt.broadcast_to(x1, broadcast_sh)
         if buf2.shape != broadcast_sh:
             buf2 = dpt.broadcast_to(buf2, broadcast_sh)
-        x1 = dpt.moveaxis(x1, axis, -1)
-        buf2 = dpt.moveaxis(buf2, axis, -1)
+        x1 = dpt.moveaxis(x1, contracted_axis, -1)
+        buf2 = dpt.moveaxis(buf2, contracted_axis, -1)
         out = dpt.empty(
             res_sh,
             dtype=res_dt,
@@ -497,8 +500,8 @@ def vecdot(x1, x2, axis=-1):
             buf1 = dpt.broadcast_to(buf1, broadcast_sh)
         if x2.shape != broadcast_sh:
             x2 = dpt.broadcast_to(x2, broadcast_sh)
-        buf1 = dpt.moveaxis(buf1, axis, -1)
-        x2 = dpt.moveaxis(x2, axis, -1)
+        buf1 = dpt.moveaxis(buf1, contracted_axis, -1)
+        x2 = dpt.moveaxis(x2, contracted_axis, -1)
         out = dpt.empty(
             res_sh,
             dtype=res_dt,
@@ -544,8 +547,8 @@ def vecdot(x1, x2, axis=-1):
         buf1 = dpt.broadcast_to(buf1, broadcast_sh)
     if buf2.shape != broadcast_sh:
         buf2 = dpt.broadcast_to(buf2, broadcast_sh)
-    buf1 = dpt.moveaxis(buf1, axis, -1)
-    buf2 = dpt.moveaxis(buf2, axis, -1)
+    buf1 = dpt.moveaxis(buf1, contracted_axis, -1)
+    buf2 = dpt.moveaxis(buf2, contracted_axis, -1)
     out = dpt.empty(
         res_sh,
         dtype=res_dt,
