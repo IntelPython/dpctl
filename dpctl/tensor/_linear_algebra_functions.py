@@ -90,8 +90,9 @@ def tensordot(x1, x2, axes=2):
             to `x2`. Both sequences must have equal length, and each axis
             `x1_axes[i]` for `x1` must have the same size as the respective
             axis `x2_axes[i]` for `x2`. Each sequence must consist of unique
-            non-negative integers that specify valid axes for each respective
-            array.
+            integers that specify valid axes for each respective array.
+            For example, if `x1` has rank `N`, a valid axis must reside on the
+            half-open interval `[-N, N)`.
     Returns:
         usm_ndarray:
             an array containing the tensor contraction whose shape consists of
@@ -310,12 +311,11 @@ def vecdot(x1, x2, axis=-1):
             axis. Input arrays should be of numeric type.
         axis (Optional[int]):
             axis over which to compute the dot product. The axis must
-            be an integer on the interval `[-N, N)`, where `N` is the
-            array rank of input arrays after broadcasting rules are
-            applied. If specified as a negative integer, the axis along
-            which dot product is performed is counted backward from
-            the last axes (that is `-1` refers to the last axis). By
-            default, dot product is computed over the last axis.
+            be an integer on the interval `[-N, -1]`, where `N` is
+            ``min(x1.ndim, x2.ndim)``. The axis along which dot product
+            is performed is counted backward from the last axes
+            (that is, `-1` refers to the last axis). By default,
+            dot product is computed over the last axis.
             Default: `-1`.
 
     Returns:
