@@ -14,7 +14,6 @@ libsyclinterface
 	group_PlatformInterface.rst
 	group_PlatformManager.rst
 	group_QueueInterface.rst
-	group_QueueManager.rst
 	group_Service.rst
 	group_USMInterface.rst
 
@@ -30,7 +29,6 @@ libsyclinterface
 |	:ref:`Platform class C wrapper<doxid-da/dbd/group___platform_interface>`
 |	:ref:`Platform class helper functions<doxid-d5/dcf/group___platform_manager>`
 |	:ref:`Queue class C wrapper<doxid-d2/d22/group___queue_interface>`
-|	:ref:`Queue class helper functions<doxid-d0/dde/group___queue_manager>`
 |	:ref:`Service functions<doxid-d8/d1a/group___service>`
 |	:ref:`USM Interface<doxid-df/d6e/group___u_s_m_interface>`
 
