@@ -28,7 +28,7 @@ def create_queue_from_filter_selector():
     """Create queue for a GPU device or,
     if it is not available, for a CPU device.
 
-    Create in-order queue with profilign enabled.
+    Create in-order queue with profiling enabled.
     """
     q = dpctl.SyclQueue("gpu,cpu", property=("in_order", "enable_profiling"))
     print("Queue {} is in order: {}".format(q, q.is_in_order))
