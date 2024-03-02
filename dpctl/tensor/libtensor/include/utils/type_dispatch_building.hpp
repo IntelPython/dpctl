@@ -1,4 +1,5 @@
-//===--type_dispatch.cpp - Type-dispatch table building utils ----*-C++-*- ===//
+//===--type_dispatch_building.cpp - Type-dispatch table building utils -*-C++-*-
+//===//
 //
 //                      Data Parallel Control (dpctl)
 //
