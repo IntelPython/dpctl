@@ -51,6 +51,17 @@ typedef struct complex
     uint64_t imag;
 } complexNumber;
 
+void set_dependent_events(handler &cgh,
+                          __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                          size_t NDepEvents)
+{
+    for (auto i = 0ul; i < NDepEvents; ++i) {
+        auto ei = unwrap<event>(DepEvents[i]);
+        if (ei)
+            cgh.depends_on(*ei);
+    }
+}
+
 /*!
  * @brief Set the kernel arg object
  *
@@ -105,6 +116,21 @@ bool set_kernel_arg(handler &cgh,
         break;
     }
     return arg_set;
+}
+
+void set_kernel_args(handler &cgh,
+                     __dpctl_keep void **Args,
+                     __dpctl_keep const DPCTLKernelArgType *ArgTypes,
+                     size_t NArgs)
+{
+    for (auto i = 0ul; i < NArgs; ++i) {
+        if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i])) {
+            error_handler("Kernel argument could not be created.", __FILE__,
+                          __func__, __LINE__);
+            throw std::invalid_argument(
+                "Kernel argument could not be created.");
+        }
+    }
 }
 
 std::unique_ptr<property_list> create_property_list(int properties)
@@ -341,39 +367,52 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
     event e;
 
     try {
-        e = Queue->submit([&](handler &cgh) {
-            // Depend on any event that was specified by the caller.
-            if (NDepEvents)
-                for (auto i = 0ul; i < NDepEvents; ++i)
-                    cgh.depends_on(*unwrap<event>(DepEvents[i]));
-
-            for (auto i = 0ul; i < NArgs; ++i) {
-                // \todo add support for Sycl buffers
-                if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
-                    exit(1);
-            }
-            switch (NDims) {
-            case 1:
+        switch (NDims) {
+        case 1:
+        {
+            e = Queue->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                set_dependent_events(cgh, DepEvents, NDepEvents);
+                set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(range<1>{Range[0]}, *Kernel);
-                break;
-            case 2:
+            });
+            return wrap<event>(new event(std::move(e)));
+        }
+        case 2:
+        {
+            e = Queue->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                set_dependent_events(cgh, DepEvents, NDepEvents);
+                set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(range<2>{Range[0], Range[1]}, *Kernel);
-                break;
-            case 3:
+            });
+            return wrap<event>(new event(std::move(e)));
+        }
+        case 3:
+        {
+            e = Queue->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                set_dependent_events(cgh, DepEvents, NDepEvents);
+                set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]},
                                  *Kernel);
-                break;
-            default:
-                throw std::runtime_error("Range cannot be greater than three "
-                                         "dimensions.");
-            }
-        });
+            });
+            return wrap<event>(new event(std::move(e)));
+        }
+        default:
+            error_handler("Range cannot be greater than three "
+                          "dimensions.",
+                          __FILE__, __func__, __LINE__, error_level::error);
+            return nullptr;
+        }
     } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
+        error_handler(e, __FILE__, __func__, __LINE__, error_level::error);
+        return nullptr;
+    } catch (...) {
+        error_handler("Unknown exception encountered", __FILE__, __func__,
+                      __LINE__, error_level::error);
         return nullptr;
     }
-
-    return wrap<event>(new event(std::move(e)));
 }
 
 __dpctl_give DPCTLSyclEventRef
@@ -393,46 +432,56 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
     event e;
 
     try {
-        e = Queue->submit([&](handler &cgh) {
-            // Depend on any event that was specified by the caller.
-            if (DepEvents)
-                for (auto i = 0ul; i < NDepEvents; ++i) {
-                    auto ei = unwrap<event>(DepEvents[i]);
-                    if (ei)
-                        cgh.depends_on(*ei);
-                }
-
-            for (auto i = 0ul; i < NArgs; ++i) {
-                // \todo add support for Sycl buffers
-                if (!set_kernel_arg(cgh, i, Args[i], ArgTypes[i]))
-                    exit(1);
-            }
-            switch (NDims) {
-            case 1:
+        switch (NDims) {
+        case 1:
+        {
+            e = Queue->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                set_dependent_events(cgh, DepEvents, NDepEvents);
+                set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(nd_range<1>{{gRange[0]}, {lRange[0]}},
                                  *Kernel);
-                break;
-            case 2:
+            });
+            return wrap<event>(new event(std::move(e)));
+        }
+        case 2:
+        {
+            e = Queue->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                set_dependent_events(cgh, DepEvents, NDepEvents);
+                set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(
                     nd_range<2>{{gRange[0], gRange[1]}, {lRange[0], lRange[1]}},
                     *Kernel);
-                break;
-            case 3:
+            });
+            return wrap<event>(new event(std::move(e)));
+        }
+        case 3:
+        {
+            e = Queue->submit([&](handler &cgh) {
+                // Depend on any event that was specified by the caller.
+                set_dependent_events(cgh, DepEvents, NDepEvents);
+                set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
                                              {lRange[0], lRange[1], lRange[2]}},
                                  *Kernel);
-                break;
-            default:
-                throw std::runtime_error("Range cannot be greater than three "
-                                         "dimensions.");
-            }
-        });
+            });
+            return wrap<event>(new event(std::move(e)));
+        }
+        default:
+            error_handler("Range cannot be greater than three "
+                          "dimensions.",
+                          __FILE__, __func__, __LINE__, error_level::error);
+            return nullptr;
+        }
     } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__);
+        error_handler(e, __FILE__, __func__, __LINE__, error_level::error);
+        return nullptr;
+    } catch (...) {
+        error_handler("Unknown exception encountered", __FILE__, __func__,
+                      __LINE__, error_level::error);
         return nullptr;
     }
-
-    return wrap<event>(new event(std::move(e)));
 }
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
