@@ -65,50 +65,35 @@ bool set_kernel_arg(handler &cgh,
     bool arg_set = true;
 
     switch (ArgTy) {
-    case DPCTL_CHAR:
-        cgh.set_arg(idx, *(char *)Arg);
+    case DPCTL_INT8_T:
+        cgh.set_arg(idx, *(int8_t *)Arg);
         break;
-    case DPCTL_SIGNED_CHAR:
-        cgh.set_arg(idx, *(signed char *)Arg);
-        break;
-    case DPCTL_UNSIGNED_CHAR:
-        cgh.set_arg(idx, *(unsigned char *)Arg);
-        break;
-    case DPCTL_SHORT:
-        cgh.set_arg(idx, *(short *)Arg);
-        break;
-    case DPCTL_INT:
-        cgh.set_arg(idx, *(int *)Arg);
-        break;
-    case DPCTL_UNSIGNED_INT:
-        cgh.set_arg(idx, *(unsigned int *)Arg);
-        break;
-    case DPCTL_UNSIGNED_INT8:
+    case DPCTL_UINT8_T:
         cgh.set_arg(idx, *(uint8_t *)Arg);
         break;
-    case DPCTL_LONG:
-        cgh.set_arg(idx, *(long *)Arg);
+    case DPCTL_INT16_T:
+        cgh.set_arg(idx, *(int16_t *)Arg);
         break;
-    case DPCTL_UNSIGNED_LONG:
-        cgh.set_arg(idx, *(unsigned long *)Arg);
+    case DPCTL_UINT16_T:
+        cgh.set_arg(idx, *(uint16_t *)Arg);
         break;
-    case DPCTL_LONG_LONG:
-        cgh.set_arg(idx, *(long long *)Arg);
+    case DPCTL_INT32_T:
+        cgh.set_arg(idx, *(int32_t *)Arg);
         break;
-    case DPCTL_UNSIGNED_LONG_LONG:
-        cgh.set_arg(idx, *(unsigned long long *)Arg);
+    case DPCTL_UINT32_T:
+        cgh.set_arg(idx, *(uint32_t *)Arg);
         break;
-    case DPCTL_SIZE_T:
-        cgh.set_arg(idx, *(size_t *)Arg);
+    case DPCTL_INT64_T:
+        cgh.set_arg(idx, *(int64_t *)Arg);
         break;
-    case DPCTL_FLOAT:
+    case DPCTL_UINT64_T:
+        cgh.set_arg(idx, *(uint64_t *)Arg);
+        break;
+    case DPCTL_FLOAT32_T:
         cgh.set_arg(idx, *(float *)Arg);
         break;
-    case DPCTL_DOUBLE:
+    case DPCTL_FLOAT64_T:
         cgh.set_arg(idx, *(double *)Arg);
-        break;
-    case DPCTL_LONG_DOUBLE:
-        cgh.set_arg(idx, *(long double *)Arg);
         break;
     case DPCTL_VOID_PTR:
         cgh.set_arg(idx, Arg);
