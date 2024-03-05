@@ -1,4 +1,5 @@
 find_package(GTest REQUIRED)
+
 # We need thread support for gtest
 find_package(Threads REQUIRED)
 
@@ -16,7 +17,12 @@ include_directories(
 link_directories(${GTEST_LIB_DIR})
 
 # Copy the spir-v input files to test build directory
-set(spirv-test-files multi_kernel.spv)
+set(spirv-test-files
+    multi_kernel.spv
+    oneD_range_kernel_inttys_fp32.spv
+    oneD_range_kernel_fp64.spv
+)
+
 foreach(tf ${spirv-test-files})
     file(COPY ${tf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
@@ -32,38 +38,39 @@ add_executable(dpctl_c_api_tests
     ${sources}
 )
 add_sycl_to_target(
-  TARGET dpctl_c_api_tests
-  SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_helper.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_context_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_invalid_filters.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_subdevices.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_manager.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_selector_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_aspects.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_event_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_bundle_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
+    TARGET dpctl_c_api_tests
+    SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_helper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_context_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_invalid_filters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_subdevices.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_selector_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_aspects.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_event_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_bundle_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
 )
-if (_dpctl_sycl_targets)
-# make fat binary
-target_compile_options(
-    dpctl_c_api_tests
-    PRIVATE
-    -fsycl-targets=${_dpctl_sycl_targets}
-)
-target_link_options(
-    dpctl_c_api_tests
-    PRIVATE
-    -fsycl-targets=${_dpctl_sycl_targets}
-)
+
+if(_dpctl_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        dpctl_c_api_tests
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
+    target_link_options(
+        dpctl_c_api_tests
+        PRIVATE
+        -fsycl-targets=${_dpctl_sycl_targets}
+    )
 endif()
 
 if(DPCTL_GENERATE_COVERAGE)
@@ -82,21 +89,21 @@ if(DPCTL_GENERATE_COVERAGE)
     add_custom_target(llvm-cov
         COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
         COMMAND ${LLVMProfdata_EXE}
-            merge
-            -sparse default.profraw
-            -o
-            dpctl.profdata
+        merge
+        -sparse default.profraw
+        -o
+        dpctl.profdata
         COMMAND ${LLVMCov_EXE}
-            export
-            -format=lcov
-            -ignore-filename-regex=/tmp/icpx*
-            -instr-profile=dpctl.profdata
-            "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
-            > dpctl.lcov
+        export
+        -format=lcov
+        -ignore-filename-regex=/tmp/icpx*
+        -instr-profile=dpctl.profdata
+        "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+        > dpctl.lcov
         COMMAND ${LLVMCov_EXE}
-            report
-            -instr-profile=dpctl.profdata
-            "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+        report
+        -instr-profile=dpctl.profdata
+        "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND_EXPAND_LISTS
         DEPENDS dpctl_c_api_tests
@@ -105,21 +112,21 @@ if(DPCTL_GENERATE_COVERAGE)
     add_custom_target(lcov-genhtml
         COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
         COMMAND ${LLVMProfdata_EXE}
-            merge
-            -sparse default.profraw
-            -o
-            dpctl.profdata
+        merge
+        -sparse default.profraw
+        -o
+        dpctl.profdata
         COMMAND ${LLVMCov_EXE}
-            export
-            -format=lcov
-            -instr-profile=dpctl.profdata
-            "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
-            > dpctl.lcov
+        export
+        -format=lcov
+        -instr-profile=dpctl.profdata
+        "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+        > dpctl.lcov
         COMMAND ${GENHTML_EXE}
-            ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov
-            --no-source
-            --output-directory
-            ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
+        ${CMAKE_CURRENT_BINARY_DIR}/dpctl.lcov
+        --no-source
+        --output-directory
+        ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND_EXPAND_LISTS
         DEPENDS dpctl_c_api_tests
