@@ -35,7 +35,9 @@
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <iostream>
 #include <sycl/sycl.hpp>
+#include <utility>
 
 namespace
 {
@@ -44,154 +46,312 @@ static_assert(SIZE % 8 == 0);
 
 using namespace dpctl::syclinterface;
 
+template <typename T>
+void submit_kernel(DPCTLSyclQueueRef QRef,
+                   DPCTLSyclKernelBundleRef KBRef,
+                   std::vector<char> spirvBuffer,
+                   size_t spirvFileSize,
+                   DPCTLKernelArgType kernelArgTy,
+                   std::string kernelName)
+{
+    T scalarVal = 3;
+    constexpr size_t NARGS = 4;
+    constexpr size_t RANGE_NDIMS = 1;
+
+    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
+    auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());
+
+    // Create the input args
+    auto a = DPCTLmalloc_shared(SIZE * sizeof(T), QRef);
+    ASSERT_TRUE(a != nullptr);
+    auto b = DPCTLmalloc_shared(SIZE * sizeof(T), QRef);
+    ASSERT_TRUE(b != nullptr);
+    auto c = DPCTLmalloc_shared(SIZE * sizeof(T), QRef);
+    ASSERT_TRUE(c != nullptr);
+
+    // Create kernel args for vector_add
+    size_t Range[] = {SIZE};
+    void *args[NARGS] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
+                         (void *)&scalarVal};
+    DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
+                                              DPCTL_VOID_PTR, kernelArgTy};
+    auto ERef = DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes,
+                                       NARGS, Range, RANGE_NDIMS, nullptr, 0);
+    ASSERT_TRUE(ERef != nullptr);
+    DPCTLQueue_Wait(QRef);
+
+    // clean ups
+    DPCTLEvent_Delete(ERef);
+    DPCTLKernel_Delete(kernel);
+    DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
+    DPCTLfree_with_queue((DPCTLSyclUSMRef)b, QRef);
+    DPCTLfree_with_queue((DPCTLSyclUSMRef)c, QRef);
+}
+
 } /* end of anonymous namespace */
+
+/*
+// The oneD_range_kernel spv files were generated from the below SYCL program.
+// To compile:
+// icpx -fsycl oneD_range_kernel.cpp
+// IGC_ShaderDumpEnable=1 IGC_DumpToCustomDir=dump ./a.out
+
+// The generated spv files should be inspected using spirv-dis to identify
+// kernel names. When these files were generated using dpcpp 2024.1, a single
+// spv file was generated for all integer types and float32_t and a separate
+// file generated for float64_t.
+
+#include <CL/sycl.hpp>
+#include <iostream>
+#include <sstream>
+
+template <typename T>
+class Range1DKernel
+{
+private:
+    T *a_ = nullptr;
+    T *b_ = nullptr;
+    T *c_ = nullptr;
+    T scalarVal_;
+
+public:
+    RangeKernel(T *a, T *b, T *c, T scalarVal)
+        : a_(a), b_(b), c_(c), scalarVal_(scalarVal)
+    {
+    }
+
+    void operator()(sycl::item<1> it) const
+    {
+        auto i = it.get_id();
+        a_[i] = i + 1;
+        b_[i] = i + 2;
+        c_[i] = scalarVal_ * (a_[i] + b_[i]);
+    }
+};
+
+template <typename T>
+void submit_kernel(
+    sycl::queue q,
+    const unsigned long N,
+    T *a,
+    T *b,
+    T *c,
+    T scalarVal)
+{
+    // clang-format off
+    q.submit([&](auto &h) {
+        h.parallel_for(sycl::range(N), RangeKernel<T>(a, b, c, scalarVal));
+    });
+    // clang-format on
+}
+
+template <typename T>
+void driver(size_t N)
+{
+    sycl::queue q;
+    auto *a = sycl::malloc_shared<T>(N, q);
+    auto *b = sycl::malloc_shared<T>(N, q);
+    auto *c = sycl::malloc_shared<T>(N, q);
+    T scalarVal = 3;
+
+    submit_kernel(q, N, a, b, c, scalarVal);
+    q.wait();
+
+    std::cout << "C[0] : " << (size_t)c[0] << " " << std::endl;
+    sycl::free(a, q);
+}
+
+int main(int argc, const char **argv)
+{
+    size_t N = 0;
+    std::cout << "Enter problem size in N:\n";
+    std::cin >> N;
+    std::cout << "Executing with N = " << N << std::endl;
+
+    driver<int8_t>(N);
+    driver<uint8_t>(N);
+    driver<int16_t>(N);
+    driver<uint16_t>(N);
+    driver<int32_t>(N);
+    driver<uint32_t>(N);
+    driver<int64_t>(N);
+    driver<uint64_t>(N);
+    driver<float>(N);
+    driver<double>(N);
+
+    return 0;
+}
+*/
 
 struct TestQueueSubmit : public ::testing::Test
 {
     std::ifstream spirvFile;
-    size_t spirvFileSize;
-    std::vector<char> spirvBuffer;
+    size_t spirvFileSize_;
+    std::vector<char> spirvBuffer_;
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
 
     TestQueueSubmit()
     {
-        spirvFile.open("./multi_kernel.spv", std::ios::binary | std::ios::ate);
-        spirvFileSize = std::filesystem::file_size("./multi_kernel.spv");
-        spirvBuffer.reserve(spirvFileSize);
+        DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        DPCTLSyclDeviceRef DRef = nullptr;
+
+        spirvFile.open("./oneD_range_kernel_inttys_fp32.spv",
+                       std::ios::binary | std::ios::ate);
+        spirvFileSize_ =
+            std::filesystem::file_size("./oneD_range_kernel_inttys_fp32.spv");
+        spirvBuffer_.reserve(spirvFileSize_);
         spirvFile.seekg(0, std::ios::beg);
-        spirvFile.read(spirvBuffer.data(), spirvFileSize);
+        spirvFile.read(spirvBuffer_.data(), spirvFileSize_);
+
+        DSRef = DPCTLDefaultSelector_Create();
+        DRef = DPCTLDevice_CreateFromSelector(DSRef);
+        QRef =
+            DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
+        auto CRef = DPCTLQueue_GetContext(QRef);
+
+        KBRef = DPCTLKernelBundle_CreateFromSpirv(
+            CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
+        DPCTLDevice_Delete(DRef);
+        DPCTLDeviceSelector_Delete(DSRef);
     }
 
     ~TestQueueSubmit()
     {
         spirvFile.close();
+        DPCTLQueue_Delete(QRef);
+        DPCTLKernelBundle_Delete(KBRef);
     }
 };
 
-TEST_F(TestQueueSubmit, CheckSubmitRange_saxpy)
+struct TestQueueSubmitFP64 : public ::testing::Test
 {
-    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
+    std::ifstream spirvFile;
+    size_t spirvFileSize_;
+    std::vector<char> spirvBuffer_;
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
 
-    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    DPCTLDeviceMgr_PrintDeviceInfo(DRef);
-    ASSERT_TRUE(DRef);
-    auto QRef =
-        DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
-    ASSERT_TRUE(QRef);
-    auto CRef = DPCTLQueue_GetContext(QRef);
-    ASSERT_TRUE(CRef);
-    auto KBRef = DPCTLKernelBundle_CreateFromSpirv(
-        CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr);
-    ASSERT_TRUE(KBRef != nullptr);
-    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
-    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
+    TestQueueSubmitFP64()
+    {
+        DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        DPCTLSyclDeviceRef DRef = nullptr;
 
-    // Create the input args
-    auto a = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
-    ASSERT_TRUE(a != nullptr);
-    auto b = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
-    ASSERT_TRUE(b != nullptr);
-    auto c = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
-    ASSERT_TRUE(c != nullptr);
+        spirvFile.open("./oneD_range_kernel_fp64.spv",
+                       std::ios::binary | std::ios::ate);
+        spirvFileSize_ =
+            std::filesystem::file_size("./oneD_range_kernel_fp64.spv");
+        spirvBuffer_.reserve(spirvFileSize_);
+        spirvFile.seekg(0, std::ios::beg);
+        spirvFile.read(spirvBuffer_.data(), spirvFileSize_);
+        DSRef = DPCTLDefaultSelector_Create();
+        DRef = DPCTLDevice_CreateFromSelector(DSRef);
+        QRef =
+            DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
+        auto CRef = DPCTLQueue_GetContext(QRef);
 
-    auto a_ptr = reinterpret_cast<float *>(unwrap<void>(a));
-    auto b_ptr = reinterpret_cast<float *>(unwrap<void>(b));
-    // Initialize a,b
-    for (auto i = 0ul; i < SIZE; ++i) {
-        a_ptr[i] = i + 1.0;
-        b_ptr[i] = i + 2.0;
+        KBRef = DPCTLKernelBundle_CreateFromSpirv(
+            CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
+        DPCTLDevice_Delete(DRef);
+        DPCTLDeviceSelector_Delete(DSRef);
     }
 
-    // Create kernel args for axpy
-    float d = 10.0;
-    size_t Range[] = {SIZE};
-    void *args2[4] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
-                      (void *)&d};
-    DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
-                                              DPCTL_VOID_PTR, DPCTL_FLOAT};
-    auto ERef = DPCTLQueue_SubmitRange(
-        AxpyKernel, QRef, args2, addKernelArgTypes, 4, Range, 1, nullptr, 0);
-    ASSERT_TRUE(ERef != nullptr);
-    DPCTLQueue_Wait(QRef);
+    ~TestQueueSubmitFP64()
+    {
+        spirvFile.close();
+        DPCTLQueue_Delete(QRef);
+        DPCTLKernelBundle_Delete(KBRef);
+    }
+};
 
-    // clean ups
-    DPCTLEvent_Delete(ERef);
-    DPCTLKernel_Delete(AxpyKernel);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)b, QRef);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)c, QRef);
-    DPCTLQueue_Delete(QRef);
-    DPCTLContext_Delete(CRef);
-    DPCTLKernelBundle_Delete(KBRef);
-    DPCTLDevice_Delete(DRef);
-    DPCTLDeviceSelector_Delete(DSRef);
+TEST_F(TestQueueSubmit, CheckForInt8)
+{
+    submit_kernel<int8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                          DPCTLKernelArgType::DPCTL_INT8_T,
+                          "_ZTS11RangeKernelIaE");
 }
 
-TEST_F(TestQueueSubmit, CheckSubmitNDRange_saxpy)
+TEST_F(TestQueueSubmit, CheckForUInt8)
 {
-    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-    DPCTLSyclDeviceRef DRef = nullptr;
+    submit_kernel<uint8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                           DPCTLKernelArgType::DPCTL_UINT8_T,
+                           "_ZTS11RangeKernelIhE");
+}
 
-    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
-    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
-    DPCTLDeviceMgr_PrintDeviceInfo(DRef);
-    ASSERT_TRUE(DRef);
-    auto QRef =
-        DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_DEFAULT_PROPERTY);
-    ASSERT_TRUE(QRef);
-    auto CRef = DPCTLQueue_GetContext(QRef);
-    ASSERT_TRUE(CRef);
-    auto KBRef = DPCTLKernelBundle_CreateFromSpirv(
-        CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr);
-    ASSERT_TRUE(KBRef != nullptr);
-    ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, "axpy"));
-    auto AxpyKernel = DPCTLKernelBundle_GetKernel(KBRef, "axpy");
+TEST_F(TestQueueSubmit, CheckForInt16)
+{
+    submit_kernel<int16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                           DPCTLKernelArgType::DPCTL_INT16_T,
+                           "_ZTS11RangeKernelIsE");
+}
 
-    // Create the input args
-    auto a = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
-    ASSERT_TRUE(a != nullptr);
-    auto b = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
-    ASSERT_TRUE(b != nullptr);
-    auto c = DPCTLmalloc_shared(SIZE * sizeof(float), QRef);
-    ASSERT_TRUE(c != nullptr);
+TEST_F(TestQueueSubmit, CheckForUInt16)
+{
+    submit_kernel<uint16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                            DPCTLKernelArgType::DPCTL_UINT16_T,
+                            "_ZTS11RangeKernelItE");
+}
 
-    auto a_ptr = reinterpret_cast<float *>(unwrap<void>(a));
-    auto b_ptr = reinterpret_cast<float *>(unwrap<void>(b));
-    // Initialize a,b
-    for (auto i = 0ul; i < SIZE; ++i) {
-        a_ptr[i] = i + 1.0;
-        b_ptr[i] = i + 2.0;
-    }
+TEST_F(TestQueueSubmit, CheckForInt32)
+{
+    submit_kernel<int32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                           DPCTLKernelArgType::DPCTL_INT32_T,
+                           "_ZTS11RangeKernelIiE");
+}
 
-    // Create kernel args for axpy
-    float d = 10.0;
-    size_t gRange[] = {1, 1, SIZE};
-    size_t lRange[] = {1, 1, 8};
-    void *args2[4] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
-                      (void *)&d};
+TEST_F(TestQueueSubmit, CheckForUInt32)
+{
+    submit_kernel<uint32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                            DPCTLKernelArgType::DPCTL_UINT32_T,
+                            "_ZTS11RangeKernelIjE");
+}
+
+TEST_F(TestQueueSubmit, CheckForInt64)
+{
+    submit_kernel<int64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                           DPCTLKernelArgType::DPCTL_INT64_T,
+                           "_ZTS11RangeKernelIlE");
+}
+
+TEST_F(TestQueueSubmit, CheckForUInt64)
+{
+    submit_kernel<uint64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                            DPCTLKernelArgType::DPCTL_UINT64_T,
+                            "_ZTS11RangeKernelImE");
+}
+
+TEST_F(TestQueueSubmit, CheckForFloat)
+{
+    submit_kernel<float>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                         DPCTLKernelArgType::DPCTL_FLOAT32_T,
+                         "_ZTS11RangeKernelIfE");
+}
+
+TEST_F(TestQueueSubmitFP64, CheckForDouble)
+{
+    submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                          DPCTLKernelArgType::DPCTL_FLOAT64_T,
+                          "_ZTS11RangeKernelIdE");
+}
+
+TEST_F(TestQueueSubmit, CheckForUnsupportedArgTy)
+{
+
+    int scalarVal = 3;
+    size_t Range[] = {SIZE};
+    size_t RANGE_NDIMS = 1;
+    constexpr size_t NARGS = 4;
+
+    auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS11RangeKernelIdE");
+    void *args[NARGS] = {unwrap<void>(nullptr), unwrap<void>(nullptr),
+                         unwrap<void>(nullptr), (void *)&scalarVal};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
-                                              DPCTL_VOID_PTR, DPCTL_FLOAT};
-    DPCTLSyclEventRef events[1];
-    events[0] = DPCTLEvent_Create();
+                                              DPCTL_VOID_PTR,
+                                              DPCTL_UNSUPPORTED_KERNEL_ARG};
+    auto ERef = DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes,
+                                       NARGS, Range, RANGE_NDIMS, nullptr, 0);
 
-    auto ERef =
-        DPCTLQueue_SubmitNDRange(AxpyKernel, QRef, args2, addKernelArgTypes, 4,
-                                 gRange, lRange, 3, events, 1);
-    ASSERT_TRUE(ERef != nullptr);
-    DPCTLQueue_Wait(QRef);
-
-    // clean ups
-    DPCTLEvent_Delete(ERef);
-    DPCTLKernel_Delete(AxpyKernel);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)b, QRef);
-    DPCTLfree_with_queue((DPCTLSyclUSMRef)c, QRef);
-    DPCTLQueue_Delete(QRef);
-    DPCTLContext_Delete(CRef);
-    DPCTLKernelBundle_Delete(KBRef);
-    DPCTLDevice_Delete(DRef);
-    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(ERef == nullptr);
 }
 
 struct TestQueueSubmitBarrier : public ::testing::Test
