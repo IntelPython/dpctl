@@ -107,8 +107,8 @@ inclusive_scan_base_step(sycl::queue &exec_q,
                          outputT *output,
                          const size_t s0,
                          const size_t s1,
-                         IndexerT indexer,
-                         TransformerT transformer,
+                         const IndexerT &indexer,
+                         const TransformerT &transformer,
                          size_t &n_groups,
                          const std::vector<sycl::event> &depends = {})
 {
@@ -234,8 +234,8 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                                 outputT *output,
                                 const size_t s0,
                                 const size_t s1,
-                                IndexerT indexer,
-                                TransformerT transformer,
+                                const IndexerT &indexer,
+                                const TransformerT &transformer,
                                 std::vector<sycl::event> &host_tasks,
                                 const std::vector<sycl::event> &depends = {})
 {

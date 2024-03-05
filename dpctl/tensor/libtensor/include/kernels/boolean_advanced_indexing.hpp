@@ -56,9 +56,9 @@ struct MaskedExtractStridedFunctor
                                 char *dst_data_p,
                                 size_t orthog_iter_size,
                                 size_t masked_iter_size,
-                                OrthogIndexerT orthog_src_dst_indexer_,
-                                MaskedSrcIndexerT masked_src_indexer_,
-                                MaskedDstIndexerT masked_dst_indexer_)
+                                const OrthogIndexerT &orthog_src_dst_indexer_,
+                                const MaskedSrcIndexerT &masked_src_indexer_,
+                                const MaskedDstIndexerT &masked_dst_indexer_)
         : src_cp(src_data_p), cumsum_cp(cumsum_data_p), dst_cp(dst_data_p),
           orthog_nelems(orthog_iter_size), masked_nelems(masked_iter_size),
           orthog_src_dst_indexer(orthog_src_dst_indexer_),
@@ -106,13 +106,14 @@ private:
     char *dst_cp = nullptr;
     size_t orthog_nelems = 0;
     size_t masked_nelems = 0;
-    OrthogIndexerT
-        orthog_src_dst_indexer; // has nd, shape, src_strides, dst_strides for
-                                // dimensions that ARE NOT masked
-    MaskedSrcIndexerT masked_src_indexer; // has nd, shape, src_strides for
-                                          // dimensions that ARE     masked
-    MaskedDstIndexerT
-        masked_dst_indexer; // has 1, dst_strides for dimensions that ARE masked
+    // has nd, shape, src_strides, dst_strides for
+    // dimensions that ARE NOT masked
+    const OrthogIndexerT orthog_src_dst_indexer;
+    // has nd, shape, src_strides for
+    // dimensions that ARE masked
+    const MaskedSrcIndexerT masked_src_indexer;
+    // has 1, dst_strides for dimensions that ARE masked
+    const MaskedDstIndexerT masked_dst_indexer;
 };
 
 template <typename OrthogIndexerT,
@@ -127,9 +128,9 @@ struct MaskedPlaceStridedFunctor
                               const char *rhs_data_p,
                               size_t orthog_iter_size,
                               size_t masked_iter_size,
-                              OrthogIndexerT orthog_dst_rhs_indexer_,
-                              MaskedDstIndexerT masked_dst_indexer_,
-                              MaskedRhsIndexerT masked_rhs_indexer_)
+                              const OrthogIndexerT &orthog_dst_rhs_indexer_,
+                              const MaskedDstIndexerT &masked_dst_indexer_,
+                              const MaskedRhsIndexerT &masked_rhs_indexer_)
         : dst_cp(dst_data_p), cumsum_cp(cumsum_data_p), rhs_cp(rhs_data_p),
           orthog_nelems(orthog_iter_size), masked_nelems(masked_iter_size),
           orthog_dst_rhs_indexer(orthog_dst_rhs_indexer_),
@@ -177,13 +178,14 @@ private:
     const char *rhs_cp = nullptr;
     size_t orthog_nelems = 0;
     size_t masked_nelems = 0;
-    OrthogIndexerT
-        orthog_dst_rhs_indexer; // has nd, shape, dst_strides, rhs_strides for
-                                // dimensions that ARE NOT masked
-    MaskedDstIndexerT masked_dst_indexer; // has nd, shape, dst_strides for
-                                          // dimensions that ARE     masked
-    MaskedRhsIndexerT
-        masked_rhs_indexer; // has 1, rhs_strides for dimensions that ARE masked
+    // has nd, shape, dst_strides, rhs_strides for
+    // dimensions that ARE NOT masked
+    const OrthogIndexerT orthog_dst_rhs_indexer;
+    // has nd, shape, dst_strides for
+    // dimensions that ARE masked
+    const MaskedDstIndexerT masked_dst_indexer;
+    // has 1, rhs_strides for dimensions that ARE masked
+    const MaskedRhsIndexerT masked_rhs_indexer;
 };
 
 // ======= Masked extraction ================================
@@ -226,12 +228,12 @@ sycl::event masked_extract_all_slices_strided_impl(
     //  using StridedIndexer;
     //  using TwoZeroOffsets_Indexer;
 
-    TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
+    constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
 
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
-    StridedIndexer masked_src_indexer(nd, 0, packed_src_shape_strides);
-    Strided1DIndexer masked_dst_indexer(0, dst_size, dst_stride);
+    const StridedIndexer masked_src_indexer(nd, 0, packed_src_shape_strides);
+    const Strided1DIndexer masked_dst_indexer(0, dst_size, dst_stride);
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -283,17 +285,16 @@ sycl::event masked_extract_some_slices_strided_impl(
     const char *cumsum_p,
     char *dst_p,
     int orthog_nd,
-    const ssize_t
-        *packed_ortho_src_dst_shape_strides, // [ortho_shape, ortho_src_strides,
-                                             // ortho_dst_strides], length
-                                             // 3*ortho_nd
+    // [ortho_shape, ortho_src_strides, // ortho_dst_strides],
+    // length 3*ortho_nd
+    const ssize_t *packed_ortho_src_dst_shape_strides,
     ssize_t ortho_src_offset,
     ssize_t ortho_dst_offset,
     int masked_nd,
-    const ssize_t *packed_masked_src_shape_strides, // [masked_src_shape,
-                                                    // masked_src_strides],
-                                                    // length 2*masked_nd
-    ssize_t masked_dst_size,                        // mask_dst is 1D
+    // [masked_src_shape, masked_src_strides],
+    // length 2*masked_nd, mask_dst is 1D
+    const ssize_t *packed_masked_src_shape_strides,
+    ssize_t masked_dst_size,
     ssize_t masked_dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
@@ -302,13 +303,14 @@ sycl::event masked_extract_some_slices_strided_impl(
     //  using StridedIndexer;
     //  using TwoOffsets_StridedIndexer;
 
-    TwoOffsets_StridedIndexer orthog_src_dst_indexer{
+    const TwoOffsets_StridedIndexer orthog_src_dst_indexer{
         orthog_nd, ortho_src_offset, ortho_dst_offset,
         packed_ortho_src_dst_shape_strides};
 
-    StridedIndexer masked_src_indexer{masked_nd, 0,
-                                      packed_masked_src_shape_strides};
-    Strided1DIndexer masked_dst_indexer{0, masked_dst_size, masked_dst_stride};
+    const StridedIndexer masked_src_indexer{masked_nd, 0,
+                                            packed_masked_src_shape_strides};
+    const Strided1DIndexer masked_dst_indexer{0, masked_dst_size,
+                                              masked_dst_stride};
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -403,12 +405,12 @@ sycl::event masked_place_all_slices_strided_impl(
     ssize_t rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    TwoZeroOffsets_Indexer orthog_dst_rhs_indexer{};
+    constexpr TwoZeroOffsets_Indexer orthog_dst_rhs_indexer{};
 
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
-    StridedIndexer masked_dst_indexer(nd, 0, packed_dst_shape_strides);
-    Strided1DCyclicIndexer masked_rhs_indexer(0, rhs_size, rhs_stride);
+    const StridedIndexer masked_dst_indexer(nd, 0, packed_dst_shape_strides);
+    const Strided1DCyclicIndexer masked_rhs_indexer(0, rhs_size, rhs_stride);
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -460,30 +462,29 @@ sycl::event masked_place_some_slices_strided_impl(
     const char *cumsum_p,
     const char *rhs_p,
     int orthog_nd,
-    const ssize_t
-        *packed_ortho_dst_rhs_shape_strides, // [ortho_shape, ortho_dst_strides,
-                                             // ortho_rhs_strides], length
-                                             // 3*ortho_nd
+    // [ortho_shape, ortho_dst_strides, ortho_rhs_strides],
+    // length 3*ortho_nd
+    const ssize_t *packed_ortho_dst_rhs_shape_strides,
     ssize_t ortho_dst_offset,
     ssize_t ortho_rhs_offset,
     int masked_nd,
-    const ssize_t *packed_masked_dst_shape_strides, // [masked_dst_shape,
-                                                    // masked_dst_strides],
-                                                    // length 2*masked_nd
-    ssize_t masked_rhs_size,                        // mask_dst is 1D
+    // [masked_dst_shape, masked_dst_strides],
+    // length 2*masked_nd, mask_dst is 1D
+    const ssize_t *packed_masked_dst_shape_strides,
+    ssize_t masked_rhs_size,
     ssize_t masked_rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    TwoOffsets_StridedIndexer orthog_dst_rhs_indexer{
+    const TwoOffsets_StridedIndexer orthog_dst_rhs_indexer{
         orthog_nd, ortho_dst_offset, ortho_rhs_offset,
         packed_ortho_dst_rhs_shape_strides};
 
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
-    StridedIndexer masked_dst_indexer{masked_nd, 0,
-                                      packed_masked_dst_shape_strides};
-    Strided1DCyclicIndexer masked_rhs_indexer{0, masked_rhs_size,
-                                              masked_rhs_stride};
+    const StridedIndexer masked_dst_indexer{masked_nd, 0,
+                                            packed_masked_dst_shape_strides};
+    const Strided1DCyclicIndexer masked_rhs_indexer{0, masked_rhs_size,
+                                                    masked_rhs_stride};
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);

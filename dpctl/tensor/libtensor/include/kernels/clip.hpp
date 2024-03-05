@@ -235,14 +235,14 @@ private:
     const T *min_p = nullptr;
     const T *max_p = nullptr;
     T *dst_p = nullptr;
-    IndexerT indexer;
+    const IndexerT indexer;
 
 public:
     ClipStridedFunctor(const T *x_p_,
                        const T *min_p_,
                        const T *max_p_,
                        T *dst_p_,
-                       IndexerT indexer_)
+                       const IndexerT &indexer_)
         : x_p(x_p_), min_p(min_p_), max_p(max_p_), dst_p(dst_p_),
           indexer(indexer_)
     {
@@ -298,7 +298,7 @@ sycl::event clip_strided_impl(sycl::queue &q,
     sycl::event clip_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        FourOffsets_StridedIndexer indexer{
+        const FourOffsets_StridedIndexer indexer{
             nd, x_offset, min_offset, max_offset, dst_offset, shape_strides};
 
         cgh.parallel_for<clip_strided_kernel<T, FourOffsets_StridedIndexer>>(

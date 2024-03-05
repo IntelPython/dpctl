@@ -249,12 +249,12 @@ struct UnaryStridedFunctor
 private:
     const argT *inp_ = nullptr;
     resT *res_ = nullptr;
-    IndexerT inp_out_indexer_;
+    const IndexerT inp_out_indexer_;
 
 public:
     UnaryStridedFunctor(const argT *inp_p,
                         resT *res_p,
-                        IndexerT inp_out_indexer)
+                        const IndexerT &inp_out_indexer)
         : inp_(inp_p), res_(res_p), inp_out_indexer_(inp_out_indexer)
     {
     }
@@ -356,7 +356,7 @@ unary_strided_impl(sycl::queue &exec_q,
         using IndexerT =
             typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-        IndexerT indexer{nd, arg_offset, res_offset, shape_and_strides};
+        const IndexerT indexer{nd, arg_offset, res_offset, shape_and_strides};
 
         const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
         resTy *res_tp = reinterpret_cast<resTy *>(res_p);
@@ -516,13 +516,13 @@ private:
     const argT1 *in1 = nullptr;
     const argT2 *in2 = nullptr;
     resT *out = nullptr;
-    ThreeOffsets_IndexerT three_offsets_indexer_;
+    const ThreeOffsets_IndexerT three_offsets_indexer_;
 
 public:
     BinaryStridedFunctor(const argT1 *inp1_tp,
                          const argT2 *inp2_tp,
                          resT *res_tp,
-                         ThreeOffsets_IndexerT inps_res_indexer)
+                         const ThreeOffsets_IndexerT &inps_res_indexer)
         : in1(inp1_tp), in2(inp2_tp), out(res_tp),
           three_offsets_indexer_(inps_res_indexer)
     {
@@ -848,8 +848,8 @@ binary_strided_impl(sycl::queue &exec_q,
         using IndexerT =
             typename dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
 
-        IndexerT indexer{nd, arg1_offset, arg2_offset, res_offset,
-                         shape_and_strides};
+        const IndexerT indexer{nd, arg1_offset, arg2_offset, res_offset,
+                               shape_and_strides};
 
         const argTy1 *arg1_tp = reinterpret_cast<const argTy1 *>(arg1_p);
         const argTy2 *arg2_tp = reinterpret_cast<const argTy2 *>(arg2_p);
