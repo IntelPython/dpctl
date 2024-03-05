@@ -1,0 +1,40 @@
+.. index:: pair: enum; DPCTLKernelArgType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089:
+
+enum DPCTLKernelArgType
+=======================
+
+Overview
+~~~~~~~~
+
+Supported types for kernel arguments to be passed to a Sycl kernel using DPCTL. :ref:`More...<details-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLKernelArgType
+	{
+	    :target:`DPCTL_INT8_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ab0b770dc454c9dd1dbaee79851879d38>`,
+	    :target:`DPCTL_UINT8_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a65d3851ebb234e2431893f5740a5e157>`,
+	    :target:`DPCTL_INT16_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ad1d8136b0fdc01580f217a5c3b798df8>`,
+	    :target:`DPCTL_UINT16_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089afc1da4a7ae956e99c6580b92b80065ed>`,
+	    :target:`DPCTL_INT32_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089aab6ddd90dc460db90db27c0903adbcea>`,
+	    :target:`DPCTL_UINT32_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a36a7870804e6c71e050c1f2852349259>`,
+	    :target:`DPCTL_INT64_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089ad68b57b95d4baa0dad85cda616fcceba>`,
+	    :target:`DPCTL_UINT64_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a49c37a83dc1e500d349804bb3e68bdfa>`,
+	    :target:`DPCTL_FLOAT32_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089abdfe95fb8b5c91a42430fe2fcca917ec>`,
+	    :target:`DPCTL_FLOAT64_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a0069771ce6fc28ef066612ce06022fa8>`,
+	    :target:`DPCTL_VOID_PTR<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8>`,
+	};
+
+.. _details-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Supported types for kernel arguments to be passed to a Sycl kernel using DPCTL.
+
+Todo Add support for sycl::buffer
+
