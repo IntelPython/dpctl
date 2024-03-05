@@ -224,14 +224,14 @@ private:
     const T *x2_p = nullptr;
     T *dst_p = nullptr;
     const condT *cond_p = nullptr;
-    IndexerT indexer;
+    const IndexerT indexer;
 
 public:
     WhereStridedFunctor(const condT *cond_p_,
                         const T *x1_p_,
                         const T *x2_p_,
                         T *dst_p_,
-                        IndexerT indexer_)
+                        const IndexerT &indexer_)
         : x1_p(x1_p_), x2_p(x2_p_), dst_p(dst_p_), cond_p(cond_p_),
           indexer(indexer_)
     {
@@ -290,7 +290,7 @@ sycl::event where_strided_impl(sycl::queue &q,
     sycl::event where_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        FourOffsets_StridedIndexer indexer{
+        const FourOffsets_StridedIndexer indexer{
             nd, cond_offset, x1_offset, x2_offset, dst_offset, shape_strides};
 
         cgh.parallel_for<

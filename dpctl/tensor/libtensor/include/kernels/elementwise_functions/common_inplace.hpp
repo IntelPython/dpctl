@@ -177,12 +177,12 @@ struct BinaryInplaceStridedFunctor
 private:
     const argT *rhs = nullptr;
     resT *lhs = nullptr;
-    TwoOffsets_IndexerT two_offsets_indexer_;
+    const TwoOffsets_IndexerT two_offsets_indexer_;
 
 public:
     BinaryInplaceStridedFunctor(const argT *rhs_tp,
                                 resT *lhs_tp,
-                                TwoOffsets_IndexerT inp_res_indexer)
+                                const TwoOffsets_IndexerT &inp_res_indexer)
         : rhs(rhs_tp), lhs(lhs_tp), two_offsets_indexer_(inp_res_indexer)
     {
     }
@@ -375,7 +375,7 @@ binary_inplace_strided_impl(sycl::queue &exec_q,
         using IndexerT =
             typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
-        IndexerT indexer{nd, rhs_offset, lhs_offset, shape_and_strides};
+        const IndexerT indexer{nd, rhs_offset, lhs_offset, shape_and_strides};
 
         const argTy *arg_tp = reinterpret_cast<const argTy *>(rhs_p);
         resTy *res_tp = reinterpret_cast<resTy *>(lhs_p);

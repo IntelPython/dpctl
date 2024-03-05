@@ -78,10 +78,10 @@ class GenericCopyFunctor
 private:
     const srcT *src_ = nullptr;
     dstT *dst_ = nullptr;
-    IndexerT indexer_;
+    const IndexerT indexer_;
 
 public:
-    GenericCopyFunctor(const srcT *src_p, dstT *dst_p, IndexerT indexer)
+    GenericCopyFunctor(const srcT *src_p, dstT *dst_p, const IndexerT &indexer)
         : src_(src_p), dst_(dst_p), indexer_(indexer)
     {
     }
@@ -169,8 +169,8 @@ copy_and_cast_generic_impl(sycl::queue &q,
         cgh.depends_on(depends);
         cgh.depends_on(additional_depends);
 
-        TwoOffsets_StridedIndexer indexer{nd, src_offset, dst_offset,
-                                          shape_and_strides};
+        const TwoOffsets_StridedIndexer indexer{nd, src_offset, dst_offset,
+                                                shape_and_strides};
         const srcTy *src_tp = reinterpret_cast<const srcTy *>(src_p);
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
 
@@ -460,8 +460,8 @@ copy_and_cast_nd_specialized_impl(sycl::queue &q,
 
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         using IndexerT = TwoOffsets_FixedDimStridedIndexer<nd>;
-        IndexerT indexer{shape, src_strides, dst_strides, src_offset,
-                         dst_offset};
+        const IndexerT indexer{shape, src_strides, dst_strides, src_offset,
+                               dst_offset};
         const srcTy *src_tp = reinterpret_cast<const srcTy *>(src_p);
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
 
@@ -515,12 +515,12 @@ class GenericCopyFromHostFunctor
 private:
     const AccessorT src_acc_;
     dstTy *dst_ = nullptr;
-    IndexerT indexer_;
+    const IndexerT indexer_;
 
 public:
     GenericCopyFromHostFunctor(const AccessorT &src_acc,
                                dstTy *dst_p,
-                               IndexerT indexer)
+                               const IndexerT &indexer)
         : src_acc_(src_acc), dst_(dst_p), indexer_(indexer)
     {
     }
@@ -618,7 +618,7 @@ void copy_and_cast_from_host_impl(
 
         sycl::accessor npy_acc(npy_buf, cgh, sycl::read_only);
 
-        TwoOffsets_StridedIndexer indexer{
+        const TwoOffsets_StridedIndexer indexer{
             nd, src_offset - src_min_nelem_offset, dst_offset,
             const_cast<const ssize_t *>(shape_and_strides)};
 
@@ -666,14 +666,14 @@ class GenericCopyForReshapeFunctor
 private:
     const Ty *src_p = nullptr;
     Ty *dst_p = nullptr;
-    SrcIndexerT src_indexer_;
-    DstIndexerT dst_indexer_;
+    const SrcIndexerT src_indexer_;
+    const DstIndexerT dst_indexer_;
 
 public:
     GenericCopyForReshapeFunctor(const char *src_ptr,
                                  char *dst_ptr,
-                                 SrcIndexerT src_indexer,
-                                 DstIndexerT dst_indexer)
+                                 const SrcIndexerT &src_indexer,
+                                 const DstIndexerT &dst_indexer)
         : src_p(reinterpret_cast<const Ty *>(src_ptr)),
           dst_p(reinterpret_cast<Ty *>(dst_ptr)), src_indexer_(src_indexer),
           dst_indexer_(dst_indexer)
@@ -747,8 +747,8 @@ copy_for_reshape_generic_impl(sycl::queue &q,
         const ssize_t *dst_shape_and_strides = const_cast<const ssize_t *>(
             packed_shapes_and_strides + (2 * src_nd));
 
-        StridedIndexer src_indexer{src_nd, 0, src_shape_and_strides};
-        StridedIndexer dst_indexer{dst_nd, 0, dst_shape_and_strides};
+        const StridedIndexer src_indexer{src_nd, 0, src_shape_and_strides};
+        const StridedIndexer dst_indexer{dst_nd, 0, dst_shape_and_strides};
 
         using KernelName =
             copy_for_reshape_generic_kernel<Ty, StridedIndexer, StridedIndexer>;
@@ -864,14 +864,14 @@ class StridedCopyForRollFunctor
 private:
     const Ty *src_p = nullptr;
     Ty *dst_p = nullptr;
-    SrcIndexerT src_indexer_;
-    DstIndexerT dst_indexer_;
+    const SrcIndexerT src_indexer_;
+    const DstIndexerT dst_indexer_;
 
 public:
     StridedCopyForRollFunctor(const Ty *src_ptr,
                               Ty *dst_ptr,
-                              SrcIndexerT src_indexer,
-                              DstIndexerT dst_indexer)
+                              const SrcIndexerT &src_indexer,
+                              const DstIndexerT &dst_indexer)
         : src_p(src_ptr), dst_p(dst_ptr), src_indexer_(src_indexer),
           dst_indexer_(dst_indexer)
     {
@@ -946,14 +946,15 @@ sycl::event copy_for_roll_strided_impl(sycl::queue &q,
         //   USM array of size 3 * nd
         //   [ common_shape; src_strides; dst_strides ]
 
-        StridedIndexer src_indexer{nd, src_offset, packed_shapes_and_strides};
-        LeftRolled1DTransformer left_roll_transformer{shift, nelems};
+        const StridedIndexer src_indexer{nd, src_offset,
+                                         packed_shapes_and_strides};
+        const LeftRolled1DTransformer left_roll_transformer{shift, nelems};
 
         using CompositeIndexerT =
             CompositionIndexer<StridedIndexer, LeftRolled1DTransformer>;
 
-        CompositeIndexerT rolled_src_indexer(src_indexer,
-                                             left_roll_transformer);
+        const CompositeIndexerT rolled_src_indexer(src_indexer,
+                                                   left_roll_transformer);
 
         UnpackedStridedIndexer dst_indexer{nd, dst_offset,
                                            packed_shapes_and_strides,
@@ -1024,12 +1025,12 @@ sycl::event copy_for_roll_contig_impl(sycl::queue &q,
     sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        NoOpIndexer src_indexer{};
-        LeftRolled1DTransformer roller{shift, nelems};
+        constexpr NoOpIndexer src_indexer{};
+        const LeftRolled1DTransformer roller{shift, nelems};
 
-        CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>
+        const CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>
             left_rolled_src_indexer{src_indexer, roller};
-        NoOpIndexer dst_indexer{};
+        constexpr NoOpIndexer dst_indexer{};
 
         using KernelName = copy_for_roll_contig_kernel<Ty>;
 
@@ -1119,11 +1120,11 @@ sycl::event copy_for_roll_ndshift_strided_impl(
         const ssize_t *shifts_ptr =
             packed_shapes_and_strides_and_shifts + 3 * nd;
 
-        RolledNDIndexer src_indexer{nd, shape_ptr, src_strides_ptr, shifts_ptr,
-                                    src_offset};
+        const RolledNDIndexer src_indexer{nd, shape_ptr, src_strides_ptr,
+                                          shifts_ptr, src_offset};
 
-        UnpackedStridedIndexer dst_indexer{nd, dst_offset, shape_ptr,
-                                           dst_strides_ptr};
+        const UnpackedStridedIndexer dst_indexer{nd, dst_offset, shape_ptr,
+                                                 dst_strides_ptr};
 
         using KernelName = copy_for_roll_strided_kernel<Ty, RolledNDIndexer,
                                                         UnpackedStridedIndexer>;

@@ -101,9 +101,9 @@ private:
     int k_ = 0;
     size_t ind_nelems_ = 0;
     const ssize_t *axes_shape_and_strides_ = nullptr;
-    OrthogStrider orthog_strider;
-    IndicesStrider ind_strider;
-    AxesStrider axes_strider;
+    const OrthogStrider orthog_strider;
+    const IndicesStrider ind_strider;
+    const AxesStrider axes_strider;
 
 public:
     TakeFunctor(const char *src_cp,
@@ -112,9 +112,9 @@ public:
                 int k,
                 size_t ind_nelems,
                 const ssize_t *axes_shape_and_strides,
-                OrthogStrider orthog_strider_,
-                IndicesStrider ind_strider_,
-                AxesStrider axes_strider_)
+                const OrthogStrider &orthog_strider_,
+                const IndicesStrider &ind_strider_,
+                const AxesStrider &axes_strider_)
         : src_(src_cp), dst_(dst_cp), ind_(ind_cp), k_(k),
           ind_nelems_(ind_nelems),
           axes_shape_and_strides_(axes_shape_and_strides),
@@ -136,7 +136,7 @@ public:
         ssize_t src_offset = orthog_offsets.get_first_offset();
         ssize_t dst_offset = orthog_offsets.get_second_offset();
 
-        ProjectorT proj{};
+        const ProjectorT proj{};
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
 
@@ -194,12 +194,12 @@ sycl::event take_impl(sycl::queue &q,
     sycl::event take_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        TwoOffsets_StridedIndexer orthog_indexer{nd, src_offset, dst_offset,
-                                                 orthog_shape_and_strides};
-        NthStrideOffset indices_indexer{ind_nd, ind_offsets,
-                                        ind_shape_and_strides};
-        StridedIndexer axes_indexer{ind_nd, 0,
-                                    axes_shape_and_strides + (2 * k)};
+        const TwoOffsets_StridedIndexer orthog_indexer{
+            nd, src_offset, dst_offset, orthog_shape_and_strides};
+        const NthStrideOffset indices_indexer{ind_nd, ind_offsets,
+                                              ind_shape_and_strides};
+        const StridedIndexer axes_indexer{ind_nd, 0,
+                                          axes_shape_and_strides + (2 * k)};
 
         const size_t gws = orthog_nelems * ind_nelems;
 
@@ -231,9 +231,9 @@ private:
     int k_ = 0;
     size_t ind_nelems_ = 0;
     const ssize_t *axes_shape_and_strides_ = nullptr;
-    OrthogStrider orthog_strider;
-    IndicesStrider ind_strider;
-    AxesStrider axes_strider;
+    const OrthogStrider orthog_strider;
+    const IndicesStrider ind_strider;
+    const AxesStrider axes_strider;
 
 public:
     PutFunctor(char *dst_cp,
@@ -242,9 +242,9 @@ public:
                int k,
                size_t ind_nelems,
                const ssize_t *axes_shape_and_strides,
-               OrthogStrider orthog_strider_,
-               IndicesStrider ind_strider_,
-               AxesStrider axes_strider_)
+               const OrthogStrider &orthog_strider_,
+               const IndicesStrider &ind_strider_,
+               const AxesStrider &axes_strider_)
         : dst_(dst_cp), val_(val_cp), ind_(ind_cp), k_(k),
           ind_nelems_(ind_nelems),
           axes_shape_and_strides_(axes_shape_and_strides),
@@ -266,7 +266,7 @@ public:
         ssize_t dst_offset = orthog_offsets.get_first_offset();
         ssize_t val_offset = orthog_offsets.get_second_offset();
 
-        ProjectorT proj{};
+        const ProjectorT proj{};
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
 
@@ -324,12 +324,12 @@ sycl::event put_impl(sycl::queue &q,
     sycl::event put_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        TwoOffsets_StridedIndexer orthog_indexer{nd, dst_offset, val_offset,
-                                                 orthog_shape_and_strides};
-        NthStrideOffset indices_indexer{ind_nd, ind_offsets,
-                                        ind_shape_and_strides};
-        StridedIndexer axes_indexer{ind_nd, 0,
-                                    axes_shape_and_strides + (2 * k)};
+        const TwoOffsets_StridedIndexer orthog_indexer{
+            nd, dst_offset, val_offset, orthog_shape_and_strides};
+        const NthStrideOffset indices_indexer{ind_nd, ind_offsets,
+                                              ind_shape_and_strides};
+        const StridedIndexer axes_indexer{ind_nd, 0,
+                                          axes_shape_and_strides + (2 * k)};
 
         const size_t gws = orthog_nelems * ind_nelems;
 
