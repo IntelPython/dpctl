@@ -57,21 +57,16 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
 
     ctypedef enum _arg_data_type 'DPCTLKernelArgType':
-        _CHAR               'DPCTL_CHAR',
-        _SIGNED_CHAR        'DPCTL_SIGNED_CHAR',
-        _UNSIGNED_CHAR      'DPCTL_UNSIGNED_CHAR',
-        _SHORT              'DPCTL_SHORT',
-        _INT                'DPCTL_INT',
-        _UNSIGNED_INT       'DPCTL_UNSIGNED_INT',
-        _UNSIGNED_INT8      'DPCTL_UNSIGNED_INT8',
-        _LONG               'DPCTL_LONG',
-        _UNSIGNED_LONG      'DPCTL_UNSIGNED_LONG',
-        _LONG_LONG          'DPCTL_LONG_LONG',
-        _UNSIGNED_LONG_LONG 'DPCTL_UNSIGNED_LONG_LONG',
-        _SIZE_T             'DPCTL_SIZE_T',
-        _FLOAT              'DPCTL_FLOAT',
-        _DOUBLE             'DPCTL_DOUBLE',
-        _LONG_DOUBLE        'DPCTL_DOUBLE',
+        _INT8_T             'DPCTL_INT8_T',
+        _UINT8_T            'DPCTL_UINT8_T',
+        _INT16_T            'DPCTL_INT16_T',
+        _UINT16_T           'DPCTL_UINT16_T',
+        _INT32_T            'DPCTL_INT32_T',
+        _UINT32_T           'DPCTL_UINT32_T',
+        _INT64_T            'DPCTL_INT64_T',
+        _UINT64_T           'DPCTL_UINT64_T',
+        _FLOAT              'DPCTL_FLOAT32_T',
+        _DOUBLE             'DPCTL_FLOAT64_T',
         _VOID_PTR           'DPCTL_VOID_PTR'
 
     ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
