@@ -1,0 +1,137 @@
+.. _dpctl_pyapi:
+
+#####
+dpctl
+#####
+
+.. currentmodule:: dpctl
+
+.. automodule:: dpctl
+
+
+Sub-modules
+-----------
+
+.. toctree::
+   :hidden:
+
+   dpctl.memory_pyapi
+   dpctl.program_pyapi
+   dpctl.tensor_pyapi
+   dpctl.utils_pyapi
+
+.. list-table::
+    :widths: 25,50
+
+    * - :ref:`dpctl.memory_pyapi`
+      - **Data Parallel Control Memory** provides Python objects for untyped USM memory container of bytes for each kind of USM pointers: shared pointers, device pointers and host pointers.
+    * - :ref:`dpctl.program_pyapi`
+      - **Data Parallel Control Program** provides a way to create a SYCL kernel from either an OpenCL program represented as a string or a SPIR-V binary file.
+    * - :ref:`dpctl.tensor_pyapi`
+      - **Data Parallel Tensor** provides an N-dimensional array container backed by typed USM allocations and implements operations to create and manipulate such arrays, as well as perform operations on arrays in conformance with Python Array API standard.
+    * - :ref:`dpctl.utils_pyapi`
+      - A collection of utility functions.
+
+
+.. _dpctl_classes:
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   SyclContext
+   SyclDevice
+   SyclEvent
+   SyclPlatform
+   SyclQueue
+   SyclTimer
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclContext`
+      - A Python wrapper for the :sycl_context:`sycl::context <>` C++ class.
+    * - :class:`SyclDevice`
+      - A Python wrapper for the :sycl_device:`sycl::device <>` C++ class.
+    * - :class:`SyclEvent`
+      - Python class representing ``sycl::event``. There are multiple ways to create a :class:`dpctl.SyclEvent` object: - Invoking the constructor with no arguments creates a ready event using the default constructor of the ``sycl::event``.
+    * - :class:`SyclPlatform`
+      - Python class representing ``sycl::platform`` class.
+    * - :class:`SyclQueue`
+      - Python class representing ``sycl::queue``. There are multiple ways to create a :class:`dpctl.SyclQueue` object: - Invoking the constructor with no arguments creates a context using the default selector.
+    * - :class:`SyclTimer`
+      - Python class to measure device time of execution of commands submitted to :class:`dpctl.SyclQueue` as well as the wall-time.
+
+
+.. _dpctl_queue_management_functions:
+
+Queue Management Functions
+--------------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`device_context()`
+      - Yields a SYCL queue corresponding to the input queue object, device object, or device filter selector string.
+
+.. _dpctl_device_selection_functions:
+
+Device Selection Functions
+--------------------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`select_device_with_aspects()`
+      - Selects the root :class:`dpctl.SyclDevice` that has the highest default selector score among devices that have all aspects in the `required_aspects` list, and do not have any aspects in `excluded_aspects` list.
+
+.. _dpctl_other_functions:
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`get_include()`
+      - Return the directory that contains the dpctl \*.h header files.
+
+
+Enums
+-----
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`backend_type`
+      - An enumeration of supported SYCL backends.
+    * - :class:`device_type`
+      - An enumeration of supported SYCL device types.
+    * - :class:`event_status_type`
+      - An enumeration of SYCL event states.
+    * - :class:`global_mem_cache_type`
+      - An enumeration of global memory cache types for a device.
+
+
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclContextCreationError`
+      - A SyclContextCreationError exception is raised when SyclContext could not created.
+    * - :class:`SyclDeviceCreationError`
+      - A SyclDeviceCreationError exception is raised when SyclDevice instance could not created.
+    * - :class:`SyclKernelInvalidRangeError`
+      - A SyclKernelInvalidRangeError is raised when the provided range has less than one or more than three dimensions.
+    * - :class:`SyclKernelSubmitError`
+      - A SyclKernelSubmitError exception is raised when the provided :class:`.SyclKernel` could not be submitted to the :class:`.SyclQueue`.
+    * - :class:`SyclQueueCreationError`
+      - A SyclQueueCreationError exception is raised when a :class:`.SyclQueue` could not be created. :class:`.SyclQueue` creation can fail if the filter string is invalid, or the backend or device type values are not supported.
+    * - :class:`SyclSubDeviceCreationError`
+      - A SyclSubDeviceCreationError exception is raised when sub-devices were not created.
+
+
