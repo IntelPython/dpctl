@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+49.g067f89f7 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+63.g0bd39fc057 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7458c89c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c20c08d0"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+49.g067f89f7
+                0.17.0dev0+63.g0bd39fc057
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1199,8 +1199,9 @@ first sequence applies to <cite>x1</cite> and the second sequence applies
 to <cite>x2</cite>. Both sequences must have equal length, and each axis
 <cite>x1_axes[i]</cite> for <cite>x1</cite> must have the same size as the respective
 axis <cite>x2_axes[i]</cite> for <cite>x2</cite>. Each sequence must consist of unique
-non-negative integers that specify valid axes for each respective
-array.</p>
+integers that specify valid axes for each respective array.
+For example, if <cite>x1</cite> has rank <cite>N</cite>, a valid axis must reside on the
+half-open interval <cite>[-N, N)</cite>.</p>
 </p></li>
 </ul>
 </dd>
@@ -1509,12 +1510,11 @@ shapes along non-contract axes according to broadcasting
 rules, and must have the same size along the contracted
 axis. Input arrays should be of numeric type.</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – axis over which to compute the dot product. The axis must
-be an integer on the interval <cite>[-N, N)</cite>, where <cite>N</cite> is the
-array rank of input arrays after broadcasting rules are
-applied. If specified as a negative integer, the axis along
-which dot product is performed is counted backward from
-the last axes (that is <cite>-1</cite> refers to the last axis). By
-default, dot product is computed over the last axis.
+be an integer on the interval <cite>[-N, -1]</cite>, where <cite>N</cite> is
+<code class="docutils literal notranslate"><span class="pre">min(x1.ndim,</span> <span class="pre">x2.ndim)</span></code>. The axis along which dot product
+is performed is counted backward from the last axes
+(that is, <cite>-1</cite> refers to the last axis). By default,
+dot product is computed over the last axis.
 Default: <cite>-1</cite>.</p></li>
 </ul>
 </dd>
