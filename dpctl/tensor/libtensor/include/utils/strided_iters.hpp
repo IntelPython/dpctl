@@ -73,7 +73,7 @@ template <typename indT = std::ptrdiff_t> class CIndexer_vector
 public:
     CIndexer_vector(int dim) : nd(dim) {}
 
-    template <class ShapeTy> indT size(ShapeTy shape) const
+    template <class ShapeTy> indT size(const ShapeTy &shape) const
     {
         indT s = static_cast<indT>(1);
         for (int i = 0; i < nd; ++i) {
@@ -83,8 +83,10 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void
-    get_displacement(indT i, ShapeTy shape, StridesTy stride, indT &disp) const
+    void get_displacement(const indT i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride,
+                          indT &disp) const
     {
         if (nd == 1) {
             disp = i * stride[0];
@@ -104,10 +106,10 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(indT i,
-                          ShapeTy shape,
-                          StridesTy stride1,
-                          StridesTy stride2,
+    void get_displacement(const indT i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride1,
+                          const StridesTy &stride2,
                           indT &disp1,
                           indT &disp2) const
     {
@@ -133,11 +135,11 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(indT i,
-                          ShapeTy shape,
-                          StridesTy stride1,
-                          StridesTy stride2,
-                          StridesTy stride3,
+    void get_displacement(const indT i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride1,
+                          const StridesTy &stride2,
+                          const StridesTy &stride3,
                           indT &disp1,
                           indT &disp2,
                           indT &disp3) const
@@ -167,12 +169,12 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_displacement(indT i,
-                          ShapeTy shape,
-                          StridesTy stride1,
-                          StridesTy stride2,
-                          StridesTy stride3,
-                          StridesTy stride4,
+    void get_displacement(const indT i,
+                          const ShapeTy &shape,
+                          const StridesTy &stride1,
+                          const StridesTy &stride2,
+                          const StridesTy &stride3,
+                          const StridesTy &stride4,
                           indT &disp1,
                           indT &disp2,
                           indT &disp3,
@@ -206,9 +208,9 @@ public:
     }
 
     template <class ShapeTy, class StridesTy, int nstrides>
-    void get_displacement(indT i,
-                          ShapeTy shape,
-                          const std::array<StridesTy, nstrides> strides,
+    void get_displacement(const indT i,
+                          const ShapeTy &shape,
+                          const std::array<StridesTy, nstrides> &strides,
                           std::array<indT, nstrides> &disps) const
     {
         if (nd == 1) {
@@ -240,14 +242,14 @@ public:
     }
 
     template <class ShapeTy, class StridesTy>
-    void get_left_rolled_displacement(indT i,
-                                      ShapeTy shape,
-                                      StridesTy stride,
-                                      StridesTy shifts,
+    void get_left_rolled_displacement(const indT i,
+                                      const ShapeTy &shape,
+                                      const StridesTy &stride,
+                                      const StridesTy &shifts,
                                       indT &disp) const
     {
         indT i_ = i;
-        indT d = 0;
+        indT d(0);
         for (int dim = nd; --dim > 0;) {
             const indT si = shape[dim];
             const indT q = i_ / si;
@@ -275,7 +277,7 @@ public:
 
 template <int _ndim, typename indT = std::ptrdiff_t> class CIndexer_array
 {
-    static const int ndim = _ndim;
+    static constexpr int ndim = _ndim;
 
     static_assert(std::is_integral<indT>::value, "Integral type is required");
     static_assert(std::is_signed<indT>::value,
@@ -295,7 +297,7 @@ public:
     explicit CIndexer_array(const index_t &input_shape)
         : elem_count(0), shape{}, multi_index{}
     {
-        indT s = static_cast<std::ptrdiff_t>(1);
+        indT s(1);
         for (int i = 0; i < ndim; ++i) {
             shape[i] = input_shape[i];
             s *= input_shape[i];
@@ -312,7 +314,7 @@ public:
         return ndim;
     }
 
-    void set(indT i)
+    void set(const indT i)
     {
         if (ndim == 1) {
             multi_index[0] = i;
@@ -366,7 +368,7 @@ int simplify_iteration_stride(const int nd,
                               StridesTy *strides,
                               StridesTy &disp)
 {
-    disp = std::ptrdiff_t(0);
+    disp = StridesTy(0);
     if (nd < 2)
         return nd;
 
@@ -451,8 +453,8 @@ int simplify_iteration_two_strides(const int nd,
                                    StridesTy &disp1,
                                    StridesTy &disp2)
 {
-    disp1 = std::ptrdiff_t(0);
-    disp2 = std::ptrdiff_t(0);
+    disp1 = StridesTy(0);
+    disp2 = StridesTy(0);
     if (nd < 2)
         return nd;
 
@@ -603,8 +605,8 @@ int simplify_iteration_three_strides(const int nd,
                                      StridesTy &disp2,
                                      StridesTy &disp3)
 {
-    disp1 = std::ptrdiff_t(0);
-    disp2 = std::ptrdiff_t(0);
+    disp1 = StridesTy(0);
+    disp2 = StridesTy(0);
     if (nd < 2)
         return nd;
 
@@ -768,8 +770,8 @@ int simplify_iteration_four_strides(const int nd,
                                     StridesTy &disp3,
                                     StridesTy &disp4)
 {
-    disp1 = std::ptrdiff_t(0);
-    disp2 = std::ptrdiff_t(0);
+    disp1 = StridesTy(0);
+    disp2 = StridesTy(0);
     if (nd < 2)
         return nd;
 

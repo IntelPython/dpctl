@@ -203,6 +203,9 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
         simplified_shape, simplified_cond_strides, simplified_x1_strides,
         simplified_x2_strides, simplified_dst_strides);
     py::ssize_t *packed_shape_strides = std::get<0>(ptr_size_event_tuple);
+    if (!packed_shape_strides) {
+        throw std::runtime_error("USM-host memory allocation failure");
+    }
     sycl::event copy_shape_strides_ev = std::get<2>(ptr_size_event_tuple);
 
     std::vector<sycl::event> all_deps;
