@@ -181,6 +181,7 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
+from ._searchsorted import searchsorted
 from ._set_functions import (
     unique_all,
     unique_counts,
@@ -365,4 +366,5 @@ __all__ = [
     "matmul",
     "tensordot",
     "vecdot",
+    "searchsorted",
 ]
