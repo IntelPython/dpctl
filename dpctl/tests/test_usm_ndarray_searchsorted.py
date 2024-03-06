@@ -275,7 +275,7 @@ def test_searchsorted_validation():
     with pytest.raises(TypeError):
         dpt.searchsorted(x1, None)
     with pytest.raises(TypeError):
-        dpt.searchsorted(x1, x1, sorted=dict())
+        dpt.searchsorted(x1, x1, sorter=dict())
     with pytest.raises(ValueError):
         dpt.searchsorted(x1, x1, side="unknown")
 
@@ -295,6 +295,19 @@ def test_searchsorted_validation2():
 
     with pytest.raises(dpu.ExecutionPlacementError):
         dpt.searchsorted(x1, x2, sorter=sorter)
+
+    sorter = dpt.ones(x1.shape, dtype=dpt.bool)
+    # non-integral sorter.dtype raises
+    with pytest.raises(ValueError):
+        dpt.searchsorted(x1, x1, sorter=sorter)
+
+    # non-matching x1.shape and sorter.shape raises
+    with pytest.raises(ValueError):
+        dpt.searchsorted(x1, x1, sorter=sorter[:-1])
+
+    # x1 must be 1d, or ValueError is raised
+    with pytest.raises(ValueError):
+        dpt.searchsorted(x1[dpt.newaxis, :], x1)
 
 
 def test_pw_linear_interpolation_example():
