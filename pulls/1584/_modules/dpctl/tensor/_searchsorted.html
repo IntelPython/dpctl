@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._searchsorted &mdash; Data Parallel Control (dpctl) 0.17.0dev0+65.g42b0f2973b documentation</title>
+  <title>dpctl.tensor._searchsorted &mdash; Data Parallel Control (dpctl) 0.17.0dev0+67.g19e63c0bee documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=3a090522"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=44ccfff1"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+65.g42b0f2973b
+                0.17.0dev0+67.g19e63c0bee
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -170,9 +170,14 @@
 
     <span class="k">if</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">isdtype</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;integral&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Sorter array must have integral data type, got </span><span class="si">{</span><span class="n">sorter</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">sorter</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Sorter array must be one-dimension with the same &quot;</span>
+                <span class="s2">&quot;shape as the first argument array&quot;</span>
+            <span class="p">)</span>
         <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">[</span><span class="n">sorter</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
