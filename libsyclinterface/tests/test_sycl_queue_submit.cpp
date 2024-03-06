@@ -91,15 +91,20 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
 } /* end of anonymous namespace */
 
 /*
-// The oneD_range_kernel spv files were generated from the below SYCL program.
-// To compile:
-// icpx -fsycl oneD_range_kernel.cpp
-// IGC_ShaderDumpEnable=1 IGC_DumpToCustomDir=dump ./a.out
-
-// The generated spv files should be inspected using spirv-dis to identify
-// kernel names. When these files were generated using dpcpp 2024.1, a single
-// spv file was generated for all integer types and float32_t and a separate
-// file generated for float64_t.
+// The oneD_range_kernel spv files were generated from the SYCL program included
+// in this comment. The program can be compiled using
+// `icpx -fsycl oneD_range_kernel.cpp`. After that if the generated executable
+// is run with the environment variable `SYCL_DUMP_IMAGES=1`, icpx runtime
+// will dump all offload sections of fat binary to the current working
+// directory. When tested with DPC++ 2024.0 the kernels are split across two
+// separate SPV files. One contains all kernels for integers and FP32
+// data type, and another contains the kernel for FP64.
+//
+// Note that, `SYCL_DUMP_IMAGES=1` will also generate extra SPV files that
+// contain the code for built in functions such as indexing and barriers. To
+// figure which SPV file contains the kernels, use `spirv-dis` from the
+// spirv-tools package to translate the SPV binary format to a human-readable
+// textual format.
 
 #include <CL/sycl.hpp>
 #include <iostream>
