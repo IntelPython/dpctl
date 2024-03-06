@@ -27,6 +27,7 @@ Supported types for kernel arguments to be passed to a Sycl kernel using DPCTL. 
 	    :target:`DPCTL_FLOAT32_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089abdfe95fb8b5c91a42430fe2fcca917ec>`,
 	    :target:`DPCTL_FLOAT64_T<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a0069771ce6fc28ef066612ce06022fa8>`,
 	    :target:`DPCTL_VOID_PTR<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089a68399621c4ff81e521dd7cddf2afc9b8>`,
+	    :target:`DPCTL_UNSUPPORTED_KERNEL_ARG<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089aa844e18f1a2d00e448ce2ca41e852f20>`,
 	};
 
 .. _details-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089:
