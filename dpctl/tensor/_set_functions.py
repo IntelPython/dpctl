@@ -403,23 +403,9 @@ def unique_inverse(x):
         depends=[set_ev, extr_ev],
     )
     host_tasks.append(ht_ev)
-    # TODO: when searchsorted is available,
-    #   inv = searchsorted(unique_vals, fx)
     dpctl.SyclEvent.wait_for(host_tasks)
-    counts = dpt.asnumpy(_counts).tolist()
-    inv = dpt.empty_like(fx, dtype=ind_dt)
-    pos = 0
-    host_tasks = []
-    for i in range(len(counts)):
-        pos_next = pos + counts[i]
-        _dst = inv[pos:pos_next]
-        ht_ev, _ = _full_usm_ndarray(fill_value=i, dst=_dst, sycl_queue=exec_q)
-        pos = pos_next
-        host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
-    return UniqueInverseResult(
-        unique_vals, dpt.reshape(inv[unsorting_ids], x.shape)
-    )
+    inv = dpt.searchsorted(unique_vals, x)
+    return UniqueInverseResult(unique_vals, inv)
 
 
 def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
@@ -584,23 +570,10 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         depends=[set_ev, extr_ev],
     )
     host_tasks.append(ht_ev)
-    # TODO: when searchsorted is available,
-    #   inv = searchsorted(unique_vals, fx)
-    dpctl.SyclEvent.wait_for(host_tasks)
-    counts = dpt.asnumpy(_counts).tolist()
-    inv = dpt.empty_like(fx, dtype=ind_dt)
-    pos = 0
-    host_tasks = []
-    for i in range(len(counts)):
-        pos_next = pos + counts[i]
-        _dst = inv[pos:pos_next]
-        ht_ev, _ = _full_usm_ndarray(fill_value=i, dst=_dst, sycl_queue=exec_q)
-        pos = pos_next
-        host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
+    inv = dpt.searchsorted(unique_vals, x)
     return UniqueAllResult(
         unique_vals,
         sorting_ids[cum_unique_counts[:-1]],
-        dpt.reshape(inv[unsorting_ids], x.shape),
+        inv,
         _counts,
     )
