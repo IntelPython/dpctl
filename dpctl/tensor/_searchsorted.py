@@ -76,9 +76,14 @@ def searchsorted(
 
     if sorter is not None:
         if not isdtype(sorter.dtype, "integral"):
-            raise ValueError
+            raise ValueError(
+                f"Sorter array must have integral data type, got {sorter.dtype}"
+            )
         if x1.shape != sorter.shape:
-            raise ValueError
+            raise ValueError(
+                "Sorter array must be one-dimension with the same "
+                "shape as the first argument array"
+            )
         x1 = x1[sorter]
 
     if x1.ndim != 1:
