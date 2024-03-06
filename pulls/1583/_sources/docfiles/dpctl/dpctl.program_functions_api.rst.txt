@@ -1,9 +1,0 @@
-.. _dpctl.program_functions_api:
-
-#######################
-dpctl.program Functions
-#######################
-
-
-.. currentmodule:: dpctl.program
-
