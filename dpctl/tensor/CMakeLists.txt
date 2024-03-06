@@ -120,6 +120,7 @@ set(_reduction_sources
 set(_sorting_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/argsort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/searchsorted.cpp
 )
 set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp

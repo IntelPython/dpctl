@@ -31,7 +31,8 @@
 #include <utility>
 #include <vector>
 
-#include "dpctl_tensor_types.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/sorting/sort_detail.hpp"
 
 namespace dpctl
 {
@@ -42,45 +43,6 @@ namespace kernels
 
 namespace sort_detail
 {
-
-template <typename T> T quotient_ceil(T n, T m)
-{
-    return (n + m - 1) / m;
-}
-
-template <typename Acc, typename Value, typename Compare>
-std::size_t lower_bound_impl(const Acc acc,
-                             std::size_t first,
-                             std::size_t last,
-                             const Value &value,
-                             Compare comp)
-{
-    std::size_t n = last - first;
-    std::size_t cur = n;
-    std::size_t it;
-    while (n > 0) {
-        it = first;
-        cur = n / 2;
-        it += cur;
-        if (comp(acc[it], value)) {
-            n -= cur + 1, first = ++it;
-        }
-        else
-            n = cur;
-    }
-    return first;
-}
-
-template <typename Acc, typename Value, typename Compare>
-std::size_t upper_bound_impl(const Acc acc,
-                             const std::size_t first,
-                             const std::size_t last,
-                             const Value &value,
-                             Compare comp)
-{
-    const auto &op_comp = [comp](auto x, auto y) { return !comp(y, x); };
-    return lower_bound_impl(acc, first, last, value, op_comp);
-}
 
 /*! @brief Merge two contiguous sorted segments */
 template <typename InAcc, typename OutAcc, typename Compare>
