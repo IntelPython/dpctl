@@ -121,7 +121,7 @@ class kernel_arg_type(Enum):
     :func:`dpctl.SyclQueue.submit`
     """
 
-    dpctl_int8 = auto()
+    dpctl_int8 = 0
     dpctl_uint8 = auto()
     dpctl_int16 = auto()
     dpctl_uint16 = auto()
