@@ -280,7 +280,7 @@ set_target_properties(DPCTLSyclInterface
 
 if (SKBUILD)
     set(_lib_destination dpctl)
-    set(_include_destination dpctl/include/syclinterface)
+    set(_include_destination ${CMAKE_INSTALL_PREFIX}/unused)
 else()
     set(_lib_destination ${CMAKE_INSTALL_PREFIX}/lib)
     set(_include_destination ${CMAKE_INSTALL_PREFIX}/include)

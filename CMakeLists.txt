@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpctl
-    VERSION 0.15
+    VERSION 0.17
     LANGUAGES CXX
     DESCRIPTION "Python interface for XPU programming"
 )
@@ -46,11 +46,6 @@ if(_dpctl_sycl_targets)
 endif()
 
 add_subdirectory(libsyclinterface)
-
-file(GLOB _dpctl_capi_headers dpctl/apis/include/*.h*)
-install(FILES ${_dpctl_capi_headers}
-    DESTINATION dpctl/include
-)
 
 # Define CMAKE_INSTALL_xxx: LIBDIR, INCLUDEDIR
 include(GNUInstallDirs)
