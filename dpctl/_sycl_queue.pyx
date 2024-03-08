@@ -88,6 +88,155 @@ __all__ = [
 _logger = logging.getLogger(__name__)
 
 
+cdef class kernel_arg_type_attribute:
+    cdef str parent_name
+    cdef str attr_name
+    cdef int attr_value
+
+    def __cinit__(self, str parent, str name, int value):
+        self.parent_name = parent
+        self.attr_name = name
+        self.attr_value = value
+
+    def __repr__(self):
+        return f"<{self.parent_name}.{self.attr_name}: {self.attr_value}>"
+
+    def __str__(self):
+        return f"<{self.parent_name}.{self.attr_name}: {self.attr_value}>"
+
+    @property
+    def name(self):
+        return self.attr_name
+
+    @property
+    def value(self):
+        return self.attr_value
+
+
+cdef class _kernel_arg_type:
+    """
+    An enumeration of supported kernel argument types in
+    :func:`dpctl.SyclQueue.submit`
+    """
+    cdef str _name
+
+    def __cinit__(self):
+        self._name = "kernel_arg_type"
+
+
+    @property
+    def __name__(self):
+        return self._name
+
+    def __repr__(self):
+        return "<enum 'kernel_arg_type'>"
+
+    def __str__(self):
+        return "<enum 'kernel_arg_type'>"
+
+    @property
+    def dpctl_int8(self):
+        cdef str p_name = "dpctl_int8"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._INT8_T
+        )
+
+    @property
+    def dpctl_uint8(self):
+        cdef str p_name = "dpctl_uint8"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._UINT8_T
+        )
+
+    @property
+    def dpctl_int16(self):
+        cdef str p_name = "dpctl_int16"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._INT16_T
+        )
+
+    @property
+    def dpctl_uint16(self):
+        cdef str p_name = "dpctl_uint16"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._UINT16_T
+        )
+
+    @property
+    def dpctl_int32(self):
+        cdef str p_name = "dpctl_int32"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._INT32_T
+        )
+
+    @property
+    def dpctl_uint32(self):
+        cdef str p_name = "dpctl_uint32"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._UINT32_T
+        )
+
+    @property
+    def dpctl_int64(self):
+        cdef str p_name = "dpctl_int64"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._INT64_T
+        )
+
+    @property
+    def dpctl_uint64(self):
+        cdef str p_name = "dpctl_uint64"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._UINT64_T
+        )
+
+    @property
+    def dpctl_float32(self):
+        cdef str p_name = "dpctl_float32"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._FLOAT
+        )
+
+    @property
+    def dpctl_float64(self):
+        cdef str p_name = "dpctl_float64"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._DOUBLE
+        )
+
+    @property
+    def dpctl_void_ptr(self):
+        cdef str p_name = "dpctl_void_ptr"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._VOID_PTR
+        )
+
+
+kernel_arg_type = _kernel_arg_type()
+
+
 cdef class SyclKernelSubmitError(Exception):
     """
     A SyclKernelSubmitError exception is raised when the provided
