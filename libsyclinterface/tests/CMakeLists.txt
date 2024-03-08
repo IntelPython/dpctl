@@ -21,6 +21,8 @@ set(spirv-test-files
     multi_kernel.spv
     oneD_range_kernel_inttys_fp32.spv
     oneD_range_kernel_fp64.spv
+    local_accessor_kernel_inttys_fp32.spv
+    local_accessor_kernel_fp64.spv
 )
 
 foreach(tf ${spirv-test-files})
@@ -55,6 +57,7 @@ add_sycl_to_target(
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit_local_accessor_arg.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
 )
