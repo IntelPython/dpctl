@@ -233,6 +233,15 @@ cdef class _kernel_arg_type:
             _arg_data_type._VOID_PTR
         )
 
+    @property
+    def dpctl_local_accessor(self):
+        cdef str p_name = "dpctl_local_accessor"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._LOCAL_ACCESSOR
+        )
+
 
 kernel_arg_type = _kernel_arg_type()
 

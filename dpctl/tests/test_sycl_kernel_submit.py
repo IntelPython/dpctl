@@ -274,3 +274,4 @@ def test_kernel_arg_type():
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float32)
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float64)
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_void_ptr)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_local_accessor)
