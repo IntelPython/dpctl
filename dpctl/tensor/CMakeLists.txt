@@ -153,6 +153,7 @@ set(_tensor_reductions_impl_sources
 )
 set(_tensor_sorting_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_sorting.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_sorting_sources}
 )
 set(_linalg_sources

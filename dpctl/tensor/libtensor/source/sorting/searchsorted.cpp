@@ -334,28 +334,42 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
 
     // strided case
 
-    // simplify needles, positions strides ?
+    const auto &needles_strides = needles.get_strides_vector();
+    const auto &positions_strides = positions.get_strides_vector();
+
+    int simplified_nd = needles_nd;
+
+    using shT = std::vector<py::ssize_t>;
+
+    shT simplified_common_shape;
+    shT simplified_needles_strides;
+    shT simplified_positions_strides;
+    py::ssize_t needles_offset(0);
+    py::ssize_t positions_offset(0);
+
+    dpctl::tensor::py_internal::simplify_iteration_space(
+        // modified by refernce
+        simplified_nd,
+        // read-only inputs
+        needles_shape_ptr, needles_strides, positions_strides,
+        // output, modified by reference
+        simplified_common_shape, simplified_needles_strides,
+        simplified_positions_strides, needles_offset, positions_offset);
 
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
 
-    // FIXME: use non-owning container viewing into needles_shape to avoid
-    // temporary allocation
-    const auto &common_shape =
-        needles
-            .get_shape_vector(); // std::vector<py::ssize_t>(needles_shape_ptr,
-                                 // needles_shape_ptr + needles_nd);
-    const auto &needles_strides = needles.get_strides_vector();
-    const auto &positions_strides = positions.get_strides_vector();
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events,
         // vectors being packed
-        common_shape, needles_strides, positions_strides);
+        simplified_common_shape, simplified_needles_strides,
+        simplified_positions_strides);
 
     py::ssize_t *packed_shape_strides = std::get<0>(ptr_size_event_tuple);
-    sycl::event copy_shape_strides_ev = std::get<2>(ptr_size_event_tuple);
+    const sycl::event &copy_shape_strides_ev =
+        std::get<2>(ptr_size_event_tuple);
 
     if (!packed_shape_strides) {
         throw std::runtime_error("USM-host allocation failure");
@@ -381,10 +395,10 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
     constexpr py::ssize_t zero_offset(0);
     py::ssize_t hay_step = hay.get_strides_vector()[0];
 
-    sycl::event comp_ev =
-        strided_fn(exec_q, hay_nelems, needles_nelems, hay_data, zero_offset,
-                   hay_step, needles_data, zero_offset, positions_data,
-                   zero_offset, needles_nd, packed_shape_strides, all_deps);
+    sycl::event comp_ev = strided_fn(
+        exec_q, hay_nelems, needles_nelems, hay_data, zero_offset, hay_step,
+        needles_data, needles_offset, positions_data, positions_offset,
+        simplified_nd, packed_shape_strides, all_deps);
 
     // free packed temporaries
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
