@@ -113,22 +113,3 @@ class global_mem_cache_type(Enum):
     none = auto()
     read_only = auto()
     read_write = auto()
-
-
-class kernel_arg_type(Enum):
-    """
-    An enumeration of supported kernel argument types in
-    :func:`dpctl.SyclQueue.submit`
-    """
-
-    dpctl_int8 = 0
-    dpctl_uint8 = auto()
-    dpctl_int16 = auto()
-    dpctl_uint16 = auto()
-    dpctl_int32 = auto()
-    dpctl_uint32 = auto()
-    dpctl_int64 = auto()
-    dpctl_uint64 = auto()
-    dpctl_float32 = auto()
-    dpctl_float64 = auto()
-    dpctl_void_ptr = auto()

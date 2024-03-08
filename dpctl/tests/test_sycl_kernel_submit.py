@@ -26,7 +26,7 @@ import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 import dpctl.tensor as dpt
-from dpctl.enum_types import kernel_arg_type
+from dpctl._sycl_queue import kernel_arg_type
 
 
 @pytest.mark.parametrize(
