@@ -26,6 +26,7 @@ import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 import dpctl.tensor as dpt
+from dpctl.enum_types import kernel_arg_type
 
 
 @pytest.mark.parametrize(
@@ -244,3 +245,13 @@ def test_submit_async():
         Xref[2, i] = min(Xref[0, i], Xref[1, i])
 
     assert np.array_equal(Xnp[:, :n], Xref[:, :n])
+
+
+def test_kernel_arg_type():
+    """
+    Check that enum values for kernel_arg_type start at 0,
+    as numba_dpex expects. The next enumerated type must
+    have next value.
+    """
+    assert kernel_arg_type.dpctl_int8.value == 0
+    assert kernel_arg_type.dpctl_uint8.value == 1
