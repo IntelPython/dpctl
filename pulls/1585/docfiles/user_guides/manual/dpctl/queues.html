@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue &mdash; Data Parallel Control (dpctl) 0.17.0dev0+70.g9fbb0511c3 documentation</title>
+  <title>Queue &mdash; Data Parallel Control (dpctl) 0.17.0dev0+71.g765cb7b32a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=def5bea4"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=d19e3d57"></script>
         <script src="../../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+70.g9fbb0511c3
+                0.17.0dev0+71.g765cb7b32a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -181,7 +181,7 @@ Traceback (most recent call last):
     clbl()
   File &quot;/home/runner/work/dpctl/dpctl/docs/../examples/python/sycl_queue.py&quot;, line 84, in create_queue_from_subdevice_multidevice_context
     q = dpctl.SyclQueue(ctx, sub_devs[0], partition=&quot;enable_profiling&quot;)
-  File &quot;dpctl/_sycl_queue.pyx&quot;, line 339, in dpctl._sycl_queue.SyclQueue.__cinit__
+  File &quot;dpctl/_sycl_queue.pyx&quot;, line 488, in dpctl._sycl_queue.SyclQueue.__cinit__
 TypeError: Unsupported keyword arguments {&#39;partition&#39;: &#39;enable_profiling&#39;} to SyclQueue constructor encountered.
 </pre></div>
 </div>
@@ -212,7 +212,7 @@ is called.</p>
 </div>
 <p>A possible output for the <a class="reference internal" href="#fig-constructing-queue-filter-selector"><span class="std std-ref">Constructing SyclQueue from filter selector</span></a> example:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO: Executing example create_queue_from_filter_selector
-Queue &lt;dpctl.SyclQueue at 0x7f3779ff1840, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
+Queue &lt;dpctl.SyclQueue at 0x7f3777cfd600, property=[&#39;in_order&#39;, &#39;enable_profiling&#39;]&gt; is in order: True
 Device targeted by the queue:
     Name            AMD EPYC 7763 64-Core Processor                
     Driver version  2023.16.12.0.12_195853.xmain-hotfix
