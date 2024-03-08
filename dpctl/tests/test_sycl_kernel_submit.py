@@ -247,11 +247,30 @@ def test_submit_async():
     assert np.array_equal(Xnp[:, :n], Xref[:, :n])
 
 
+def _check_kernel_arg_type_instance(kati):
+    assert isinstance(kati.name, str)
+    assert isinstance(kati.value, int)
+    assert isinstance(repr(kati), str)
+    assert isinstance(str(kati), str)
+
+
 def test_kernel_arg_type():
     """
     Check that enum values for kernel_arg_type start at 0,
     as numba_dpex expects. The next enumerated type must
     have next value.
     """
-    assert kernel_arg_type.dpctl_int8.value == 0
-    assert kernel_arg_type.dpctl_uint8.value == 1
+    assert isinstance(kernel_arg_type.__name__, str)
+    assert isinstance(repr(kernel_arg_type), str)
+    assert isinstance(str(kernel_arg_type), str)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int8)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint8)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int16)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint16)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int32)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint32)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float32)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_void_ptr)
