@@ -26,6 +26,7 @@ import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 import dpctl.tensor as dpt
+from dpctl._sycl_queue import kernel_arg_type
 
 
 @pytest.mark.parametrize(
@@ -244,3 +245,32 @@ def test_submit_async():
         Xref[2, i] = min(Xref[0, i], Xref[1, i])
 
     assert np.array_equal(Xnp[:, :n], Xref[:, :n])
+
+
+def _check_kernel_arg_type_instance(kati):
+    assert isinstance(kati.name, str)
+    assert isinstance(kati.value, int)
+    assert isinstance(repr(kati), str)
+    assert isinstance(str(kati), str)
+
+
+def test_kernel_arg_type():
+    """
+    Check that enum values for kernel_arg_type start at 0,
+    as numba_dpex expects. The next enumerated type must
+    have next value.
+    """
+    assert isinstance(kernel_arg_type.__name__, str)
+    assert isinstance(repr(kernel_arg_type), str)
+    assert isinstance(str(kernel_arg_type), str)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int8)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint8)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int16)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint16)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int32)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint32)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_int64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_uint64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float32)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_void_ptr)
