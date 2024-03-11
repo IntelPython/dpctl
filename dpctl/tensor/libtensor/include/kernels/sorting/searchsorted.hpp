@@ -232,7 +232,7 @@ sycl::event searchsorted_strided_impl(
         const ssize_t *positions_strides =
             packed_shape_strides + 2 * needles_nd;
         const PositionsIndexerT positions_indexer(
-            needles_nd, needles_offset, positions_shape, positions_strides);
+            needles_nd, positions_offset, positions_shape, positions_strides);
 
         const auto fnctr =
             SearchSortedFunctor<argTy, indTy, left_closed, HayIndexerT,
