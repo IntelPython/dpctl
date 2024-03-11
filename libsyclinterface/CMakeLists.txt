@@ -95,8 +95,8 @@ message(STATUS "LIB_ZE: ${LIBZE_LOADER_FILENAME}")
 message(STATUS "LIB_CL: ${LIBCL_LOADER_FILENAME}")
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Config/dpctl_config.h.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Config/dpctl_config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Config/dpctl_config.h.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Config/dpctl_config.h
 )
 
 # Set the C++ standard to C++17
@@ -226,11 +226,12 @@ if(DPCTL_GENERATE_COVERAGE)
 endif()
 
 target_include_directories(DPCTLSyclInterface
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Support
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Config
+    # PUBLIC
     PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Support
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Config
+    # PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
     ${SYCL_INCLUDE_DIR}
 )
@@ -267,43 +268,19 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     )
 endif()
 
-# Install all headers
-
-file(GLOB MAIN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
-file(GLOB SUPPORT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Support/*.h")
-file(GLOB CONFIG_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/Config/*.h")
-
-set_target_properties(DPCTLSyclInterface
-    PROPERTIES PUBLIC_HEADER
-    "${MAIN_HEADERS}"
+target_include_directories(DPCTLSyclInterface INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-
-if (SKBUILD)
-    set(_lib_destination dpctl)
-    set(_include_destination dpctl/include/syclinterface)
-else()
-    set(_lib_destination ${CMAKE_INSTALL_PREFIX}/lib)
-    set(_include_destination ${CMAKE_INSTALL_PREFIX}/include)
-endif()
 
 install(TARGETS
     DPCTLSyclInterface
     LIBRARY
-    DESTINATION ${_lib_destination}
-    ARCHIVE
-    DESTINATION ${_lib_destination}
-    RUNTIME
-    DESTINATION ${_lib_destination}
-    PUBLIC_HEADER
-    DESTINATION ${_include_destination}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl
 )
-install(
-    FILES ${SUPPORT_HEADERS}
-    DESTINATION ${_include_destination}/Support
-)
-install(
-    FILES ${CONFIG_HEADERS}
-    DESTINATION ${_include_destination}/Config
+install(DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include
+    FILES_MATCHING REGEX "\\.h(pp)?$"
 )
 
 # Add sub-directory to build the dpctl C API test cases

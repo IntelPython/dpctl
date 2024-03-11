@@ -74,64 +74,6 @@ endif()
 
 # at build time create include/ directory and copy header files over
 set(DPCTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-add_custom_target(_build_time_create_dpctl_include ALL
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface/Support
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${DPCTL_INCLUDE_DIR}/syclinterface/Config
-    DEPENDS DPCTLSyclInterface
-)
-
-set(_copied_header_files)
-file(GLOB _syclinterface_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/*.h*)
-foreach(hf ${_syclinterface_h})
-    get_filename_component(_header_name ${hf} NAME)
-    set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/${_header_name})
-    list(APPEND _copied_header_files ${_target_header_file})
-    add_custom_command(OUTPUT ${_target_header_file}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
-        DEPENDS ${hf} _build_time_create_dpctl_include
-	VERBATIM
-    )
-endforeach()
-
-file(GLOB _syclinterface_Support_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Support/*.h)
-foreach(hf ${_syclinterface_Support_h})
-    get_filename_component(_header_name ${hf} NAME)
-    set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/Support/${_header_name})
-    list(APPEND _copied_header_files ${_target_header_file})
-    add_custom_command(OUTPUT ${_target_header_file}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
-        DEPENDS ${hf} _build_time_create_dpctl_include
-    )
-endforeach()
-
-file(GLOB _syclinterface_Config_h ${CMAKE_SOURCE_DIR}/libsyclinterface/include/Config/*.h)
-foreach(hf ${_syclinterface_Config_h})
-    get_filename_component(_header_name ${hf} NAME)
-    set(_target_header_file ${DPCTL_INCLUDE_DIR}/syclinterface/Config/${_header_name})
-    list(APPEND _copied_header_files ${_target_header_file})
-    add_custom_command(OUTPUT ${_target_header_file}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
-        DEPENDS ${hf} _build_time_create_dpctl_include
-    )
-endforeach()
-
-file(GLOB _apis_h ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/*)
-foreach(hf ${_apis_h})
-    get_filename_component(_header_name ${hf} NAME)
-    set(_target_header_file ${DPCTL_INCLUDE_DIR}/${_header_name})
-    list(APPEND _copied_header_files ${_target_header_file})
-    add_custom_command(OUTPUT ${_target_header_file}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${hf} ${_target_header_file}
-        DEPENDS ${hf} _build_time_create_dpctl_include
-    )
-endforeach()
-
-add_custom_target(
-    _build_time_create_dpctl_include_copy ALL
-    DEPENDS ${_copied_header_files}
-)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
@@ -140,7 +82,6 @@ function(build_dpctl_ext _trgt _src _dest)
     cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     set(_cythonize_trgt "${_trgt}_cythonize_pyx")
-    add_custom_target(${_cythonize_trgt} DEPENDS ${_src})
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if (BUILD_DPCTL_EXT_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
@@ -158,8 +99,7 @@ function(build_dpctl_ext _trgt _src _dest)
 	    )
 	endif()
     endif()
-    target_include_directories(${_trgt} PRIVATE ${NumPy_INCLUDE_DIR} ${DPCTL_INCLUDE_DIR})
-    add_dependencies(${_trgt} _build_time_create_dpctl_include_copy ${_cythonize_trgt})
+    target_link_libraries(${_trgt} PRIVATE Python::NumPy)
     if (DPCTL_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
         # target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
@@ -171,35 +111,23 @@ function(build_dpctl_ext _trgt _src _dest)
     get_filename_component(_generated_src_dir ${_generated_src} DIRECTORY)
     set(_generated_public_h "${_generated_src_dir}/${_name_wle}.h")
     set(_generated_api_h "${_generated_src_dir}/${_name_wle}_api.h")
-    set(_copy_trgt "${_trgt}_copy_capi_include")
-    add_custom_target(
-         ${_copy_trgt} ALL
-         COMMAND ${CMAKE_COMMAND}
-	     -DSOURCE_FILE=${_generated_public_h}
-	     -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
-         COMMAND ${CMAKE_COMMAND}
-	     -DSOURCE_FILE=${_generated_api_h}
-	     -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	     -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
-	 DEPENDS ${_trgt}
-	 VERBATIM
-         COMMENT "Copying Cython-generated headers to dpctl"
-    )
-    if (DPCTL_GENERATE_COVERAGE)
-         set(_copy_cxx_trgt "${_trgt}_copy_cxx")
-         add_custom_target(
-             ${_copy_cxx_trgt} ALL
-             COMMAND ${CMAKE_COMMAND}
-	         -DSOURCE_FILE=${_generated_src}
-	         -DDEST=${CMAKE_CURRENT_SOURCE_DIR}
-	         -P ${CMAKE_SOURCE_DIR}/dpctl/cmake/copy_existing.cmake
-	     DEPENDS ${_trgt}
-	     VERBATIM
-             COMMENT "Copying Cython-generated source to dpctl"
-         )
-    endif()
-    install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
+
+    # TODO: create separate folder inside build folder that contains only
+    #   headers related to this target and appropriate folder structure to
+    #   eliminate shadow dependencies
+    get_filename_component(_generated_src_dir_dir ${_generated_src_dir} DIRECTORY)
+    target_include_directories(${_trgt} INTERFACE ${_generated_src_dir_dir})
+
+    install(TARGETS ${_trgt}
+        LIBRARY DESTINATION ${_dest})
+    install(FILES
+        ${_generated_api_h}
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include/${_dest}
+        OPTIONAL)
+    install(FILES
+        ${_generated_public_h}
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include/${_dest}
+        OPTIONAL)
 endfunction()
 
 file(GLOB _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.pyx)
@@ -207,6 +135,7 @@ list(REMOVE_ITEM _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpctl_ext(${_trgt} ${_cy_file} "dpctl")
+    target_link_libraries(DpctlCAPI INTERFACE ${_trgt})
 endforeach()
 
 set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
