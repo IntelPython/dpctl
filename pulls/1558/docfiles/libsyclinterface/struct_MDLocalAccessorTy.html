@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>class dpctl::syclinterface::dpctl_accelerator_selector &mdash; Data Parallel Control (dpctl) 0.17.0dev0+88.ge77004a61 documentation</title>
+  <title>struct MDLocalAccessorTy &mdash; Data Parallel Control (dpctl) 0.17.0dev0+88.ge77004a61 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -33,8 +33,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="class dpctl::syclinterface::dpctl_cpu_selector" href="class_dpctl_syclinterface_dpctl_cpu_selector.html" />
-    <link rel="prev" title="namespace dpctl::syclinterface" href="namespace_dpctl_syclinterface.html" /> 
+    <link rel="prev" title="enum DPCTLSyclUSMType" href="enum_DPCTLSyclUSMType.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -82,10 +81,7 @@
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="global.html">Global Namespace</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="namespace_dpctl.html">namespace dpctl</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_dpctl.html">namespace dpctl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLGlobalMemCacheType.html">enum DPCTLGlobalMemCacheType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLKernelArgType.html">enum DPCTLKernelArgType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html">enum DPCTLPartitionAffinityDomainType</a></li>
@@ -95,7 +91,9 @@
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
-<li class="toctree-l3"><a class="reference internal" href="struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">struct MDLocalAccessorTy</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="global.html#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="global.html#detailed-documentation">Detailed Documentation</a></li>
 </ul>
@@ -120,11 +118,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">libsyclinterface</a></li>
           <li class="breadcrumb-item"><a href="global.html">Global Namespace</a></li>
-          <li class="breadcrumb-item"><a href="namespace_dpctl.html">namespace dpctl</a></li>
-          <li class="breadcrumb-item"><a href="namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a></li>
-      <li class="breadcrumb-item active">class dpctl::syclinterface::dpctl_accelerator_selector</li>
+      <li class="breadcrumb-item active">struct MDLocalAccessorTy</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/docfiles/libsyclinterface/class_dpctl_syclinterface_dpctl_accelerator_selector.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/docfiles/libsyclinterface/struct_MDLocalAccessorTy.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -132,42 +128,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="class-dpctl-syclinterface-dpctl-accelerator-selector">
-<span id="doxid-de-d9f-classdpctl-1-1syclinterface-1-1dpctl-accelerator-selector"></span><span id="index-0"></span><h1>class dpctl::syclinterface::dpctl_accelerator_selector<a class="headerlink" href="#class-dpctl-syclinterface-dpctl-accelerator-selector" title="Permalink to this heading"></a></h1>
+  <section id="struct-mdlocalaccessorty">
+<span id="doxid-db-dfd-struct-m-d-local-accessor-ty"></span><span id="index-0"></span><h1>struct MDLocalAccessorTy<a class="headerlink" href="#struct-mdlocalaccessorty" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_device_selection.hpp&gt;</span>
+<p>Structure to be used to specify dimensionality and type of local_accessor kernel type argument.</p>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_sycl_queue_interface.h&gt;</span>
 
-<span class="k">class</span> <span class="nl">dpctl_accelerator_selector</span><span class="p">:</span> <span class="k">public</span> <a class="reference internal" href="class_dpctl_syclinterface_dpctl_device_selector.html#doxid-d0-dbb-classdpctl-1-1syclinterface-1-1dpctl-device-selector"><span class="std std-ref">dpctl::syclinterface::dpctl_device_selector</span></a><span></span>
+<span class="k">struct</span> <span class="n">MDLocalAccessorTy</span>
 <span class="p">{</span>
-<span class="k">public</span><span class="o">:</span>
-    <span class="c1">// methods</span>
-
-    <span class="k">virtual</span>
-    <span class="kt">int</span>
-    <span class="doxyrest-code-target target" id="doxid-de-d9f-classdpctl-1-1syclinterface-1-1dpctl-accelerator-selector-1ad4711d348042a573a04fa80ab216445f"><span></span><span class="k">operator</span> <span class="p">()</span></span><span></span> <span class="p">(</span><span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span><span class="o">&amp;</span> <span class="n">d</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<span class="p">};</span></pre>
-<section id="inherited-members">
-<h2>Inherited Members<a class="headerlink" href="#inherited-members" title="Permalink to this heading"></a></h2>
-<pre class="highlight doxyrest-overview-inherited-code-block literal-block"><span></span><span class="k">public</span><span class="o">:</span>
     <span class="c1">// fields</span>
 
-    <span class="k">static</span> <span class="k">constexpr</span> <span class="kt">int</span> <a class="reference internal" href="class_dpctl_syclinterface_dpctl_device_selector.html#doxid-d0-dbb-classdpctl-1-1syclinterface-1-1dpctl-device-selector-1a3803a4a44ef1315dbb40f5c78ed9e326"><span class="std std-ref">REJECT_DEVICE</span></a><span></span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-
-    <span class="c1">// methods</span>
-
-    <span class="k">virtual</span>
-    <span class="kt">int</span>
-    <a class="reference internal" href="class_dpctl_syclinterface_dpctl_device_selector.html#doxid-d0-dbb-classdpctl-1-1syclinterface-1-1dpctl-device-selector-1a897941b230c0931aaab9d513be091136"><span class="std std-ref">operator ()</span></a><span></span> <span class="p">(</span><span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span><span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span></pre>
-</section>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a2f38fe6c63084fd947ec322c8609f79a"><span></span><span class="n">dim0</span></span><span></span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a198638e249a88789bbfa13ef50a9a675"><span></span><span class="n">dim1</span></span><span></span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1af0876c6b8135d36550f0cdc5047907d0"><span></span><span class="n">dim2</span></span><span></span><span class="p">;</span>
+    <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a2e17804f58ddf62527c0fe8d292084e2"><span></span><span class="n">dpctl_type_id</span></span><span></span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a5737884a1cd8859b0ee4e4bb7bcaa648"><span></span><span class="n">ndim</span></span><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="namespace_dpctl_syclinterface.html" class="btn btn-neutral float-left" title="namespace dpctl::syclinterface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="class_dpctl_syclinterface_dpctl_cpu_selector.html" class="btn btn-neutral float-right" title="class dpctl::syclinterface::dpctl_cpu_selector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="enum_DPCTLSyclUSMType.html" class="btn btn-neutral float-left" title="enum DPCTLSyclUSMType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
