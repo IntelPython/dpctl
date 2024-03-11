@@ -82,7 +82,7 @@ def run(
         .strip("\n")
     )
     subprocess.check_call(
-        ["cmake", "--build", ".", "--target", "llvm-cov"],
+        ["cmake", "--build", ".", "--target", "llvm-cov-report"],
         cwd=cmake_build_dir,
     )
     env["LLVM_PROFILE_FILE"] = "dpctl_pytest.profraw"
