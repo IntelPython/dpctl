@@ -67,7 +67,8 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _UINT64_T           'DPCTL_UINT64_T',
         _FLOAT              'DPCTL_FLOAT32_T',
         _DOUBLE             'DPCTL_FLOAT64_T',
-        _VOID_PTR           'DPCTL_VOID_PTR'
+        _VOID_PTR           'DPCTL_VOID_PTR',
+        _LOCAL_ACCESSOR     'DPCTL_LOCAL_ACCESSOR'
 
     ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
         _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'

@@ -21,6 +21,8 @@ set(spirv-test-files
     multi_kernel.spv
     oneD_range_kernel_inttys_fp32.spv
     oneD_range_kernel_fp64.spv
+    local_accessor_kernel_inttys_fp32.spv
+    local_accessor_kernel_fp64.spv
 )
 
 foreach(tf ${spirv-test-files})
@@ -55,6 +57,7 @@ add_sycl_to_target(
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_invalid_filters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit_local_accessor_arg.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
 )
@@ -86,8 +89,35 @@ if(DPCTL_GENERATE_COVERAGE)
         ${CMAKE_DL_LIBS}
     )
     set(object_arg "-object;")
-    add_custom_target(llvm-cov
+    add_custom_target(run-c-api-tests
         COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND_EXPAND_LISTS
+        DEPENDS dpctl_c_api_tests
+    )
+    add_custom_target(llvm-cov-show
+        COMMAND ${LLVMProfdata_EXE}
+        merge
+        -sparse default.profraw
+        -o
+        dpctl.profdata
+        COMMAND ${LLVMCov_EXE}
+        export
+        -format=lcov
+        -ignore-filename-regex=/tmp/icpx*
+        -instr-profile=dpctl.profdata
+        "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+        > dpctl.lcov
+        COMMAND ${LLVMCov_EXE}
+        show
+        -instr-profile=dpctl.profdata
+        "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND_EXPAND_LISTS
+        DEPENDS run-c-api-tests
+    )
+
+    add_custom_target(llvm-cov-report
         COMMAND ${LLVMProfdata_EXE}
         merge
         -sparse default.profraw
@@ -106,11 +136,10 @@ if(DPCTL_GENERATE_COVERAGE)
         "${object_arg}$<JOIN:$<TARGET_OBJECTS:DPCTLSyclInterface>,;${object_arg}>"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND_EXPAND_LISTS
-        DEPENDS dpctl_c_api_tests
+        DEPENDS run-c-api-tests
     )
 
     add_custom_target(lcov-genhtml
-        COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
         COMMAND ${LLVMProfdata_EXE}
         merge
         -sparse default.profraw
@@ -129,7 +158,7 @@ if(DPCTL_GENERATE_COVERAGE)
         ${COVERAGE_OUTPUT_DIR}/dpctl-c-api-coverage
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND_EXPAND_LISTS
-        DEPENDS dpctl_c_api_tests
+        DEPENDS run-c-api-tests
     )
 else()
     target_link_libraries(dpctl_c_api_tests

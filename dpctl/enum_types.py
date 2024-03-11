@@ -22,11 +22,7 @@ backend and device_type enumerations.
 """
 from enum import Enum, auto
 
-__all__ = [
-    "device_type",
-    "backend_type",
-    "event_status_type",
-]
+__all__ = ["device_type", "backend_type", "event_status_type"]
 
 
 class device_type(Enum):

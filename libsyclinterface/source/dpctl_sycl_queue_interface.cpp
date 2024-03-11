@@ -38,6 +38,76 @@
 
 using namespace sycl;
 
+#define SET_LOCAL_ACCESSOR_ARG(CGH, NDIM, ARGTY, R, IDX)                       \
+    do {                                                                       \
+        switch ((ARGTY)) {                                                     \
+        case DPCTL_INT8_T:                                                     \
+        {                                                                      \
+            auto la = local_accessor<int8_t, NDIM>(R, CGH);                    \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_UINT8_T:                                                    \
+        {                                                                      \
+            auto la = local_accessor<uint8_t, NDIM>(R, CGH);                   \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_INT16_T:                                                    \
+        {                                                                      \
+            auto la = local_accessor<int16_t, NDIM>(R, CGH);                   \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_UINT16_T:                                                   \
+        {                                                                      \
+            auto la = local_accessor<uint16_t, NDIM>(R, CGH);                  \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_INT32_T:                                                    \
+        {                                                                      \
+            auto la = local_accessor<int32_t, NDIM>(R, CGH);                   \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_UINT32_T:                                                   \
+        {                                                                      \
+            auto la = local_accessor<uint32_t, NDIM>(R, CGH);                  \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_INT64_T:                                                    \
+        {                                                                      \
+            auto la = local_accessor<int64_t, NDIM>(R, CGH);                   \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_UINT64_T:                                                   \
+        {                                                                      \
+            auto la = local_accessor<uint64_t, NDIM>(R, CGH);                  \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_FLOAT32_T:                                                  \
+        {                                                                      \
+            auto la = local_accessor<float, NDIM>(R, CGH);                     \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_FLOAT64_T:                                                  \
+        {                                                                      \
+            auto la = local_accessor<double, NDIM>(R, CGH);                    \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        default:                                                               \
+            error_handler("Kernel argument could not be created.", __FILE__,   \
+                          __func__, __LINE__, error_level::error);             \
+            return false;                                                      \
+        }                                                                      \
+    } while (0);
+
 namespace
 {
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
@@ -62,11 +132,39 @@ void set_dependent_events(handler &cgh,
     }
 }
 
+bool set_local_accessor_arg(handler &cgh,
+                            size_t idx,
+                            const MDLocalAccessor *mdstruct)
+{
+    switch (mdstruct->ndim) {
+    case 1:
+    {
+        auto r = range<1>(mdstruct->dim0);
+        SET_LOCAL_ACCESSOR_ARG(cgh, 1, mdstruct->dpctl_type_id, r, idx);
+    }
+    case 2:
+    {
+        auto r = range<2>(mdstruct->dim0, mdstruct->dim1);
+        SET_LOCAL_ACCESSOR_ARG(cgh, 2, mdstruct->dpctl_type_id, r, idx);
+    }
+    case 3:
+    {
+        auto r = range<3>(mdstruct->dim0, mdstruct->dim1, mdstruct->dim2);
+        SET_LOCAL_ACCESSOR_ARG(cgh, 3, mdstruct->dpctl_type_id, r, idx);
+    }
+    default:
+        return false;
+    }
+}
 /*!
  * @brief Set the kernel arg object
  *
- * @param    cgh            My Param doc
- * @param    Arg            My Param doc
+ * @param cgh   SYCL command group handler using which a kernel is going to
+ *              be submitted.
+ * @param idx   The position of the argument in the list of arguments passed
+ * to a kernel.
+ * @param Arg   A void* representing a kernel argument.
+ * @param Argty A typeid specifying the C++ type of the Arg parameter.
  */
 bool set_kernel_arg(handler &cgh,
                     size_t idx,
@@ -109,10 +207,11 @@ bool set_kernel_arg(handler &cgh,
     case DPCTL_VOID_PTR:
         cgh.set_arg(idx, Arg);
         break;
+    case DPCTL_LOCAL_ACCESSOR:
+        arg_set = set_local_accessor_arg(cgh, idx, (MDLocalAccessor *)Arg);
+        break;
     default:
         arg_set = false;
-        error_handler("Kernel argument could not be created.", __FILE__,
-                      __func__, __LINE__);
         break;
     }
     return arg_set;
