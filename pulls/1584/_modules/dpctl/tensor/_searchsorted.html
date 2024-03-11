@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._searchsorted &mdash; Data Parallel Control (dpctl) 0.17.0dev0+80.g1b84c34947 documentation</title>
+  <title>dpctl.tensor._searchsorted &mdash; Data Parallel Control (dpctl) 0.17.0dev0+83.gbceed53f8b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a1af915e"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2d2baae1"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+80.g1b84c34947
+                0.17.0dev0+83.gbceed53f8b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -94,11 +94,14 @@
   <h1>Source code for dpctl.tensor._searchsorted</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
 
-<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">astype</span>
+<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_empty_like_orderK</span>
 <span class="kn">from</span> <span class="nn">._ctors</span> <span class="kn">import</span> <span class="n">empty</span>
 <span class="kn">from</span> <span class="nn">._data_types</span> <span class="kn">import</span> <span class="n">int32</span><span class="p">,</span> <span class="n">int64</span>
+<span class="kn">from</span> <span class="nn">._tensor_impl</span> <span class="kn">import</span> <span class="n">_copy_usm_ndarray_into_usm_ndarray</span> <span class="k">as</span> <span class="n">ti_copy</span>
+<span class="kn">from</span> <span class="nn">._tensor_impl</span> <span class="kn">import</span> <span class="n">_take</span> <span class="k">as</span> <span class="n">ti_take</span>
 <span class="kn">from</span> <span class="nn">._tensor_sorting_impl</span> <span class="kn">import</span> <span class="n">_searchsorted_left</span><span class="p">,</span> <span class="n">_searchsorted_right</span>
 <span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">iinfo</span><span class="p">,</span> <span class="n">isdtype</span><span class="p">,</span> <span class="n">result_type</span>
 <span class="kn">from</span> <span class="nn">._usmarray</span> <span class="kn">import</span> <span class="n">usm_ndarray</span>
@@ -168,6 +171,14 @@
             <span class="s2">&quot;inferred from input arguments.&quot;</span>
         <span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;First argument array must be one-dimensional&quot;</span><span class="p">)</span>
+
+    <span class="n">x1_dt</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">x2_dt</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="n">host_evs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">isdtype</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;integral&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -178,30 +189,79 @@
                 <span class="s2">&quot;Sorter array must be one-dimension with the same &quot;</span>
                 <span class="s2">&quot;shape as the first argument array&quot;</span>
             <span class="p">)</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">[</span><span class="n">sorter</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x1_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">sorter</span><span class="p">,)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">wrap_out_of_bound_indices_mode</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti_take</span><span class="p">(</span>
+            <span class="n">x1</span><span class="p">,</span>
+            <span class="n">ind</span><span class="p">,</span>
+            <span class="n">res</span><span class="p">,</span>
+            <span class="n">axis</span><span class="p">,</span>
+            <span class="n">wrap_out_of_bound_indices_mode</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ev</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;First argument array must be one-dimensional&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x1_dt</span> <span class="o">!=</span> <span class="n">x2_dt</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">result_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">astype</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
+            <span class="n">x1_buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti_copy</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">x1_buf</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ev</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">x1_buf</span>
+        <span class="k">if</span> <span class="n">x2_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
+            <span class="n">x2_buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti_copy</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">x2_buf</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">ev</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">x2_buf</span>
 
     <span class="n">dst_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
     <span class="n">dst_dt</span> <span class="o">=</span> <span class="n">int32</span> <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">iinfo</span><span class="p">(</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="k">else</span> <span class="n">int64</span>
 
-    <span class="n">dst</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dst_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dst_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">side</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span><span class="p">:</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_searchsorted_left</span><span class="p">(</span>
-            <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
+            <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
+            <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ev</span><span class="p">,</span>
+            <span class="p">],</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_searchsorted_right</span><span class="p">(</span>
-            <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
+            <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
+            <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ev</span><span class="p">,</span>
+            <span class="p">],</span>
         <span class="p">)</span>
-    <span class="n">ht_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+    <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_evs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dst</span></div>
 </pre></div>
