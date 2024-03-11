@@ -33,20 +33,20 @@
 #else
 #define CYTHON_EXTERN_C
 #endif
-#include "../_sycl_device.h"
-#include "../_sycl_device_api.h"
-#include "../_sycl_context.h"
-#include "../_sycl_context_api.h"
-#include "../_sycl_event.h"
-#include "../_sycl_event_api.h"
-#include "../_sycl_queue.h"
-#include "../_sycl_queue_api.h"
-#include "../memory/_memory.h"
-#include "../memory/_memory_api.h"
-#include "../tensor/_usmarray.h"
-#include "../tensor/_usmarray_api.h"
-#include "../program/_program.h"
-#include "../program/_program_api.h"
+#include "dpctl/_sycl_device.h"
+#include "dpctl/_sycl_device_api.h"
+#include "dpctl/_sycl_context.h"
+#include "dpctl/_sycl_context_api.h"
+#include "dpctl/_sycl_event.h"
+#include "dpctl/_sycl_event_api.h"
+#include "dpctl/_sycl_queue.h"
+#include "dpctl/_sycl_queue_api.h"
+#include "dpctl/memory/_memory.h"
+#include "dpctl/memory/_memory_api.h"
+#include "dpctl/tensor/_usmarray.h"
+#include "dpctl/tensor/_usmarray_api.h"
+#include "dpctl/program/_program.h"
+#include "dpctl/program/_program_api.h"
 
 // clang-format on
 
