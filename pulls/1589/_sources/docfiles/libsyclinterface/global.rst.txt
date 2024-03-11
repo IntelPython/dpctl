@@ -17,6 +17,7 @@ Global Namespace
 	enum_DPCTLSyclDeviceType.rst
 	enum_DPCTLSyclEventStatusType.rst
 	enum_DPCTLSyclUSMType.rst
+	struct_MDLocalAccessorTy.rst
 
 Overview
 ~~~~~~~~
@@ -39,6 +40,7 @@ Overview
 	typedef struct DPCTLDeviceVector* :target:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`;
 	typedef struct DPCTLEventVector* :target:`DPCTLEventVectorRef<doxid-d5/d12/dpctl__sycl__event__interface_8h_1a76cea07268a5ba53a6b8d1c6f686bc02>`;
 	typedef struct DPCTLPlatformVector* :target:`DPCTLPlatformVectorRef<doxid-d5/dcf/group___platform_manager_1ga18dc8588af45614eb2f4a9f7b25a6047>`;
+	typedef struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>` :ref:`MDLocalAccessor<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a7779ae83e3fd4db1174768e1ba62f30b>`;
 	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
 	typedef struct DPCTLOpaqueSyclDeviceSelector* :ref:`DPCTLSyclDeviceSelectorRef<doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83>`;
@@ -60,6 +62,10 @@ Overview
 	enum :ref:`DPCTLSyclDeviceType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a15d8954e4e712e2ec00838a9283d13ff>`;
 	enum :ref:`DPCTLSyclEventStatusType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1ac950d7ef3975b7c553971613f4a27021>`;
 	enum :ref:`DPCTLSyclUSMType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a61bd8b72de91212af565a9be9b913844>`;
+
+	// structs
+
+	struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>`;
 
 	// global functions
 
@@ -859,6 +865,16 @@ Type of function to be used in SYCL async error handler provide by DPCTL.
 		- err_code
 
 		- Error code extracted from an SYCL asynchronous error.
+
+.. index:: pair: typedef; MDLocalAccessor
+.. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a7779ae83e3fd4db1174768e1ba62f30b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>` MDLocalAccessor
+
+Structure to be used to specify dimensionality and type of local_accessor kernel type argument.
 
 .. index:: pair: typedef; DPCTLSyclContextRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08:
