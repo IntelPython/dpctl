@@ -75,20 +75,39 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
         a_ptr[i] = 0;
     }
 
-    auto la = MDLocalAccessor{1, kernelArgTy, SIZE / 10, 1, 1};
+    auto la1 = MDLocalAccessor{1, kernelArgTy, SIZE / 10, 1, 1};
 
     // Create kernel args for vector_add
     size_t gRange[] = {SIZE};
     size_t lRange[] = {SIZE / 10};
-    void *args[NARGS] = {unwrap<void>(a), (void *)&la};
+    void *args_1d[NARGS] = {unwrap<void>(a), (void *)&la1};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR,
                                               DPCTL_LOCAL_ACCESSOR};
 
-    auto ERef =
-        DPCTLQueue_SubmitNDRange(kernel, QRef, args, addKernelArgTypes, NARGS,
-                                 gRange, lRange, RANGE_NDIMS, nullptr, 0);
-    ASSERT_TRUE(ERef != nullptr);
-    DPCTLQueue_Wait(QRef);
+    DPCTLSyclEventRef E1Ref = DPCTLQueue_SubmitNDRange(
+        kernel, QRef, args_1d, addKernelArgTypes, NARGS, gRange, lRange,
+        RANGE_NDIMS, nullptr, 0);
+    ASSERT_TRUE(E1Ref != nullptr);
+
+    DPCTLSyclEventRef DepEv1[] = {E1Ref};
+    auto la2 = MDLocalAccessor{2, kernelArgTy, SIZE / 10, 1, 1};
+    void *args_2d[NARGS] = {unwrap<void>(a), (void *)&la2};
+
+    DPCTLSyclEventRef E2Ref =
+        DPCTLQueue_SubmitNDRange(kernel, QRef, args_2d, addKernelArgTypes,
+                                 NARGS, gRange, lRange, RANGE_NDIMS, DepEv1, 1);
+    ASSERT_TRUE(E2Ref != nullptr);
+
+    DPCTLSyclEventRef DepEv2[] = {E1Ref, E2Ref};
+    auto la3 = MDLocalAccessor{3, kernelArgTy, SIZE / 10, 1, 1};
+    void *args_3d[NARGS] = {unwrap<void>(a), (void *)&la3};
+
+    DPCTLSyclEventRef E3Ref =
+        DPCTLQueue_SubmitNDRange(kernel, QRef, args_3d, addKernelArgTypes,
+                                 NARGS, gRange, lRange, RANGE_NDIMS, DepEv2, 2);
+    ASSERT_TRUE(E3Ref != nullptr);
+
+    DPCTLEvent_Wait(E3Ref);
 
     if (kernelArgTy != DPCTL_FLOAT32_T && kernelArgTy != DPCTL_FLOAT64_T)
         ASSERT_TRUE(a_ptr[0] == 20);
@@ -96,7 +115,9 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
         ASSERT_TRUE(a_ptr[0] == 20.0);
 
     // clean ups
-    DPCTLEvent_Delete(ERef);
+    DPCTLEvent_Delete(E1Ref);
+    DPCTLEvent_Delete(E2Ref);
+    DPCTLEvent_Delete(E3Ref);
     DPCTLKernel_Delete(kernel);
     DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
 }
