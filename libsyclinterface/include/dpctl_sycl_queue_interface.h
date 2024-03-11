@@ -171,6 +171,18 @@ DPCTL_API
 __dpctl_give DPCTLSyclDeviceRef
 DPCTLQueue_GetDevice(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
+/*! @brief Structure to be used to specify dimensionality and type of
+ * local_accessor kernel type argument.
+ */
+typedef struct MDLocalAccessorTy
+{
+    size_t ndim;
+    DPCTLKernelArgType dpctl_type_id;
+    size_t dim0;
+    size_t dim1;
+    size_t dim2;
+} MDLocalAccessor;
+
 /*!
  * @brief Submits the kernel to the specified queue with the provided range
  * argument.
