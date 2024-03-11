@@ -44,15 +44,6 @@ constexpr size_t SIZE = 100;
 
 using namespace dpctl::syclinterface;
 
-typedef struct MDLocalAccessorTy
-{
-    size_t ndim;
-    DPCTLKernelArgType dpctl_type_id;
-    size_t dim0;
-    size_t dim1;
-    size_t dim2;
-} MDLocalAccessor;
-
 template <typename T>
 void submit_kernel(DPCTLSyclQueueRef QRef,
                    DPCTLSyclKernelBundleRef KBRef,

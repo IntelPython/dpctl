@@ -121,15 +121,6 @@ typedef struct complex
     uint64_t imag;
 } complexNumber;
 
-typedef struct MDLocalAccessorTy
-{
-    size_t ndim;
-    DPCTLKernelArgType dpctl_type_id;
-    size_t dim0;
-    size_t dim1;
-    size_t dim2;
-} MDLocalAccessor;
-
 void set_dependent_events(handler &cgh,
                           __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                           size_t NDepEvents)
