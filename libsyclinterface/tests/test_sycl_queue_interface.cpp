@@ -90,6 +90,34 @@ protected:
 
 } /* End of anonymous namespace */
 
+TEST(TestDPCTLSyclQueueInterface, CheckCreate)
+{
+    /* We are testing that we do not crash even when input is NULL. */
+    DPCTLSyclQueueRef QRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(
+        QRef = DPCTLQueue_Create(nullptr, nullptr, nullptr, 0));
+    ASSERT_TRUE(QRef == nullptr);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckCreate2)
+{
+    /* We are testing that we do not crash even when input is NULL. */
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+
+    EXPECT_NO_FATAL_FAILURE(QRef =
+                                DPCTLQueue_Create(nullptr, DRef, nullptr, 0));
+    ASSERT_TRUE(QRef == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+}
+
 TEST(TestDPCTLSyclQueueInterface, CheckCreateForDevice)
 {
     /* We are testing that we do not crash even when input is NULL. */
