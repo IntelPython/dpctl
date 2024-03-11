@@ -29,7 +29,11 @@ from ._tensor_impl import (
     default_device_index_type,
     mask_positions,
 )
-from ._tensor_sorting_impl import _argsort_ascending, _sort_ascending
+from ._tensor_sorting_impl import (
+    _argsort_ascending,
+    _searchsorted_left,
+    _sort_ascending,
+)
 
 __all__ = [
     "unique_values",
@@ -365,7 +369,7 @@ def unique_inverse(x):
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
-    ht_ev, _ = _extract(
+    ht_ev, uv_ev = _extract(
         src=s,
         cumsum=cumsum,
         axis_start=0,
@@ -403,23 +407,22 @@ def unique_inverse(x):
         depends=[set_ev, extr_ev],
     )
     host_tasks.append(ht_ev)
-    # TODO: when searchsorted is available,
-    #   inv = searchsorted(unique_vals, fx)
-    dpctl.SyclEvent.wait_for(host_tasks)
-    counts = dpt.asnumpy(_counts).tolist()
-    inv = dpt.empty_like(fx, dtype=ind_dt)
-    pos = 0
-    host_tasks = []
-    for i in range(len(counts)):
-        pos_next = pos + counts[i]
-        _dst = inv[pos:pos_next]
-        ht_ev, _ = _full_usm_ndarray(fill_value=i, dst=_dst, sycl_queue=exec_q)
-        pos = pos_next
-        host_tasks.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_tasks)
-    return UniqueInverseResult(
-        unique_vals, dpt.reshape(inv[unsorting_ids], x.shape)
+
+    inv_dt = dpt.int64 if x.size > dpt.iinfo(dpt.int32).max else dpt.int32
+    inv = dpt.empty_like(x, dtype=inv_dt, order="C")
+    ht_ev, _ = _searchsorted_left(
+        hay=unique_vals,
+        needles=x,
+        positions=inv,
+        sycl_queue=exec_q,
+        depends=[
+            uv_ev,
+        ],
     )
+    host_tasks.append(ht_ev)
+
+    dpctl.SyclEvent.wait_for(host_tasks)
+    return UniqueInverseResult(unique_vals, inv)
 
 
 def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
@@ -546,7 +549,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
-    ht_ev, _ = _extract(
+    ht_ev, uv_ev = _extract(
         src=s,
         cumsum=cumsum,
         axis_start=0,
@@ -576,7 +579,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     )
     host_tasks.append(ht_ev)
     _counts = dpt.empty_like(cum_unique_counts[1:])
-    ht_ev, _ = _subtract(
+    ht_ev, sub_ev = _subtract(
         src1=cum_unique_counts[1:],
         src2=cum_unique_counts[:-1],
         dst=_counts,
@@ -584,23 +587,24 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         depends=[set_ev, extr_ev],
     )
     host_tasks.append(ht_ev)
-    # TODO: when searchsorted is available,
-    #   inv = searchsorted(unique_vals, fx)
-    dpctl.SyclEvent.wait_for(host_tasks)
-    counts = dpt.asnumpy(_counts).tolist()
-    inv = dpt.empty_like(fx, dtype=ind_dt)
-    pos = 0
-    host_tasks = []
-    for i in range(len(counts)):
-        pos_next = pos + counts[i]
-        _dst = inv[pos:pos_next]
-        ht_ev, _ = _full_usm_ndarray(fill_value=i, dst=_dst, sycl_queue=exec_q)
-        pos = pos_next
-        host_tasks.append(ht_ev)
+
+    inv_dt = dpt.int64 if x.size > dpt.iinfo(dpt.int32).max else dpt.int32
+    inv = dpt.empty_like(x, dtype=inv_dt, order="C")
+    ht_ev, _ = _searchsorted_left(
+        hay=unique_vals,
+        needles=x,
+        positions=inv,
+        sycl_queue=exec_q,
+        depends=[
+            uv_ev,
+        ],
+    )
+    host_tasks.append(ht_ev)
+
     dpctl.SyclEvent.wait_for(host_tasks)
     return UniqueAllResult(
         unique_vals,
         sorting_ids[cum_unique_counts[:-1]],
-        dpt.reshape(inv[unsorting_ids], x.shape),
+        inv,
         _counts,
     )

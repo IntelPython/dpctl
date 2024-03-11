@@ -120,6 +120,7 @@ set(_reduction_sources
 set(_sorting_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/argsort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/searchsorted.cpp
 )
 set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp
@@ -152,6 +153,7 @@ set(_tensor_reductions_impl_sources
 )
 set(_tensor_sorting_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_sorting.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_sorting_sources}
 )
 set(_linalg_sources
