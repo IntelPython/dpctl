@@ -395,7 +395,7 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
     constexpr py::ssize_t zero_offset(0);
     py::ssize_t hay_step = hay.get_strides_vector()[0];
 
-    sycl::event comp_ev = strided_fn(
+    const sycl::event &comp_ev = strided_fn(
         exec_q, hay_nelems, needles_nelems, hay_data, zero_offset, hay_step,
         needles_data, needles_offset, positions_data, positions_offset,
         simplified_nd, packed_shape_strides, all_deps);
@@ -410,11 +410,10 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
     });
 
     host_task_events.push_back(temporaries_cleanup_ev);
+    const sycl::event &ht_ev = dpctl::utils::keep_args_alive(
+        exec_q, {hay, needles, positions}, host_task_events);
 
-    return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {hay, needles, positions},
-                                      host_task_events),
-        comp_ev);
+    return std::make_pair(ht_ev, comp_ev);
 }
 
 /*! @brief search for needle from needles in sorted hay,
