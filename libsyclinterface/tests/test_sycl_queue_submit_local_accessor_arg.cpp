@@ -239,13 +239,13 @@ struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
     std::ifstream spirvFile;
     size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
+    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
 
     TestQueueSubmitWithLocalAccessorFP64()
     {
         DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-        DPCTLSyclDeviceRef DRef = nullptr;
 
         spirvFile.open("./local_accessor_kernel_fp64.spv",
                        std::ios::binary | std::ios::ate);
@@ -262,13 +262,13 @@ struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
 
         KBRef = DPCTLKernelBundle_CreateFromSpirv(
             CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
-        DPCTLDevice_Delete(DRef);
         DPCTLDeviceSelector_Delete(DSRef);
     }
 
     ~TestQueueSubmitWithLocalAccessorFP64()
     {
         spirvFile.close();
+        DPCTLDevice_Delete(DRef);
         DPCTLQueue_Delete(QRef);
         DPCTLKernelBundle_Delete(KBRef);
     }
@@ -339,9 +339,11 @@ TEST_F(TestQueueSubmitWithLocalAccessor, CheckForFloat)
 
 TEST_F(TestQueueSubmitWithLocalAccessorFP64, CheckForDouble)
 {
-    submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                          DPCTLKernelArgType::DPCTL_FLOAT64_T,
-                          "_ZTS14SyclKernel_SLMIdE");
+    if (DPCTLDevice_HasAspect(DRef, DPCTLSyclAspectType::fp64)) {
+        submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                              DPCTLKernelArgType::DPCTL_FLOAT64_T,
+                              "_ZTS14SyclKernel_SLMIdE");
+    }
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUnsupportedArgTy)
