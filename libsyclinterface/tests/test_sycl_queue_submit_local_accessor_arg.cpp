@@ -44,15 +44,6 @@ constexpr size_t SIZE = 100;
 
 using namespace dpctl::syclinterface;
 
-typedef struct MDLocalAccessorTy
-{
-    size_t ndim;
-    DPCTLKernelArgType dpctl_type_id;
-    size_t dim0;
-    size_t dim1;
-    size_t dim2;
-} MDLocalAccessor;
-
 template <typename T>
 void submit_kernel(DPCTLSyclQueueRef QRef,
                    DPCTLSyclKernelBundleRef KBRef,
@@ -75,20 +66,39 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
         a_ptr[i] = 0;
     }
 
-    auto la = MDLocalAccessor{1, kernelArgTy, SIZE / 10, 1, 1};
+    auto la1 = MDLocalAccessor{1, kernelArgTy, SIZE / 10, 1, 1};
 
     // Create kernel args for vector_add
     size_t gRange[] = {SIZE};
     size_t lRange[] = {SIZE / 10};
-    void *args[NARGS] = {unwrap<void>(a), (void *)&la};
+    void *args_1d[NARGS] = {unwrap<void>(a), (void *)&la1};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR,
                                               DPCTL_LOCAL_ACCESSOR};
 
-    auto ERef =
-        DPCTLQueue_SubmitNDRange(kernel, QRef, args, addKernelArgTypes, NARGS,
-                                 gRange, lRange, RANGE_NDIMS, nullptr, 0);
-    ASSERT_TRUE(ERef != nullptr);
-    DPCTLQueue_Wait(QRef);
+    DPCTLSyclEventRef E1Ref = DPCTLQueue_SubmitNDRange(
+        kernel, QRef, args_1d, addKernelArgTypes, NARGS, gRange, lRange,
+        RANGE_NDIMS, nullptr, 0);
+    ASSERT_TRUE(E1Ref != nullptr);
+
+    DPCTLSyclEventRef DepEv1[] = {E1Ref};
+    auto la2 = MDLocalAccessor{2, kernelArgTy, SIZE / 10, 1, 1};
+    void *args_2d[NARGS] = {unwrap<void>(a), (void *)&la2};
+
+    DPCTLSyclEventRef E2Ref =
+        DPCTLQueue_SubmitNDRange(kernel, QRef, args_2d, addKernelArgTypes,
+                                 NARGS, gRange, lRange, RANGE_NDIMS, DepEv1, 1);
+    ASSERT_TRUE(E2Ref != nullptr);
+
+    DPCTLSyclEventRef DepEv2[] = {E1Ref, E2Ref};
+    auto la3 = MDLocalAccessor{3, kernelArgTy, SIZE / 10, 1, 1};
+    void *args_3d[NARGS] = {unwrap<void>(a), (void *)&la3};
+
+    DPCTLSyclEventRef E3Ref =
+        DPCTLQueue_SubmitNDRange(kernel, QRef, args_3d, addKernelArgTypes,
+                                 NARGS, gRange, lRange, RANGE_NDIMS, DepEv2, 2);
+    ASSERT_TRUE(E3Ref != nullptr);
+
+    DPCTLEvent_Wait(E3Ref);
 
     if (kernelArgTy != DPCTL_FLOAT32_T && kernelArgTy != DPCTL_FLOAT64_T)
         ASSERT_TRUE(a_ptr[0] == 20);
@@ -96,7 +106,9 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
         ASSERT_TRUE(a_ptr[0] == 20.0);
 
     // clean ups
-    DPCTLEvent_Delete(ERef);
+    DPCTLEvent_Delete(E1Ref);
+    DPCTLEvent_Delete(E2Ref);
+    DPCTLEvent_Delete(E3Ref);
     DPCTLKernel_Delete(kernel);
     DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
 }
@@ -239,13 +251,13 @@ struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
     std::ifstream spirvFile;
     size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
+    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
 
     TestQueueSubmitWithLocalAccessorFP64()
     {
         DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-        DPCTLSyclDeviceRef DRef = nullptr;
 
         spirvFile.open("./local_accessor_kernel_fp64.spv",
                        std::ios::binary | std::ios::ate);
@@ -262,13 +274,13 @@ struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
 
         KBRef = DPCTLKernelBundle_CreateFromSpirv(
             CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
-        DPCTLDevice_Delete(DRef);
         DPCTLDeviceSelector_Delete(DSRef);
     }
 
     ~TestQueueSubmitWithLocalAccessorFP64()
     {
         spirvFile.close();
+        DPCTLDevice_Delete(DRef);
         DPCTLQueue_Delete(QRef);
         DPCTLKernelBundle_Delete(KBRef);
     }
@@ -339,9 +351,11 @@ TEST_F(TestQueueSubmitWithLocalAccessor, CheckForFloat)
 
 TEST_F(TestQueueSubmitWithLocalAccessorFP64, CheckForDouble)
 {
-    submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                          DPCTLKernelArgType::DPCTL_FLOAT64_T,
-                          "_ZTS14SyclKernel_SLMIdE");
+    if (DPCTLDevice_HasAspect(DRef, DPCTLSyclAspectType::fp64)) {
+        submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                              DPCTLKernelArgType::DPCTL_FLOAT64_T,
+                              "_ZTS14SyclKernel_SLMIdE");
+    }
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUnsupportedArgTy)

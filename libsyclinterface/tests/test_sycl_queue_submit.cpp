@@ -56,7 +56,9 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
 {
     T scalarVal = 3;
     constexpr size_t NARGS = 4;
-    constexpr size_t RANGE_NDIMS = 1;
+    constexpr size_t RANGE_NDIMS_1 = 1;
+    constexpr size_t RANGE_NDIMS_2 = 2;
+    constexpr size_t RANGE_NDIMS_3 = 3;
 
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());
@@ -75,13 +77,33 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
                          (void *)&scalarVal};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
                                               DPCTL_VOID_PTR, kernelArgTy};
-    auto ERef = DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes,
-                                       NARGS, Range, RANGE_NDIMS, nullptr, 0);
-    ASSERT_TRUE(ERef != nullptr);
-    DPCTLQueue_Wait(QRef);
+    auto E1Ref =
+        DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes, NARGS,
+                               Range, RANGE_NDIMS_1, nullptr, 0);
+    ASSERT_TRUE(E1Ref != nullptr);
+
+    // Create kernel args for vector_add
+    size_t Range2D[] = {SIZE, 1};
+    DPCTLSyclEventRef DepEvs[] = {E1Ref};
+    auto E2Ref =
+        DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes, NARGS,
+                               Range2D, RANGE_NDIMS_2, DepEvs, 1);
+    ASSERT_TRUE(E2Ref != nullptr);
+
+    // Create kernel args for vector_add
+    size_t Range3D[] = {SIZE, 1, 1};
+    DPCTLSyclEventRef DepEvs2[] = {E1Ref, E2Ref};
+    auto E3Ref =
+        DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes, NARGS,
+                               Range3D, RANGE_NDIMS_3, DepEvs2, 2);
+    ASSERT_TRUE(E3Ref != nullptr);
+
+    DPCTLEvent_Wait(E3Ref);
 
     // clean ups
-    DPCTLEvent_Delete(ERef);
+    DPCTLEvent_Delete(E1Ref);
+    DPCTLEvent_Delete(E2Ref);
+    DPCTLEvent_Delete(E3Ref);
     DPCTLKernel_Delete(kernel);
     DPCTLfree_with_queue((DPCTLSyclUSMRef)a, QRef);
     DPCTLfree_with_queue((DPCTLSyclUSMRef)b, QRef);
@@ -234,13 +256,13 @@ struct TestQueueSubmitFP64 : public ::testing::Test
     std::ifstream spirvFile;
     size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
+    DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
 
     TestQueueSubmitFP64()
     {
         DPCTLSyclDeviceSelectorRef DSRef = nullptr;
-        DPCTLSyclDeviceRef DRef = nullptr;
 
         spirvFile.open("./oneD_range_kernel_fp64.spv",
                        std::ios::binary | std::ios::ate);
@@ -257,13 +279,13 @@ struct TestQueueSubmitFP64 : public ::testing::Test
 
         KBRef = DPCTLKernelBundle_CreateFromSpirv(
             CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
-        DPCTLDevice_Delete(DRef);
         DPCTLDeviceSelector_Delete(DSRef);
     }
 
     ~TestQueueSubmitFP64()
     {
         spirvFile.close();
+        DPCTLDevice_Delete(DRef);
         DPCTLQueue_Delete(QRef);
         DPCTLKernelBundle_Delete(KBRef);
     }
@@ -334,9 +356,11 @@ TEST_F(TestQueueSubmit, CheckForFloat)
 
 TEST_F(TestQueueSubmitFP64, CheckForDouble)
 {
-    submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                          DPCTLKernelArgType::DPCTL_FLOAT64_T,
-                          "_ZTS11RangeKernelIdE");
+    if (DPCTLDevice_HasAspect(DRef, DPCTLSyclAspectType::fp64)) {
+        submit_kernel<double>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                              DPCTLKernelArgType::DPCTL_FLOAT64_T,
+                              "_ZTS11RangeKernelIdE");
+    }
 }
 
 TEST_F(TestQueueSubmit, CheckForUnsupportedArgTy)
