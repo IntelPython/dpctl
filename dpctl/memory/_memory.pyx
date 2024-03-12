@@ -47,6 +47,7 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLQueue_Delete,
     DPCTLQueue_GetContext,
     DPCTLQueue_Memcpy,
+    DPCTLQueue_MemcpyWithEvents,
     DPCTLQueue_Memset,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
@@ -100,6 +101,7 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
     # could also have used bytearray(nbytes)
     cdef unsigned char[::1] host_buf = np.empty((nbytes,), dtype="|u1")
     cdef DPCTLSyclEventRef E1Ref = NULL
+    cdef DPCTLSyclEventRef *depEvs = [NULL,]
     cdef DPCTLSyclEventRef E2Ref = NULL
 
     E1Ref = DPCTLQueue_Memcpy(
@@ -108,16 +110,17 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         src_ptr,
         nbytes
     )
-    with nogil: DPCTLEvent_Wait(E1Ref)
-
-    E2Ref = DPCTLQueue_Memcpy(
+    depEvs[0] = E1Ref
+    E2Ref = DPCTLQueue_MemcpyWithEvents(
         dest_queue.get_queue_ref(),
         dest_ptr,
         <void *>&host_buf[0],
-        nbytes
+        nbytes,
+        depEvs,
+        1
     )
-    with nogil: DPCTLEvent_Wait(E2Ref)
     DPCTLEvent_Delete(E1Ref)
+    with nogil: DPCTLEvent_Wait(E2Ref)
     DPCTLEvent_Delete(E2Ref)
 
 
@@ -224,7 +227,6 @@ cdef class _Memory:
                 self.memory_ptr = other_buf.p
                 self.nbytes = other_buf.nbytes
                 self.queue = other_buf.queue
-                # self.writable = other_buf.writable
                 self.refobj = other
             else:
                 raise ValueError(
