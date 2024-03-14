@@ -629,7 +629,8 @@ def iinfo(dtype):
 
     Returns:
         iinfo_object:
-            An object with the following attributes
+            An object with the following attributes:
+
             * bits: int
                 number of bits occupied by the data type
             * max: int
@@ -658,7 +659,8 @@ def finfo(dtype):
 
     Returns:
         finfo_object:
-            an object have the following attributes
+            an object have the following attributes:
+
                 * bits: int
                     number of bits occupied by dtype.
                 * eps: float
