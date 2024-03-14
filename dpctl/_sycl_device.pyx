@@ -503,6 +503,7 @@ cdef class SyclDevice(_SyclDevice):
 
         Indicates that the device supports the following atomic operations on
         64-bit values:
+
             - atomic::load
             - atomic::store
             - atomic::fetch_add

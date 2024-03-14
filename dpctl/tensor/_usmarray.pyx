@@ -82,23 +82,23 @@ cdef class usm_ndarray:
             If ``dtype`` has the value ``None``, it is determined by default
             floating point type supported by target device.
             The supported types are
-               * ``bool``
-                     boolean type
-               * ``int8``, ``int16``, ``int32``, ``int64``,
-                     signed integer types
-               * ``uint8``, ``uint16``, ``uint32``, ``uint64``,
-                     unsigned integer types
-               * ``float16``
-                     half-precision floating type,
-                     supported if target device's property
-                     ``has_aspect_fp16`` is ``True``
-               * ``float32``, ``complex64``
-                     single-precision real and complex floating
-                     types
-               * ``float64``, ``complex128``
-                     double-precision real and complex floating
-                     types, supported if target device's property
-                     ``has_aspect_fp64`` is ``True``.
+
+                ``bool``:
+                    boolean type
+                ``int8``, ``int16``, ``int32``, ``int64``:
+                    signed integer types
+                ``uint8``, ``uint16``, ``uint32``, ``uint64``:
+                    unsigned integer types
+                ``float16``:
+                    half-precision floating type,
+                    supported if target device's property
+                    ``has_aspect_fp16`` is ``True``
+                ``float32``, ``complex64``:
+                    single-precision real and complex floating types
+                ``float64``, ``complex128``:
+                    double-precision real and complex floating
+                    types, supported if target device's property
+                    ``has_aspect_fp64`` is ``True``.
             Default: ``None``.
         strides (tuple, optional):
             Strides of the array to be created in elements.

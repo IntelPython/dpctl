@@ -81,10 +81,11 @@ def tensordot(x1, x2, axes=2):
             then the contraction is performed over last `N` axes of `x1` and
             the first `N` axis of `x2` in order. The size of each corresponding
             axis must match and must be non-negative.
-               * if `N` equals `0`, the result is the tensor outer product
-               * if `N` equals `1`, the result is the tensor dot product
-               * if `N` equals `2`, the result is the tensor double
-                 contraction (default).
+
+                * if `N` equals `0`, the result is the tensor outer product
+                * if `N` equals `1`, the result is the tensor dot product
+                * if `N` equals `2`, the result is the tensor double
+                  contraction (default).
             If `axes` is a tuple of two sequences `(x1_axes, x2_axes)`, the
             first sequence applies to `x1` and the second sequence applies
             to `x2`. Both sequences must have equal length, and each axis

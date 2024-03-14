@@ -32,15 +32,20 @@ def onetrace_enabled():
     """Enable `onetrace` collection for kernels executed in this context.
 
     N.B.: Proper working of this utility assumes that Python interpreter
-    has been launched by `onetrace` tool from intel/pti-gpu project.
+    has been launched by `onetrace` or `unitrace` tool from project
+    `intel/pti-gpu <https://github.com/intel/pti-gpu>`_.
 
     :Example:
-        Launch the Python interpreter using `onetrace` tool: ::
+        Launch the Python interpreter using `onetrace` tool:
+
+        .. code-block:: bash
 
             $ onetrace --conditional-collection -v -t --demangle python app.py
 
         Now using the context manager in the Python sessions enables
-        data collection and its output for every offloaded kernel ::
+        data collection and its output for every offloaded kernel:
+
+        .. code-block:: python
 
             import dpctl.tensor as dpt
             from dpctl.utils import onetrace_enabled

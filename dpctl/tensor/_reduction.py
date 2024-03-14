@@ -194,6 +194,7 @@ def sum(x, axis=None, dtype=None, keepdims=False):
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
+
                 * If `x` has a real-valued floating-point data type,
                   the returned array will have the default real-valued
                   floating-point data type for the device where input
@@ -220,6 +221,7 @@ def sum(x, axis=None, dtype=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the sums. If the sum was computed over the
@@ -254,6 +256,7 @@ def prod(x, axis=None, dtype=None, keepdims=False):
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
+
                 * If `x` has a real-valued floating-point data type,
                   the returned array will have the default real-valued
                   floating-point data type for the device where input
@@ -280,6 +283,7 @@ def prod(x, axis=None, dtype=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the products. If the product was computed over
@@ -315,6 +319,7 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
+
                 * If `x` has a real-valued floating-point data type,
                   the returned array will have the default real-valued
                   floating-point data type for the device where input
@@ -333,6 +338,7 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the results. If the result was computed over
@@ -370,6 +376,7 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
+
                 * If `x` has a real-valued floating-point data type,
                   the returned array will have the default real-valued
                   floating-point data type for the device where input
@@ -388,6 +395,7 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the results. If the result was computed over
