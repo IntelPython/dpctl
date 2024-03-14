@@ -271,6 +271,11 @@ endif()
 target_include_directories(DPCTLSyclInterface INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+add_library(DPCTLSyclInterfaceHeaders INTERFACE)
+add_dependencies(DPCTLSyclInterfaceHeaders DPCTLSyclInterface)
+target_include_directories(DPCTLSyclInterfaceHeaders INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 install(TARGETS
     DPCTLSyclInterface

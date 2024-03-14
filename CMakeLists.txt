@@ -50,7 +50,7 @@ add_subdirectory(libsyclinterface)
 
 add_library(DpctlCAPI INTERFACE)
 target_include_directories(DpctlCAPI INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpctl/apis/include)
-target_link_libraries(DpctlCAPI INTERFACE DPCTLSyclInterface)
+target_link_libraries(DpctlCAPI INTERFACE DPCTLSyclInterfaceHeaders)
 
 install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/dpctl/apis/include/
