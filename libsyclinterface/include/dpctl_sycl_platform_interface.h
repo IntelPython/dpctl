@@ -176,6 +176,6 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @ingroup PlatformInterface
  */
 DPCTL_API
-size_t DPCTLPlatform_Hash(__dpctl_keep DPCTLSyclPlatformRef CtxRef);
+size_t DPCTLPlatform_Hash(__dpctl_keep DPCTLSyclPlatformRef PRef);
 
 DPCTL_C_EXTERN_C_END
