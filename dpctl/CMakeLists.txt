@@ -116,6 +116,7 @@ function(build_dpctl_ext _trgt _src _dest)
     #   headers related to this target and appropriate folder structure to
     #   eliminate shadow dependencies
     get_filename_component(_generated_src_dir_dir ${_generated_src_dir} DIRECTORY)
+    # TODO: do not set directory if we did not generate header
     target_include_directories(${_trgt} INTERFACE ${_generated_src_dir_dir})
 
     install(TARGETS ${_trgt}
@@ -128,6 +129,12 @@ function(build_dpctl_ext _trgt _src _dest)
         ${_generated_public_h}
         DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include/${_dest}
         OPTIONAL)
+
+    set(_trgt_headers ${_trgt}_headers)
+    add_library(${_trgt_headers} INTERFACE)
+    add_dependencies(${_trgt_headers} ${_trgt})
+    get_target_property(_trgt_headers_dir ${_trgt} INTERFACE_INCLUDE_DIRECTORIES)
+    target_include_directories(${_trgt_headers} INTERFACE ${_trgt_headers_dir})
 endfunction()
 
 file(GLOB _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.pyx)
@@ -135,7 +142,11 @@ list(REMOVE_ITEM _cython_sources ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpctl_ext(${_trgt} ${_cy_file} "dpctl")
-    target_link_libraries(DpctlCAPI INTERFACE ${_trgt})
+    target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
+    # TODO: cleanup
+    # add_dependencies(DpctlCAPI ${_trgt})
+    # get_target_property(_trgt_headers ${_trgt} INTERFACE_INCLUDE_DIRECTORIES)
+    # target_include_directories(DpctlCAPI INTERFACE ${_trgt_headers})
 endforeach()
 
 set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
@@ -143,6 +154,7 @@ get_filename_component(_trgt ${_cy_file} NAME_WLE)
 build_dpctl_ext(${_trgt} ${_cy_file} "dpctl" SYCL)
 # _sycl_queue include _host_task_util.hpp
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 
 add_subdirectory(program)
 add_subdirectory(memory)
