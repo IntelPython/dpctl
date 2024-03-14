@@ -116,50 +116,61 @@ def set_print_options(
     Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
 
     Args:
-        linewidth (int, optional): Number of characters printed per line.
+        linewidth (int, optional):
+            Number of characters printed per line.
             Raises `TypeError` if linewidth is not an integer.
             Default: `75`.
-        edgeitems (int, optional): Number of elements at the beginning and end
+        edgeitems (int, optional):
+            Number of elements at the beginning and end
             when the printed array is abbreviated.
             Raises `TypeError` if edgeitems is not an integer.
             Default: `3`.
-        threshold (int, optional): Number of elements that triggers array
-            abbreviation.
+        threshold (int, optional):
+            Number of elements that triggers array abbreviation.
             Raises `TypeError` if threshold is not an integer.
             Default: `1000`.
-        precision (int or None, optional): Number of digits printed for
-            floating point numbers.
+        precision (int or None, optional):
+            Number of digits printed for floating point numbers.
             Raises `TypeError` if precision is not an integer.
             Default: `8`.
-        floatmode (str, optional): Controls how floating point
-            numbers are interpreted.
-
-            `"fixed:`: Always prints exactly `precision` digits.
-            `"unique"`: Ignores precision, prints the number of
-                digits necessary to uniquely specify each number.
-            `"maxprec"`: Prints `precision` digits or fewer,
-                if fewer will uniquely represent a number.
-            `"maxprec_equal"`: Prints an equal number of digits
-                for each number. This number is `precision` digits or fewer,
-                if fewer will uniquely represent each number.
+        floatmode (str, optional):
+            Controls how floating point numbers are interpreted.
+                `"fixed:`:
+                    Always prints exactly `precision` digits.
+                `"unique"`:
+                    Ignores precision, prints the number of
+                    digits necessary to uniquely specify each number.
+                `"maxprec"`:
+                    Prints `precision` digits or fewer,
+                    if fewer will uniquely represent a number.
+                `"maxprec_equal"`:
+                    Prints an equal number of digits
+                    for each number. This number is `precision` digits
+                    or fewer, if fewer will uniquely represent each number.
             Raises `ValueError` if floatmode is not one of
             `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
             Default: "maxprec_equal"
-        suppress (bool, optional): If `True,` numbers equal to zero
-            in the current precision will print as zero.
+        suppress (bool, optional):
+            If `True,` numbers equal to zero in the current precision
+            will print as zero.
             Default: `False`.
-        nanstr (str, optional): String used to represent nan.
+        nanstr (str, optional):
+            String used to represent nan.
             Raises `TypeError` if nanstr is not a string.
             Default: `"nan"`.
-        infstr (str, optional): String used to represent infinity.
+        infstr (str, optional):
+            String used to represent infinity.
             Raises `TypeError` if infstr is not a string.
             Default: `"inf"`.
-        sign (str, optional): Controls the sign of floating point
-            numbers.
-            `"-"`: Omit the sign of positive numbers.
-            `"+"`: Always print the sign of positive numbers.
-            `" "`: Always print a whitespace in place of the
-                sign of positive numbers.
+        sign (str, optional):
+            Controls the sign of floating point numbers.
+                `"-"`:
+                    Omit the sign of positive numbers.
+                `"+"`:
+                    Always print the sign of positive numbers.
+                `" "`:
+                    Always print a whitespace in place of the
+                    sign of positive numbers.
             Raises `ValueError` if sign is not one of
             `"-"`, `"+"`, or `" "`.
             Default: `"-"`.
@@ -287,60 +298,71 @@ def usm_ndarray_str(
     :class:`dpctl.tensor.usm_ndarray`.
 
     Args:
-        x (usm_ndarray): Input array.
-        line_width (int, optional): Number of characters printed per line.
+        x (usm_ndarray):
+            Input array.
+        line_width (int, optional):
+            Number of characters printed per line.
             Raises `TypeError` if line_width is not an integer.
             Default: `75`.
-        edgeitems (int, optional): Number of elements at the beginning and end
+        edgeitems (int, optional):
+            Number of elements at the beginning and end
             when the printed array is abbreviated.
             Raises `TypeError` if edgeitems is not an integer.
             Default: `3`.
-        threshold (int, optional): Number of elements that triggers array
-            abbreviation.
+        threshold (int, optional):
+            Number of elements that triggers array abbreviation.
             Raises `TypeError` if threshold is not an integer.
             Default: `1000`.
-        precision (int or None, optional): Number of digits printed for
-            floating point numbers.
+        precision (int or None, optional):
+            Number of digits printed for floating point numbers.
             Raises `TypeError` if precision is not an integer.
             Default: `8`.
-        floatmode (str, optional): Controls how floating point
-            numbers are interpreted.
-
-            `"fixed:`: Always prints exactly `precision` digits.
-            `"unique"`: Ignores precision, prints the number of
-                digits necessary to uniquely specify each number.
-            `"maxprec"`: Prints `precision` digits or fewer,
-                if fewer will uniquely represent a number.
-            `"maxprec_equal"`: Prints an equal number of digits
-                for each number. This number is `precision` digits or fewer,
-                if fewer will uniquely represent each number.
+        floatmode (str, optional):
+            Controls how floating point numbers are interpreted.
+                `"fixed:`:
+                    Always prints exactly `precision` digits.
+                `"unique"`:
+                    Ignores precision, prints the number of
+                    digits necessary to uniquely specify each number.
+                `"maxprec"`:
+                    Prints `precision` digits or fewer,
+                    if fewer will uniquely represent a number.
+                `"maxprec_equal"`:
+                    Prints an equal number of digits for each number.
+                    This number is `precision` digits or fewer,
+                    if fewer will uniquely represent each number.
             Raises `ValueError` if floatmode is not one of
             `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
             Default: "maxprec_equal"
-        suppress (bool, optional): If `True,` numbers equal to zero
-            in the current precision will print as zero.
+        suppress (bool, optional):
+            If `True,` numbers equal to zero in the current precision
+            will print as zero.
             Default: `False`.
-        sign (str, optional): Controls the sign of floating point
-            numbers.
-            `"-"`: Omit the sign of positive numbers.
-            `"+"`: Always print the sign of positive numbers.
-            `" "`: Always print a whitespace in place of the
-                sign of positive numbers.
+        sign (str, optional):
+            Controls the sign of floating point numbers.
+                `"-"`:
+                    Omit the sign of positive numbers.
+                `"+"`:
+                    Always print the sign of positive numbers.
+                `" "`:
+                    Always print a whitespace in place of the
+                    sign of positive numbers.
             Raises `ValueError` if sign is not one of
             `"-"`, `"+"`, or `" "`.
             Default: `"-"`.
-        numpy (bool, optional): If `True,` then before other specified print
+        numpy (bool, optional):
+            If `True,` then before other specified print
             options are set, a dictionary of Numpy's print options
             will be used to initialize dpctl's print options.
             Default: "False"
-        separator (str, optional): String inserted between elements of
-            the array string.
+        separator (str, optional):
+            String inserted between elements of the array string.
             Default: " "
-        prefix (str, optional): String used to determine spacing to the left
-            of the array string.
+        prefix (str, optional):
+            String used to determine spacing to the left of the array string.
             Default: ""
-        suffix (str, optional): String that determines length of the last line
-            of the array string.
+        suffix (str, optional):
+            String that determines length of the last line of the array string.
             Default: ""
 
     Returns:
