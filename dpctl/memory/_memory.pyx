@@ -83,6 +83,7 @@ class USMAllocationError(Exception):
     An exception raised when Universal Shared Memory (USM) allocation
     call returns a null pointer, signaling a failure to perform the allocation.
     Some common reasons for allocation failure are:
+
         * insufficient free memory to perform the allocation request
         * allocation size exceeds the maximum supported by targeted backend
     """
