@@ -269,7 +269,8 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
 endif()
 
 target_include_directories(DPCTLSyclInterface INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 add_library(DPCTLSyclInterfaceHeaders INTERFACE)
 add_dependencies(DPCTLSyclInterfaceHeaders DPCTLSyclInterface)
@@ -279,6 +280,7 @@ target_include_directories(DPCTLSyclInterfaceHeaders INTERFACE
 
 install(TARGETS
     DPCTLSyclInterface
+    EXPORT DPCTLSyclInterface
     LIBRARY
     DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl
 )
@@ -286,6 +288,11 @@ install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include
     FILES_MATCHING REGEX "\\.h(pp)?$"
+)
+
+install(EXPORT DPCTLSyclInterface
+  FILE DPCTLSyclInterface.cmake
+  DESTINATION cmake/DPCTLSyclInterface
 )
 
 # Add sub-directory to build the dpctl C API test cases
