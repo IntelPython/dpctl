@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data Parallel Control (dpctl) 0.17.0dev0+115.gc2ee127926 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data Parallel Control (dpctl) 0.17.0dev0+125.g3c5f7b9ecb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a02c4bc5"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=17e86b26"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+115.gc2ee127926
+                0.17.0dev0+125.g3c5f7b9ecb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -132,43 +132,24 @@ If <code class="docutils literal notranslate"><span class="pre">dtype</span></co
 floating point type supported by target device.
 The supported types are</p>
 <blockquote>
-<div><ul class="simple">
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">bool</span></code></dt><dd><p>boolean type</p>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">bool</span></code>:</dt><dd><p>boolean type</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">int8</span></code>, <code class="docutils literal notranslate"><span class="pre">int16</span></code>, <code class="docutils literal notranslate"><span class="pre">int32</span></code>, <code class="docutils literal notranslate"><span class="pre">int64</span></code>,</dt><dd><p>signed integer types</p>
+<dt><code class="docutils literal notranslate"><span class="pre">int8</span></code>, <code class="docutils literal notranslate"><span class="pre">int16</span></code>, <code class="docutils literal notranslate"><span class="pre">int32</span></code>, <code class="docutils literal notranslate"><span class="pre">int64</span></code>:</dt><dd><p>signed integer types</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="docutils literal notranslate"><span class="pre">uint64</span></code>,</dt><dd><p>unsigned integer types</p>
+<dt><code class="docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="docutils literal notranslate"><span class="pre">uint64</span></code>:</dt><dd><p>unsigned integer types</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">float16</span></code></dt><dd><p>half-precision floating type,
+<dt><code class="docutils literal notranslate"><span class="pre">float16</span></code>:</dt><dd><p>half-precision floating type,
 supported if target device’s property
 <code class="docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">float32</span></code>, <code class="docutils literal notranslate"><span class="pre">complex64</span></code></dt><dd><p>single-precision real and complex floating
-types</p>
+<dt><code class="docutils literal notranslate"><span class="pre">float32</span></code>, <code class="docutils literal notranslate"><span class="pre">complex64</span></code>:</dt><dd><p>single-precision real and complex floating types</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">float64</span></code>, <code class="docutils literal notranslate"><span class="pre">complex128</span></code></dt><dd><p>double-precision real and complex floating
+<dt><code class="docutils literal notranslate"><span class="pre">float64</span></code>, <code class="docutils literal notranslate"><span class="pre">complex128</span></code>:</dt><dd><p>double-precision real and complex floating
 types, supported if target device’s property
 <code class="docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 </dl>
-</li>
-</ul>
 </div></blockquote>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
