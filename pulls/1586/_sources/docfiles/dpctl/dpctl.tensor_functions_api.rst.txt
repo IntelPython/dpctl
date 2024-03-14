@@ -38,6 +38,7 @@ Other Functions
 .. autofunction:: put
 .. autofunction:: reduce_hypot
 .. autofunction:: result_type
+.. autofunction:: searchsorted
 .. autofunction:: set_print_options
 .. autofunction:: sort
 .. autofunction:: std

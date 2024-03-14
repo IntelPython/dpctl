@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+70.g9b77f32a44 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+107.g2a585e228b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7af13d71"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=92c44e28"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+70.g9b77f32a44
+                0.17.0dev0+107.g2a585e228b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -936,6 +936,37 @@ input arrays and dtypes.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype">dtype</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.searchsorted">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">searchsorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_searchsorted.html#searchsorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.searchsorted" title="Permalink to this definition"></a></dt>
+<dd><p>Finds the indices into <cite>x1</cite> such that, if the corresponding elements
+in <cite>x2</cite> were inserted before the indices, the order of <cite>x1</cite>, when sorted
+in ascending order, would be preserved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Must be a one-dimensional array. If <cite>sorter</cite> is
+<cite>None</cite>, must be sorted in ascending order; otherwise, <cite>sorter</cite> must
+be an array of indices that sort <cite>x1</cite> in ascending order.</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – array containing search values.</p></li>
+<li><p><strong>side</strong> (<em>Literal</em><em>[</em><em>&quot;left&quot;</em><em>, </em><em>&quot;right</em><em>]</em>) – argument controlling which index is returned if a value lands
+exactly on an edge. If <cite>x2</cite> is an array of rank <cite>N</cite> where
+<cite>v = x2[n, m, …, j]</cite>, the element <cite>ret[n, m, …, j]</cite> in the
+return array <cite>ret</cite> contains the position <cite>i</cite> such that
+if <cite>side=”left”</cite>, it is the first index such that
+<cite>x1[i-1] &lt; v &lt;= x1[i]</cite>, <cite>0</cite> if <cite>v &lt;= x1[0]</cite>, and <cite>x1.size</cite>
+if <cite>v &gt; x1[-1]</cite>;
+and if <cite>side=”right”</cite>, it is the first position <cite>i</cite> such that
+<cite>x1[i-1] &lt;= v &lt; x1[i]</cite>, <cite>0</cite> if <cite>v &lt; x1[0]</cite>, and <cite>x1.size</cite>
+if <cite>v &gt;= x1[-1]</cite>. Default: <cite>“left”</cite>.</p></li>
+<li><p><strong>sorter</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – array of indices that sort <cite>x1</cite> in ascending order. The array must
+have the same shape as <cite>x1</cite> and have an integral data type.
+Default: <cite>None</cite>.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -2416,7 +2447,7 @@ of size one at the position specified by axis.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>axis</strong> (<em>int</em>) – axis position (zero-based). If <cite>x</cite> has rank
+<li><p><strong>axis</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>]</em><em>]</em>) – axis position in the expanded axes (zero-based). If <cite>x</cite> has rank
 (i.e, number of dimensions) <cite>N</cite>, a valid <cite>axis</cite> must reside
 in the closed-interval <cite>[-N-1, N]</cite>. If provided a negative
 <cite>axis</cite>, the <cite>axis</cite> position at which to insert a singleton

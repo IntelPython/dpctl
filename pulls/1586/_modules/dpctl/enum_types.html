@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.enum_types &mdash; Data Parallel Control (dpctl) 0.17.0dev0+70.g9b77f32a44 documentation</title>
+  <title>dpctl.enum_types &mdash; Data Parallel Control (dpctl) 0.17.0dev0+107.g2a585e228b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7af13d71"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=92c44e28"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+70.g9b77f32a44
+                0.17.0dev0+107.g2a585e228b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -116,11 +116,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;device_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;backend_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;event_status_type&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;device_type&quot;</span><span class="p">,</span> <span class="s2">&quot;backend_type&quot;</span><span class="p">,</span> <span class="s2">&quot;event_status_type&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="device_type"><a class="viewcode-back" href="../../docfiles/dpctl/dpctl_enum_api.html#dpctl.device_type">[docs]</a><span class="k">class</span> <span class="nc">device_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -207,25 +203,6 @@
     <span class="n">none</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">read_only</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">read_write</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
-
-
-<span class="k">class</span> <span class="nc">kernel_arg_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An enumeration of supported kernel argument types in</span>
-<span class="sd">    :func:`dpctl.SyclQueue.submit`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpctl_int8</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_uint8</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_int16</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_uint16</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_int32</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_uint32</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_int64</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_uint64</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_float32</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_float64</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-    <span class="n">dpctl_void_ptr</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </pre></div>
 
            </div>

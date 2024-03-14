@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Global Namespace &mdash; Data Parallel Control (dpctl) 0.17.0dev0+70.g9b77f32a44 documentation</title>
+  <title>Global Namespace &mdash; Data Parallel Control (dpctl) 0.17.0dev0+107.g2a585e228b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7af13d71"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=92c44e28"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+70.g9b77f32a44
+                0.17.0dev0+107.g2a585e228b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -92,6 +92,7 @@
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#typedefs">Typedefs</a></li>
@@ -146,6 +147,7 @@
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLDeviceVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-dc-ddc-group-device-manager-1ga69ba4893acc931f2040cba37863a188e"><span></span><span class="n">DPCTLDeviceVectorRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLEventVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span></span><span class="n">DPCTLEventVectorRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLPlatformVector</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-d5-dcf-group-platform-manager-1ga18dc8588af45614eb2f4a9f7b25a6047"><span></span><span class="n">DPCTLPlatformVectorRef</span></span><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <a class="reference internal" href="struct_MDLocalAccessorTy.html#doxid-db-dfd-struct-m-d-local-accessor-ty"><span class="std std-ref">MDLocalAccessorTy</span></a><span></span> <a class="reference internal" href="#doxid-da-db8-dpctl-sycl-queue-interface-8h-1a7779ae83e3fd4db1174768e1ba62f30b"><span class="std std-ref">MDLocalAccessor</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span>  <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclContext</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDeviceSelector</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span><span class="p">;</span>
@@ -167,6 +169,10 @@
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclDeviceType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a15d8954e4e712e2ec00838a9283d13ff"><span class="std std-ref">DPCTLSyclDeviceType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclEventStatusType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"><span class="std std-ref">DPCTLSyclEventStatusType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclUSMType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a61bd8b72de91212af565a9be9b913844"><span class="std std-ref">DPCTLSyclUSMType</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// structs</span>
+
+<span class="k">struct</span> <a class="reference internal" href="struct_MDLocalAccessorTy.html#doxid-db-dfd-struct-m-d-local-accessor-ty"><span class="std std-ref">MDLocalAccessorTy</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
@@ -953,28 +959,30 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span id="index-2"></span><span></span><span class="k">typedef</span>  <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclContext</span><span class="o">*</span> <span class="n">DPCTLSyclContextRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a7779ae83e3fd4db1174768e1ba62f30b"><span id="index-2"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <a class="reference internal" href="struct_MDLocalAccessorTy.html#doxid-db-dfd-struct-m-d-local-accessor-ty"><span class="std std-ref">MDLocalAccessorTy</span></a><span></span> <span class="n">MDLocalAccessor</span></pre>
+<p>Structure to be used to specify dimensionality and type of local_accessor kernel type argument.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span id="index-3"></span><span></span><span class="k">typedef</span>  <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclContext</span><span class="o">*</span> <span class="n">DPCTLSyclContextRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span id="index-3"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <span class="n">DPCTLSyclDeviceRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span id="index-4"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <span class="n">DPCTLSyclDeviceRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span id="index-4"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDeviceSelector</span><span class="o">*</span> <span class="n">DPCTLSyclDeviceSelectorRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span id="index-5"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDeviceSelector</span><span class="o">*</span> <span class="n">DPCTLSyclDeviceSelectorRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::device_selector</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span id="index-5"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclEvent</span><span class="o">*</span> <span class="n">DPCTLSyclEventRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span id="index-6"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclEvent</span><span class="o">*</span> <span class="n">DPCTLSyclEventRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span id="index-6"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernelBundle</span><span class="o">*</span> <span class="n">DPCTLSyclKernelBundleRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a6d9c52ea7d2e9394ddf7ba7e7f01bebd"><span id="index-7"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernelBundle</span><span class="o">*</span> <span class="n">DPCTLSyclKernelBundleRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span id="index-7"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernel</span><span class="o">*</span> <span class="n">DPCTLSyclKernelRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span id="index-8"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclKernel</span><span class="o">*</span> <span class="n">DPCTLSyclKernelRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span id="index-8"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclPlatform</span><span class="o">*</span> <span class="n">DPCTLSyclPlatformRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span id="index-9"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclPlatform</span><span class="o">*</span> <span class="n">DPCTLSyclPlatformRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span id="index-9"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclQueue</span><span class="o">*</span> <span class="n">DPCTLSyclQueueRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span id="index-10"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclQueue</span><span class="o">*</span> <span class="n">DPCTLSyclQueueRef</span></pre>
 <p>Opaque pointer to a <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span id="index-10"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclUSM</span><span class="o">*</span> <span class="n">DPCTLSyclUSMRef</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-df-d57-dpctl-sycl-types-8h-1a8c78ad1413045f90e15f5b6a2727d2e6"><span id="index-11"></span><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclUSM</span><span class="o">*</span> <span class="n">DPCTLSyclUSMRef</span></pre>
 <p>Used to pass a <code class="docutils literal notranslate"><span class="pre">sycl::usm</span></code> memory opaquely through DPCTL interfaces.</p>
 </section>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac47e84e08c40272eb54358b6ab76c0f0"><span id="index-11"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac47e84e08c40272eb54358b6ab76c0f0"><span id="index-12"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetGlobalMemCacheLineSize</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::global_mem_cache_line_size">info::device::global_mem_cache_line_size</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -991,7 +999,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the size of global memory cache line in bytes as uint32_t.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ae4641fb22da8c78a1c5b3c9a0c0fd913"><span id="index-12"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ae4641fb22da8c78a1c5b3c9a0c0fd913"><span id="index-13"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
 <span class="n">DPCTLDevice_GetGlobalMemCacheSize</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::global_mem_cache_size">info::device::global_mem_cache_size</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1008,7 +1016,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the size of global memory cache in bytes as uint64_t.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a34aef85cc31edf294aece8d68f5bccba"><span id="index-13"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLGlobalMemCacheType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94d"><span class="std std-ref">DPCTLGlobalMemCacheType</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a34aef85cc31edf294aece8d68f5bccba"><span id="index-14"></span><span></span><span class="n">DPCTL_API</span> <a class="reference internal" href="enum_DPCTLGlobalMemCacheType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94d"><span class="std std-ref">DPCTLGlobalMemCacheType</span></a><span></span>
 <span class="n">DPCTLDevice_GetGlobalMemCacheType</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::global_mem_cache_type">info::device::global_mem_cache_type</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1025,7 +1033,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the type of global memory cache supported.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a4ef25a38cbf63e618016302e8ebf480d"><span id="index-14"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a4ef25a38cbf63e618016302e8ebf480d"><span id="index-15"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetImage2dMaxHeight</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::image2d_max_height">info::device::image2d_max_height</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1042,7 +1050,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum height of a 2D image or 1D image in pixels. The minimum value is 8192 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ad1f6957fdc5fb51ed873fa444af17c13"><span id="index-15"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ad1f6957fdc5fb51ed873fa444af17c13"><span id="index-16"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetImage2dMaxWidth</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::image2d_max_width">info::device::image2d_max_width</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1059,7 +1067,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum width of a 2D image or 1D image in pixels. The minimum value is 8192 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac64423a160a010d1841b36ae2ab48658"><span id="index-16"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac64423a160a010d1841b36ae2ab48658"><span id="index-17"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetImage3dMaxDepth</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::image3d_max_depth">info::device::image3d_max_depth</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1076,7 +1084,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum depth of a 3D image The minimum value is 2048 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac041263954e4e4c2a5bf58eeb08c0b7e"><span id="index-17"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac041263954e4e4c2a5bf58eeb08c0b7e"><span id="index-18"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetImage3dMaxHeight</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::image3d_max_height">info::device::image3d_max_height</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1093,7 +1101,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum height of a 3D image The minimum value is 2048 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a775e74dcd25c38e1d1575df3262b6f60"><span id="index-18"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a775e74dcd25c38e1d1575df3262b6f60"><span id="index-19"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetImage3dMaxWidth</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::image3d_max_width">info::device::image3d_max_width</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1110,7 +1118,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum width of a 3D image in pixels. The minimum value is 2048 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a8a86e895dc25e747f8f4349100d85809"><span id="index-19"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a8a86e895dc25e747f8f4349100d85809"><span id="index-20"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetMaxClockFrequency</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::max_clock_frequency">info::device::max_clock_frequency</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1127,7 +1135,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum clock frequency in MHz as uint32_t.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ad546933b32f0c9917982f39ddf0be5c6"><span id="index-20"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ad546933b32f0c9917982f39ddf0be5c6"><span id="index-21"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint64_t</span>
 <span class="n">DPCTLDevice_GetMaxMemAllocSize</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::max_mem_alloc_size">info::device::max_mem_alloc_size</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1144,7 +1152,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum size of memory object in bytes as uint64_t.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a9810a239416c53427e3742bfb72ea0a6"><span id="index-21"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a9810a239416c53427e3742bfb72ea0a6"><span id="index-22"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetMaxReadImageArgs</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::max_read_image_args">info::device::max_read_image_args</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1161,7 +1169,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum number of simultaneous image objects that can be read from by a kernel. The minimum value is 128 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a34dbd5b5dbde22ba5f1d5205de298d81"><span id="index-22"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a34dbd5b5dbde22ba5f1d5205de298d81"><span id="index-23"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetMaxWriteImageArgs</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::max_write_image_args">info::device::max_write_image_args</a>&gt;().</p>
 <p class="rubric">Parameters:</p>
@@ -1178,7 +1186,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum number of simultaneous image objects that can be written to by a kernel. The minimum value is 8 if the SYCL device has aspect::image.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1acccdc3f034e6c5fd2a249907355169bc"><span id="index-23"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1acccdc3f034e6c5fd2a249907355169bc"><span id="index-24"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span>
 <span class="n">DPCTLDevice_GetParentDevice</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::parent_device">info::device::parent_device</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1195,7 +1203,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns an opaque pointer to the parent device for a sub-device, or nullptr otherwise.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ab48d25118cd217ccd917993afba98570"><span id="index-24"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ab48d25118cd217ccd917993afba98570"><span id="index-25"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetPartitionMaxSubDevices</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::partition_max_sub_devices">info::device::partition_max_sub_devices</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1212,7 +1220,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the maximum number of sub-devices that can be created when this device is partitioned.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a5fe67bf4915e62ce08d80d810f0e8632"><span id="index-25"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a5fe67bf4915e62ce08d80d810f0e8632"><span id="index-26"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_GetProfilingTimerResolution</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::profiling_timer_resolution">info::device::profiling_timer_resolution</a>&gt;</p>
 <p class="rubric">Parameters:</p>
@@ -1229,7 +1237,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns the resolution of device timer in nanoseconds.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a28538fa8029a6d4c7ff4d972ec690b97"><span id="index-26"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a28538fa8029a6d4c7ff4d972ec690b97"><span id="index-27"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">size_t</span>
 <span class="n">DPCTLDevice_Hash</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over std::hash&lt;sycl::device&gt;’s operator()</p>
 <p class="rubric">Parameters:</p>
@@ -1246,7 +1254,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns hash value.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a2533273ef88851620d8778b67af96b40"><span id="index-27"></span><span></span><span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a2533273ef88851620d8778b67af96b40"><span id="index-28"></span><span></span><span class="kt">void</span>
 <span class="n">DPCTLEventVector_Clear</span><span class="p">(</span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all the elements of the std::vector.</p>
 <p class="rubric">Parameters:</p>
@@ -1261,12 +1269,12 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1ab5afa80c19843fa1b41973b1e62a178b"><span id="index-28"></span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1ab5afa80c19843fa1b41973b1e62a178b"><span id="index-29"></span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
 <span class="n">DPCTLEventVector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Create an opaque pointer to a std::vector of opaque pointers wrapping the SYCL data type.</p>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a6f276dcdc80178cf99995b8f5d424023"><span id="index-29"></span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a6f276dcdc80178cf99995b8f5d424023"><span id="index-30"></span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span>
 <span class="n">DPCTLEventVector_CreateFromArray</span><span class="p">(</span>
     <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
     <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">elems</span>
@@ -1289,7 +1297,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>Returns a new opaque pointer to a vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a5f9bc369029a26d550d30454d44d3af2"><span id="index-30"></span><span></span><span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a5f9bc369029a26d550d30454d44d3af2"><span id="index-31"></span><span></span><span class="kt">void</span>
 <span class="n">DPCTLEventVector_Delete</span><span class="p">(</span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Delete all elements in the vector and then delete the vector.</p>
 <p class="rubric">Parameters:</p>
@@ -1304,7 +1312,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1add811579bc4037c70d2e21ea10473310"><span id="index-31"></span><a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1add811579bc4037c70d2e21ea10473310"><span id="index-32"></span><a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLEventVector_GetAt</span><span class="p">(</span>
     <a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">index</span>
@@ -1327,7 +1335,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>The element at the specified position, if the index position is out of bounds then a nullptr is returned.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a52a48c99dd11d8591efaf6b2d55450fc"><span id="index-32"></span><span></span><span class="kt">size_t</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-d12-dpctl-sycl-event-interface-8h-1a52a48c99dd11d8591efaf6b2d55450fc"><span id="index-33"></span><span></span><span class="kt">size_t</span>
 <span class="n">DPCTLEventVector_Size</span><span class="p">(</span><a class="reference internal" href="#doxid-d5-d12-dpctl-sycl-event-interface-8h-1a76cea07268a5ba53a6b8d1c6f686bc02"><span class="std std-ref">DPCTLEventVectorRef</span></a><span></span> <span class="n">VRef</span><span class="p">)</span></pre>
 <p>Returns the number of elements in the vector.</p>
 <p class="rubric">Parameters:</p>
@@ -1344,7 +1352,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>The current size of the vector.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a2453786e50a7d7e51a0d240b2ce52f53"><span id="index-33"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a2453786e50a7d7e51a0d240b2ce52f53"><span id="index-34"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLQueue_SubmitBarrier</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
 <p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -1361,7 +1369,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code> function.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a1666c1e2da52e7736cfc662a7c0ad6fb"><span id="index-34"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a1666c1e2da52e7736cfc662a7c0ad6fb"><span id="index-35"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLQueue_SubmitBarrierForEvents</span><span class="p">(</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
     <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>

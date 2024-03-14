@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._set_functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+70.g9b77f32a44 documentation</title>
+  <title>dpctl.tensor._set_functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+107.g2a585e228b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=7af13d71"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=92c44e28"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+70.g9b77f32a44
+                0.17.0dev0+107.g2a585e228b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -123,7 +123,11 @@
     <span class="n">default_device_index_type</span><span class="p">,</span>
     <span class="n">mask_positions</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._tensor_sorting_impl</span> <span class="kn">import</span> <span class="n">_argsort_ascending</span><span class="p">,</span> <span class="n">_sort_ascending</span>
+<span class="kn">from</span> <span class="nn">._tensor_sorting_impl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_argsort_ascending</span><span class="p">,</span>
+    <span class="n">_searchsorted_left</span><span class="p">,</span>
+    <span class="n">_sort_ascending</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;unique_values&quot;</span><span class="p">,</span>
@@ -459,7 +463,7 @@
     <span class="n">unique_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="n">n_uniques</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
     <span class="p">)</span>
-    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_extract</span><span class="p">(</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">uv_ev</span> <span class="o">=</span> <span class="n">_extract</span><span class="p">(</span>
         <span class="n">src</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
         <span class="n">cumsum</span><span class="o">=</span><span class="n">cumsum</span><span class="p">,</span>
         <span class="n">axis_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -497,23 +501,22 @@
         <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">set_ev</span><span class="p">,</span> <span class="n">extr_ev</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
-    <span class="c1"># TODO: when searchsorted is available,</span>
-    <span class="c1">#   inv = searchsorted(unique_vals, fx)</span>
+
+    <span class="n">inv_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inv_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_searchsorted_left</span><span class="p">(</span>
+        <span class="n">hay</span><span class="o">=</span><span class="n">unique_vals</span><span class="p">,</span>
+        <span class="n">needles</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+        <span class="n">positions</span><span class="o">=</span><span class="n">inv</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">uv_ev</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+
     <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks</span><span class="p">)</span>
-    <span class="n">counts</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">_counts</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-    <span class="n">inv</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">fx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ind_dt</span><span class="p">)</span>
-    <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">host_tasks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)):</span>
-        <span class="n">pos_next</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">_dst</span> <span class="o">=</span> <span class="n">inv</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos_next</span><span class="p">]</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">_dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
-        <span class="n">pos</span> <span class="o">=</span> <span class="n">pos_next</span>
-        <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">UniqueInverseResult</span><span class="p">(</span>
-        <span class="n">unique_vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">inv</span><span class="p">[</span><span class="n">unsorting_ids</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">UniqueInverseResult</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">,</span> <span class="n">inv</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="unique_all"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.unique_all">[docs]</a><span class="k">def</span> <span class="nf">unique_all</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueAllResult</span><span class="p">:</span>
@@ -640,7 +643,7 @@
     <span class="n">unique_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="n">n_uniques</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
     <span class="p">)</span>
-    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_extract</span><span class="p">(</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">uv_ev</span> <span class="o">=</span> <span class="n">_extract</span><span class="p">(</span>
         <span class="n">src</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
         <span class="n">cumsum</span><span class="o">=</span><span class="n">cumsum</span><span class="p">,</span>
         <span class="n">axis_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -670,7 +673,7 @@
     <span class="p">)</span>
     <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
     <span class="n">_counts</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">cum_unique_counts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_subtract</span><span class="p">(</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">sub_ev</span> <span class="o">=</span> <span class="n">_subtract</span><span class="p">(</span>
         <span class="n">src1</span><span class="o">=</span><span class="n">cum_unique_counts</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
         <span class="n">src2</span><span class="o">=</span><span class="n">cum_unique_counts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
         <span class="n">dst</span><span class="o">=</span><span class="n">_counts</span><span class="p">,</span>
@@ -678,24 +681,25 @@
         <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">set_ev</span><span class="p">,</span> <span class="n">extr_ev</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
-    <span class="c1"># TODO: when searchsorted is available,</span>
-    <span class="c1">#   inv = searchsorted(unique_vals, fx)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks</span><span class="p">)</span>
-    <span class="n">counts</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">_counts</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-    <span class="n">inv</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">fx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ind_dt</span><span class="p">)</span>
-    <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">host_tasks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">)):</span>
-        <span class="n">pos_next</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">counts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">_dst</span> <span class="o">=</span> <span class="n">inv</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos_next</span><span class="p">]</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">_dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
-        <span class="n">pos</span> <span class="o">=</span> <span class="n">pos_next</span>
-        <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+
+    <span class="n">inv_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inv_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_searchsorted_left</span><span class="p">(</span>
+        <span class="n">hay</span><span class="o">=</span><span class="n">unique_vals</span><span class="p">,</span>
+        <span class="n">needles</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+        <span class="n">positions</span><span class="o">=</span><span class="n">inv</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">uv_ev</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">host_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+
     <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">UniqueAllResult</span><span class="p">(</span>
         <span class="n">unique_vals</span><span class="p">,</span>
         <span class="n">sorting_ids</span><span class="p">[</span><span class="n">cum_unique_counts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">inv</span><span class="p">[</span><span class="n">unsorting_ids</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">inv</span><span class="p">,</span>
         <span class="n">_counts</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
