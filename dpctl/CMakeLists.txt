@@ -1,5 +1,7 @@
 find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 
+# -t is to only Cythonize sources with timestamps newer than existing CXX files (if present)
+# -w is to set working directory (and correctly set __pyx_f[] array of filenames)
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
 
