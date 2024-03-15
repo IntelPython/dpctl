@@ -85,19 +85,19 @@ function(build_dpctl_ext _trgt _src _dest)
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if (BUILD_DPCTL_EXT_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
-	if(_dpctl_sycl_targets)
-	    # make fat binary
+        if(_dpctl_sycl_targets)
+            # make fat binary
             target_compile_options(
                 ${_trgt}
                 PRIVATE
                 -fsycl-targets=${_dpctl_sycl_targets}
             )
-	    target_link_options(
-	        ${_trgt}
-	        PRIVATE
-	        -fsycl-targets=${_dpctl_sycl_targets}
-	    )
-	endif()
+            target_link_options(
+                ${_trgt}
+                PRIVATE
+                -fsycl-targets=${_dpctl_sycl_targets}
+            )
+        endif()
     endif()
     target_link_libraries(${_trgt} PRIVATE Python::NumPy)
     if (DPCTL_GENERATE_COVERAGE)
