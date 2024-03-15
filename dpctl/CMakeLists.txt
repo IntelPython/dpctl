@@ -129,6 +129,14 @@ function(build_dpctl_ext _trgt _src _dest)
         ${_generated_public_h}
         DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include/${_dest}
         OPTIONAL)
+    if (DPCTL_GENERATE_COVERAGE)
+        get_filename_component(_original_src_dir ${_src} DIRECTORY)
+        file(RELATIVE_PATH _rel_dir ${CMAKE_SOURCE_DIR} ${_original_src_dir})
+        install(FILES
+            ${_generated_src}
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/${_rel_dir}
+        )
+    endif()
 
     # Create target with headers only, because python is managing all the
     # library imports at runtime
