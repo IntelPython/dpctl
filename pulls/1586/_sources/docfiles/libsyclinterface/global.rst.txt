@@ -546,7 +546,7 @@ Overview
 	:ref:`DPCTLPlatform_GetVersion<doxid-da/dbd/group___platform_interface_1gae715cdc1ac7a46ae61e626600c269fb9>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 	DPCTL_API size_t
-	:ref:`DPCTLPlatform_Hash<doxid-da/dbd/group___platform_interface_1ga794100dd2667467207af1f3c58ca47aa>`(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` CtxRef);
+	:ref:`DPCTLPlatform_Hash<doxid-da/dbd/group___platform_interface_1gac7cc24c940cc4956b736a5612c4777ef>`(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 	DPCTL_API __dpctl_give const char*
 	:ref:`DPCTLPlatformMgr_GetInfo<doxid-d5/dcf/group___platform_manager_1ga9ae968c8a7b5e73db62d28b0fe038fd6>`(

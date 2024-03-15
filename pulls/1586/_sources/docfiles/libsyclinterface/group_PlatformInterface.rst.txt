@@ -56,7 +56,7 @@ Overview
 	:ref:`DPCTLPlatform_GetVersion<doxid-da/dbd/group___platform_interface_1gae715cdc1ac7a46ae61e626600c269fb9>`(__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 	DPCTL_API size_t
-	:ref:`DPCTLPlatform_Hash<doxid-da/dbd/group___platform_interface_1ga794100dd2667467207af1f3c58ca47aa>`(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` CtxRef);
+	:ref:`DPCTLPlatform_Hash<doxid-da/dbd/group___platform_interface_1gac7cc24c940cc4956b736a5612c4777ef>`(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef);
 
 .. _details-da/dbd/group___platform_interface:
 
@@ -366,13 +366,13 @@ Returns the software driver version of the sycl::platform as a C string.
 A C string containing the software driver version of the device associated with the platform.
 
 .. index:: pair: function; DPCTLPlatform_Hash
-.. _doxid-da/dbd/group___platform_interface_1ga794100dd2667467207af1f3c58ca47aa:
+.. _doxid-da/dbd/group___platform_interface_1gac7cc24c940cc4956b736a5612c4777ef:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
 	DPCTL_API size_t
-	DPCTLPlatform_Hash(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` CtxRef)
+	DPCTLPlatform_Hash(__dpctl_keep :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef)
 
 Wrapper over std::hash<sycl::platform>'s operator()
 

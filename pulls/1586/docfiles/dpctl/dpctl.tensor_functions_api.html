@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+107.g2a585e228b documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+118.g90fa22b5fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=92c44e28"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=e8adab31"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+107.g2a585e228b
+                0.17.0dev0+118.g90fa22b5fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -377,8 +377,9 @@ If complex, the information is about its component
 data type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>an object have the following attributes</dt><dd><ul class="simple">
+<dd class="field-even"><p><p>an object have the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
 <li><dl class="simple">
 <dt>bits: int</dt><dd><p>number of bits occupied by dtype.</p>
 </dd>
@@ -413,8 +414,7 @@ full precision.</p>
 </dl>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -466,12 +466,13 @@ full precision.</p>
 an array with integer dtype.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>An object with the following attributes
-* bits: int</p>
-<blockquote>
-<div><p>number of bits occupied by the data type</p>
-</div></blockquote>
+<dd class="field-even"><p><p>An object with the following attributes:</p>
 <ul class="simple">
+<li><dl class="simple">
+<dt>bits: int</dt><dd><p>number of bits occupied by the data type</p>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>max: int</dt><dd><p>largest representable number.</p>
 </dd>
@@ -990,34 +991,35 @@ Default: <cite>75</cite>.</p></li>
 when the printed array is abbreviated.
 Raises <cite>TypeError</cite> if edgeitems is not an integer.
 Default: <cite>3</cite>.</p></li>
-<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
-abbreviation.
+<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array abbreviation.
 Raises <cite>TypeError</cite> if threshold is not an integer.
 Default: <cite>1000</cite>.</p></li>
-<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
-floating point numbers.
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for floating point numbers.
 Raises <cite>TypeError</cite> if precision is not an integer.
 Default: <cite>8</cite>.</p></li>
-<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
-numbers are interpreted.</p>
-<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
-<cite>“unique”</cite>: Ignores precision, prints the number of</p>
-<blockquote>
-<div><p>digits necessary to uniquely specify each number.</p>
-</div></blockquote>
-<dl class="simple">
-<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
+<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Controls how floating point numbers are interpreted.</dt><dd><dl class="simple">
+<dt><cite>”fixed:</cite>:</dt><dd><p>Always prints exactly <cite>precision</cite> digits.</p>
 </dd>
-<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
-if fewer will uniquely represent each number.</p>
+<dt><cite>”unique”</cite>:</dt><dd><p>Ignores precision, prints the number of
+digits necessary to uniquely specify each number.</p>
+</dd>
+<dt><cite>”maxprec”</cite>:</dt><dd><p>Prints <cite>precision</cite> digits or fewer,
+if fewer will uniquely represent a number.</p>
+</dd>
+<dt><cite>”maxprec_equal”</cite>:</dt><dd><p>Prints an equal number of digits
+for each number. This number is <cite>precision</cite> digits
+or fewer, if fewer will uniquely represent each number.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <p>Raises <cite>ValueError</cite> if floatmode is not one of
 <cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
 Default: “maxprec_equal”</p>
 </p></li>
-<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
-in the current precision will print as zero.
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero in the current precision
+will print as zero.
 Default: <cite>False</cite>.</p></li>
 <li><p><strong>nanstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to represent nan.
 Raises <cite>TypeError</cite> if nanstr is not a string.
@@ -1025,14 +1027,18 @@ Default: <cite>“nan”</cite>.</p></li>
 <li><p><strong>infstr</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to represent infinity.
 Raises <cite>TypeError</cite> if infstr is not a string.
 Default: <cite>“inf”</cite>.</p></li>
-<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
-numbers.
-<cite>“-”</cite>: Omit the sign of positive numbers.
-<cite>“+”</cite>: Always print the sign of positive numbers.
-<cite>“ “</cite>: Always print a whitespace in place of the</p>
-<blockquote>
-<div><p>sign of positive numbers.</p>
-</div></blockquote>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Controls the sign of floating point numbers.</dt><dd><dl class="simple">
+<dt><cite>”-”</cite>:</dt><dd><p>Omit the sign of positive numbers.</p>
+</dd>
+<dt><cite>”+”</cite>:</dt><dd><p>Always print the sign of positive numbers.</p>
+</dd>
+<dt><cite>” “</cite>:</dt><dd><p>Always print a whitespace in place of the
+sign of positive numbers.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p>Raises <cite>ValueError</cite> if sign is not one of
 <cite>“-”</cite>, <cite>“+”</cite>, or <cite>“ “</cite>.
 Default: <cite>“-”</cite>.</p>
@@ -1424,43 +1430,48 @@ Default: <cite>75</cite>.</p></li>
 when the printed array is abbreviated.
 Raises <cite>TypeError</cite> if edgeitems is not an integer.
 Default: <cite>3</cite>.</p></li>
-<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array
-abbreviation.
+<li><p><strong>threshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements that triggers array abbreviation.
 Raises <cite>TypeError</cite> if threshold is not an integer.
 Default: <cite>1000</cite>.</p></li>
-<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for
-floating point numbers.
+<li><p><strong>precision</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of digits printed for floating point numbers.
 Raises <cite>TypeError</cite> if precision is not an integer.
 Default: <cite>8</cite>.</p></li>
-<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how floating point
-numbers are interpreted.</p>
-<p><cite>”fixed:</cite>: Always prints exactly <cite>precision</cite> digits.
-<cite>“unique”</cite>: Ignores precision, prints the number of</p>
-<blockquote>
-<div><p>digits necessary to uniquely specify each number.</p>
-</div></blockquote>
-<dl class="simple">
-<dt><cite>”maxprec”</cite>: Prints <cite>precision</cite> digits or fewer,</dt><dd><p>if fewer will uniquely represent a number.</p>
+<li><p><strong>floatmode</strong> (<em>str</em><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Controls how floating point numbers are interpreted.</dt><dd><dl class="simple">
+<dt><cite>”fixed:</cite>:</dt><dd><p>Always prints exactly <cite>precision</cite> digits.</p>
 </dd>
-<dt><cite>”maxprec_equal”</cite>: Prints an equal number of digits</dt><dd><p>for each number. This number is <cite>precision</cite> digits or fewer,
+<dt><cite>”unique”</cite>:</dt><dd><p>Ignores precision, prints the number of
+digits necessary to uniquely specify each number.</p>
+</dd>
+<dt><cite>”maxprec”</cite>:</dt><dd><p>Prints <cite>precision</cite> digits or fewer,
+if fewer will uniquely represent a number.</p>
+</dd>
+<dt><cite>”maxprec_equal”</cite>:</dt><dd><p>Prints an equal number of digits for each number.
+This number is <cite>precision</cite> digits or fewer,
 if fewer will uniquely represent each number.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <p>Raises <cite>ValueError</cite> if floatmode is not one of
 <cite>fixed</cite>, <cite>unique</cite>, <cite>maxprec</cite>, or <cite>maxprec_equal</cite>.
 Default: “maxprec_equal”</p>
 </p></li>
-<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero
-in the current precision will print as zero.
+<li><p><strong>suppress</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True,</cite> numbers equal to zero in the current precision
+will print as zero.
 Default: <cite>False</cite>.</p></li>
-<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls the sign of floating point
-numbers.
-<cite>“-”</cite>: Omit the sign of positive numbers.
-<cite>“+”</cite>: Always print the sign of positive numbers.
-<cite>“ “</cite>: Always print a whitespace in place of the</p>
-<blockquote>
-<div><p>sign of positive numbers.</p>
-</div></blockquote>
+<li><p><strong>sign</strong> (<em>str</em><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Controls the sign of floating point numbers.</dt><dd><dl class="simple">
+<dt><cite>”-”</cite>:</dt><dd><p>Omit the sign of positive numbers.</p>
+</dd>
+<dt><cite>”+”</cite>:</dt><dd><p>Always print the sign of positive numbers.</p>
+</dd>
+<dt><cite>” “</cite>:</dt><dd><p>Always print a whitespace in place of the
+sign of positive numbers.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p>Raises <cite>ValueError</cite> if sign is not one of
 <cite>“-”</cite>, <cite>“+”</cite>, or <cite>“ “</cite>.
 Default: <cite>“-”</cite>.</p>
@@ -1469,14 +1480,11 @@ Default: <cite>“-”</cite>.</p>
 options are set, a dictionary of Numpy’s print options
 will be used to initialize dpctl’s print options.
 Default: “False”</p></li>
-<li><p><strong>separator</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted between elements of
-the array string.
+<li><p><strong>separator</strong> (<em>str</em><em>, </em><em>optional</em>) – String inserted between elements of the array string.
 Default: “ “</p></li>
-<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to determine spacing to the left
-of the array string.
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – String used to determine spacing to the left of the array string.
 Default: “”</p></li>
-<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – String that determines length of the last line
-of the array string.
+<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – String that determines length of the last line of the array string.
 Default: “”</p></li>
 </ul>
 </dd>
