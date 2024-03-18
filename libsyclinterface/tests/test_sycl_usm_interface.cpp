@@ -94,74 +94,125 @@ struct TestDPCTLSyclUSMInterface : public ::testing::Test
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocShared)
 {
-    sycl::queue q;
-    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
-    ASSERT_TRUE(Q);
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    ASSERT_TRUE(DSRef);
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(DRef);
+    DPCTLSyclQueueRef QRef =
+        DPCTLQueue_CreateForDevice(DRef, NULL, DPCTL_DEFAULT_PROPERTY);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+
     const size_t nbytes = SIZE;
-    auto Ptr = DPCTLmalloc_shared(nbytes, Q);
+    auto Ptr = DPCTLmalloc_shared(nbytes, QRef);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_SHARED);
-    DPCTLfree_with_queue(Ptr, Q);
+    common_test_body(nbytes, Ptr, QRef, DPCTLSyclUSMType::DPCTL_USM_SHARED);
+    DPCTLfree_with_queue(Ptr, QRef);
+
+    DPCTLQueue_Delete(QRef);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocDevice)
 {
-    sycl::queue q;
-    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
-    ASSERT_TRUE(Q);
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    ASSERT_TRUE(DSRef);
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(DRef);
+    DPCTLSyclQueueRef QRef =
+        DPCTLQueue_CreateForDevice(DRef, NULL, DPCTL_DEFAULT_PROPERTY);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+
     const size_t nbytes = SIZE;
-    auto Ptr = DPCTLmalloc_device(nbytes, Q);
+    auto Ptr = DPCTLmalloc_device(nbytes, QRef);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
-    DPCTLfree_with_queue(Ptr, Q);
+    common_test_body(nbytes, Ptr, QRef, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
+    DPCTLfree_with_queue(Ptr, QRef);
+
+    DPCTLQueue_Delete(QRef);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, MallocHost)
 {
-    sycl::queue q;
-    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
-    ASSERT_TRUE(Q);
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    ASSERT_TRUE(DSRef);
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(DRef);
+    DPCTLSyclQueueRef QRef =
+        DPCTLQueue_CreateForDevice(DRef, NULL, DPCTL_DEFAULT_PROPERTY);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+
     const size_t nbytes = SIZE;
-    auto Ptr = DPCTLmalloc_host(nbytes, Q);
+    auto Ptr = DPCTLmalloc_host(nbytes, QRef);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_HOST);
-    DPCTLfree_with_queue(Ptr, Q);
+    common_test_body(nbytes, Ptr, QRef, DPCTLSyclUSMType::DPCTL_USM_HOST);
+    DPCTLfree_with_queue(Ptr, QRef);
+    DPCTLQueue_Delete(QRef);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocShared)
 {
-    sycl::queue q;
-    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
-    ASSERT_TRUE(Q);
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    ASSERT_TRUE(DSRef);
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(DRef);
+    DPCTLSyclQueueRef QRef =
+        DPCTLQueue_CreateForDevice(DRef, NULL, DPCTL_DEFAULT_PROPERTY);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+
     const size_t nbytes = SIZE;
-    auto Ptr = DPCTLaligned_alloc_shared(64, nbytes, Q);
+    auto Ptr = DPCTLaligned_alloc_shared(64, nbytes, QRef);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_SHARED);
-    DPCTLfree_with_queue(Ptr, Q);
+    common_test_body(nbytes, Ptr, QRef, DPCTLSyclUSMType::DPCTL_USM_SHARED);
+    DPCTLfree_with_queue(Ptr, QRef);
+    DPCTLQueue_Delete(QRef);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocDevice)
 {
-    sycl::queue q;
-    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
-    ASSERT_TRUE(Q);
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    ASSERT_TRUE(DSRef);
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(DRef);
+    DPCTLSyclQueueRef QRef =
+        DPCTLQueue_CreateForDevice(DRef, NULL, DPCTL_DEFAULT_PROPERTY);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+
     const size_t nbytes = SIZE;
-    auto Ptr = DPCTLaligned_alloc_device(64, nbytes, Q);
+    auto Ptr = DPCTLaligned_alloc_device(64, nbytes, QRef);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
-    DPCTLfree_with_queue(Ptr, Q);
+    common_test_body(nbytes, Ptr, QRef, DPCTLSyclUSMType::DPCTL_USM_DEVICE);
+    DPCTLfree_with_queue(Ptr, QRef);
+    DPCTLQueue_Delete(QRef);
 }
 
 TEST_F(TestDPCTLSyclUSMInterface, AlignedAllocHost)
 {
-    sycl::queue q;
-    DPCTLSyclQueueRef Q = dpctl::syclinterface::wrap<sycl::queue>(&q);
-    ASSERT_TRUE(Q);
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    ASSERT_TRUE(DSRef);
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    ASSERT_TRUE(DRef);
+    DPCTLSyclQueueRef QRef =
+        DPCTLQueue_CreateForDevice(DRef, NULL, DPCTL_DEFAULT_PROPERTY);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+
     const size_t nbytes = SIZE;
-    auto Ptr = DPCTLaligned_alloc_host(64, nbytes, Q);
+    auto Ptr = DPCTLaligned_alloc_host(64, nbytes, QRef);
     EXPECT_TRUE(bool(Ptr));
-    common_test_body(nbytes, Ptr, Q, DPCTLSyclUSMType::DPCTL_USM_HOST);
-    DPCTLfree_with_queue(Ptr, Q);
+    common_test_body(nbytes, Ptr, QRef, DPCTLSyclUSMType::DPCTL_USM_HOST);
+    DPCTLfree_with_queue(Ptr, QRef);
+
+    DPCTLQueue_Delete(QRef);
 }
 
 struct TestDPCTLSyclUSMNullArgs : public ::testing::Test
