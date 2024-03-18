@@ -23,15 +23,15 @@ Helper functions for ``sycl::platform`` objects that do not directly map to any 
 
 	// global functions
 
-	DPCTL_API __dpctl_give const char*
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` const char*
 	:ref:`DPCTLPlatformMgr_GetInfo<doxid-d5/dcf/group___platform_manager_1ga9ae968c8a7b5e73db62d28b0fe038fd6>`(
-		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
 		size_t verbosity
 		);
 
-	DPCTL_API void
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:ref:`DPCTLPlatformMgr_PrintInfo<doxid-d5/dcf/group___platform_manager_1ga8e44adac75e0ecf8705b089404a8fb86>`(
-		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
 		size_t verbosity
 		);
 
@@ -75,9 +75,9 @@ Global Functions
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API __dpctl_give const char*
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` const char*
 	DPCTLPlatformMgr_GetInfo(
-		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
 		size_t verbosity
 		)
 
@@ -116,9 +116,9 @@ A formatted C string capturing the information about the sycl::platform argument
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API void
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	DPCTLPlatformMgr_PrintInfo(
-		__dpctl_keep const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
+		:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclPlatformRef<doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0>` PRef,
 		size_t verbosity
 		)
 

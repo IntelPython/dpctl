@@ -19,16 +19,16 @@ Overview
 	
 	// global functions
 
-	DPCTL_API __dpctl_give const char*
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` const char*
 	:ref:`DPCTLService_GetDPCPPVersion<doxid-d8/d1a/group___service_1ga4762cae74b0bbd7e5d3661283b748916>`(void);
 
-	DPCTL_API void
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:ref:`DPCTLService_InitLogger<doxid-d8/d1a/group___service_1gabbfc206297f96578e9cdef4eea7c1505>`(
 		const char* app_name,
 		const char* log_dir
 		);
 
-	DPCTL_API void
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:ref:`DPCTLService_ShutdownLogger<doxid-d8/d1a/group___service_1ga9699c638b54314fc1398af7d48df0353>`(void);
 
 .. _details-d8/d1a/group___service:
@@ -47,7 +47,7 @@ Global Functions
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API __dpctl_give const char*
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` const char*
 	DPCTLService_GetDPCPPVersion(void)
 
 Get version of DPC++ toolchain the library was compiled with.
@@ -64,7 +64,7 @@ A C string containing the version of DPC++ toolchain.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API void
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	DPCTLService_InitLogger(
 		const char* app_name,
 		const char* log_dir
@@ -95,7 +95,7 @@ Initialize logger if compiled to use logger, no-op otherwise.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API void
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	DPCTLService_ShutdownLogger(void)
 
 Finilize logger if enabled, no-op otherwise.

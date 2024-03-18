@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._linear_algebra_functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+53.gbdf0691b20 documentation</title>
+  <title>dpctl.tensor._linear_algebra_functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+135.g4afbc115fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2f4eb53c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=64495d64"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+53.gbdf0691b20
+                0.17.0dev0+135.g4afbc115fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -175,17 +175,19 @@
 <span class="sd">            then the contraction is performed over last `N` axes of `x1` and</span>
 <span class="sd">            the first `N` axis of `x2` in order. The size of each corresponding</span>
 <span class="sd">            axis must match and must be non-negative.</span>
-<span class="sd">               * if `N` equals `0`, the result is the tensor outer product</span>
-<span class="sd">               * if `N` equals `1`, the result is the tensor dot product</span>
-<span class="sd">               * if `N` equals `2`, the result is the tensor double</span>
-<span class="sd">                 contraction (default).</span>
+
+<span class="sd">                * if `N` equals `0`, the result is the tensor outer product</span>
+<span class="sd">                * if `N` equals `1`, the result is the tensor dot product</span>
+<span class="sd">                * if `N` equals `2`, the result is the tensor double</span>
+<span class="sd">                  contraction (default).</span>
 <span class="sd">            If `axes` is a tuple of two sequences `(x1_axes, x2_axes)`, the</span>
 <span class="sd">            first sequence applies to `x1` and the second sequence applies</span>
 <span class="sd">            to `x2`. Both sequences must have equal length, and each axis</span>
 <span class="sd">            `x1_axes[i]` for `x1` must have the same size as the respective</span>
 <span class="sd">            axis `x2_axes[i]` for `x2`. Each sequence must consist of unique</span>
-<span class="sd">            non-negative integers that specify valid axes for each respective</span>
-<span class="sd">            array.</span>
+<span class="sd">            integers that specify valid axes for each respective array.</span>
+<span class="sd">            For example, if `x1` has rank `N`, a valid axis must reside on the</span>
+<span class="sd">            half-open interval `[-N, N)`.</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        usm_ndarray:</span>
 <span class="sd">            an array containing the tensor contraction whose shape consists of</span>
@@ -248,11 +250,7 @@
         <span class="n">same_shapes</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_axes1</span><span class="p">):</span>
             <span class="n">axis1</span> <span class="o">=</span> <span class="n">axes1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">axis1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axes` must be non-negative&quot;</span><span class="p">)</span>
             <span class="n">axis2</span> <span class="o">=</span> <span class="n">axes2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">axis2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axes` must be non-negative&quot;</span><span class="p">)</span>
             <span class="n">same_shapes</span> <span class="o">=</span> <span class="n">same_shapes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x1_shape</span><span class="p">[</span><span class="n">axis1</span><span class="p">]</span> <span class="o">==</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">axis2</span><span class="p">])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">same_shapes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;shape mismatch in contracted `tensordot` axes&quot;</span><span class="p">)</span>
@@ -408,12 +406,11 @@
 <span class="sd">            axis. Input arrays should be of numeric type.</span>
 <span class="sd">        axis (Optional[int]):</span>
 <span class="sd">            axis over which to compute the dot product. The axis must</span>
-<span class="sd">            be an integer on the interval `[-N, N)`, where `N` is the</span>
-<span class="sd">            array rank of input arrays after broadcasting rules are</span>
-<span class="sd">            applied. If specified as a negative integer, the axis along</span>
-<span class="sd">            which dot product is performed is counted backward from</span>
-<span class="sd">            the last axes (that is `-1` refers to the last axis). By</span>
-<span class="sd">            default, dot product is computed over the last axis.</span>
+<span class="sd">            be an integer on the interval `[-N, -1]`, where `N` is</span>
+<span class="sd">            ``min(x1.ndim, x2.ndim)``. The axis along which dot product</span>
+<span class="sd">            is performed is counted backward from the last axes</span>
+<span class="sd">            (that is, `-1` refers to the last axis). By default,</span>
+<span class="sd">            dot product is computed over the last axis.</span>
 <span class="sd">            Default: `-1`.</span>
 
 <span class="sd">    Returns:</span>
@@ -449,17 +446,19 @@
     <span class="n">x2_nd</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">x1_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">x2_shape</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">if</span> <span class="n">x1_nd</span> <span class="o">&gt;</span> <span class="n">x2_nd</span><span class="p">:</span>
-        <span class="n">x2_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1_nd</span> <span class="o">-</span> <span class="n">x2_nd</span><span class="p">)</span> <span class="o">+</span> <span class="n">x2_shape</span>
-        <span class="n">x2_nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x2_shape</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">x2_nd</span> <span class="o">&gt;</span> <span class="n">x1_nd</span><span class="p">:</span>
-        <span class="n">x1_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x2_nd</span> <span class="o">-</span> <span class="n">x1_nd</span><span class="p">)</span> <span class="o">+</span> <span class="n">x1_shape</span>
-        <span class="n">x1_nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x1_shape</span><span class="p">)</span>
-    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">x1_nd</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axis` must be negative&quot;</span><span class="p">)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">x1_axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x1_nd</span><span class="p">)</span>
+    <span class="n">x2_axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x2_nd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_shape</span><span class="p">[</span><span class="n">x1_axis</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x2_shape</span><span class="p">[</span><span class="n">x2_axis</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;given axis must have the same shape for `x1` and `x2`&quot;</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_nd</span> <span class="o">&gt;</span> <span class="n">x2_nd</span><span class="p">:</span>
+        <span class="n">x2_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1_nd</span> <span class="o">-</span> <span class="n">x2_nd</span><span class="p">)</span> <span class="o">+</span> <span class="n">x2_shape</span>
+    <span class="k">elif</span> <span class="n">x2_nd</span> <span class="o">&gt;</span> <span class="n">x1_nd</span><span class="p">:</span>
+        <span class="n">x1_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x2_nd</span> <span class="o">-</span> <span class="n">x1_nd</span><span class="p">)</span> <span class="o">+</span> <span class="n">x1_shape</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">broadcast_sh</span> <span class="o">=</span> <span class="n">_broadcast_shape_impl</span><span class="p">(</span>
             <span class="p">[</span>
@@ -469,8 +468,10 @@
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mismatch in `vecdot` dimensions&quot;</span><span class="p">)</span>
+    <span class="n">broadcast_nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">broadcast_sh</span><span class="p">)</span>
+    <span class="n">contracted_axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">broadcast_nd</span><span class="p">)</span>
     <span class="n">res_sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">broadcast_sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">broadcast_sh</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">broadcast_sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">broadcast_nd</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">contracted_axis</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="c1"># type validation</span>
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
@@ -508,9 +509,8 @@
             <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">broadcast_sh</span><span class="p">:</span>
             <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_sh</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
@@ -521,7 +521,7 @@
         <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
             <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
             <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
-            <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_sh</span><span class="p">),</span>
             <span class="n">x1_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">x2_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">inner_dims</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -553,8 +553,8 @@
             <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">buf2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">broadcast_sh</span><span class="p">:</span>
             <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_sh</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
@@ -565,7 +565,7 @@
         <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
             <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
             <span class="n">x2</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
-            <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_sh</span><span class="p">),</span>
             <span class="n">x1_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">x2_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">inner_dims</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -595,8 +595,8 @@
             <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">broadcast_sh</span><span class="p">:</span>
             <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
-        <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_sh</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
@@ -607,7 +607,7 @@
         <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
             <span class="n">x1</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span>
             <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
-            <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_sh</span><span class="p">),</span>
             <span class="n">x1_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">x2_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">inner_dims</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -642,8 +642,8 @@
         <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">buf2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">broadcast_sh</span><span class="p">:</span>
         <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">broadcast_sh</span><span class="p">)</span>
-    <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">contracted_axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="n">res_sh</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
@@ -654,7 +654,7 @@
     <span class="n">ht_dot_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tli</span><span class="o">.</span><span class="n">_dot</span><span class="p">(</span>
         <span class="n">x1</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span>
         <span class="n">x2</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
-        <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">batch_dims</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">res_sh</span><span class="p">),</span>
         <span class="n">x1_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">x2_outer_dims</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">inner_dims</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>enum DPCTLSyclEventStatusType &mdash; Data Parallel Control (dpctl) 0.17.0dev0+135.g4afbc115fb documentation</title>
+  <title>struct MDLocalAccessorTy &mdash; Data Parallel Control (dpctl) 0.17.0dev0+135.g4afbc115fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -33,8 +33,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="enum DPCTLSyclUSMType" href="enum_DPCTLSyclUSMType.html" />
-    <link rel="prev" title="enum DPCTLSyclDeviceType" href="enum_DPCTLSyclDeviceType.html" /> 
+    <link rel="prev" title="enum DPCTLSyclUSMType" href="enum_DPCTLSyclUSMType.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -90,9 +89,11 @@
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">enum DPCTLSyclEventStatusType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
-<li class="toctree-l3"><a class="reference internal" href="struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">struct MDLocalAccessorTy</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="global.html#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="global.html#detailed-documentation">Detailed Documentation</a></li>
 </ul>
@@ -117,9 +118,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">libsyclinterface</a></li>
           <li class="breadcrumb-item"><a href="global.html">Global Namespace</a></li>
-      <li class="breadcrumb-item active">enum DPCTLSyclEventStatusType</li>
+      <li class="breadcrumb-item active">struct MDLocalAccessorTy</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/docfiles/libsyclinterface/enum_DPCTLSyclEventStatusType.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/docfiles/libsyclinterface/struct_MDLocalAccessorTy.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -127,16 +128,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="enum-dpctlsycleventstatustype">
-<span id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021"></span><span id="index-0"></span><h1>enum DPCTLSyclEventStatusType<a class="headerlink" href="#enum-dpctlsycleventstatustype" title="Permalink to this heading"></a></h1>
-<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_sycl_enum_types.h&gt;</span>
+  <section id="struct-mdlocalaccessorty">
+<span id="doxid-db-dfd-struct-m-d-local-accessor-ty"></span><span id="index-0"></span><h1>struct MDLocalAccessorTy<a class="headerlink" href="#struct-mdlocalaccessorty" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>Structure to be used to specify dimensionality and type of local_accessor kernel type argument.</p>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;dpctl_sycl_queue_interface.h&gt;</span>
 
-<span class="k">enum</span> <span class="n">DPCTLSyclEventStatusType</span>
+<span class="k">struct</span> <span class="n">MDLocalAccessorTy</span>
 <span class="p">{</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021a174675630eef09c2c94f4f3e2dec52af"><span></span><span class="n">DPCTL_UNKNOWN_STATUS</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021abb000965a91d3761986706b52ee2d244"><span></span><span class="n">DPCTL_SUBMITTED</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021aa4b3fb9838e7eadebe271de818335146"><span></span><span class="n">DPCTL_RUNNING</span></span><span></span><span class="p">,</span>
-    <span class="doxyrest-code-target target" id="doxid-d3-d94-dpctl-sycl-enum-types-8h-1ac950d7ef3975b7c553971613f4a27021a2e96163b1f35bc641b376233c54616e9"><span></span><span class="n">DPCTL_COMPLETE</span></span><span></span><span class="p">,</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a2f38fe6c63084fd947ec322c8609f79a"><span></span><span class="n">dim0</span></span><span></span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a198638e249a88789bbfa13ef50a9a675"><span></span><span class="n">dim1</span></span><span></span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1af0876c6b8135d36550f0cdc5047907d0"><span></span><span class="n">dim2</span></span><span></span><span class="p">;</span>
+    <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a2e17804f58ddf62527c0fe8d292084e2"><span></span><span class="n">dpctl_type_id</span></span><span></span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="doxyrest-code-target target" id="doxid-db-dfd-struct-m-d-local-accessor-ty-1a5737884a1cd8859b0ee4e4bb7bcaa648"><span></span><span class="n">ndim</span></span><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 
@@ -144,8 +151,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="enum_DPCTLSyclDeviceType.html" class="btn btn-neutral float-left" title="enum DPCTLSyclDeviceType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="enum_DPCTLSyclUSMType.html" class="btn btn-neutral float-right" title="enum DPCTLSyclUSMType" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="enum_DPCTLSyclUSMType.html" class="btn btn-neutral float-left" title="enum DPCTLSyclUSMType" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

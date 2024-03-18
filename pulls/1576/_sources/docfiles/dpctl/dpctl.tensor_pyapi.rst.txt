@@ -182,6 +182,8 @@ Other Functions
       - Calculates the square root of the sum of squares of elements in the input array `x`.
     * - :func:`result_type()`
       - Returns the dtype that results from applying the Type Promotion Rules to the arguments.
+    * - :func:`searchsorted()`
+      - Finds the indices into `x1` such that, if the corresponding elements in `x2` were inserted before the indices, the order of `x1`, when sorted in ascending order, would be preserved.
     * - :func:`set_print_options()`
       - Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
     * - :func:`sort()`

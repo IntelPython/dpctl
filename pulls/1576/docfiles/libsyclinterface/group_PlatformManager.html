@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform class helper functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+53.gbdf0691b20 documentation</title>
+  <title>Platform class helper functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+135.g4afbc115fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=2f4eb53c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=64495d64"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+53.gbdf0691b20
+                0.17.0dev0+135.g4afbc115fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -84,6 +84,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_Service.html">Service functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
@@ -130,15 +131,15 @@
 
 <span class="c1">// global functions</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span>
+DPCTL_API<span></span> __dpctl_give<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span>
 <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga9ae968c8a7b5e73db62d28b0fe038fd6"><span class="std std-ref">DPCTLPlatformMgr_GetInfo</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    __dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
     <span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="kt">void</span>
+DPCTL_API<span></span> <span class="kt">void</span>
 <a class="reference internal" href="#doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span class="std std-ref">DPCTLPlatformMgr_PrintInfo</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    __dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
     <span class="p">);</span>
 
@@ -171,9 +172,9 @@
 <p>Helper functions for <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> objects that do not directly map to any <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> member function.</p>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga9ae968c8a7b5e73db62d28b0fe038fd6"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga9ae968c8a7b5e73db62d28b0fe038fd6"><span id="index-1"></span>DPCTL_API<span></span> __dpctl_give<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span>
 <span class="n">DPCTLPlatformMgr_GetInfo</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    __dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
     <span class="p">)</span></pre>
 <p>Returns a set of platform info attributes as a string.</p>
@@ -196,9 +197,9 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A formatted C string capturing the information about the sycl::platform argument.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d5-dcf-group-platform-manager-1ga8e44adac75e0ecf8705b089404a8fb86"><span id="index-2"></span>DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLPlatformMgr_PrintInfo</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
+    __dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1aae750289dcff2c3739f4870086ac7ed0"><span class="std std-ref">DPCTLSyclPlatformRef</span></a><span></span> <span class="n">PRef</span><span class="p">,</span>
     <span class="kt">size_t</span> <span class="n">verbosity</span>
     <span class="p">)</span></pre>
 <p>Prints out information about the sycl::platform argument.</p>

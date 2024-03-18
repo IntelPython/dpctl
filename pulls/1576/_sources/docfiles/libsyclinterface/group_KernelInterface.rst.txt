@@ -19,35 +19,35 @@ Overview
 	
 	// global functions
 
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
-	:ref:`DPCTLKernel_Copy<doxid-da/df6/group___kernel_interface_1gae6d5f7dcf1d42d6e1edc2b911386c22f>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	:ref:`DPCTLKernel_Copy<doxid-da/df6/group___kernel_interface_1gae6d5f7dcf1d42d6e1edc2b911386c22f>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API void
-	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLKernel_Delete<doxid-da/df6/group___kernel_interface_1ga02cb1ddc64d9f78d228a5dc222c8862b>`(:ref:`__dpctl_take<doxid-d2/dc1/_mem_ownership_attrs_8h_1a17fe5722d78d8ce138ca952889d07bc6>` :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API uint32_t
-	:ref:`DPCTLKernel_GetCompileNumSubGroups<doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	:ref:`DPCTLKernel_GetCompileNumSubGroups<doxid-da/df6/group___kernel_interface_1gab94f84a23cabefeda98896a35707c694>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API uint32_t
-	:ref:`DPCTLKernel_GetCompileSubGroupSize<doxid-da/df6/group___kernel_interface_1gaac45a42a0c66f550c099b635f2cecad7>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	:ref:`DPCTLKernel_GetCompileSubGroupSize<doxid-da/df6/group___kernel_interface_1gaac45a42a0c66f550c099b635f2cecad7>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API uint32_t
-	:ref:`DPCTLKernel_GetMaxNumSubGroups<doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	:ref:`DPCTLKernel_GetMaxNumSubGroups<doxid-da/df6/group___kernel_interface_1ga87026b11e734302aa8238ad38fc6b14a>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API uint32_t
-	:ref:`DPCTLKernel_GetMaxSubGroupSize<doxid-da/df6/group___kernel_interface_1gae84f948176f0eff5519fdb9a0ec4a3e7>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	:ref:`DPCTLKernel_GetMaxSubGroupSize<doxid-da/df6/group___kernel_interface_1gae84f948176f0eff5519fdb9a0ec4a3e7>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API size_t
-	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	:ref:`DPCTLKernel_GetNumArgs<doxid-da/df6/group___kernel_interface_1gae585c0ae9e5e1826ca24aac6f9b2a71d>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API size_t
-	:ref:`DPCTLKernel_GetPreferredWorkGroupSizeMultiple<doxid-da/df6/group___kernel_interface_1ga54f99084068d619b9bd5a624c02b5fbb>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	:ref:`DPCTLKernel_GetPreferredWorkGroupSizeMultiple<doxid-da/df6/group___kernel_interface_1ga54f99084068d619b9bd5a624c02b5fbb>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API size_t
-	:ref:`DPCTLKernel_GetPrivateMemSize<doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	:ref:`DPCTLKernel_GetPrivateMemSize<doxid-da/df6/group___kernel_interface_1ga8b5b72e2f69a5eaeab645e96bf28b411>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
-	DPCTL_API size_t
-	:ref:`DPCTLKernel_GetWorkGroupSize<doxid-da/df6/group___kernel_interface_1ga2ddbfad26249fccbf46c8f044c4244d4>`(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	:ref:`DPCTLKernel_GetWorkGroupSize<doxid-da/df6/group___kernel_interface_1ga2ddbfad26249fccbf46c8f044c4244d4>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef);
 
 .. _details-da/df6/group___kernel_interface:
 
@@ -65,8 +65,8 @@ Global Functions
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API __dpctl_give :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
-	DPCTLKernel_Copy(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>`
+	DPCTLKernel_Copy(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 Returns a copy of the DPCTLSyclKernelRef object.
 
@@ -94,8 +94,8 @@ A new DPCTLSyclKernelRef created by copying the passed in DPCTLSyclKernelRef obj
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API void
-	DPCTLKernel_Delete(__dpctl_take :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLKernel_Delete(:ref:`__dpctl_take<doxid-d2/dc1/_mem_ownership_attrs_8h_1a17fe5722d78d8ce138ca952889d07bc6>` :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 Deletes the DPCTLSyclKernelRef after casting it to a ``sycl::kernel``.
 
@@ -117,8 +117,8 @@ Deletes the DPCTLSyclKernelRef after casting it to a ``sycl::kernel``.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API uint32_t
-	DPCTLKernel_GetCompileNumSubGroups(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	DPCTLKernel_GetCompileNumSubGroups(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::compile_num_sub_groups>()``.
 
@@ -146,8 +146,8 @@ Returns the number of sub-groups specified by the kernel, or 0 (if not specified
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API uint32_t
-	DPCTLKernel_GetCompileSubGroupSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	DPCTLKernel_GetCompileSubGroupSize(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::compile_sub_group_size>()``.
 
@@ -175,8 +175,8 @@ Returns the required sub-group size specified by this kernel, or 0 (if not speci
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API uint32_t
-	DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	DPCTLKernel_GetMaxNumSubGroups(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::max_num_sub_groups>()``.
 
@@ -204,8 +204,8 @@ Returns the maximum number of sub-groups for this kernel.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API uint32_t
-	DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
+	DPCTLKernel_GetMaxSubGroupSize(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::max_sub_group_size>()``.
 
@@ -233,8 +233,8 @@ Returns the maximum sub-group size for this kernel.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API size_t
-	DPCTLKernel_GetNumArgs(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	DPCTLKernel_GetNumArgs(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 Returns the number of arguments for the sycl interoperability kernel.
 
@@ -262,8 +262,8 @@ Returns the number of arguments for the interoperability kernel.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API size_t
-	DPCTLKernel_GetPreferredWorkGroupSizeMultiple(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	DPCTLKernel_GetPreferredWorkGroupSizeMultiple(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::preferred_work_group_size_multiple>()``.
 
@@ -291,8 +291,8 @@ Returns a value, of which work-group size is preferred to be a multiple, for exe
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API size_t
-	DPCTLKernel_GetPrivateMemSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	DPCTLKernel_GetPrivateMemSize(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::private_mem_size>()``.
 
@@ -320,8 +320,8 @@ Returns the minimum amount of private memory, in bytes, used by each work-item i
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API size_t
-	DPCTLKernel_GetWorkGroupSize(__dpctl_keep const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
+	DPCTLKernel_GetWorkGroupSize(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclKernelRef<doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef)
 
 !brief Wrapper around ``kernel::get_info<info::kernel_device_specific::work_group_size>()``.
 

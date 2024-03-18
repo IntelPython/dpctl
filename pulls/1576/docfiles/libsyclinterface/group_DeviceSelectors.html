@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Device selection &mdash; Data Parallel Control (dpctl) 0.17.0dev0+53.gbdf0691b20 documentation</title>
+  <title>Device selection &mdash; Data Parallel Control (dpctl) 0.17.0dev0+135.g4afbc115fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=2f4eb53c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=64495d64"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+53.gbdf0691b20
+                0.17.0dev0+135.g4afbc115fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -84,6 +84,7 @@
 <li class="toctree-l2"><a class="reference internal" href="group_PlatformInterface.html">Platform class C wrapper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_PlatformManager.html">Platform class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_QueueInterface.html">Queue class C wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group_QueueManager.html">Queue class helper functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_Service.html">Service functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="group_USMInterface.html">USM Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page_todo.html">Todo List</a></li>
@@ -125,51 +126,51 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// global functions</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1gaa8a810bcbfd1c1f74d44b2da6a50ef3f"><span class="std std-ref">DPCTLAcceleratorSelector_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1ga977605ab08808729951c6c33ef22df52"><span class="std std-ref">DPCTLCPUSelector_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1gadf9585e3b7e81b40abc15c843ba99aa8"><span class="std std-ref">DPCTLDefaultSelector_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="kt">void</span>
-<a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1ga30678acd2383c56d7eb78bf99b7bcf7c"><span class="std std-ref">DPCTLDeviceSelector_Delete</span></a><span></span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">);</span>
+DPCTL_API<span></span> <span class="kt">void</span>
+<a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1ga30678acd2383c56d7eb78bf99b7bcf7c"><span class="std std-ref">DPCTLDeviceSelector_Delete</span></a><span></span><span class="p">(</span>__dpctl_take<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="kt">int</span>
+DPCTL_API<span></span> <span class="kt">int</span>
 <a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1gab3f9bab0a2fcfeaf7858d264cca1253f"><span class="std std-ref">DPCTLDeviceSelector_Score</span></a><span></span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span>
+    __dpctl_keep<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">,</span>
+    __dpctl_keep<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span>
     <span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
-<a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1ga1cfad5b95c7793766cf863378cdccf3d"><span class="std std-ref">DPCTLFilterSelector_Create</span></a><span></span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filter_str</span><span class="p">);</span>
+DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+<a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1ga1cfad5b95c7793766cf863378cdccf3d"><span class="std std-ref">DPCTLFilterSelector_Create</span></a><span></span><span class="p">(</span>__dpctl_keep<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filter_str</span><span class="p">);</span>
 
-<span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <a class="reference internal" href="#doxid-d8-d27-group-device-selectors-1ga1dabb6a4adf35a193d6d05240d8ed534"><span class="std std-ref">DPCTLGPUSelector_Create</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="p">);</span></pre>
 </section>
 <section id="detailed-documentation">
 <span id="details-d8-d27-group-device-selectors"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading"></a></h2>
 <section id="global-functions">
 <h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading"></a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1gaa8a810bcbfd1c1f74d44b2da6a50ef3f"><span id="index-1"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1gaa8a810bcbfd1c1f74d44b2da6a50ef3f"><span id="index-1"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLAcceleratorSelector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Returns an opaque wrapper for sycl::accelerator_selector object.</p>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to a sycl::accelerator_selector object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga977605ab08808729951c6c33ef22df52"><span id="index-2"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga977605ab08808729951c6c33ef22df52"><span id="index-2"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLCPUSelector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Returns an opaque wrapper for sycl::cpu_selector object.</p>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to a sycl::cpu_selector object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1gadf9585e3b7e81b40abc15c843ba99aa8"><span id="index-3"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1gadf9585e3b7e81b40abc15c843ba99aa8"><span id="index-3"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLDefaultSelector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Returns an opaque wrapper for sycl::default_selector object.</p>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to a sycl::default_selector object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga30678acd2383c56d7eb78bf99b7bcf7c"><span id="index-4"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">void</span>
-<span class="n">DPCTLDeviceSelector_Delete</span><span class="p">(</span><span class="n">__dpctl_take</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga30678acd2383c56d7eb78bf99b7bcf7c"><span id="index-4"></span>DPCTL_API<span></span> <span class="kt">void</span>
+<span class="n">DPCTLDeviceSelector_Delete</span><span class="p">(</span>__dpctl_take<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">)</span></pre>
 <p>Deletes the DPCTLSyclDeviceSelectorRef after casting it to a sycl::device_selector.</p>
 <p class="rubric">Parameters:</p>
 <table class="docutils align-default">
@@ -183,10 +184,10 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1gab3f9bab0a2fcfeaf7858d264cca1253f"><span id="index-5"></span><span></span><span class="n">DPCTL_API</span> <span class="kt">int</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1gab3f9bab0a2fcfeaf7858d264cca1253f"><span id="index-5"></span>DPCTL_API<span></span> <span class="kt">int</span>
 <span class="n">DPCTLDeviceSelector_Score</span><span class="p">(</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">,</span>
-    <span class="n">__dpctl_keep</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span>
+    __dpctl_keep<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span> <span class="n">DSRef</span><span class="p">,</span>
+    __dpctl_keep<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span>
     <span class="p">)</span></pre>
 <p>Scores the device specified by DRef by device selector specified by DSRef.</p>
 <p class="rubric">Parameters:</p>
@@ -206,8 +207,8 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>A integer score. The negative value indicates select rejected the device.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga1cfad5b95c7793766cf863378cdccf3d"><span id="index-6"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
-<span class="n">DPCTLFilterSelector_Create</span><span class="p">(</span><span class="n">__dpctl_keep</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filter_str</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga1cfad5b95c7793766cf863378cdccf3d"><span id="index-6"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+<span class="n">DPCTLFilterSelector_Create</span><span class="p">(</span>__dpctl_keep<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filter_str</span><span class="p">)</span></pre>
 <p>Returns an opaque wrapper for sycl::ext::oneapi::filter_selector object based on the passed in filter string.</p>
 <p class="rubric">Parameters:</p>
 <table class="docutils align-default">
@@ -223,7 +224,7 @@
 </table>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to a sycl::ext::oneapi::filter_selector object.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga1dabb6a4adf35a193d6d05240d8ed534"><span id="index-7"></span><span></span><span class="n">DPCTL_API</span> <span class="n">__dpctl_give</span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d8-d27-group-device-selectors-1ga1dabb6a4adf35a193d6d05240d8ed534"><span id="index-7"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a50a1c6c98f4ca4a27a88e53a7f3eeb83"><span class="std std-ref">DPCTLSyclDeviceSelectorRef</span></a><span></span>
 <span class="n">DPCTLGPUSelector_Create</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span></pre>
 <p>Returns an opaque wrapper for dpctl_gpu_selector object.</p>
 <p class="rubric">Returns:</p>

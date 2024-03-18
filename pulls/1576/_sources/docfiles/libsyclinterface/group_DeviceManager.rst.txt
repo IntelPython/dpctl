@@ -23,29 +23,29 @@ Helper functions for sycl::device objects that do not directly map to any sycl::
 
 	// global functions
 
-	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	:ref:`DPCTLDeviceMgr_GetCachedContext<doxid-dc/ddc/group___device_manager_1gabb587f003e809eaef26d7dbd253ec88e>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	:ref:`DPCTLDeviceMgr_GetCachedContext<doxid-dc/ddc/group___device_manager_1gabb587f003e809eaef26d7dbd253ec88e>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_API __dpctl_give const char*
-	:ref:`DPCTLDeviceMgr_GetDeviceInfoStr<doxid-dc/ddc/group___device_manager_1ga496a3ecb3729a4aec2d16b2b11cb40d9>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` const char*
+	:ref:`DPCTLDeviceMgr_GetDeviceInfoStr<doxid-dc/ddc/group___device_manager_1ga496a3ecb3729a4aec2d16b2b11cb40d9>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
 	:ref:`DPCTLDeviceMgr_GetDevices<doxid-dc/ddc/group___device_manager_1gab7f1386fee08d194d4ad046221c02e18>`(int device_identifier);
 
-	DPCTL_API size_t
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	:ref:`DPCTLDeviceMgr_GetNumDevices<doxid-dc/ddc/group___device_manager_1ga2578ffe4d41ef3adbb690ea99bb5f664>`(int device_identifier);
 
-	DPCTL_API int
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` int
 	:ref:`DPCTLDeviceMgr_GetPositionInDevices<doxid-dc/ddc/group___device_manager_1ga1f86861af1da6e44aa917f1c20285325>`(
-		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
 		int device_identifier
 		);
 
-	DPCTL_API int64_t
-	:ref:`DPCTLDeviceMgr_GetRelativeId<doxid-dc/ddc/group___device_manager_1ga38db5431168d0d9883a62681b139762a>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` int64_t
+	:ref:`DPCTLDeviceMgr_GetRelativeId<doxid-dc/ddc/group___device_manager_1ga38db5431168d0d9883a62681b139762a>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
-	DPCTL_API void
-	:ref:`DPCTLDeviceMgr_PrintDeviceInfo<doxid-dc/ddc/group___device_manager_1ga4d424acf4bfc1365804d43aad4238846>`(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLDeviceMgr_PrintDeviceInfo<doxid-dc/ddc/group___device_manager_1ga4d424acf4bfc1365804d43aad4238846>`(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	void
 	:ref:`DPCTLDeviceVector_Clear<doxid-dc/ddc/group___device_manager_1gaaf299d11c92ca191c2c462b7770da85f>`(:ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>` VRef);
@@ -87,8 +87,8 @@ Global Functions
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
-	DPCTLDeviceMgr_GetCachedContext(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`
+	DPCTLDeviceMgr_GetCachedContext(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
 If the DPCTLSyclDeviceRef argument is a root device, then this function returns a cached default SYCL context for that device.
 
@@ -116,8 +116,8 @@ A DPCTLSyclContextRef associated with the :ref:`DPCTLSyclDeviceRef <doxid-df/d57
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API __dpctl_give const char*
-	DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` const char*
+	DPCTLDeviceMgr_GetDeviceInfoStr(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
 Returns a set of device info attributes as a string.
 
@@ -155,7 +155,7 @@ A formatted C string capturing the following attributes:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API __dpctl_give :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/dc1/_mem_ownership_attrs_8h_1a836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLDeviceVectorRef<doxid-dc/ddc/group___device_manager_1ga69ba4893acc931f2040cba37863a188e>`
 	DPCTLDeviceMgr_GetDevices(int device_identifier)
 
 Returns a pointer to a std::vector<sycl::DPCTLSyclDeviceRef> containing the set of :ref:`DPCTLSyclDeviceRef <doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` pointers matching the passed in device_identifier bit flag.
@@ -198,7 +198,7 @@ A :ref:`DPCTLDeviceVectorRef <doxid-dc/ddc/group___device_manager_1ga69ba4893acc
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API size_t
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	DPCTLDeviceMgr_GetNumDevices(int device_identifier)
 
 Get the number of available devices for given backend and device type combination.
@@ -227,9 +227,9 @@ The number of available devices satisfying the condition specified by the device
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API int
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` int
 	DPCTLDeviceMgr_GetPositionInDevices(
-		__dpctl_keep :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
+		:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef,
 		int device_identifier
 		)
 
@@ -266,8 +266,8 @@ If found, returns the position of the given device in the vector that would be r
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API int64_t
-	DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` int64_t
+	DPCTLDeviceMgr_GetRelativeId(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
 Gives the index of the given device with respective to all the other devices of the same type in the device's platform.
 
@@ -297,8 +297,8 @@ A relative id corresponding to the device, -1 indicates that a relative id value
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	DPCTL_API void
-	DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLDeviceMgr_PrintDeviceInfo(:ref:`__dpctl_keep<doxid-d2/dc1/_mem_ownership_attrs_8h_1add48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
 Prints out the info::deivice attributes for the device that are currently supported by dpctl.
 

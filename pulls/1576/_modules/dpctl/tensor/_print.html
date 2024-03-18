@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._print &mdash; Data Parallel Control (dpctl) 0.17.0dev0+53.gbdf0691b20 documentation</title>
+  <title>dpctl.tensor._print &mdash; Data Parallel Control (dpctl) 0.17.0dev0+135.g4afbc115fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2f4eb53c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=64495d64"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+53.gbdf0691b20
+                0.17.0dev0+135.g4afbc115fb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -210,50 +210,61 @@
 <span class="sd">    Set options for printing :class:`dpctl.tensor.usm_ndarray` class.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        linewidth (int, optional): Number of characters printed per line.</span>
+<span class="sd">        linewidth (int, optional):</span>
+<span class="sd">            Number of characters printed per line.</span>
 <span class="sd">            Raises `TypeError` if linewidth is not an integer.</span>
 <span class="sd">            Default: `75`.</span>
-<span class="sd">        edgeitems (int, optional): Number of elements at the beginning and end</span>
+<span class="sd">        edgeitems (int, optional):</span>
+<span class="sd">            Number of elements at the beginning and end</span>
 <span class="sd">            when the printed array is abbreviated.</span>
 <span class="sd">            Raises `TypeError` if edgeitems is not an integer.</span>
 <span class="sd">            Default: `3`.</span>
-<span class="sd">        threshold (int, optional): Number of elements that triggers array</span>
-<span class="sd">            abbreviation.</span>
+<span class="sd">        threshold (int, optional):</span>
+<span class="sd">            Number of elements that triggers array abbreviation.</span>
 <span class="sd">            Raises `TypeError` if threshold is not an integer.</span>
 <span class="sd">            Default: `1000`.</span>
-<span class="sd">        precision (int or None, optional): Number of digits printed for</span>
-<span class="sd">            floating point numbers.</span>
+<span class="sd">        precision (int or None, optional):</span>
+<span class="sd">            Number of digits printed for floating point numbers.</span>
 <span class="sd">            Raises `TypeError` if precision is not an integer.</span>
 <span class="sd">            Default: `8`.</span>
-<span class="sd">        floatmode (str, optional): Controls how floating point</span>
-<span class="sd">            numbers are interpreted.</span>
-
-<span class="sd">            `&quot;fixed:`: Always prints exactly `precision` digits.</span>
-<span class="sd">            `&quot;unique&quot;`: Ignores precision, prints the number of</span>
-<span class="sd">                digits necessary to uniquely specify each number.</span>
-<span class="sd">            `&quot;maxprec&quot;`: Prints `precision` digits or fewer,</span>
-<span class="sd">                if fewer will uniquely represent a number.</span>
-<span class="sd">            `&quot;maxprec_equal&quot;`: Prints an equal number of digits</span>
-<span class="sd">                for each number. This number is `precision` digits or fewer,</span>
-<span class="sd">                if fewer will uniquely represent each number.</span>
+<span class="sd">        floatmode (str, optional):</span>
+<span class="sd">            Controls how floating point numbers are interpreted.</span>
+<span class="sd">                `&quot;fixed:`:</span>
+<span class="sd">                    Always prints exactly `precision` digits.</span>
+<span class="sd">                `&quot;unique&quot;`:</span>
+<span class="sd">                    Ignores precision, prints the number of</span>
+<span class="sd">                    digits necessary to uniquely specify each number.</span>
+<span class="sd">                `&quot;maxprec&quot;`:</span>
+<span class="sd">                    Prints `precision` digits or fewer,</span>
+<span class="sd">                    if fewer will uniquely represent a number.</span>
+<span class="sd">                `&quot;maxprec_equal&quot;`:</span>
+<span class="sd">                    Prints an equal number of digits</span>
+<span class="sd">                    for each number. This number is `precision` digits</span>
+<span class="sd">                    or fewer, if fewer will uniquely represent each number.</span>
 <span class="sd">            Raises `ValueError` if floatmode is not one of</span>
 <span class="sd">            `fixed`, `unique`, `maxprec`, or `maxprec_equal`.</span>
 <span class="sd">            Default: &quot;maxprec_equal&quot;</span>
-<span class="sd">        suppress (bool, optional): If `True,` numbers equal to zero</span>
-<span class="sd">            in the current precision will print as zero.</span>
+<span class="sd">        suppress (bool, optional):</span>
+<span class="sd">            If `True,` numbers equal to zero in the current precision</span>
+<span class="sd">            will print as zero.</span>
 <span class="sd">            Default: `False`.</span>
-<span class="sd">        nanstr (str, optional): String used to represent nan.</span>
+<span class="sd">        nanstr (str, optional):</span>
+<span class="sd">            String used to represent nan.</span>
 <span class="sd">            Raises `TypeError` if nanstr is not a string.</span>
 <span class="sd">            Default: `&quot;nan&quot;`.</span>
-<span class="sd">        infstr (str, optional): String used to represent infinity.</span>
+<span class="sd">        infstr (str, optional):</span>
+<span class="sd">            String used to represent infinity.</span>
 <span class="sd">            Raises `TypeError` if infstr is not a string.</span>
 <span class="sd">            Default: `&quot;inf&quot;`.</span>
-<span class="sd">        sign (str, optional): Controls the sign of floating point</span>
-<span class="sd">            numbers.</span>
-<span class="sd">            `&quot;-&quot;`: Omit the sign of positive numbers.</span>
-<span class="sd">            `&quot;+&quot;`: Always print the sign of positive numbers.</span>
-<span class="sd">            `&quot; &quot;`: Always print a whitespace in place of the</span>
-<span class="sd">                sign of positive numbers.</span>
+<span class="sd">        sign (str, optional):</span>
+<span class="sd">            Controls the sign of floating point numbers.</span>
+<span class="sd">                `&quot;-&quot;`:</span>
+<span class="sd">                    Omit the sign of positive numbers.</span>
+<span class="sd">                `&quot;+&quot;`:</span>
+<span class="sd">                    Always print the sign of positive numbers.</span>
+<span class="sd">                `&quot; &quot;`:</span>
+<span class="sd">                    Always print a whitespace in place of the</span>
+<span class="sd">                    sign of positive numbers.</span>
 <span class="sd">            Raises `ValueError` if sign is not one of</span>
 <span class="sd">            `&quot;-&quot;`, `&quot;+&quot;`, or `&quot; &quot;`.</span>
 <span class="sd">            Default: `&quot;-&quot;`.</span>
@@ -381,60 +392,71 @@
 <span class="sd">    :class:`dpctl.tensor.usm_ndarray`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        x (usm_ndarray): Input array.</span>
-<span class="sd">        line_width (int, optional): Number of characters printed per line.</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            Input array.</span>
+<span class="sd">        line_width (int, optional):</span>
+<span class="sd">            Number of characters printed per line.</span>
 <span class="sd">            Raises `TypeError` if line_width is not an integer.</span>
 <span class="sd">            Default: `75`.</span>
-<span class="sd">        edgeitems (int, optional): Number of elements at the beginning and end</span>
+<span class="sd">        edgeitems (int, optional):</span>
+<span class="sd">            Number of elements at the beginning and end</span>
 <span class="sd">            when the printed array is abbreviated.</span>
 <span class="sd">            Raises `TypeError` if edgeitems is not an integer.</span>
 <span class="sd">            Default: `3`.</span>
-<span class="sd">        threshold (int, optional): Number of elements that triggers array</span>
-<span class="sd">            abbreviation.</span>
+<span class="sd">        threshold (int, optional):</span>
+<span class="sd">            Number of elements that triggers array abbreviation.</span>
 <span class="sd">            Raises `TypeError` if threshold is not an integer.</span>
 <span class="sd">            Default: `1000`.</span>
-<span class="sd">        precision (int or None, optional): Number of digits printed for</span>
-<span class="sd">            floating point numbers.</span>
+<span class="sd">        precision (int or None, optional):</span>
+<span class="sd">            Number of digits printed for floating point numbers.</span>
 <span class="sd">            Raises `TypeError` if precision is not an integer.</span>
 <span class="sd">            Default: `8`.</span>
-<span class="sd">        floatmode (str, optional): Controls how floating point</span>
-<span class="sd">            numbers are interpreted.</span>
-
-<span class="sd">            `&quot;fixed:`: Always prints exactly `precision` digits.</span>
-<span class="sd">            `&quot;unique&quot;`: Ignores precision, prints the number of</span>
-<span class="sd">                digits necessary to uniquely specify each number.</span>
-<span class="sd">            `&quot;maxprec&quot;`: Prints `precision` digits or fewer,</span>
-<span class="sd">                if fewer will uniquely represent a number.</span>
-<span class="sd">            `&quot;maxprec_equal&quot;`: Prints an equal number of digits</span>
-<span class="sd">                for each number. This number is `precision` digits or fewer,</span>
-<span class="sd">                if fewer will uniquely represent each number.</span>
+<span class="sd">        floatmode (str, optional):</span>
+<span class="sd">            Controls how floating point numbers are interpreted.</span>
+<span class="sd">                `&quot;fixed:`:</span>
+<span class="sd">                    Always prints exactly `precision` digits.</span>
+<span class="sd">                `&quot;unique&quot;`:</span>
+<span class="sd">                    Ignores precision, prints the number of</span>
+<span class="sd">                    digits necessary to uniquely specify each number.</span>
+<span class="sd">                `&quot;maxprec&quot;`:</span>
+<span class="sd">                    Prints `precision` digits or fewer,</span>
+<span class="sd">                    if fewer will uniquely represent a number.</span>
+<span class="sd">                `&quot;maxprec_equal&quot;`:</span>
+<span class="sd">                    Prints an equal number of digits for each number.</span>
+<span class="sd">                    This number is `precision` digits or fewer,</span>
+<span class="sd">                    if fewer will uniquely represent each number.</span>
 <span class="sd">            Raises `ValueError` if floatmode is not one of</span>
 <span class="sd">            `fixed`, `unique`, `maxprec`, or `maxprec_equal`.</span>
 <span class="sd">            Default: &quot;maxprec_equal&quot;</span>
-<span class="sd">        suppress (bool, optional): If `True,` numbers equal to zero</span>
-<span class="sd">            in the current precision will print as zero.</span>
+<span class="sd">        suppress (bool, optional):</span>
+<span class="sd">            If `True,` numbers equal to zero in the current precision</span>
+<span class="sd">            will print as zero.</span>
 <span class="sd">            Default: `False`.</span>
-<span class="sd">        sign (str, optional): Controls the sign of floating point</span>
-<span class="sd">            numbers.</span>
-<span class="sd">            `&quot;-&quot;`: Omit the sign of positive numbers.</span>
-<span class="sd">            `&quot;+&quot;`: Always print the sign of positive numbers.</span>
-<span class="sd">            `&quot; &quot;`: Always print a whitespace in place of the</span>
-<span class="sd">                sign of positive numbers.</span>
+<span class="sd">        sign (str, optional):</span>
+<span class="sd">            Controls the sign of floating point numbers.</span>
+<span class="sd">                `&quot;-&quot;`:</span>
+<span class="sd">                    Omit the sign of positive numbers.</span>
+<span class="sd">                `&quot;+&quot;`:</span>
+<span class="sd">                    Always print the sign of positive numbers.</span>
+<span class="sd">                `&quot; &quot;`:</span>
+<span class="sd">                    Always print a whitespace in place of the</span>
+<span class="sd">                    sign of positive numbers.</span>
 <span class="sd">            Raises `ValueError` if sign is not one of</span>
 <span class="sd">            `&quot;-&quot;`, `&quot;+&quot;`, or `&quot; &quot;`.</span>
 <span class="sd">            Default: `&quot;-&quot;`.</span>
-<span class="sd">        numpy (bool, optional): If `True,` then before other specified print</span>
+<span class="sd">        numpy (bool, optional):</span>
+<span class="sd">            If `True,` then before other specified print</span>
 <span class="sd">            options are set, a dictionary of Numpy&#39;s print options</span>
 <span class="sd">            will be used to initialize dpctl&#39;s print options.</span>
 <span class="sd">            Default: &quot;False&quot;</span>
-<span class="sd">        separator (str, optional): String inserted between elements of</span>
-<span class="sd">            the array string.</span>
+<span class="sd">        separator (str, optional):</span>
+<span class="sd">            String inserted between elements of the array string.</span>
 <span class="sd">            Default: &quot; &quot;</span>
-<span class="sd">        prefix (str, optional): String used to determine spacing to the left</span>
-<span class="sd">            of the array string.</span>
+<span class="sd">        prefix (str, optional):</span>
+<span class="sd">            String used to determine spacing to the left of the array string.</span>
 <span class="sd">            Default: &quot;&quot;</span>
-<span class="sd">        suffix (str, optional): String that determines length of the last line</span>
-<span class="sd">            of the array string.</span>
+<span class="sd">        suffix (str, optional):</span>
+<span class="sd">            String that determines length of the last line of the array string.</span>
 <span class="sd">            Default: &quot;&quot;</span>
 
 <span class="sd">    Returns:</span>
