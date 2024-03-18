@@ -402,8 +402,9 @@ private:
 
     dpctl_capi(dpctl_capi const &) = default;
     dpctl_capi &operator=(dpctl_capi const &) = default;
+    dpctl_capi &operator=(dpctl_capi &&) = default;
 
-    static dpctl_capi lookup()
+    static dpctl_capi &lookup()
     {
         static dpctl_capi api;
         return api;
