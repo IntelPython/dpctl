@@ -12,6 +12,10 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 # set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 
+if (UNIX)
+    add_link_options("-fuse-ld=lld")
+endif()
+
 # Option to generate code coverage report using llvm-cov and lcov.
 option(DPCTL_GENERATE_COVERAGE
     "Build dpctl with coverage instrumentation"
@@ -47,9 +51,14 @@ endif()
 
 add_subdirectory(libsyclinterface)
 
-file(GLOB _dpctl_capi_headers dpctl/apis/include/*.h*)
-install(FILES ${_dpctl_capi_headers}
-    DESTINATION dpctl/include
+add_library(DpctlCAPI INTERFACE)
+target_include_directories(DpctlCAPI INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpctl/apis/include)
+target_link_libraries(DpctlCAPI INTERFACE DPCTLSyclInterfaceHeaders)
+
+install(DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/dpctl/apis/include/
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include
+    FILES_MATCHING REGEX "\\.h(pp)?$"
 )
 
 # Define CMAKE_INSTALL_xxx: LIBDIR, INCLUDEDIR

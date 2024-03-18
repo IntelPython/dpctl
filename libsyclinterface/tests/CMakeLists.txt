@@ -8,14 +8,6 @@ set(CMAKE_CTEST_COMMAND ctest --progress --output-on-failure -j 4)
 add_custom_target(check COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CTEST_COMMAND})
 enable_testing()
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/helper/include
-    ${GTEST_INCLUDE_DIR}
-    ${LEVEL_ZERO_INCLUDE_DIR}
-)
-link_directories(${GTEST_LIB_DIR})
-
 # Copy the spir-v input files to test build directory
 set(spirv-test-files
     multi_kernel.spv
@@ -76,18 +68,23 @@ if(_dpctl_sycl_targets)
     )
 endif()
 
+target_link_libraries(dpctl_c_api_tests
+    ${CMAKE_THREAD_LIBS_INIT}
+    GTest::gtest_main
+    GTest::GTest
+    DPCTLSyclInterface
+    ${IntelSyclCompiler_OPENCL_LIBRARY}
+    # Seems to work without it...
+    ${CMAKE_DL_LIBS}
+)
+target_include_directories(dpctl_c_api_tests
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../helper/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include/syclinterface"
+    ${LEVEL_ZERO_INCLUDE_DIR}
+)
+
 if(DPCTL_GENERATE_COVERAGE)
-    target_include_directories(dpctl_c_api_tests
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../helper/include"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include"
-    )
-    target_link_libraries(dpctl_c_api_tests
-        ${CMAKE_THREAD_LIBS_INIT}
-        GTest::GTest
-        DPCTLSyclInterface
-        ${IntelSyclCompiler_OPENCL_LIBRARY}
-        ${CMAKE_DL_LIBS}
-    )
     set(object_arg "-object;")
     add_custom_target(run-c-api-tests
         COMMAND ${CMAKE_COMMAND} -E env DPCTL_VERBOSITY=warning ${CMAKE_CURRENT_BINARY_DIR}/dpctl_c_api_tests
@@ -159,13 +156,6 @@ if(DPCTL_GENERATE_COVERAGE)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND_EXPAND_LISTS
         DEPENDS run-c-api-tests
-    )
-else()
-    target_link_libraries(dpctl_c_api_tests
-        ${CMAKE_THREAD_LIBS_INIT}
-        GTest::GTest
-        DPCTLSyclInterface
-        ${IntelSyclCompiler_OPENCL_LIBRARY}
     )
 endif()
 
