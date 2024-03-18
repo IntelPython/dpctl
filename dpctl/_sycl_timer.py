@@ -74,9 +74,9 @@ class SyclTimer:
         exit of the context and uses profiling information from events
         associated with these submissions to perform the timing. Thus
         :class:`dpctl.SyclTimer` requires the queue with "enable_profiling"
-        property. In order to be able to collect the profiling information
-        the property, the `dt` method ensures that both submitted barriers
-        complete their execution and thus effectively synchronizes the queue.
+        property. In order to be able to collect the profiling information,
+        the `dt` property ensures that both submitted barriers complete their
+        execution and thus effectively synchronizes the queue.
 
     Args:
         host_timer (callable): A callable such that host_timer() returns current
