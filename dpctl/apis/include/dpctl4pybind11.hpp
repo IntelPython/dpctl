@@ -181,7 +181,7 @@ public:
 
     static auto &get()
     {
-        static dpctl_capi api = lookup();
+        static dpctl_capi api{};
         return api;
     }
 
@@ -403,12 +403,6 @@ private:
     dpctl_capi(dpctl_capi const &) = default;
     dpctl_capi &operator=(dpctl_capi const &) = default;
     dpctl_capi &operator=(dpctl_capi &&) = default;
-
-    static dpctl_capi &lookup()
-    {
-        static dpctl_capi api;
-        return api;
-    }
 
 }; // struct dpctl_capi
 } // namespace detail
