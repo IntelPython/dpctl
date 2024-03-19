@@ -5,11 +5,13 @@ import dpctl.utils as du
 
 from ._copy_utils import _empty_like_orderK
 from ._ctors import empty
-from ._data_types import int32, int64
 from ._tensor_impl import _copy_usm_ndarray_into_usm_ndarray as ti_copy
 from ._tensor_impl import _take as ti_take
+from ._tensor_impl import (
+    default_device_index_type as ti_default_device_index_type,
+)
 from ._tensor_sorting_impl import _searchsorted_left, _searchsorted_right
-from ._type_utils import iinfo, isdtype, result_type
+from ._type_utils import isdtype, result_type
 from ._usmarray import usm_ndarray
 
 
@@ -141,9 +143,9 @@ def searchsorted(
             x2 = x2_buf
 
     dst_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
-    dst_dt = int32 if x2.size <= iinfo(int32).max else int64
+    index_dt = ti_default_device_index_type(q)
 
-    dst = _empty_like_orderK(x2, dst_dt, usm_type=dst_usm_type)
+    dst = _empty_like_orderK(x2, index_dt, usm_type=dst_usm_type)
 
     if side == "left":
         ht_ev, _ = _searchsorted_left(
