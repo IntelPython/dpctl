@@ -11,20 +11,29 @@ def _check(hay_stack, needles, needles_np):
     assert hay_stack.dtype == needles.dtype
     assert hay_stack.ndim == 1
 
+    info_ = dpt.__array_namespace_info__()
+    default_dts_dev = info_.default_dtypes(hay_stack.device)
+    index_dt = default_dts_dev["indexing"]
+
     p_left = dpt.searchsorted(hay_stack, needles, side="left")
+    assert p_left.dtype == index_dt
 
     hs_np = dpt.asnumpy(hay_stack)
     ref_left = np.searchsorted(hs_np, needles_np, side="left")
     assert dpt.all(p_left == dpt.asarray(ref_left))
 
     p_right = dpt.searchsorted(hay_stack, needles, side="right")
+    assert p_right.dtype == index_dt
+
     ref_right = np.searchsorted(hs_np, needles_np, side="right")
     assert dpt.all(p_right == dpt.asarray(ref_right))
 
     sorter = dpt.arange(hay_stack.size)
     ps_left = dpt.searchsorted(hay_stack, needles, side="left", sorter=sorter)
+    assert ps_left.dtype == index_dt
     assert dpt.all(ps_left == p_left)
     ps_right = dpt.searchsorted(hay_stack, needles, side="right", sorter=sorter)
+    assert ps_right.dtype == index_dt
     assert dpt.all(ps_right == p_right)
 
 
