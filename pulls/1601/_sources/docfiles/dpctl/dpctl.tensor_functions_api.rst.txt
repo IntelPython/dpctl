@@ -1,0 +1,99 @@
+.. _dpctl.tensor_functions_api:
+
+######################
+dpctl.tensor Functions
+######################
+
+
+.. currentmodule:: dpctl.tensor
+
+
+Other Functions
+---------------
+
+.. autofunction:: __array_namespace_info__
+.. autofunction:: all
+.. autofunction:: allclose
+.. autofunction:: any
+.. autofunction:: argmax
+.. autofunction:: argmin
+.. autofunction:: argsort
+.. autofunction:: can_cast
+.. autofunction:: clip
+.. autofunction:: extract
+.. autofunction:: finfo
+.. autofunction:: get_print_options
+.. autofunction:: iinfo
+.. autofunction:: isdtype
+.. autofunction:: logsumexp
+.. autofunction:: matmul
+.. autofunction:: matrix_transpose
+.. autofunction:: max
+.. autofunction:: mean
+.. autofunction:: min
+.. autofunction:: nonzero
+.. autofunction:: place
+.. autofunction:: print_options
+.. autofunction:: prod
+.. autofunction:: put
+.. autofunction:: reduce_hypot
+.. autofunction:: result_type
+.. autofunction:: searchsorted
+.. autofunction:: set_print_options
+.. autofunction:: sort
+.. autofunction:: std
+.. autofunction:: sum
+.. autofunction:: take
+.. autofunction:: tensordot
+.. autofunction:: unique_all
+.. autofunction:: unique_counts
+.. autofunction:: unique_inverse
+.. autofunction:: unique_values
+.. autofunction:: usm_ndarray_repr
+.. autofunction:: usm_ndarray_str
+.. autofunction:: var
+.. autofunction:: vecdot
+.. autofunction:: where
+
+Array Construction
+------------------
+
+.. autofunction:: arange
+.. autofunction:: asarray
+.. autofunction:: asnumpy
+.. autofunction:: astype
+.. autofunction:: copy
+.. autofunction:: empty
+.. autofunction:: empty_like
+.. autofunction:: eye
+.. autofunction:: from_numpy
+.. autofunction:: full
+.. autofunction:: full_like
+.. autofunction:: linspace
+.. autofunction:: meshgrid
+.. autofunction:: ones
+.. autofunction:: ones_like
+.. autofunction:: to_numpy
+.. autofunction:: tril
+.. autofunction:: triu
+.. autofunction:: zeros
+.. autofunction:: zeros_like
+
+Array Manipulation
+------------------
+
+.. autofunction:: broadcast_arrays
+.. autofunction:: broadcast_to
+.. autofunction:: concat
+.. autofunction:: expand_dims
+.. autofunction:: flip
+.. autofunction:: moveaxis
+.. autofunction:: permute_dims
+.. autofunction:: repeat
+.. autofunction:: reshape
+.. autofunction:: roll
+.. autofunction:: squeeze
+.. autofunction:: stack
+.. autofunction:: swapaxes
+.. autofunction:: tile
+.. autofunction:: unstack
