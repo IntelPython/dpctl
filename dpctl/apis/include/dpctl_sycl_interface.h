@@ -39,7 +39,6 @@
 #include "syclinterface/dpctl_sycl_usm_interface.h"
 #include "syclinterface/dpctl_sycl_device_manager.h"
 #include "syclinterface/dpctl_sycl_platform_manager.h"
-#include "syclinterface/dpctl_sycl_queue_manager.h"
 #include "syclinterface/dpctl_sycl_kernel_bundle_interface.h"
 #include "syclinterface/dpctl_sycl_kernel_interface.h"
 // clang-format on

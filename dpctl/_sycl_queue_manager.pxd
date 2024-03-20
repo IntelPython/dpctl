@@ -21,8 +21,4 @@ from ._sycl_device cimport SyclDevice
 from ._sycl_queue cimport SyclQueue
 
 
-cpdef SyclQueue get_current_queue()
-cpdef get_current_device_type ()
-cpdef get_current_backend()
-
 cpdef object get_device_cached_queue(object)

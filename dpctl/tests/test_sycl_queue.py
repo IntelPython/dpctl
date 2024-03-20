@@ -40,18 +40,6 @@ def test_standard_selectors(device_selector, check):
         pytest.skip()
 
 
-def test_current_device(check):
-    """
-    Test is the device for the current queue is valid.
-    """
-    try:
-        q = dpctl.get_current_queue()
-    except Exception:
-        pytest.skip("Encountered an exception inside get_current_queue().")
-    device = q.get_sycl_device()
-    check(device)
-
-
 def test_valid_filter_selectors(valid_filter, check):
     """
     Tests if we can create a SyclDevice using a supported filter selector

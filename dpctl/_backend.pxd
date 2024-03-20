@@ -432,16 +432,6 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
     cdef bool DPCTLQueue_HasEnableProfiling(const DPCTLSyclQueueRef QRef)
 
 
-cdef extern from "syclinterface/dpctl_sycl_queue_manager.h":
-    cdef DPCTLSyclQueueRef DPCTLQueueMgr_GetCurrentQueue()
-    cdef bool DPCTLQueueMgr_GlobalQueueIsCurrent()
-    cdef bool DPCTLQueueMgr_IsCurrentQueue(const DPCTLSyclQueueRef QRef)
-    cdef void DPCTLQueueMgr_PopQueue()
-    cdef void DPCTLQueueMgr_PushQueue(const DPCTLSyclQueueRef dRef)
-    cdef void DPCTLQueueMgr_SetGlobalQueue(const DPCTLSyclQueueRef dRef)
-    cdef size_t DPCTLQueueMgr_GetQueueStackSize()
-
-
 cdef extern from "syclinterface/dpctl_sycl_usm_interface.h":
     cdef DPCTLSyclUSMRef DPCTLmalloc_shared(
         size_t size,

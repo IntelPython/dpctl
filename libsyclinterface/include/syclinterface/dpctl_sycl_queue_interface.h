@@ -19,9 +19,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C interface to sycl::queue member functions. Note
-/// that sycl::queue constructors are not exposed in this interface. Instead,
-/// users should use the functions in dpctl_sycl_queue_manager.h.
+/// This header declares a C interface to sycl::queue member functions.
 ///
 //===----------------------------------------------------------------------===//
 
