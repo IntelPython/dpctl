@@ -296,9 +296,9 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         assert(std::equal(orthog_src_shape.begin(), orthog_src_shape.end(),
                           orthog_dst_shape.begin()));
 
-        std::vector<py::ssize_t> simplified_orthog_shape;
-        std::vector<py::ssize_t> simplified_orthog_src_strides;
-        std::vector<py::ssize_t> simplified_orthog_dst_strides;
+        shT simplified_orthog_shape;
+        shT simplified_orthog_src_strides;
+        shT simplified_orthog_dst_strides;
 
         const py::ssize_t *_shape = orthog_src_shape.data();
 
@@ -671,9 +671,9 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         assert(std::equal(orthog_src_shape.begin(), orthog_src_shape.end(),
                           orthog_dst_shape.begin()));
 
-        std::vector<py::ssize_t> simplified_orthog_shape;
-        std::vector<py::ssize_t> simplified_orthog_src_strides;
-        std::vector<py::ssize_t> simplified_orthog_dst_strides;
+        shT simplified_orthog_shape;
+        shT simplified_orthog_src_strides;
+        shT simplified_orthog_dst_strides;
 
         const py::ssize_t *_shape = orthog_src_shape.data();
 
