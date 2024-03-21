@@ -22,7 +22,7 @@ def searchsorted(
     *,
     side: Literal["left", "right"] = "left",
     sorter: Union[usm_ndarray, None] = None,
-):
+) -> usm_ndarray:
     """searchsorted(x1, x2, side='left', sorter=None)
 
     Finds the indices into `x1` such that, if the corresponding elements
@@ -50,6 +50,8 @@ def searchsorted(
         sorter (Optional[usm_ndarray]):
             array of indices that sort `x1` in ascending order. The array must
             have the same shape as `x1` and have an integral data type.
+            Out of bound index values of `sorter` array are treated using
+            `"wrap"` mode documented in :py:func:`dpctl.tensor.take`.
             Default: `None`.
     """
     if not isinstance(x1, usm_ndarray):

@@ -340,3 +340,18 @@ def test_pw_linear_interpolation_example():
     exp = dpt.vecdot(vals[1:] + vals[:-1], bins[1:] - bins[:-1]) / 2
 
     assert dpt.abs(av - exp) < 0.1
+
+
+def test_out_of_bound_sorter_values():
+    get_queue_or_skip()
+
+    x = dpt.asarray([1, 2, 0], dtype="i4")
+    n = x.shape[0]
+
+    # use out-of-bounds indices in sorter
+    sorter = dpt.asarray([2, 0 - n, 1 - n], dtype="i8")
+
+    x2 = dpt.arange(3, dtype=x.dtype)
+    p = dpt.searchsorted(x, x2, sorter=sorter)
+    # verify that they were applied with mode="wrap"
+    assert dpt.all(p == dpt.arange(3, dtype=p.dtype))
