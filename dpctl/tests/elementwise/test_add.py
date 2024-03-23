@@ -15,10 +15,10 @@
 #  limitations under the License.
 
 import ctypes
+import re
 
 import numpy as np
 import pytest
-from numpy.testing import assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
@@ -280,48 +280,36 @@ def test_add_errors():
     ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
     ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
     y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Input and output allocation queues are not compatible",
-        dpt.add,
-        ar1,
-        ar2,
-        y,
+    with pytest.raises(ExecutionPlacementError) as excinfo:
+        dpt.add(ar1, ar2, out=y)
+    assert "Input and output allocation queues are not compatible" in str(
+        excinfo.value
     )
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones_like(ar1, dtype="int32")
     y = dpt.empty(3)
-    assert_raises_regex(
-        ValueError,
-        "The shape of input and output arrays are inconsistent",
-        dpt.add,
-        ar1,
-        ar2,
-        y,
+    with pytest.raises(ValueError) as excinfo:
+        dpt.add(ar1, ar2, out=y)
+    assert "The shape of input and output arrays are inconsistent" in str(
+        excinfo.value
     )
 
     ar1 = np.ones(2, dtype="float32")
     ar2 = np.ones_like(ar1, dtype="int32")
-    assert_raises_regex(
-        ExecutionPlacementError,
+    with pytest.raises(ExecutionPlacementError) as excinfo:
+        dpt.add(ar1, ar2)
+    assert re.match(
         "Execution placement can not be unambiguously inferred.*",
-        dpt.add,
-        ar1,
-        ar2,
+        str(excinfo.value),
     )
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones_like(ar1, dtype="int32")
     y = np.empty_like(ar1)
-    assert_raises_regex(
-        TypeError,
-        "output array must be of usm_ndarray type",
-        dpt.add,
-        ar1,
-        ar2,
-        y,
-    )
+    with pytest.raises(TypeError) as excinfo:
+        dpt.add(ar1, ar2, out=y)
+    assert "output array must be of usm_ndarray type" in str(excinfo.value)
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -335,9 +323,9 @@ def test_add_dtype_error(
     ar2 = dpt.ones_like(ar1, dtype="f4")
 
     y = dpt.zeros_like(ar1, dtype="int8")
-    assert_raises_regex(
-        ValueError, "Output array of type.*is needed", dpt.add, ar1, ar2, y
-    )
+    with pytest.raises(ValueError) as excinfo:
+        dpt.add(ar1, ar2, out=y)
+    assert re.match("Output array of type.*is needed", str(excinfo.value))
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)

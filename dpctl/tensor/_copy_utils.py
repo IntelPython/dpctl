@@ -900,7 +900,7 @@ def _put_multi_index(ary, inds, p, vals):
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     if not isinstance(vals, dpt.usm_ndarray):
         vals = dpt.asarray(
-            vals, ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
+            vals, dtype=ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
 
     vals = dpt.broadcast_to(vals, vals_shape)
