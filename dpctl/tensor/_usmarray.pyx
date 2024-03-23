@@ -99,6 +99,7 @@ cdef class usm_ndarray:
                     double-precision real and complex floating
                     types, supported if target device's property
                     ``has_aspect_fp64`` is ``True``.
+
             Default: ``None``.
         strides (tuple, optional):
             Strides of the array to be created in elements.
