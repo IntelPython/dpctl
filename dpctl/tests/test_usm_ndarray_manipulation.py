@@ -1188,18 +1188,18 @@ def test_repeat_axes():
 
     reps = 2
     x = dpt.reshape(dpt.arange(5 * 10, dtype="i4"), (5, 10))
-    expected_res = dpt.empty((x.shape[0] * 2, x.shape[1]), x.dtype)
+    expected_res = dpt.empty((x.shape[0] * 2, x.shape[1]), dtype=x.dtype)
     expected_res[::2, :], expected_res[1::2] = x, x
     res = dpt.repeat(x, reps, axis=0)
     assert dpt.all(res == expected_res)
 
-    expected_res = dpt.empty((x.shape[0], x.shape[1] * 2), x.dtype)
+    expected_res = dpt.empty((x.shape[0], x.shape[1] * 2), dtype=x.dtype)
     expected_res[:, ::2], expected_res[:, 1::2] = x, x
     res = dpt.repeat(x, reps, axis=1)
     assert dpt.all(res == expected_res)
 
     x = dpt.arange(10, dtype="i4")
-    expected_res = dpt.empty(x.shape[0] * reps, x.dtype)
+    expected_res = dpt.empty(x.shape[0] * reps, dtype=x.dtype)
     expected_res[::2], expected_res[1::2] = x, x
     res = dpt.repeat(x, reps, axis=0)
     assert dpt.all(res == expected_res)
