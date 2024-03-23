@@ -46,18 +46,27 @@ def intel_device_info(dev):
     dictionary otherwise. The dictionary contains
     the following keys:
 
-        device_id: 32-bits device PCI identifier
-        gpu_eu_count: Total number of execution units
-        gpu_hw_threads_per_eu: Number of thread contexts in EU
-        gpu_eu_simd_width: Physical SIMD width of EU
-        gpu_slices: Total number of slices
-        gpu_subslices_per_slice: Number of sub-slices per slice
-        gpu_eu_count_per_subslice: Number of EUs in subslice
-        max_mem_bandwidth: Maximum memory bandwidth in bytes/second
+        device_id:
+            32-bits device PCI identifier
+        gpu_eu_count:
+            Total number of execution units
+        gpu_hw_threads_per_eu:
+            Number of thread contexts in EU
+        gpu_eu_simd_width:
+            Physical SIMD width of EU
+        gpu_slices:
+            Total number of slices
+        gpu_subslices_per_slice:
+            Number of sub-slices per slice
+        gpu_eu_count_per_subslice:
+            Number of EUs in subslice
+        max_mem_bandwidth:
+            Maximum memory bandwidth in bytes/second
 
     Unsupported descriptors are omitted from the dictionary.
-    Descriptors other than PCI identifier are supported only for
-    SyclDevices with Leve-Zero backend.
+
+    Descriptors other than the PCI identifier are supported only
+    for :class:`.SyclDevices` with Leve-Zero backend.
     """
     if not isinstance(dev, SyclDevice):
         raise TypeError(f"Expected dpctl.SyclDevice, got {type(dev)}")
