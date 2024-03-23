@@ -264,14 +264,15 @@ def _ensure_native_dtype_device_support(dtype, dev) -> None:
     """Check that dtype is natively supported by device.
 
     Arg:
-       dtype:
-           Elemental data-type
-       dev (:class:`dpctl.SyclDevice`):
-           The device about which the query is being made.
+        dtype:
+            Elemental data-type
+        dev (:class:`dpctl.SyclDevice`):
+            The device about which the query is being made.
     Returns:
-       None
+        None
     Raise:
-       ValueError - if device does not natively support this dtype.
+        ValueError:
+            if device does not natively support this `dtype`.
     """
     if dtype in [dpt.float64, dpt.complex128] and not dev.has_aspect_fp64:
         raise ValueError(
@@ -384,7 +385,7 @@ def _asarray_from_seq(
     usm_type=None,
     order="C",
 ):
-    "`obj` is a sequence"
+    "`seq_obj` is a sequence"
     if usm_type is None:
         usm_types_in_seq = []
         _usm_types_walker(seq_obj, usm_types_in_seq)
@@ -461,6 +462,8 @@ def _asarray_from_seq_single_device(
 
 def asarray(
     obj,
+    /,
+    *,
     dtype=None,
     device=None,
     copy=None,
@@ -468,10 +471,8 @@ def asarray(
     sycl_queue=None,
     order="K",
 ):
-    """ asarray(obj, dtype=None, copy=None, device=None, \
-           usm_type=None, sycl_queue=None, order="K")
-
-    Converts `obj` to :class:`dpctl.tensor.usm_ndarray`.
+    """
+    Converts input object to :class:`dpctl.tensor.usm_ndarray`.
 
     Args:
         obj: Python object to convert. Can be an instance of
@@ -497,7 +498,7 @@ def asarray(
             non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. For `usm_type=None` the allocation
             type is inferred from the input if `obj` has USM allocation, or
             `"device"` is used instead. Default: `None`.
@@ -649,15 +650,14 @@ def asarray(
 
 def empty(
     shape,
+    *,
     dtype=None,
     order="C",
     device=None,
     usm_type="device",
     sycl_queue=None,
 ):
-    """ empty(shape, dtype=None, order="C", device=None, \
-            usm_type="device", sycl_queue=None)
-
+    """
     Creates :class:`dpctl.tensor.usm_ndarray` from uninitialized
     USM allocation.
 
@@ -674,7 +674,7 @@ def empty(
             non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
@@ -762,9 +762,7 @@ def arange(
     usm_type="device",
     sycl_queue=None,
 ):
-    """ arange(start, /, stop=None, step=1, *, dtype=None, \
-               device=None, usm_type="device", sycl_queue=None)
-
+    """
     Returns evenly spaced values within the half-open interval [start, stop)
     as a one-dimensional array.
 
@@ -779,7 +777,7 @@ def arange(
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. Default: `'device'`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
@@ -856,15 +854,14 @@ def arange(
 
 def zeros(
     shape,
+    *,
     dtype=None,
     order="C",
     device=None,
     usm_type="device",
     sycl_queue=None,
 ):
-    """ zeros(shape, dtype=None, order="C", device=None, \
-              usm_type="device", sycl_queue=None)
-
+    """
     Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified
     shape and filled with zeros.
 
@@ -880,7 +877,7 @@ def zeros(
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
@@ -916,6 +913,7 @@ def zeros(
 
 def ones(
     shape,
+    *,
     dtype=None,
     order="C",
     device=None,
@@ -940,7 +938,7 @@ def ones(
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
@@ -977,15 +975,14 @@ def ones(
 def full(
     shape,
     fill_value,
+    *,
     dtype=None,
     order="C",
     device=None,
     usm_type=None,
     sycl_queue=None,
 ):
-    """ full(shape, fill_value, dtype=None, order="C", \
-             device=None, usm_type=None, sycl_queue=None)
-
+    """
     Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified
     shape and filled with `fill_value`.
 
@@ -1002,7 +999,7 @@ def full(
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
+        usm_type ("device", "shared", "host", optional): The type of SYCL
             USM allocation for the output array. If `usm_type` is `None`, it is
             inferred from `fill_value` input if it is an instance of
             `ums_ndarray`, or interpreted as `"device"` otherwise.
@@ -1070,11 +1067,9 @@ def full(
 
 
 def empty_like(
-    x, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
 ):
-    """ empty_like(x, dtype=None, order="C", \
-                   device=None, usm_type=None, sycl_queue=None)
-
+    """
     Returns an uninitialized :class:`dpctl.tensor.usm_ndarray` with the
     same `shape` as the input array `x`.
 
@@ -1082,18 +1077,18 @@ def empty_like(
         x (usm_ndarray): Input array from which to derive the output array
             shape.
         dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: `"C"`
+            a :py:class:`numpy.dtype` object, numpy char string,
+            or a numpy scalar type. Default: `None`.
+        order ("C" or F"): memory layout for the array. Default: `"C"`.
         device (optional): array API concept of device where the output array
             is created. `device` can be `None`, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
+            :py:class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :py:attr:`dpctl.tensor.usm_array.device`. Default: `None`.
+        usm_type ("device", "shared", "host", optional): The type of SYCL
             USM allocation for the output array. If `usm_type` is `None`, the
-            the `usm_type` is inferred from the input array. Default: `None`.
+            the ``usm_type`` is inferred from the input array. Default: `None`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
             are exclusive keywords, i.e. use one or another. If both are
@@ -1135,11 +1130,9 @@ def empty_like(
 
 
 def zeros_like(
-    x, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
 ):
-    """ zeros_like(x, dtype=None, order="C", \
-                   device=None, usm_type=None, sycl_queue=None)
-
+    """
     Creates :class:`dpctl.tensor.usm_ndarray` from USM allocation
     initialized with zeros.
 
@@ -1157,7 +1150,7 @@ def zeros_like(
             to a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
+        usm_type ("device", "shared", "host", optional): The type of SYCL
             USM allocation for the output array. If `None`, output array has
             the same USM allocation type as the input array. Default: `None`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -1200,11 +1193,9 @@ def zeros_like(
 
 
 def ones_like(
-    x, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
 ):
-    """ ones_like(x, dtype=None, order="C", \
-                  device=None, usm_type=None, sycl_queue=None)
-
+    """
     Returns a new :class:`dpctl.tensor.usm_ndarray` filled with ones and
     having the same `shape` as the input array `x`.
 
@@ -1221,7 +1212,7 @@ def ones_like(
             to a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
+        usm_type ("device", "shared", "host", optional): The type of SYCL
             USM allocation for the output array. If `None`, output array has
             the same USM allocation type as the input array. Default: `None`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
@@ -1265,7 +1256,9 @@ def ones_like(
 
 def full_like(
     x,
+    /,
     fill_value,
+    *,
     dtype=None,
     order="C",
     device=None,
@@ -1293,7 +1286,7 @@ def full_like(
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host"|None, optional): The type of SYCL
+        usm_type ("device", "shared", "host", optional): The type of SYCL
             USM allocation for the output array. If `None`, output array has
             the same USM allocation type as the input array `x`.
             Default: `None`.
@@ -1377,7 +1370,7 @@ def linspace(
             non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
@@ -1463,7 +1456,7 @@ def eye(
             a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a `Device` object returned by
             :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device"|"shared"|"host", optional): The type of SYCL USM
+        usm_type ("device", "shared", "host", optional): The type of SYCL USM
             allocation for the output array. Default: `"device"`.
         sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
             for output array allocation and copying. `sycl_queue` and `device`
@@ -1511,10 +1504,8 @@ def eye(
     return res
 
 
-def tril(x, k=0):
+def tril(x, /, *, k=0):
     """
-    tril(x, k=0)
-
     Returns the lower triangular part of a matrix (or a stack of matrices) `x`.
 
     The lower triangular part of the matrix is defined as the elements on and
@@ -1581,10 +1572,8 @@ def tril(x, k=0):
     return res
 
 
-def triu(x, k=0):
+def triu(x, /, *, k=0):
     """
-    triu(x, k=0)
-
     Returns the upper triangular part of a matrix (or a stack of matrices) `x`.
 
     The upper triangular part of the matrix is defined as the elements on and
@@ -1652,8 +1641,7 @@ def triu(x, k=0):
 
 
 def meshgrid(*arrays, indexing="xy"):
-    """meshgrid(*arrays, indexing="xy")
-
+    """
     Creates list of :class:`dpctl.tensor.usm_ndarray` coordinate matrices
     from vectors.
 

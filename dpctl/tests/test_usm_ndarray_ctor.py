@@ -1153,8 +1153,8 @@ def test_setitem_errors():
 def test_setitem_different_dtypes(src_dt, dst_dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dst_dt, q)
-    X = dpt.ones(10, src_dt, sycl_queue=q)
-    Y = dpt.zeros(10, src_dt, sycl_queue=q)
+    X = dpt.ones(10, dtype=src_dt, sycl_queue=q)
+    Y = dpt.zeros(10, dtype=src_dt, sycl_queue=q)
     Z = dpt.empty((20,), dtype=dst_dt, sycl_queue=q)
     Z[::2] = X
     Z[1::2] = Y
@@ -1298,7 +1298,7 @@ def test_to_device():
 def test_to_device_migration():
     q1 = get_queue_or_skip()  # two distinct copies of default-constructed queue
     q2 = get_queue_or_skip()
-    X1 = dpt.empty((5,), "i8", sycl_queue=q1)  # X1 is associated with q1
+    X1 = dpt.empty((5,), dtype="i8", sycl_queue=q1)  # X1 is associated with q1
     X2 = X1.to_device(q2)  # X2 is reassociated with q2
     assert X1.sycl_queue == q1
     assert X2.sycl_queue == q2
@@ -1990,9 +1990,9 @@ def test_triu(dtype):
     X = dpt.reshape(
         dpt.arange(np.prod(shape), dtype=dtype, sycl_queue=q), shape
     )
-    Y = dpt.triu(X, 1)
+    Y = dpt.triu(X, k=1)
     Xnp = np.arange(np.prod(shape), dtype=dtype).reshape(shape)
-    Ynp = np.triu(Xnp, 1)
+    Ynp = np.triu(Xnp, k=1)
     assert Y.dtype == Ynp.dtype
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
 
@@ -2087,9 +2087,9 @@ def test_triu_order_k(order, k):
         shape,
         order=order,
     )
-    Y = dpt.triu(X, k)
+    Y = dpt.triu(X, k=k)
     Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
-    Ynp = np.triu(Xnp, k)
+    Ynp = np.triu(Xnp, k=k)
     assert Y.dtype == Ynp.dtype
     assert X.flags == Y.flags
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
@@ -2108,9 +2108,9 @@ def test_tril_order_k(order, k):
         shape,
         order=order,
     )
-    Y = dpt.tril(X, k)
+    Y = dpt.tril(X, k=k)
     Xnp = np.arange(np.prod(shape), dtype="int").reshape(shape, order=order)
-    Ynp = np.tril(Xnp, k)
+    Ynp = np.tril(Xnp, k=k)
     assert Y.dtype == Ynp.dtype
     assert X.flags == Y.flags
     assert np.array_equal(Ynp, dpt.asnumpy(Y))
@@ -2209,7 +2209,7 @@ def test_common_arg_validation():
 
 def test_flags():
     try:
-        x = dpt.empty(tuple(), "i4")
+        x = dpt.empty(tuple(), dtype="i4")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     f = x.flags

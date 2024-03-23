@@ -986,7 +986,10 @@ def tile(x, repetitions):
     # case of empty input
     if x.size == 0:
         return dpt.empty(
-            res_shape, x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+            res_shape,
+            dtype=x.dtype,
+            usm_type=x.usm_type,
+            sycl_queue=x.sycl_queue,
         )
     in_sh = x.shape
     if res_shape == in_sh:
@@ -1009,7 +1012,9 @@ def tile(x, repetitions):
             broadcast_sh.extend([reps, sh])
             expanded_sh.extend([1, sh])
     exec_q = x.sycl_queue
-    res = dpt.empty((out_sz,), x.dtype, usm_type=x.usm_type, sycl_queue=exec_q)
+    xdt = x.dtype
+    xut = x.usm_type
+    res = dpt.empty((out_sz,), dtype=xdt, usm_type=xut, sycl_queue=exec_q)
     # no need to copy data for empty output
     if out_sz > 0:
         x = dpt.broadcast_to(
