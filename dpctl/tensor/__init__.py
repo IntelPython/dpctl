@@ -96,6 +96,7 @@ from dpctl.tensor._statistical_functions import mean, std, var
 from dpctl.tensor._usmarray import usm_ndarray
 from dpctl.tensor._utility_functions import all, any
 
+from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._array_api import __array_api_version__, __array_namespace_info__
 from ._clip import clip
 from ._constants import e, inf, nan, newaxis, pi
@@ -367,4 +368,7 @@ __all__ = [
     "tensordot",
     "vecdot",
     "searchsorted",
+    "cumulative_logsumexp",
+    "cumulative_prod",
+    "cumulative_sum",
 ]

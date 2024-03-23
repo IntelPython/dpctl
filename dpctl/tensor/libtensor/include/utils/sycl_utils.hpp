@@ -154,6 +154,29 @@ T custom_reduce_over_group(const GroupT &wg,
     return sycl::group_broadcast(wg, red_val_over_wg);
 }
 
+template <typename T, typename GroupT, typename LocAccT, typename OpT>
+T custom_inclusive_scan_over_group(const GroupT &wg,
+                                   LocAccT local_mem_acc,
+                                   const T local_val,
+                                   const OpT &op)
+{
+    auto local_id = wg.get_local_id(0);
+    auto wgs = wg.get_local_range(0);
+    local_mem_acc[local_id] = local_val;
+
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    if (wg.leader()) {
+        for (size_t i = 1; i < wgs; ++i) {
+            local_mem_acc[i] = op(local_mem_acc[i], local_mem_acc[i - 1]);
+        }
+    }
+
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    return local_mem_acc[local_id];
+}
+
 // Reduction functors
 
 // Maximum
