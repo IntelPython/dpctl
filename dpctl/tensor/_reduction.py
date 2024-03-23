@@ -132,9 +132,8 @@ def _reduction_over_axis(
     return res
 
 
-def sum(x, axis=None, dtype=None, keepdims=False):
-    """sum(x, axis=None, dtype=None, keepdims=False)
-
+def sum(x, /, *, axis=None, dtype=None, keepdims=False):
+    """
     Calculates the sum of elements in the input array `x`.
 
     Args:
@@ -166,6 +165,7 @@ def sum(x, axis=None, dtype=None, keepdims=False):
                 * If `x` has a boolean data type, the returned array will
                   have the default signed integral type for the device
                   where input array `x` is allocated.
+
             If the data type (either specified or resolved) differs from the
             data type of `x`, the input array elements are cast to the
             specified data type before computing the sum. Default: `None`.
@@ -194,9 +194,8 @@ def sum(x, axis=None, dtype=None, keepdims=False):
     )
 
 
-def prod(x, axis=None, dtype=None, keepdims=False):
-    """prod(x, axis=None, dtype=None, keepdims=False)
-
+def prod(x, /, *, axis=None, dtype=None, keepdims=False):
+    """
     Calculates the product of elements in the input array `x`.
 
     Args:
@@ -228,6 +227,7 @@ def prod(x, axis=None, dtype=None, keepdims=False):
                 * If `x` has a boolean data type, the returned array will
                   have the default signed integral type for the device
                   where input array `x` is allocated.
+
             If the data type (either specified or resolved) differs from the
             data type of `x`, the input array elements are cast to the
             specified data type before computing the product. Default: `None`.
@@ -256,9 +256,8 @@ def prod(x, axis=None, dtype=None, keepdims=False):
     )
 
 
-def logsumexp(x, axis=None, dtype=None, keepdims=False):
-    """logsumexp(x, axis=None, dtype=None, keepdims=False)
-
+def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False):
+    """
     Calculates the logarithm of the sum of exponentials of elements in the
     input array `x`.
 
@@ -283,6 +282,7 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
                   where input array `x` is allocated.
                 * If `x` has a complex-valued floating-point data type,
                   an error is raised.
+
             If the data type (either specified or resolved) differs from the
             data type of `x`, the input array elements are cast to the
             specified data type before computing the result. Default: `None`.
@@ -313,9 +313,8 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
     )
 
 
-def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
-    """reduce_hypot(x, axis=None, dtype=None, keepdims=False)
-
+def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False):
+    """
     Calculates the square root of the sum of squares of elements in the input
     array `x`.
 
@@ -340,6 +339,7 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
                   where input array `x` is allocated.
                 * If `x` has a complex-valued floating-point data type,
                   an error is raised.
+
             If the data type (either specified or resolved) differs from the
             data type of `x`, the input array elements are cast to the
             specified data type before computing the result. Default: `None`.
@@ -423,9 +423,8 @@ def _comparison_over_axis(x, axis, keepdims, _reduction_fn):
     return res
 
 
-def max(x, axis=None, keepdims=False):
-    """max(x, axis=None, keepdims=False)
-
+def max(x, /, *, axis=None, keepdims=False):
+    """
     Calculates the maximum value of the input array `x`.
 
     Args:
@@ -442,6 +441,7 @@ def max(x, axis=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the maxima. If the max was computed over the
@@ -451,9 +451,8 @@ def max(x, axis=None, keepdims=False):
     return _comparison_over_axis(x, axis, keepdims, tri._max_over_axis)
 
 
-def min(x, axis=None, keepdims=False):
-    """min(x, axis=None, keepdims=False)
-
+def min(x, /, *, axis=None, keepdims=False):
+    """
     Calculates the minimum value of the input array `x`.
 
     Args:
@@ -470,6 +469,7 @@ def min(x, axis=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the minima. If the min was computed over the
@@ -538,9 +538,8 @@ def _search_over_axis(x, axis, keepdims, _reduction_fn):
     return res
 
 
-def argmax(x, axis=None, keepdims=False):
-    """argmax(x, axis=None, keepdims=False)
-
+def argmax(x, /, *, axis=None, keepdims=False):
+    """
     Returns the indices of the maximum values of the input array `x` along a
     specified axis.
 
@@ -560,6 +559,7 @@ def argmax(x, axis=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the indices of the first occurrence of the
@@ -570,9 +570,8 @@ def argmax(x, axis=None, keepdims=False):
     return _search_over_axis(x, axis, keepdims, tri._argmax_over_axis)
 
 
-def argmin(x, axis=None, keepdims=False):
-    """argmin(x, axis=None, keepdims=False)
-
+def argmin(x, /, *, axis=None, keepdims=False):
+    """
     Returns the indices of the minimum values of the input array `x` along a
     specified axis.
 
@@ -592,6 +591,7 @@ def argmin(x, axis=None, keepdims=False):
             compatible with the input arrays according to Array Broadcasting
             rules. Otherwise, if `False`, the reduced axes are not included in
             the returned array. Default: `False`.
+
     Returns:
         usm_ndarray:
             an array containing the indices of the first occurrence of the
