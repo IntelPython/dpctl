@@ -487,7 +487,7 @@ class finfo_object:
         return self._finfo.__repr__()
 
 
-def can_cast(from_, to, casting="safe"):
+def can_cast(from_, to, casting="safe") -> bool:
     """ can_cast(from, to, casting="safe")
 
     Determines if one data type can be cast to another data type according \
@@ -501,11 +501,13 @@ def can_cast(from_, to, casting="safe"):
            target data type
        casting (Optional[str]):
             controls what kind of data casting may occur.
+
                 * "no" means data types should not be cast at all.
                 * "safe" means only casts that preserve values are allowed.
                 * "same_kind" means only safe casts and casts within a kind,
                   like `float64` to `float32`, are allowed.
                 * "unsafe" means any data conversion can be done.
+
             Default: `"safe"`.
 
     Returns:
