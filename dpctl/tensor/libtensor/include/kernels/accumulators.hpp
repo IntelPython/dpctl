@@ -352,6 +352,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                                    const size_t s1,
                                    const IndexerT &indexer,
                                    const TransformerT &transformer,
+                                   std::vector<sycl::event> &host_tasks,
                                    const std::vector<sycl::event> &depends = {})
 {
     ScanOpT scan_op = ScanOpT();
@@ -453,11 +454,12 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
             });
         }
 
-        dependent_event = exec_q.submit([&](sycl::handler &cgh) {
+        sycl::event free_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(dependent_event);
             const auto &ctx = exec_q.get_context();
             cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
         });
+        host_tasks.push_back(free_ev);
     }
 
     return dependent_event;
@@ -468,6 +470,7 @@ typedef sycl::event (*accumulate_1d_contig_impl_fn_ptr_t)(
     size_t,
     const char *,
     char *,
+    std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
 template <typename srcT,
@@ -480,6 +483,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
                           size_t n_elems,
                           const char *src,
                           char *dst,
+                          std::vector<sycl::event> &host_tasks,
                           const std::vector<sycl::event> &depends = {})
 {
     const srcT *src_data_ptr = reinterpret_cast<const srcT *>(src);
@@ -501,7 +505,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
                                          transformerT, AccumulateOpT,
                                          include_initial>(
             q, wg_size, n_elems, src_data_ptr, dst_data_ptr, s0, s1,
-            flat_indexer, transformer, depends);
+            flat_indexer, transformer, host_tasks, depends);
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
@@ -510,7 +514,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
                                          transformerT, AccumulateOpT,
                                          include_initial>(
             q, wg_size, n_elems, src_data_ptr, dst_data_ptr, s0, s1,
-            flat_indexer, transformer, depends);
+            flat_indexer, transformer, host_tasks, depends);
     }
     return comp_ev;
 }
@@ -549,6 +553,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                                 const InpIndexerT &inp_indexer,
                                 const OutIndexerT &out_indexer,
                                 const TransformerT &transformer,
+                                std::vector<sycl::event> &host_tasks,
                                 const std::vector<sycl::event> &depends = {})
 {
     ScanOpT scan_op = ScanOpT();
@@ -772,11 +777,12 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             });
         }
 
-        dependent_event = exec_q.submit([&](sycl::handler &cgh) {
+        sycl::event free_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(dependent_event);
             const auto &ctx = exec_q.get_context();
             cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
         });
+        host_tasks.push_back(free_ev);
     }
 
     return dependent_event;
@@ -794,6 +800,7 @@ typedef sycl::event (*accumulate_strided_impl_fn_ptr_t)(
     int,
     const ssize_t *,
     char *,
+    std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
 template <typename srcT,
@@ -813,6 +820,7 @@ accumulate_strided_impl(sycl::queue &q,
                         int acc_nd,
                         const ssize_t *acc_shape_strides,
                         char *dst,
+                        std::vector<sycl::event> &host_tasks,
                         const std::vector<sycl::event> &depends = {})
 {
     const srcT *src_data_ptr = reinterpret_cast<const srcT *>(src);
@@ -846,7 +854,7 @@ accumulate_strided_impl(sycl::queue &q,
                                 transformerT, AccumulateOpT, include_initial>(
                 q, wg_size, iter_nelems, acc_nelems, src_data_ptr, dst_data_ptr,
                 s0, s1, inp_iter_indexer, out_iter_indexer, inp_axis_indexer,
-                out_axis_indexer, transformer, depends);
+                out_axis_indexer, transformer, host_tasks, depends);
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
@@ -857,7 +865,7 @@ accumulate_strided_impl(sycl::queue &q,
                                 transformerT, AccumulateOpT, include_initial>(
                 q, wg_size, iter_nelems, acc_nelems, src_data_ptr, dst_data_ptr,
                 s0, s1, inp_iter_indexer, out_iter_indexer, inp_axis_indexer,
-                out_axis_indexer, transformer, depends);
+                out_axis_indexer, transformer, host_tasks, depends);
     }
 
     return comp_ev;
@@ -900,7 +908,7 @@ size_t cumsum_val_contig_impl(sycl::queue &q,
                                          NoOpIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
             q, wg_size, n_elems, mask_data_ptr, cumsum_data_ptr, s0, s1,
-            flat_indexer, transformer, depends);
+            flat_indexer, transformer, host_tasks, depends);
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
@@ -909,7 +917,7 @@ size_t cumsum_val_contig_impl(sycl::queue &q,
                                          NoOpIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
             q, wg_size, n_elems, mask_data_ptr, cumsum_data_ptr, s0, s1,
-            flat_indexer, transformer, depends);
+            flat_indexer, transformer, host_tasks, depends);
     }
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
@@ -1008,7 +1016,7 @@ size_t cumsum_val_strided_impl(sycl::queue &q,
                                          StridedIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
             q, wg_size, n_elems, mask_data_ptr, cumsum_data_ptr, s0, s1,
-            strided_indexer, transformer, depends);
+            strided_indexer, transformer, host_tasks, depends);
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
@@ -1017,7 +1025,7 @@ size_t cumsum_val_strided_impl(sycl::queue &q,
                                          StridedIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
             q, wg_size, n_elems, mask_data_ptr, cumsum_data_ptr, s0, s1,
-            strided_indexer, transformer, depends);
+            strided_indexer, transformer, host_tasks, depends);
     }
 
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);

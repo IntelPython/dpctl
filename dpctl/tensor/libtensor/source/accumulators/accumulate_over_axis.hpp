@@ -126,14 +126,16 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
+    std::vector<sycl::event> host_task_events;
+
     if ((is_src_c_contig && is_dst_c_contig) && iter_nd == 0) {
         auto fn = contig_dispatch_table[src_typeid][dst_typeid];
         if (fn == nullptr) {
             throw std::runtime_error("Datatypes are not supported");
         }
 
-        sycl::event acc_ev =
-            fn(exec_q, acc_nelems, src_data, dst_data, depends);
+        sycl::event acc_ev = fn(exec_q, acc_nelems, src_data, dst_data,
+                                host_task_events, depends);
 
         return std::make_pair(
             dpctl::utils::keep_args_alive(exec_q, {src, dst}, {acc_ev}),
@@ -145,8 +147,6 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
     auto dst_strides_vec = dst.get_strides_vector();
 
     int acc_nd = trailing_dims_to_accumulate;
-
-    std::vector<sycl::event> host_task_events;
 
     using shT = std::vector<py::ssize_t>;
     shT acc_shape(std::begin(src_shape_vec) + iter_nd, std::end(src_shape_vec));
@@ -212,10 +212,10 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
     all_deps.insert(all_deps.end(), copy_shapes_strides_ev);
     all_deps.insert(all_deps.end(), depends.begin(), depends.end());
 
-    sycl::event acc_ev =
-        strided_fn(exec_q, iter_nelems, acc_nelems, src_data, iter_nd,
-                   iter_shape_and_strides, iter_src_offset, iter_dst_offset,
-                   acc_nd, acc_shapes_and_strides, dst_data, all_deps);
+    sycl::event acc_ev = strided_fn(
+        exec_q, iter_nelems, acc_nelems, src_data, iter_nd,
+        iter_shape_and_strides, iter_src_offset, iter_dst_offset, acc_nd,
+        acc_shapes_and_strides, dst_data, host_task_events, all_deps);
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(acc_ev);
@@ -311,14 +311,16 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
+    std::vector<sycl::event> host_task_events;
+
     if ((is_src_c_contig && is_dst_c_contig) && iter_nd == 0) {
         auto fn = contig_dispatch_table[src_typeid][dst_typeid];
         if (fn == nullptr) {
             throw std::runtime_error("Datatypes are not supported");
         }
 
-        sycl::event acc_ev =
-            fn(exec_q, acc_nelems, src_data, dst_data, depends);
+        sycl::event acc_ev = fn(exec_q, acc_nelems, src_data, dst_data,
+                                host_task_events, depends);
 
         return std::make_pair(
             dpctl::utils::keep_args_alive(exec_q, {src, dst}, {acc_ev}),
@@ -328,8 +330,6 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
     auto src_shape_vec = src.get_shape_vector();
     auto src_strides_vec = src.get_strides_vector();
     auto dst_strides_vec = dst.get_strides_vector();
-
-    std::vector<sycl::event> host_task_events;
 
     using shT = std::vector<py::ssize_t>;
     shT acc_shape(std::begin(src_shape_vec) + iter_nd, std::end(src_shape_vec));
@@ -395,10 +395,10 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
     all_deps.insert(all_deps.end(), copy_shapes_strides_ev);
     all_deps.insert(all_deps.end(), depends.begin(), depends.end());
 
-    sycl::event acc_ev =
-        strided_fn(exec_q, iter_nelems, acc_nelems, src_data, iter_nd,
-                   iter_shape_and_strides, iter_src_offset, iter_dst_offset,
-                   acc_nd, acc_shapes_and_strides, dst_data, all_deps);
+    sycl::event acc_ev = strided_fn(
+        exec_q, iter_nelems, acc_nelems, src_data, iter_nd,
+        iter_shape_and_strides, iter_src_offset, iter_dst_offset, acc_nd,
+        acc_shapes_and_strides, dst_data, host_task_events, all_deps);
 
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(acc_ev);
