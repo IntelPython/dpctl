@@ -1371,7 +1371,8 @@ cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
     """Set/unset USM_ARRAY_WRITABLE in the given array `arr`."""
     arr._set_writable_flag(flag)
 
-cdef api object UsmNDArray_MakeSimpleFromMemory(
+
+cdef api object UsmNDArray_MakeSimplkeFromMemory(
     int nd, const Py_ssize_t *shape, int typenum,
     c_dpmem._Memory mobj, Py_ssize_t offset, char order
 ):
