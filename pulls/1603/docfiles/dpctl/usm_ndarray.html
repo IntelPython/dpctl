@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7TCKS5BHYE');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl.tensor.usm_ndarray &mdash; Data Parallel Control (dpctl) 0.17.0dev0+151.g782fc6f79c documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d0ecf3c6"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/target-highlight.js?v=df7d332b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpctl.utils" href="dpctl.utils_pyapi.html" />
+    <link rel="prev" title="numpy.dtype" href="dtype.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.17.0dev0+151.g782fc6f79c
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpctl_pyapi.html">dpctl</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dpctl_pyapi.html#sub-modules">Sub-modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpctl.memory_pyapi.html">dpctl.memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program_pyapi.html">dpctl.program</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="dpctl.tensor_pyapi.html">dpctl.tensor</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dpctl.tensor_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor_pyapi.html#array-construction">Array Construction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor_pyapi.html#array-manipulation">Array Manipulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor_pyapi.html#other-functions">Other Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.utils_pyapi.html">dpctl.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#device-selection-functions">Device Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#other-functions">Other Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_pyapi.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="dpctl_pyapi.html">dpctl</a></li>
+          <li class="breadcrumb-item"><a href="dpctl.tensor_pyapi.html">dpctl.tensor</a></li>
+      <li class="breadcrumb-item active">dpctl.tensor.usm_ndarray</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/docfiles/dpctl/usm_ndarray.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpctl-tensor-usm-ndarray">
+<span id="usm-ndarray-api"></span><h1>dpctl.tensor.usm_ndarray<a class="headerlink" href="#dpctl-tensor-usm-ndarray" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">usm_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_ctor_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray" title="Permalink to this definition"></a></dt>
+<dd><p>An array object represents a multidimensional tensor of numeric
+elements stored in a USM allocation on a SYCL device.</p>
+<dl>
+<dt>Arg:</dt><dd><dl>
+<dt>shape (int, tuple):</dt><dd><p>Shape of the array to be created.</p>
+</dd>
+<dt>dtype (str, dtype):</dt><dd><p>Array data type, i.e. the type of array elements.
+If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> has the value <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined by default
+floating point type supported by target device.
+The supported types are</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">bool</span></code>:</dt><dd><p>boolean type</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">int8</span></code>, <code class="docutils literal notranslate"><span class="pre">int16</span></code>, <code class="docutils literal notranslate"><span class="pre">int32</span></code>, <code class="docutils literal notranslate"><span class="pre">int64</span></code>:</dt><dd><p>signed integer types</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">uint8</span></code>, <code class="docutils literal notranslate"><span class="pre">uint16</span></code>, <code class="docutils literal notranslate"><span class="pre">uint32</span></code>, <code class="docutils literal notranslate"><span class="pre">uint64</span></code>:</dt><dd><p>unsigned integer types</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">float16</span></code>:</dt><dd><p>half-precision floating type,
+supported if target device’s property
+<code class="docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">float32</span></code>, <code class="docutils literal notranslate"><span class="pre">complex64</span></code>:</dt><dd><p>single-precision real and complex floating types</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">float64</span></code>, <code class="docutils literal notranslate"><span class="pre">complex128</span></code>:</dt><dd><p>double-precision real and complex floating
+types, supported if target device’s property
+<code class="docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt>strides (tuple, optional):</dt><dd><p>Strides of the array to be created in elements.
+If <code class="docutils literal notranslate"><span class="pre">strides</span></code> has the value <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined by the
+<code class="docutils literal notranslate"><span class="pre">shape</span></code> of the array and the requested <code class="docutils literal notranslate"><span class="pre">order</span></code>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt>buffer (str, object, optional):</dt><dd><p>A string corresponding to the type of USM allocation to make,
+or a Python object representing a USM memory allocation, i.e.
+<a class="reference internal" href="MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>,
+<a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>, or
+<a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>. Recognized strings are
+<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>. Additional arguments to
+the USM memory alloctors can be passed in a dictionary specified
+via <code class="docutils literal notranslate"><span class="pre">buffer_ctor_kwrds</span></code> keyword parameter.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>.</p>
+</dd>
+<dt>offset (int, optional):</dt><dd><p>Offset of the array element with all zero indexes relative to the
+start of the provided <cite>buffer</cite> in elements. The argument is ignored
+if the <code class="docutils literal notranslate"><span class="pre">buffer</span></code> value is a string and the memory is allocated by
+the constructor. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt>order ({“C”, “F”}, optional):</dt><dd><p>The memory layout of the array when constructing using a new
+allocation. Value <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> corresponds to C-contiguous, or row-major
+memory layout, while value <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> corresponds to F-contiguous, or
+column-major layout. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
+</dd>
+<dt>buffer_ctor_kwargs (dict, optional):</dt><dd><p>Dictionary with keyword parameters to use when creating a new USM
+memory allocation. See <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a> for
+supported keyword arguments.</p>
+</dd>
+<dt>array_namespace (module, optional):</dt><dd><p>Array namespace module associated with this array.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">buffer</span></code> can be <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code> to allocate
+new device memory by calling respective constructor with
+the specified <code class="docutils literal notranslate"><span class="pre">buffer_ctor_kwrds</span></code>; <code class="docutils literal notranslate"><span class="pre">buffer</span></code> can be an
+instance of <a class="reference internal" href="MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>,
+<a class="reference internal" href="MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>, or
+<a class="reference internal" href="MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>; <code class="docutils literal notranslate"><span class="pre">buffer</span></code> can also be
+another <a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance, in which case its
+underlying <code class="docutils literal notranslate"><span class="pre">MemoryUSM*</span></code> buffer is used.</p>
+<p class="rubric">Attributes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.T" title="dpctl.tensor.usm_ndarray.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></a></p></td>
+<td><p>Returns transposed array for 2D array, raises <cite>ValueError</cite> otherwise.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></a></p></td>
+<td><p>Returns data-API object representing residence of the array data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.dtype" title="dpctl.tensor.usm_ndarray.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a></p></td>
+<td><p>Returns NumPy's dtype corresponding to the type of the array elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.flags" title="dpctl.tensor.usm_ndarray.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></a></p></td>
+<td><p>Returns <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor._flags</span></code> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.imag" title="dpctl.tensor.usm_ndarray.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></a></p></td>
+<td><p>Returns imaginary component for arrays with complex data-types and returns zero array for all other data-types.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.itemsize" title="dpctl.tensor.usm_ndarray.itemsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></a></p></td>
+<td><p>Size of array element in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.mT" title="dpctl.tensor.usm_ndarray.mT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></a></p></td>
+<td><p>Returns array where the last two dimensions are transposed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.nbytes" title="dpctl.tensor.usm_ndarray.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></a></p></td>
+<td><p>Total bytes consumed by the elements of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.ndim" title="dpctl.tensor.usm_ndarray.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></a></p></td>
+<td><p>Gives the number of indices needed to address elements of this array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.real" title="dpctl.tensor.usm_ndarray.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
+<td><p>Returns real component for arrays with complex data-types and returns itself for all other data-types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.shape" title="dpctl.tensor.usm_ndarray.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a></p></td>
+<td><p>Elements of the shape tuple give the lengths of the respective array dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.size" title="dpctl.tensor.usm_ndarray.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
+<td><p>Number of elements in the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.strides" title="dpctl.tensor.usm_ndarray.strides"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></a></p></td>
+<td><p>Returns memory displacement in array elements, upon unit change of respective index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_context" title="dpctl.tensor.usm_ndarray.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
+<td><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_device" title="dpctl.tensor.usm_ndarray.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
+<td><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.sycl_queue" title="dpctl.tensor.usm_ndarray.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_queue</span></code></a></p></td>
+<td><p>Returns <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_data" title="dpctl.tensor.usm_ndarray.usm_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_data</span></code></a></p></td>
+<td><p>Gives USM memory object underlying usm_array instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.usm_type" title="dpctl.tensor.usm_ndarray.usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">usm_type</span></code></a></p></td>
+<td><p>USM type of underlying memory.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Public methods:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray.to_device" title="dpctl.tensor.usm_ndarray.to_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_device</span></code></a>(target_device)</p></td>
+<td><p>Transfers this array to specified target device.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Private methods:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray._set_namespace" title="dpctl.tensor.usm_ndarray._set_namespace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_namespace</span></code></a>(mod)</p></td>
+<td><p>Sets array namespace to given module <cite>mod</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.T">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">T</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.T" title="Permalink to this definition"></a></dt>
+<dd><p>Returns transposed array for 2D array, raises <cite>ValueError</cite>
+otherwise.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._byte_bounds">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_byte_bounds</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._byte_bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a 2-tuple with pointers to the end-points of the array</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._element_offset">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_element_offset</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._element_offset" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the offset of the zero-index element of the array, in elements,
+relative to the start of memory allocation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._pointer">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_pointer</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._pointer" title="Permalink to this definition"></a></dt>
+<dd><p>Returns USM pointer for data allocation encoded as integer</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.device">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.device" title="Permalink to this definition"></a></dt>
+<dd><p>Returns data-API object representing residence of the array data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.dtype">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.dtype" title="Permalink to this definition"></a></dt>
+<dd><p>Returns NumPy’s dtype corresponding to the type of the array elements.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.flags">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.flags" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor._flags</span></code> object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.imag">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">imag</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.imag" title="Permalink to this definition"></a></dt>
+<dd><p>Returns imaginary component for arrays with complex data-types
+and returns zero array for all other data-types.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.itemsize">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.itemsize" title="Permalink to this definition"></a></dt>
+<dd><p>Size of array element in bytes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.mT">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">mT</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.mT" title="Permalink to this definition"></a></dt>
+<dd><p>Returns array where the last two dimensions are transposed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.nbytes">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.nbytes" title="Permalink to this definition"></a></dt>
+<dd><p>Total bytes consumed by the elements of the array.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.ndim">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.ndim" title="Permalink to this definition"></a></dt>
+<dd><p>Gives the number of indices needed to address elements of this array.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.real">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">real</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.real" title="Permalink to this definition"></a></dt>
+<dd><p>Returns real component for arrays with complex data-types
+and returns itself for all other data-types.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.shape">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.shape" title="Permalink to this definition"></a></dt>
+<dd><p>Elements of the shape tuple give the lengths of the
+respective array dimensions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.size">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.size" title="Permalink to this definition"></a></dt>
+<dd><p>Number of elements in the array.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.strides">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">strides</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.strides" title="Permalink to this definition"></a></dt>
+<dd><p>Returns memory displacement in array elements, upon unit
+change of respective index.</p>
+<p>E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)</p>
+<blockquote>
+<div><p>a[i1, i2, i3] == (&amp;a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.sycl_context">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">sycl_context</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.sycl_context" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.sycl_device">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">sycl_device</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.sycl_device" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.sycl_queue">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">sycl_queue</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.sycl_queue" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.usm_data">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">usm_data</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.usm_data" title="Permalink to this definition"></a></dt>
+<dd><p>Gives USM memory object underlying usm_array instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.usm_type">
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">usm_type</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.usm_type" title="Permalink to this definition"></a></dt>
+<dd><p>USM type of underlying memory. Can be <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>.</p>
+<p>See: <a class="reference external" href="https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html">https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html</a></p>
+</dd></dl>
+
+</section>
+<section id="public-methods">
+<h2>Public methods<a class="headerlink" href="#public-methods" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.to_device">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.to_device" title="Permalink to this definition"></a></dt>
+<dd><p>Transfers this array to specified target device.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+<span class="n">q_prof</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
+<span class="c1"># return a view with profile-enabled queue</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">q_prof</span><span class="p">)</span>
+<span class="n">timer</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="n">q_prof</span><span class="p">):</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>target_device</strong> (<em>object</em>) – Array API concept of target device.
+It can be a oneAPI filter selector string,
+an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
+non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>
+object returned by <code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A view if data copy is not required, and a copy otherwise.
+If copying is required, it is done by copying from the original
+allocation device to the host, followed by copying from host
+to the target device.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="private-methods">
+<h2>Private methods<a class="headerlink" href="#private-methods" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._set_namespace">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_set_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._set_namespace" title="Permalink to this definition"></a></dt>
+<dd><p>Sets array namespace to given module <cite>mod</cite>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dtype.html" class="btn btn-neutral float-left" title="numpy.dtype" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpctl.utils_pyapi.html" class="btn btn-neutral float-right" title="dpctl.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2024, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
