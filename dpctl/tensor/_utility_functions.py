@@ -73,7 +73,7 @@ def _boolean_reduction(x, axis, keepdims, func):
     return res
 
 
-def all(x, axis=None, keepdims=False):
+def all(x, /, *, axis=None, keepdims=False):
     """all(x, axis=None, keepdims=False)
 
     Tests whether all input array elements evaluate to True along a given axis.
@@ -101,7 +101,7 @@ def all(x, axis=None, keepdims=False):
     return _boolean_reduction(x, axis, keepdims, tri._all)
 
 
-def any(x, axis=None, keepdims=False):
+def any(x, /, *, axis=None, keepdims=False):
     """any(x, axis=None, keepdims=False)
 
     Tests whether any input array elements evaluate to True along a given axis.
