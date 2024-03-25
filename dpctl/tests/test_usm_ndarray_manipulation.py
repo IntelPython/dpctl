@@ -88,7 +88,7 @@ def test_permute_dims_2d_3d(shapes):
 def test_expand_dims_incorrect_type():
     X_list = [1, 2, 3, 4, 5]
     with pytest.raises(TypeError):
-        dpt.permute_dims(X_list, 1)
+        dpt.permute_dims(X_list, axis=1)
 
 
 def test_expand_dims_0d():
@@ -97,16 +97,16 @@ def test_expand_dims_0d():
     Xnp = np.array(1, dtype="int64")
     X = dpt.asarray(Xnp, sycl_queue=q)
 
-    Y = dpt.expand_dims(X, 0)
-    Ynp = np.expand_dims(Xnp, 0)
+    Y = dpt.expand_dims(X, axis=0)
+    Ynp = np.expand_dims(Xnp, axis=0)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    Y = dpt.expand_dims(X, -1)
-    Ynp = np.expand_dims(Xnp, -1)
+    Y = dpt.expand_dims(X, axis=-1)
+    Ynp = np.expand_dims(Xnp, axis=-1)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.expand_dims, X, 1)
-    pytest.raises(np.AxisError, dpt.expand_dims, X, -2)
+    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=1)
+    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=-2)
 
 
 @pytest.mark.parametrize("shapes", [(3,), (3, 3), (3, 3, 3)])
@@ -119,12 +119,12 @@ def test_expand_dims_1d_3d(shapes):
     X = dpt.asarray(Xnp, sycl_queue=q)
     shape_len = len(shapes)
     for axis in range(-shape_len - 1, shape_len):
-        Y = dpt.expand_dims(X, axis)
-        Ynp = np.expand_dims(Xnp, axis)
+        Y = dpt.expand_dims(X, axis=axis)
+        Ynp = np.expand_dims(Xnp, axis=axis)
         assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.expand_dims, X, shape_len + 1)
-    pytest.raises(np.AxisError, dpt.expand_dims, X, -shape_len - 2)
+    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=shape_len + 1)
+    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=-shape_len - 2)
 
 
 @pytest.mark.parametrize(
@@ -135,8 +135,8 @@ def test_expand_dims_tuple(axes):
 
     Xnp = np.empty((3, 3, 3), dtype="u1")
     X = dpt.asarray(Xnp, sycl_queue=q)
-    Y = dpt.expand_dims(X, axes)
-    Ynp = np.expand_dims(Xnp, axes)
+    Y = dpt.expand_dims(X, axis=axes)
+    Ynp = np.expand_dims(Xnp, axis=axes)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -146,12 +146,12 @@ def test_expand_dims_incorrect_tuple():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     with pytest.raises(np.AxisError):
-        dpt.expand_dims(X, (0, -6))
+        dpt.expand_dims(X, axis=(0, -6))
     with pytest.raises(np.AxisError):
-        dpt.expand_dims(X, (0, 5))
+        dpt.expand_dims(X, axis=(0, 5))
 
     with pytest.raises(ValueError):
-        dpt.expand_dims(X, (1, 1))
+        dpt.expand_dims(X, axis=(1, 1))
 
 
 def test_squeeze_incorrect_type():
@@ -456,9 +456,9 @@ def test_flip_0d():
     Y = dpt.flip(X)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.flip, X, 0)
-    pytest.raises(np.AxisError, dpt.flip, X, 1)
-    pytest.raises(np.AxisError, dpt.flip, X, -1)
+    pytest.raises(np.AxisError, dpt.flip, X, axis=0)
+    pytest.raises(np.AxisError, dpt.flip, X, axis=1)
+    pytest.raises(np.AxisError, dpt.flip, X, axis=-1)
 
 
 def test_flip_1d():
@@ -468,12 +468,12 @@ def test_flip_1d():
     X = dpt.asarray(Xnp, sycl_queue=q)
 
     for ax in range(-X.ndim, X.ndim):
-        Ynp = np.flip(Xnp, ax)
-        Y = dpt.flip(X, ax)
+        Ynp = np.flip(Xnp, axis=ax)
+        Y = dpt.flip(X, axis=ax)
         assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    Ynp = np.flip(Xnp, 0)
-    Y = dpt.flip(X, 0)
+    Ynp = np.flip(Xnp, axis=0)
+    Y = dpt.flip(X, axis=0)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -497,8 +497,8 @@ def test_flip_2d_3d(shapes):
     Xnp = np.arange(Xnp_size).reshape(shapes)
     X = dpt.asarray(Xnp, sycl_queue=q)
     for ax in range(-X.ndim, X.ndim):
-        Y = dpt.flip(X, ax)
-        Ynp = np.flip(Xnp, ax)
+        Y = dpt.flip(X, axis=ax)
+        Ynp = np.flip(Xnp, axis=ax)
         assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -569,8 +569,8 @@ def test_flip_multiple_axes(data):
     Xnp_size = np.prod(shape)
     Xnp = np.arange(Xnp_size).reshape(shape)
     X = dpt.asarray(Xnp, sycl_queue=q)
-    Y = dpt.flip(X, axes)
-    Ynp = np.flip(Xnp, axes)
+    Y = dpt.flip(X, axis=axes)
+    Ynp = np.flip(Xnp, axis=axes)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -583,8 +583,10 @@ def test_roll_empty():
     Y = dpt.roll(X, 1)
     Ynp = np.roll(Xnp, 1)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
-    pytest.raises(np.AxisError, dpt.roll, X, 1, 0)
-    pytest.raises(np.AxisError, dpt.roll, X, 1, 1)
+    with pytest.raises(np.AxisError):
+        dpt.roll(X, 1, axis=0)
+    with pytest.raises(np.AxisError):
+        dpt.roll(X, 1, axis=1)
 
 
 @pytest.mark.parametrize(
@@ -605,12 +607,12 @@ def test_roll_1d(data):
     X = dpt.asarray(Xnp, sycl_queue=q)
     sh, ax = data
 
-    Y = dpt.roll(X, sh, ax)
-    Ynp = np.roll(Xnp, sh, ax)
+    Y = dpt.roll(X, sh, axis=ax)
+    Ynp = np.roll(Xnp, sh, axis=ax)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    Y = dpt.roll(X, sh, ax)
-    Ynp = np.roll(Xnp, sh, ax)
+    Y = dpt.roll(X, sh, axis=ax)
+    Ynp = np.roll(Xnp, sh, axis=ax)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -644,8 +646,8 @@ def test_roll_2d(data):
     X = dpt.asarray(Xnp, sycl_queue=q)
     sh, ax = data
 
-    Y = dpt.roll(X, sh, ax)
-    Ynp = np.roll(Xnp, sh, ax)
+    Y = dpt.roll(X, sh, axis=ax)
+    Ynp = np.roll(Xnp, sh, axis=ax)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
@@ -664,10 +666,14 @@ def test_roll_validation():
 
 def test_concat_incorrect_type():
     Xnp = np.ones((2, 2))
-    pytest.raises(TypeError, dpt.concat)
-    pytest.raises(TypeError, dpt.concat, [])
-    pytest.raises(TypeError, dpt.concat, Xnp)
-    pytest.raises(TypeError, dpt.concat, [Xnp, Xnp])
+    with pytest.raises(TypeError):
+        dpt.concat()
+    with pytest.raises(TypeError):
+        dpt.concat([])
+    with pytest.raises(TypeError):
+        dpt.concat(Xnp)
+    with pytest.raises(TypeError):
+        dpt.concat([Xnp, Xnp])
 
 
 def test_concat_incorrect_queue():
@@ -719,7 +725,7 @@ def test_concat_incorrect_shape(data):
     X = dpt.ones(Xshape, sycl_queue=q)
     Y = dpt.ones(Yshape, sycl_queue=q)
 
-    pytest.raises(ValueError, dpt.concat, [X, Y], axis)
+    pytest.raises(ValueError, dpt.concat, [X, Y], axis=axis)
 
 
 @pytest.mark.parametrize(
@@ -827,7 +833,8 @@ def test_stack_incorrect_shape():
     X = dpt.ones((1,), sycl_queue=q)
     Y = dpt.ones((2,), sycl_queue=q)
 
-    pytest.raises(ValueError, dpt.stack, [X, Y], 0)
+    with pytest.raises(ValueError):
+        dpt.stack([X, Y], axis=0)
 
 
 @pytest.mark.parametrize(
@@ -1111,7 +1118,7 @@ def test_unstack_axis1():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     y = dpt.reshape(x_flat, (2, 3))
-    res = dpt.unstack(y, 1)
+    res = dpt.unstack(y, axis=1)
 
     assert_array_equal(dpt.asnumpy(y[:, 0, ...]), dpt.asnumpy(res[0]))
     assert_array_equal(dpt.asnumpy(y[:, 1, ...]), dpt.asnumpy(res[1]))
@@ -1124,7 +1131,7 @@ def test_unstack_axis2():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     y = dpt.reshape(x_flat, (4, 5, 3))
-    res = dpt.unstack(y, 2)
+    res = dpt.unstack(y, axis=2)
 
     assert_array_equal(dpt.asnumpy(y[:, :, 0, ...]), dpt.asnumpy(res[0]))
     assert_array_equal(dpt.asnumpy(y[:, :, 1, ...]), dpt.asnumpy(res[1]))
