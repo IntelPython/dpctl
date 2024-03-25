@@ -38,7 +38,7 @@ from ._device_queries import (
 from ._onetrace_context import onetrace_enabled
 
 
-def intel_device_info(dev):
+def intel_device_info(dev, /):
     """intel_device_info(sycl_device)
 
     For Intel(R) GPU devices returns a dictionary
