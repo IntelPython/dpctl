@@ -487,7 +487,7 @@ class finfo_object:
         return self._finfo.__repr__()
 
 
-def can_cast(from_, to, casting="safe") -> bool:
+def can_cast(from_, to, /, *, casting="safe") -> bool:
     """ can_cast(from, to, casting="safe")
 
     Determines if one data type can be cast to another data type according \
@@ -619,7 +619,7 @@ def result_type(*arrays_and_dtypes):
     return res_dt
 
 
-def iinfo(dtype):
+def iinfo(dtype, /):
     """iinfo(dtype)
 
     Returns machine limits for integer data types.
@@ -648,7 +648,7 @@ def iinfo(dtype):
     return np.iinfo(dtype)
 
 
-def finfo(dtype):
+def finfo(dtype, /):
     """finfo(type)
 
     Returns machine limits for floating-point data types.
@@ -693,7 +693,7 @@ def _supported_dtype(dtypes):
     return True
 
 
-def isdtype(dtype, kind):
+def isdtype(dtype, kind, /):
     """isdtype(dtype, kind)
 
     Returns a boolean indicating whether a provided `dtype` is
@@ -786,6 +786,8 @@ __all__ = [
     "_acceptance_fn_reciprocal",
     "_acceptance_fn_default_binary",
     "_acceptance_fn_divide",
+    "_acceptance_fn_negative",
+    "_acceptance_fn_subtract",
     "_resolve_weak_types",
     "_weak_type_num_kind",
     "_strong_dtype_num_kind",
