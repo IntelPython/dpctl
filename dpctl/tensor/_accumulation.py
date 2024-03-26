@@ -156,7 +156,8 @@ def _accumulate_over_axis(
             out = dpt.empty(
                 res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
-            out = dpt.permute_dims(out, perm)
+            if a1 != nd:
+                out = dpt.permute_dims(out, perm)
         if not include_initial:
             ht_e, acc_ev = _accumulate_fn(
                 src=arr,
@@ -191,7 +192,8 @@ def _accumulate_over_axis(
                 out = dpt.empty(
                     res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
                 )
-                out = dpt.permute_dims(out, perm)
+                if a1 != nd:
+                    out = dpt.permute_dims(out, perm)
             if not include_initial:
                 ht_e, acc_ev = _accumulate_fn(
                     src=tmp,
@@ -226,6 +228,8 @@ def _accumulate_over_axis(
             tmp_res = dpt.empty(
                 res_sh, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
+            if a1 != nd:
+                tmp_res = dpt.permute_dims(tmp_res, perm)
             host_tasks_list.append(ht_e_cpy)
             if out is None:
                 out = dpt.empty(
