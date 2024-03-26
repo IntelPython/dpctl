@@ -147,11 +147,11 @@ Other Functions
     * - :func:`clip()`
       - Clips to the range [`min_i`, `max_i`] for each element `x_i` in `x`.
     * - :func:`cumulative_logsumexp()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Calculates the cumulative logsmumexp of elements in the input array `x`.
     * - :func:`cumulative_prod()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Calculates the cumulative product of elements in the input array `x`.
     * - :func:`cumulative_sum()`
-      - [FIXME]: <class 'function'> does not have a docstring
+      - Calculates the cumulative sum of elements in the input array `x`.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`finfo()`

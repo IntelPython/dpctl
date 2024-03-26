@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._accumulation &mdash; Data Parallel Control (dpctl) 0.17.0dev0+161.g0bd7a84cd6 documentation</title>
+  <title>dpctl.tensor._accumulation &mdash; Data Parallel Control (dpctl) 0.17.0dev0+163.g0fa435886c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=df4eb511"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=662032ba"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+161.g0bd7a84cd6
+                0.17.0dev0+163.g0fa435886c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -380,6 +380,57 @@
 <div class="viewcode-block" id="cumulative_sum"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.cumulative_sum">[docs]</a><span class="k">def</span> <span class="nf">cumulative_sum</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    cumulative_sum(x, /, *, axis=None, dtype=None, include_initial=False,</span>
+<span class="sd">                   out=None)</span>
+
+<span class="sd">    Calculates the cumulative sum of elements in the input array `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis along which cumulative sum must be computed.</span>
+<span class="sd">            If `None`, the sum is computed over the entire array.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        dtype (Optional[dtype]):</span>
+<span class="sd">            data type of the returned array. If `None`, the default data</span>
+<span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
+
+<span class="sd">                * If `x` has a real- or complex-valued floating-point data</span>
+<span class="sd">                  type, the returned array will have the same data type as</span>
+<span class="sd">                  `x`.</span>
+<span class="sd">                * If `x` has signed integral data type, the returned array</span>
+<span class="sd">                  will have the default signed integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">                * If `x` has unsigned integral data type, the returned array</span>
+<span class="sd">                  will have the default unsigned integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">                * If `x` has a boolean data type, the returned array will</span>
+<span class="sd">                  have the default signed integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">            If the data type (either specified or resolved) differs from the</span>
+<span class="sd">            data type of `x`, the input array elements are cast to the</span>
+<span class="sd">            specified data type before computing the cumulative sum.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        include_initial (bool):</span>
+<span class="sd">            boolean indicating whether to include the initial value (i.e., the</span>
+<span class="sd">            additive identity, zero) as the first value along the provided axis</span>
+<span class="sd">            in the output. Default: `False`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing cumulative sums. The returned array has the data</span>
+<span class="sd">            type as described in the `dtype` parameter description above.</span>
+
+<span class="sd">            Where `N` is the size of the axis the cumulative sums are computed</span>
+<span class="sd">            along, the returned array shape is determined as follows.</span>
+<span class="sd">            * If `include_initial` is `False`, the returned array will have the</span>
+<span class="sd">            same shape as `x`.</span>
+<span class="sd">            * If `include_initial` is `True`, the returned array will have the</span>
+<span class="sd">            same shape as `x` except the axis along which the cumulative sum is</span>
+<span class="sd">            calculated, which will have size `N+1`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_accumulate_common</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">,</span>
@@ -396,6 +447,57 @@
 <div class="viewcode-block" id="cumulative_prod"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.cumulative_prod">[docs]</a><span class="k">def</span> <span class="nf">cumulative_prod</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    cumulative_prod(x, /, *, axis=None, dtype=None, include_initial=False,</span>
+<span class="sd">                   out=None)</span>
+
+<span class="sd">    Calculates the cumulative product of elements in the input array `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis along which cumulative product must be computed.</span>
+<span class="sd">            If `None`, the product is computed over the entire array.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        dtype (Optional[dtype]):</span>
+<span class="sd">            data type of the returned array. If `None`, the default data</span>
+<span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
+
+<span class="sd">                * If `x` has a real- or complex-valued floating-point data</span>
+<span class="sd">                  type, the returned array will have the same data type as</span>
+<span class="sd">                  `x`.</span>
+<span class="sd">                * If `x` has signed integral data type, the returned array</span>
+<span class="sd">                  will have the default signed integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">                * If `x` has unsigned integral data type, the returned array</span>
+<span class="sd">                  will have the default unsigned integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">                * If `x` has a boolean data type, the returned array will</span>
+<span class="sd">                  have the default signed integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">            If the data type (either specified or resolved) differs from the</span>
+<span class="sd">            data type of `x`, the input array elements are cast to the</span>
+<span class="sd">            specified data type before computing the cumulative product.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        include_initial (bool):</span>
+<span class="sd">            boolean indicating whether to include the initial value (i.e., the</span>
+<span class="sd">            additive identity, zero) as the first value along the provided axis</span>
+<span class="sd">            in the output. Default: `False`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing cumulative products. The returned array has the</span>
+<span class="sd">            data type as described in the `dtype` parameter description above.</span>
+
+<span class="sd">            Where `N` is the size of the axis the cumulative products are</span>
+<span class="sd">            computed along, the returned array shape is determined as follows.</span>
+<span class="sd">            * If `include_initial` is `False`, the returned array will have the</span>
+<span class="sd">            same shape as `x`.</span>
+<span class="sd">            * If `include_initial` is `True`, the returned array will have the</span>
+<span class="sd">            same shape as `x` except the axis along which the cumulative product</span>
+<span class="sd">            is calculated, which will have size `N+1`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_accumulate_common</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">,</span>
@@ -412,6 +514,59 @@
 <div class="viewcode-block" id="cumulative_logsumexp"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.cumulative_logsumexp">[docs]</a><span class="k">def</span> <span class="nf">cumulative_logsumexp</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    cumulative_logsumexp(x, /, *, axis=None, dtype=None, include_initial=False,</span>
+<span class="sd">                   out=None)</span>
+
+<span class="sd">    Calculates the cumulative logsmumexp of elements in the input array `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis along which cumulative logsumexp must be computed.</span>
+<span class="sd">            If `None`, the logsumexp is computed over the entire array.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        dtype (Optional[dtype]):</span>
+<span class="sd">            data type of the returned array. If `None`, the default data</span>
+<span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
+
+<span class="sd">                * If `x` has a real- or complex-valued floating-point data</span>
+<span class="sd">                  type, the returned array will have the same data type as</span>
+<span class="sd">                  `x`.</span>
+<span class="sd">                * If `x` has signed integral data type, the returned array</span>
+<span class="sd">                  will have the default signed integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">                * If `x` has unsigned integral data type, the returned array</span>
+<span class="sd">                  will have the default unsigned integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">                * If `x` has a boolean data type, the returned array will</span>
+<span class="sd">                  have the default signed integral type for the device</span>
+<span class="sd">                  where input array `x` is allocated.</span>
+<span class="sd">            If the data type (either specified or resolved) differs from the</span>
+<span class="sd">            data type of `x`, the input array elements are cast to the</span>
+<span class="sd">            specified data type before computing the cumulative logsumexp.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        include_initial (bool):</span>
+<span class="sd">            boolean indicating whether to include the initial value (i.e., the</span>
+<span class="sd">            additive identity, zero) as the first value along the provided axis</span>
+<span class="sd">            in the output. Default: `False`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing cumulative logsumexp results. The returned array</span>
+<span class="sd">            has the data type as described in the `dtype` parameter description</span>
+<span class="sd">            above.</span>
+
+<span class="sd">            Where `N` is the size of the axis the cumulative logsumexp results</span>
+<span class="sd">            are computed along, the returned array shape is determined as</span>
+<span class="sd">            follows.</span>
+<span class="sd">            * If `include_initial` is `False`, the returned array will have the</span>
+<span class="sd">            same shape as `x`.</span>
+<span class="sd">            * If `include_initial` is `True`, the returned array will have the</span>
+<span class="sd">            same shape as `x` except the axis along which the cumulative</span>
+<span class="sd">            logsumexp is calculated, which will have size `N+1`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_accumulate_common</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">,</span>
