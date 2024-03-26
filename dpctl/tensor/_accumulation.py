@@ -216,7 +216,7 @@ def _accumulate_over_axis(
                 host_tasks_list.append(ht_e_cpy2)
                 out = orig_out
         else:
-            buf_dt = _default_accumulation_dtype(inp_dt, q)
+            buf_dt = _default_accumulation_type_fn(inp_dt, q)
             tmp = dpt.empty(
                 arr.shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
