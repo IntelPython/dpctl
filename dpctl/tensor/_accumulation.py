@@ -41,9 +41,7 @@ def _default_accumulation_dtype(inp_dt, q):
             pass
         else:
             res_dt = inp_dt
-    elif inp_kind in "f":
-        res_dt = inp_dt
-    elif inp_kind in "c":
+    elif inp_kind in "fc":
         res_dt = inp_dt
 
     return res_dt
