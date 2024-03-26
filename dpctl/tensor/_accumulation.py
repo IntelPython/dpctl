@@ -286,6 +286,57 @@ def _accumulate_common(
 def cumulative_sum(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
+    """
+    cumulative_sum(x, /, *, axis=None, dtype=None, include_initial=False,
+                   out=None)
+
+    Calculates the cumulative sum of elements in the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis along which cumulative sum must be computed.
+            If `None`, the sum is computed over the entire array.
+            Default: `None`.
+        dtype (Optional[dtype]):
+            data type of the returned array. If `None`, the default data
+            type is inferred from the "kind" of the input array data type.
+
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
+                * If `x` has signed integral data type, the returned array
+                  will have the default signed integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has unsigned integral data type, the returned array
+                  will have the default unsigned integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has a boolean data type, the returned array will
+                  have the default signed integral type for the device
+                  where input array `x` is allocated.
+            If the data type (either specified or resolved) differs from the
+            data type of `x`, the input array elements are cast to the
+            specified data type before computing the cumulative sum.
+            Default: `None`.
+        include_initial (bool):
+            boolean indicating whether to include the initial value (i.e., the
+            additive identity, zero) as the first value along the provided axis
+            in the output. Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            an array containing cumulative sums. The returned array has the data
+            type as described in the `dtype` parameter description above.
+
+            Where `N` is the size of the axis the cumulative sums are computed
+            along, the returned array shape is determined as follows.
+            * If `include_initial` is `False`, the returned array will have the
+            same shape as `x`.
+            * If `include_initial` is `True`, the returned array will have the
+            same shape as `x` except the axis along which the cumulative sum is
+            calculated, which will have size `N+1`.
+    """
     return _accumulate_common(
         x,
         axis,
@@ -302,6 +353,57 @@ def cumulative_sum(
 def cumulative_prod(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
+    """
+    cumulative_prod(x, /, *, axis=None, dtype=None, include_initial=False,
+                   out=None)
+
+    Calculates the cumulative product of elements in the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis along which cumulative product must be computed.
+            If `None`, the product is computed over the entire array.
+            Default: `None`.
+        dtype (Optional[dtype]):
+            data type of the returned array. If `None`, the default data
+            type is inferred from the "kind" of the input array data type.
+
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
+                * If `x` has signed integral data type, the returned array
+                  will have the default signed integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has unsigned integral data type, the returned array
+                  will have the default unsigned integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has a boolean data type, the returned array will
+                  have the default signed integral type for the device
+                  where input array `x` is allocated.
+            If the data type (either specified or resolved) differs from the
+            data type of `x`, the input array elements are cast to the
+            specified data type before computing the cumulative product.
+            Default: `None`.
+        include_initial (bool):
+            boolean indicating whether to include the initial value (i.e., the
+            additive identity, zero) as the first value along the provided axis
+            in the output. Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            an array containing cumulative products. The returned array has the
+            data type as described in the `dtype` parameter description above.
+
+            Where `N` is the size of the axis the cumulative products are
+            computed along, the returned array shape is determined as follows.
+            * If `include_initial` is `False`, the returned array will have the
+            same shape as `x`.
+            * If `include_initial` is `True`, the returned array will have the
+            same shape as `x` except the axis along which the cumulative product
+            is calculated, which will have size `N+1`.
+    """
     return _accumulate_common(
         x,
         axis,
@@ -318,6 +420,59 @@ def cumulative_prod(
 def cumulative_logsumexp(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
+    """
+    cumulative_logsumexp(x, /, *, axis=None, dtype=None, include_initial=False,
+                   out=None)
+
+    Calculates the cumulative logsmumexp of elements in the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis along which cumulative logsumexp must be computed.
+            If `None`, the logsumexp is computed over the entire array.
+            Default: `None`.
+        dtype (Optional[dtype]):
+            data type of the returned array. If `None`, the default data
+            type is inferred from the "kind" of the input array data type.
+
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
+                * If `x` has signed integral data type, the returned array
+                  will have the default signed integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has unsigned integral data type, the returned array
+                  will have the default unsigned integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has a boolean data type, the returned array will
+                  have the default signed integral type for the device
+                  where input array `x` is allocated.
+            If the data type (either specified or resolved) differs from the
+            data type of `x`, the input array elements are cast to the
+            specified data type before computing the cumulative logsumexp.
+            Default: `None`.
+        include_initial (bool):
+            boolean indicating whether to include the initial value (i.e., the
+            additive identity, zero) as the first value along the provided axis
+            in the output. Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            an array containing cumulative logsumexp results. The returned array
+            has the data type as described in the `dtype` parameter description
+            above.
+
+            Where `N` is the size of the axis the cumulative logsumexp results
+            are computed along, the returned array shape is determined as
+            follows.
+            * If `include_initial` is `False`, the returned array will have the
+            same shape as `x`.
+            * If `include_initial` is `True`, the returned array will have the
+            same shape as `x` except the axis along which the cumulative
+            logsumexp is calculated, which will have size `N+1`.
+    """
     return _accumulate_common(
         x,
         axis,
