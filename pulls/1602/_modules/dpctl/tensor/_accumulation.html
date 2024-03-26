@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._accumulation &mdash; Data Parallel Control (dpctl) 0.17.0dev0+158.gfebfeb8be documentation</title>
+  <title>dpctl.tensor._accumulation &mdash; Data Parallel Control (dpctl) 0.17.0dev0+161.g0bd7a84cd6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=95b68811"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=df4eb511"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+158.gfebfeb8be
+                0.17.0dev0+161.g0bd7a84cd6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -108,8 +108,6 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">operator</span>
-
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
@@ -165,7 +163,7 @@
     <span class="k">return</span> <span class="n">res_dt</span>
 
 
-<span class="k">def</span> <span class="nf">_accumulate_over_axis</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_accumulate_common</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">,</span>
@@ -178,8 +176,11 @@
 <span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">appended_axis</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">appended_axis</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">nd</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -187,7 +188,8 @@
             <span class="p">)</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">nd</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">res_sh</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">sh</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">sh</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">include_initial</span> <span class="k">else</span> <span class="n">sh</span>
     <span class="p">)</span>
@@ -224,10 +226,18 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_sh</span><span class="p">:</span>
+        <span class="n">out_sh</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># append an axis to `out` if scalar</span>
+        <span class="k">if</span> <span class="n">appended_axis</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_initial</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="n">orig_out</span> <span class="o">=</span> <span class="n">out</span>
+            <span class="n">final_res_sh</span> <span class="o">=</span> <span class="n">res_sh</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_res_sh</span> <span class="o">=</span> <span class="n">res_sh</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">out_sh</span> <span class="o">==</span> <span class="n">final_res_sh</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;The shape of input and output arrays are inconsistent. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">res_sh</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">final_res_sh</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out_sh</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">res_dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -250,7 +260,8 @@
             <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
                 <span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
             <span class="p">)</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">include_initial</span><span class="p">:</span>
             <span class="n">ht_e</span><span class="p">,</span> <span class="n">acc_ev</span> <span class="o">=</span> <span class="n">_accumulate_fn</span><span class="p">(</span>
                 <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
@@ -285,7 +296,8 @@
                 <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
                     <span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
                 <span class="p">)</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">include_initial</span><span class="p">:</span>
                 <span class="n">ht_e</span><span class="p">,</span> <span class="n">acc_ev</span> <span class="o">=</span> <span class="n">_accumulate_fn</span><span class="p">(</span>
                     <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
@@ -320,6 +332,8 @@
             <span class="n">tmp_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
                 <span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
+                <span class="n">tmp_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">tmp_res</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
             <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
@@ -353,7 +367,8 @@
                 <span class="p">)</span>
                 <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy3</span><span class="p">)</span>
                 <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
-
+    <span class="k">if</span> <span class="n">appended_axis</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
         <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
@@ -365,7 +380,7 @@
 <div class="viewcode-block" id="cumulative_sum"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.cumulative_sum">[docs]</a><span class="k">def</span> <span class="nf">cumulative_sum</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="k">return</span> <span class="n">_accumulate_over_axis</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">_accumulate_common</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">,</span>
@@ -381,7 +396,7 @@
 <div class="viewcode-block" id="cumulative_prod"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.cumulative_prod">[docs]</a><span class="k">def</span> <span class="nf">cumulative_prod</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="k">return</span> <span class="n">_accumulate_over_axis</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">_accumulate_common</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">,</span>
@@ -397,7 +412,7 @@
 <div class="viewcode-block" id="cumulative_logsumexp"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.cumulative_logsumexp">[docs]</a><span class="k">def</span> <span class="nf">cumulative_logsumexp</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="k">return</span> <span class="n">_accumulate_over_axis</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">_accumulate_common</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">,</span>
