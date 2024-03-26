@@ -14,8 +14,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import operator
-
 from numpy.core.numeric import normalize_axis_index
 
 import dpctl
@@ -71,7 +69,7 @@ def _default_accumulation_dtype_fp_types(inp_dt, q):
     return res_dt
 
 
-def _accumulate_over_axis(
+def _accumulate_common(
     x,
     axis,
     dtype,
@@ -84,8 +82,11 @@ def _accumulate_over_axis(
 ):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+    appended_axis = False
+    if x.ndim == 0:
+        x = x[dpt.newaxis]
+        appended_axis = True
     nd = x.ndim
-    sh = x.shape
     if axis is None:
         if nd > 1:
             raise ValueError(
@@ -93,7 +94,8 @@ def _accumulate_over_axis(
             )
         axis = 0
     else:
-        axis = normalize_axis_index(operator.index(axis), nd, "axis")
+        axis = normalize_axis_index(axis, nd, "axis")
+    sh = x.shape
     res_sh = (
         sh[:axis] + (sh[axis] + 1,) + sh[axis + 1 :] if include_initial else sh
     )
@@ -130,10 +132,18 @@ def _accumulate_over_axis(
             )
         if not out.flags.writable:
             raise ValueError("provided `out` array is read-only")
-        if out.shape != res_sh:
+        out_sh = out.shape
+        # append an axis to `out` if scalar
+        if appended_axis and not include_initial:
+            out = out[dpt.newaxis, ...]
+            orig_out = out
+            final_res_sh = res_sh[1:]
+        else:
+            final_res_sh = res_sh
+        if not out_sh == final_res_sh:
             raise ValueError(
                 "The shape of input and output arrays are inconsistent. "
-                f"Expected output shape is {res_sh}, got {out.shape}"
+                f"Expected output shape is {final_res_sh}, got {out_sh}"
             )
         if res_dt != out.dtype:
             raise ValueError(
@@ -263,7 +273,8 @@ def _accumulate_over_axis(
                 )
                 host_tasks_list.append(ht_e_cpy3)
                 out = orig_out
-
+    if appended_axis:
+        out = dpt.squeeze(out)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         out = dpt.permute_dims(out, inv_perm)
@@ -275,7 +286,7 @@ def _accumulate_over_axis(
 def cumulative_sum(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
-    return _accumulate_over_axis(
+    return _accumulate_common(
         x,
         axis,
         dtype,
@@ -291,7 +302,7 @@ def cumulative_sum(
 def cumulative_prod(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
-    return _accumulate_over_axis(
+    return _accumulate_common(
         x,
         axis,
         dtype,
@@ -307,7 +318,7 @@ def cumulative_prod(
 def cumulative_logsumexp(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
-    return _accumulate_over_axis(
+    return _accumulate_common(
         x,
         axis,
         dtype,
