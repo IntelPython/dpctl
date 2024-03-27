@@ -121,6 +121,39 @@ cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) noexcept with gil
         dlm_tensor.manager_ctx = NULL
         stdlib.free(dlm_tensor)
 
+cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
+    try:
+        if _IS_LINUX:
+            default_context = dev.sycl_platform.default_context
+        else:
+            default_context = None
+    except RuntimeError:
+        # RT does not support default_context, e.g. Windows
+        default_context = None
+
+    return default_context
+
+
+cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
+    cdef DPCTLSyclDeviceRef pDRef = NULL
+    cdef DPCTLSyclDeviceRef tDRef = NULL
+    cdef c_dpctl.SyclDevice p_dev
+
+    pDRef = DPCTLDevice_GetParentDevice(dev.get_device_ref())
+    if pDRef is not NULL:
+        # if dev is a sub-device, find its parent
+        # and return its overall ordinal id
+        tDRef = DPCTLDevice_GetParentDevice(pDRef)
+        while tDRef is not NULL:
+            DPCTLDevice_Delete(pDRef)
+            pDRef = tDRef
+            tDRef = DPCTLDevice_GetParentDevice(pDRef)
+        p_dev = c_dpctl.SyclDevice._create(pDRef)
+        return p_dev.get_overall_ordinal()
+
+    # return overall ordinal id of argument device
+    return dev.get_overall_ordinal()
+
 
 cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     """
@@ -168,14 +201,7 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     ary_sycl_queue = usm_ary.get_sycl_queue()
     ary_sycl_device = ary_sycl_queue.get_sycl_device()
 
-    try:
-        if _IS_LINUX:
-            default_context = ary_sycl_device.sycl_platform.default_context
-        else:
-            default_context = None
-    except RuntimeError:
-        # RT does not support default_context, e.g. Windows
-        default_context = None
+    default_context = _get_default_context(ary_sycl_device)
     if default_context is None:
         # check that ary_sycl_device is a non-partitioned device
         pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())

@@ -954,10 +954,10 @@ cdef class usm_ndarray:
             DLPackCreationError: when array is allocation on a partitioned
                 SYCL device
         """
-        cdef int dev_id = (<c_dpctl.SyclDevice>self.sycl_device).get_overall_ordinal()
+        cdef int dev_id = c_dlpack.get_parent_device_ordinal_id(<c_dpctl.SyclDevice>self.sycl_device)
         if dev_id < 0:
             raise c_dlpack.DLPackCreationError(
-                "DLPack protocol is only supported for non-partitioned devices"
+                "Could not determine id of the device where array was allocated."
             )
         else:
             return (
