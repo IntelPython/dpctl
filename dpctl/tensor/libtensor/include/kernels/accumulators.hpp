@@ -437,19 +437,30 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
             dependent_event = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(dependent_event);
 
+                constexpr nwiT updates_per_wi = n_wi;
+                size_t n_items = ceiling_quotient<size_t>(src_size, n_wi);
+
                 using UpdateKernelName =
                     class inclusive_scan_1d_iter_chunk_update_krn<
                         inputT, outputT, n_wi, IndexerT, TransformerT,
                         NoOpTransformerT, ScanOpT, include_initial>;
 
                 cgh.parallel_for<UpdateKernelName>(
-                    {src_size}, [chunk_size, src, local_scans, scan_op,
-                                 identity](auto wiid) {
-                        auto gid = wiid[0];
-                        auto i = (gid / chunk_size);
-                        src[gid] = (i > 0)
-                                       ? scan_op(src[gid], local_scans[i - 1])
-                                       : scan_op(src[gid], identity);
+                    {n_items}, [chunk_size, src, src_size, local_scans, scan_op,
+                                identity](auto wiid) {
+                        auto gid = n_wi * wiid[0];
+#pragma unroll
+                        for (auto i = 0; i < updates_per_wi; ++i) {
+                            auto src_id = gid + i;
+                            if (src_id < src_size) {
+                                auto scan_id = (src_id / chunk_size);
+                                src[src_id] =
+                                    (scan_id > 0)
+                                        ? scan_op(src[src_id],
+                                                  local_scans[scan_id - 1])
+                                        : scan_op(src[src_id], identity);
+                            }
+                        }
                     });
             });
         }
