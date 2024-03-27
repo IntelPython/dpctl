@@ -741,11 +741,20 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         if not out.flags.writable:
             raise ValueError("provided `out` array is read-only")
 
-        if out.shape != res_shape:
+        final_res_shape = tuple(
+            res_shape[i]
+            for i in range(-len(res_shape), 0)
+            if i not in appended_axes
+        )
+        if out.shape != final_res_shape:
             raise ValueError(
                 "The shape of input and output arrays are inconsistent. "
-                f"Expected output shape is {res_shape}, got {out.shape}"
+                f"Expected output shape is {final_res_shape}, got {out.shape}"
             )
+
+        if appended_axes:
+            out = dpt.expand_dims(out, appended_axes)
+            orig_out = out
 
         if res_dt != out.dtype:
             raise ValueError(
