@@ -205,7 +205,9 @@ def test_main_library():
     )
     assert res.returncode == 0
     assert res.stdout
-    assert res.stdout.decode("utf-8").startswith("-L")
+    output = res.stdout.decode("utf-8")
+    assert output.startswith("-L")
+    assert "DPCTLSyclInterface" in output
 
 
 def test_tensor_includes():
