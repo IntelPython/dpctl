@@ -980,3 +980,28 @@ def test_vecdot_contig_small():
         res = dpt.vecdot(v1, v2)
         assert dpt.all(res[:-1] == 0)
         assert res[-1] == n
+
+
+def test_matmul_out_appended_axes():
+    get_queue_or_skip()
+
+    n0, n1, n2 = 4, 10, 5
+    # vm
+    x1 = dpt.ones(n1, dtype="i4")
+    x2 = dpt.ones((n0, n1, n2), dtype="i4")
+    out = dpt.empty((n0, n2), dtype="i4")
+
+    dpt.matmul(x1, x2, out=out)
+    assert dpt.all(out == n1)
+
+    # mv
+    x2 = x2.mT
+    x1, x2 = x2, x1
+    dpt.matmul(x1, x2, out=out)
+    assert dpt.all(out == n1)
+
+    # vv
+    x1 = dpt.ones(n1, dtype="i4")
+    out = dpt.empty((), dtype="i4")
+    dpt.matmul(x1, x2, out=out)
+    assert out == n1
