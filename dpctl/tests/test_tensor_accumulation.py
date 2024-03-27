@@ -1,5 +1,21 @@
+#                      Data Parallel Control (dpctl)
+#
+# Copyright 2020-2024 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import pytest
-from helper import get_queue_or_skip
+from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl.tensor as dpt
 
@@ -24,6 +40,8 @@ cfp_types = [
     dpt.complex64,
     dpt.complex128,
 ]
+
+no_complex_types = [dpt.bool] + sint_types + uint_types + rfp_types
 
 all_types = [dpt.bool] + sint_types + uint_types + rfp_types + cfp_types
 
@@ -156,3 +174,45 @@ def test_accumulate_empty_array():
     r = dpt.cumulative_sum(x, axis=0, include_initial=True)
     assert r.shape == (n0 + 1, n1, n2)
     assert r.size == 0
+
+
+@pytest.mark.parametrize("arg_dtype", all_types)
+def test_cumsum_arg_dtype_default_output_dtype_matrix(arg_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    n = 100
+    x = dpt.ones(n, dtype=arg_dtype)
+    r = dpt.cumulative_sum(x)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    if x.dtype.kind == "i":
+        assert r.dtype.kind == "i"
+    elif x.dtype.kind == "u":
+        assert r.dtype.kind == "u"
+    elif x.dtype.kind == "fc":
+        assert r.dtype == arg_dtype
+
+    r_expected = dpt.arange(1, n + 1, dtype=r.dtype)
+
+    assert dpt.all(r == r_expected)
+
+
+@pytest.mark.parametrize("arg_dtype", all_types)
+@pytest.mark.parametrize("out_dtype", all_types)
+def test_cumsum_arg_out_dtype_matrix(arg_dtype, out_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+    skip_if_dtype_not_supported(out_dtype, q)
+
+    n = 100
+    x = dpt.ones(n, dtype=arg_dtype)
+    r = dpt.cumulative_sum(x, dtype=out_dtype)
+
+    assert isinstance(r, dpt.usm_ndarray)
+    assert r.dtype == dpt.dtype(out_dtype)
+    if out_dtype == dpt.bool:
+        assert dpt.all(r)
+    else:
+        r_expected = dpt.arange(1, n + 1, dtype=out_dtype)
+        assert dpt.all(r == r_expected)
