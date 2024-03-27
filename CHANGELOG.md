@@ -12,7 +12,7 @@ consuming instances of ``sycl::kernel_accessor`` template type.
 ### Changed
 
 * Changed behavior of ``dpctl.tensor.usm_ndarray.__dlpack_device__`` method to return device id of the parent unpartition device if array is allocated on a sub-device instead of raising an exception: [#1604](https://github.com/IntelPython/dpctl/pull/1604)
-* Array creation functions and the ``usm-ndarray`` constructor in `dpctl.tensor` submodule now use cached default-selected device to improve performance: [#1606](https://github.com/IntelPython/dpctl/pull/1606)
+* Array creation functions and the ``usm_ndarray`` constructor in `dpctl.tensor` submodule now use cached default-selected device to improve performance: [#1606](https://github.com/IntelPython/dpctl/pull/1606)
 * Changed treatment of `axis` keyword for `dpctl.tensor.tensordot` and `dpctl.tensor.vecdot` to align with Python Array API 2023.12 specification: [#1608](https://github.com/IntelPython/dpctl/pull/1608)
 * Changed implementation of `DPCTLQueue_SubmitRange`, `DPCTLQueue_SubmitNDRange` in DPCTLSyclInterface library to support ``sycl::local_accessor`` arguments needed by ``numba_dpex``; the enum `DPCTLKernelArgType` to correspond to C++ disjoint types: [#1609](https://github.com/IntelPython/dpctl/pull/1609), [#1611](https://github.com/IntelPython/dpctl/pull/1611), [#1612](https://github.com/IntelPython/dpctl/pull/1612)
 
