@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7TCKS5BHYE');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpctl.tensor._clip &mdash; Data Parallel Control (dpctl) 0.16.0+46.gb37250fa45 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-sphinx_rtd_theme.css?v=b6ca47bd" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=12db9733"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Data Parallel Control (dpctl)
+          </a>
+              <div class="version">
+                0.16.0+46.gb37250fa45
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/user_guides/QuickStart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/user_guides/UserManual.html">User Manual</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/dpctl/dpctl_pyapi.html">dpctl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../docfiles/libsyclinterface/index.html">libsyclinterface</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Data Parallel Control (dpctl)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../dpctl.html">dpctl</a></li>
+      <li class="breadcrumb-item active">dpctl.tensor._clip</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpctl.tensor._clip</h1><div class="highlight"><pre>
+<span></span><span class="c1">#                       Data Parallel Control (dpctl)</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright 2020-2024 Intel Corporation</span>
+<span class="c1">#</span>
+<span class="c1">#  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1">#  you may not use this file except in compliance with the License.</span>
+<span class="c1">#  You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#  Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1">#  distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1">#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1">#  See the License for the specific language governing permissions and</span>
+<span class="c1">#  limitations under the License.</span>
+
+<span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">tei</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._copy_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_empty_like_orderK</span><span class="p">,</span>
+    <span class="n">_empty_like_pair_orderK</span><span class="p">,</span>
+    <span class="n">_empty_like_triple_orderK</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_dtype</span><span class="p">,</span>
+    <span class="n">_get_queue_usm_type</span><span class="p">,</span>
+    <span class="n">_get_shape</span><span class="p">,</span>
+    <span class="n">_validate_dtype</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._manipulation_functions</span> <span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_can_cast</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span>
+<span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
+
+<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">WeakBooleanType</span><span class="p">,</span>
+    <span class="n">WeakComplexType</span><span class="p">,</span>
+    <span class="n">WeakFloatingType</span><span class="p">,</span>
+    <span class="n">WeakIntegralType</span><span class="p">,</span>
+    <span class="n">_strong_dtype_num_kind</span><span class="p">,</span>
+    <span class="n">_weak_type_num_kind</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_resolve_one_strong_two_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+    <span class="s2">&quot;Resolves weak data types per NEP-0050,&quot;</span>
+    <span class="s2">&quot;where the second and third arguments are&quot;</span>
+    <span class="s2">&quot;permitted to be weak types&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">st_dtype</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">WeakBooleanType</span><span class="p">,</span>
+            <span class="n">WeakIntegralType</span><span class="p">,</span>
+            <span class="n">WeakFloatingType</span><span class="p">,</span>
+            <span class="n">WeakComplexType</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">dtype1</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">dtype2</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">WeakBooleanType</span><span class="p">,</span>
+                <span class="n">WeakIntegralType</span><span class="p">,</span>
+                <span class="n">WeakFloatingType</span><span class="p">,</span>
+                <span class="n">WeakComplexType</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">):</span>
+            <span class="n">kind_num1</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype1</span><span class="p">)</span>
+            <span class="n">kind_num2</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype2</span><span class="p">)</span>
+            <span class="n">st_kind_num</span> <span class="o">=</span> <span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">kind_num1</span> <span class="o">&gt;</span> <span class="n">st_kind_num</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                    <span class="n">ret_dtype1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">st_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">st_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                        <span class="n">ret_dtype1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span>
+                    <span class="n">ret_dtype1</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ret_dtype1</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret_dtype1</span> <span class="o">=</span> <span class="n">st_dtype</span>
+
+            <span class="k">if</span> <span class="n">kind_num2</span> <span class="o">&gt;</span> <span class="n">st_kind_num</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype2</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                    <span class="n">ret_dtype2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype2</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">st_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">st_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                        <span class="n">ret_dtype2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span>
+                    <span class="n">ret_dtype2</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ret_dtype2</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret_dtype2</span> <span class="o">=</span> <span class="n">st_dtype</span>
+
+            <span class="k">return</span> <span class="n">ret_dtype1</span><span class="p">,</span> <span class="n">ret_dtype2</span>
+
+        <span class="n">max_dt_num_kind</span><span class="p">,</span> <span class="n">max_dtype</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">),</span> <span class="n">st_dtype</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">dtype2</span><span class="p">),</span> <span class="n">dtype2</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">dt1_kind_num</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dt1_kind_num</span> <span class="o">&gt;</span> <span class="n">max_dt_num_kind</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">)),</span> <span class="n">dtype2</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">max_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">max_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span> <span class="n">dtype2</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span>
+                    <span class="n">dtype2</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span> <span class="n">dtype2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">max_dtype</span><span class="p">,</span> <span class="n">dtype2</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">dtype2</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="n">max_dt_num_kind</span><span class="p">,</span> <span class="n">max_dtype</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">),</span> <span class="n">st_dtype</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">dtype1</span><span class="p">),</span> <span class="n">dtype1</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">dt2_kind_num</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dt2_kind_num</span> <span class="o">&gt;</span> <span class="n">max_dt_num_kind</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype2</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype2</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">max_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">max_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="n">dtype1</span><span class="p">,</span>
+                    <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">max_dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># both are strong dtypes</span>
+        <span class="c1"># return unmodified</span>
+        <span class="k">return</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span>
+
+
+<span class="k">def</span> <span class="nf">_resolve_one_strong_one_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+    <span class="s2">&quot;Resolves one weak data type with one strong data type per NEP-0050&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">st_dtype</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">dtype</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="n">st_kind_num</span> <span class="o">=</span> <span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">)</span>
+        <span class="n">kind_num</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind_num</span> <span class="o">&gt;</span> <span class="n">st_kind_num</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">dev</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">st_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span> <span class="ow">or</span> <span class="n">st_dtype</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span>
+                <span class="k">return</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">st_dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dtype</span>
+
+
+<span class="k">def</span> <span class="nf">_check_clip_dtypes</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+    <span class="s2">&quot;Checks if both types `arg1_dtype` and `arg2_dtype` can be&quot;</span>
+    <span class="s2">&quot;cast to `res_dtype` according to the rule `safe`&quot;</span>
+    <span class="k">if</span> <span class="n">arg1_dtype</span> <span class="o">==</span> <span class="n">res_dtype</span> <span class="ow">and</span> <span class="n">arg2_dtype</span> <span class="o">==</span> <span class="n">res_dtype</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_dtype</span>
+
+    <span class="n">_fp16</span> <span class="o">=</span> <span class="n">sycl_dev</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
+    <span class="n">_fp64</span> <span class="o">=</span> <span class="n">sycl_dev</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
+    <span class="k">if</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_can_cast</span><span class="p">(</span>
+        <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">,</span> <span class="n">_fp64</span>
+    <span class="p">):</span>
+        <span class="c1"># prevent unnecessary casting</span>
+        <span class="n">ret_buf1_dt</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">res_dtype</span> <span class="o">==</span> <span class="n">arg1_dtype</span> <span class="k">else</span> <span class="n">res_dtype</span>
+        <span class="n">ret_buf2_dt</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">res_dtype</span> <span class="o">==</span> <span class="n">arg2_dtype</span> <span class="k">else</span> <span class="n">res_dtype</span>
+        <span class="k">return</span> <span class="n">ret_buf1_dt</span><span class="p">,</span> <span class="n">ret_buf2_dt</span><span class="p">,</span> <span class="n">res_dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_clip_none</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">_binary_fn</span><span class="p">):</span>
+    <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">q2</span><span class="p">,</span> <span class="n">val_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
+        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                <span class="s2">&quot;from input arguments.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">x_usm_type</span><span class="p">,</span>
+                <span class="n">val_usm_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">x_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">val_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_shape</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Shape of arguments can not be inferred. &quot;</span>
+            <span class="s2">&quot;Arguments are expected to be &quot;</span>
+            <span class="s2">&quot;lists, tuples, or both&quot;</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">_broadcast_shape_impl</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">x_shape</span><span class="p">,</span>
+                <span class="n">val_shape</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;operands could not be broadcast together with shapes &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_shape</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">val_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
+    <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">val_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate_dtype</span><span class="p">(</span><span class="n">val_dtype</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operands have unsupported data types&quot;</span><span class="p">)</span>
+
+    <span class="n">val_dtype</span> <span class="o">=</span> <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">val_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+
+    <span class="n">res_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">_fp16</span> <span class="o">=</span> <span class="n">sycl_dev</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
+    <span class="n">_fp64</span> <span class="o">=</span> <span class="n">sycl_dev</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">val_dtype</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;function &#39;clip&#39; does not support input types &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_dtype</span><span class="si">}</span><span class="s2">), &quot;</span>
+            <span class="s2">&quot;and the inputs could not be safely coerced to any &quot;</span>
+            <span class="s2">&quot;supported types according to the casting rule &#39;&#39;safe&#39;&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">orig_out</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;output array must be of usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The shape of input and output arrays are inconsistent. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">res_shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">res_dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">res_dt</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">val_dtype</span> <span class="o">==</span> <span class="n">res_dt</span>
+            <span class="p">):</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">val_ary</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">val_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">val_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;F&quot;</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">val_ary</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">else</span> <span class="s2">&quot;C&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">val_dtype</span> <span class="o">==</span> <span class="n">res_dt</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_pair_orderK</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">val_ary</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">res_shape</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                    <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+            <span class="n">val_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">val_ary</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="n">ht_binary_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">_binary_fn</span><span class="p">(</span>
+            <span class="n">src1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">src2</span><span class="o">=</span><span class="n">val_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig_out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">orig_out</span> <span class="ow">is</span> <span class="n">out</span><span class="p">):</span>
+            <span class="c1"># Copy the out data from temporary buffer to original memory</span>
+            <span class="n">ht_copy_out_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
+        <span class="n">ht_binary_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">val_ary</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">val_ary</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="n">ht_copy_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">val_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_pair_orderK</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">res_shape</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                    <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">x_shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="n">ht_binary_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">_binary_fn</span><span class="p">(</span>
+            <span class="n">src1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">src2</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig_out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">orig_out</span> <span class="ow">is</span> <span class="n">out</span><span class="p">):</span>
+            <span class="c1"># Copy the out data from temporary buffer to original memory</span>
+            <span class="n">ht_copy_out_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
+        <span class="n">ht_copy_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">ht_binary_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.clip">[docs]</a><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;clip(x, min=None, max=None, out=None, order=&quot;K&quot;)</span>
+
+<span class="sd">    Clips to the range [`min_i`, `max_i`] for each element `x_i`</span>
+<span class="sd">    in `x`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray): Array containing elements to clip.</span>
+<span class="sd">            Must be compatible with `min` and `max` according</span>
+<span class="sd">            to broadcasting rules.</span>
+<span class="sd">        min ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):</span>
+<span class="sd">            Array containing minimum values.</span>
+<span class="sd">            Must be compatible with `x` and `max` according</span>
+<span class="sd">            to broadcasting rules.</span>
+<span class="sd">        max ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):</span>
+<span class="sd">            Array containing maximum values.</span>
+<span class="sd">            Must be compatible with `x` and `min` according</span>
+<span class="sd">            to broadcasting rules.</span>
+<span class="sd">        out ({None, usm_ndarray}, optional):</span>
+<span class="sd">            Output array to populate.</span>
+<span class="sd">            Array must have the correct shape and the expected data type.</span>
+<span class="sd">        order (&quot;C&quot;,&quot;F&quot;,&quot;A&quot;,&quot;K&quot;, optional):</span>
+<span class="sd">            Memory layout of the newly output array, if parameter `out` is</span>
+<span class="sd">            `None`.</span>
+<span class="sd">            Default: &quot;K&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            An array with elements clipped to the range [`min`, `max`].</span>
+<span class="sd">            The returned array has the same data type as `x`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Expected `x` to be of dpctl.tensor.usm_ndarray type, got &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">]:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
+    <span class="k">if</span> <span class="nb">min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">orig_out</span> <span class="o">=</span> <span class="n">out</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;output array must be of usm_ndarray type, got &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The shape of input and output arrays are &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;inconsistent. Expected output shape is </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+                <span class="ow">is</span> <span class="kc">None</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="n">ht_copy_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig_out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">orig_out</span> <span class="ow">is</span> <span class="n">out</span><span class="p">):</span>
+            <span class="c1"># Copy the out data from temporary buffer to original memory</span>
+            <span class="n">ht_copy_out_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
+        <span class="n">ht_copy_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out</span>
+    <span class="k">elif</span> <span class="nb">max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_clip_none</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">tei</span><span class="o">.</span><span class="n">_maximum</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_clip_none</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">tei</span><span class="o">.</span><span class="n">_minimum</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">q2</span><span class="p">,</span> <span class="n">min_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+        <span class="n">q3</span><span class="p">,</span> <span class="n">max_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
+            <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
+        <span class="k">elif</span> <span class="n">q3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">min_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q3</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">max_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">min_usm_type</span><span class="p">,</span>
+                    <span class="n">max_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">x_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">min_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+        <span class="n">max_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">min_shape</span><span class="p">,</span>
+                <span class="n">max_shape</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape of arguments can not be inferred. &quot;</span>
+                <span class="s2">&quot;Arguments are expected to be &quot;</span>
+                <span class="s2">&quot;lists, tuples, or both&quot;</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res_shape</span> <span class="o">=</span> <span class="n">_broadcast_shape_impl</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">x_shape</span><span class="p">,</span>
+                    <span class="n">min_shape</span><span class="p">,</span>
+                    <span class="n">max_shape</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;operands could not be broadcast together with shapes &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">min_shape</span><span class="si">}</span><span class="s2">, and </span><span class="si">{</span><span class="n">max_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
+        <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">min_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+        <span class="n">max_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">_validate_dtype</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="n">min_dtype</span><span class="p">,</span> <span class="n">max_dtype</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operands have unsupported data types&quot;</span><span class="p">)</span>
+
+        <span class="n">min_dtype</span><span class="p">,</span> <span class="n">max_dtype</span> <span class="o">=</span> <span class="n">_resolve_one_strong_two_weak_types</span><span class="p">(</span>
+            <span class="n">x_dtype</span><span class="p">,</span> <span class="n">min_dtype</span><span class="p">,</span> <span class="n">max_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span>
+        <span class="p">)</span>
+
+        <span class="n">buf1_dt</span><span class="p">,</span> <span class="n">buf2_dt</span><span class="p">,</span> <span class="n">res_dt</span> <span class="o">=</span> <span class="n">_check_clip_dtypes</span><span class="p">(</span>
+            <span class="n">x_dtype</span><span class="p">,</span>
+            <span class="n">min_dtype</span><span class="p">,</span>
+            <span class="n">max_dtype</span><span class="p">,</span>
+            <span class="n">sycl_dev</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">res_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;function &#39;</span><span class="si">{</span><span class="n">clip</span><span class="si">}</span><span class="s2">&#39; does not support input types &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">min_dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">max_dtype</span><span class="si">}</span><span class="s2">), &quot;</span>
+                <span class="s2">&quot;and the inputs could not be safely coerced to any &quot;</span>
+                <span class="s2">&quot;supported types according to the casting rule &#39;&#39;safe&#39;&#39;.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">orig_out</span> <span class="o">=</span> <span class="n">out</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;output array must be of usm_ndarray type, got &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The shape of input and output arrays are &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;inconsistent. Expected output shape is </span><span class="si">{</span><span class="n">res_shape</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">res_dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">res_dt</span><span class="si">}</span><span class="s2"> is needed, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+                <span class="ow">is</span> <span class="kc">None</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">buf1_dt</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="p">):</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">buf2_dt</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="p">):</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">a_min</span> <span class="o">=</span> <span class="nb">min</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_min</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">min_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">a_max</span> <span class="o">=</span> <span class="nb">max</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_max</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">max_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;F&quot;</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                    <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                    <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">a_min</span><span class="p">,</span>
+                        <span class="n">a_max</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">else</span> <span class="s2">&quot;C&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">buf1_dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">buf2_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_triple_orderK</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">a_min</span><span class="p">,</span>
+                        <span class="n">a_max</span><span class="p">,</span>
+                        <span class="n">res_dt</span><span class="p">,</span>
+                        <span class="n">res_shape</span><span class="p">,</span>
+                        <span class="n">res_usm_type</span><span class="p">,</span>
+                        <span class="n">exec_q</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="n">res_shape</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">if</span> <span class="n">x_shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a_min</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+                <span class="n">a_min</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a_max</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+                <span class="n">a_max</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="n">ht_binary_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_clip</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">a_min</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">a_max</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig_out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">orig_out</span> <span class="ow">is</span> <span class="n">out</span><span class="p">):</span>
+                <span class="c1"># Copy the out data from temporary buffer to original memory</span>
+                <span class="n">ht_copy_out_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                    <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                    <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
+            <span class="n">ht_binary_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="k">elif</span> <span class="n">buf1_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                <span class="n">buf2</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">buf2_dt</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf2_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">ht_copy_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">a_max</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_triple_orderK</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">a_min</span><span class="p">,</span>
+                        <span class="n">buf2</span><span class="p">,</span>
+                        <span class="n">res_dt</span><span class="p">,</span>
+                        <span class="n">res_shape</span><span class="p">,</span>
+                        <span class="n">res_usm_type</span><span class="p">,</span>
+                        <span class="n">exec_q</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="n">res_shape</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a_min</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+                <span class="n">a_min</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="n">ht_binary_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_clip</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="nb">min</span><span class="o">=</span><span class="n">a_min</span><span class="p">,</span>
+                <span class="nb">max</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig_out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">orig_out</span> <span class="ow">is</span> <span class="n">out</span><span class="p">):</span>
+                <span class="c1"># Copy the out data from temporary buffer to original memory</span>
+                <span class="n">ht_copy_out_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                    <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                    <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
+            <span class="n">ht_copy_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">ht_binary_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="k">elif</span> <span class="n">buf2_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                <span class="n">buf1</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">buf1_dt</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf1_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">ht_copy_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">a_min</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_triple_orderK</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">buf1</span><span class="p">,</span>
+                        <span class="n">a_max</span><span class="p">,</span>
+                        <span class="n">res_dt</span><span class="p">,</span>
+                        <span class="n">res_shape</span><span class="p">,</span>
+                        <span class="n">res_usm_type</span><span class="p">,</span>
+                        <span class="n">exec_q</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                        <span class="n">res_shape</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a_max</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+                <span class="n">a_max</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+            <span class="n">ht_binary_ev</span><span class="p">,</span> <span class="n">binary_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_clip</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="nb">min</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span>
+                <span class="nb">max</span><span class="o">=</span><span class="n">a_max</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">orig_out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">orig_out</span> <span class="ow">is</span> <span class="n">out</span><span class="p">):</span>
+                <span class="c1"># Copy the out data from temporary buffer to original memory</span>
+                <span class="n">ht_copy_out_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                    <span class="n">dst</span><span class="o">=</span><span class="n">orig_out</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                    <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">binary_ev</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">ht_copy_out_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">orig_out</span>
+            <span class="n">ht_copy_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">ht_binary_ev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                <span class="ow">and</span> <span class="n">a_min</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                <span class="ow">and</span> <span class="n">a_max</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+            <span class="p">):</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+                <span class="ow">and</span> <span class="n">a_min</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+                <span class="ow">and</span> <span class="n">a_max</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+            <span class="p">):</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+            <span class="n">buf1</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">buf1_dt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf1_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="n">ht_copy1_ev</span><span class="p">,</span> <span class="n">copy1_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">a_min</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+            <span class="n">buf2</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">buf2_dt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">buf2_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="n">ht_copy2_ev</span><span class="p">,</span> <span class="n">copy2_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">a_max</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">_empty_like_triple_orderK</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">buf1</span><span class="p">,</span> <span class="n">buf2</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">res_shape</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span>
+                    <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="n">buf1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf1</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="n">buf2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">buf2</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+        <span class="n">ht_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_clip</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="n">buf1</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy1_ev</span><span class="p">,</span> <span class="n">copy2_ev</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">([</span><span class="n">ht_copy1_ev</span><span class="p">,</span> <span class="n">ht_copy2_ev</span><span class="p">,</span> <span class="n">ht_</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-21, Intel Corp..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
