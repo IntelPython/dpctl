@@ -101,3 +101,58 @@ def test_accumulate_scalar():
     r = dpt.cumulative_sum(s, include_initial=True)
     r_expected = dpt.asarray([0, 1], dtype="i8")
     assert dpt.all(r == r_expected)
+
+
+def test_cumulative_sum_include_initial():
+    get_queue_or_skip()
+
+    n0, n1 = 3, 5
+    x = dpt.ones((n0, n1), dtype="i4")
+    r = dpt.cumulative_sum(x, axis=0, include_initial=True)
+    assert dpt.all(r[0, :] == 0)
+
+    r = dpt.cumulative_sum(x, axis=1, include_initial=True)
+    assert dpt.all(r[:, 0] == 0)
+
+    x = dpt.ones(n1, dtype="i4")
+    r = dpt.cumulative_sum(x, include_initial=True)
+    assert r.shape == (n1 + 1,)
+    assert r[0] == 0
+
+
+def test_cumulative_prod_identity():
+    get_queue_or_skip()
+
+    x = dpt.zeros(5, dtype="i4")
+    r = dpt.cumulative_prod(x, include_initial=True)
+    assert r[0] == 1
+
+
+def test_cumulative_logsumexp_identity():
+    get_queue_or_skip()
+
+    x = dpt.ones(5, dtype="f4")
+    r = dpt.cumulative_logsumexp(x, include_initial=True)
+    assert r[0] == -dpt.inf
+
+
+def test_accumulate_empty_array():
+    get_queue_or_skip()
+
+    n0, n1, n2 = 3, 0, 5
+    x = dpt.ones((n0, n1, n2), dtype="i8")
+    r = dpt.cumulative_sum(x, axis=1)
+    assert r.shape == x.shape
+    assert r.size == 0
+
+    r = dpt.cumulative_sum(x, axis=0)
+    assert r.shape == x.shape
+    assert r.size == 0
+
+    r = dpt.cumulative_sum(x, axis=1, include_initial=True)
+    assert r.shape == (n0, n1 + 1, n2)
+    assert r.size == (n0 * n2)
+
+    r = dpt.cumulative_sum(x, axis=0, include_initial=True)
+    assert r.shape == (n0 + 1, n1, n2)
+    assert r.size == 0
