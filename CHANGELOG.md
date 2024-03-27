@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.1] - Apr. XX, 2024
+
+This is a bug-fix release, which also provides a change needed by ``numba_dpex`` project to support dispatching kernels
+consuming instances of ``sycl::kernel_accessor`` template type.
+
+### Changed
+
+* Changed behavior of ``dpctl.tensor.usm_ndarray.__dlpack_device__`` method to return device id of the parent unpartition device if array is allocated on a sub-device instead of raising an exception: [#1604](https://github.com/IntelPython/dpctl/pull/1604)
+* Array creation functions and the ``usm-ndarray`` constructor in `dpctl.tensor` submodule now use cached default-selected device to improve performance: [#1606](https://github.com/IntelPython/dpctl/pull/1606)
+* Changed treatment of `axis` keyword for `dpctl.tensor.tensordot` and `dpctl.tensor.vecdot` to align with Python Array API 2023.12 specification: [#1608](https://github.com/IntelPython/dpctl/pull/1608)
+* Changed implementation of `DPCTLQueue_SubmitRange`, `DPCTLQueue_SubmitNDRange` in DPCTLSyclInterface library to support ``sycl::local_accessor`` arguments needed by ``numba_dpex``; the enum `DPCTLKernelArgType` to correspond to C++ disjoint types: [#1609](https://github.com/IntelPython/dpctl/pull/1609), [#1611](https://github.com/IntelPython/dpctl/pull/1611), [#1612](https://github.com/IntelPython/dpctl/pull/1612)
+
+### Fixed
+
+* Fixed a crash on Windows platform during execution of getter of `dpctl.SyclPlatfom.default_context` property: : [#1604](https://github.com/IntelPython/dpctl/pull/1604)
+* Fixed kernel submission error on NVidia CUDA GPUs during `dpctl.tensor.matmul` operation: [#1605](https://github.com/IntelPython/dpctl/pull/1605)
+* Fixed corruption of context cache table entries: [#1607](https://github.com/IntelPython/dpctl/pull/1607)
+
+
 ## [0.16.0] - Feb. 16, 2024
 
 This release will require DPC++ 2024.1.0, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th generation and older.
