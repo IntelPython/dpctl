@@ -599,11 +599,16 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             matrices on which to perform matrix multiplication.
         out (Optional[usm_ndarray]):
             the array into which the result of the matrix product is written.
-            If `None` then a new array is returned.
+            The data type of `out` must match the expected data type of the
+            result or (if provided) `dtype`.
+            If `None` then a new array is returned. Default: `None`.
+        dtype (Optional[dtype]):
+            data type of the returned array. If `None`, the data type of the
+            returned array is determined by the Type Promotion Rules.
+            Default: `None`.
         order (["K", "C", "F", "A"]):
             memory layout of the output array, if `out` is `None`, otherwise
-            the `order` parameter value is not used.
-
+            the `order` parameter value is not used. Default: `K`.
     Returns:
         usm_ndarray:
             * if both `x1` and `x2` are one-dimensional arrays with shape
@@ -613,8 +618,8 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
               a two-dimensional array with shape `(K, N)`, returned array is a
               two-dimensional array with shape `(M, N)` and contains the
               conventional matrix product.
-            * if `x1` is a one-dimensinal array with shape `(K,)` and `x2` is an
-              array with shape `(..., K, N)`, returned array contains the
+            * if `x1` is a one-dimensional array with shape `(K,)` and `x2` is
+              an array with shape `(..., K, N)`, returned array contains the
               conventional matrix product and has shape `(..., N)`.
             * if `x1` is an array with shape `(..., M, K)` and `x2` is a
               one-dimensional array with shape `(K,)`, returned array has shape
