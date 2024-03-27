@@ -678,7 +678,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             outputT *local_scans = stack_elem.get_local_scans_ptr();
             size_t local_stride = stack_elem.get_local_stride();
 
-            nwiT constexpr updates_per_wi = n_wi;
+            constexpr nwiT updates_per_wi = n_wi;
             size_t update_nelems =
                 ceiling_quotient<size_t>(src_size, updates_per_wi);
 
@@ -730,7 +730,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             outputT *local_scans = stack_elem.get_local_scans_ptr();
             size_t local_stride = stack_elem.get_local_stride();
 
-            nwiT constexpr updates_per_wi = n_wi;
+            constexpr nwiT updates_per_wi = n_wi;
             size_t update_nelems =
                 ceiling_quotient<size_t>(src_size, updates_per_wi);
 
