@@ -21,6 +21,7 @@ consuming instances of ``sycl::kernel_accessor`` template type.
 * Fixed a crash on Windows platform during execution of getter of `dpctl.SyclPlatfom.default_context` property: : [#1604](https://github.com/IntelPython/dpctl/pull/1604)
 * Fixed kernel submission error on NVidia CUDA GPUs during `dpctl.tensor.matmul` operation: [#1605](https://github.com/IntelPython/dpctl/pull/1605)
 * Fixed corruption of context cache table entries: [#1607](https://github.com/IntelPython/dpctl/pull/1607)
+* Fixed output of ``python -m dpctl --library`` to fix specified library name: [#1615](https://github.com/IntelPython/dpctl/pull/1615)
 
 
 ## [0.16.0] - Feb. 16, 2024
