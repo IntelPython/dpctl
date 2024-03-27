@@ -631,34 +631,28 @@ cdef class SyclQueue(_SyclQueue):
         for idx, arg in enumerate(args):
             if isinstance(arg, ctypes.c_char):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._CHAR
-            elif isinstance(arg, ctypes.c_int):
-                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._INT
-            elif isinstance(arg, ctypes.c_uint):
-                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._UNSIGNED_INT
+                kargty[idx] = _arg_data_type._INT8_T
             elif isinstance(arg, ctypes.c_uint8):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._UNSIGNED_INT8
-            elif isinstance(arg, ctypes.c_long):
-                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._LONG
-            elif isinstance(arg, ctypes.c_ulong):
-                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._UNSIGNED_LONG
-            elif isinstance(arg, ctypes.c_longlong):
-                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._LONG_LONG
-            elif isinstance(arg, ctypes.c_ulonglong):
-                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._UNSIGNED_LONG_LONG
+                kargty[idx] = _arg_data_type._UINT8_T
             elif isinstance(arg, ctypes.c_short):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._SHORT
-            elif isinstance(arg, ctypes.c_size_t):
+                kargty[idx] = _arg_data_type._INT16_T
+            elif isinstance(arg, ctypes.c_ushort):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
-                kargty[idx] = _arg_data_type._SIZE_T
+                kargty[idx] = _arg_data_type._UINT16_T
+            elif isinstance(arg, ctypes.c_int):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._INT32_T
+            elif isinstance(arg, ctypes.c_uint):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._UINT32_T
+            elif isinstance(arg, ctypes.c_longlong):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._INT64_T
+            elif isinstance(arg, ctypes.c_ulonglong):
+                kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
+                kargty[idx] = _arg_data_type._UINT64_T
             elif isinstance(arg, ctypes.c_float):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._FLOAT
