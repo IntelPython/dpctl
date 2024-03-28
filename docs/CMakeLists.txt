@@ -57,15 +57,15 @@ function(_setup_doxygen)
 endfunction()
 
 function(_setup_doxyrest)
-    set(DOXYREST_OUTPUT_DIR_NAME docfiles/libsyclinterface)
+    set(DOXYREST_OUTPUT_RELATIVE_DIR_NAME doc_sources/reference_guides/libsyclinterface/generated)
     # Set the DOXYREST_OUTPUT_DIR variable in both current and parent scope.
     # The variable is used by _setup_sphinx when generating the conf.py file.
     set(DOXYREST_OUTPUT_DIR
-        ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
+        ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_RELATIVE_DIR_NAME}
         PARENT_SCOPE
     )
     set(DOXYREST_OUTPUT_DIR
-       ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_DIR_NAME}
+       ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYREST_OUTPUT_RELATIVE_DIR_NAME}
     )
     set(DOXYREST_CONFIG_IN ${CMAKE_CURRENT_SOURCE_DIR}/doxyrest-config.lua.in)
     set(DOXYREST_CONFIG_OUT ${CMAKE_CURRENT_SOURCE_DIR}/doxyrest-config.lua)
@@ -73,7 +73,6 @@ function(_setup_doxyrest)
     set(DOXYGEN_OUTPUT_DIR ${DOC_OUTPUT_DIR}/doxygen)
 
     configure_file(${DOXYREST_CONFIG_IN} ${DOXYREST_CONFIG_OUT} @ONLY)
-    configure_file(${INDEX_DOXYREST_IN} ${INDEX_OUT} @ONLY)
 
     add_custom_command(
         OUTPUT ${DOXYREST_OUTPUT}
@@ -83,7 +82,6 @@ function(_setup_doxyrest)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS
             # Other docs files that can be edited manually
-            ${INDEX_OUT}
             ${DOXYGEN_INDEX_FILE}
         MAIN_DEPENDENCY ${DOXYREST_CONFIG_OUT} ${DOXYREST_CONFIG_IN}
         COMMENT "Generating Doxyrest documentation"
@@ -96,37 +94,14 @@ function(_setup_doxyrest)
 endfunction()
 
 function(_setup_sphinx)
-    set(GENERATE_RST_OUTPUT_DIR
-        ${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl
-    )
-    set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
+    set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/doc_sources)
     set(SPHINX_OUTPUT_DIR ${DOC_OUTPUT_DIR}/docs)
     set(SPHINX_INDEX_FILE ${SPHINX_OUTPUT_DIR}/index.html)
-    set(SPHINX_CONF_IN ${SPHINX_SOURCE}/conf.in)
-    set(SPHINX_CONF_OUT ${SPHINX_SOURCE}/conf.py)
-    set(DPCTL_PYAPI_RST_FILE ${GENERATE_RST_OUTPUT_DIR}/dpctl_pyapi.rst)
 
     if(DPCTL_ENABLE_DOXYREST)
         set(DEPEND_ON_DOXYREST "Doxyrest")
-    else()
-        configure_file(${INDEX_NO_DOXYREST_IN} ${INDEX_OUT} @ONLY)
     endif()
 
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/generate_rst.py"
-        ${CMAKE_CURRENT_BINARY_DIR}
-    )
-    # A custom command to generate the Python API rst files
-    add_custom_command(
-        OUTPUT ${DPCTL_PYAPI_RST_FILE}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${GENERATE_RST_OUTPUT_DIR}
-        COMMAND
-            "${Python_EXECUTABLE}"
-            "${CMAKE_CURRENT_BINARY_DIR}/generate_rst.py"
-            --dir "${GENERATE_RST_OUTPUT_DIR}"
-            --module "dpctl"
-        COMMENT "Generating RST files for Python API of dpctl"
-    )
     add_custom_command(
         OUTPUT ${SPHINX_INDEX_FILE}
         COMMAND
@@ -134,8 +109,6 @@ function(_setup_sphinx)
             ${SPHINX_SOURCE}
             ${SPHINX_OUTPUT_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
-        MAIN_DEPENDENCY ${SPHINX_CONF_OUT} ${SPHINX_CONF_IN}
         COMMENT "Generating Sphinx documentation"
     )
     # Target to generate Sphinx. Note that the order of the dependencies is
@@ -144,11 +117,10 @@ function(_setup_sphinx)
         Sphinx
         DEPENDS
             ${DEPEND_ON_DOXYREST}
-            ${DPCTL_PYAPI_RST_FILE}
             ${SPHINX_INDEX_FILE}
     )
     # Create a conf.py by replacing variables inside @@ with the current values
-    configure_file(${SPHINX_CONF_IN} ${SPHINX_CONF_OUT} @ONLY)
+    # configure_file(${SPHINX_CONF_IN} ${SPHINX_CONF_OUT} @ONLY)
 endfunction()
 
 function(_set_current_release)
@@ -192,8 +164,8 @@ endif()
 # Set the location where the generated docs are saved
 set(DOC_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/docs)
 
-set(INDEX_NO_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_no_doxyrest.rst.in)
-set(INDEX_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_doxyrest.rst.in)
+# set(INDEX_NO_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_no_doxyrest.rst.in)
+# set(INDEX_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_doxyrest.rst.in)
 set(INDEX_OUT ${CMAKE_CURRENT_SOURCE_DIR}/index.rst)
 
 _set_current_release()
@@ -207,6 +179,6 @@ set_property(
     DIRECTORY
     PROPERTY
     ADDITIONAL_CLEAN_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/docfiles/dpctl"
-        "${CMAKE_CURRENT_SOURCE_DIR}/docfiles/libsyclinterface"
+        "${CMAKE_CURRENT_SOURCE_DIR}/doc_sources/reference_guides/dpctl/generated"
+        "${CMAKE_CURRENT_SOURCE_DIR}/doc_sources/reference_guides/libsyclinterface/generated"
 )
