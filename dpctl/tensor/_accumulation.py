@@ -62,7 +62,7 @@ def _default_accumulation_dtype_fp_types(inp_dt, q):
     elif inp_kind in "f":
         res_dt = inp_dt
     elif inp_kind in "c":
-        raise TypeError("reduction not defined for complex types")
+        raise ValueError("function not defined for complex types")
 
     return res_dt
 

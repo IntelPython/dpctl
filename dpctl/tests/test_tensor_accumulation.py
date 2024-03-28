@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from random import randrange
+
 import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl.tensor as dpt
-from dpctl.tensor._tensor_impl import default_device_int_type
 from dpctl.utils import ExecutionPlacementError
 
 sint_types = [
@@ -156,7 +157,7 @@ def test_cumulative_logsumexp_identity():
     assert r[0] == -dpt.inf
 
 
-def test_accumulate_empty_array():
+def test_accumulate_zero_size_dims():
     get_queue_or_skip()
 
     n0, n1, n2 = 3, 0, 5
@@ -224,33 +225,32 @@ def test_accumulator_out_kwarg():
     q = get_queue_or_skip()
 
     n = 100
-    default_int = default_device_int_type(q)
 
-    expected = dpt.arange(1, n + 1, dtype=default_int, sycl_queue=q)
+    expected = dpt.arange(1, n + 1, dtype="i4", sycl_queue=q)
     x = dpt.ones(n, dtype="i4", sycl_queue=q)
-    out = dpt.empty_like(x, dtype=default_int)
-    dpt.cumulative_sum(x, out=out)
+    out = dpt.empty_like(x, dtype="i4")
+    dpt.cumulative_sum(x, dtype="i4", out=out)
     assert dpt.all(expected == out)
 
     # overlap
-    x = dpt.ones(n, dtype=default_int, sycl_queue=q)
-    dpt.cumulative_sum(x, out=x)
+    x = dpt.ones(n, dtype="i4", sycl_queue=q)
+    dpt.cumulative_sum(x, dtype="i4", out=x)
     assert dpt.all(x == expected)
 
     # axis before final axis
     expected = dpt.broadcast_to(
-        dpt.arange(1, n + 1, dtype=default_int, sycl_queue=q), (n, n)
+        dpt.arange(1, n + 1, dtype="i4", sycl_queue=q), (n, n)
     ).mT
     x = dpt.ones((n, n), dtype="i4", sycl_queue=q)
-    out = dpt.empty_like(x, dtype=default_int)
-    dpt.cumulative_sum(x, axis=0, out=out)
+    out = dpt.empty_like(x, dtype="i4")
+    dpt.cumulative_sum(x, axis=0, dtype="i4", out=out)
     assert dpt.all(expected == out)
 
     # scalar
     x = dpt.asarray(3, dtype="i4")
-    out = dpt.empty((), dtype=default_int)
-    expected = dpt.asarray(3, dtype=default_int)
-    dpt.cumulative_sum(x, out=out)
+    out = dpt.empty((), dtype="i4")
+    expected = 3
+    dpt.cumulative_sum(x, dtype="i4", out=out)
     assert expected == out
 
 
@@ -294,3 +294,90 @@ def test_accumulator_arg_validation():
     out_wrong_queue = dpt.empty_like(x2, sycl_queue=q2)
     with pytest.raises(ExecutionPlacementError):
         dpt.cumulative_sum(x2, out=out_wrong_queue)
+
+
+def test_cumsum_nan_propagation():
+    get_queue_or_skip()
+
+    n = 100
+    x = dpt.ones(n, dtype="f4")
+    i = randrange(n)
+    x[i] = dpt.nan
+
+    r = dpt.cumulative_sum(x)
+    assert dpt.all(dpt.isnan(r[i:]))
+
+
+def test_cumprod_nan_propagation():
+    get_queue_or_skip()
+
+    n = 100
+    x = dpt.ones(n, dtype="f4")
+    i = randrange(n)
+    x[i] = dpt.nan
+
+    r = dpt.cumulative_prod(x)
+    assert dpt.all(dpt.isnan(r[i:]))
+
+
+def test_logcumsumexp_nan_propagation():
+    get_queue_or_skip()
+
+    n = 100
+    x = dpt.ones(n, dtype="f4")
+    i = randrange(n)
+    x[i] = dpt.nan
+
+    r = dpt.cumulative_logsumexp(x)
+    assert dpt.all(dpt.isnan(r[i:]))
+
+
+@pytest.mark.parametrize("arg_dtype", no_complex_types)
+def test_logcumsumexp_arg_dtype_default_output_dtype_matrix(arg_dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(arg_dtype, q)
+
+    x = dpt.ones(10, dtype=arg_dtype, sycl_queue=q)
+    r = dpt.cumulative_logsumexp(x)
+
+    if arg_dtype.kind in "biu":
+        assert r.dtype.kind == "f"
+    else:
+        assert r.dtype == arg_dtype
+
+
+def test_logcumsumexp_complex_error():
+    get_queue_or_skip()
+
+    x = dpt.ones(10, dtype="c8")
+    with pytest.raises(ValueError):
+        dpt.cumulative_logsumexp(x)
+
+
+def test_cumprod_basic():
+    get_queue_or_skip()
+
+    n = 50
+    val = 2
+    x = dpt.full(n, val, dtype="i8")
+    r = dpt.cumulative_prod(x)
+    expected = dpt.pow(val, dpt.arange(1, n + 1, dtype="i8"))
+
+    assert dpt.all(r == expected)
+
+    x = dpt.tile(dpt.asarray([2, 0.5], dtype="f4"), 10000)
+    expected = dpt.tile(dpt.asarray([2, 1], dtype="f4"), 10000)
+    r = dpt.cumulative_prod(x)
+    assert dpt.all(r == expected)
+
+
+def test_cumlogsumexp_basic():
+    get_queue_or_skip()
+
+    dt = dpt.float32
+    x = dpt.ones(100, dtype=dt)
+    r = dpt.cumulative_logsumexp(x)
+    expected = dpt.log(dpt.cumulative_sum(dpt.exp(x)))
+
+    tol = 7 * dpt.finfo(dt).resolution
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol)
