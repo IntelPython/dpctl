@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.16.1] - Apr. XX, 2024
 
 This is a bug-fix release, which also provides a change needed by ``numba_dpex`` project to support dispatching kernels
-consuming instances of ``sycl::kernel_accessor`` template type.
+consuming instances of ``sycl::local_accessor`` template type.
 
 ### Changed
 
