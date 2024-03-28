@@ -81,7 +81,7 @@ def create_queue_from_subdevice_multidevice_context():
         print(f"{cpu_d} has {cpu_d.max_compute_units} compute units")
         return
     ctx = dpctl.SyclContext(sub_devs)
-    q = dpctl.SyclQueue(ctx, sub_devs[0], partition="enable_profiling")
+    q = dpctl.SyclQueue(ctx, sub_devs[0], property="enable_profiling")
     print(
         "Number of devices in SyclContext " "associated with the queue: ",
         q.sycl_context.device_count,

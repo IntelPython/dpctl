@@ -758,7 +758,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             )
 
         if appended_axes:
-            out = dpt.expand_dims(out, appended_axes)
+            out = dpt.expand_dims(out, axis=appended_axes)
             orig_out = out
 
         if res_dt != out.dtype:

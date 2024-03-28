@@ -15,10 +15,11 @@
 #  limitations under the License.
 
 import ctypes
+import re
 
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose, assert_raises_regex
+from numpy.testing import assert_allclose
 
 import dpctl
 import dpctl.tensor as dpt
@@ -188,11 +189,6 @@ def test_logaddexp_dtype_error(
     ar2 = dpt.ones_like(ar1, dtype="f4")
 
     y = dpt.zeros_like(ar1, dtype="int8")
-    assert_raises_regex(
-        ValueError,
-        "Output array of type.*is needed",
-        dpt.logaddexp,
-        ar1,
-        ar2,
-        y,
-    )
+    with pytest.raises(ValueError) as excinfo:
+        dpt.logaddexp(ar1, ar2, out=y)
+    assert re.match("Output array of type.*is needed", str(excinfo.value))

@@ -108,7 +108,7 @@ def _copy_from_numpy_into(dst, np_ary):
     )
 
 
-def from_numpy(np_ary, device=None, usm_type="device", sycl_queue=None):
+def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     """
     from_numpy(arg, device=None, usm_type="device", sycl_queue=None)
 
@@ -147,7 +147,7 @@ def from_numpy(np_ary, device=None, usm_type="device", sycl_queue=None):
     return _copy_from_numpy(np_ary, usm_type=usm_type, sycl_queue=q)
 
 
-def to_numpy(usm_ary):
+def to_numpy(usm_ary, /):
     """
     to_numpy(usm_ary)
 
@@ -501,7 +501,7 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
     return dpt.permute_dims(R, inv_perm)
 
 
-def copy(usm_ary, order="K"):
+def copy(usm_ary, /, *, order="K"):
     """copy(ary, order="K")
 
     Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.
@@ -566,7 +566,7 @@ def copy(usm_ary, order="K"):
 
 
 def astype(
-    usm_ary, newdtype, /, order="K", casting="unsafe", *, copy=True, device=None
+    usm_ary, newdtype, /, *, order="K", casting="unsafe", copy=True, device=None
 ):
     """ astype(array, new_dtype, order="K", casting="unsafe", \
             copy=True, device=None)
@@ -900,7 +900,7 @@ def _put_multi_index(ary, inds, p, vals):
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     if not isinstance(vals, dpt.usm_ndarray):
         vals = dpt.asarray(
-            vals, ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
+            vals, dtype=ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
 
     vals = dpt.broadcast_to(vals, vals_shape)

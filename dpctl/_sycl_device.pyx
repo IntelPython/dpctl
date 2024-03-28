@@ -122,25 +122,26 @@ __all__ = [
 
 cdef class SyclDeviceCreationError(Exception):
     """
-    A SyclDeviceCreationError exception is raised when
-    SyclDevice instance could not created.
-
+    A ``SyclDeviceCreationError`` exception is raised when
+    :class:`.SyclDevice` instance could not created.
     """
     pass
 
 
 cdef class SyclSubDeviceCreationError(Exception):
     """
-    A SyclSubDeviceCreationError exception is raised when
-    sub-devices were not created.
-
+    A ``SyclSubDeviceCreationError`` exception is raised
+    by :meth:`.SyclDevice.create_sub_devices` when
+    :class:`.SyclDevice` instance could not be partitioned
+    into sub-devices.
     """
     pass
 
 
 cdef class _SyclDevice:
     """
-    A helper data-owner class to abstract a `sycl::device` instance.
+    A helper data-owner class to abstract ``sycl::device``
+    instance.
     """
 
     def __dealloc__(self):
@@ -234,7 +235,7 @@ def _cached_filter_string(d : SyclDevice):
 
 cdef class SyclDevice(_SyclDevice):
     """ SyclDevice(arg=None)
-    A Python wrapper for the :sycl_device:`sycl::device <>` C++ class.
+    A Python wrapper for the ``sycl::device`` C++ class.
 
     There are two ways of creating a SyclDevice instance:
 
@@ -254,10 +255,10 @@ cdef class SyclDevice(_SyclDevice):
 
         - by calling one of the device selector helper functions:
 
-          :func:`dpctl.select_accelerator_device()`,
-          :func:`dpctl.select_cpu_device()`,
-          :func:`dpctl.select_default_device()`,
-          :func:`dpctl.select_gpu_device()`,
+          :py:func:`dpctl.select_accelerator_device()`,
+          :py:func:`dpctl.select_cpu_device()`,
+          :py:func:`dpctl.select_default_device()`,
+          :py:func:`dpctl.select_gpu_device()`,
 
 
         :Example:
@@ -282,7 +283,6 @@ cdef class SyclDevice(_SyclDevice):
         TypeError: If the list of :class:`dpctl.SyclDevice` objects was empty,
                    or the input capsule contained a null pointer or could not
                    be renamed.
-
 
     """
     @staticmethod

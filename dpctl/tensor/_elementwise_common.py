@@ -175,7 +175,7 @@ class UnaryElementwiseFunc:
             self.types_ = types
         return types
 
-    def __call__(self, x, out=None, order="K"):
+    def __call__(self, x, /, *, out=None, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
             raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
 
@@ -515,7 +515,7 @@ class BinaryElementwiseFunc:
             self.types_ = types
         return types
 
-    def __call__(self, o1, o2, out=None, order="K"):
+    def __call__(self, o1, o2, /, *, out=None, order="K"):
         if order not in ["K", "C", "F", "A"]:
             order = "K"
         q1, o1_usm_type = _get_queue_usm_type(o1)

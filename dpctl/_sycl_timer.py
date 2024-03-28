@@ -46,9 +46,8 @@ class HostDeviceDuration:
 
 class SyclTimer:
     """
-    SyclTimer(host_timer=timeit.default_timer, time_scale=1)
-    Python class to measure device time of execution of commands submitted to
-    :class:`dpctl.SyclQueue` as well as the wall-time.
+    Context to measure device time and host wall-time of execution
+    of commands submitted to :class:`dpctl.SyclQueue`.
 
     :Example:
         .. code-block:: python
@@ -79,10 +78,13 @@ class SyclTimer:
         execution and thus effectively synchronizes the queue.
 
     Args:
-        host_timer (callable): A callable such that host_timer() returns current
+        host_timer (callable, optional):
+            A callable such that host_timer() returns current
             host time in seconds.
-        time_scale (int, float): Ratio of the unit of time of interest and
-            one second.
+            Default: :py:func:`timeit.default_timer`.
+        time_scale (Union[int, float], optional):
+            Ratio of the unit of time of interest and one second.
+            Default: `1`.
     """
 
     def __init__(self, host_timer=timeit.default_timer, time_scale=1):

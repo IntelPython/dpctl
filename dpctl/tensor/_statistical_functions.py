@@ -148,7 +148,9 @@ def _var_impl(x, axis, correction, keepdims):
     div = max(nelems - correction, 0)
     if not div:
         div = dpt.nan
-    div_ary = dpt.asarray(div, res_dt, usm_type=res_usm_type, sycl_queue=q)
+    div_ary = dpt.asarray(
+        div, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
+    )
     # divide in-place again
     if div_ary.shape != res_shape:
         div_ary = dpt.broadcast_to(div_ary, res.shape)

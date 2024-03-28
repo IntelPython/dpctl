@@ -128,7 +128,7 @@ def test_not_equal_broadcasting():
     assert (dpt.asnumpy(r2) == expected).all()
 
     r3 = dpt.empty_like(m, dtype="?")
-    dpt.not_equal(m, v, r3)
+    dpt.not_equal(m, v, out=r3)
     assert (dpt.asnumpy(r3) == expected).all()
 
 

@@ -141,7 +141,7 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 
 
 cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
-    """ get_devices(backend=backend_type.all, device_type=device_type_t.all)
+    """
     Returns a list of :class:`dpctl.SyclDevice` instances selected based on
     the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
 
@@ -150,18 +150,21 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     ``backend`` in addition to only ``device_type``.
 
     Args:
-        backend (optional): Defaults to ``dpctl.backend_type.all``.
+        backend (optional):
             A :class:`dpctl.backend_type` enum value or a string that
             specifies a SYCL backend. Currently, accepted values are: "cuda",
             "opencl", "level_zero", or "all".
-        device_type (optional): Defaults to ``dpctl.device_type.all``.
+            Default: ``dpctl.backend_type.all``.
+        device_type (optional):
             A :class:`dpctl.device_type` enum value or a string that
             specifies a SYCL device type. Currently, accepted values are:
             "gpu", "cpu", "accelerator", "host", or "all".
+            Default: ``dpctl.device_type.all``.
     Returns:
-        list: A list of available :class:`dpctl.SyclDevice` instances that
-        satisfy the provided :class:`dpctl.backend_type` and
-        :class:`dpctl.device_type` values.
+        list:
+            A list of available :class:`dpctl.SyclDevice` instances that
+            satisfy the provided :class:`dpctl.backend_type` and
+            :class:`dpctl.device_type` values.
     """
     cdef _backend_type BTy = _backend_type._ALL_BACKENDS
     cdef _device_type DTy = _device_type._ALL_DEVICES
@@ -198,22 +201,26 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
 cpdef int get_num_devices(
     backend=backend_type.all, device_type=device_type_t.all
 ):
-    """ get_num_devices(backend=backend_type.all, device_type=device_type_t.all)
+    """
     A helper function to return the number of SYCL devices of a given
     :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
 
     Args:
-        backend (optional): Defaults to ``dpctl.backend_type.all``.
+        backend (optional):
             A :class:`dpctl.backend_type` enum value or a string that
             specifies a SYCL backend. Currently, accepted values are: "cuda",
             "opencl", "level_zero", or "all".
-        device_type (optional): Defaults to ``dpctl.device_type.all``.
+            Default: ``dpctl.backend_type.all``.
+        device_type (optional):
             A :class:`dpctl.device_type` enum value or a string that
             specifies a SYCL device type. Currently, accepted values are:
             "gpu", "cpu", "accelerator", "host", or "all".
+            Default: ``dpctl.device_type.all``.
     Returns:
-        int: The number of available SYCL devices that satisfy the provided
-        :class:`dpctl.backend_type` and :class:`dpctl.device_type` values.
+        int:
+            The number of available SYCL devices that satisfy the provided
+            :py:class:`dpctl.backend_type` and :py:class:`dpctl.device_type`
+            values.
     """
     cdef _backend_type BTy = _backend_type._ALL_BACKENDS
     cdef _device_type DTy = _device_type._ALL_DEVICES
@@ -248,8 +255,9 @@ cpdef cpp_bool has_cpu_devices():
     """ A helper function to check if there are any SYCL CPU devices available.
 
     Returns:
-        bool: ``True`` if ``sycl::device_type::cpu`` devices are present,
-        ``False`` otherwise.
+        bool:
+            ``True`` if ``sycl::device_type::cpu`` devices are present,
+            ``False`` otherwise.
     """
     cdef int num_cpu_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._CPU)
     return <cpp_bool>num_cpu_dev
@@ -259,8 +267,9 @@ cpdef cpp_bool has_gpu_devices():
     """ A helper function to check if there are any SYCL GPU devices available.
 
     Returns:
-        bool: ``True`` if ``sycl::device_type::gpu`` devices are present,
-        ``False`` otherwise.
+        bool:
+            ``True`` if ``sycl::device_type::gpu`` devices are present,
+            ``False`` otherwise.
     """
     cdef int num_gpu_dev = DPCTLDeviceMgr_GetNumDevices(_device_type._GPU)
     return <cpp_bool>num_gpu_dev
@@ -271,8 +280,9 @@ cpdef cpp_bool has_accelerator_devices():
     available.
 
     Returns:
-        bool: ``True`` if ``sycl::device_type::accelerator`` devices are
-        present, ``False`` otherwise.
+        bool:
+            ``True`` if ``sycl::device_type::accelerator`` devices are
+            present, ``False`` otherwise.
     """
     cdef int num_accelerator_dev = DPCTLDeviceMgr_GetNumDevices(
         _device_type._ACCELERATOR
@@ -284,11 +294,13 @@ cpdef SyclDevice select_accelerator_device():
     """ A wrapper for SYCL's ``accelerator_selector`` class.
 
     Returns:
-        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
-        returned by the SYCL ``accelerator_selector``.
+        dpctl.SyclDevice:
+            A Python object wrapping the SYCL ``device``
+            returned by the SYCL ``accelerator_selector``.
     Raises:
-        dpctl.SyclDeviceCreatioError: If the SYCL ``accelerator_selector`` is
-        unable to select a ``device``.
+        dpctl.SyclDeviceCreationError:
+            If the SYCL ``accelerator_selector`` is
+            unable to select a ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLAcceleratorSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -304,11 +316,13 @@ cpdef SyclDevice select_cpu_device():
     """ A wrapper for SYCL's ``cpu_selector`` class.
 
     Returns:
-        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
-        returned by the SYCL ``cpu_selector``.
+        dpctl.SyclDevice:
+            A Python object wrapping the SYCL ``device``
+            returned by the SYCL ``cpu_selector``.
     Raises:
-        dpctl.SyclDeviceCreationError: If the SYCL ``cpu_selector`` is
-        unable to select a ``device``.
+        dpctl.SyclDeviceCreationError:
+            If the SYCL ``cpu_selector`` is
+            unable to select a ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLCPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -324,11 +338,13 @@ cpdef SyclDevice select_default_device():
     """ A wrapper for SYCL's ``default_selector`` class.
 
     Returns:
-        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
-        returned by the SYCL ``default_selector``.
+        dpctl.SyclDevice:
+            A Python object wrapping the SYCL ``device``
+            returned by the SYCL ``default_selector``.
     Raises:
-        dpctl.SyclDeviceCreationError: If the SYCL ``default_selector`` is
-        unable to select a ``device``.
+        dpctl.SyclDeviceCreationError:
+            If the SYCL ``default_selector`` is
+            unable to select a ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -344,11 +360,13 @@ cpdef SyclDevice select_gpu_device():
     """ A wrapper for SYCL's ``gpu_selector`` class.
 
     Returns:
-        dpctl.SyclDevice: A Python object wrapping the SYCL ``device``
-        returned by the SYCL ``gpu_selector``.
+        dpctl.SyclDevice:
+            A Python object wrapping the SYCL ``device``
+            returned by the SYCL ``gpu_selector``.
     Raises:
-        dpctl.SyclDeviceCreationError: If the SYCL ``gpu_selector`` is
-        unable to select a ``device``.
+        dpctl.SyclDeviceCreationError:
+            If the SYCL ``gpu_selector`` is
+            unable to select a ``device``.
     """
     cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLGPUSelector_Create()
     cdef DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef)
@@ -393,10 +411,11 @@ _global_default_device_cache = ContextVar(
 
 
 cpdef SyclDevice _cached_default_device():
-    """Returns a cached devide selected by default selector.
+    """Returns a cached device selected by default selector.
 
     Returns:
-        :class:`dpctl.SyclDevice`: A cached default-selected SYCL device.
+        dpctl.SyclDevice:
+            A cached default-selected SYCL device.
 
     """
     cdef _DefaultDeviceCache _cache = _global_default_device_cache.get()

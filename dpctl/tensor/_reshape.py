@@ -87,7 +87,7 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
     return new_sts if valid else None
 
 
-def reshape(X, shape, order="C", copy=None):
+def reshape(X, /, shape, *, order="C", copy=None):
     """reshape(x, shape, order="C")
 
     Reshapes array `x` into new shape.

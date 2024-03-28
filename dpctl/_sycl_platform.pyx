@@ -85,12 +85,36 @@ cdef void _init_helper(_SyclPlatform platform, DPCTLSyclPlatformRef PRef):
 
 cdef class SyclPlatform(_SyclPlatform):
     """ SyclPlatform(self, arg=None)
-        Python class representing ``sycl::platform`` class.
+    Python class representing ``sycl::platform`` class.
 
-        SyclPlatform() - create platform selected by sycl::default_selector
-        SyclPlatform(filter_selector) - create platform selected by filter
-        selector
+    There are two ways of creating a SyclDevice instance:
+
+        - Invoking the constructor with no arguments creates a
+          platform using the default selector.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a SyclPlatform for default-selected device
+                pl = dpctl.SyclPlatform()
+                print(pl.name, pl.version)
+
+        - Invoking the constructor with specific filter selector string that
+          creates a queue for the device corresponding to the filter string.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                # Create a SyclPlatform for device selected by
+                # filter-selector string
+                pl = dpctl.SyclPlatform("opencl:cpu")
+                print(pl.name, pl.version)
     """
+
     @staticmethod
     cdef SyclPlatform _create(DPCTLSyclPlatformRef pref):
         """
@@ -340,11 +364,16 @@ def lsplatform(verbosity=0):
 
     :Example:
         On a system with an OpenCL CPU driver, OpenCL GPU driver,
-        Level Zero GPU driver, running the command. ::
+        Level Zero GPU driver, running the command:
 
-            $ python -c "import dpctl; dpctl.lsplatform()"
+        .. code-block:: bash
 
-        returns ::
+            $ python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+
+        outputs
+
+        .. code-block:: text
+            :caption: Sample output of lsplatform(verbosity=2)
 
             Platform 0::
                 Name        Intel(R) OpenCL
@@ -381,10 +410,10 @@ def lsplatform(verbosity=0):
                     Device type     gpu
 
     Args:
-        verbosity (optional): Defaults to 0.
+        verbosity (Literal[0,1,2], optional):
             The verbosity controls how much information is printed by the
             function. 0 is the lowest level set by default and 2 is the highest
-            level to print the most verbose output.
+            level to print the most verbose output. Default: `0`.
     """
     cdef DPCTLPlatformVectorRef PVRef = NULL
     cdef size_t v = 0

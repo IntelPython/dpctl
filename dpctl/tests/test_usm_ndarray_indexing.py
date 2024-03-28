@@ -1010,7 +1010,7 @@ def test_put_arg_validation():
     x = dpt.arange(4, dtype="i4", sycl_queue=q)
     ind0 = dpt.arange(4, dtype=np.intp, sycl_queue=q)
     ind1 = dpt.arange(2.0, dtype="f", sycl_queue=q)
-    val = dpt.asarray(2, x.dtype, sycl_queue=q)
+    val = dpt.asarray(2, dtype=x.dtype, sycl_queue=q)
 
     with pytest.raises(TypeError):
         dpt.put(dict(), ind0, val, axis=0)

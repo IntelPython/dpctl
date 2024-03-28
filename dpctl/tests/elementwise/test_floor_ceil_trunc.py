@@ -15,14 +15,11 @@
 #  limitations under the License.
 
 import itertools
+import re
 
 import numpy as np
 import pytest
-from numpy.testing import (
-    assert_allclose,
-    assert_array_equal,
-    assert_raises_regex,
-)
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -99,9 +96,9 @@ def test_floor_ceil_trunc_error_dtype(dpt_call, dtype):
 
     x = dpt.zeros(5, dtype=dtype)
     y = dpt.empty_like(x, dtype="b1")
-    assert_raises_regex(
-        ValueError, "Output array of type.*is needed", dpt_call, x, y
-    )
+    with pytest.raises(ValueError) as excinfo:
+        dpt_call(x, out=y)
+    assert re.match("Output array of type.*is needed", str(excinfo.value))
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)

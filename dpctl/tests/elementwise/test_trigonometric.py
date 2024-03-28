@@ -16,10 +16,11 @@
 
 import itertools
 import os
+import re
 
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose, assert_raises_regex
+from numpy.testing import assert_allclose
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -193,9 +194,9 @@ def test_trig_error_dtype(callable, dtype):
 
     x = dpt.zeros(5, dtype=dtype)
     y = dpt.empty_like(x, dtype="int16")
-    assert_raises_regex(
-        ValueError, "Output array of type.*is needed", callable, x, y
-    )
+    with pytest.raises(ValueError) as excinfo:
+        callable(x, out=y)
+    assert re.match("Output array of type.*is needed", str(excinfo.value))
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)

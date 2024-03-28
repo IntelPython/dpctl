@@ -60,9 +60,8 @@ _logger = logging.getLogger(__name__)
 
 cdef class SyclContextCreationError(Exception):
     """
-    A SyclContextCreationError exception is raised when
-    SyclContext could not created.
-
+    A ``SyclContextCreationError`` exception is raised
+    when :class:`.SyclContext` could not created.
     """
     pass
 
@@ -97,7 +96,7 @@ cdef class _SyclContext:
 cdef class SyclContext(_SyclContext):
     """
     SyclContext(arg=None)
-    A Python wrapper for the :sycl_context:`sycl::context <>` C++ class.
+    A Python wrapper for the ``sycl::context`` C++ class.
 
     There are multiple ways to create a :class:`dpctl.SyclContext` object:
 
@@ -109,7 +108,7 @@ cdef class SyclContext(_SyclContext):
 
                 import dpctl
 
-                # Create a default SyclContext
+                # Create a SyclContext for default-selected device
                 ctx = dpctl.SyclContext()
                 print(ctx.get_devices())
 
