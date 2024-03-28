@@ -399,7 +399,7 @@ jobs:
     runs-on:  ${{ matrix.runner }}
     strategy:
       matrix:
-        python: ['3.9']
+        python: ['3.10']
         experimental: [false]
         runner: [ubuntu-20.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -450,7 +450,7 @@ jobs:
       - name: Install example requirements
         shell: bash -l {0}
         env:
-          DPCPP_CMPLR: dpcpp_linux-64">=2024.0.0,<2024.0.1"
+          DPCPP_CMPLR: dpcpp_linux-64">=2024.0"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
