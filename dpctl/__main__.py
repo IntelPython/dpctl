@@ -30,12 +30,12 @@ def _dpctl_dir() -> str:
 
 
 def get_include_dir() -> str:
-    "Prints include flags for dpctl and SyclInterface library"
+    "Prints include flags for dpctl and DPCTLSyclInterface library"
     return os.path.join(_dpctl_dir(), "include")
 
 
 def print_include_flags() -> None:
-    "Prints include flags for dpctl and SyclInterface library"
+    "Prints include flags for dpctl and DPCTLSyclInterface library"
     print("-I " + get_include_dir())
 
 
@@ -46,13 +46,13 @@ def get_tensor_include_dir() -> str:
 
 
 def print_tensor_include_flags() -> None:
-    "Prints include flags for dpctl and SyclInterface library"
+    "Prints include flags for dpctl and DPCTLSyclInterface library"
     libtensor_dir = get_tensor_include_dir()
     print("-I " + libtensor_dir)
 
 
 def print_cmake_dir() -> None:
-    "Prints directory with FindDpctl.cmake"
+    "Prints directory with dpctl-config.cmake"
     dpctl_dir = _dpctl_dir()
     cmake_dir = os.path.join(dpctl_dir, "resources", "cmake")
     print(cmake_dir)
@@ -64,13 +64,13 @@ def get_library_dir() -> str:
 
 
 def print_library() -> None:
-    "Prints linker flags for SyclInterface library"
+    "Prints linker flags for DPCTLSyclInterface library"
     dpctl_dir = get_library_dir()
     plt = platform.platform()
     ld_flags = "-L " + dpctl_dir
     if plt != "Windows":
         ld_flags = ld_flags + " -Wl,-rpath," + dpctl_dir
-    print(ld_flags + " -lSyclInterface")
+    print(ld_flags + " -lDPCTLSyclInterface")
 
 
 def _warn_if_any_set(args, li) -> None:
