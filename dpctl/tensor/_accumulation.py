@@ -189,8 +189,6 @@ def _accumulate_common(
             out = orig_out
     else:
         if _dtype_supported(res_dt, res_dt):
-            # no need to check for orig_out here, branch should never
-            # be reached if inp and out are the same array
             tmp = dpt.empty(
                 arr.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
@@ -229,7 +227,7 @@ def _accumulate_common(
             host_tasks_list.append(ht_e_cpy)
             if not include_initial:
                 ht_e, a_e = _accumulate_fn(
-                    src=arr,
+                    src=tmp,
                     trailing_dims_to_accumulate=1,
                     dst=tmp_res,
                     sycl_queue=q,
@@ -237,23 +235,17 @@ def _accumulate_common(
                 )
             else:
                 ht_e, a_e = _accumulate_include_initial_fn(
-                    src=arr,
+                    src=tmp,
                     dst=tmp_res,
                     sycl_queue=q,
                     depends=[cpy_e],
                 )
             host_tasks_list.append(ht_e)
-            ht_e_cpy2, cpy_e2 = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=tmp_res, dst=out, sycl_queue=q, depends=[a_e]
             )
             host_tasks_list.append(ht_e_cpy2)
-            if not (orig_out is None or out is orig_out):
-                # Copy the out data from temporary buffer to original memory
-                ht_e_cpy3, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                    src=out, dst=orig_out, sycl_queue=q, depends=[cpy_e2]
-                )
-                host_tasks_list.append(ht_e_cpy3)
-                out = orig_out
+
     if appended_axis:
         out = dpt.squeeze(out)
     if a1 != nd:

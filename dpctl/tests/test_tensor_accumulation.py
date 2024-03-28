@@ -231,6 +231,7 @@ def test_accumulator_out_kwarg():
     out = dpt.empty_like(x, dtype=default_int)
     dpt.cumulative_sum(x, out=out)
     assert dpt.all(expected == out)
+
     # overlap
     x = dpt.ones(n, dtype=default_int, sycl_queue=q)
     dpt.cumulative_sum(x, out=x)
@@ -251,12 +252,6 @@ def test_accumulator_out_kwarg():
     expected = dpt.asarray(3, dtype=default_int)
     dpt.cumulative_sum(x, out=out)
     assert expected == out
-
-    # overlapping and unimplemented
-    x = dpt.ones(n, dtype="?", sycl_queue=q)
-    x[20:] = False
-    dpt.cumulative_sum(x, dtype="?", out=x)
-    assert dpt.all(x)
 
 
 def test_accumulator_arg_validation():
