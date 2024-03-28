@@ -693,7 +693,7 @@ def _supported_dtype(dtypes):
     return True
 
 
-def isdtype(dtype, kind, /):
+def isdtype(dtype, kind):
     """isdtype(dtype, kind)
 
     Returns a boolean indicating whether a provided `dtype` is
