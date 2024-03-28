@@ -54,7 +54,8 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput sphinxcontrib-googleanalytics
+          pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" pydot graphviz furo \
+                      sphinxcontrib-programoutput sphinxcontrib-googleanalytics sphinx-design sphinxcontrib-jsmath
       - name: Checkout repo
         uses: actions/checkout@v4.1.1
         with:
@@ -80,6 +81,7 @@ jobs:
           cmake --build . --target Sphinx || exit 1
           mv ../cmake-install/docs/docs ~/docs
           git clean -dfx
+          git reset --hard @{u}
       - name: Publish docs
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' && github.event.action != 'closed' }}
         shell: bash -l {0}
