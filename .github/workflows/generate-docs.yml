@@ -77,11 +77,12 @@ jobs:
               -DDPCTL_ENABLE_DOXYREST=ON                      \
               -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64
           python -c "import dpctl; print(dpctl.__version__)" || exit 1
-          cd "$(find _skbuild -name cmake-build)" || exit 1
+          pushd "$(find _skbuild -name cmake-build)" || exit 1
           cmake --build . --target Sphinx || exit 1
           mv ../cmake-install/docs/docs ~/docs
           git clean -dfx
-          git reset --hard @{u}
+          popd
+          git reset --hard
       - name: Publish docs
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' && github.event.action != 'closed' }}
         shell: bash -l {0}
