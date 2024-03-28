@@ -49,23 +49,23 @@ namespace py_internal
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::accumulators::accumulate_contig_impl_fn_ptr_t;
-static accumulate_contig_impl_fn_ptr_t
+using dpctl::tensor::kernels::accumulators::cumsum_val_contig_impl_fn_ptr_t;
+static cumsum_val_contig_impl_fn_ptr_t
     mask_positions_contig_i64_dispatch_vector[td_ns::num_types];
-static accumulate_contig_impl_fn_ptr_t
+static cumsum_val_contig_impl_fn_ptr_t
     mask_positions_contig_i32_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::accumulators::accumulate_strided_impl_fn_ptr_t;
-static accumulate_strided_impl_fn_ptr_t
+using dpctl::tensor::kernels::accumulators::cumsum_val_strided_impl_fn_ptr_t;
+static cumsum_val_strided_impl_fn_ptr_t
     mask_positions_strided_i64_dispatch_vector[td_ns::num_types];
-static accumulate_strided_impl_fn_ptr_t
+static cumsum_val_strided_impl_fn_ptr_t
     mask_positions_strided_i32_dispatch_vector[td_ns::num_types];
 
 void populate_mask_positions_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsContigFactoryForInt64;
-    td_ns::DispatchVectorBuilder<accumulate_contig_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<cumsum_val_contig_impl_fn_ptr_t,
                                  MaskPositionsContigFactoryForInt64,
                                  td_ns::num_types>
         dvb1;
@@ -73,7 +73,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsContigFactoryForInt32;
-    td_ns::DispatchVectorBuilder<accumulate_contig_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<cumsum_val_contig_impl_fn_ptr_t,
                                  MaskPositionsContigFactoryForInt32,
                                  td_ns::num_types>
         dvb2;
@@ -81,7 +81,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsStridedFactoryForInt64;
-    td_ns::DispatchVectorBuilder<accumulate_strided_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<cumsum_val_strided_impl_fn_ptr_t,
                                  MaskPositionsStridedFactoryForInt64,
                                  td_ns::num_types>
         dvb3;
@@ -89,7 +89,7 @@ void populate_mask_positions_dispatch_vectors(void)
 
     using dpctl::tensor::kernels::accumulators::
         MaskPositionsStridedFactoryForInt32;
-    td_ns::DispatchVectorBuilder<accumulate_strided_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<cumsum_val_strided_impl_fn_ptr_t,
                                  MaskPositionsStridedFactoryForInt32,
                                  td_ns::num_types>
         dvb4;
@@ -226,23 +226,23 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     return total_set;
 }
 
-using dpctl::tensor::kernels::accumulators::accumulate_strided_impl_fn_ptr_t;
-static accumulate_strided_impl_fn_ptr_t
+using dpctl::tensor::kernels::accumulators::cumsum_val_strided_impl_fn_ptr_t;
+static cumsum_val_strided_impl_fn_ptr_t
     cumsum_1d_strided_dispatch_vector[td_ns::num_types];
-using dpctl::tensor::kernels::accumulators::accumulate_contig_impl_fn_ptr_t;
-static accumulate_contig_impl_fn_ptr_t
+using dpctl::tensor::kernels::accumulators::cumsum_val_contig_impl_fn_ptr_t;
+static cumsum_val_contig_impl_fn_ptr_t
     cumsum_1d_contig_dispatch_vector[td_ns::num_types];
 
 void populate_cumsum_1d_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::accumulators::Cumsum1DContigFactory;
-    td_ns::DispatchVectorBuilder<accumulate_contig_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<cumsum_val_contig_impl_fn_ptr_t,
                                  Cumsum1DContigFactory, td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(cumsum_1d_contig_dispatch_vector);
 
     using dpctl::tensor::kernels::accumulators::Cumsum1DStridedFactory;
-    td_ns::DispatchVectorBuilder<accumulate_strided_impl_fn_ptr_t,
+    td_ns::DispatchVectorBuilder<cumsum_val_strided_impl_fn_ptr_t,
                                  Cumsum1DStridedFactory, td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(cumsum_1d_strided_dispatch_vector);

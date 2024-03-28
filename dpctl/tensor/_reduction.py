@@ -164,6 +164,7 @@ def _reduction_over_axis(
                 sycl_queue=q,
                 depends=[cpy_e],
             )
+            host_tasks_list.append(ht_e_red)
             ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=tmp_res, dst=res, sycl_queue=q, depends=[r_e]
             )
