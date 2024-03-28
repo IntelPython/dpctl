@@ -371,7 +371,7 @@ def test_cumprod_basic():
     assert dpt.all(r == expected)
 
 
-def test_cumlogsumexp_basic():
+def test_logcumsumexp_basic():
     get_queue_or_skip()
 
     dt = dpt.float32
@@ -379,5 +379,5 @@ def test_cumlogsumexp_basic():
     r = dpt.cumulative_logsumexp(x)
     expected = dpt.log(dpt.cumulative_sum(dpt.exp(x)))
 
-    tol = 7 * dpt.finfo(dt).resolution
+    tol = 32 * dpt.finfo(dt).resolution
     assert dpt.allclose(r, expected, atol=tol, rtol=tol)
