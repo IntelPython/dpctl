@@ -17,7 +17,7 @@ jobs:
       ONEAPI_ROOT: /opt/intel/oneapi
       GTEST_ROOT: /home/runner/work/googletest-1.13.0/install
       # Use oneAPI compiler 2023 to work around an issue
-      USE_2023: 1
+      USE_2023: 0
 
     steps:
       - name: Cancel Previous Runs
