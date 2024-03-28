@@ -98,6 +98,9 @@ function(_setup_sphinx)
     set(SPHINX_OUTPUT_DIR ${DOC_OUTPUT_DIR}/docs)
     set(SPHINX_INDEX_FILE ${SPHINX_OUTPUT_DIR}/index.html)
 
+    set(SPHINX_CONF_IN ${SPHINX_SOURCE}/conf.py.in)
+    set(SPHINX_CONF_OUT ${SPHINX_SOURCE}/conf.py)
+
     if(DPCTL_ENABLE_DOXYREST)
         set(DEPEND_ON_DOXYREST "Doxyrest")
     endif()
@@ -120,7 +123,7 @@ function(_setup_sphinx)
             ${SPHINX_INDEX_FILE}
     )
     # Create a conf.py by replacing variables inside @@ with the current values
-    # configure_file(${SPHINX_CONF_IN} ${SPHINX_CONF_OUT} @ONLY)
+    configure_file(${SPHINX_CONF_IN} ${SPHINX_CONF_OUT} @ONLY)
 endfunction()
 
 function(_set_current_release)
