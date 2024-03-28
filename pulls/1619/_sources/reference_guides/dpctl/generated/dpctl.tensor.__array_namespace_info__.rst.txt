@@ -1,0 +1,17 @@
+﻿dpctl.tensor.\_\_array\_namespace\_info\_\_
+===========================================
+
+.. currentmodule:: dpctl.tensor
+
+
+
+.. autoclass:: __array_namespace_info__
+
+   
+
+   
+   
+
+   
+   
+   

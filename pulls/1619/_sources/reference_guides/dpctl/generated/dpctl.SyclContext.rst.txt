@@ -1,0 +1,31 @@
+﻿dpctl.SyclContext
+=================
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: SyclContext
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SyclContext.__init__
+      ~SyclContext.addressof_ref
+      ~SyclContext.get_devices
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SyclContext.device_count
+   
+   

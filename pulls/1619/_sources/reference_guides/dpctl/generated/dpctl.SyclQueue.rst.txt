@@ -1,0 +1,47 @@
+﻿dpctl.SyclQueue
+===============
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: SyclQueue
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SyclQueue.__init__
+      ~SyclQueue.addressof_ref
+      ~SyclQueue.get_sycl_context
+      ~SyclQueue.get_sycl_device
+      ~SyclQueue.mem_advise
+      ~SyclQueue.memcpy
+      ~SyclQueue.memcpy_async
+      ~SyclQueue.prefetch
+      ~SyclQueue.print_device_info
+      ~SyclQueue.submit
+      ~SyclQueue.submit_async
+      ~SyclQueue.submit_barrier
+      ~SyclQueue.wait
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SyclQueue.backend
+      ~SyclQueue.driver_version
+      ~SyclQueue.has_enable_profiling
+      ~SyclQueue.is_in_order
+      ~SyclQueue.name
+      ~SyclQueue.sycl_context
+      ~SyclQueue.sycl_device
+   
+   

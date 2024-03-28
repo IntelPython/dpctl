@@ -1,0 +1,47 @@
+﻿dpctl.tensor.usm\_ndarray
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+
+
+.. autoclass:: usm_ndarray
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~usm_ndarray.__init__
+      ~usm_ndarray.to_device
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~usm_ndarray.T
+      ~usm_ndarray.device
+      ~usm_ndarray.dtype
+      ~usm_ndarray.flags
+      ~usm_ndarray.imag
+      ~usm_ndarray.itemsize
+      ~usm_ndarray.mT
+      ~usm_ndarray.nbytes
+      ~usm_ndarray.ndim
+      ~usm_ndarray.real
+      ~usm_ndarray.shape
+      ~usm_ndarray.size
+      ~usm_ndarray.strides
+      ~usm_ndarray.sycl_context
+      ~usm_ndarray.sycl_device
+      ~usm_ndarray.sycl_queue
+      ~usm_ndarray.usm_data
+      ~usm_ndarray.usm_type
+   
+   

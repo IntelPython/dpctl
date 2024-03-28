@@ -1,0 +1,43 @@
+﻿dpctl.memory.MemoryUSMDevice
+============================
+
+.. currentmodule:: dpctl.memory
+
+
+
+.. autoclass:: MemoryUSMDevice
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MemoryUSMDevice.__init__
+      ~MemoryUSMDevice.copy_from_device
+      ~MemoryUSMDevice.copy_from_host
+      ~MemoryUSMDevice.copy_to_host
+      ~MemoryUSMDevice.get_usm_type
+      ~MemoryUSMDevice.get_usm_type_enum
+      ~MemoryUSMDevice.memset
+      ~MemoryUSMDevice.tobytes
+   
+   
+
+   :special-members: __sycl_usm_array_interface__
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MemoryUSMDevice.nbytes
+      ~MemoryUSMDevice.reference_obj
+      ~MemoryUSMDevice.size
+      ~MemoryUSMDevice.sycl_context
+      ~MemoryUSMDevice.sycl_device
+      ~MemoryUSMDevice.sycl_queue
+   
+   

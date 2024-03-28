@@ -1,0 +1,37 @@
+﻿dpctl.SyclEvent
+===============
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: SyclEvent
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SyclEvent.__init__
+      ~SyclEvent.addressof_ref
+      ~SyclEvent.get_wait_list
+      ~SyclEvent.wait
+      ~SyclEvent.wait_for
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SyclEvent.backend
+      ~SyclEvent.execution_status
+      ~SyclEvent.profiling_info_end
+      ~SyclEvent.profiling_info_start
+      ~SyclEvent.profiling_info_submit
+   
+   
