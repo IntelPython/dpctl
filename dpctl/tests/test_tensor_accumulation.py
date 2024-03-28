@@ -18,6 +18,8 @@ import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl.tensor as dpt
+from dpctl.tensor._tensor_impl import default_device_int_type
+from dpctl.utils import ExecutionPlacementError
 
 sint_types = [
     dpt.int8,
@@ -216,3 +218,84 @@ def test_cumsum_arg_out_dtype_matrix(arg_dtype, out_dtype):
     else:
         r_expected = dpt.arange(1, n + 1, dtype=out_dtype)
         assert dpt.all(r == r_expected)
+
+
+def test_accumulator_out_kwarg():
+    q = get_queue_or_skip()
+
+    n = 100
+    default_int = default_device_int_type(q)
+
+    expected = dpt.arange(1, n + 1, dtype=default_int, sycl_queue=q)
+    x = dpt.ones(n, dtype="i4", sycl_queue=q)
+    out = dpt.empty_like(x, dtype=default_int)
+    dpt.cumulative_sum(x, out=out)
+    assert dpt.all(expected == out)
+    # overlap
+    x = dpt.ones(n, dtype=default_int, sycl_queue=q)
+    dpt.cumulative_sum(x, out=x)
+    assert dpt.all(x == expected)
+
+    # axis before final axis
+    expected = dpt.broadcast_to(
+        dpt.arange(1, n + 1, dtype=default_int, sycl_queue=q), (n, n)
+    ).mT
+    x = dpt.ones((n, n), dtype="i4", sycl_queue=q)
+    out = dpt.empty_like(x, dtype=default_int)
+    dpt.cumulative_sum(x, axis=0, out=out)
+    assert dpt.all(expected == out)
+
+    # scalar
+    x = dpt.asarray(3, dtype="i4")
+    out = dpt.empty((), dtype=default_int)
+    expected = dpt.asarray(3, dtype=default_int)
+    dpt.cumulative_sum(x, out=out)
+    assert expected == out
+
+    # overlapping and unimplemented
+    x = dpt.ones(n, dtype="?", sycl_queue=q)
+    x[20:] = False
+    dpt.cumulative_sum(x, dtype="?", out=x)
+    assert dpt.all(x)
+
+
+def test_accumulator_arg_validation():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    n = 5
+    x1 = dpt.ones((n, n), dtype="f4", sycl_queue=q1)
+    x2 = dpt.ones(n, dtype="f4", sycl_queue=q1)
+
+    # must be usm_ndarray
+    with pytest.raises(TypeError):
+        dpt.cumulative_sum(dict())
+
+    # axis must be specified when input not 1D
+    with pytest.raises(ValueError):
+        dpt.cumulative_sum(x1)
+
+    # out must be usm_ndarray
+    with pytest.raises(TypeError):
+        dpt.cumulative_sum(x2, out=dict())
+
+    # out must be writable
+    out_not_writable = dpt.empty_like(x2)
+    out_not_writable.flags.writable = False
+    with pytest.raises(ValueError):
+        dpt.cumulative_sum(x2, out=out_not_writable)
+
+    # out must be expected shape
+    out_wrong_shape = dpt.ones(n + 1, dtype=x2.dtype, sycl_queue=q1)
+    with pytest.raises(ValueError):
+        dpt.cumulative_sum(x2, out=out_wrong_shape)
+
+    # out must be expected dtype
+    out_wrong_dtype = dpt.empty_like(x2, dtype="i4")
+    with pytest.raises(ValueError):
+        dpt.cumulative_sum(x2, out=out_wrong_dtype)
+
+    # compute follows data
+    out_wrong_queue = dpt.empty_like(x2, sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.cumulative_sum(x2, out=out_wrong_queue)
