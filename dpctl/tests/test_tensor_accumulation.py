@@ -16,7 +16,6 @@
 
 from random import randrange
 
-import numpy as np
 import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -379,8 +378,10 @@ def test_logcumsumexp_basic():
     x = dpt.ones(100, dtype=dt)
     r = dpt.cumulative_logsumexp(x)
 
-    x_np = dpt.asnumpy(x)
-    expected = np.logaddexp.accumulate(x_np, dtype=dt)
-
+    sums = []
+    for i in range(x.size):
+        r_i = dpt.logsumexp(x[: i + 1], dtype=dt)
+        sums.append(r_i)
+    expected = dpt.concat(sums, axis=None)
     tol = 32 * dpt.finfo(dt).resolution
-    assert np.allclose(dpt.asnumpy(r), expected, atol=tol, rtol=tol)
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol)
