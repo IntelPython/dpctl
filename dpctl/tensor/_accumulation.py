@@ -189,6 +189,8 @@ def _accumulate_common(
             out = orig_out
     else:
         if _dtype_supported(res_dt, res_dt):
+            # no need to check for orig_out here, branch should never
+            # be reached if inp and out are the same array
             tmp = dpt.empty(
                 arr.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
@@ -211,14 +213,6 @@ def _accumulate_common(
                     sycl_queue=q,
                     depends=[cpy_e],
                 )
-            host_tasks_list.append(ht_e)
-            if not (orig_out is None or out is orig_out):
-                # Copy the out data from temporary buffer to original memory
-                ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                    src=out, dst=orig_out, sycl_queue=q, depends=[acc_ev]
-                )
-                host_tasks_list.append(ht_e_cpy2)
-                out = orig_out
         else:
             buf_dt = _default_accumulation_type_fn(inp_dt, q)
             tmp = dpt.empty(
