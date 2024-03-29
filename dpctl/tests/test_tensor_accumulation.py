@@ -379,8 +379,34 @@ def test_logcumsumexp_basic():
     x = dpt.ones(10, dtype=dt)
     r = dpt.cumulative_logsumexp(x)
 
-    x_np = dpt.asnumpy(x)
-    expected = np.logaddexp.accumulate(x_np, dtype=dt)
+    expected = 1 + np.log(np.arange(1, 11, dtype=dt))
 
-    tol = 32 * dpt.finfo(dt).resolution
+    tol = 4 * dpt.finfo(dt).resolution
     assert np.allclose(dpt.asnumpy(r), expected, atol=tol, rtol=tol)
+
+
+def geometric_series_closed_form(n, dtype=None, device=None):
+    """Closed form for cumulative_logsumexp(dpt.arange(-n, 0))
+
+    :math:`r[k] == -n + k + log(1 - exp(-k-1)) - log(1-exp(-1))`
+    """
+    x = dpt.arange(-n, 0, dtype=dtype, device=device)
+    y = dpt.arange(-1, -n - 1, step=-1, dtype=dtype, device=device)
+    y = dpt.exp(y, out=y)
+    y = dpt.negative(y, out=y)
+    y = dpt.log1p(y, out=y)
+    y -= y[0]
+    return x + y
+
+
+@pytest.mark.parametrize("fpdt", rfp_types)
+def test_cumulative_logsumexp_closed_form(fpdt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(fpdt, q)
+
+    n = 128
+    r = dpt.cumulative_logsumexp(dpt.arange(-n, 0, dtype=fpdt, device=q))
+    expected = geometric_series_closed_form(n, dtype=fpdt, device=q)
+
+    tol = 4 * dpt.finfo(fpdt).eps
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol)
