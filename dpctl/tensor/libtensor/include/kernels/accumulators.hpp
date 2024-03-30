@@ -113,11 +113,6 @@ public:
         return src_;
     }
 
-    const T *get_src_const_ptr() const
-    {
-        return src_;
-    }
-
     size_t get_size() const
     {
         return size_;
@@ -146,11 +141,6 @@ public:
     ~stack_strided_t(){};
 
     T *get_src_ptr() const
-    {
-        return src_;
-    }
-
-    const T *get_src_const_ptr() const
     {
         return src_;
     }
@@ -247,16 +237,16 @@ inclusive_scan_base_step(sycl::queue &exec_q,
         cgh.parallel_for<KernelName>(ndRange, [=, slm_iscan_tmp =
                                                       std::move(slm_iscan_tmp)](
                                                   sycl::nd_item<1> it) {
-            size_t gid = it.get_global_id(0);
-            size_t lid = it.get_local_id(0);
+            const size_t gid = it.get_global_id(0);
+            const size_t lid = it.get_local_id(0);
 
-            size_t iter_gid = gid / (acc_groups * wg_size);
-            size_t chunk_gid = gid - (iter_gid * acc_groups * wg_size);
+            const size_t iter_gid = gid / (acc_groups * wg_size);
+            const size_t chunk_gid = gid - (iter_gid * acc_groups * wg_size);
 
             std::array<outputT, n_wi> local_iscan;
 
             size_t i = chunk_gid * n_wi;
-            auto iter_offsets = iter_indexer(iter_gid);
+            const auto &iter_offsets = iter_indexer(iter_gid);
             const auto &inp_iter_offset = iter_offsets.get_first_offset();
             const auto &out_iter_offset = iter_offsets.get_second_offset();
 
@@ -377,7 +367,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
 
     sycl::event dependent_event = inc_scan_phase1_ev;
     if (n_groups > 1) {
-        auto chunk_size = wg_size * n_wi;
+        const size_t chunk_size = wg_size * n_wi;
 
         // how much of temporary allocation do we need
         size_t n_groups_ = n_groups;
@@ -407,7 +397,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         size_t size_to_update = n_elems;
         while (n_groups_ > 1) {
 
-            size_t src_size = n_groups_ - 1;
+            const size_t src_size = n_groups_ - 1;
             dependent_event =
                 inclusive_scan_base_step<outputT, outputT, n_wi, IterIndexerT,
                                          NoOpIndexerT, NoOpIndexerT,
@@ -426,11 +416,11 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         for (size_t reverse_stack_id = 0; reverse_stack_id < stack.size();
              ++reverse_stack_id)
         {
-            auto stack_id = stack.size() - 1 - reverse_stack_id;
+            const size_t stack_id = stack.size() - 1 - reverse_stack_id;
 
-            auto stack_elem = stack[stack_id];
+            const auto &stack_elem = stack[stack_id];
             outputT *src = stack_elem.get_src_ptr();
-            size_t src_size = stack_elem.get_size();
+            const size_t src_size = stack_elem.get_size();
             outputT *local_scans = stack_elem.get_local_scans_ptr();
 
             // output[ chunk_size * (i + 1) + j] += temp[i]
@@ -438,7 +428,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                 cgh.depends_on(dependent_event);
 
                 constexpr nwiT updates_per_wi = n_wi;
-                size_t n_items = ceiling_quotient<size_t>(src_size, n_wi);
+                const size_t n_items = ceiling_quotient<size_t>(src_size, n_wi);
 
                 using UpdateKernelName =
                     class inclusive_scan_1d_iter_chunk_update_krn<
@@ -448,12 +438,12 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                 cgh.parallel_for<UpdateKernelName>(
                     {n_items}, [chunk_size, src, src_size, local_scans, scan_op,
                                 identity](auto wiid) {
-                        auto gid = n_wi * wiid[0];
+                        const size_t gid = n_wi * wiid[0];
 #pragma unroll
-                        for (auto i = 0; i < updates_per_wi; ++i) {
-                            auto src_id = gid + i;
+                        for (size_t i = 0; i < updates_per_wi; ++i) {
+                            const size_t src_id = gid + i;
                             if (src_id < src_size) {
-                                auto scan_id = (src_id / chunk_size);
+                                const size_t scan_id = (src_id / chunk_size);
                                 src[src_id] =
                                     (scan_id > 0)
                                         ? scan_op(src[src_id],
@@ -511,7 +501,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
     const sycl::device &dev = q.get_device();
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<srcT, dstT, n_wi_for_cpu, NoOpIndexerT,
                                          transformerT, AccumulateOpT,
                                          include_initial>(
@@ -520,7 +510,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<srcT, dstT, n_wi_for_gpu, NoOpIndexerT,
                                          transformerT, AccumulateOpT,
                                          include_initial>(
@@ -586,13 +576,13 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
 
     sycl::event dependent_event = inc_scan_phase1_ev;
     if (acc_groups > 1) {
-        auto chunk_size = wg_size * n_wi;
+        const size_t chunk_size = wg_size * n_wi;
 
         // how much of temporary allocation do we need
         size_t acc_groups_ = acc_groups;
         size_t temp_size = 0;
         while (acc_groups_ > 1) {
-            const auto this_size = (acc_groups_ - 1);
+            const size_t this_size = (acc_groups_ - 1);
             temp_size += this_size;
             acc_groups_ = ceiling_quotient<size_t>(this_size, chunk_size);
         }
@@ -622,14 +612,15 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             size_t src_size = acc_groups - 1;
             using LocalScanIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
-            LocalScanIndexerT scan_iter_indexer{
+            const LocalScanIndexerT scan_iter_indexer{
                 0, static_cast<ssize_t>(iter_nelems),
                 static_cast<ssize_t>(src_size)};
 
             using IterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     OutIterIndexerT, LocalScanIndexerT>;
-            IterIndexerT iter_indexer_{out_iter_indexer, scan_iter_indexer};
+            const IterIndexerT iter_indexer_{out_iter_indexer,
+                                             scan_iter_indexer};
 
             dependent_event =
                 inclusive_scan_base_step<outputT, outputT, n_wi, IterIndexerT,
@@ -651,17 +642,18 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
 
             using LocalScanIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
-            LocalScanIndexerT scan1_iter_indexer{
+            const LocalScanIndexerT scan1_iter_indexer{
                 0, static_cast<ssize_t>(iter_nelems),
                 static_cast<ssize_t>(size_to_update)};
-            LocalScanIndexerT scan2_iter_indexer{
+            const LocalScanIndexerT scan2_iter_indexer{
                 0, static_cast<ssize_t>(iter_nelems),
                 static_cast<ssize_t>(src_size)};
 
             using IterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     LocalScanIndexerT, LocalScanIndexerT>;
-            IterIndexerT iter_indexer_{scan1_iter_indexer, scan2_iter_indexer};
+            const IterIndexerT iter_indexer_{scan1_iter_indexer,
+                                             scan2_iter_indexer};
 
             dependent_event =
                 inclusive_scan_base_step<outputT, outputT, n_wi, IterIndexerT,
@@ -681,16 +673,16 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         for (size_t reverse_stack_id = 0; reverse_stack_id < stack.size() - 1;
              ++reverse_stack_id)
         {
-            auto stack_id = stack.size() - 1 - reverse_stack_id;
+            const size_t stack_id = stack.size() - 1 - reverse_stack_id;
 
-            auto stack_elem = stack[stack_id];
+            const auto &stack_elem = stack[stack_id];
             outputT *src = stack_elem.get_src_ptr();
             size_t src_size = stack_elem.get_size();
             outputT *local_scans = stack_elem.get_local_scans_ptr();
             size_t local_stride = stack_elem.get_local_stride();
 
             constexpr nwiT updates_per_wi = n_wi;
-            size_t update_nelems =
+            const size_t update_nelems =
                 ceiling_quotient<size_t>(src_size, updates_per_wi);
 
             dependent_event = exec_q.submit([&](sycl::handler &cgh) {
@@ -705,21 +697,23 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                     {iter_nelems * update_nelems},
                     [chunk_size, update_nelems, src_size, local_stride, src,
                      local_scans, scan_op, identity](auto wiid) {
-                        size_t gid = wiid[0];
+                        const size_t gid = wiid[0];
 
-                        size_t iter_gid = gid / update_nelems;
-                        size_t axis_gid = gid - (iter_gid * update_nelems);
+                        const size_t iter_gid = gid / update_nelems;
+                        const size_t axis_gid =
+                            gid - (iter_gid * update_nelems);
 
-                        size_t src_axis_id0 = axis_gid * updates_per_wi;
-                        size_t src_iter_id = iter_gid * src_size;
+                        const size_t src_axis_id0 = axis_gid * updates_per_wi;
+                        const size_t src_iter_id = iter_gid * src_size;
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            size_t src_axis_id = src_axis_id0 + i;
-                            size_t src_id = src_axis_id + src_iter_id;
+                            const size_t src_axis_id = src_axis_id0 + i;
+                            const size_t src_id = src_axis_id + src_iter_id;
 
                             if (src_axis_id < src_size) {
-                                size_t scan_axis_id = src_axis_id / chunk_size;
-                                size_t scan_id =
+                                const size_t scan_axis_id =
+                                    src_axis_id / chunk_size;
+                                const size_t scan_id =
                                     scan_axis_id + iter_gid * local_stride;
 
                                 src[src_id] =
@@ -735,14 +729,14 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
 
         // last stack element is always directly to output
         {
-            auto stack_elem = stack[0];
+            const auto &stack_elem = stack[0];
             outputT *src = stack_elem.get_src_ptr();
-            size_t src_size = stack_elem.get_size();
+            const size_t src_size = stack_elem.get_size();
             outputT *local_scans = stack_elem.get_local_scans_ptr();
-            size_t local_stride = stack_elem.get_local_stride();
+            const size_t local_stride = stack_elem.get_local_stride();
 
             constexpr nwiT updates_per_wi = n_wi;
-            size_t update_nelems =
+            const size_t update_nelems =
                 ceiling_quotient<size_t>(src_size, updates_per_wi);
 
             dependent_event = exec_q.submit([&](sycl::handler &cgh) {
@@ -759,22 +753,24 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                     [chunk_size, update_nelems, src_size, local_stride, src,
                      local_scans, scan_op, identity, out_iter_indexer,
                      out_indexer](auto wiid) {
-                        size_t gid = wiid[0];
+                        const size_t gid = wiid[0];
 
-                        size_t iter_gid = gid / update_nelems;
-                        size_t axis_gid = gid - (iter_gid * update_nelems);
+                        const size_t iter_gid = gid / update_nelems;
+                        const size_t axis_gid =
+                            gid - (iter_gid * update_nelems);
 
-                        size_t src_axis_id0 = axis_gid * updates_per_wi;
-                        size_t src_iter_id = out_iter_indexer(iter_gid);
+                        const size_t src_axis_id0 = axis_gid * updates_per_wi;
+                        const size_t src_iter_id = out_iter_indexer(iter_gid);
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            size_t src_axis_id = src_axis_id0 + i;
-                            size_t src_id =
+                            const size_t src_axis_id = src_axis_id0 + i;
+                            const size_t src_id =
                                 out_indexer(src_axis_id) + src_iter_id;
 
                             if (src_axis_id < src_size) {
-                                size_t scan_axis_id = src_axis_id / chunk_size;
-                                size_t scan_id =
+                                const size_t scan_axis_id =
+                                    src_axis_id / chunk_size;
+                                const size_t scan_id =
                                     scan_axis_id + iter_gid * local_stride;
 
                                 src[src_id] =
@@ -858,7 +854,7 @@ accumulate_strided_impl(sycl::queue &q,
     sycl::event comp_ev;
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev =
             inclusive_scan_iter<srcT, dstT, n_wi_for_cpu, InpIndexerT,
                                 OutIndexerT, InpIndexerT, OutIndexerT,
@@ -869,7 +865,7 @@ accumulate_strided_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev =
             inclusive_scan_iter<srcT, dstT, n_wi_for_gpu, InpIndexerT,
                                 OutIndexerT, InpIndexerT, OutIndexerT,
@@ -914,7 +910,7 @@ size_t cumsum_val_contig_impl(sycl::queue &q,
     const sycl::device &dev = q.get_device();
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_cpu,
                                          NoOpIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
@@ -923,7 +919,7 @@ size_t cumsum_val_contig_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_gpu,
                                          NoOpIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
@@ -1022,7 +1018,7 @@ size_t cumsum_val_strided_impl(sycl::queue &q,
     sycl::event comp_ev;
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_cpu,
                                          StridedIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
@@ -1031,7 +1027,7 @@ size_t cumsum_val_strided_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        size_t wg_size = 256;
+        const size_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_gpu,
                                          StridedIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
