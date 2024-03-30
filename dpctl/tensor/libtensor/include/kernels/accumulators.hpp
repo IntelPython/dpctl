@@ -622,14 +622,15 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             size_t src_size = acc_groups - 1;
             using LocalScanIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
-            LocalScanIndexerT scan_iter_indexer{
+            const LocalScanIndexerT scan_iter_indexer{
                 0, static_cast<ssize_t>(iter_nelems),
                 static_cast<ssize_t>(src_size)};
 
             using IterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     OutIterIndexerT, LocalScanIndexerT>;
-            IterIndexerT iter_indexer_{out_iter_indexer, scan_iter_indexer};
+            const IterIndexerT iter_indexer_{out_iter_indexer,
+                                             scan_iter_indexer};
 
             dependent_event =
                 inclusive_scan_base_step<outputT, outputT, n_wi, IterIndexerT,
@@ -651,17 +652,18 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
 
             using LocalScanIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
-            LocalScanIndexerT scan1_iter_indexer{
+            const LocalScanIndexerT scan1_iter_indexer{
                 0, static_cast<ssize_t>(iter_nelems),
                 static_cast<ssize_t>(size_to_update)};
-            LocalScanIndexerT scan2_iter_indexer{
+            const LocalScanIndexerT scan2_iter_indexer{
                 0, static_cast<ssize_t>(iter_nelems),
                 static_cast<ssize_t>(src_size)};
 
             using IterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     LocalScanIndexerT, LocalScanIndexerT>;
-            IterIndexerT iter_indexer_{scan1_iter_indexer, scan2_iter_indexer};
+            const IterIndexerT iter_indexer_{scan1_iter_indexer,
+                                             scan2_iter_indexer};
 
             dependent_event =
                 inclusive_scan_base_step<outputT, outputT, n_wi, IterIndexerT,
@@ -705,21 +707,23 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                     {iter_nelems * update_nelems},
                     [chunk_size, update_nelems, src_size, local_stride, src,
                      local_scans, scan_op, identity](auto wiid) {
-                        size_t gid = wiid[0];
+                        const size_t gid = wiid[0];
 
-                        size_t iter_gid = gid / update_nelems;
-                        size_t axis_gid = gid - (iter_gid * update_nelems);
+                        const size_t iter_gid = gid / update_nelems;
+                        const size_t axis_gid =
+                            gid - (iter_gid * update_nelems);
 
-                        size_t src_axis_id0 = axis_gid * updates_per_wi;
-                        size_t src_iter_id = iter_gid * src_size;
+                        const size_t src_axis_id0 = axis_gid * updates_per_wi;
+                        const size_t src_iter_id = iter_gid * src_size;
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            size_t src_axis_id = src_axis_id0 + i;
-                            size_t src_id = src_axis_id + src_iter_id;
+                            const size_t src_axis_id = src_axis_id0 + i;
+                            const size_t src_id = src_axis_id + src_iter_id;
 
                             if (src_axis_id < src_size) {
-                                size_t scan_axis_id = src_axis_id / chunk_size;
-                                size_t scan_id =
+                                const size_t scan_axis_id =
+                                    src_axis_id / chunk_size;
+                                const size_t scan_id =
                                     scan_axis_id + iter_gid * local_stride;
 
                                 src[src_id] =
@@ -759,22 +763,24 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                     [chunk_size, update_nelems, src_size, local_stride, src,
                      local_scans, scan_op, identity, out_iter_indexer,
                      out_indexer](auto wiid) {
-                        size_t gid = wiid[0];
+                        const size_t gid = wiid[0];
 
-                        size_t iter_gid = gid / update_nelems;
-                        size_t axis_gid = gid - (iter_gid * update_nelems);
+                        const size_t iter_gid = gid / update_nelems;
+                        const size_t axis_gid =
+                            gid - (iter_gid * update_nelems);
 
-                        size_t src_axis_id0 = axis_gid * updates_per_wi;
-                        size_t src_iter_id = out_iter_indexer(iter_gid);
+                        const size_t src_axis_id0 = axis_gid * updates_per_wi;
+                        const size_t src_iter_id = out_iter_indexer(iter_gid);
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            size_t src_axis_id = src_axis_id0 + i;
-                            size_t src_id =
+                            const size_t src_axis_id = src_axis_id0 + i;
+                            const size_t src_id =
                                 out_indexer(src_axis_id) + src_iter_id;
 
                             if (src_axis_id < src_size) {
-                                size_t scan_axis_id = src_axis_id / chunk_size;
-                                size_t scan_id =
+                                const size_t scan_axis_id =
+                                    src_axis_id / chunk_size;
+                                const size_t scan_id =
                                     scan_axis_id + iter_gid * local_stride;
 
                                 src[src_id] =
