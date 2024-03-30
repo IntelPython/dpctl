@@ -414,6 +414,10 @@ def test_cumulative_logsumexp_closed_form(fpdt):
     if not dpt.allclose(r, expected, atol=atol, rtol=rtol):
         # on AMD CPUs (in CI) some failures are present
         ad = dpt.abs(r - expected)
-        viols = ad > atol + rtol * dpt.maximum(dpt.abs(r), dpt.abs(expected))
+        max_sc = dpt.maximum(dpt.abs(r), dpt.abs(expected))
+        viols = ad > atol + rtol * max_sc
         viols_count = dpt.sum(viols)
-        assert viols_count <= 8
+        i = dpt.argmax(ad / max_sc)
+        assert (
+            False
+        ), f"({i}, {r[i]}, {expected[i]}, {ad[i] / max_sc[i]}, {viols_count})"
