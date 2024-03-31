@@ -23,6 +23,7 @@ This module contains:
 * :ref:`elementwise functions <dpctl_api_elementwise_functions>`
 * :ref:`indexing functions <dpctl_tensor_indexing_functions>`
 * :ref:`introspection functions <dpctl_tensor_inspection>`
+* :ref:`linear algebra functions <dpctl_tensor_linear_algebra>`
 * :ref:`searching functions <dpctl_tensor_searching_functions>`
 * :ref:`set functions <dpctl_tensor_set_functions>`
 * :ref:`sorting functions <dpctl_tensor_sorting_functions>`
@@ -40,6 +41,7 @@ This module contains:
     tensor.elementwise_functions
     tensor.indexing_functions
     tensor.inspection
+    tensor.linear_algebra
     tensor.manipulation_functions
     tensor.searching_functions
     tensor.set_functions
