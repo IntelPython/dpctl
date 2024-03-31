@@ -206,6 +206,9 @@ jobs:
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
           python -m pytest -v --pyargs $MODULE_NAME
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3.17
 
   test_windows:
     needs: build_windows
