@@ -172,9 +172,10 @@ T custom_inclusive_scan_over_group(const GroupT &wg,
         }
     }
 
+    T accumulated_local_val = local_mem_acc[local_id];
     sycl::group_barrier(wg, sycl::memory_scope::work_group);
 
-    return local_mem_acc[local_id];
+    return accumulated_local_val;
 }
 
 // Reduction functors
