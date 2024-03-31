@@ -16,7 +16,6 @@
 
 from random import randrange
 
-import numpy as np
 import pytest
 from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -376,13 +375,13 @@ def test_logcumsumexp_basic():
     get_queue_or_skip()
 
     dt = dpt.float32
-    x = dpt.ones(10, dtype=dt)
+    x = dpt.ones(1000, dtype=dt)
     r = dpt.cumulative_logsumexp(x)
 
-    expected = 1 + np.log(np.arange(1, 11, dtype=dt))
+    expected = 1 + dpt.log(dpt.arange(1, 1001, dtype=dt))
 
     tol = 4 * dpt.finfo(dt).resolution
-    assert np.allclose(dpt.asnumpy(r), expected, atol=tol, rtol=tol)
+    assert dpt.allclose(r, expected, atol=tol, rtol=tol)
 
 
 def geometric_series_closed_form(n, dtype=None, device=None):
