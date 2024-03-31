@@ -1,0 +1,29 @@
+﻿dpctl.SyclTimer
+===============
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: SyclTimer
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SyclTimer.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SyclTimer.dt
+   
+   

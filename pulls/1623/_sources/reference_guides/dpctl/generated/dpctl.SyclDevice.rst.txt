@@ -1,0 +1,102 @@
+﻿dpctl.SyclDevice
+================
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: SyclDevice
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SyclDevice.__init__
+      ~SyclDevice.addressof_ref
+      ~SyclDevice.create_sub_devices
+      ~SyclDevice.get_filter_string
+      ~SyclDevice.print_device_info
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SyclDevice.backend
+      ~SyclDevice.default_selector_score
+      ~SyclDevice.device_type
+      ~SyclDevice.driver_version
+      ~SyclDevice.filter_string
+      ~SyclDevice.global_mem_cache_line_size
+      ~SyclDevice.global_mem_cache_size
+      ~SyclDevice.global_mem_cache_type
+      ~SyclDevice.global_mem_size
+      ~SyclDevice.has_aspect_accelerator
+      ~SyclDevice.has_aspect_atomic64
+      ~SyclDevice.has_aspect_cpu
+      ~SyclDevice.has_aspect_custom
+      ~SyclDevice.has_aspect_fp16
+      ~SyclDevice.has_aspect_fp64
+      ~SyclDevice.has_aspect_gpu
+      ~SyclDevice.has_aspect_host_debuggable
+      ~SyclDevice.has_aspect_image
+      ~SyclDevice.has_aspect_online_compiler
+      ~SyclDevice.has_aspect_online_linker
+      ~SyclDevice.has_aspect_queue_profiling
+      ~SyclDevice.has_aspect_usm_atomic_host_allocations
+      ~SyclDevice.has_aspect_usm_atomic_shared_allocations
+      ~SyclDevice.has_aspect_usm_device_allocations
+      ~SyclDevice.has_aspect_usm_host_allocations
+      ~SyclDevice.has_aspect_usm_shared_allocations
+      ~SyclDevice.has_aspect_usm_system_allocations
+      ~SyclDevice.image_2d_max_height
+      ~SyclDevice.image_2d_max_width
+      ~SyclDevice.image_3d_max_depth
+      ~SyclDevice.image_3d_max_height
+      ~SyclDevice.image_3d_max_width
+      ~SyclDevice.is_accelerator
+      ~SyclDevice.is_cpu
+      ~SyclDevice.is_gpu
+      ~SyclDevice.local_mem_size
+      ~SyclDevice.max_clock_frequency
+      ~SyclDevice.max_compute_units
+      ~SyclDevice.max_mem_alloc_size
+      ~SyclDevice.max_num_sub_groups
+      ~SyclDevice.max_read_image_args
+      ~SyclDevice.max_work_group_size
+      ~SyclDevice.max_work_item_dims
+      ~SyclDevice.max_work_item_sizes
+      ~SyclDevice.max_work_item_sizes1d
+      ~SyclDevice.max_work_item_sizes2d
+      ~SyclDevice.max_work_item_sizes3d
+      ~SyclDevice.max_write_image_args
+      ~SyclDevice.name
+      ~SyclDevice.native_vector_width_char
+      ~SyclDevice.native_vector_width_double
+      ~SyclDevice.native_vector_width_float
+      ~SyclDevice.native_vector_width_half
+      ~SyclDevice.native_vector_width_int
+      ~SyclDevice.native_vector_width_long
+      ~SyclDevice.native_vector_width_short
+      ~SyclDevice.parent_device
+      ~SyclDevice.partition_max_sub_devices
+      ~SyclDevice.preferred_vector_width_char
+      ~SyclDevice.preferred_vector_width_double
+      ~SyclDevice.preferred_vector_width_float
+      ~SyclDevice.preferred_vector_width_half
+      ~SyclDevice.preferred_vector_width_int
+      ~SyclDevice.preferred_vector_width_long
+      ~SyclDevice.preferred_vector_width_short
+      ~SyclDevice.profiling_timer_resolution
+      ~SyclDevice.sub_group_independent_forward_progress
+      ~SyclDevice.sub_group_sizes
+      ~SyclDevice.sycl_platform
+      ~SyclDevice.vendor
+   
+   

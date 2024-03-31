@@ -1,0 +1,43 @@
+﻿dpctl.memory.MemoryUSMShared
+============================
+
+.. currentmodule:: dpctl.memory
+
+
+
+.. autoclass:: MemoryUSMShared
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MemoryUSMShared.__init__
+      ~MemoryUSMShared.copy_from_device
+      ~MemoryUSMShared.copy_from_host
+      ~MemoryUSMShared.copy_to_host
+      ~MemoryUSMShared.get_usm_type
+      ~MemoryUSMShared.get_usm_type_enum
+      ~MemoryUSMShared.memset
+      ~MemoryUSMShared.tobytes
+   
+   
+
+   :special-members: __sycl_usm_array_interface__
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MemoryUSMShared.nbytes
+      ~MemoryUSMShared.reference_obj
+      ~MemoryUSMShared.size
+      ~MemoryUSMShared.sycl_context
+      ~MemoryUSMShared.sycl_device
+      ~MemoryUSMShared.sycl_queue
+   
+   
