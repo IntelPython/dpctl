@@ -25,6 +25,7 @@
 #pragma once
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 #include <vector>
@@ -152,6 +153,31 @@ T custom_reduce_over_group(const GroupT &wg,
     sycl::group_barrier(wg, sycl::memory_scope::work_group);
 
     return sycl::group_broadcast(wg, red_val_over_wg);
+}
+
+template <typename T, typename GroupT, typename LocAccT, typename OpT>
+T custom_inclusive_scan_over_group(const GroupT &wg,
+                                   LocAccT local_mem_acc,
+                                   const T local_val,
+                                   const OpT &op)
+{
+    const std::uint32_t local_id = wg.get_local_id(0);
+    const std::uint32_t wgs = wg.get_local_range(0);
+    local_mem_acc[local_id] = local_val;
+
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    if (wg.leader()) {
+        T scan_val = local_mem_acc[0];
+        for (std::uint32_t i = 1; i < wgs; ++i) {
+            scan_val = op(local_mem_acc[i], scan_val);
+            local_mem_acc[i] = scan_val;
+        }
+    }
+
+    // ensure all work-items see the same SLM that leader updated
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+    return local_mem_acc[local_id];
 }
 
 // Reduction functors
