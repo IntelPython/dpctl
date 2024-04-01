@@ -725,7 +725,7 @@ def repeat(x, repeats, /, *, axis=None):
         repeats (Union[int, Sequence[int, ...], usm_ndarray]):
             The number of repetitions for each element.
 
-            `repeats` must be broadcast compatible with `N` where `N` is
+            `repeats` must be broadcast-compatible with `N` where `N` is
             `prod(x.shape)` if `axis` is `None` and `x.shape[axis]`
             otherwise.
 
