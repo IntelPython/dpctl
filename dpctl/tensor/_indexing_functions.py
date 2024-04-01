@@ -326,7 +326,7 @@ def nonzero(arr):
 
     Return the indices of non-zero elements.
 
-    Returns the tuple of usm_narrays, one for each dimension
+    Returns a tuple of usm_ndarrays, one for each dimension
     of `arr`, containing the indices of the non-zero elements
     in that dimension. The values of `arr` are always tested in
     row-major, C-style order.
