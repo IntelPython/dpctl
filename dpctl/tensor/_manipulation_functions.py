@@ -95,7 +95,7 @@ def permute_dims(X, /, axes):
            `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
            of `x`.
     Returns:
-        usm_narray:
+        usm_ndarray:
             An array with permuted axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same USM allocation
@@ -646,7 +646,7 @@ def moveaxis(X, source, destination, /):
             in the half-open interval `[-N, N)`.
 
     Returns:
-        usm_narray:
+        usm_ndarray:
             Array with moved axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same
@@ -693,7 +693,7 @@ def swapaxes(X, axis1, axis2):
             a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Returns:
-        usm_narray:
+        usm_ndarray:
             Array with swapped axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same USM
