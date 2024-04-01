@@ -21,58 +21,11 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
 
-from ._type_utils import _to_device_supported_dtype
-
-
-def _default_reduction_dtype(inp_dt, q):
-    """Gives default output data type for given input data
-    type `inp_dt` when reduction is performed on queue `q`
-    """
-    inp_kind = inp_dt.kind
-    if inp_kind in "bi":
-        res_dt = dpt.dtype(ti.default_device_int_type(q))
-        if inp_dt.itemsize > res_dt.itemsize:
-            res_dt = inp_dt
-    elif inp_kind in "u":
-        res_dt = dpt.dtype(ti.default_device_int_type(q).upper())
-        res_ii = dpt.iinfo(res_dt)
-        inp_ii = dpt.iinfo(inp_dt)
-        if inp_ii.min >= res_ii.min and inp_ii.max <= res_ii.max:
-            pass
-        else:
-            res_dt = inp_dt
-    elif inp_kind in "f":
-        res_dt = dpt.dtype(ti.default_device_fp_type(q))
-        if res_dt.itemsize < inp_dt.itemsize:
-            res_dt = inp_dt
-    elif inp_kind in "c":
-        res_dt = dpt.dtype(ti.default_device_complex_type(q))
-        if res_dt.itemsize < inp_dt.itemsize:
-            res_dt = inp_dt
-
-    return res_dt
-
-
-def _default_reduction_dtype_fp_types(inp_dt, q):
-    """Gives default output data type for given input data
-    type `inp_dt` when reduction is performed on queue `q`
-    and the reduction supports only floating-point data types
-    """
-    inp_kind = inp_dt.kind
-    if inp_kind in "biu":
-        res_dt = dpt.dtype(ti.default_device_fp_type(q))
-        can_cast_v = dpt.can_cast(inp_dt, res_dt)
-        if not can_cast_v:
-            _fp64 = q.sycl_device.has_aspect_fp64
-            res_dt = dpt.float64 if _fp64 else dpt.float32
-    elif inp_kind in "f":
-        res_dt = dpt.dtype(ti.default_device_fp_type(q))
-        if res_dt.itemsize < inp_dt.itemsize:
-            res_dt = inp_dt
-    elif inp_kind in "c":
-        raise TypeError("reduction not defined for complex types")
-
-    return res_dt
+from ._type_utils import (
+    _default_accumulation_dtype,
+    _default_accumulation_dtype_fp_types,
+    _to_device_supported_dtype,
+)
 
 
 def _reduction_over_axis(
@@ -237,7 +190,7 @@ def sum(x, axis=None, dtype=None, keepdims=False):
         keepdims,
         tri._sum_over_axis,
         tri._sum_over_axis_dtype_supported,
-        _default_reduction_dtype,
+        _default_accumulation_dtype,
     )
 
 
@@ -299,7 +252,7 @@ def prod(x, axis=None, dtype=None, keepdims=False):
         keepdims,
         tri._prod_over_axis,
         tri._prod_over_axis_dtype_supported,
-        _default_reduction_dtype,
+        _default_accumulation_dtype,
     )
 
 
@@ -356,7 +309,7 @@ def logsumexp(x, axis=None, dtype=None, keepdims=False):
         lambda inp_dt, res_dt, *_: tri._logsumexp_over_axis_dtype_supported(
             inp_dt, res_dt
         ),
-        _default_reduction_dtype_fp_types,
+        _default_accumulation_dtype_fp_types,
     )
 
 
@@ -413,7 +366,7 @@ def reduce_hypot(x, axis=None, dtype=None, keepdims=False):
         lambda inp_dt, res_dt, *_: tri._hypot_over_axis_dtype_supported(
             inp_dt, res_dt
         ),
-        _default_reduction_dtype_fp_types,
+        _default_accumulation_dtype_fp_types,
     )
 
 
