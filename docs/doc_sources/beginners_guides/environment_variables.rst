@@ -8,7 +8,7 @@ affect DPC++ compiler runtime. Particularly, the varible ``ONEAPI_DEVICE_SELECTO
 used to limit the choice of devices available to :py:mod:`dpctl`.
 
 As such, the device returned by :py:func:`select_default_device`, as well the behavior
-of default constructor of :py:class:`SyclDevice` class is infuenced by settings of this
+of default constructor of :py:class:`SyclDevice` class is influenced by settings of this
 variable.
 
 Some users may find it convenient to also use a default-selected device, but control
