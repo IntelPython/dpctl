@@ -491,7 +491,7 @@ def test_mixed_index_getitem():
     x = dpt.reshape(dpt.arange(1000, dtype="i4"), (10, 10, 10))
     i1b = dpt.ones(10, dtype="?")
     info = x.__array_namespace__().__array_namespace_info__()
-    ind_dt = info.default_dtypes(x.device)["indexing"]
+    ind_dt = info.default_dtypes(device=x.device)["indexing"]
     i0 = dpt.asarray([0, 2, 3], dtype=ind_dt)[:, dpt.newaxis]
     i2 = dpt.asarray([3, 4, 7], dtype=ind_dt)[:, dpt.newaxis]
     y = x[i0, i1b, i2]
@@ -503,7 +503,7 @@ def test_mixed_index_setitem():
     x = dpt.reshape(dpt.arange(1000, dtype="i4"), (10, 10, 10))
     i1b = dpt.ones(10, dtype="?")
     info = x.__array_namespace__().__array_namespace_info__()
-    ind_dt = info.default_dtypes(x.device)["indexing"]
+    ind_dt = info.default_dtypes(device=x.device)["indexing"]
     i0 = dpt.asarray([0, 2, 3], dtype=ind_dt)[:, dpt.newaxis]
     i2 = dpt.asarray([3, 4, 7], dtype=ind_dt)[:, dpt.newaxis]
     v_shape = (3, int(dpt.sum(i1b, dtype="i8")))
