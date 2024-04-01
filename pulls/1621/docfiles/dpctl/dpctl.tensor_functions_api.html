@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+196.g8a431adbec documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+198.gf771633b54 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=7293abf7"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=618a271b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+196.g8a431adbec
+                0.17.0dev0+198.gf771633b54
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -384,17 +384,20 @@ in the output. Default: <cite>False</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>an array containing cumulative logsumexp results. The returned array
-has the data type as described in the <cite>dtype</cite> parameter description
-above.</p>
-<p>Where <cite>N</cite> is the size of the axis the cumulative logsumexp results
-are computed along, the returned array shape is determined as
-follows.
-* If <cite>include_initial</cite> is <cite>False</cite>, the returned array will have the
-same shape as <cite>x</cite>.
-* If <cite>include_initial</cite> is <cite>True</cite>, the returned array will have the
-same shape as <cite>x</cite> except the axis along which the cumulative
-logsumexp is calculated, which will have size <cite>N+1</cite>.</p>
+<dd class="field-even"><p><p>an array containing cumulative logsumexp results. The returned
+array has the data type as described in the <cite>dtype</cite> parameter
+description above.</p>
+<p>The returned array shape is determined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>include_initial</cite> is <cite>False</cite>, the returned array will
+have the same shape as <cite>x</cite></p></li>
+<li><p>If <cite>include_initial</cite> is <cite>True</cite>, the returned array will
+have the same shape as <cite>x</cite> except the axis along which the
+cumulative logsumexp is calculated, which will have size
+<cite>N+1</cite></p></li>
+</ul>
+</div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -442,20 +445,26 @@ specified data type before computing the cumulative product.
 Default: <cite>None</cite>.</p>
 </p></li>
 <li><p><strong>include_initial</strong> (<em>bool</em>) – boolean indicating whether to include the initial value (i.e., the
-additive identity, zero) as the first value along the provided axis
-in the output. Default: <cite>False</cite>.</p></li>
+additive identity, zero) as the first value along the provided
+axis in the output. Default: <cite>False</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>an array containing cumulative products. The returned array has the
-data type as described in the <cite>dtype</cite> parameter description above.</p>
-<p>Where <cite>N</cite> is the size of the axis the cumulative products are
-computed along, the returned array shape is determined as follows.
-* If <cite>include_initial</cite> is <cite>False</cite>, the returned array will have the
-same shape as <cite>x</cite>.
-* If <cite>include_initial</cite> is <cite>True</cite>, the returned array will have the
-same shape as <cite>x</cite> except the axis along which the cumulative product
-is calculated, which will have size <cite>N+1</cite>.</p>
+<dd class="field-even"><p><p>an array containing cumulative products. The returned array has
+the data type as described in the <cite>dtype</cite> parameter description
+above.</p>
+<p>The returned array shape is determined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>include_initial</cite> is <cite>False</cite>, the returned array will
+have the same shape as <cite>x</cite></p></li>
+<li><p>If <cite>include_initial</cite> is <cite>True</cite>, the returned array will
+have the same shape as <cite>x</cite> except the axis along which the
+cumulative product is calculated, which will have size <cite>N+1</cite></p></li>
+</ul>
+</div></blockquote>
+<p>where <cite>N</cite> is the size of the axis the cumulative products are
+computed along.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -510,13 +519,18 @@ in the output. Default: <cite>False</cite>.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>an array containing cumulative sums. The returned array has the data
 type as described in the <cite>dtype</cite> parameter description above.</p>
-<p>Where <cite>N</cite> is the size of the axis the cumulative sums are computed
-along, the returned array shape is determined as follows.
-* If <cite>include_initial</cite> is <cite>False</cite>, the returned array will have the
-same shape as <cite>x</cite>.
-* If <cite>include_initial</cite> is <cite>True</cite>, the returned array will have the
-same shape as <cite>x</cite> except the axis along which the cumulative sum is
-calculated, which will have size <cite>N+1</cite>.</p>
+<p>The returned array shape is determined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>include_initial</cite> is <cite>False</cite>, the returned array will
+have the same shape as <cite>x</cite></p></li>
+<li><p>If <cite>include_initial</cite> is <cite>True</cite>, the returned array will
+have the same shape as <cite>x</cite> except the axis along which the
+cumulative sum is calculated, which will have size <cite>N+1</cite></p></li>
+</ul>
+</div></blockquote>
+<p>where <cite>N</cite> is the size of the axis the cumulative sums are computed
+along.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
