@@ -964,18 +964,6 @@ def tile(x, repetitions):
                 f"Expected tuple or integer type, got {type(repetitions)}."
             )
 
-    # case of scalar
-    if x.size == 1:
-        if not repetitions:
-            # handle empty tuple
-            repetitions = (1,)
-        return dpt.full(
-            repetitions,
-            x,
-            dtype=x.dtype,
-            usm_type=x.usm_type,
-            sycl_queue=x.sycl_queue,
-        )
     rep_dims = len(repetitions)
     x_dims = x.ndim
     if rep_dims < x_dims:

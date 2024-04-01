@@ -1378,20 +1378,24 @@ def test_tile_size_1():
 
     reps = 5
     # test for 0d array
-    x = dpt.asarray(2, dtype="i4")
-    res = dpt.tile(x, reps)
+    x1 = dpt.asarray(2, dtype="i4")
+    res = dpt.tile(x1, reps)
     assert dpt.all(res == dpt.full(reps, 2, dtype="i4"))
 
     # test for 1d array with single element
-    x = dpt.asarray([2], dtype="i4")
-    res = dpt.tile(x, reps)
+    x2 = dpt.asarray([2], dtype="i4")
+    res = dpt.tile(x2, reps)
     assert dpt.all(res == dpt.full(reps, 2, dtype="i4"))
 
-    # test empty reps returns copy of input
     reps = ()
-    res = dpt.tile(x, reps)
-    assert x.shape == res.shape
-    assert x == res
+    # test for gh-1627 behavior
+    res = dpt.tile(x1, reps)
+    assert x1.shape == res.shape
+    assert x1 == res
+
+    res = dpt.tile(x2, reps)
+    assert x2.shape == res.shape
+    assert x2 == res
 
 
 def test_tile_prepends_axes():
