@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+182.g840311e221 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+183.g3711733f73 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=bc223791"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e5861c8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+182.g840311e221
+                0.17.0dev0+183.g3711733f73
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -333,6 +333,205 @@ Default: “K”.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An array with elements clipped to the range [<cite>min</cite>, <cite>max</cite>].
 The returned array has the same data type as <cite>x</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.cumulative_logsumexp">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">cumulative_logsumexp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_accumulation.html#cumulative_logsumexp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.cumulative_logsumexp" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>cumulative_logsumexp(x, /, <a href="#id1"><span class="problematic" id="id2">*</span></a>, axis=None, dtype=None, include_initial=False,</dt><dd><p>out=None)</p>
+</dd>
+</dl>
+<p>Calculates the cumulative logsmumexp of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis along which cumulative logsumexp must be computed.
+If <cite>None</cite>, the logsumexp is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real- or complex-valued floating-point data
+type, the returned array will have the same data type as
+<cite>x</cite>.</p></li>
+<li><p>If <cite>x</cite> has signed integral data type, the returned array
+will have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has unsigned integral data type, the returned array
+will have the default unsigned integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean data type, the returned array will
+have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the cumulative logsumexp.
+Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>include_initial</strong> (<em>bool</em>) – boolean indicating whether to include the initial value (i.e., the
+additive identity, zero) as the first value along the provided axis
+in the output. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing cumulative logsumexp results. The returned
+array has the data type as described in the <cite>dtype</cite> parameter
+description above.</p>
+<p>The returned array shape is determined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>include_initial</cite> is <cite>False</cite>, the returned array will
+have the same shape as <cite>x</cite></p></li>
+<li><p>If <cite>include_initial</cite> is <cite>True</cite>, the returned array will
+have the same shape as <cite>x</cite> except the axis along which the
+cumulative logsumexp is calculated, which will have size
+<cite>N+1</cite></p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.cumulative_prod">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">cumulative_prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_accumulation.html#cumulative_prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.cumulative_prod" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>cumulative_prod(x, /, <a href="#id3"><span class="problematic" id="id4">*</span></a>, axis=None, dtype=None, include_initial=False,</dt><dd><p>out=None)</p>
+</dd>
+</dl>
+<p>Calculates the cumulative product of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis along which cumulative product must be computed.
+If <cite>None</cite>, the product is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real- or complex-valued floating-point data
+type, the returned array will have the same data type as
+<cite>x</cite>.</p></li>
+<li><p>If <cite>x</cite> has signed integral data type, the returned array
+will have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has unsigned integral data type, the returned array
+will have the default unsigned integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean data type, the returned array will
+have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the cumulative product.
+Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>include_initial</strong> (<em>bool</em>) – boolean indicating whether to include the initial value (i.e., the
+additive identity, zero) as the first value along the provided
+axis in the output. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing cumulative products. The returned array has
+the data type as described in the <cite>dtype</cite> parameter description
+above.</p>
+<p>The returned array shape is determined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>include_initial</cite> is <cite>False</cite>, the returned array will
+have the same shape as <cite>x</cite></p></li>
+<li><p>If <cite>include_initial</cite> is <cite>True</cite>, the returned array will
+have the same shape as <cite>x</cite> except the axis along which the
+cumulative product is calculated, which will have size <cite>N+1</cite></p></li>
+</ul>
+</div></blockquote>
+<p>where <cite>N</cite> is the size of the axis the cumulative products are
+computed along.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.cumulative_sum">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">cumulative_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_accumulation.html#cumulative_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.cumulative_sum" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>cumulative_sum(x, /, <a href="#id5"><span class="problematic" id="id6">*</span></a>, axis=None, dtype=None, include_initial=False,</dt><dd><p>out=None)</p>
+</dd>
+</dl>
+<p>Calculates the cumulative sum of elements in the input array <cite>x</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – axis along which cumulative sum must be computed.
+If <cite>None</cite>, the sum is computed over the entire array.
+Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><em>dtype</em></a><em>]</em>) – <p>data type of the returned array. If <cite>None</cite>, the default data
+type is inferred from the “kind” of the input array data type.</p>
+<blockquote>
+<div><ul>
+<li><p>If <cite>x</cite> has a real- or complex-valued floating-point data
+type, the returned array will have the same data type as
+<cite>x</cite>.</p></li>
+<li><p>If <cite>x</cite> has signed integral data type, the returned array
+will have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has unsigned integral data type, the returned array
+will have the default unsigned integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+<li><p>If <cite>x</cite> has a boolean data type, the returned array will
+have the default signed integral type for the device
+where input array <cite>x</cite> is allocated.</p></li>
+</ul>
+</div></blockquote>
+<p>If the data type (either specified or resolved) differs from the
+data type of <cite>x</cite>, the input array elements are cast to the
+specified data type before computing the cumulative sum.
+Default: <cite>None</cite>.</p>
+</p></li>
+<li><p><strong>include_initial</strong> (<em>bool</em>) – boolean indicating whether to include the initial value (i.e., the
+additive identity, zero) as the first value along the provided axis
+in the output. Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>an array containing cumulative sums. The returned array has the data
+type as described in the <cite>dtype</cite> parameter description above.</p>
+<p>The returned array shape is determined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>include_initial</cite> is <cite>False</cite>, the returned array will
+have the same shape as <cite>x</cite></p></li>
+<li><p>If <cite>include_initial</cite> is <cite>True</cite>, the returned array will
+have the same shape as <cite>x</cite> except the axis along which the
+cumulative sum is calculated, which will have size <cite>N+1</cite></p></li>
+</ul>
+</div></blockquote>
+<p>where <cite>N</cite> is the size of the axis the cumulative sums are computed
+along.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>

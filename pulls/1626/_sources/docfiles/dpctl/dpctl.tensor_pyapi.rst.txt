@@ -146,6 +146,12 @@ Other Functions
       - Determines if one data type can be cast to another data type according to Type Promotion Rules.
     * - :func:`clip()`
       - Clips to the range [`min_i`, `max_i`] for each element `x_i` in `x`.
+    * - :func:`cumulative_logsumexp()`
+      - Calculates the cumulative logsmumexp of elements in the input array `x`.
+    * - :func:`cumulative_prod()`
+      - Calculates the cumulative product of elements in the input array `x`.
+    * - :func:`cumulative_sum()`
+      - Calculates the cumulative sum of elements in the input array `x`.
     * - :func:`extract()`
       - Returns the elements of an array that satisfies the condition.
     * - :func:`finfo()`

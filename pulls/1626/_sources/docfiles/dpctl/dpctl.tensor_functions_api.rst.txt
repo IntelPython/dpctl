@@ -20,6 +20,9 @@ Other Functions
 .. autofunction:: argsort
 .. autofunction:: can_cast
 .. autofunction:: clip
+.. autofunction:: cumulative_logsumexp
+.. autofunction:: cumulative_prod
+.. autofunction:: cumulative_sum
 .. autofunction:: extract
 .. autofunction:: finfo
 .. autofunction:: get_print_options
