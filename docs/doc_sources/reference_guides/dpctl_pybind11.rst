@@ -27,7 +27,7 @@ The extension should be compiled using Intel(R) oneAPI DPC++ compiler:
 
 .. code-block:: bash
 
-    icpx -fsycl $(python -m pybind11 --includes) $(python -m dpctl  --includes) \
+    icpx -fsycl $(python -m pybind11 --includes) $(python -m dpctl  --library) \
         _example.cpp -fPIC -shared -o _example.so
 
 We can now use it from Python:
