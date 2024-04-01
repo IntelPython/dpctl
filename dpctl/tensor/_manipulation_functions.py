@@ -717,31 +717,37 @@ def swapaxes(X, axis1, axis2):
 def repeat(x, repeats, /, *, axis=None):
     """repeat(x, repeats, axis=None)
 
-    Repeat elements of an array.
+    Repeat elements of an array on a per-element basis.
 
     Args:
         x (usm_ndarray): input array
 
         repeats (Union[int, Sequence[int, ...], usm_ndarray]):
             The number of repetitions for each element.
-            `repeats` is broadcast to fit the shape of the given axis.
+
+            `repeats` must be broadcast compatible with `N` where `N` is
+            `prod(x.shape)` if `axis` is `None` and `x.shape[axis]`
+            otherwise.
+
             If `repeats` is an array, it must have an integer data type.
-            Otherwise, `repeats` must be a Python integer, tuple, list, or
-            range.
+            Otherwise, `repeats` must be a Python integer or sequence of
+            Python integers (i.e., a tuple, list, or range).
 
         axis (Optional[int]):
             The axis along which to repeat values. If `axis` is `None`, the
-            function repeats elements of the flattened array.
-            Default: `None`.
+            function repeats elements of the flattened array. Default: `None`.
 
     Returns:
-        usm_narray:
-            Array with repeated elements.
-            The returned array must have the same data type as `x`, is created
-            on the same device as `x` and has the same USM allocation type as
-            `x`. If `axis` is `None`, the returned array is one-dimensional,
+        usm_ndarray:
+            output array with repeated elements.
+
+            If `axis` is `None`, the returned array is one-dimensional,
             otherwise, it has the same shape as `x`, except for the axis along
             which elements were repeated.
+
+            The returned array will have the same data type as `x`.
+            The returned array will be located on the same device as `x` and
+            have the same USM allocation type as `x`.
 
     Raises:
         AxisError: if `axis` value is invalid.
@@ -951,14 +957,14 @@ def tile(x, repetitions, /):
         usm_ndarray:
             tiled output array.
 
-            The returned array will have rank `max(M, N)`. If `S` is
-            the shape of `x` after prepending dimensions and `R` is
-            `repetitions` after prepending ones, then the shape of
-            the result will be `S[i] * R[i]` for each dimension `i`.
-            
+            The returned array will have rank `max(M, N)`. If `S` is the
+            shape of `x` after prepending dimensions and `R` is
+            `repetitions` after prepending ones, then the shape of the
+            result will be `S[i] * R[i]` for each dimension `i`.
+
             The returned array will have the same data type as `x`.
-            The returned array will be located on the same device as
-            `x` and have the same USM allocation type as `x`.
+            The returned array will be located on the same device as `x` and
+            have the same USM allocation type as `x`.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
