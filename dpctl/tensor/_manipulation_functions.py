@@ -937,21 +937,28 @@ def tile(x, repetitions, /):
     `repetitions`.
 
     For `N` = len(`repetitions`) and `M` = len(`x.shape`):
-    - if `M < N`, `x` will have `N - M` new axes prepended to its shape
-    - if `M > N`, `repetitions` will have `M - N` new axes 1 prepended to it
+
+        * If `M < N`, `x` will have `N - M` new axes prepended to its shape
+        * If `M > N`, `repetitions` will have `M - N` ones prepended to it
 
     Args:
         x (usm_ndarray): input array
 
         repetitions (Union[int, Tuple[int, ...]]):
-            The number of repetitions for each dimension.
+            The number of repetitions along each dimension of `x`.
 
     Returns:
-        usm_narray:
-            Array with tiled elements.
-            The returned array must have the same data type as `x`,
-            is created on the same device as `x` and has the same USM
-            allocation type as `x`.
+        usm_ndarray:
+            tiled output array.
+
+            The returned array will have rank `max(M, N)`. If `S` is
+            the shape of `x` after prepending dimensions and `R` is
+            `repetitions` after prepending ones, then the shape of
+            the result will be `S[i] * R[i]` for each dimension `i`.
+            
+            The returned array will have the same data type as `x`.
+            The returned array will be located on the same device as
+            `x` and have the same USM allocation type as `x`.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
