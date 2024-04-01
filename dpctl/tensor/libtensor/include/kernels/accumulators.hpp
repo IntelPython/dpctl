@@ -290,6 +290,9 @@ inclusive_scan_base_step(sycl::queue &exec_q,
             else {
                 wg_iscan_val = su_ns::custom_inclusive_scan_over_group(
                     it.get_group(), slm_iscan_tmp, local_iscan.back(), scan_op);
+                // ensure all finished reading from SLM, to avoid race condition
+                // with subsequent writes into SLM
+                it.barrier(sycl::access::fence_space::local_space);
             }
 
             slm_iscan_tmp[(lid + 1) % wg_size] = wg_iscan_val;
