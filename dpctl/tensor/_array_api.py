@@ -49,7 +49,7 @@ def _isdtype_impl(dtype, kind):
         raise TypeError(f"Unsupported data type kind: {kind}")
 
 
-__array_api_version__ = "2022.12"
+__array_api_version__ = "2023.12"
 
 
 class Info:
@@ -80,6 +80,8 @@ class Info:
 
     def capabilities(self):
         """
+        capabilities()
+
         Returns a dictionary of `dpctl`'s capabilities.
 
         Returns:
@@ -92,12 +94,16 @@ class Info:
 
     def default_device(self):
         """
+        default_device()
+
         Returns the default SYCL device.
         """
         return dpctl.select_default_device()
 
-    def default_dtypes(self, device=None):
+    def default_dtypes(self, *, device=None):
         """
+        default_dtypes(*, device=None)
+
         Returns a dictionary of default data types for `device`.
 
         Args:
@@ -129,8 +135,10 @@ class Info:
             "indexing": dpt.dtype(default_device_index_type(device)),
         }
 
-    def dtypes(self, device=None, kind=None):
+    def dtypes(self, *, device=None, kind=None):
         """
+        dtypes(*, device=None, kind=None)
+
         Returns a dictionary of all Array API data types of a specified `kind`
         supported by `device`
 
@@ -193,13 +201,16 @@ class Info:
 
     def devices(self):
         """
+        devices()
+
         Returns a list of supported devices.
         """
         return dpctl.get_devices()
 
 
 def __array_namespace_info__():
-    """__array_namespace_info__()
+    """
+    __array_namespace_info__()
 
     Returns a namespace with Array API namespace inspection utilities.
 
