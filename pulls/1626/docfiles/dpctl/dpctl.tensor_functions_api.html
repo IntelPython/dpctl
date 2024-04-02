@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+183.g3711733f73 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+185.gdee703a4b1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e5861c8"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=bc8c3719"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+183.g3711733f73
+                0.17.0dev0+185.gdee703a4b1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -947,7 +947,7 @@ array has the same data type as <cite>x</cite>.</p>
 <dt class="sig sig-object py" id="dpctl.tensor.nonzero">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#nonzero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.nonzero" title="Permalink to this definition"></a></dt>
 <dd><p>Return the indices of non-zero elements.</p>
-<p>Returns the tuple of usm_narrays, one for each dimension
+<p>Returns a tuple of usm_ndarrays, one for each dimension
 of <cite>arr</cite>, containing the indices of the non-zero elements
 in that dimension. The values of <cite>arr</cite> are always tested in
 row-major, C-style order.</p>
@@ -2739,7 +2739,7 @@ is created on the same device as <cite>x</cite> and has the same
 USM allocation type as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>usm_narray</p>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -2771,7 +2771,7 @@ is created on the same device as <cite>x</cite> and has the same USM allocation
 type as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>usm_narray</p>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2779,31 +2779,35 @@ type as <cite>x</cite>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.repeat">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">repeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#repeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.repeat" title="Permalink to this definition"></a></dt>
-<dd><p>Repeat elements of an array.</p>
+<dd><p>Repeat elements of an array on a per-element basis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Sequence</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – The number of repetitions for each element.
-<cite>repeats</cite> is broadcast to fit the shape of the given axis.
-If <cite>repeats</cite> is an array, it must have an integer data type.
-Otherwise, <cite>repeats</cite> must be a Python integer, tuple, list, or
-range.</p></li>
+<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Sequence</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – <p>The number of repetitions for each element.</p>
+<p><cite>repeats</cite> must be broadcast-compatible with <cite>N</cite> where <cite>N</cite> is
+<cite>prod(x.shape)</cite> if <cite>axis</cite> is <cite>None</cite> and <cite>x.shape[axis]</cite>
+otherwise.</p>
+<p>If <cite>repeats</cite> is an array, it must have an integer data type.
+Otherwise, <cite>repeats</cite> must be a Python integer or sequence of
+Python integers (i.e., a tuple, list, or range).</p>
+</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The axis along which to repeat values. If <cite>axis</cite> is <cite>None</cite>, the
-function repeats elements of the flattened array.
-Default: <cite>None</cite>.</p></li>
+function repeats elements of the flattened array. Default: <cite>None</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array with repeated elements.
-The returned array must have the same data type as <cite>x</cite>, is created
-on the same device as <cite>x</cite> and has the same USM allocation type as
-<cite>x</cite>. If <cite>axis</cite> is <cite>None</cite>, the returned array is one-dimensional,
+<dd class="field-even"><p><p>output array with repeated elements.</p>
+<p>If <cite>axis</cite> is <cite>None</cite>, the returned array is one-dimensional,
 otherwise, it has the same shape as <cite>x</cite>, except for the axis along
 which elements were repeated.</p>
+<p>The returned array will have the same data type as <cite>x</cite>.
+The returned array will be located on the same device as <cite>x</cite> and
+have the same USM allocation type as <cite>x</cite>.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>usm_narray</p>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
@@ -2958,7 +2962,7 @@ is created on the same device as <cite>x</cite> and has the same USM
 allocation type as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>usm_narray</p>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
@@ -2971,24 +2975,33 @@ allocation type as <cite>x</cite>.</p>
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">tile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_manipulation_functions.html#tile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.tile" title="Permalink to this definition"></a></dt>
 <dd><p>Repeat an input array <cite>x</cite> along each axis a number of times given by
 <cite>repetitions</cite>.</p>
-<p>For <cite>N</cite> = len(<cite>repetitions</cite>) and <cite>M</cite> = len(<cite>x.shape</cite>):
-- if <cite>M &lt; N</cite>, <cite>x</cite> will have <cite>N - M</cite> new axes prepended to its shape
-- if <cite>M &gt; N</cite>, <cite>repetitions</cite> will have <cite>M - N</cite> new axes 1 prepended to it</p>
+<p>For <cite>N</cite> = len(<cite>repetitions</cite>) and <cite>M</cite> = len(<cite>x.shape</cite>):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <cite>M &lt; N</cite>, <cite>x</cite> will have <cite>N - M</cite> new axes prepended to its shape</p></li>
+<li><p>If <cite>M &gt; N</cite>, <cite>repetitions</cite> will have <cite>M - N</cite> ones prepended to it</p></li>
+</ul>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>repetitions</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – The number of repetitions for each dimension.</p></li>
+<li><p><strong>repetitions</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>]</em>) – The number of repetitions along each dimension of <cite>x</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array with tiled elements.
-The returned array must have the same data type as <cite>x</cite>,
-is created on the same device as <cite>x</cite> and has the same USM
-allocation type as <cite>x</cite>.</p>
+<dd class="field-even"><p><p>tiled output array.</p>
+<p>The returned array will have rank <cite>max(M, N)</cite>. If <cite>S</cite> is the
+shape of <cite>x</cite> after prepending dimensions and <cite>R</cite> is
+<cite>repetitions</cite> after prepending ones, then the shape of the
+result will be <cite>S[i] * R[i]</cite> for each dimension <cite>i</cite>.</p>
+<p>The returned array will have the same data type as <cite>x</cite>.
+The returned array will be located on the same device as <cite>x</cite> and
+have the same USM allocation type as <cite>x</cite>.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>usm_narray</p>
+<dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>

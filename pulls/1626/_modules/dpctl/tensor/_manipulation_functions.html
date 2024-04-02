@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+183.g3711733f73 documentation</title>
+  <title>dpctl.tensor._manipulation_functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+185.gdee703a4b1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=4e5861c8"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=bc8c3719"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+183.g3711733f73
+                0.17.0dev0+185.gdee703a4b1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -189,7 +189,7 @@
 <span class="sd">           `(0,1,...,N-1)` where `N` is the number of axes (dimensions)</span>
 <span class="sd">           of `x`.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        usm_narray:</span>
+<span class="sd">        usm_ndarray:</span>
 <span class="sd">            An array with permuted axes.</span>
 <span class="sd">            The returned array must has the same data type as `x`,</span>
 <span class="sd">            is created on the same device as `x` and has the same USM allocation</span>
@@ -740,7 +740,7 @@
 <span class="sd">            in the half-open interval `[-N, N)`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        usm_narray:</span>
+<span class="sd">        usm_ndarray:</span>
 <span class="sd">            Array with moved axes.</span>
 <span class="sd">            The returned array must has the same data type as `x`,</span>
 <span class="sd">            is created on the same device as `x` and has the same</span>
@@ -787,7 +787,7 @@
 <span class="sd">            a valid `axis` must be in the half-open interval `[-N, N)`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        usm_narray:</span>
+<span class="sd">        usm_ndarray:</span>
 <span class="sd">            Array with swapped axes.</span>
 <span class="sd">            The returned array must has the same data type as `x`,</span>
 <span class="sd">            is created on the same device as `x` and has the same USM</span>
@@ -811,31 +811,37 @@
 <div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;repeat(x, repeats, axis=None)</span>
 
-<span class="sd">    Repeat elements of an array.</span>
+<span class="sd">    Repeat elements of an array on a per-element basis.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (usm_ndarray): input array</span>
 
 <span class="sd">        repeats (Union[int, Sequence[int, ...], usm_ndarray]):</span>
 <span class="sd">            The number of repetitions for each element.</span>
-<span class="sd">            `repeats` is broadcast to fit the shape of the given axis.</span>
+
+<span class="sd">            `repeats` must be broadcast-compatible with `N` where `N` is</span>
+<span class="sd">            `prod(x.shape)` if `axis` is `None` and `x.shape[axis]`</span>
+<span class="sd">            otherwise.</span>
+
 <span class="sd">            If `repeats` is an array, it must have an integer data type.</span>
-<span class="sd">            Otherwise, `repeats` must be a Python integer, tuple, list, or</span>
-<span class="sd">            range.</span>
+<span class="sd">            Otherwise, `repeats` must be a Python integer or sequence of</span>
+<span class="sd">            Python integers (i.e., a tuple, list, or range).</span>
 
 <span class="sd">        axis (Optional[int]):</span>
 <span class="sd">            The axis along which to repeat values. If `axis` is `None`, the</span>
-<span class="sd">            function repeats elements of the flattened array.</span>
-<span class="sd">            Default: `None`.</span>
+<span class="sd">            function repeats elements of the flattened array. Default: `None`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        usm_narray:</span>
-<span class="sd">            Array with repeated elements.</span>
-<span class="sd">            The returned array must have the same data type as `x`, is created</span>
-<span class="sd">            on the same device as `x` and has the same USM allocation type as</span>
-<span class="sd">            `x`. If `axis` is `None`, the returned array is one-dimensional,</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            output array with repeated elements.</span>
+
+<span class="sd">            If `axis` is `None`, the returned array is one-dimensional,</span>
 <span class="sd">            otherwise, it has the same shape as `x`, except for the axis along</span>
 <span class="sd">            which elements were repeated.</span>
+
+<span class="sd">            The returned array will have the same data type as `x`.</span>
+<span class="sd">            The returned array will be located on the same device as `x` and</span>
+<span class="sd">            have the same USM allocation type as `x`.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        AxisError: if `axis` value is invalid.</span>
@@ -1031,21 +1037,28 @@
 <span class="sd">    `repetitions`.</span>
 
 <span class="sd">    For `N` = len(`repetitions`) and `M` = len(`x.shape`):</span>
-<span class="sd">    - if `M &lt; N`, `x` will have `N - M` new axes prepended to its shape</span>
-<span class="sd">    - if `M &gt; N`, `repetitions` will have `M - N` new axes 1 prepended to it</span>
+
+<span class="sd">        * If `M &lt; N`, `x` will have `N - M` new axes prepended to its shape</span>
+<span class="sd">        * If `M &gt; N`, `repetitions` will have `M - N` ones prepended to it</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (usm_ndarray): input array</span>
 
 <span class="sd">        repetitions (Union[int, Tuple[int, ...]]):</span>
-<span class="sd">            The number of repetitions for each dimension.</span>
+<span class="sd">            The number of repetitions along each dimension of `x`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        usm_narray:</span>
-<span class="sd">            Array with tiled elements.</span>
-<span class="sd">            The returned array must have the same data type as `x`,</span>
-<span class="sd">            is created on the same device as `x` and has the same USM</span>
-<span class="sd">            allocation type as `x`.</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            tiled output array.</span>
+
+<span class="sd">            The returned array will have rank `max(M, N)`. If `S` is the</span>
+<span class="sd">            shape of `x` after prepending dimensions and `R` is</span>
+<span class="sd">            `repetitions` after prepending ones, then the shape of the</span>
+<span class="sd">            result will be `S[i] * R[i]` for each dimension `i`.</span>
+
+<span class="sd">            The returned array will have the same data type as `x`.</span>
+<span class="sd">            The returned array will be located on the same device as `x` and</span>
+<span class="sd">            have the same USM allocation type as `x`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -1058,18 +1071,6 @@
                 <span class="sa">f</span><span class="s2">&quot;Expected tuple or integer type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-    <span class="c1"># case of scalar</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">repetitions</span><span class="p">:</span>
-            <span class="c1"># handle empty tuple</span>
-            <span class="n">repetitions</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-            <span class="n">repetitions</span><span class="p">,</span>
-            <span class="n">x</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
     <span class="n">rep_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span>
     <span class="n">x_dims</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">rep_dims</span> <span class="o">&lt;</span> <span class="n">x_dims</span><span class="p">:</span>

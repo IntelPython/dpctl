@@ -104,7 +104,7 @@ Array Manipulation
     * - :func:`permute_dims()`
       - Permute the axes (dimensions) of an array; returns the permuted array as a view.
     * - :func:`repeat()`
-      - Repeat elements of an array.
+      - Repeat elements of an array on a per-element basis.
     * - :func:`reshape()`
       - Reshapes array `x` into new shape.
     * - :func:`roll()`
