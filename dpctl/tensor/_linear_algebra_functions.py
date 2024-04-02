@@ -86,6 +86,7 @@ def tensordot(x1, x2, axes=2):
                 * if `N` equals `1`, the result is the tensor dot product
                 * if `N` equals `2`, the result is the tensor double
                   contraction (default).
+
             If `axes` is a tuple of two sequences `(x1_axes, x2_axes)`, the
             first sequence applies to `x1` and the second sequence applies
             to `x2`. Both sequences must have equal length, and each axis
