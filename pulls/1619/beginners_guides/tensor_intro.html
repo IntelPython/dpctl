@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="User guides" href="../user_guides/index.html" /><link rel="prev" title="Environment variables" href="environment_variables.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</title>
+        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -145,7 +145,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -415,6 +415,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../reference_guides/dpctl/tensor.utility_functions.html">Utility functions</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Utility functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.all.html">dpctl.tensor.all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.any.html">dpctl.tensor.any</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
 </ul>
 </li>
 </ul>
@@ -546,7 +547,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -554,7 +555,119 @@
         <article role="main">
           <section id="getting-started-with-dpctl-tensor">
 <span id="beginners-guide-tensor-intro"></span><h1>Getting started with <a class="reference internal" href="../reference_guides/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><a class="headerlink" href="#getting-started-with-dpctl-tensor" title="Permalink to this heading">#</a></h1>
-<p>To be written</p>
+<p>The tensor submodule provides an N-dimensional array object for a tensor whose values have the same data type
+from the <a class="reference internal" href="../reference_guides/dpctl/tensor.data_types.html#dpctl-tensor-data-types"><span class="std std-ref">following list</span></a>:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int8</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int16</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int32</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int64</span></code></p></td>
+<td></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">float16</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">complex64</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint32</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint64</span></code></p></td>
+<td></td>
+<td></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">float64</span></code></p></td>
+<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">complex128</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="creating-an-array">
+<h2>Creating an array<a class="headerlink" href="#creating-an-array" title="Permalink to this heading">#</a></h2>
+<p>Array <a class="reference internal" href="../reference_guides/dpctl/tensor.creation_functions.html#dpctl-tensor-creation-functions"><span class="std std-ref">creation functions</span></a> support keyword arguments that
+control the device where the array is allocated as well as aspects of
+<a class="reference internal" href="../reference_guides/dpctl/memory.html#dpctl-memory-pyapi"><span class="std std-ref">Unified Shared Memory allocation</span></a> for the array.</p>
+<p>These three keywords are:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Keyword arguments</p></th>
+<th class="head"><p>Default value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">usm_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></td>
+<td><p>type of USM allocation to make</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p><a class="reference internal" href="../reference_guides/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> instance</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Instance of <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> associated with array</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Arguments <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and <code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary to each other, and
+a user need only provide one of these.</p>
+<p>A valid setting for the <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword argument is any object that can be passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.Device.create_device()</span></code>.
+If both <code class="docutils literal notranslate"><span class="pre">device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> keyword arguments are specified, they must correspond to <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instances which
+compare equal to one another.</p>
+<p>A created instance of <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a> has an associated <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instance that can be retrieved
+using <code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.sycl_queue</span></code> property. The underlying USM allocation
+is allocated on <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> and is bound to <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> targeted by this queue.</p>
+</section>
+<section id="execution-model">
+<h2>Execution model<a class="headerlink" href="#execution-model" title="Permalink to this heading">#</a></h2>
+<p id="dpctl-tensor-compute-follows-data">When one of more instances of <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> objects are passed to a function in <a class="reference internal" href="../reference_guides/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> other than creation function,
+a “compute follows data” execution model is followed.</p>
+<p>The model requires that <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instances associated with each array compared equal to one another, signifying that
+each one corresponds to the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> object. In such a case, the output array is associated with the same
+<code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> and computations are scheduled for execution using this <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Two instances <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> may target the same <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and be using the same <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code>, but correspond
+to different scheduling enties, and hence be in violation of the compute-follows-data requirement. One common example of this are
+<code class="docutils literal notranslate"><span class="pre">SyclQueue</span></code> corresponding to default-selected device and using platform default context but created using different properties, e.g.
+one with <cite>“enable_profiling”</cite> set and another without it.</p>
+</div>
+<p>If input arrays do not conform to the compute-follows-data requirements, <a class="reference internal" href="../reference_guides/dpctl/utils.html#dpctl.utils.ExecutionPlacementError" title="dpctl.utils.ExecutionPlacementError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">dpctl.utils.ExecutionPlacementError</span></code></a> is raised.
+User must explicitly migrate the data to unambiguously control the execution placement.</p>
+</section>
+<section id="migrating-arrays">
+<h2>Migrating arrays<a class="headerlink" href="#migrating-arrays" title="Permalink to this heading">#</a></h2>
+<p>Array content can be migrated to a different device <a class="reference internal" href="../reference_guides/dpctl/tensor.usm_ndarray.html#dpctl-tensor-usm-ndarray-to-device-example"><span class="std std-ref">using</span></a>
+either <code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.to_device()</span></code> method, or by using <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a> function.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">arr.to_device(device=target_device)</span></code> method will be zero-copy if the <code class="docutils literal notranslate"><span class="pre">arr.sycl_queue</span></code> and the <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>
+instance associated with new target device have the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> instances.</p>
+<p>Here is an example of migration without a copy:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Using <code class="docutils literal notranslate"><span class="pre">to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">q_prof</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
+
+<span class="n">timer</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span>
+<span class="c1"># no data migration takes place here,</span>
+<span class="c1"># but x and x1 arrays do not satify compute-follows-data requirements</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">q_prof</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="n">q_prof</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="n">tensor</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tensor</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x1</span><span class="p">))</span>
+
+<span class="n">host_dt</span><span class="p">,</span> <span class="n">device_dt</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">dt</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution on device </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">device_dt</span><span class="si">}</span><span class="s2"> seconds, on host </span><span class="si">{</span><span class="n">host_dt</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 
         </article>
@@ -600,13 +713,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><ul>
+<li><a class="reference internal" href="#creating-an-array">Creating an array</a></li>
+<li><a class="reference internal" href="#execution-model">Execution model</a></li>
+<li><a class="reference internal" href="#migrating-arrays">Migrating arrays</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=a8181c27"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c783659d"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

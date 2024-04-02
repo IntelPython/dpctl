@@ -1,5 +1,7 @@
 .. rubric:: Use :meth:`usm_ndarray.to_device` to migrate array to different device
 
+.. _dpctl_tensor_usm_ndarray_to_device_example:
+
 .. code-block:: python
     :caption: Migrate array to a different device
 

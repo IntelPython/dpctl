@@ -52,5 +52,78 @@ Requests to create an instance of array object for these types on devices where 
 
 .. TODO: provide a note on support for sub-normal numbers
 
-Data type objects are instances of :py:class:`numpy.dtype` object, and support equality comparison by implementing
+Data type objects are instances of :py:class:`dtype` object, and support equality comparison by implementing
 special method :meth:`__eq__`.
+
+.. py:class:: dtype
+
+    Same as :py:class:`numpy.dtype`
+
+    .. py:method:: __eq__
+
+        Check if data-type instances are equal.
+
+
+Default integral data type
+--------------------------
+
+The default integral data type is :attr:`int64` for all supported devices.
+
+Default indexing data type
+--------------------------
+
+The default indexing data type is :attr:`int64` for all supported devices.
+
+Default real floating-point data type
+-------------------------------------
+
+The default real floating-point type depends on the capabilities of device where array is allocated.
+If the device support double precision floating-point types, the default real floating-point type
+is :attr:`float64`, otherwise :attr:`float32`.
+
+Make sure to select an appropriately capable device for an application that requires use of double
+precision floating-point type.
+
+Default complex floating-point data type
+----------------------------------------
+
+Like for the default real floating-point type, the default complex floating-point type depends on
+capabilities of device. If the device support double precision real floating-point types, the default
+complex floating-point type is :attr:`complex128`, otherwise :attr:`complex64`.
+
+
+Querying default data types programmatically
+--------------------------------------------
+
+The data type can be discovered programmatically using Array API :ref:`inspection functions <dpctl_tensor_inspection>`:
+
+.. code-block:: python
+
+    from dpctl
+    from dpctl import tensor
+
+    device = dpctl.select_default_device()
+    # get default data types for default-selected device
+    default_types = tensor.__array_namespace_info__().default_dtypes(device)
+    int_dt = default_types["integral"]
+    ind_dt = default_types["indexing"]
+    rfp_dt = default_types["real floating"]
+    cfp_dt = default_types["complex floating"]
+
+
+Type promotion rules
+--------------------
+
+Type promotion rules govern behavior of array library when its function does not have
+dedicated implementation for the data type(s) of the input array(s).
+
+In such a case, input arrays may be cast to data types for which dedicated implementation
+exists. This is what happens when function :data:`sin` is applied to array of integral values.
+
+Type promotion rules used in :py:mod:`dpctl.tensor` are consistent with the
+Python Array API specification's `type promotion rules <https://data-apis.org/array-api/latest/API_specification/type_promotion.html>`_
+for devices that support double precision floating-point type.
+
+
+For devices that do not support double precision floating-point type, the type promotion rule is
+truncated by removing nodes corresponding to unsupported data types and edges that lead to them.

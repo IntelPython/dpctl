@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.reshape" href="dpctl.tensor.reshape.html" /><link rel="prev" title="dpctl.tensor.permute_dims" href="dpctl.tensor.permute_dims.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.repeat - Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</title>
+        <title>dpctl.tensor.repeat - Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -415,6 +415,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.utility_functions.html">Utility functions</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Utility functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.all.html">dpctl.tensor.all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.any.html">dpctl.tensor.any</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
 </ul>
 </li>
 </ul>
@@ -557,31 +558,35 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.repeat">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">repeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_manipulation_functions.html#repeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.repeat" title="Permalink to this definition">#</a></dt>
-<dd><p>Repeat elements of an array.</p>
+<dd><p>Repeat elements of an array on a per-element basis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – The number of repetitions for each element.
-<cite>repeats</cite> is broadcast to fit the shape of the given axis.
-If <cite>repeats</cite> is an array, it must have an integer data type.
-Otherwise, <cite>repeats</cite> must be a Python integer, tuple, list, or
-range.</p></li>
+<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – <p>The number of repetitions for each element.</p>
+<p><cite>repeats</cite> must be broadcast-compatible with <cite>N</cite> where <cite>N</cite> is
+<cite>prod(x.shape)</cite> if <cite>axis</cite> is <cite>None</cite> and <cite>x.shape[axis]</cite>
+otherwise.</p>
+<p>If <cite>repeats</cite> is an array, it must have an integer data type.
+Otherwise, <cite>repeats</cite> must be a Python integer or sequence of
+Python integers (i.e., a tuple, list, or range).</p>
+</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – The axis along which to repeat values. If <cite>axis</cite> is <cite>None</cite>, the
-function repeats elements of the flattened array.
-Default: <cite>None</cite>.</p></li>
+function repeats elements of the flattened array. Default: <cite>None</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array with repeated elements.
-The returned array must have the same data type as <cite>x</cite>, is created
-on the same device as <cite>x</cite> and has the same USM allocation type as
-<cite>x</cite>. If <cite>axis</cite> is <cite>None</cite>, the returned array is one-dimensional,
+<dd class="field-even"><p><p>output array with repeated elements.</p>
+<p>If <cite>axis</cite> is <cite>None</cite>, the returned array is one-dimensional,
 otherwise, it has the same shape as <cite>x</cite>, except for the axis along
 which elements were repeated.</p>
+<p>The returned array will have the same data type as <cite>x</cite>.
+The returned array will be located on the same device as <cite>x</cite> and
+have the same USM allocation type as <cite>x</cite>.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>usm_narray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>AxisError</strong> – if <cite>axis</cite> value is invalid.</p>
@@ -659,7 +664,7 @@ which elements were repeated.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a8181c27"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c783659d"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

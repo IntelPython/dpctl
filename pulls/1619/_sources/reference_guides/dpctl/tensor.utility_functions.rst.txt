@@ -10,3 +10,15 @@ Utility functions
 
     all
     any
+    allclose
+
+Device object
+-------------
+
+.. autoclass:: Device
+
+    .. autosummary::
+        ~create_device
+        ~sycl_queue
+        ~sycl_device
+        ~sycl_context

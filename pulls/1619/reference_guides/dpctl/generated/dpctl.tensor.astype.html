@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.can_cast" href="dpctl.tensor.can_cast.html" /><link rel="prev" title="Data type functions" href="../tensor.data_type_functions.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.astype - Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</title>
+        <title>dpctl.tensor.astype - Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+192.g28aad86224 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+199.g3b20628b38 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -415,6 +415,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.utility_functions.html">Utility functions</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Utility functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.all.html">dpctl.tensor.all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.any.html">dpctl.tensor.any</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
 </ul>
 </li>
 </ul>
@@ -563,7 +564,7 @@ specified type.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An input array.</p></li>
-<li><p><strong>new_dtype</strong> (<em>dtype</em>) – The data type of the resulting array. If <cite>None</cite>, gives default
+<li><p><strong>new_dtype</strong> (<a class="reference internal" href="../tensor.data_types.html#dpctl.tensor.dtype" title="dpctl.tensor.dtype"><em>dtype</em></a>) – The data type of the resulting array. If <cite>None</cite>, gives default
 floating point type supported by device where the resulting array
 will be located.</p></li>
 <li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Controls memory layout of the resulting array if a copy
@@ -578,7 +579,7 @@ output array is created. Device can be specified by a
 a filter selector string, an instance of
 <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, an instance of
 <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or an instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code>. If the value is <cite>None</cite>,
+<a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>. If the value is <cite>None</cite>,
 returned array is created on the same device as <cite>array</cite>.
 Default: <cite>None</cite>.</p></li>
 </ul>
@@ -663,7 +664,7 @@ Default: <cite>None</cite>.</p></li>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a8181c27"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c783659d"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
