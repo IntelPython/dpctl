@@ -103,6 +103,9 @@ function(_setup_sphinx)
 
     if(DPCTL_ENABLE_DOXYREST)
         set(DEPEND_ON_DOXYREST "Doxyrest")
+    else()
+        set(_generated_dir ${SPHINX_SOURCE}/reference_guides/libsyclinterface/generated)
+        configure_file(${_generated_dir}/index_template.rst.in ${_generated_dir}/index.rst @ONLY)
     endif()
 
     add_custom_command(
