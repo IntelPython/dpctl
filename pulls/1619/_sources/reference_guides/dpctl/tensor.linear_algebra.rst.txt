@@ -1,7 +1,7 @@
 .. _dpctl_tensor_linear_algebra:
 
 Linear algebra functions
-==================
+========================
 
 .. currentmodule:: dpctl.tensor
 
