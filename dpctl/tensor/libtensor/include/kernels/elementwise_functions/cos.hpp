@@ -109,7 +109,7 @@ template <typename argT, typename resT> struct CosFunctor
              */
             if (x == realT(0) && !yfinite) {
                 const realT y_m_y = (y - y);
-                const realT res_im = std::copysign(realT(0), x * y_m_y);
+                const realT res_im = sycl::copysign(realT(0), x * y_m_y);
                 return resT{y_m_y, res_im};
             }
 
@@ -120,7 +120,7 @@ template <typename argT, typename resT> struct CosFunctor
              * The sign of 0 in the result is unspecified.
              */
             if (y == realT(0) && !xfinite) {
-                const realT res_im = std::copysign(realT(0), x) * y;
+                const realT res_im = sycl::copysign(realT(0), x) * y;
                 return resT{x * x, res_im};
             }
 
@@ -144,7 +144,7 @@ template <typename argT, typename resT> struct CosFunctor
              */
             if (std::isinf(x)) {
                 if (!yfinite) {
-                    return resT{x * x, std::copysign(q_nan, x)};
+                    return resT{x * x, sycl::copysign(q_nan, x)};
                 }
                 return resT{(x * x) * std::cos(y), x * std::sin(y)};
             }

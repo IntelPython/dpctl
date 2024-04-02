@@ -86,7 +86,7 @@ template <typename argT, typename resT> struct SinFunctor
                 resT res = std::sin(in);
 #endif
                 if (in_re == realT(0)) {
-                    res.real(std::copysign(realT(0), in_re));
+                    res.real(sycl::copysign(realT(0), in_re));
                 }
                 return res;
             }
@@ -111,7 +111,7 @@ template <typename argT, typename resT> struct SinFunctor
              */
             if (x == realT(0) && !yfinite) {
                 const realT sinh_im = q_nan;
-                const realT sinh_re = std::copysign(realT(0), x * sinh_im);
+                const realT sinh_re = sycl::copysign(realT(0), x * sinh_im);
                 return resT{sinh_im, -sinh_re};
             }
 
@@ -127,7 +127,7 @@ template <typename argT, typename resT> struct SinFunctor
                     return resT{sinh_im, -sinh_re};
                 }
                 const realT sinh_re = x;
-                const realT sinh_im = std::copysign(realT(0), y);
+                const realT sinh_im = sycl::copysign(realT(0), y);
                 return resT{sinh_im, -sinh_re};
             }
 

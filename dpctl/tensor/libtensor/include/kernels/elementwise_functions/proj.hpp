@@ -84,7 +84,7 @@ template <typename argT, typename resT> struct ProjFunctor
 private:
     template <typename T> std::complex<T> value_at_infinity(const T &y) const
     {
-        const T res_im = std::copysign(T(0), y);
+        const T res_im = sycl::copysign(T(0), y);
         return std::complex<T>{std::numeric_limits<T>::infinity(), res_im};
     }
 };

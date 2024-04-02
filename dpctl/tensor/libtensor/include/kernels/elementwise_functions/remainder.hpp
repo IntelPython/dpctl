@@ -81,7 +81,7 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
                 }
             }
             else {
-                rem = std::copysign(resT(0), in2);
+                rem = sycl::copysign(resT(0), in2);
             }
             return rem;
         }
@@ -122,7 +122,7 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
                     }
                 }
                 else {
-                    rem[i] = std::copysign(remT(0), in2[i]);
+                    rem[i] = sycl::copysign(remT(0), in2[i]);
                 }
             }
             if constexpr (std::is_same_v<resT, remT>) {

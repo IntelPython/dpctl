@@ -109,7 +109,7 @@ template <typename argT, typename resT> struct AcoshFunctor
             /*
              * For large x or y including acos(+-Inf + I*+-Inf)
              */
-            if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
+            if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
 #ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = typename exprm_ns::complex<realT>;
                 const sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
@@ -120,7 +120,7 @@ template <typename argT, typename resT> struct AcoshFunctor
                 const realT wx = std::real(log_in);
                 const realT wy = std::imag(log_in);
 #endif
-                const realT rx = std::abs(wy);
+                const realT rx = sycl::fabs(wy);
                 realT ry = wx + std::log(realT(2));
                 acos_in = resT{rx, (std::signbit(y)) ? ry : -ry};
             }
@@ -145,15 +145,15 @@ template <typename argT, typename resT> struct AcoshFunctor
             /* acosh(NaN + I*+-Inf) = +Inf + I*NaN */
             /* acosh(+-Inf + I*NaN) = +Inf + I*NaN */
             if (std::isnan(rx)) {
-                return resT{std::abs(ry), rx};
+                return resT{sycl::fabs(ry), rx};
             }
             /* acosh(0 + I*NaN) = NaN + I*NaN */
             if (std::isnan(ry)) {
                 return resT{ry, ry};
             }
             /* ordinary cases */
-            const realT res_im = std::copysign(rx, std::imag(in));
-            return resT{std::abs(ry), res_im};
+            const realT res_im = sycl::copysign(rx, std::imag(in));
+            return resT{sycl::fabs(ry), res_im};
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

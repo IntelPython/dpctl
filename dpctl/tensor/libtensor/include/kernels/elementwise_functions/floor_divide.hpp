@@ -73,7 +73,7 @@ struct FloorDivideFunctor
         }
         else {
             auto div = in1 / in2;
-            return (div == resT(0)) ? div : resT(std::floor(div));
+            return (div == resT(0)) ? div : resT(sycl::floor(div));
         }
     }
 
@@ -106,7 +106,7 @@ struct FloorDivideFunctor
 #pragma unroll
             for (int i = 0; i < vec_sz; ++i) {
                 if (in2[i] != argT2(0)) {
-                    tmp[i] = std::floor(tmp[i]);
+                    tmp[i] = sycl::floor(tmp[i]);
                 }
             }
             if constexpr (std::is_same_v<resT, tmpT>) {
@@ -330,7 +330,7 @@ template <typename argT, typename resT> struct FloorDivideInplaceFunctor
             if (in1 == resT(0)) {
                 return;
             }
-            in1 = std::floor(in1);
+            in1 = sycl::floor(in1);
         }
     }
 
@@ -363,7 +363,7 @@ template <typename argT, typename resT> struct FloorDivideInplaceFunctor
 #pragma unroll
             for (int i = 0; i < vec_sz; ++i) {
                 if (in2[i] != argT(0)) {
-                    in1[i] = std::floor(in1[i]);
+                    in1[i] = sycl::floor(in1[i]);
                 }
             }
         }

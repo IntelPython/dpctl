@@ -99,7 +99,7 @@ template <typename argT, typename resT> struct CoshFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT res_im = std::copysign(realT(0), x * q_nan);
+                const realT res_im = sycl::copysign(realT(0), x * q_nan);
                 return resT{q_nan, res_im};
             }
 
@@ -110,7 +110,7 @@ template <typename argT, typename resT> struct CoshFunctor
              * The sign of 0 in the result is unspecified.
              */
             if (y == realT(0) && !xfinite) {
-                const realT res_im = std::copysign(realT(0), x) * y;
+                const realT res_im = sycl::copysign(realT(0), x) * y;
                 return resT{x * x, res_im};
             }
 

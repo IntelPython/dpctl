@@ -95,7 +95,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * the same as d(NaN).
              */
             if (x == realT(0) && !yfinite) {
-                const realT res_re = std::copysign(realT(0), x * (y - y));
+                const realT res_re = sycl::copysign(realT(0), x * (y - y));
                 return resT{res_re, y - y};
             }
 
@@ -108,7 +108,7 @@ template <typename argT, typename resT> struct SinhFunctor
                 if (std::isnan(x)) {
                     return resT{x, y};
                 }
-                const realT res_im = std::copysign(realT(0), y);
+                const realT res_im = sycl::copysign(realT(0), y);
                 return resT{x, res_im};
             }
 
