@@ -15,7 +15,7 @@ Two commonly encountered types of parallelism are:
 
 
 `Intel(R) oneAPI DPC++ <intel_oneapi_dpcpp_>`_ compiler implements SYCL standard which brings data parallelism to C++ language,
-so it is apt that DPC++ stands for data-parallel C++. Please refer to open access book "`Data Parallel C++ <mastering_dpcpp_book_>`_"
+so it is appropriate that DPC++ stands for data-parallel C++. Please refer to open access book "`Data Parallel C++ <mastering_dpcpp_book_>`_"
 by J. Rainders, et. al. for a great introduction.
 
 .. _intel_oneapi_dpcpp: https://www.intel.com/content/www/us/en/developer/tools/oneapi/data-parallel-c-plus-plus.html
