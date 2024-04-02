@@ -2160,7 +2160,7 @@ Args:
         Default: "K".
 
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise reciprocals.
         The returned array has a floating-point data type determined
         by the Type Promotion Rules.
@@ -2195,7 +2195,7 @@ Args:
         Default: "K".
 
 Returns:
-    usm_narray:
+    usm_ndarray:
         An array containing the element-wise phase angles.
         The returned array has a floating-point data type determined
         by the Type Promotion Rules.
