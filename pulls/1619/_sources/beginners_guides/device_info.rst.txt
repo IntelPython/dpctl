@@ -3,6 +3,8 @@
 Obtaining information about device
 ==================================
 
+.. currentmodule:: dpctl
+
 An instance of :py:class:`SyclDevice` provides access to a collection of information
 descriptors characterizing underlying ``sycl::device``.
 

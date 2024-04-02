@@ -19,7 +19,7 @@ variable.
 Some users may find it convenient to also use a default-selected device, but control
 which device that may be using ``ONEAPI_DEVICE_SELECTOR``. For example, the following script:
 
-.. code-block::python
+.. code-block:: python
     :caption: Sample array computation script "run.py"
 
     from dpctl import tensor as dpt
