@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="User guides" href="../user_guides/index.html" /><link rel="prev" title="Environment variables" href="environment_variables.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0+201.g9df788ba20 documentation</title>
+        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0+202.g318a8eed32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+201.g9df788ba20 documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+202.g318a8eed32 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+201.g9df788ba20 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+202.g318a8eed32 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -645,9 +645,9 @@ User must explicitly migrate the data to unambiguously control the execution pla
 either <code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.to_device()</span></code> method, or by using <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a> function.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">arr.to_device(device=target_device)</span></code> method will be zero-copy if the <code class="docutils literal notranslate"><span class="pre">arr.sycl_queue</span></code> and the <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>
 instance associated with new target device have the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> instances.</p>
-<p>Here is an example of migration without a copy:</p>
+<p>Here is an example of migration without a copy using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> method:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Using <code class="docutils literal notranslate"><span class="pre">to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Use <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
@@ -655,17 +655,129 @@ instance associated with new target device have the same underlying <code class=
 <span class="n">q_prof</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
 
 <span class="n">timer</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span>
-<span class="c1"># no data migration takes place here,</span>
+<span class="c1"># no data migration takes place here (zero-copy),</span>
 <span class="c1"># but x and x1 arrays do not satify compute-follows-data requirements</span>
 <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">q_prof</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="n">q_prof</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="n">tensor</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tensor</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x1</span><span class="p">))</span>
+    <span class="n">y1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="n">tensor</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tensor</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x1</span><span class="p">))</span>
+
+<span class="c1"># also a zero copy operation</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y1</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
 <span class="n">host_dt</span><span class="p">,</span> <span class="n">device_dt</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">dt</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution on device </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">device_dt</span><span class="si">}</span><span class="s2"> seconds, on host </span><span class="si">{</span><span class="n">host_dt</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution on device </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">device_dt</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution on host took </span><span class="si">{</span><span class="n">host_dt</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<p>Data migration when the current and the target SYCL contexts are different is performed via host. That means that data are copied from
+the current device to the host, and then from the host to the target device:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+
+<span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
+
+<span class="c1"># data migration is performed via host</span>
+<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">x_cpu</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>An alternative way to migrate data is to use <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">asarray()</span></code></a> and specify device-placement keyword arguments:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">asarray</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+
+<span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
+
+<span class="c1"># data migration is performed via host</span>
+<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_cpu</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>An advantage of using the function <code class="docutils literal notranslate"><span class="pre">asarray</span></code> is that migration from <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances allocated on different
+devices as well migration from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> may be accomplished in a single call:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example: <code class="docutils literal notranslate"><span class="pre">asarray</span></code> may migrate multiple arrays</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;opencl:gpu&quot;</span><span class="p">)</span>
+<span class="n">x_np</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Array w has shape (3, 10, 10)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">x_cpu</span><span class="p">,</span> <span class="n">x_gpu</span><span class="p">,</span> <span class="n">x_np</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;level_zero:gpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Migration may also occur during calls to other array creation functions, e.g. <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a> when the <cite>fill_value</cite> parameter is an instance
+of <a class="reference internal" href="../reference_guides/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a>. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e. the
+new array is created on the same device where <cite>fill_value</cite> array was allocated.</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> as arguments to array construction _dpctl_tensor_utility_functions</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+
+<span class="c1"># Zero-dimensional array allocated on CPU device</span>
+<span class="n">pi_on_device</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="c1"># x will also be allocated on CPU device</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">pi_on_device</span><span class="p">)</span>
+
+<span class="c1"># Create array on GPU. Migration of `pi_on_device` to GPU via host</span>
+<span class="c1"># takes place under the hood</span>
+<span class="n">y_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">pi_on_device</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="combining-arrays-with-different-usm-types">
+<h2>Combining arrays with different USM types<a class="headerlink" href="#combining-arrays-with-different-usm-types" title="Permalink to this heading">#</a></h2>
+<p>For functions with single argument the returned array has the same <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> as the input array.</p>
+<p>Functions that combine several <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances the <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> of the output array is determined
+using the following coercion rule:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>“device”</p></td>
+<td><p>“shared”</p></td>
+<td><p>“host”</p></td>
+</tr>
+<tr class="row-even"><td><p>“device”</p></td>
+<td><p>“device”</p></td>
+<td><p>“device”</p></td>
+<td><p>“device”</p></td>
+</tr>
+<tr class="row-odd"><td><p>“shared”</p></td>
+<td><p>“device”</p></td>
+<td><p>“shared”</p></td>
+<td><p>“shared”</p></td>
+</tr>
+<tr class="row-even"><td><p>“host”</p></td>
+<td><p>“device”</p></td>
+<td><p>“shared”</p></td>
+<td><p>“host”</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>If assignign USM-type “device” a score of 0, USM-type “shared” a score of 1, and USM-type “host” a score of 2,
+the USM-type of the output array has the smallest score of all its inputs.</p>
+<p>The convenience function <a class="reference internal" href="../reference_guides/dpctl/utils.html#dpctl.utils.get_coerced_usm_type" title="dpctl.utils.get_coerced_usm_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coerced_usm_type()</span></code></a> is a convenience function to determine the USM-type
+following this convention:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">get_coerced_usm_type</span>
+
+<span class="c1"># r1 has value &quot;device&quot;</span>
+<span class="n">r1</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
+
+<span class="c1"># r2 has value &quot;shared&quot;</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
+
+<span class="c1"># r3 has value &quot;host&quot;</span>
+<span class="n">r3</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
+</pre></div>
 </div>
 </section>
 </section>
@@ -729,6 +841,7 @@ instance associated with new target device have the same underlying <code class=
 <li><a class="reference internal" href="#creating-an-array">Creating an array</a></li>
 <li><a class="reference internal" href="#execution-model">Execution model</a></li>
 <li><a class="reference internal" href="#migrating-arrays">Migrating arrays</a></li>
+<li><a class="reference internal" href="#combining-arrays-with-different-usm-types">Combining arrays with different USM types</a></li>
 </ul>
 </li>
 </ul>
@@ -740,7 +853,7 @@ instance associated with new target device have the same underlying <code class=
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0f712a0e"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=65d58047"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -99,10 +99,10 @@ either :meth:`dpctl.tensor.usm_ndarray.to_device` method, or by using :func:`dpc
 The ``arr.to_device(device=target_device)`` method will be zero-copy if the ``arr.sycl_queue`` and the :class:`dpctl.SyclQueue`
 instance associated with new target device have the same underlying ``sycl::device`` and ``sycl::context`` instances.
 
-Here is an example of migration without a copy:
+Here is an example of migration without a copy using ``.to_device`` method:
 
 .. code-block:: python
-    :caption: Using ``to_device`` to zero-copy migrate array content to be associated with a different ``sycl::queue``
+    :caption: Example: Use ``.to_device`` to zero-copy migrate array content to be associated with a different ``sycl::queue``
 
     import dpctl
     from dpctl import tensor
@@ -111,12 +111,116 @@ Here is an example of migration without a copy:
     q_prof = dpctl.SyclQueue(x.sycl_context, x.sycl_device, property="enable_profiling")
 
     timer = dpctl.SyclTimer()
-    # no data migration takes place here,
+    # no data migration takes place here (zero-copy),
     # but x and x1 arrays do not satify compute-follows-data requirements
     x1 = x.to_device(q_prof)
 
     with timer(q_prof):
-        y = tensor.sin(2*x1)*tensor.exp(-tensor.square(x1))
+        y1 = tensor.sin(2*x1)*tensor.exp(-tensor.square(x1))
+
+    # also a zero copy operation
+    y = y1.to_device(x.device)
 
     host_dt, device_dt = timer.dt
-    print(f"Execution on device {x.sycl_device.name} took {device_dt} seconds, on host {host_dt} seconds")
+    print(f"Execution on device {x.sycl_device.name} took {device_dt} seconds")
+    print(f"Execution on host took {host_dt} seconds")
+
+Data migration when the current and the target SYCL contexts are different is performed via host. That means that data are copied from
+the current device to the host, and then from the host to the target device:
+
+.. code-block:: python
+    :caption: Example: Using ``.to_device`` to migrate data may involve copy via host
+
+    from dpctl import tensor
+
+    x_cpu = tensor.concat((tensor.ones(10, device="cpu"), tensor.zeros(1000, device="cpu")))
+
+    # data migration is performed via host
+    x_gpu = x_cpu.to_device("gpu")
+
+An alternative way to migrate data is to use :py:func:`asarray` and specify device-placement keyword arguments:
+
+.. code-block:: python
+    :caption: Example: Using ``asarray`` to migrate data may involve copy via host
+
+    from dpctl import tensor
+
+    x_cpu = tensor.concat((tensor.ones(10, device="cpu"), tensor.zeros(1000, device="cpu")))
+
+    # data migration is performed via host
+    x_gpu = tensor.asarray(x_cpu, device="cpu")
+
+An advantage of using the function ``asarray`` is that migration from ``usm_ndarray`` instances allocated on different
+devices as well migration from :py:class:`numpy.ndarray` may be accomplished in a single call:
+
+.. code-block:: python
+    :caption: Example: ``asarray`` may migrate multiple arrays
+
+    from dpctl import tensor
+    import numpy
+
+    x_cpu = tensor.ones((10, 10), device="cpu")
+    x_gpu = tensor.zeros((10, 10), device="opencl:gpu")
+    x_np = numpy.random.randn(10, 10)
+
+    # Array w has shape (3, 10, 10)
+    w = tensor.asarray([x_cpu, x_gpu, x_np], device="level_zero:gpu")
+
+Migration may also occur during calls to other array creation functions, e.g. :py:func:`full` when the `fill_value` parameter is an instance
+of :py:class:`usm_ndarray`. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e. the
+new array is created on the same device where `fill_value` array was allocated.
+
+.. code-block:: python
+    :caption: Example: Using ``usm_ndarray`` as arguments to array construction _dpctl_tensor_utility_functions
+
+    from dpctl import tensor
+
+    # Zero-dimensional array allocated on CPU device
+    pi_on_device = tensor.asarray(tensor.pi, dtype=tensor.float32, device="cpu")
+
+    # x will also be allocated on CPU device
+    x = tensor.full(shape=(100, 100), fill_value=pi_on_device)
+
+    # Create array on GPU. Migration of `pi_on_device` to GPU via host
+    # takes place under the hood
+    y_gpu = tensor.full(shape=(100, 100), fill_value=pi_on_device, device="gpu")
+
+
+Combining arrays with different USM types
+-----------------------------------------
+
+For functions with single argument the returned array has the same ``usm_type`` as the input array.
+
+Functions that combine several ``usm_ndarray`` instances the ``usm_type`` of the output array is determined
+using the following coercion rule:
+
++------------+----------+----------+----------+
+|            | "device" | "shared" | "host"   |
++------------+----------+----------+----------+
+| "device"   | "device" | "device" | "device" |
++------------+----------+----------+----------+
+| "shared"   | "device" | "shared" | "shared" |
++------------+----------+----------+----------+
+| "host"     | "device" | "shared" | "host"   |
++------------+----------+----------+----------+
+
+If assignign USM-type "device" a score of 0, USM-type "shared" a score of 1, and USM-type "host" a score of 2,
+the USM-type of the output array has the smallest score of all its inputs.
+
+.. currentmodule:: dpctl.utils
+
+The convenience function :py:func:`get_coerced_usm_type` is a convenience function to determine the USM-type
+following this convention:
+
+.. code-block:: python
+
+    from dpctl.utils import get_coerced_usm_type
+
+    # r1 has value "device"
+    r1 = get_coerced_usm_type(["device", "shared", "host"])
+
+    # r2 has value "shared"
+    r2 = get_coerced_usm_type(["shared", "shared", "host"])
+
+    # r3 has value "host"
+    r3 = get_coerced_usm_type(["host", "host", "host"])
