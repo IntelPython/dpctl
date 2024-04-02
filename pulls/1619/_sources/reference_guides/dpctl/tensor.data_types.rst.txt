@@ -114,11 +114,11 @@ The data type can be discovered programmatically using Array API :ref:`inspectio
 Type promotion rules
 --------------------
 
-Type promotion rules govern behavior of array library when its function does not have
-dedicated implementation for the data type(s) of the input array(s).
+Type promotion rules govern the behavior of an array library when a function does not have
+a dedicated implementation for the data type(s) of the input array(s).
 
-In such a case, input arrays may be cast to data types for which dedicated implementation
-exists. This is what happens when function :data:`sin` is applied to array of integral values.
+In such a case, input arrays may be cast to data types for which a dedicated implementation
+exists. e.g., when :data:`sin` is applied to array of integral values.
 
 Type promotion rules used in :py:mod:`dpctl.tensor` are consistent with the
 Python Array API specification's `type promotion rules <https://data-apis.org/array-api/latest/API_specification/type_promotion.html>`_

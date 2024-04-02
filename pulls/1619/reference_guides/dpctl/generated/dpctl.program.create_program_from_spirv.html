@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.program.SyclProgram" href="dpctl.program.SyclProgram.html" /><link rel="prev" title="dpctl.program.create_program_from_source" href="dpctl.program.create_program_from_source.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.program.create_program_from_spirv - Data Parallel Control (dpctl) 0.17.0dev0+204.gc14780d787 documentation</title>
+        <title>dpctl.program.create_program_from_spirv - Data Parallel Control (dpctl) 0.17.0dev0+206.g3345855290 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+204.gc14780d787 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+206.g3345855290 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+204.gc14780d787 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+206.g3345855290 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -559,7 +559,7 @@
 <dt class="sig sig-object py" id="dpctl.program.create_program_from_spirv">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_program_from_spirv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_spirv" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates a Sycl interoperability program from an SPIR-V binary.</p>
-<p>We use the <code class="docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function to
+<p>We use the <code class="xref c c-func docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function to
 create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> object
 from an compiled SPIR-V binary file.</p>
 <dl class="field-list simple">
@@ -567,8 +567,8 @@ from an compiled SPIR-V binary file.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code> for which the
 <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
-<li><p><strong>char</strong><strong>[</strong> (<em>IL</em><em> (</em><em>const</em>) – ]) : SPIR-V binary IL file for an OpenCL program.</p></li>
-<li><p><strong>copts</strong> (<em>unicode</em>) – Optional compilation flags that will be used
+<li><p><strong>IL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><em>bytes</em></a>) – SPIR-V binary IL file for an OpenCL program.</p></li>
+<li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Optional compilation flags that will be used
 when compiling the program.</p></li>
 </ul>
 </dd>
@@ -659,7 +659,7 @@ the C API.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=10f68227"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=65214b3a"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

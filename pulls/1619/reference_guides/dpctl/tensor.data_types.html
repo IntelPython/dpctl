@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Element-wise functions" href="tensor.elementwise_functions.html" /><link rel="prev" title="dpctl.tensor.result_type" href="generated/dpctl.tensor.result_type.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Data types - Data Parallel Control (dpctl) 0.17.0dev0+204.gc14780d787 documentation</title>
+        <title>Data types - Data Parallel Control (dpctl) 0.17.0dev0+206.g3345855290 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+204.gc14780d787 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+206.g3345855290 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+204.gc14780d787 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+206.g3345855290 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -668,10 +668,10 @@ complex floating-point type is <code class="xref py py-attr docutils literal not
 </section>
 <section id="type-promotion-rules">
 <h2>Type promotion rules<a class="headerlink" href="#type-promotion-rules" title="Permalink to this heading">#</a></h2>
-<p>Type promotion rules govern behavior of array library when its function does not have
-dedicated implementation for the data type(s) of the input array(s).</p>
-<p>In such a case, input arrays may be cast to data types for which dedicated implementation
-exists. This is what happens when function <a class="reference internal" href="generated/dpctl.tensor.sin.html#dpctl.tensor.sin" title="dpctl.tensor.sin"><code class="xref py py-data docutils literal notranslate"><span class="pre">sin</span></code></a> is applied to array of integral values.</p>
+<p>Type promotion rules govern the behavior of an array library when a function does not have
+a dedicated implementation for the data type(s) of the input array(s).</p>
+<p>In such a case, input arrays may be cast to data types for which a dedicated implementation
+exists. e.g., when <a class="reference internal" href="generated/dpctl.tensor.sin.html#dpctl.tensor.sin" title="dpctl.tensor.sin"><code class="xref py py-data docutils literal notranslate"><span class="pre">sin</span></code></a> is applied to array of integral values.</p>
 <p>Type promotion rules used in <a class="reference internal" href="tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> are consistent with the
 Python Array API specification’s <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/type_promotion.html">type promotion rules</a>
 for devices that support double precision floating-point type.</p>
@@ -757,7 +757,7 @@ truncated by removing nodes corresponding to unsupported data types and edges th
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=10f68227"></script>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=65214b3a"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
