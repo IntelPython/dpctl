@@ -5,10 +5,10 @@ Obtaining information about device
 
 .. currentmodule:: dpctl
 
-An instance of :py:class:`SyclDevice` provides access to a collection of information
+An instance of :py:class:`SyclDevice` provides access to a collection of
 descriptors characterizing underlying ``sycl::device``.
 
-Information of Boolean nature is exposed via ``has_aspect_*`` properties.
+Properties ``has_aspect_*`` expose Boolean descriptors which can be either ``True`` or ``False``.
 Other descriptions are exposed as properties of the instance.
 
 .. code-block:: python
