@@ -271,6 +271,9 @@ def cumulative_sum(
         axis (Optional[int, Tuple[int, ...]]):
             axis along which cumulative sum must be computed.
             If `None`, the sum is computed over the entire array.
+            If `x` is a one-dimensional array, providing an `axis` is optional;
+            however, if `x` has more than one dimension, providing an `axis`
+            is required.
             Default: `None`.
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
@@ -342,6 +345,9 @@ def cumulative_prod(
         axis (Optional[int, Tuple[int, ...]]):
             axis along which cumulative product must be computed.
             If `None`, the product is computed over the entire array.
+            If `x` is a one-dimensional array, providing an `axis` is optional;
+            however, if `x` has more than one dimension, providing an `axis`
+            is required.
             Default: `None`.
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
@@ -414,6 +420,9 @@ def cumulative_logsumexp(
         axis (Optional[int, Tuple[int, ...]]):
             axis along which cumulative logsumexp must be computed.
             If `None`, the logsumexp is computed over the entire array.
+            If `x` is a one-dimensional array, providing an `axis` is optional;
+            however, if `x` has more than one dimension, providing an `axis`
+            is required.
             Default: `None`.
         dtype (Optional[dtype]):
             data type of the returned array. If `None`, the default data
