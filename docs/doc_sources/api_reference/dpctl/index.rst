@@ -72,6 +72,13 @@
     SyclQueueCreationError
     SyclSubDeviceCreationError
 
+.. rubric:: Utilities
+
+.. autosummary::
+    :toctree: generated
+
+    get_include
+
 .. toctree::
     :hidden:
 
