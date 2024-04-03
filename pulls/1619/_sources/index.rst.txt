@@ -58,19 +58,19 @@ take place.
 
             To the user guides
 
-    .. grid-item-card:: Reference Guides
+    .. grid-item-card:: API Reference
 
-        Reference guides contain detailed documentation of functionality provided
-        in :py:mod:`dpctl`.
+        API Reference contains detailed documentation of functionality provided
+        in :py:mod:`dpctl` and its components.
 
         +++
 
-        .. button-ref:: reference_guides
+        .. button-ref:: api_reference
             :expand:
             :color: secondary
             :click-parent:
 
-            Access reference guides
+            Access API Reference
 
     .. grid-item-card:: Contibutor Guides
 
@@ -94,5 +94,5 @@ take place.
 
    beginners_guides/index
    user_guides/index
-   reference_guides/index
+   api_reference/index
    contributor_guides/index
