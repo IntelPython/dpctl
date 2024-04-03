@@ -34,3 +34,4 @@ The package ``dpctl`` provides
    dpctl_capi
    dpctl_cython
    dpctl_pybind11
+   dpctl_cmake
