@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="User guides" href="../user_guides/index.html" /><link rel="prev" title="Environment variables" href="environment_variables.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0+212.gc8e4917b4f documentation</title>
+        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0+215.ge89f868c10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+212.gc8e4917b4f documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+215.ge89f868c10 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+212.gc8e4917b4f documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+215.ge89f868c10 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -214,6 +214,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_include.html">dpctl.get_include</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html">Filter Selector String</a></li>
 </ul>
 </li>
@@ -512,6 +513,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C-API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/dpctl_pybind11.html">pybind11 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/dpctl_cmake.html">CMake support</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle navigation of Contributing to dpctl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -642,7 +644,7 @@ User must explicitly migrate the data to unambiguously control the execution pla
 </section>
 <section id="migrating-arrays">
 <h2>Migrating arrays<a class="headerlink" href="#migrating-arrays" title="Permalink to this heading">#</a></h2>
-<p>Array content can be migrated to a different device <a class="reference internal" href="../api_reference/dpctl/tensor.usm_ndarray.html#dpctl-tensor-usm-ndarray-to-device-example"><span class="std std-ref">using</span></a>
+<p>Array content can be migrated to a different device <span class="xref std std-ref">using</span>
 either <code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.to_device()</span></code> method, or by using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a> function.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">arr.to_device(device=target_device)</span></code> method will be zero-copy if the <code class="docutils literal notranslate"><span class="pre">arr.sycl_queue</span></code> and the <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>
 instance associated with new target device have the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> instances.</p>
@@ -854,7 +856,7 @@ following this convention:</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=8d2481c5"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=6d21a7ce"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.get_num_devices" href="dpctl.get_num_devices.html" /><link rel="prev" title="dpctl.get_devices" href="dpctl.get_devices.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="Filter Selector String" href="../filter_selector_string.html" /><link rel="prev" title="dpctl.SyclSubDeviceCreationError" href="dpctl.SyclSubDeviceCreationError.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.lsplatform - Data Parallel Control (dpctl) 0.17.0dev0+215.ge89f868c10 documentation</title>
+        <title>dpctl.get_include - Data Parallel Control (dpctl) 0.17.0dev0+215.ge89f868c10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -205,7 +205,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl.select_accelerator_device.html">dpctl.select_accelerator_device</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.select_device_with_aspects.html">dpctl.select_device_with_aspects</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.get_devices.html">dpctl.get_devices</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">dpctl.lsplatform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.lsplatform.html">dpctl.lsplatform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.get_num_devices.html">dpctl.get_num_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_gpu_devices.html">dpctl.has_gpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
@@ -214,7 +214,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl.get_include.html">dpctl.get_include</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">dpctl.get_include</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../filter_selector_string.html">Filter Selector String</a></li>
 </ul>
 </li>
@@ -556,77 +556,14 @@
           </label>
         </div>
         <article role="main">
-          <section id="dpctl-lsplatform">
-<h1>dpctl.lsplatform<a class="headerlink" href="#dpctl-lsplatform" title="Permalink to this heading">#</a></h1>
+          <section id="dpctl-get-include">
+<h1>dpctl.get_include<a class="headerlink" href="#dpctl-get-include" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpctl.lsplatform">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">lsplatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.lsplatform" title="Permalink to this definition">#</a></dt>
-<dd><p>Prints out the list of available SYCL platforms, and optionally extra
-metadata about each platform.</p>
-<p>The level of information printed out by the function can be controlled by
-the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
-<ul class="simple">
-<li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their names.</p></li>
-<li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor, backend,
-number of devices for each platform.</p></li>
-<li><p><strong>Verbosity level 2</strong>: At the highest level of verbosity everything in the
-previous levels along with the name, version, and filter string for each
-device is printed.</p></li>
-</ul>
-<p>At verbosity level 2 (highest level) the following output is generated.</p>
-<dl class="field-list">
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><p>On a system with an OpenCL CPU driver, OpenCL GPU driver,
-Level Zero GPU driver, running the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import dpctl; dpctl.lsplatform(verbosity=2)&quot;</span>
-</pre></div>
-</div>
-<p>outputs</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Sample output of lsplatform(verbosity=2)</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Platform 0::
-    Name        Intel(R) OpenCL
-    Version     OpenCL 2.1 LINUX
-    Vendor      Intel(R) Corporation
-    Profile     FULL_PROFILE
-    Backend     opencl
-    Devices     1
-        Device 0::
-        Name            Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
-        Driver version  2020.11.11.0.13_160000
-        Device type     cpu
-Platform 1::
-    Name        Intel(R) OpenCL HD Graphics
-    Version     OpenCL 3.0
-    Vendor      Intel(R) Corporation
-    Profile     FULL_PROFILE
-    Backend     opencl
-    Devices     1
-        Device 0::
-        Name            Intel(R) Graphics Gen9 [0x3e98]
-        Driver version  20.47.18513
-        Device type     gpu
-Platform 2::
-    Name        Intel(R) Level-Zero
-    Version     1.0
-    Vendor      Intel(R) Corporation
-    Profile     FULL_PROFILE
-    Backend     level_zero
-    Devices     1
-        Device 0::
-        Name            Intel(R) Graphics Gen9 [0x3e98]
-        Driver version  1.0.18513
-        Device type     gpu
-</pre></div>
-</div>
-</div>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>verbosity</strong> (<em>Literal</em><em>[</em><em>0</em><em>,</em><em>1</em><em>,</em><em>2</em><em>]</em><em>, </em><em>optional</em>) – The verbosity controls how much information is printed by the
-function. 0 is the lowest level set by default and 2 is the highest
-level to print the most verbose output. Default: <cite>0</cite>.</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="dpctl.get_include">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_include</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl.html#get_include"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.get_include" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the directory that contains the dpctl *.h header files.</p>
+<p>Extension modules that need to be compiled against dpctl should use
+this function to locate the appropriate include directory.</p>
 </dd></dl>
 
 </section>
@@ -636,23 +573,23 @@ level to print the most verbose output. Default: <cite>0</cite>.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.get_num_devices.html">
+          <a class="next-page" href="../filter_selector_string.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.get_num_devices</div>
+                <div class="title">Filter Selector String</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.get_devices.html">
+          <a class="prev-page" href="dpctl.SyclSubDeviceCreationError.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.get_devices</div>
+                <div class="title">dpctl.SyclSubDeviceCreationError</div>
                 
               </div>
             </a>
@@ -686,8 +623,8 @@ level to print the most verbose output. Default: <cite>0</cite>.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.lsplatform</a><ul>
-<li><a class="reference internal" href="#dpctl.lsplatform"><code class="docutils literal notranslate"><span class="pre">lsplatform()</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.get_include</a><ul>
+<li><a class="reference internal" href="#dpctl.get_include"><code class="docutils literal notranslate"><span class="pre">get_include()</span></code></a></li>
 </ul>
 </li>
 </ul>
