@@ -116,7 +116,7 @@ template <typename argT, typename resT> struct AsinFunctor
              */
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
-            if (std::abs(x) > r_eps || std::abs(y) > r_eps) {
+            if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
 #ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = exprm_ns::complex<realT>;
                 const sycl_complexT z{x, y};
@@ -145,8 +145,8 @@ template <typename argT, typename resT> struct AsinFunctor
                     wy = std::imag(log_mz);
                 }
 #endif
-                const realT asinh_re = std::copysign(wx, x);
-                const realT asinh_im = std::copysign(wy, y);
+                const realT asinh_re = sycl::copysign(wx, x);
+                const realT asinh_im = sycl::copysign(wy, y);
                 return resT{asinh_im, asinh_re};
             }
             /* ordinary cases */

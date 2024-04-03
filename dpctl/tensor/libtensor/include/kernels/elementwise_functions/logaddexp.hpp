@@ -77,7 +77,7 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
         for (int i = 0; i < vec_sz; ++i) {
             if (std::isfinite(diff[i])) {
                 res[i] = std::max<resT>(in1[i], in2[i]) +
-                         impl_finite<resT>(-std::abs(diff[i]));
+                         impl_finite<resT>(-sycl::fabs(diff[i]));
             }
             else {
                 using dpctl::tensor::math_utils::logaddexp;

@@ -78,8 +78,8 @@ template <typename argT, typename resT> struct AtanhFunctor
                 if (std::isinf(y)) {
                     const realT pi_half = std::atan(realT(1)) * 2;
 
-                    const realT res_re = std::copysign(realT(0), x);
-                    const realT res_im = std::copysign(pi_half, y);
+                    const realT res_re = sycl::copysign(realT(0), x);
+                    const realT res_im = sycl::copysign(pi_half, y);
                     return resT{res_re, res_im};
                 }
                 /*
@@ -90,7 +90,7 @@ template <typename argT, typename resT> struct AtanhFunctor
             else if (std::isnan(y)) {
                 /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
                 if (std::isinf(x)) {
-                    const realT res_re = std::copysign(realT(0), x);
+                    const realT res_re = sycl::copysign(realT(0), x);
                     return resT{res_re, q_nan};
                 }
                 /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
@@ -111,11 +111,12 @@ template <typename argT, typename resT> struct AtanhFunctor
              */
             const realT RECIP_EPSILON =
                 realT(1) / std::numeric_limits<realT>::epsilon();
-            if (std::abs(x) > RECIP_EPSILON || std::abs(y) > RECIP_EPSILON) {
+            if (sycl::fabs(x) > RECIP_EPSILON || sycl::fabs(y) > RECIP_EPSILON)
+            {
                 const realT pi_half = std::atan(realT(1)) * 2;
 
                 const realT res_re = realT(0);
-                const realT res_im = std::copysign(pi_half, y);
+                const realT res_im = sycl::copysign(pi_half, y);
                 return resT{res_re, res_im};
             }
             /* ordinary cases */

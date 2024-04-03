@@ -58,7 +58,7 @@ template <typename argT1, typename argT2, typename resT> struct Atan2Functor
     {
         if (std::isinf(in2) && !std::signbit(in2)) {
             if (std::isfinite(in1)) {
-                return std::copysign(resT(0), in1);
+                return sycl::copysign(resT(0), in1);
             }
         }
         return std::atan2(in1, in2);

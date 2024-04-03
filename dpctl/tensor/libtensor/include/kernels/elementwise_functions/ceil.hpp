@@ -71,7 +71,7 @@ template <typename argT, typename resT> struct CeilFunctor
             if (in == 0) {
                 return in;
             }
-            return std::ceil(in);
+            return sycl::ceil(in);
         }
     }
 };

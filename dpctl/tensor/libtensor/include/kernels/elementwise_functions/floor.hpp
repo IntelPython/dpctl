@@ -71,7 +71,7 @@ template <typename argT, typename resT> struct FloorFunctor
             if (in == 0) {
                 return in;
             }
-            return std::floor(in);
+            return sycl::floor(in);
         }
     }
 };

@@ -130,10 +130,12 @@ private:
         else if (std::isinf(x)) { // x is an infinity
             // y is either finite, or nan
             if (std::signbit(x)) { // x == -inf
-                return {(std::isfinite(y) ? zero : y), std::copysign(p_inf, y)};
+                return {(std::isfinite(y) ? zero : y),
+                        sycl::copysign(p_inf, y)};
             }
             else {
-                return {p_inf, (std::isfinite(y) ? std::copysign(zero, y) : y)};
+                return {p_inf,
+                        (std::isfinite(y) ? sycl::copysign(zero, y) : y)};
             }
         }
         else { // x is finite
@@ -205,15 +207,15 @@ private:
         if (std::signbit(xx)) {
             const realT m = std::hypot(xx, yy);
             const realT d = std::sqrt((m - xx) * half);
-            const realT res_re = (d == zero ? zero : std::abs(yy) / d * half);
-            const realT res_im = std::copysign(d, yy);
+            const realT res_re = (d == zero ? zero : sycl::fabs(yy) / d * half);
+            const realT res_im = sycl::copysign(d, yy);
             return {sycl::ldexp(res_re, sc), sycl::ldexp(res_im, sc)};
         }
         else {
             const realT m = std::hypot(xx, yy);
             const realT d = std::sqrt((m + xx) * half);
             const realT res_im =
-                (d == zero) ? std::copysign(zero, yy) : yy * half / d;
+                (d == zero) ? sycl::copysign(zero, yy) : yy * half / d;
             return {sycl::ldexp(d, sc), sycl::ldexp(res_im, sc)};
         }
     }
@@ -232,15 +234,15 @@ private:
         if (std::signbit(x)) {
             const realT m = std::hypot(x, y);
             const realT d = std::sqrt((m - x) * half);
-            const realT res_re = (d == zero ? zero : std::abs(y) / d * half);
-            const realT res_im = std::copysign(d, y);
+            const realT res_re = (d == zero ? zero : sycl::fabs(y) / d * half);
+            const realT res_im = sycl::copysign(d, y);
             return {res_re, res_im};
         }
         else {
             const realT m = std::hypot(x, y);
             const realT d = std::sqrt((m + x) * half);
             const realT res_im =
-                (d == zero) ? std::copysign(zero, y) : y * half / d;
+                (d == zero) ? sycl::copysign(zero, y) : y * half / d;
             return {d, res_im};
         }
     }
@@ -258,7 +260,8 @@ private:
     template <typename T>
     std::complex<T> csqrt_finite(T const &x, T const &y) const
     {
-        return (std::max<T>(std::abs(x), std::abs(y)) < scaling_threshold<T>())
+        return (std::max<T>(std::fabs(x), std::fabs(y)) <
+                scaling_threshold<T>())
                    ? csqrt_finite_unscaled(x, y)
                    : csqrt_finite_scaled(x, y);
     }

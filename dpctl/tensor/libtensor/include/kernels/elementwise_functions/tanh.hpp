@@ -94,8 +94,8 @@ template <typename argT, typename resT> struct TanhFunctor
                 if (std::isnan(x)) {
                     return resT{q_nan, (y == realT(0) ? y : q_nan)};
                 }
-                const realT res_re = std::copysign(realT(1), x);
-                const realT res_im = std::copysign(
+                const realT res_re = sycl::copysign(realT(1), x);
+                const realT res_im = sycl::copysign(
                     realT(0), std::isinf(y) ? y : std::sin(y) * std::cos(y));
                 return resT{res_re, res_im};
             }

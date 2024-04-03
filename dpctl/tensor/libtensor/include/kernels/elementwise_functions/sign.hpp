@@ -30,8 +30,8 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "cabs_impl.hpp"
 #include "kernels/elementwise_functions/common.hpp"
-#include "sycl_complex.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
@@ -79,12 +79,8 @@ template <typename argT, typename resT> struct SignFunctor
                     return resT(0);
                 }
                 else {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                     auto z = exprm_ns::complex<realT>(in);
-                    return (z / exprm_ns::abs(z));
-#else
-                    return in / std::abs(in);
-#endif
+                    return (z / detail::cabs(in));
                 }
             }
             else {

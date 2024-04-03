@@ -84,8 +84,8 @@ template <typename argT, typename resT> struct Expm1Functor
                         return in;
                     }
                     else {
-                        return (resT{std::copysign(x, std::cos(y)),
-                                     std::copysign(x, std::sin(y))});
+                        return (resT{sycl::copysign(x, std::cos(y)),
+                                     sycl::copysign(x, std::sin(y))});
                     }
                 }
                 else {
@@ -93,11 +93,11 @@ template <typename argT, typename resT> struct Expm1Functor
                     if (!std::isfinite(y)) {
                         // copy sign of y to guarantee
                         // conj(expm1(x)) == expm1(conj(x))
-                        return resT{realT(-1), std::copysign(realT(0), y)};
+                        return resT{realT(-1), sycl::copysign(realT(0), y)};
                     }
                     else {
                         return resT{realT(-1),
-                                    std::copysign(realT(0), std::sin(y))};
+                                    sycl::copysign(realT(0), std::sin(y))};
                     }
                 }
             }
