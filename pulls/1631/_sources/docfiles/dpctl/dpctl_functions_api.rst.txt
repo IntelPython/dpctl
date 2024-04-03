@@ -1,0 +1,19 @@
+.. _dpctl_functions_api:
+
+###############
+dpctl Functions
+###############
+
+
+.. currentmodule:: dpctl
+
+
+Other Functions
+---------------
+
+.. autofunction:: get_include
+
+Device Selection Functions
+--------------------------
+
+.. autofunction:: select_device_with_aspects
