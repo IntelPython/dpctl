@@ -4,11 +4,13 @@
 Beginner's guides
 =================
 
+* :ref:`Why <beginners_guide_why_dpctl>` is it called ``"dpctl"``?
+
 Installation
 ------------
 
 * :ref:`Installing <dpctl_installation>` :mod:`dpctl`
-* :ref:`Why <beginners_guide_why_dpctl>` is it called ``"dpctl"``?
+* Setting up drivers
 
 Working with devices
 --------------------

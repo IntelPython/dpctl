@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Environment variables" href="environment_variables.html" /><link rel="prev" title="Device selection" href="device_selection.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API Reference" href="../api_reference/index.html" /><link rel="prev" title="License" href="license.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Obtaining information about device - Data Parallel Control (dpctl) 0.17.0dev0+212.gc8e4917b4f documentation</title>
+        <title>DLPack exchange of USM allocated arrays - Data Parallel Control (dpctl) 0.17.0dev0+212.gc8e4917b4f documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -145,7 +145,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -167,28 +167,28 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Beginner’s guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelisms.html">Types of parallelisms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enumerating_devices.html">Enumerating available devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device_selection.html">Device selection</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Obtaining information about device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../beginners_guides/index.html">Beginner’s guides</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/parallelisms.html">Types of parallelisms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/enumerating_devices.html">Enumerating available devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/device_selection.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/device_info.html">Obtaining information about device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/environment_variables.html">Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../beginners_guides/tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../user_guides/intro.html">oneAPI execution model</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of oneAPI execution model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../user_guides/basic_concepts.html">Basic Concepts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guides/device_selection.html">Device Selection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guides/platforms.html">Platform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guides/devices.html">Device</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guides/queues.html">Queue</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">User guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="intro.html">oneAPI execution model</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of oneAPI execution model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic_concepts.html">Basic Concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="device_selection.html">Device Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="platforms.html">Platform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="devices.html">Device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="queues.html">Queue</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guides/license.html">License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">DLPack exchange of USM allocated arrays</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_reference/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -548,62 +548,133 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="obtaining-information-about-device">
-<span id="beginners-guide-device-info"></span><h1>Obtaining information about device<a class="headerlink" href="#obtaining-information-about-device" title="Permalink to this heading">#</a></h1>
-<p>An instance of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> provides access to a collection of
-descriptors characterizing underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code>.</p>
-<p>Properties <code class="docutils literal notranslate"><span class="pre">has_aspect_*</span></code> expose Boolean descriptors which can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-Other descriptions are exposed as properties of the instance.</p>
+          <section id="dlpack-exchange-of-usm-allocated-arrays">
+<span id="dpctl-tensor-dlpack-support"></span><h1>DLPack exchange of USM allocated arrays<a class="headerlink" href="#dlpack-exchange-of-usm-allocated-arrays" title="Permalink to this heading">#</a></h1>
+<section id="dlpack-preamble">
+<h2>DLPack preamble<a class="headerlink" href="#dlpack-preamble" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://dmlc.github.io/dlpack/latest/">DLPack</a> is a common C-ABI compatible data structure that allows data exchange between major frameworks.
+DLPack strives to be minimal, intentionally leaves allocators, device API out of scope.</p>
+<p>Data shared via DLPack are owned by the producer who provides a deleter function stored in the
+<a class="reference external" href="https://dmlc.github.io/dlpack/latest/c_api.html#c.DLManagedTensor">DLManagedTensor</a>, and are only accessed by consumer.
+Python semantics of using the structure is <a class="reference external" href="https://dmlc.github.io/dlpack/latest/python_spec.html">explained in dlpack docs</a>.</p>
+<p>DLPack specifies data location in memory via <cite>void * data</cite> field of <a class="reference external" href="https://dmlc.github.io/dlpack/latest/c_api.html#c.DLTensor">DLTensor</a> struct, and via <code class="docutils literal notranslate"><span class="pre">DLDevice</span> <span class="pre">device</span></code> field.
+The <a class="reference external" href="https://dmlc.github.io/dlpack/latest/c_api.html#c.DLDevice">DLDevice</a> struct has two members: an enumeration <code class="docutils literal notranslate"><span class="pre">device_type</span></code> and an integer <code class="docutils literal notranslate"><span class="pre">device_id</span></code>.</p>
+<p>DLPack recognizes enumeration value <code class="docutils literal notranslate"><span class="pre">DLDeviceType::kDLOneAPI</span></code> reserved for sharing SYCL USM allocations.
+It is not <code class="docutils literal notranslate"><span class="pre">kDLSycl</span></code> since importing USM-allocated tensor with this device type relies on oneAPI SYCL extensions
+<code class="docutils literal notranslate"><span class="pre">sycl_ext_oneapi_filter_selector</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl_ext_oneapi_default_platform_context</span></code> to operate.</p>
+</section>
+<section id="exporting-usm-allocation-to-dlpack">
+<h2>Exporting USM allocation to DLPack<a class="headerlink" href="#exporting-usm-allocation-to-dlpack" title="Permalink to this heading">#</a></h2>
+<p>When sharing USM allocation (of any <code class="docutils literal notranslate"><span class="pre">sycl::usm::kind</span></code>) with <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">*</span> <span class="pre">ptr</span></code> bound to <code class="docutils literal notranslate"><span class="pre">sycl::context</span> <span class="pre">ctx</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example: Obtaining information about a device</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<div class="code-block-caption"><span class="caption-text">Protocol for exporting USM allocation as DLPack</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Input: void *ptr:</span>
+<span class="c1">//             USM allocation pointer</span>
+<span class="c1">//        sycl::context ctx:</span>
+<span class="c1">//             context the pointer is bound to</span>
 
-<span class="c1"># create default-selected device</span>
-<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
+<span class="c1">// Get device where allocation was originally made</span>
+<span class="c1">// Keep in mind, the device may be a sub-device</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">ptr_dev</span> <span class="o">=</span> <span class="n">sycl</span><span class="o">::</span><span class="n">get_pointer_device</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span>
 
-<span class="c1"># number of compute units</span>
-<span class="n">cu</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_compute_units</span>
-<span class="c1"># maximal supported size of a work-group</span>
-<span class="n">max_wg</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_work_group_size</span>
-<span class="c1"># size of shared local memory in bytes</span>
-<span class="n">loc_mem_sz</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">local_mem_size</span>
+<span class="cp">#if SYCL_EXT_ONEAPI_DEFAULT_CONTEXT</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">context</span> <span class="o">&amp;</span><span class="n">default_ctx</span> <span class="o">=</span> <span class="n">ptr_dev</span><span class="p">.</span><span class="n">get_platform</span><span class="p">().</span><span class="n">ext_oneapi_get_default_context</span><span class="p">();</span>
+<span class="cp">#else</span>
+<span class="k">static_assert</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">&quot;ext_oneapi_default_context extension is required&quot;</span><span class="p">);</span>
+<span class="cp">#endif</span>
 
-<span class="c1"># name of the device</span>
-<span class="n">dname</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">name</span>
-<span class="c1"># maximal clock frequency in MHz</span>
-<span class="n">freq</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_clock_frequency</span>
+<span class="c1">// Assert that ctx is the default platform context, or throw</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">ctx</span> <span class="o">!=</span> <span class="n">default_ctx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="n">pybind11</span><span class="o">::</span><span class="n">type_error</span><span class="p">(</span>
+        <span class="s">&quot;Can not export USM allocations not &quot;</span>
+        <span class="s">&quot;bound to default platform context.&quot;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Find parent root device if ptr_dev is a sub-device</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">parent_root_device</span> <span class="o">=</span> <span class="n">get_parent_root_device</span><span class="p">(</span><span class="n">ptr_dev</span><span class="p">);</span>
+
+<span class="c1">// find position of parent_root_device in sycl::get_devices</span>
+<span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="n">all_root_devs</span> <span class="o">=</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span><span class="o">::</span><span class="n">get_devices</span><span class="p">();</span>
+<span class="k">auto</span> <span class="n">beg</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">all_root_devs</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">end</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">all_root_devs</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">selectot_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent_root_device</span><span class="p">](</span><span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">root_d</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">parent_root_device</span> <span class="o">==</span> <span class="n">root_d</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">auto</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">find_if</span><span class="p">(</span><span class="n">beg</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">selector_fn</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">==</span> <span class="n">end</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="n">pybind11</span><span class="o">::</span><span class="n">type_error</span><span class="p">(</span><span class="s">&quot;Could not produce DLPack: failed finding device_id&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">std</span><span class="o">::</span><span class="kt">ptrdiff_t</span> <span class="n">dev_idx</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">distance</span><span class="p">(</span><span class="n">beg</span><span class="p">,</span> <span class="n">pos</span><span class="p">);</span>
+
+<span class="c1">// check that dev_idx can fit into int32_t if needed</span>
+<span class="kt">int32_t</span> <span class="n">device_id</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">dev_idx</span><span class="p">);</span>
+
+<span class="c1">// populate DLTensor with DLDeviceType::kDLOneAPI and computed device_id</span>
 </pre></div>
 </div>
 </div>
-<p>For Intel GPU devices, additional architectural information can be access with <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.intel_device_info" title="dpctl.utils.intel_device_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a> function:</p>
+</section>
+<section id="importing-dlpack-with-device-type-kdloneapi">
+<h2>Importing DLPack with <code class="docutils literal notranslate"><span class="pre">device_type</span> <span class="pre">==</span> <span class="pre">kDLOneAPI</span></code><a class="headerlink" href="#importing-dlpack-with-device-type-kdloneapi" title="Permalink to this heading">#</a></h2>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Example: Intel GPU-specific information</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">dpctl</span><span class="o">,</span> <span class="nn">dpctl.utils</span>
+<div class="code-block-caption"><span class="caption-text">Protocol for recognizing DLPack as a valid USM allocation</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Input: ptr = dlm_tensor-&gt;dl_tensor.data</span>
+<span class="c1">//        device_id = dlm_tensor-&gt;dl_tensor.device.device_id</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">d_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
+<span class="c1">// Get root_device from device_id</span>
+<span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="n">device_vector</span> <span class="o">=</span> <span class="n">sycl</span><span class="o">::</span><span class="n">get_device</span><span class="p">();</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">root_device</span> <span class="o">=</span> <span class="n">device_vector</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">device_id</span><span class="p">);</span>
 
-<span class="c1"># Output for Iris Xe integerate GPU, with PCI ID 0x9a49</span>
-<span class="c1"># (corresponding decimal value: 39497)</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">intel_device_info</span><span class="p">(</span><span class="n">d_gpu</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
-<span class="p">{</span><span class="s1">&#39;device_id&#39;</span><span class="p">:</span> <span class="mi">39497</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_count&#39;</span><span class="p">:</span> <span class="mi">96</span><span class="p">,</span>
-<span class="s1">&#39;gpu_hw_threads_per_eu&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_simd_width&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-<span class="s1">&#39;gpu_slices&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-<span class="s1">&#39;gpu_subslices_per_slice&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_count_per_subslice&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+<span class="c1">// Check if the backend of the device is supported by consumer</span>
+<span class="c1">//    Perhaps for certain backends (CUDA, hip, etc.) we should dispatch</span>
+<span class="c1">//    different dlpack importers</span>
+
+<span class="c1">// alternatively</span>
+<span class="c1">// sycl::device root_device = sycl::device(</span>
+<span class="c1">//       sycl::ext::oneapi::filter_selector{ std::to_string(device_id)}</span>
+<span class="c1">// );</span>
+
+<span class="c1">// Get default platform context</span>
+<span class="cp">#if SYCL_EXT_ONEAPI_DEFAULT_CONTEXT</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">context</span> <span class="o">&amp;</span><span class="n">default_ctx</span> <span class="o">=</span> <span class="n">root_device</span><span class="p">.</span><span class="n">get_platform</span><span class="p">().</span><span class="n">ext_oneapi_get_default_context</span><span class="p">();</span>
+<span class="cp">#else</span>
+<span class="k">static_assert</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">&quot;ext_oneapi_default_context extension is required&quot;</span><span class="p">);</span>
+<span class="cp">#endif</span>
+
+<span class="c1">// Check that pointer is known in the context</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">usm</span><span class="o">::</span><span class="n">kind</span> <span class="o">&amp;</span><span class="n">alloc_type</span> <span class="o">=</span> <span class="n">sycl</span><span class="o">::</span><span class="n">get_pointer_type</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">alloc_type</span> <span class="o">==</span> <span class="n">sycl</span><span class="o">::</span><span class="n">usm</span><span class="o">::</span><span class="n">kind</span><span class="o">::</span><span class="n">unknown</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="n">pybind11</span><span class="o">::</span><span class="n">type_error</span><span class="p">(</span>
+        <span class="s">&quot;Data pointer in DLPack is not bound to the &quot;</span>
+        <span class="s">&quot;default platform context of specified device&quot;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Perform check that USM allocation type is supported by consumer if needed</span>
+
+<span class="c1">// Get sycl::device where the data was allocated</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">ptr_dev</span> <span class="o">=</span> <span class="n">sycl</span><span class="o">::</span><span class="n">get_pointer_device</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span>
+
+<span class="c1">// Create object of consumer&#39;s library from ptr, ptr_dev, ctx</span>
 </pre></div>
 </div>
 </div>
-<p>Please refer to “Intel(R) Xe GPU Architecture” section of the “<a class="reference external" href="https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/">oneAPI GPU Optimization Guide</a>”
-for detailed explanation of these architectural descriptors.</p>
+</section>
+<section id="support-of-dlpack-with-kdloneapi-device-type">
+<h2>Support of DLPack with <code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code> device type<a class="headerlink" href="#support-of-dlpack-with-kdloneapi-device-type" title="Permalink to this heading">#</a></h2>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> supports DLPack v0.8. Exchange of USM allocations made using Level-Zero backend
+is supported with <code class="docutils literal notranslate"><span class="pre">torch.Tensor(device='xpu')</span></code> for PyTorch when using <a class="reference external" href="https://github.com/intel/intel-extension-for-pytorch">intel-extension-for-pytorch</a>,
+as well as for TensorFlow when <a class="reference external" href="https://github.com/intel/intel-extension-for-tensorflow">intel-extension-for-tensorflow</a> is used.</p>
+</section>
 </section>
 
         </article>
@@ -611,23 +682,23 @@ for detailed explanation of these architectural descriptors.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="environment_variables.html">
+          <a class="next-page" href="../api_reference/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Environment variables</div>
+                <div class="title">API Reference</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="device_selection.html">
+          <a class="prev-page" href="license.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Device selection</div>
+                <div class="title">License</div>
                 
               </div>
             </a>
@@ -649,8 +720,30 @@ for detailed explanation of these architectural descriptors.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">DLPack exchange of USM allocated arrays</a><ul>
+<li><a class="reference internal" href="#dlpack-preamble">DLPack preamble</a></li>
+<li><a class="reference internal" href="#exporting-usm-allocation-to-dlpack">Exporting USM allocation to DLPack</a></li>
+<li><a class="reference internal" href="#importing-dlpack-with-device-type-kdloneapi">Importing DLPack with <code class="docutils literal notranslate"><span class="pre">device_type</span> <span class="pre">==</span> <span class="pre">kDLOneAPI</span></code></a></li>
+<li><a class="reference internal" href="#support-of-dlpack-with-kdloneapi-device-type">Support of DLPack with <code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code> device type</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
