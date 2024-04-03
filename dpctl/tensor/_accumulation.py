@@ -20,51 +20,12 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_accumulation_impl as tai
 import dpctl.tensor._tensor_impl as ti
-from dpctl.tensor._type_utils import _to_device_supported_dtype
+from dpctl.tensor._type_utils import (
+    _default_accumulation_dtype,
+    _default_accumulation_dtype_fp_types,
+    _to_device_supported_dtype,
+)
 from dpctl.utils import ExecutionPlacementError
-
-
-def _default_accumulation_dtype(inp_dt, q):
-    """Gives default output data type for given input data
-    type `inp_dt` when accumulation is performed on queue `q`
-    """
-    inp_kind = inp_dt.kind
-    if inp_kind in "bi":
-        res_dt = dpt.dtype(ti.default_device_int_type(q))
-        if inp_dt.itemsize > res_dt.itemsize:
-            res_dt = inp_dt
-    elif inp_kind in "u":
-        res_dt = dpt.dtype(ti.default_device_int_type(q).upper())
-        res_ii = dpt.iinfo(res_dt)
-        inp_ii = dpt.iinfo(inp_dt)
-        if inp_ii.min >= res_ii.min and inp_ii.max <= res_ii.max:
-            pass
-        else:
-            res_dt = inp_dt
-    elif inp_kind in "fc":
-        res_dt = inp_dt
-
-    return res_dt
-
-
-def _default_accumulation_dtype_fp_types(inp_dt, q):
-    """Gives default output data type for given input data
-    type `inp_dt` when accumulation is performed on queue `q`
-    and the accumulation supports only floating-point data types
-    """
-    inp_kind = inp_dt.kind
-    if inp_kind in "biu":
-        res_dt = dpt.dtype(ti.default_device_fp_type(q))
-        can_cast_v = dpt.can_cast(inp_dt, res_dt)
-        if not can_cast_v:
-            _fp64 = q.sycl_device.has_aspect_fp64
-            res_dt = dpt.float64 if _fp64 else dpt.float32
-    elif inp_kind in "f":
-        res_dt = inp_dt
-    elif inp_kind in "c":
-        raise ValueError("function not defined for complex types")
-
-    return res_dt
 
 
 def _accumulate_common(

@@ -96,7 +96,7 @@ def test_array_api_inspection_default_dtypes():
 
     info = dpt.__array_namespace_info__()
     default_dts_nodev = info.default_dtypes()
-    default_dts_dev = info.default_dtypes(dev)
+    default_dts_dev = info.default_dtypes(device=dev)
 
     assert (
         int_dt == default_dts_nodev["integral"] == default_dts_dev["integral"]

@@ -406,7 +406,7 @@ def test_logsumexp_complex():
     get_queue_or_skip()
 
     x = dpt.zeros(1, dtype="c8")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.logsumexp(x)
 
 
@@ -470,7 +470,7 @@ def test_hypot_complex():
     get_queue_or_skip()
 
     x = dpt.zeros(1, dtype="c8")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.reduce_hypot(x)
 
 

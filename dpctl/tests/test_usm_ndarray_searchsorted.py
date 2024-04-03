@@ -12,7 +12,7 @@ def _check(hay_stack, needles, needles_np):
     assert hay_stack.ndim == 1
 
     info_ = dpt.__array_namespace_info__()
-    default_dts_dev = info_.default_dtypes(hay_stack.device)
+    default_dts_dev = info_.default_dtypes(device=hay_stack.device)
     index_dt = default_dts_dev["indexing"]
 
     p_left = dpt.searchsorted(hay_stack, needles, side="left")
