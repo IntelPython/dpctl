@@ -57,7 +57,7 @@ function(_setup_doxygen)
 endfunction()
 
 function(_setup_doxyrest)
-    set(DOXYREST_OUTPUT_RELATIVE_DIR_NAME doc_sources/reference_guides/libsyclinterface/generated)
+    set(DOXYREST_OUTPUT_RELATIVE_DIR_NAME doc_sources/api_reference/libsyclinterface/generated)
     # Set the DOXYREST_OUTPUT_DIR variable in both current and parent scope.
     # The variable is used by _setup_sphinx when generating the conf.py file.
     set(DOXYREST_OUTPUT_DIR
@@ -104,7 +104,7 @@ function(_setup_sphinx)
     if(DPCTL_ENABLE_DOXYREST)
         set(DEPEND_ON_DOXYREST "Doxyrest")
     else()
-        set(_generated_dir ${SPHINX_SOURCE}/reference_guides/libsyclinterface/generated)
+        set(_generated_dir ${SPHINX_SOURCE}/api_reference/libsyclinterface/generated)
         configure_file(${_generated_dir}/index_template.rst.in ${_generated_dir}/index.rst @ONLY)
     endif()
 
@@ -185,6 +185,6 @@ set_property(
     DIRECTORY
     PROPERTY
     ADDITIONAL_CLEAN_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/doc_sources/reference_guides/dpctl/generated"
-        "${CMAKE_CURRENT_SOURCE_DIR}/doc_sources/reference_guides/libsyclinterface/generated"
+        "${CMAKE_CURRENT_SOURCE_DIR}/doc_sources/api_reference/dpctl/generated"
+        "${CMAKE_CURRENT_SOURCE_DIR}/doc_sources/api_reference/libsyclinterface/generated"
 )

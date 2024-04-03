@@ -5,5 +5,5 @@ docfiles/dpctl
 api
 build
 doxyrest-config.lua
-doc_sources/reference_guides/dpctl/generated
-doc_sources/reference_guides/libsyclinterface/generated
+doc_sources/api_reference/dpctl/generated
+doc_sources/api_reference/libsyclinterface/generated
