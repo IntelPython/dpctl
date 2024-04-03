@@ -3,16 +3,14 @@
 
 .. currentmodule:: dpctl
 
-
-
 .. autoclass:: SyclTimer
-
    
 
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
       ~SyclTimer.__init__
    
@@ -23,6 +21,7 @@
    .. rubric:: Attributes
 
    .. autosummary::
+      :toctree: generated
    
       ~SyclTimer.dt
    

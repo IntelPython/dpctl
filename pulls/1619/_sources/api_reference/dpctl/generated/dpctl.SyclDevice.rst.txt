@@ -3,18 +3,15 @@
 
 .. currentmodule:: dpctl
 
-
-
 .. autoclass:: SyclDevice
-
    
 
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
-      ~SyclDevice.__init__
       ~SyclDevice.addressof_ref
       ~SyclDevice.create_sub_devices
       ~SyclDevice.get_filter_string
@@ -27,6 +24,7 @@
    .. rubric:: Attributes
 
    .. autosummary::
+      :toctree: generated
    
       ~SyclDevice.backend
       ~SyclDevice.default_selector_score

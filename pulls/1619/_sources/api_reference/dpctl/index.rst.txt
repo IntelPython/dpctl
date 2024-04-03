@@ -26,6 +26,7 @@
 .. autosummary::
     :toctree: generated
     :nosignatures:
+    :template: autosummary/cython_class.rst
 
     SyclDevice
     SyclContext

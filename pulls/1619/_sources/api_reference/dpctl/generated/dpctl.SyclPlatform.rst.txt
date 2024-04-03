@@ -3,18 +3,15 @@
 
 .. currentmodule:: dpctl
 
-
-
 .. autoclass:: SyclPlatform
-
    
 
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
-      ~SyclPlatform.__init__
       ~SyclPlatform.print_platform_info
    
    
@@ -24,6 +21,7 @@
    .. rubric:: Attributes
 
    .. autosummary::
+      :toctree: generated
    
       ~SyclPlatform.backend
       ~SyclPlatform.default_context

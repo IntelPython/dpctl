@@ -13,6 +13,7 @@
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
       ~MemoryUSMShared.__init__
       ~MemoryUSMShared.copy_from_device
@@ -25,13 +26,12 @@
    
    
 
-   :special-members: __sycl_usm_array_interface__
-
    
    
    .. rubric:: Attributes
 
    .. autosummary::
+      :toctree: generated
    
       ~MemoryUSMShared.nbytes
       ~MemoryUSMShared.reference_obj
@@ -39,5 +39,6 @@
       ~MemoryUSMShared.sycl_context
       ~MemoryUSMShared.sycl_device
       ~MemoryUSMShared.sycl_queue
+      ~MemoryUSMShared.__sycl_usm_array_interface__
    
    

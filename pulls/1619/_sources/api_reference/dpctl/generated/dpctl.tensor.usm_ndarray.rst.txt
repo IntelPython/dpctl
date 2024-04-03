@@ -3,18 +3,15 @@
 
 .. currentmodule:: dpctl.tensor
 
-
-
 .. autoclass:: usm_ndarray
-
    
 
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
-      ~usm_ndarray.__init__
       ~usm_ndarray.to_device
    
    
@@ -24,6 +21,7 @@
    .. rubric:: Attributes
 
    .. autosummary::
+      :toctree: generated
    
       ~usm_ndarray.T
       ~usm_ndarray.device

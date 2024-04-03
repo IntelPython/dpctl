@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMHost.\_\_init\_\_
+=======================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMHost.__init__

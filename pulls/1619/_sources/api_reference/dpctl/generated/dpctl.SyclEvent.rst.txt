@@ -3,18 +3,15 @@
 
 .. currentmodule:: dpctl
 
-
-
 .. autoclass:: SyclEvent
-
    
 
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
-      ~SyclEvent.__init__
       ~SyclEvent.addressof_ref
       ~SyclEvent.get_wait_list
       ~SyclEvent.wait
@@ -27,6 +24,7 @@
    .. rubric:: Attributes
 
    .. autosummary::
+      :toctree: generated
    
       ~SyclEvent.backend
       ~SyclEvent.execution_status

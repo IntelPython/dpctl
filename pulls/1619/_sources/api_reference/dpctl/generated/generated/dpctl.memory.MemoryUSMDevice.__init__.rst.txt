@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMDevice.\_\_init\_\_
+=========================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMDevice.__init__
