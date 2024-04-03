@@ -23,7 +23,7 @@ Using fixed device selectors
 Selecting device based on aspects
 ---------------------------------
 
-In addition, a :py:func:`select_device_with_aspects` permits selecting a device based on aspects it is required to have:
+In addition, :py:func:`select_device_with_aspects` permits selecting a device based on aspects it is required to have:
 
 .. code-block:: python
     :caption: Example: Selecting devices based on their aspects

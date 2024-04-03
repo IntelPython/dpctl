@@ -72,7 +72,7 @@ It is implemented using :py:func:`lsplatform` function.
 Listing devices programmatically
 --------------------------------
 
-Devices can also be discovered programmatically, either by using :py:func:`lsplatform` to :py:func:`print`` the listing or
+Devices can also be discovered programmatically, either by using :py:func:`lsplatform` to :py:func:`print` the listing or
 by using :py:func:`get_devices` to obtain a list of :py:class:`SyclDevice` objects suitable for further processing.
 
 .. code-block:: python
