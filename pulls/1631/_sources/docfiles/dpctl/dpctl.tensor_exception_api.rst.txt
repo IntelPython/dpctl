@@ -1,9 +1,0 @@
-.. _dpctl.tensor_exception_api:
-
-#######################
-dpctl.tensor Exceptions
-#######################
-
-
-.. currentmodule:: dpctl.tensor
-
