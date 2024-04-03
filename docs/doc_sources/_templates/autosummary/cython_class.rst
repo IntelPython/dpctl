@@ -2,10 +2,7 @@
 
 .. currentmodule:: {{ module }}
 
-
-
 .. autoclass:: {{ name }}
-
    {% block methods %}
 
    {% if methods %}
@@ -13,7 +10,7 @@
 
    .. autosummary::
       :toctree: generated
-   {% for item in methods %}
+   {% for item in methods if item != "__init__" or name == "SyclTimer" %}
       ~{{ name }}.{{ item }}
    {%- endfor %}
    {% endif %}
@@ -28,6 +25,5 @@
    {% for item in attributes %}
       ~{{ name }}.{{ item }}
    {%- endfor %}
-      ~{{name}}.__sycl_usm_array_interface__
    {% endif %}
    {% endblock %}
