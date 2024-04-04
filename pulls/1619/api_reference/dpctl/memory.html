@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="dpctl.memory.MemoryUSMDevice" href="generated/dpctl.memory.MemoryUSMDevice.html" /><link rel="prev" title="Filter Selector String" href="filter_selector_string.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.memory - Data Parallel Control (dpctl) 0.17.0dev0+218.gaaafc4bd41 documentation</title>
+        <title>dpctl.memory - Data Parallel Control (dpctl) 0.17.0dev0+226.g0c551006b2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+218.gaaafc4bd41 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+226.g0c551006b2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+218.gaaafc4bd41 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+226.g0c551006b2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -795,7 +795,7 @@ pointer values will be consistent.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MemoryUSMDevice</span></code></a></p></td>
-<td><p>An object representing allocation of SYCL USM-device memory.</p></td>
+<td><p>Class representing allocation of SYCL USM-device memory.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.memory.MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MemoryUSMShared</span></code></a></p></td>
 <td><p>An object representing allocation of SYCL USM-shared memory.</p></td>
@@ -812,7 +812,7 @@ A Python object can be converted to one of these classes using the following fun
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.memory.as_usm_memory.html#dpctl.memory.as_usm_memory" title="dpctl.memory.as_usm_memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">as_usm_memory</span></code></a></p></td>
-<td><p>Converts Python object with <cite>__sycl_usm_array_interface__</cite> property to one of <a class="reference internal" href="generated/dpctl.memory.MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMShared</span></code></a>, <a class="reference internal" href="generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMDevice</span></code></a>, or <a class="reference internal" href="generated/dpctl.memory.MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMHost</span></code></a> instances depending on the type of USM allocation they represent.</p></td>
+<td><p>Converts Python object with <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> property to one of <a class="reference internal" href="generated/dpctl.memory.MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMShared</span></code></a>, <a class="reference internal" href="generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMDevice</span></code></a>, or <a class="reference internal" href="generated/dpctl.memory.MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMHost</span></code></a> instances depending on the type of USM allocation they represent.</p></td>
 </tr>
 </tbody>
 </table>
@@ -898,7 +898,7 @@ A Python object can be converted to one of these classes using the following fun
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=9d78c80a"></script>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=9fffa679"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.memory.USMAllocationError" href="dpctl.memory.USMAllocationError.html" /><link rel="prev" title="dpctl.memory.MemoryUSMHost.__sycl_usm_array_interface__" href="generated/dpctl.memory.MemoryUSMHost.__sycl_usm_array_interface__.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.memory.as_usm_memory - Data Parallel Control (dpctl) 0.17.0dev0+218.gaaafc4bd41 documentation</title>
+        <title>dpctl.memory.as_usm_memory - Data Parallel Control (dpctl) 0.17.0dev0+226.g0c551006b2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+218.gaaafc4bd41 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+226.g0c551006b2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+218.gaaafc4bd41 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+226.g0c551006b2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -758,14 +758,14 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.as_usm_memory">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">as_usm_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.as_usm_memory" title="Permalink to this definition">#</a></dt>
-<dd><p>Converts Python object with <cite>__sycl_usm_array_interface__</cite> property
+<dd><p>Converts Python object with <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> property
 to one of <a class="reference internal" href="dpctl.memory.MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMShared</span></code></a>, <a class="reference internal" href="dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMDevice</span></code></a>, or
 <a class="reference internal" href="dpctl.memory.MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryUSMHost</span></code></a> instances depending on the type of USM allocation
 they represent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – When object does not expose the <cite>__sycl_usm_array_interface__</cite>,
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – When object does not expose the <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code>,
     or it is malformed</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – When unexpected types of entries in the interface are encountered</p></li>
 <li><p><a class="reference internal" href="dpctl.SyclQueueCreationError.html#dpctl.SyclQueueCreationError" title="dpctl.SyclQueueCreationError"><strong>SyclQueueCreationError</strong></a> – When a <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> could not be created from the
@@ -845,7 +845,7 @@ they represent.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=9d78c80a"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=9fffa679"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
