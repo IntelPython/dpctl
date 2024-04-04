@@ -261,6 +261,11 @@ def cumulative_sum(
             boolean indicating whether to include the initial value (i.e., the
             additive identity, zero) as the first value along the provided axis
             in the output. Default: `False`.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of `out` must match the expected shape and the
+            expected data type of the result or (if provided) `dtype`.
+            If `None` then a new array is returned. Default: `None`.
 
     Returns:
         usm_ndarray:
@@ -335,6 +340,11 @@ def cumulative_prod(
             boolean indicating whether to include the initial value (i.e., the
             additive identity, zero) as the first value along the provided
             axis in the output. Default: `False`.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of `out` must match the expected shape and the
+            expected data type of the result or (if provided) `dtype`.
+            If `None` then a new array is returned. Default: `None`.
 
     Returns:
         usm_ndarray:
@@ -410,6 +420,11 @@ def cumulative_logsumexp(
             boolean indicating whether to include the initial value (i.e., the
             additive identity, zero) as the first value along the provided axis
             in the output. Default: `False`.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of `out` must match the expected shape and the
+            expected data type of the result or (if provided) `dtype`.
+            If `None` then a new array is returned. Default: `None`.
 
     Returns:
         usm_ndarray:
