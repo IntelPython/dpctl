@@ -148,19 +148,15 @@ def sum(x, /, *, axis=None, dtype=None, keepdims=False):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
 
-                * If `x` has a real-valued floating-point data type,
-                  the returned array will have the default real-valued
-                  floating-point data type for the device where input
-                  array `x` is allocated.
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
                 * If `x` has signed integral data type, the returned array
                   will have the default signed integral type for the device
                   where input array `x` is allocated.
                 * If `x` has unsigned integral data type, the returned array
                   will have the default unsigned integral type for the device
                   where input array `x` is allocated.
-                * If `x` has a complex-valued floating-point data type,
-                  the returned array will have the default complex-valued
-                  floating-pointer data type for the device where input
                   array `x` is allocated.
                 * If `x` has a boolean data type, the returned array will
                   have the default signed integral type for the device
@@ -210,20 +206,15 @@ def prod(x, /, *, axis=None, dtype=None, keepdims=False):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
 
-                * If `x` has a real-valued floating-point data type,
-                  the returned array will have the default real-valued
-                  floating-point data type for the device where input
-                  array `x` is allocated.
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
                 * If `x` has signed integral data type, the returned array
                   will have the default signed integral type for the device
                   where input array `x` is allocated.
                 * If `x` has unsigned integral data type, the returned array
                   will have the default unsigned integral type for the device
                   where input array `x` is allocated.
-                * If `x` has a complex-valued floating-point data type,
-                  the returned array will have the default complex-valued
-                  floating-pointer data type for the device where input
-                  array `x` is allocated.
                 * If `x` has a boolean data type, the returned array will
                   have the default signed integral type for the device
                   where input array `x` is allocated.
@@ -273,10 +264,8 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
 
-                * If `x` has a real-valued floating-point data type,
-                  the returned array will have the default real-valued
-                  floating-point data type for the device where input
-                  array `x` is allocated.
+                * If `x` has a real-valued floating-point data type, the
+                returned array will have the same data type as `x`.
                 * If `x` has a boolean or integral data type, the returned array
                   will have the default floating point data type for the device
                   where input array `x` is allocated.
@@ -330,10 +319,8 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False):
             data type of the returned array. If `None`, the default data
             type is inferred from the "kind" of the input array data type.
 
-                * If `x` has a real-valued floating-point data type,
-                  the returned array will have the default real-valued
-                  floating-point data type for the device where input
-                  array `x` is allocated.
+                * If `x` has a real-valued floating-point data type, the
+                returned array will have the same data type as `x`.
                 * If `x` has a boolean or integral data type, the returned array
                   will have the default floating point data type for the device
                   where input array `x` is allocated.
