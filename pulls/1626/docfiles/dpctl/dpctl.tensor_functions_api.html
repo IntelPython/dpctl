@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+195.g54f87a9cd9 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+198.g4d4cd8091c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c49e6b97"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=377e96bb"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+195.g54f87a9cd9
+                0.17.0dev0+198.g4d4cd8091c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1072,8 +1072,7 @@ description above.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.put">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put" title="Permalink to this definition"></a></dt>
-<dd><p>Puts values of an array into another array
-along a given axis.</p>
+<dd><p>Puts values into an array along a given axis at given indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1320,7 +1319,7 @@ If a tuple of unique integers, the standard deviations are computed
 over multiple axes. If <cite>None</cite>, the standard deviation is computed
 over the entire array. Default: <cite>None</cite>.</p></li>
 <li><p><strong>correction</strong> (<em>Optional</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – degrees of freedom adjustment. The divisor used in calculating the
-standard deviation is <cite>N-correction</cite>, where <cite>N</cite> corresponds to the
+standard deviation is <cite>N - correction</cite>, where <cite>N</cite> corresponds to the
 total number of elements over which the standard deviation is
 calculated. Default: <cite>0.0</cite>.</p></li>
 <li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result
@@ -1404,7 +1403,7 @@ description above.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.take">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_indexing_functions.html#take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.take" title="Permalink to this definition"></a></dt>
-<dd><p>Takes elements from array along a given axis.</p>
+<dd><p>Takes elements from an array along a given axis at given indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1485,7 +1484,7 @@ elements that reconstruct <cite>x</cite>, and the corresponding counts for each
 unique element in <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Inputs with more than one dimension are flattened.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1521,7 +1520,7 @@ array index data type.</p></li>
 counts for each unique element in <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Inputs with more than one dimension are flattened.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1552,7 +1551,7 @@ array index data type.</p></li>
 set of unique elements that reconstruct <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Inputs with more than one dimension are flattened.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1576,10 +1575,10 @@ index data type.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.unique_values">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">unique_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_set_functions.html#unique_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.unique_values" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the unique elements of an input array x.</p>
+<dd><p>Returns the unique elements of an input array <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. The input with more than one dimension is flattened.</p>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Inputs with more than one dimension are flattened.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1732,7 +1731,7 @@ of unique integers, the variances are computed over multiple axes.
 If <cite>None</cite>, the variance is computed over the entire array.
 Default: <cite>None</cite>.</p></li>
 <li><p><strong>correction</strong> (<em>Optional</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – degrees of freedom adjustment. The divisor used in calculating the
-variance is <cite>N-correction</cite>, where <cite>N</cite> corresponds to the total
+variance is <cite>N - correction</cite>, where <cite>N</cite> corresponds to the total
 number of elements over which the variance is calculated.
 Default: <cite>0.0</cite>.</p></li>
 <li><p><strong>keepdims</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – if <cite>True</cite>, the reduced axes (dimensions) are included in the result

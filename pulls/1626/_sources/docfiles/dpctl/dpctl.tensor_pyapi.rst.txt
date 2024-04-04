@@ -183,7 +183,7 @@ Other Functions
     * - :func:`prod()`
       - Calculates the product of elements in the input array `x`.
     * - :func:`put()`
-      - Puts values of an array into another array along a given axis.
+      - Puts values into an array along a given axis at given indices.
     * - :func:`reduce_hypot()`
       - Calculates the square root of the sum of squares of elements in the input array `x`.
     * - :func:`result_type()`
@@ -199,7 +199,7 @@ Other Functions
     * - :func:`sum()`
       - Calculates the sum of elements in the input array `x`.
     * - :func:`take()`
-      - Takes elements from array along a given axis.
+      - Takes elements from an array along a given axis at given indices.
     * - :func:`tensordot()`
       - Returns a tensor contraction of `x1` and `x2` over specific axes.
     * - :func:`unique_all()`
@@ -209,7 +209,7 @@ Other Functions
     * - :func:`unique_inverse()`
       - unique_inverse Returns the unique elements of an input array x and the indices from the set of unique elements that reconstruct `x`.
     * - :func:`unique_values()`
-      - Returns the unique elements of an input array x.
+      - Returns the unique elements of an input array `x`.
     * - :func:`usm_ndarray_repr()`
       - Returns a formatted string representing the elements of a :class:`dpctl.tensor.usm_ndarray` and its data type, if not a default type.
     * - :func:`usm_ndarray_str()`
