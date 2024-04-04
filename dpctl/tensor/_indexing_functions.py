@@ -39,7 +39,7 @@ def _get_indexing_mode(name):
 def take(x, indices, /, *, axis=None, mode="wrap"):
     """take(x, indices, axis=None, mode="wrap")
 
-    Takes elements from array along a given axis.
+    Takes elements from an array along a given axis at given indices.
 
     Args:
        x (usm_ndarray):
@@ -123,8 +123,7 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
 def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     """put(x, indices, vals, axis=None, mode="wrap")
 
-    Puts values of an array into another array
-    along a given axis.
+    Puts values into an array along a given axis at given indices.
 
     Args:
        x (usm_ndarray):
