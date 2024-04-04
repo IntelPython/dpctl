@@ -270,25 +270,25 @@ cdef class _Memory:
         buffer.suboffsets = NULL                # for pointer arrays only
 
     property nbytes:
-        """ Extent of this USM buffer in bytes. """
+        """Extent of this USM buffer in bytes."""
         def __get__(self):
             return self.nbytes
 
     property size:
-        """ Extent of this USM buffer in bytes. """
+        """Extent of this USM buffer in bytes."""
         def __get__(self):
             return self.nbytes
 
     property _pointer:
         """
         USM pointer at the start of this buffer
-        represented in Python integer.
+        represented as Python integer.
         """
         def __get__(self):
             return <size_t>(self.memory_ptr)
 
     property _context:
-        """ :class:`dpctl.SyclContext` the USM pointer is bound to. """
+        """:class:`dpctl.SyclContext` the USM pointer is bound to. """
         def __get__(self):
             return self.queue.get_sycl_context()
 
@@ -309,12 +309,12 @@ cdef class _Memory:
             return self.refobj
 
     property sycl_context:
-        """ :class:`dpctl.SyclContext` the USM pointer is bound to. """
+        """:class:`dpctl.SyclContext` the USM pointer is bound to."""
         def __get__(self):
             return self.queue.get_sycl_context()
 
     property sycl_device:
-        """ :class:`dpctl.SyclDevice` the USM pointer is bound to. """
+        """:class:`dpctl.SyclDevice` the USM pointer is bound to."""
         def __get__(self):
             return self.queue.get_sycl_device()
 
@@ -350,6 +350,31 @@ cdef class _Memory:
         return _to_memory, (self.copy_to_host(), self.get_usm_type())
 
     property __sycl_usm_array_interface__:
+        """
+        Dictionary encoding information about USM allocation.
+
+        Contains the following fields:
+
+            * ``"data"`` (Tuple[int, bool])
+                unified address space pointer presented as Python integer
+                and a Boolean value of 'writeable' flag. If ``False`` the
+                allocation is read-only. The return flag is always set to
+                writeable.
+            * ``"shape"`` (Tuple[int])
+                Extent of array in bytes. Shape is always 1-tuple for
+                this object.
+            * ``"strides"`` (Options[Tuple[int]])
+                Strides describing array layout, or ``None`` if allocation is
+                C-contiguous. Always ``None``.
+            * ``"typestr"`` (str)
+                Typestring encoding values of allocation. This field is always
+                set to ``"|u1"`` representing unsigned bytes.
+            * ``"version"`` (int)
+                Always ``1``.
+            * ``"syclobj"`` (:class:`dpctl.SyclQueue`)
+                Queue associated with this class instance.
+
+        """
         def __get__(self):
             cdef dict iface = {
                 "data": (<size_t>(<void *>self.memory_ptr),
@@ -366,9 +391,9 @@ cdef class _Memory:
         """
         get_usm_type(syclobj=None)
 
-        Returns the type of USM allocation using Sycl context carried by
-        `syclobj` keyword argument. Value of None is understood to query
-        against `self.sycl_context` - the context used to create the
+        Returns the type of USM allocation using :class:`dpctl.SyclContext`
+        carried by ``syclobj`` keyword argument. Value of ``None`` is understood
+        to query against ``self.sycl_context`` - the context used to create the
         allocation.
         """
         cdef const char* kind
@@ -399,9 +424,9 @@ cdef class _Memory:
         """
         get_usm_type(syclobj=None)
 
-        Returns the type of USM allocation using Sycl context carried by
-        `syclobj` keyword argument. Value of None is understood to query
-        against `self.sycl_context` - the context used to create the
+        Returns the type of USM allocation using :class:`dpctl.SyclContext`
+        carried by ``syclobj`` keyword argument. Value of ``None`` is understood
+        to query against ``self.sycl_context`` - the context used to create the
         allocation.
         """
         cdef const char* kind
@@ -461,7 +486,7 @@ cdef class _Memory:
 
     cpdef copy_from_host(self, object obj):
         """
-        Copy content of Python buffer provided by `obj` to instance memory.
+        Copy content of Python buffer provided by ``obj`` to instance memory.
         """
         cdef const unsigned char[::1] host_buf = obj
         cdef Py_ssize_t buf_len = len(host_buf)
@@ -569,8 +594,8 @@ cdef class _Memory:
     @staticmethod
     cdef SyclDevice get_pointer_device(DPCTLSyclUSMRef p, SyclContext ctx):
         """
-        Returns sycl device used to allocate given pointer `p` in
-        given sycl context `ctx`
+        Returns sycl device used to allocate given pointer ``p`` in
+        given sycl context ``ctx``
         """
         cdef DPCTLSyclDeviceRef dref = DPCTLUSM_GetPointerDevice(
             p, ctx.get_context_ref()
@@ -586,8 +611,8 @@ cdef class _Memory:
         get_pointer_type(p, ctx)
 
         Gives the SYCL(TM) USM pointer type, using ``sycl::get_pointer_type``,
-        returning one of 4 possible strings: 'shared', 'host', 'device', or
-        'unknown'.
+        returning one of 4 possible strings: ``'shared'``, ``'host'``,
+        ``'device'``, or ``'unknown'``.
 
         Args:
             p: DPCTLSyclUSMRef
@@ -596,9 +621,9 @@ cdef class _Memory:
                 Python object providing :class:`dpctl.SyclContext` against
                 which to query for the pointer type.
         Returns:
-            b'unknown' if the pointer does not represent USM allocation made
-            using the given context. Otherwise, returns b'shared', b'device',
-            or b'host' type of the allocation.
+            ``b'unknown'`` if the pointer does not represent USM allocation
+            made using given context. Otherwise, returns ``b'shared'``,
+            ``b'device'``, or ``b'host'`` type of the allocation.
         """
         cdef _usm_type usm_ty = DPCTLUSM_GetPointerType(
             p, ctx.get_context_ref()
@@ -640,11 +665,11 @@ cdef class _Memory:
         DPCTLSyclQueueRef QRef, object memory_owner=None
     ):
         r"""
-        Create appropriate `MemoryUSM*` object from pre-allocated
+        Create appropriate ``MemoryUSM*`` object from pre-allocated
         USM memory bound to SYCL context in the reference SYCL queue.
 
-        Memory will be freed by `MemoryUSM*` object for default
-        value of memory_owner keyword. The non-default value should
+        Memory will be freed by ``MemoryUSM*`` object for default
+        value of ``memory_owner`` keyword. The non-default value should
         be an object whose dealloc slot frees the memory.
 
         The object may not be a no-op dummy Python object to
@@ -696,14 +721,28 @@ cdef class _Memory:
 
 cdef class MemoryUSMShared(_Memory):
     """
-    MemoryUSMShared(nbytes, alignment=0, queue=None, copy=False)
+    MemoryUSMShared(nbytes, alignment=0, queue=None)
 
     An object representing allocation of SYCL USM-shared memory.
 
-    Non-positive ``alignment`` values are not ignored and
-    the allocator ``malloc_shared`` is used for allocation instead.
-    If ``queue`` is ``None`` a cached default-constructed
-    :class:`dpctl.SyclQueue` is used to allocate memory.
+    Args:
+        nbytes (int)
+            number of bytes to allocated.
+            Expected to be positive.
+        alignment (Optional[int]):
+            allocation alignment request. Non-positive
+            ``alignment`` values are not ignored and
+            the unaligned allocator ``sycl::malloc_device``
+            is used to make allocation instead.
+            Default: `0`.
+        queue (Optional[:class:`dpctl.SyclQueue`]):
+            SYCL queue associated with return allocation
+            instance. Allocation is performed on the device
+            associated with the queue, and is bound to
+            SYCL context from the queue.
+            If ``queue`` is ``None`` a cached
+            default-constructed :class:`dpctl.SyclQueue` is
+            used to allocate memory.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -733,14 +772,28 @@ cdef class MemoryUSMShared(_Memory):
 
 cdef class MemoryUSMHost(_Memory):
     """
-    MemoryUSMHost(nbytes, alignment=0, queue=None, copy=False)
+    MemoryUSMHost(nbytes, alignment=0, queue=None)
 
     An object representing allocation of SYCL USM-host memory.
 
-    Non-positive ``alignment`` values are not ignored and
-    the allocator ``malloc_host`` is used for allocation instead.
-    If ``queue`` is ``None`` a cached default-constructed
-    :class:`dpctl.SyclQueue` is used to allocate memory.
+    Args:
+        nbytes (int)
+            number of bytes to allocated.
+            Expected to be positive.
+        alignment (Optional[int]):
+            allocation alignment request. Non-positive
+            ``alignment`` values are not ignored and
+            the unaligned allocator ``sycl::malloc_device``
+            is used to make allocation instead.
+            Default: `0`.
+        queue (Optional[:class:`dpctl.SyclQueue`]):
+            SYCL queue associated with return allocation
+            instance. Allocation is made in host memory accessible
+            to all device in te SYCL context from the queue.
+            Allocation is bound to SYCL context from the queue.
+            If ``queue`` is ``None`` a cached
+            default-constructed :class:`dpctl.SyclQueue` is
+            used to allocate memory.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -771,14 +824,28 @@ cdef class MemoryUSMHost(_Memory):
 
 cdef class MemoryUSMDevice(_Memory):
     """
-    MemoryUSMDevice(nbytes, alignment=0, queue=None, copy=False)
+    MemoryUSMDevice(nbytes, alignment=0, queue=None)
 
-    An object representing allocation of SYCL USM-device memory.
+    Class representing allocation of SYCL USM-device memory.
 
-    Non-positive ``alignment`` values are not ignored and
-    the allocator ``malloc_device`` is used for allocation instead.
-    If ``queue`` is ``None`` a cached default-constructed
-    :class:`dpctl.SyclQueue` is used to allocate memory.
+    Args:
+        nbytes (int)
+            number of bytes to allocated.
+            Expected to be positive.
+        alignment (Optional[int]):
+            allocation alignment request. Non-positive
+            ``alignment`` values are not ignored and
+            the unaligned allocator ``sycl::malloc_device``
+            is used to make allocation instead.
+            Default: `0`.
+        queue (Optional[:class:`dpctl.SyclQueue`]):
+            SYCL queue associated with return allocation
+            instance. Allocation is performed on the device
+            associated with the queue, and is bound to
+            SYCL context from the queue.
+            If ``queue`` is ``None`` a cached
+            default-constructed :class:`dpctl.SyclQueue` is
+            used to allocate memory.
     """
     def __cinit__(self, other, *, Py_ssize_t alignment=0,
                   SyclQueue queue=None, int copy=False):
@@ -808,14 +875,14 @@ def as_usm_memory(obj):
     """
     as_usm_memory(obj)
 
-    Converts Python object with `__sycl_usm_array_interface__` property
+    Converts Python object with ``__sycl_usm_array_interface__`` property
     to one of :class:`.MemoryUSMShared`, :class:`.MemoryUSMDevice`, or
     :class:`.MemoryUSMHost` instances depending on the type of USM allocation
     they represent.
 
     Raises:
         ValueError
-            When object does not expose the `__sycl_usm_array_interface__`,
+            When object does not expose the ``__sycl_usm_array_interface__``,
             or it is malformed
         TypeError
             When unexpected types of entries in the interface are encountered
