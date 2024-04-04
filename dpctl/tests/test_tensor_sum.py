@@ -17,7 +17,6 @@
 import pytest
 
 import dpctl.tensor as dpt
-import dpctl.utils as du
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
@@ -242,27 +241,12 @@ def test_sum_axis1_axis0():
     assert dpt.allclose(m, expected, atol=tol, rtol=tol)
 
 
-def _any_complex(dtypes):
-    return any(dpt.isdtype(dpt.dtype(dt), "complex floating") for dt in dtypes)
-
-
-def _skip_on_this_device(sycl_dev):
-    device_mask = du.intel_device_info(sycl_dev).get("device_id", 0) & 0xFF00
-    return device_mask in [0x3E00, 0x9B00]
-
-
 @pytest.mark.parametrize("arg_dtype", _all_dtypes[1:])
 def test_prod_arg_dtype_default_output_dtype_matrix(arg_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(arg_dtype, q)
 
     arg_dtype = dpt.dtype(arg_dtype)
-    if _any_complex((arg_dtype,)):
-        if _skip_on_this_device(q.sycl_device):
-            pytest.skip(
-                "Product reduction for complex output are known "
-                "to fail for Gen9 with 2024.0 compiler"
-            )
 
     m = dpt.ones(100, dtype=arg_dtype)
     r = dpt.prod(m)
@@ -316,12 +300,6 @@ def test_prod_arg_out_dtype_matrix(arg_dtype, out_dtype):
 
     out_dtype = dpt.dtype(out_dtype)
     arg_dtype = dpt.dtype(arg_dtype)
-    if _any_complex((arg_dtype, out_dtype)):
-        if _skip_on_this_device(q.sycl_device):
-            pytest.skip(
-                "Product reduction for complex output are known "
-                "to fail for Gen9 with 2024.0 compiler"
-            )
 
     m = dpt.ones(100, dtype=arg_dtype)
     r = dpt.prod(m, dtype=out_dtype)
