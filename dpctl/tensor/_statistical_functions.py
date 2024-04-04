@@ -289,7 +289,7 @@ def var(x, axis=None, correction=0.0, keepdims=False):
             Default: `None`.
         correction (Optional[float, int]):
             degrees of freedom adjustment. The divisor used in calculating the
-            variance is `N-correction`, where `N` corresponds to the total
+            variance is `N - correction`, where `N` corresponds to the total
             number of elements over which the variance is calculated.
             Default: `0.0`.
         keepdims (Optional[bool]):
@@ -341,7 +341,7 @@ def std(x, axis=None, correction=0.0, keepdims=False):
             over the entire array. Default: `None`.
         correction (Optional[float, int]):
             degrees of freedom adjustment. The divisor used in calculating the
-            standard deviation is `N-correction`, where `N` corresponds to the
+            standard deviation is `N - correction`, where `N` corresponds to the
             total number of elements over which the standard deviation is
             calculated. Default: `0.0`.
         keepdims (Optional[bool]):
