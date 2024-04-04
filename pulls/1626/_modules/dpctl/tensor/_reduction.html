@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._reduction &mdash; Data Parallel Control (dpctl) 0.17.0dev0+194.g9ff51eede7 documentation</title>
+  <title>dpctl.tensor._reduction &mdash; Data Parallel Control (dpctl) 0.17.0dev0+195.g54f87a9cd9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=4750817b"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c49e6b97"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+194.g9ff51eede7
+                0.17.0dev0+195.g54f87a9cd9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -242,19 +242,15 @@
 <span class="sd">            data type of the returned array. If `None`, the default data</span>
 <span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
 
-<span class="sd">                * If `x` has a real-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default real-valued</span>
-<span class="sd">                  floating-point data type for the device where input</span>
-<span class="sd">                  array `x` is allocated.</span>
+<span class="sd">                * If `x` has a real- or complex-valued floating-point data</span>
+<span class="sd">                  type, the returned array will have the same data type as</span>
+<span class="sd">                  `x`.</span>
 <span class="sd">                * If `x` has signed integral data type, the returned array</span>
 <span class="sd">                  will have the default signed integral type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
 <span class="sd">                * If `x` has unsigned integral data type, the returned array</span>
 <span class="sd">                  will have the default unsigned integral type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
-<span class="sd">                * If `x` has a complex-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default complex-valued</span>
-<span class="sd">                  floating-pointer data type for the device where input</span>
 <span class="sd">                  array `x` is allocated.</span>
 <span class="sd">                * If `x` has a boolean data type, the returned array will</span>
 <span class="sd">                  have the default signed integral type for the device</span>
@@ -304,20 +300,15 @@
 <span class="sd">            data type of the returned array. If `None`, the default data</span>
 <span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
 
-<span class="sd">                * If `x` has a real-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default real-valued</span>
-<span class="sd">                  floating-point data type for the device where input</span>
-<span class="sd">                  array `x` is allocated.</span>
+<span class="sd">                * If `x` has a real- or complex-valued floating-point data</span>
+<span class="sd">                  type, the returned array will have the same data type as</span>
+<span class="sd">                  `x`.</span>
 <span class="sd">                * If `x` has signed integral data type, the returned array</span>
 <span class="sd">                  will have the default signed integral type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
 <span class="sd">                * If `x` has unsigned integral data type, the returned array</span>
 <span class="sd">                  will have the default unsigned integral type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
-<span class="sd">                * If `x` has a complex-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default complex-valued</span>
-<span class="sd">                  floating-pointer data type for the device where input</span>
-<span class="sd">                  array `x` is allocated.</span>
 <span class="sd">                * If `x` has a boolean data type, the returned array will</span>
 <span class="sd">                  have the default signed integral type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
@@ -367,10 +358,8 @@
 <span class="sd">            data type of the returned array. If `None`, the default data</span>
 <span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
 
-<span class="sd">                * If `x` has a real-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default real-valued</span>
-<span class="sd">                  floating-point data type for the device where input</span>
-<span class="sd">                  array `x` is allocated.</span>
+<span class="sd">                * If `x` has a real-valued floating-point data type, the</span>
+<span class="sd">                returned array will have the same data type as `x`.</span>
 <span class="sd">                * If `x` has a boolean or integral data type, the returned array</span>
 <span class="sd">                  will have the default floating point data type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
@@ -424,10 +413,8 @@
 <span class="sd">            data type of the returned array. If `None`, the default data</span>
 <span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
 
-<span class="sd">                * If `x` has a real-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default real-valued</span>
-<span class="sd">                  floating-point data type for the device where input</span>
-<span class="sd">                  array `x` is allocated.</span>
+<span class="sd">                * If `x` has a real-valued floating-point data type, the</span>
+<span class="sd">                returned array will have the same data type as `x`.</span>
 <span class="sd">                * If `x` has a boolean or integral data type, the returned array</span>
 <span class="sd">                  will have the default floating point data type for the device</span>
 <span class="sd">                  where input array `x` is allocated.</span>
