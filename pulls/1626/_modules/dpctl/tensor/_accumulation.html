@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._accumulation &mdash; Data Parallel Control (dpctl) 0.17.0dev0+186.g17cf06f948 documentation</title>
+  <title>dpctl.tensor._accumulation &mdash; Data Parallel Control (dpctl) 0.17.0dev0+193.gac6be79d07 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=0105ae68"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=9a93ca93"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+186.g17cf06f948
+                0.17.0dev0+193.gac6be79d07
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -114,51 +114,12 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_accumulation_impl</span> <span class="k">as</span> <span class="nn">tai</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_to_device_supported_dtype</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_default_accumulation_dtype</span><span class="p">,</span>
+    <span class="n">_default_accumulation_dtype_fp_types</span><span class="p">,</span>
+    <span class="n">_to_device_supported_dtype</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
-
-
-<span class="k">def</span> <span class="nf">_default_accumulation_dtype</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gives default output data type for given input data</span>
-<span class="sd">    type `inp_dt` when accumulation is performed on queue `q`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">inp_kind</span> <span class="o">=</span> <span class="n">inp_dt</span><span class="o">.</span><span class="n">kind</span>
-    <span class="k">if</span> <span class="n">inp_kind</span> <span class="ow">in</span> <span class="s2">&quot;bi&quot;</span><span class="p">:</span>
-        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">q</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">inp_dt</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&gt;</span> <span class="n">res_dt</span><span class="o">.</span><span class="n">itemsize</span><span class="p">:</span>
-            <span class="n">res_dt</span> <span class="o">=</span> <span class="n">inp_dt</span>
-    <span class="k">elif</span> <span class="n">inp_kind</span> <span class="ow">in</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span>
-        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_int_type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-        <span class="n">res_ii</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">res_dt</span><span class="p">)</span>
-        <span class="n">inp_ii</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">inp_ii</span><span class="o">.</span><span class="n">min</span> <span class="o">&gt;=</span> <span class="n">res_ii</span><span class="o">.</span><span class="n">min</span> <span class="ow">and</span> <span class="n">inp_ii</span><span class="o">.</span><span class="n">max</span> <span class="o">&lt;=</span> <span class="n">res_ii</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">res_dt</span> <span class="o">=</span> <span class="n">inp_dt</span>
-    <span class="k">elif</span> <span class="n">inp_kind</span> <span class="ow">in</span> <span class="s2">&quot;fc&quot;</span><span class="p">:</span>
-        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">inp_dt</span>
-
-    <span class="k">return</span> <span class="n">res_dt</span>
-
-
-<span class="k">def</span> <span class="nf">_default_accumulation_dtype_fp_types</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gives default output data type for given input data</span>
-<span class="sd">    type `inp_dt` when accumulation is performed on queue `q`</span>
-<span class="sd">    and the accumulation supports only floating-point data types</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">inp_kind</span> <span class="o">=</span> <span class="n">inp_dt</span><span class="o">.</span><span class="n">kind</span>
-    <span class="k">if</span> <span class="n">inp_kind</span> <span class="ow">in</span> <span class="s2">&quot;biu&quot;</span><span class="p">:</span>
-        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">q</span><span class="p">))</span>
-        <span class="n">can_cast_v</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">can_cast_v</span><span class="p">:</span>
-            <span class="n">_fp64</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
-            <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float64</span> <span class="k">if</span> <span class="n">_fp64</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float32</span>
-    <span class="k">elif</span> <span class="n">inp_kind</span> <span class="ow">in</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
-        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">inp_dt</span>
-    <span class="k">elif</span> <span class="n">inp_kind</span> <span class="ow">in</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;function not defined for complex types&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">res_dt</span>
 
 
 <span class="k">def</span> <span class="nf">_accumulate_common</span><span class="p">(</span>
@@ -365,6 +326,9 @@
 <span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
 <span class="sd">            axis along which cumulative sum must be computed.</span>
 <span class="sd">            If `None`, the sum is computed over the entire array.</span>
+<span class="sd">            If `x` is a one-dimensional array, providing an `axis` is optional;</span>
+<span class="sd">            however, if `x` has more than one dimension, providing an `axis`</span>
+<span class="sd">            is required.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">        dtype (Optional[dtype]):</span>
 <span class="sd">            data type of the returned array. If `None`, the default data</span>
@@ -436,6 +400,9 @@
 <span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
 <span class="sd">            axis along which cumulative product must be computed.</span>
 <span class="sd">            If `None`, the product is computed over the entire array.</span>
+<span class="sd">            If `x` is a one-dimensional array, providing an `axis` is optional;</span>
+<span class="sd">            however, if `x` has more than one dimension, providing an `axis`</span>
+<span class="sd">            is required.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">        dtype (Optional[dtype]):</span>
 <span class="sd">            data type of the returned array. If `None`, the default data</span>
@@ -508,6 +475,9 @@
 <span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
 <span class="sd">            axis along which cumulative logsumexp must be computed.</span>
 <span class="sd">            If `None`, the logsumexp is computed over the entire array.</span>
+<span class="sd">            If `x` is a one-dimensional array, providing an `axis` is optional;</span>
+<span class="sd">            however, if `x` has more than one dimension, providing an `axis`</span>
+<span class="sd">            is required.</span>
 <span class="sd">            Default: `None`.</span>
 <span class="sd">        dtype (Optional[dtype]):</span>
 <span class="sd">            data type of the returned array. If `None`, the default data</span>

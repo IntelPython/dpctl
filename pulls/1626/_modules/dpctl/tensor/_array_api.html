@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._array_api &mdash; Data Parallel Control (dpctl) 0.17.0dev0+186.g17cf06f948 documentation</title>
+  <title>dpctl.tensor._array_api &mdash; Data Parallel Control (dpctl) 0.17.0dev0+193.gac6be79d07 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=0105ae68"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=9a93ca93"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+186.g17cf06f948
+                0.17.0dev0+193.gac6be79d07
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -143,7 +143,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported data type kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="n">__array_api_version__</span> <span class="o">=</span> <span class="s2">&quot;2022.12&quot;</span>
+<span class="n">__array_api_version__</span> <span class="o">=</span> <span class="s2">&quot;2023.12&quot;</span>
 
 
 <span class="k">class</span> <span class="nc">Info</span><span class="p">:</span>
@@ -174,6 +174,8 @@
 
     <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        capabilities()</span>
+
 <span class="sd">        Returns a dictionary of `dpctl`&#39;s capabilities.</span>
 
 <span class="sd">        Returns:</span>
@@ -186,12 +188,16 @@
 
     <span class="k">def</span> <span class="nf">default_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        default_device()</span>
+
 <span class="sd">        Returns the default SYCL device.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">default_dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">default_dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        default_dtypes(*, device=None)</span>
+
 <span class="sd">        Returns a dictionary of default data types for `device`.</span>
 
 <span class="sd">        Args:</span>
@@ -223,8 +229,10 @@
             <span class="s2">&quot;indexing&quot;</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">device</span><span class="p">)),</span>
         <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        dtypes(*, device=None, kind=None)</span>
+
 <span class="sd">        Returns a dictionary of all Array API data types of a specified `kind`</span>
 <span class="sd">        supported by `device`</span>
 
@@ -287,13 +295,16 @@
 
     <span class="k">def</span> <span class="nf">devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        devices()</span>
+
 <span class="sd">        Returns a list of supported devices.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">get_devices</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="__array_namespace_info__"><a class="viewcode-back" href="../../../docfiles/dpctl/dpctl.tensor_functions_api.html#dpctl.tensor.__array_namespace_info__">[docs]</a><span class="k">def</span> <span class="nf">__array_namespace_info__</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;__array_namespace_info__()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    __array_namespace_info__()</span>
 
 <span class="sd">    Returns a namespace with Array API namespace inspection utilities.</span>
 

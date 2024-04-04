@@ -25,7 +25,7 @@ Classes
     :widths: 25,50
 
     * - :class:`MemoryUSMDevice`
-      - An object representing allocation of SYCL USM-device memory.
+      - Class representing allocation of SYCL USM-device memory.
     * - :class:`MemoryUSMHost`
       - An object representing allocation of SYCL USM-host memory.
     * - :class:`MemoryUSMShared`

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.memory.MemoryUSMShared &mdash; Data Parallel Control (dpctl) 0.17.0dev0+186.g17cf06f948 documentation</title>
+  <title>dpctl.memory.MemoryUSMShared &mdash; Data Parallel Control (dpctl) 0.17.0dev0+193.gac6be79d07 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=0105ae68"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=9a93ca93"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+186.g17cf06f948
+                0.17.0dev0+193.gac6be79d07
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -117,12 +117,28 @@
 <span id="memoryusmshared-api"></span><h1>dpctl.memory.MemoryUSMShared<a class="headerlink" href="#dpctl-memory-memoryusmshared" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryUSMShared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryUSMShared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared" title="Permalink to this definition"></a></dt>
 <dd><p>An object representing allocation of SYCL USM-shared memory.</p>
-<p>Non-positive <code class="docutils literal notranslate"><span class="pre">alignment</span></code> values are not ignored and
-the allocator <code class="docutils literal notranslate"><span class="pre">malloc_shared</span></code> is used for allocation instead.
-If <code class="docutils literal notranslate"><span class="pre">queue</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> a cached default-constructed
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> is used to allocate memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbytes</strong> (<em>int</em>) – number of bytes to allocated.
+Expected to be positive.</p></li>
+<li><p><strong>alignment</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – allocation alignment request. Non-positive
+<code class="docutils literal notranslate"><span class="pre">alignment</span></code> values are not ignored and
+the unaligned allocator <code class="docutils literal notranslate"><span class="pre">sycl::malloc_device</span></code>
+is used to make allocation instead.
+Default: <cite>0</cite>.</p></li>
+<li><p><strong>queue</strong> (Optional[<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>]) – SYCL queue associated with return allocation
+instance. Allocation is performed on the device
+associated with the queue, and is bound to
+SYCL context from the queue.
+If <code class="docutils literal notranslate"><span class="pre">queue</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> a cached
+default-constructed <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> is
+used to allocate memory.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Attributes:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -153,13 +169,13 @@ If <code class="docutils literal notranslate"><span class="pre">queue</span></co
 <td><p>Copy SYCL memory underlying the argument object into the memory of the instance</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_from_host" title="dpctl.memory.MemoryUSMShared.copy_from_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_from_host</span></code></a>(obj)</p></td>
-<td><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p></td>
+<td><p>Copy content of Python buffer provided by <code class="docutils literal notranslate"><span class="pre">obj</span></code> to instance memory.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.copy_to_host" title="dpctl.memory.MemoryUSMShared.copy_to_host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_to_host</span></code></a>([obj])</p></td>
 <td><p>Copy content of instance's memory into memory of <code class="docutils literal notranslate"><span class="pre">obj</span></code>, or allocate NumPy array of <code class="docutils literal notranslate"><span class="pre">obj</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type" title="dpctl.memory.MemoryUSMShared.get_usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type</span></code></a>([syclobj])</p></td>
-<td><p>Returns the type of USM allocation using Sycl context carried by <cite>syclobj</cite> keyword argument.</p></td>
+<td><p>Returns the type of USM allocation using <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> carried by <code class="docutils literal notranslate"><span class="pre">syclobj</span></code> keyword argument.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="dpctl.memory.MemoryUSMShared.get_usm_type_enum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usm_type_enum</span></code></a>([syclobj])</p></td>
 <td><p>get_usm_type(syclobj=None)</p></td>
@@ -186,7 +202,7 @@ If <code class="docutils literal notranslate"><span class="pre">queue</span></co
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared._pointer">
 <span class="sig-prename descclassname"><span class="pre">MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">_pointer</span></span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared._pointer" title="Permalink to this definition"></a></dt>
 <dd><p>USM pointer at the start of this buffer
-represented in Python integer.</p>
+represented as Python integer.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -248,7 +264,7 @@ the memory of the instance</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.copy_from_host">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">copy_from_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.copy_from_host" title="Permalink to this definition"></a></dt>
-<dd><p>Copy content of Python buffer provided by <cite>obj</cite> to instance memory.</p>
+<dd><p>Copy content of Python buffer provided by <code class="docutils literal notranslate"><span class="pre">obj</span></code> to instance memory.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -261,9 +277,9 @@ NumPy array of <code class="docutils literal notranslate"><span class="pre">obj<
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.get_usm_type">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">get_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syclobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.get_usm_type" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the type of USM allocation using Sycl context carried by
-<cite>syclobj</cite> keyword argument. Value of None is understood to query
-against <cite>self.sycl_context</cite> - the context used to create the
+<dd><p>Returns the type of USM allocation using <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a>
+carried by <code class="docutils literal notranslate"><span class="pre">syclobj</span></code> keyword argument. Value of <code class="docutils literal notranslate"><span class="pre">None</span></code> is understood
+to query against <code class="docutils literal notranslate"><span class="pre">self.sycl_context</span></code> - the context used to create the
 allocation.</p>
 </dd></dl>
 
@@ -271,9 +287,9 @@ allocation.</p>
 <dt class="sig sig-object py" id="dpctl.memory.MemoryUSMShared.get_usm_type_enum">
 <span class="sig-prename descclassname"><span class="pre">dpctl.memory.MemoryUSMShared.</span></span><span class="sig-name descname"><span class="pre">get_usm_type_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syclobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryUSMShared.get_usm_type_enum" title="Permalink to this definition"></a></dt>
 <dd><p>get_usm_type(syclobj=None)</p>
-<p>Returns the type of USM allocation using Sycl context carried by
-<cite>syclobj</cite> keyword argument. Value of None is understood to query
-against <cite>self.sycl_context</cite> - the context used to create the
+<p>Returns the type of USM allocation using <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a>
+carried by <code class="docutils literal notranslate"><span class="pre">syclobj</span></code> keyword argument. Value of <code class="docutils literal notranslate"><span class="pre">None</span></code> is understood
+to query against <code class="docutils literal notranslate"><span class="pre">self.sycl_context</span></code> - the context used to create the
 allocation.</p>
 </dd></dl>
 
