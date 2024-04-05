@@ -1,0 +1,70 @@
+.. _dpctl.utils_pyapi:
+
+###########
+dpctl.utils
+###########
+
+.. currentmodule:: dpctl.utils
+
+.. automodule:: dpctl.utils
+
+
+.. _dpctl.utils_classes:
+
+Classes
+-------
+
+.. toctree::
+   :hidden:
+
+   SyclDevice
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`SyclDevice`
+      - A Python wrapper for the ``sycl::device`` C++ class.
+
+
+.. _dpctl.utils_other_functions:
+
+Other Functions
+---------------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :func:`intel_device_info()`
+      - For Intel(R) GPU devices returns a dictionary with device architectural details, and an empty dictionary otherwise. The dictionary contains the following keys: device_id: 32-bits device PCI identifier gpu_eu_count: Total number of execution units gpu_hw_threads_per_eu: Number of thread contexts in EU gpu_eu_simd_width: Physical SIMD width of EU gpu_slices: Total number of slices gpu_subslices_per_slice: Number of sub-slices per slice gpu_eu_count_per_subslice: Number of EUs in subslice max_mem_bandwidth: Maximum memory bandwidth in bytes/second Unsupported descriptors are omitted from the dictionary.
+    * - :func:`intel_device_info_device_id()`
+      - [FIXME]: <class 'builtin_function_or_method'> has a docstring with no summary
+    * - :func:`intel_device_info_gpu_eu_count()`
+      - -> int Returns the number of execution units (EUs) associated with the Intel GPU.
+    * - :func:`intel_device_info_gpu_eu_count_per_subslice()`
+      - -> int Returns the number of EUs per subslice of GPU.
+    * - :func:`intel_device_info_gpu_eu_simd_width()`
+      - -> int Returns the physical SIMD width of the execution unit (EU).
+    * - :func:`intel_device_info_gpu_hw_threads_per_eu()`
+      - -> int Returns the number of hardware threads in EU.
+    * - :func:`intel_device_info_gpu_slices()`
+      - -> int Returns the number of slices in the GPU device, or zero.
+    * - :func:`intel_device_info_gpu_subslices_per_slice()`
+      - -> int Returns the number of subslices per slice.
+    * - :func:`intel_device_info_max_mem_bandwidth()`
+      - -> int Returns the maximum memory bandwidth in units of bytes/second.
+    * - :func:`onetrace_enabled()`
+      - Enable ``onetrace`` collection for kernels executed in this context.
+
+
+
+
+Exceptions
+----------
+
+.. list-table::
+    :widths: 25,50
+
+    * - :class:`ExecutionPlacementError`
+      - Exception raised when execution placement target can not be unambiguously determined from input arrays.
+
+
