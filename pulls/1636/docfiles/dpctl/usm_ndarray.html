@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor.usm_ndarray &mdash; Data Parallel Control (dpctl) 0.17.0dev0+203.g74d6b706c3 documentation</title>
+  <title>dpctl.tensor.usm_ndarray &mdash; Data Parallel Control (dpctl) 0.17.0dev0+203.g0216931772 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=29d5aa8f"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=43b6f0df"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+203.g74d6b706c3
+                0.17.0dev0+203.g0216931772
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -285,8 +285,9 @@ otherwise.</p>
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray._byte_bounds">
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">_byte_bounds</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray._byte_bounds" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a 2-tuple with pointers to the end-points of the array</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -301,6 +302,8 @@ otherwise.</p>
 <span class="k">assert</span> <span class="n">bytes_extent</span> <span class="o">&lt;</span> <span class="n">end_pc</span> <span class="o">-</span> <span class="n">beg_pc</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -326,13 +329,16 @@ residence of the array data.</p>
 device, and contains <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> associated
 with this array. Hence, <code class="docutils literal notranslate"><span class="pre">.device</span></code> property provides
 information distinct from <code class="docutils literal notranslate"><span class="pre">.sycl_device</span></code> property.</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">device</span>
 <span class="go">Device(level_zero:gpu:0)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -353,8 +359,9 @@ information distinct from <code class="docutils literal notranslate"><span class
 <dd><p>Returns view into imaginary component for arrays with
 complex data-types and returns new zero array for all other
 data-types.</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="c1"># Reset imaginary part of complex array</span>
 
@@ -362,6 +369,8 @@ data-types.</p>
 <span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -395,8 +404,9 @@ transposed.</p>
 <dd><p>Returns view into real component for arrays with
 complex data-types and returns itself for all other
 data-types.</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="c1"># Create complex array from</span>
 <span class="c1"># arrays of real and imaginary parts</span>
@@ -409,6 +419,8 @@ data-types.</p>
 <span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">im</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -420,13 +432,16 @@ respective array dimensions.</p>
 dimensions can be returned as view, otherwise <code class="xref py py-exc docutils literal notranslate"><span class="pre">AttributeError</span></code>
 is raised. Use <a class="reference internal" href="dpctl.tensor_functions_api.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.reshape()</span></code></a> to reshape the array
 in all cases.</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">899</span><span class="p">)</span>
 <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">29</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -443,9 +458,9 @@ change of respective index.</p>
 <p>For example, for strides <code class="docutils literal notranslate"><span class="pre">(s1,</span> <span class="pre">s2,</span> <span class="pre">s3)</span></code> and multi-index
 <code class="docutils literal notranslate"><span class="pre">(i1,</span> <span class="pre">i2,</span> <span class="pre">i3)</span></code> position of the respective element relative
 to zero multi-index element is <code class="docutils literal notranslate"><span class="pre">s1*s1</span> <span class="pre">+</span> <span class="pre">s2*i2</span> <span class="pre">+</span> <span class="pre">s3*i3</span></code>.</p>
-<p>Example</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
 <span class="n">xv</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">:,</span> <span class="p">:</span><span class="mi">15</span><span class="p">]</span>
@@ -458,7 +473,8 @@ to zero multi-index element is <code class="docutils literal notranslate"><span 
 <span class="k">assert</span> <span class="n">byte_displacement</span> <span class="o">==</span> <span class="n">element_displacement</span> <span class="o">*</span> <span class="n">xv</span><span class="o">.</span><span class="n">itemsize</span>
 </pre></div>
 </div>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
