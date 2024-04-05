@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.\_\_init\_\_
-=========================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMShared.__init__

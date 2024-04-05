@@ -15,7 +15,6 @@
    .. autosummary::
       :toctree: generated
    
-      ~MemoryUSMHost.__init__
       ~MemoryUSMHost.copy_from_device
       ~MemoryUSMHost.copy_from_host
       ~MemoryUSMHost.copy_to_host
