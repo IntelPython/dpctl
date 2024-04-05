@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.17.0dev0+203.g0216931772 documentation</title>
+  <title>dpctl.tensor._copy_utils &mdash; Data Parallel Control (dpctl) 0.17.0dev0+204.gccd99fa621 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=43b6f0df"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a2cdb392"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+203.g0216931772
+                0.17.0dev0+204.gccd99fa621
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -210,31 +210,31 @@
 <span class="sd">    :class:`numpy.ndarray`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        arg (array-like): An instance of input convertible to</span>
-<span class="sd">            :class:`numpy.ndarray`</span>
+<span class="sd">        arg:</span>
+<span class="sd">            Input convertible to :class:`numpy.ndarray`</span>
 <span class="sd">        device (object): array API specification of device where the</span>
 <span class="sd">            output array is created. Device can be specified by a</span>
 <span class="sd">            a filter selector string, an instance of</span>
 <span class="sd">            :class:`dpctl.SyclDevice`, an instance of</span>
 <span class="sd">            :class:`dpctl.SyclQueue`, or an instance of</span>
-<span class="sd">            :class:`dpctl.tensor.Device`. If the value is `None`,</span>
+<span class="sd">            :class:`dpctl.tensor.Device`. If the value is ``None``,</span>
 <span class="sd">            returned array is created on the default-selected device.</span>
-<span class="sd">            Default: `None`.</span>
+<span class="sd">            Default: ``None``</span>
 <span class="sd">        usm_type (str): The requested USM allocation type for the</span>
-<span class="sd">            output array. Recognized values are `&quot;device&quot;`, `&quot;shared&quot;`,</span>
-<span class="sd">            or `&quot;host&quot;`.</span>
+<span class="sd">            output array. Recognized values are ``&quot;device&quot;``,</span>
+<span class="sd">            ``&quot;shared&quot;``, or ``&quot;host&quot;``</span>
 <span class="sd">        sycl_queue (:class:`dpctl.SyclQueue`, optional):</span>
 <span class="sd">            A SYCL queue that determines output array allocation device</span>
 <span class="sd">            as well as execution placement of data movement operations.</span>
-<span class="sd">            The `device` and `sycl_queue` arguments</span>
+<span class="sd">            The ``device`` and ``sycl_queue`` arguments</span>
 <span class="sd">            are equivalent. Only one of them should be specified. If both</span>
 <span class="sd">            are provided, they must be consistent and result in using the</span>
-<span class="sd">            same execution queue. Default: `None`.</span>
+<span class="sd">            same execution queue. Default: ``None``</span>
 
 <span class="sd">    The returned array has the same shape, and the same data type kind.</span>
 <span class="sd">    If the device does not support the data type of input array, a</span>
 <span class="sd">    closest support data type of the same kind may be returned, e.g.</span>
-<span class="sd">    input array of type `float16` may be upcast to `float32` if the</span>
+<span class="sd">    input array of type ``float16`` may be upcast to ``float32`` if the</span>
 <span class="sd">    target device does not support 16-bit floating point type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
@@ -245,7 +245,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    to_numpy(usm_ary)</span>
 
-<span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`</span>
+<span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``</span>
 <span class="sd">    into :class:`numpy.ndarray` instance of the same shape and same data type.</span>
 
 <span class="sd">    Args:</span>
@@ -254,7 +254,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        :class:`numpy.ndarray`:</span>
 <span class="sd">            An instance of :class:`numpy.ndarray` populated with content of</span>
-<span class="sd">            `usm_ary`</span>
+<span class="sd">            ``usm_ary``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
@@ -263,7 +263,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    asnumpy(usm_ary)</span>
 
-<span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`</span>
+<span class="sd">    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``</span>
 <span class="sd">    into :class:`numpy.ndarray` instance of the same shape and same data</span>
 <span class="sd">    type.</span>
 
@@ -273,7 +273,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        :class:`numpy.ndarray`:</span>
 <span class="sd">            An instance of :class:`numpy.ndarray` populated with content</span>
-<span class="sd">            of `usm_ary`</span>
+<span class="sd">            of ``usm_ary``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_copy_to_numpy</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
 
@@ -602,22 +602,28 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        ary (usm_ndarray):</span>
-<span class="sd">            Input array.</span>
-<span class="sd">        order ({&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional):</span>
-<span class="sd">            Controls the memory layout of the output array.</span>
+<span class="sd">            Input array</span>
+<span class="sd">        order (``&quot;C&quot;``, ``&quot;F&quot;``, ``&quot;A&quot;``, ``&quot;K&quot;``, optional):</span>
+<span class="sd">            Controls the memory layout of the output array</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        usm_ndarray:</span>
 <span class="sd">            A copy of the input array.</span>
 
-<span class="sd">    Memory layout of the copy is controlled by `order` keyword,</span>
-<span class="sd">    following NumPy&#39;s conventions. The `order` keywords can be</span>
+<span class="sd">    Memory layout of the copy is controlled by ``order`` keyword,</span>
+<span class="sd">    following NumPy&#39;s conventions. The ``order`` keywords can be</span>
 <span class="sd">    one of the following:</span>
 
-<span class="sd">       - &quot;C&quot;: C-contiguous memory layout</span>
-<span class="sd">       - &quot;F&quot;: Fortran-contiguous memory layout</span>
-<span class="sd">       - &quot;A&quot;: Fortran-contiguous if the input array is also Fortran-contiguous,</span>
-<span class="sd">         otherwise C-contiguous</span>
-<span class="sd">       - &quot;K&quot;: match the layout of `usm_ary` as closely as possible.</span>
+<span class="sd">    .. list-table::</span>
+
+<span class="sd">        * - ``&quot;C&quot;``</span>
+<span class="sd">          - C-contiguous memory layout</span>
+<span class="sd">        * - ``&quot;F&quot;``</span>
+<span class="sd">          - Fortran-contiguous memory layout</span>
+<span class="sd">        * - ``&quot;A&quot;``</span>
+<span class="sd">          - Fortran-contiguous if the input array is also Fortran-contiguous,</span>
+<span class="sd">            otherwise C-contiguous</span>
+<span class="sd">        * - ``&quot;K&quot;``</span>
+<span class="sd">          - match the layout of ``usm_ary`` as closely as possible.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;KkAaCcFf&quot;</span><span class="p">:</span>

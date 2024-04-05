@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+203.g0216931772 documentation</title>
+  <title>dpctl.tensor Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+204.gccd99fa621 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=43b6f0df"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a2cdb392"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+203.g0216931772
+                0.17.0dev0+204.gccd99fa621
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1841,24 +1841,25 @@ as a one-dimensional array.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start</strong> – Starting point of the interval</p></li>
-<li><p><strong>stop</strong> – Ending point of the interval. Default: <cite>None</cite></p></li>
-<li><p><strong>step</strong> – Increment of the returned sequence. Default: <cite>1</cite></p></li>
-<li><p><strong>dtype</strong> – Output array data type. Default: <cite>None</cite></p></li>
+<li><p><strong>stop</strong> – Ending point of the interval. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>step</strong> – Increment of the returned sequence. Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p><strong>dtype</strong> – Output array data type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>‘device’</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1880,37 +1881,35 @@ and copying. Default: <cite>None</cite>.</p></li>
 <li><p><strong>obj</strong> – Python object to convert. Can be an instance of
 <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>,
 an object representing SYCL USM allocation and implementing
-<cite>__sycl_usm_array_interface__</cite> protocol, an instance
+<code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> protocol, an instance
 of <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, an object supporting Python buffer
 protocol, a Python scalar, or a (possibly nested) sequence of
 Python scalars.</p></li>
-<li><p><strong>dtype</strong> (<em>data type</em><em>, </em><em>optional</em>) – output array data type. If <cite>dtype</cite> is
-<cite>None</cite>, the output array data type is inferred from data types in
-<cite>obj</cite>. Default: <cite>None</cite>.</p></li>
+<li><p><strong>dtype</strong> (<em>data type</em><em>, </em><em>optional</em>) – output array data type. If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, the output array data type is inferred from data types in
+<code class="docutils literal notranslate"><span class="pre">obj</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>copy</strong> (<cite>bool</cite>, optional) – boolean indicating whether or not to copy the
-input. If <cite>True</cite>, always creates a copy. If <cite>False</cite>, need to copy
-raises <cite>ValueError</cite>. If <cite>None</cite>, try to reuse existing memory
-allocations if possible, but allowed to perform a copy otherwise.
-Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>,</em><em>&quot;F&quot;</em><em>,</em><em>&quot;A&quot;</em><em>,</em><em>&quot;K&quot;</em><em>, </em><em>optional</em>) – memory layout of the output array.
-Default: “K”</p></li>
+input. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, always creates a copy. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the
+need to copy raises <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, tries to reuse
+existing memory allocations if possible, but allowes to perform
+a copy otherwise. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>, optional) – memory layout of the output array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
-an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
-non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. For <cite>usm_type=None</cite> the allocation
-type is inferred from the input if <cite>obj</cite> has USM allocation, or
-<cite>“device”</cite> is used instead. Default: <cite>None</cite>.</p></li>
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
+string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation and
-copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1925,7 +1924,7 @@ copying. Default: <cite>None</cite>.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.asnumpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">asnumpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_ary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#asnumpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.asnumpy" title="Permalink to this definition"></a></dt>
-<dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite>
+<dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <code class="docutils literal notranslate"><span class="pre">usm_ary</span></code>
 into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data
 type.</p>
 <dl class="field-list simple">
@@ -1934,7 +1933,7 @@ type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> populated with content
-of <cite>usm_ary</cite></p>
+of <code class="docutils literal notranslate"><span class="pre">usm_ary</span></code></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
@@ -1988,8 +1987,8 @@ Default: <cite>None</cite>.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ary</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
-<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Controls the memory layout of the output array.</p></li>
+<li><p><strong>ary</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array</p></li>
+<li><p><strong>order</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>, optional) – Controls the memory layout of the output array</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1999,18 +1998,26 @@ Default: <cite>None</cite>.</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
 </dd>
 </dl>
-<p>Memory layout of the copy is controlled by <cite>order</cite> keyword,
-following NumPy’s conventions. The <cite>order</cite> keywords can be
+<p>Memory layout of the copy is controlled by <code class="docutils literal notranslate"><span class="pre">order</span></code> keyword,
+following NumPy’s conventions. The <code class="docutils literal notranslate"><span class="pre">order</span></code> keywords can be
 one of the following:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>“C”: C-contiguous memory layout</p></li>
-<li><p>“F”: Fortran-contiguous memory layout</p></li>
-<li><p>“A”: Fortran-contiguous if the input array is also Fortran-contiguous,
-otherwise C-contiguous</p></li>
-<li><p>“K”: match the layout of <cite>usm_ary</cite> as closely as possible.</p></li>
-</ul>
-</div></blockquote>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></td>
+<td><p>C-contiguous memory layout</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code></p></td>
+<td><p>Fortran-contiguous memory layout</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code></p></td>
+<td><p>Fortran-contiguous if the input array is also Fortran-contiguous,
+otherwise C-contiguous</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code></p></td>
+<td><p>match the layout of <code class="docutils literal notranslate"><span class="pre">usm_ary</span></code> as closely as possible.</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="py function">
@@ -2021,27 +2028,28 @@ USM allocation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
+<li><p><strong>shape</strong> (<em>Tuple</em><em>[</em><em>int</em><em>]</em><em>, </em><em>int</em>) – Dimensions of the array to be created.</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. The <cite>None</cite> value creates an array of floating
-point data type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string,
+or a NumPy scalar type. The <code class="docutils literal notranslate"><span class="pre">None</span></code> value creates an
+array of floating point data type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">F&quot;</span></code>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
-an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
-non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
+string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2061,28 +2069,27 @@ same <cite>shape</cite> as the input array <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array
-shape.</p></li>
-<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, numpy char string,
-or a numpy scalar type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em> or </em><em>F&quot;</em>) – memory layout for the array. Default: <cite>“C”</cite>.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array shape.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be a typestring,
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, NumPy char string,
+or a NumPy scalar type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL
-USM allocation for the output array. If <cite>usm_type</cite> is <cite>None</cite>, the
-the <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is inferred from the input array. Default: <cite>None</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2102,33 +2109,34 @@ diagonal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_rows</strong> – number of rows in the output array.</p></li>
-<li><p><strong>n_cols</strong> (<em>optional</em>) – number of columns in the output array. If None,
-n_cols = n_rows. Default: <cite>None</cite>.</p></li>
-<li><p><strong>k</strong> – index of the diagonal, with 0 as the main diagonal.
-A positive value of k is a superdiagonal, a negative value
+<li><p><strong>n_rows</strong> (<em>int</em>) – number of rows in the output array.</p></li>
+<li><p><strong>n_cols</strong> (<em>int</em><em>, </em><em>optional</em>) – number of columns in the output array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_cols</span> <span class="pre">=</span> <span class="pre">n_rows</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>k</strong> (<em>int</em>) – index of the diagonal, with <code class="docutils literal notranslate"><span class="pre">0</span></code> as the main diagonal.
+A positive value of <code class="docutils literal notranslate"><span class="pre">k</span></code> is a superdiagonal, a negative value
 is a subdiagonal.
-Raises <cite>TypeError</cite> if <cite>k</cite> is not an integer.
-Default: <cite>0</cite>.</p></li>
+Raises <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> if <code class="docutils literal notranslate"><span class="pre">k</span></code> is not an integer.
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em> or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string, or
+a NumPy scalar type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em> or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2148,32 +2156,31 @@ and copying. Default: <cite>None</cite>.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arg</strong> (<em>array-like</em>) – An instance of input convertible to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p></li>
+<li><p><strong>arg</strong> – Input convertible to <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p></li>
 <li><p><strong>device</strong> (<em>object</em>) – array API specification of device where the
 output array is created. Device can be specified by a
 a filter selector string, an instance of
 <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, an instance of
 <a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or an instance of
-<a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>. If the value is <cite>None</cite>,
+<a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>. If the value is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 returned array is created on the default-selected device.
-Default: <cite>None</cite>.</p></li>
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>usm_type</strong> (<em>str</em>) – The requested USM allocation type for the
-output array. Recognized values are <cite>“device”</cite>, <cite>“shared”</cite>,
-or <cite>“host”</cite>.</p></li>
+output array. Recognized values are <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – A SYCL queue that determines output array allocation device
 as well as execution placement of data movement operations.
-The <cite>device</cite> and <cite>sycl_queue</cite> arguments
+The <code class="docutils literal notranslate"><span class="pre">device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> arguments
 are equivalent. Only one of them should be specified. If both
 are provided, they must be consistent and result in using the
-same execution queue. Default: <cite>None</cite>.</p></li>
+same execution queue. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <p>The returned array has the same shape, and the same data type kind.
 If the device does not support the data type of input array, a
 closest support data type of the same kind may be returned, e.g.
-input array of type <cite>float16</cite> may be upcast to <cite>float32</cite> if the
+input array of type <code class="docutils literal notranslate"><span class="pre">float16</span></code> may be upcast to <code class="docutils literal notranslate"><span class="pre">float32</span></code> if the
 target device does not support 16-bit floating point type.</p>
 </dd></dl>
 
@@ -2186,29 +2193,27 @@ shape and filled with <cite>fill_value</cite>.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
-<li><p><strong>fill_value</strong> (<em>int</em><em>,</em><em>float</em><em>,</em><em>complex</em>) – fill value</p></li>
+<li><p><strong>fill_value</strong> (<em>int</em><em>,</em><em>float</em><em>,</em><em>complex</em><em>,</em><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – fill value</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: “C”</p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string,
+or a NumPy scalar type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL
-USM allocation for the output array. If <cite>usm_type</cite> is <cite>None</cite>, it is
-inferred from <cite>fill_value</cite> input if it is an instance of
-<cite>ums_ndarray</cite>, or interpreted as <cite>“device”</cite> otherwise.
-Default: <cite>None</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2232,27 +2237,26 @@ and having the same <cite>shape</cite> as the input array <cite>x</cite>.</p>
 shape.</p></li>
 <li><p><strong>fill_value</strong> – the value to fill output array with</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. If <cite>dtype</cite> is <cite>None</cite>, the output array data type is
-inferred from <cite>x</cite>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <cite>“C”</cite>.</p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string, or a
+NumPy scalar type. If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the output array data
+type is inferred from <code class="docutils literal notranslate"><span class="pre">x</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL
-USM allocation for the output array. If <cite>None</cite>, output array has
-the same USM allocation type as the input array <cite>x</cite>.
-Default: <cite>None</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2273,36 +2277,38 @@ evenly spaced numbers of specified interval.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start</strong> – the start of the interval.</p></li>
-<li><p><strong>stop</strong> – the end of the interval. If the <cite>endpoint</cite> is <cite>False</cite>, the
-function must generate <cite>num+1</cite> evenly spaced points starting
-with <cite>start</cite> and ending with <cite>stop</cite> and exclude the <cite>stop</cite>
-from the returned array such that the returned array consists
-of evenly spaced numbers over the half-open interval
-<cite>[start, stop)</cite>. If <cite>endpoint</cite> is <cite>True</cite>, the output
-array must consist of evenly spaced numbers over the closed
-interval <cite>[start, stop]</cite>. Default: <cite>True</cite>.</p></li>
-<li><p><strong>num</strong> – number of samples. Must be a non-negative integer; otherwise,
-the function raises <cite>ValueError</cite> exception.</p></li>
+<li><p><strong>stop</strong> – the end of the interval. If the <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the
+function generates <code class="docutils literal notranslate"><span class="pre">num+1</span></code> evenly spaced points starting
+with <code class="docutils literal notranslate"><span class="pre">start</span></code> and ending with <code class="docutils literal notranslate"><span class="pre">stop</span></code> and exclude the
+<code class="docutils literal notranslate"><span class="pre">stop</span></code> from the returned array such that the returned array
+consists of evenly spaced numbers over the half-open interval
+<code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop)</span></code>. If <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the output
+array consists of evenly spaced numbers over the closed
+interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop]</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>num</strong> (<em>int</em>) – number of samples. Must be a non-negative integer; otherwise,
+the function raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.</p></li>
 <li><p><strong>dtype</strong> – output array data type. Should be a floating data type.
-If <cite>dtype</cite> is <cite>None</cite>, the output array must be the default
-floating point data type. Default: <cite>None</cite>.</p></li>
+If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the output array must be the default
+floating point data type for target device.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
-an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
-non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
+string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
-<li><p><strong>endpoint</strong> – boolean indicating whether to include <cite>stop</cite> in the
-interval. Default: <cite>True</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>endpoint</strong> – boolean indicating whether to include <code class="docutils literal notranslate"><span class="pre">stop</span></code> in the
+interval. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2326,25 +2332,22 @@ from vectors.</p>
 <li><p><strong>arrays</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – an arbitrary number of one-dimensional arrays
 representing grid coordinates. Each array should have the same
 numeric data type.</p></li>
-<li><p><strong>indexing</strong> – Cartesian (<cite>xy</cite>) or matrix (<cite>ij</cite>) indexing of output.
+<li><p><strong>indexing</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;ij&quot;</span></code>) – Cartesian (<code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>) or matrix (<code class="docutils literal notranslate"><span class="pre">&quot;ij&quot;</span></code>) indexing of output.
 If provided zero or one one-dimensional vector(s) (i.e., the
-zero- and one-dimensional cases, respectively), the <cite>indexing</cite>
-keyword has no effect and should be ignored. Default: <cite>xy</cite>.</p></li>
+zero- and one-dimensional cases, respectively), the <code class="docutils literal notranslate"><span class="pre">indexing</span></code>
+keyword has no effect and should be ignored. Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>list of <cite>N</cite> arrays, where <cite>N</cite> is the number of</dt><dd><p>provided one-dimensional input arrays. Each returned array must
-have rank <cite>N</cite>.
-For a set of <cite>n</cite> vectors with lengths <cite>N0</cite>, <cite>N1</cite>, <cite>N2</cite>, …
+<dd class="field-even"><p>list of <code class="docutils literal notranslate"><span class="pre">N</span></code> arrays, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of
+provided one-dimensional input arrays. Each returned array must
+have rank <code class="docutils literal notranslate"><span class="pre">N</span></code>.
+For a set of <code class="docutils literal notranslate"><span class="pre">n</span></code> vectors with lengths <code class="docutils literal notranslate"><span class="pre">N0</span></code>, <code class="docutils literal notranslate"><span class="pre">N1</span></code>, <code class="docutils literal notranslate"><span class="pre">N2</span></code>, …
 The cartesian indexing results in arrays of shape
-<cite>(N1, N0, N2, …)</cite>, while the
+<code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">N0,</span> <span class="pre">N2,</span> <span class="pre">...)</span></code>, while the
 matrix indexing results in arrays of shape
-<cite>(N0, N1, N2, …)</cite>.
-Default: <cite>xy</cite>.</p>
-</dd>
-</dl>
-</p>
+<code class="docutils literal notranslate"><span class="pre">(N0,</span> <span class="pre">N1,</span> <span class="pre">N2,</span> <span class="pre">...)</span></code>.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[array]</p>
@@ -2364,26 +2367,27 @@ shape and filled with ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
+<li><p><strong>shape</strong> (<em>Tuple</em><em>[</em><em>int</em><em>]</em><em>, </em><em>int</em>) – Dimensions of the array to be created.</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <cite>“C”</cite></p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string,
+or a NumPy scalar type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2403,28 +2407,27 @@ having the same <cite>shape</cite> as the input array <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array
-shape.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the output array shape</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <cite>“C”</cite>.</p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string,
+or a NumPy scalar type. Default: <cite>None</cite></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
-string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding
-to a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL
-USM allocation for the output array. If <cite>None</cite>, output array has
-the same USM allocation type as the input array. Default: <cite>None</cite>.</p></li>
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
+string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2439,7 +2442,7 @@ and copying. Default: <cite>None</cite>.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.to_numpy">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_ary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_copy_utils.html#to_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.to_numpy" title="Permalink to this definition"></a></dt>
-<dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <cite>usm_ary</cite>
+<dd><p>Copies content of <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance <code class="docutils literal notranslate"><span class="pre">usm_ary</span></code>
 into <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> instance of the same shape and same data type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2447,7 +2450,7 @@ into <code class="xref py py-class docutils literal notranslate"><span class="pr
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> populated with content of
-<cite>usm_ary</cite></p>
+<code class="docutils literal notranslate"><span class="pre">usm_ary</span></code></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
@@ -2458,17 +2461,19 @@ into <code class="xref py py-class docutils literal notranslate"><span class="pr
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.tril">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">tril</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#tril"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.tril" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the lower triangular part of a matrix (or a stack of matrices) <cite>x</cite>.</p>
+<dd><p>Returns the lower triangular part of a matrix (or a stack of matrices)
+<code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 <p>The lower triangular part of the matrix is defined as the elements on and
-below the specified diagonal <cite>k</cite>.</p>
+below the specified diagonal <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array</p></li>
 <li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – Specifies the diagonal above which to set
-elements to zero. If <cite>k = 0</cite>, the diagonal is the main diagonal.
-If <cite>k &lt; 0</cite>, the diagonal is below the main diagonal.
-If <cite>k &gt; 0</cite>, the diagonal is above the main diagonal. Default: <cite>0</cite>.</p></li>
+elements to zero. If <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">0</span></code>, the diagonal is the main diagonal.
+If <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>, the diagonal is below the main diagonal.
+If <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the diagonal is above the main diagonal.
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2483,17 +2488,19 @@ If <cite>k &gt; 0</cite>, the diagonal is above the main diagonal. Default: <cit
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.triu">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">triu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_ctors.html#triu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.triu" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the upper triangular part of a matrix (or a stack of matrices) <cite>x</cite>.</p>
+<dd><p>Returns the upper triangular part of a matrix (or a stack of matrices)
+<code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 <p>The upper triangular part of the matrix is defined as the elements on and
-above the specified diagonal <cite>k</cite>.</p>
+above the specified diagonal <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array</p></li>
 <li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – Specifies the diagonal below which to set
-elements to zero. If <cite>k = 0</cite>, the diagonal is the main diagonal.
-If <cite>k &lt; 0</cite>, the diagonal is below the main diagonal.
-If <cite>k &gt; 0</cite>, the diagonal is above the main diagonal. Default: <cite>0</cite>.</p></li>
+elements to zero. If <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">0</span></code>, the diagonal is the main diagonal.
+If <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>, the diagonal is below the main diagonal.
+If <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the diagonal is above the main diagonal.
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2513,26 +2520,27 @@ shape and filled with zeros.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>tuple</em>) – Dimensions of the array to be created.</p></li>
+<li><p><strong>shape</strong> (<em>Tuple</em><em>[</em><em>int</em><em>]</em><em>, </em><em>int</em>) – Dimensions of the array to be created.</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <cite>“C”</cite></p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string,
+or a NumPy scalar type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2555,26 +2563,26 @@ initialized with zeros.</p>
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array from which to derive the shape of the
 output array.</p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <cite>numpy.dtype</cite> object, <cite>numpy</cite> char string, or a numpy
-scalar type. If <cite>None</cite>, output array has the same data type as
-the input array. Default: <cite>None</cite>.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <cite>“C”</cite>.</p></li>
+a <a class="reference internal" href="dtype.html#numpy.dtype" title="numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> char string, or a
+NumPy scalar type. If <cite>None</cite>, output array has the same data
+type as the input array. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, or </em><em>F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector
-string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding
-to a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL
-USM allocation for the output array. If <cite>None</cite>, output array has
-the same USM allocation type as the input array. Default: <cite>None</cite>.</p></li>
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
+string, an instance of <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="Device.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2833,22 +2841,22 @@ have the same USM allocation type as <cite>x</cite>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.reshape">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/tensor/_reshape.html#reshape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.reshape" title="Permalink to this definition"></a></dt>
-<dd><p>Reshapes array <cite>x</cite> into new shape.</p>
+<dd><p>Reshapes array <code class="docutils literal notranslate"><span class="pre">x</span></code> into new shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>shape</strong> (<em>tuple</em>) – the desired shape of the resulting array.</p></li>
-<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;}</em><em>, </em><em>optional</em>) – memory layout of the resulting array
+<li><p><strong>shape</strong> (<em>Tuple</em><em>[</em><em>int</em><em>]</em>) – the desired shape of the resulting array.</p></li>
+<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>optional</em>) – memory layout of the resulting array
 if a copy is found to be necessary. Supported
-choices are <cite>“C”</cite> for C-contiguous, or row-major layout;
-and <cite>“F”</cite> for F-contiguous, or column-major layout.</p></li>
+choices are <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> for C-contiguous, or row-major layout;
+and <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> for F-contiguous, or column-major layout.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Reshaped array is a view, if possible,
 and a copy otherwise with memory layout as indicated
-by <cite>order</cite> keyword.</p>
+by <code class="docutils literal notranslate"><span class="pre">order</span></code> keyword.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
