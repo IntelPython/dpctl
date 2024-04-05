@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor._reshape - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
+        <title>dpctl.tensor._reshape - Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -133,7 +133,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -156,7 +156,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -847,24 +847,24 @@
 <div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.reshape.html#dpctl.tensor.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;reshape(x, shape, order=&quot;C&quot;)</span>
 
-<span class="sd">    Reshapes array `x` into new shape.</span>
+<span class="sd">    Reshapes array ``x`` into new shape.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (usm_ndarray):</span>
 <span class="sd">            input array</span>
-<span class="sd">        shape (tuple):</span>
+<span class="sd">        shape (Tuple[int]):</span>
 <span class="sd">            the desired shape of the resulting array.</span>
-<span class="sd">        order ({&quot;C&quot;, &quot;F&quot;}, optional):</span>
+<span class="sd">        order (&quot;C&quot;, &quot;F&quot;, optional):</span>
 <span class="sd">            memory layout of the resulting array</span>
 <span class="sd">            if a copy is found to be necessary. Supported</span>
-<span class="sd">            choices are `&quot;C&quot;` for C-contiguous, or row-major layout;</span>
-<span class="sd">            and `&quot;F&quot;` for F-contiguous, or column-major layout.</span>
+<span class="sd">            choices are ``&quot;C&quot;`` for C-contiguous, or row-major layout;</span>
+<span class="sd">            and ``&quot;F&quot;`` for F-contiguous, or column-major layout.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        usm_ndarray:</span>
 <span class="sd">            Reshaped array is a view, if possible,</span>
 <span class="sd">            and a copy otherwise with memory layout as indicated</span>
-<span class="sd">            by `order` keyword.</span>
+<span class="sd">            by ``order`` keyword.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
@@ -973,7 +973,7 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=39a5161d"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e07d81ef"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

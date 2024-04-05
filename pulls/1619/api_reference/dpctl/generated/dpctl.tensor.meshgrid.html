@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.ones" href="dpctl.tensor.ones.html" /><link rel="prev" title="dpctl.tensor.linspace" href="dpctl.tensor.linspace.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.meshgrid - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
+        <title>dpctl.tensor.meshgrid - Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -769,25 +769,22 @@ from vectors.</p>
 <li><p><strong>arrays</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – an arbitrary number of one-dimensional arrays
 representing grid coordinates. Each array should have the same
 numeric data type.</p></li>
-<li><p><strong>indexing</strong> – Cartesian (<cite>xy</cite>) or matrix (<cite>ij</cite>) indexing of output.
+<li><p><strong>indexing</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;ij&quot;</span></code>) – Cartesian (<code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>) or matrix (<code class="docutils literal notranslate"><span class="pre">&quot;ij&quot;</span></code>) indexing of output.
 If provided zero or one one-dimensional vector(s) (i.e., the
-zero- and one-dimensional cases, respectively), the <cite>indexing</cite>
-keyword has no effect and should be ignored. Default: <cite>xy</cite>.</p></li>
+zero- and one-dimensional cases, respectively), the <code class="docutils literal notranslate"><span class="pre">indexing</span></code>
+keyword has no effect and should be ignored. Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>list of <cite>N</cite> arrays, where <cite>N</cite> is the number of</dt><dd><p>provided one-dimensional input arrays. Each returned array must
-have rank <cite>N</cite>.
-For a set of <cite>n</cite> vectors with lengths <cite>N0</cite>, <cite>N1</cite>, <cite>N2</cite>, …
+<dd class="field-even"><p>list of <code class="docutils literal notranslate"><span class="pre">N</span></code> arrays, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of
+provided one-dimensional input arrays. Each returned array must
+have rank <code class="docutils literal notranslate"><span class="pre">N</span></code>.
+For a set of <code class="docutils literal notranslate"><span class="pre">n</span></code> vectors with lengths <code class="docutils literal notranslate"><span class="pre">N0</span></code>, <code class="docutils literal notranslate"><span class="pre">N1</span></code>, <code class="docutils literal notranslate"><span class="pre">N2</span></code>, …
 The cartesian indexing results in arrays of shape
-<cite>(N1, N0, N2, …)</cite>, while the
+<code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">N0,</span> <span class="pre">N2,</span> <span class="pre">...)</span></code>, while the
 matrix indexing results in arrays of shape
-<cite>(N0, N1, N2, …)</cite>.
-Default: <cite>xy</cite>.</p>
-</dd>
-</dl>
-</p>
+<code class="docutils literal notranslate"><span class="pre">(N0,</span> <span class="pre">N1,</span> <span class="pre">N2,</span> <span class="pre">...)</span></code>.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[array]</p>
@@ -869,7 +866,7 @@ Default: <cite>xy</cite>.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=39a5161d"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e07d81ef"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

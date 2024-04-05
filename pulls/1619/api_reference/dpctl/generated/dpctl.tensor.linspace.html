@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.meshgrid" href="dpctl.tensor.meshgrid.html" /><link rel="prev" title="dpctl.tensor.full_like" href="dpctl.tensor.full_like.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.linspace - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
+        <title>dpctl.tensor.linspace - Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -767,36 +767,38 @@ evenly spaced numbers of specified interval.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start</strong> – the start of the interval.</p></li>
-<li><p><strong>stop</strong> – the end of the interval. If the <cite>endpoint</cite> is <cite>False</cite>, the
-function must generate <cite>num+1</cite> evenly spaced points starting
-with <cite>start</cite> and ending with <cite>stop</cite> and exclude the <cite>stop</cite>
-from the returned array such that the returned array consists
-of evenly spaced numbers over the half-open interval
-<cite>[start, stop)</cite>. If <cite>endpoint</cite> is <cite>True</cite>, the output
-array must consist of evenly spaced numbers over the closed
-interval <cite>[start, stop]</cite>. Default: <cite>True</cite>.</p></li>
-<li><p><strong>num</strong> – number of samples. Must be a non-negative integer; otherwise,
-the function raises <cite>ValueError</cite> exception.</p></li>
+<li><p><strong>stop</strong> – the end of the interval. If the <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the
+function generates <code class="docutils literal notranslate"><span class="pre">num+1</span></code> evenly spaced points starting
+with <code class="docutils literal notranslate"><span class="pre">start</span></code> and ending with <code class="docutils literal notranslate"><span class="pre">stop</span></code> and exclude the
+<code class="docutils literal notranslate"><span class="pre">stop</span></code> from the returned array such that the returned array
+consists of evenly spaced numbers over the half-open interval
+<code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop)</span></code>. If <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the output
+array consists of evenly spaced numbers over the closed
+interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop]</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – number of samples. Must be a non-negative integer; otherwise,
+the function raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.</p></li>
 <li><p><strong>dtype</strong> – output array data type. Should be a floating data type.
-If <cite>dtype</cite> is <cite>None</cite>, the output array must be the default
-floating point data type. Default: <cite>None</cite>.</p></li>
+If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the output array must be the default
+floating point data type for target device.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <cite>device</cite> can be <cite>None</cite>, a oneAPI filter selector string,
-an instance of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a
-non-partitioned SYCL device, an instance of
-<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <cite>Device</cite> object returned by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_array.device</span></code>. Default: <cite>None</cite>.</p></li>
-<li><p><strong>usm_type</strong> (<em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;</em><em>, </em><em>optional</em>) – The type of SYCL USM
-allocation for the output array. Default: <cite>“device”</cite>.</p></li>
+is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
+string, an instance of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <cite>sycl_queue</cite> and <cite>device</cite>
-are exclusive keywords, i.e. use one or another. If both are
-specified, a <cite>TypeError</cite> is raised unless both imply the same
-underlying SYCL queue to be used. If both are <cite>None</cite>, a cached
-queue targeting default-selected device is used for allocation
-and copying. Default: <cite>None</cite>.</p></li>
-<li><p><strong>endpoint</strong> – boolean indicating whether to include <cite>stop</cite> in the
-interval. Default: <cite>True</cite>.</p></li>
+for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
+<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
+If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
+imply the same underlying SYCL queue to be used. If both are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
+used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>endpoint</strong> – boolean indicating whether to include <code class="docutils literal notranslate"><span class="pre">stop</span></code> in the
+interval. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -879,7 +881,7 @@ interval.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=39a5161d"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e07d81ef"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

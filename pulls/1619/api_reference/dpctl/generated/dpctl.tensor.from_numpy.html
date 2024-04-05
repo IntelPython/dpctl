@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.copy" href="dpctl.tensor.copy.html" /><link rel="prev" title="dpctl.tensor.zeros_like" href="dpctl.tensor.zeros_like.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.from_numpy - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
+        <title>dpctl.tensor.from_numpy - Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -766,32 +766,31 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arg</strong> (<em>array-like</em>) – An instance of input convertible to
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p></li>
+<li><p><strong>arg</strong> – Input convertible to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p></li>
 <li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – array API specification of device where the
 output array is created. Device can be specified by a
 a filter selector string, an instance of
 <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, an instance of
 <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or an instance of
-<a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>. If the value is <cite>None</cite>,
+<a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>. If the value is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 returned array is created on the default-selected device.
-Default: <cite>None</cite>.</p></li>
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>usm_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The requested USM allocation type for the
-output array. Recognized values are <cite>“device”</cite>, <cite>“shared”</cite>,
-or <cite>“host”</cite>.</p></li>
+output array. Recognized values are <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code></p></li>
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – A SYCL queue that determines output array allocation device
 as well as execution placement of data movement operations.
-The <cite>device</cite> and <cite>sycl_queue</cite> arguments
+The <code class="docutils literal notranslate"><span class="pre">device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> arguments
 are equivalent. Only one of them should be specified. If both
 are provided, they must be consistent and result in using the
-same execution queue. Default: <cite>None</cite>.</p></li>
+same execution queue. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <p>The returned array has the same shape, and the same data type kind.
 If the device does not support the data type of input array, a
 closest support data type of the same kind may be returned, e.g.
-input array of type <cite>float16</cite> may be upcast to <cite>float32</cite> if the
+input array of type <code class="docutils literal notranslate"><span class="pre">float16</span></code> may be upcast to <code class="docutils literal notranslate"><span class="pre">float32</span></code> if the
 target device does not support 16-bit floating point type.</p>
 </dd></dl>
 
@@ -865,7 +864,7 @@ target device does not support 16-bit floating point type.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=39a5161d"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e07d81ef"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

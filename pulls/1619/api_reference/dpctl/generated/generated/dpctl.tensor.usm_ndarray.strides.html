@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.tensor.usm_ndarray.sycl_context" href="dpctl.tensor.usm_ndarray.sycl_context.html" /><link rel="prev" title="dpctl.tensor.usm_ndarray.size" href="dpctl.tensor.usm_ndarray.size.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.usm_ndarray.strides - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
+        <title>dpctl.tensor.usm_ndarray.strides - Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -766,9 +766,9 @@ change of respective index.</p>
 <p>For example, for strides <code class="docutils literal notranslate"><span class="pre">(s1,</span> <span class="pre">s2,</span> <span class="pre">s3)</span></code> and multi-index
 <code class="docutils literal notranslate"><span class="pre">(i1,</span> <span class="pre">i2,</span> <span class="pre">i3)</span></code> position of the respective element relative
 to zero multi-index element is <code class="docutils literal notranslate"><span class="pre">s1*s1</span> <span class="pre">+</span> <span class="pre">s2*i2</span> <span class="pre">+</span> <span class="pre">s3*i3</span></code>.</p>
-<p>Example</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
 <span class="n">xv</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">:,</span> <span class="p">:</span><span class="mi">15</span><span class="p">]</span>
@@ -781,7 +781,8 @@ to zero multi-index element is <code class="docutils literal notranslate"><span 
 <span class="k">assert</span> <span class="n">byte_displacement</span> <span class="o">==</span> <span class="n">element_displacement</span> <span class="o">*</span> <span class="n">xv</span><span class="o">.</span><span class="n">itemsize</span>
 </pre></div>
 </div>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -854,7 +855,7 @@ to zero multi-index element is <code class="docutils literal notranslate"><span 
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=39a5161d"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=e07d81ef"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
