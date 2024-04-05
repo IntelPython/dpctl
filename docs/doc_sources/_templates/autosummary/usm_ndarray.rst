@@ -28,8 +28,18 @@
    {% for item in attributes %}
       ~{{ name }}.{{ item }}
    {%- endfor %}
+
+   .. rubric:: {{ _('Special attributes') }}
+
+   .. autosummary::
+      :toctree: generated
+
       ~{{name}}.__dlpack_device__
       ~{{name}}.__dlpack__
       ~{{name}}.__sycl_usm_array_interface__
+      ~{{name}}._pointer
+      ~{{name}}._element_offset
+      ~{{name}}._byte_bounds
+
    {% endif %}
    {% endblock %}
