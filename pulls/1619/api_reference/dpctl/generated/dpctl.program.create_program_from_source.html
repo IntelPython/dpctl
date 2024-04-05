@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.program.create_program_from_spirv" href="dpctl.program.create_program_from_spirv.html" /><link rel="prev" title="dpctl.program" href="../program.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.program.create_program_from_source - Data Parallel Control (dpctl) 0.17.0dev0+235.g36e4c93639 documentation</title>
+        <title>dpctl.program.create_program_from_source - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+235.g36e4c93639 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+235.g36e4c93639 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -452,6 +452,12 @@
 <li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.sycl_queue.html">dpctl.tensor.usm_ndarray.sycl_queue</a></li>
 <li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.usm_data.html">dpctl.tensor.usm_ndarray.usm_data</a></li>
 <li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.usm_type.html">dpctl.tensor.usm_ndarray.usm_type</a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.__dlpack_device__.html">dpctl.tensor.usm_ndarray.__dlpack_device__</a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.__dlpack__.html">dpctl.tensor.usm_ndarray.__dlpack__</a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__.html">dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__</a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray._pointer.html">dpctl.tensor.usm_ndarray._pointer</a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray._element_offset.html">dpctl.tensor.usm_ndarray._element_offset</a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray._byte_bounds.html">dpctl.tensor.usm_ndarray._byte_bounds</a></li>
 </ul>
 </li>
 </ul>
@@ -763,26 +769,24 @@ Note: This function is currently only supported for the OpenCL backend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code> for which the
+<li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> for which the
 <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
-<li><p><strong>src</strong> (<em>unicode</em>) – Source string for an OpenCL program.</p></li>
-<li><p><strong>copts</strong> (<em>unicode</em>) – Optional compilation flags that will be used
-when compiling the program.</p></li>
+<li><p><strong>src</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Source string for an OpenCL program.</p></li>
+<li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Optional compilation flags that will be used
+when compiling the program. Default: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
-<code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> returned
-by the C API.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>program (SyclProgram)</dt><dd><p>A <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
+<code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
+returned by the C API.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>program (<a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram">SyclProgram</a>)</p>
+</dl>
+</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="dpctl.program.SyclProgramCompilationError.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL kernel bundle could not be</p></li>
-<li><p><strong>created.</strong> – </p></li>
-</ul>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpctl.program.SyclProgramCompilationError.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL kernel bundle could not be created.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -857,7 +861,7 @@ by the C API.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a941dd30"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=39a5161d"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>

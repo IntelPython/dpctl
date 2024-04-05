@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.tensor.usm_ndarray.sycl_context" href="dpctl.tensor.usm_ndarray.sycl_context.html" /><link rel="prev" title="dpctl.tensor.usm_ndarray.size" href="dpctl.tensor.usm_ndarray.size.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.tensor.usm_ndarray.strides - Data Parallel Control (dpctl) 0.17.0dev0+235.g36e4c93639 documentation</title>
+        <title>dpctl.tensor.usm_ndarray.strides - Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+235.g36e4c93639 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+235.g36e4c93639 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+240.ged48ef9e8e documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -452,6 +452,12 @@
 <li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.sycl_queue.html">dpctl.tensor.usm_ndarray.sycl_queue</a></li>
 <li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.usm_data.html">dpctl.tensor.usm_ndarray.usm_data</a></li>
 <li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.usm_type.html">dpctl.tensor.usm_ndarray.usm_type</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.__dlpack_device__.html">dpctl.tensor.usm_ndarray.__dlpack_device__</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.__dlpack__.html">dpctl.tensor.usm_ndarray.__dlpack__</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__.html">dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray._pointer.html">dpctl.tensor.usm_ndarray._pointer</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray._element_offset.html">dpctl.tensor.usm_ndarray._element_offset</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray._byte_bounds.html">dpctl.tensor.usm_ndarray._byte_bounds</a></li>
 </ul>
 </li>
 </ul>
@@ -757,9 +763,24 @@
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">strides</span></span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.strides" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns memory displacement in array elements, upon unit
 change of respective index.</p>
-<p>E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)</p>
+<p>For example, for strides <code class="docutils literal notranslate"><span class="pre">(s1,</span> <span class="pre">s2,</span> <span class="pre">s3)</span></code> and multi-index
+<code class="docutils literal notranslate"><span class="pre">(i1,</span> <span class="pre">i2,</span> <span class="pre">i3)</span></code> position of the respective element relative
+to zero multi-index element is <code class="docutils literal notranslate"><span class="pre">s1*s1</span> <span class="pre">+</span> <span class="pre">s2*i2</span> <span class="pre">+</span> <span class="pre">s3*i3</span></code>.</p>
+<p>Example</p>
 <blockquote>
-<div><p>a[i1, i2, i3] == (&amp;a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]</p>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+<span class="n">xv</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">:,</span> <span class="p">:</span><span class="mi">15</span><span class="p">]</span>
+
+<span class="n">multi_id</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">byte_displacement</span> <span class="o">=</span> <span class="n">xv</span><span class="p">[</span><span class="n">multi_id</span><span class="p">]</span><span class="o">.</span><span class="n">_pointer</span> <span class="o">-</span> <span class="n">xv</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_pointer</span>
+<span class="n">element_displacement</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="n">i</span> <span class="o">*</span> <span class="n">s</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">multi_id</span><span class="p">,</span> <span class="n">xv</span><span class="o">.</span><span class="n">strides</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="n">byte_displacement</span> <span class="o">==</span> <span class="n">element_displacement</span> <span class="o">*</span> <span class="n">xv</span><span class="o">.</span><span class="n">itemsize</span>
+</pre></div>
+</div>
 </div></blockquote>
 </dd></dl>
 
@@ -833,7 +854,7 @@ change of respective index.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=a941dd30"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=39a5161d"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>

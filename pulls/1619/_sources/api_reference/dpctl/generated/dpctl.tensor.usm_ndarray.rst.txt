@@ -3,7 +3,10 @@
 
 .. currentmodule:: dpctl.tensor
 
+
+
 .. autoclass:: usm_ndarray
+
    
 
    
@@ -41,5 +44,18 @@
       ~usm_ndarray.sycl_queue
       ~usm_ndarray.usm_data
       ~usm_ndarray.usm_type
+
+   .. rubric:: Special attributes
+
+   .. autosummary::
+      :toctree: generated
+
+      ~usm_ndarray.__dlpack_device__
+      ~usm_ndarray.__dlpack__
+      ~usm_ndarray.__sycl_usm_array_interface__
+      ~usm_ndarray._pointer
+      ~usm_ndarray._element_offset
+      ~usm_ndarray._byte_bounds
+
    
    
