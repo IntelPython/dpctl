@@ -83,7 +83,7 @@ def _broadcast_shapes(*args):
     return _broadcast_shape_impl(array_shapes)
 
 
-def permute_dims(X, axes):
+def permute_dims(X, /, axes):
     """permute_dims(x, axes)
 
     Permute the axes (dimensions) of an array; returns the permuted
@@ -95,7 +95,7 @@ def permute_dims(X, axes):
            `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
            of `x`.
     Returns:
-        usm_narray:
+        usm_ndarray:
             An array with permuted axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same USM allocation
@@ -120,7 +120,7 @@ def permute_dims(X, axes):
     )
 
 
-def expand_dims(X, axis):
+def expand_dims(X, /, *, axis=0):
     """expand_dims(x, axis)
 
     Expands the shape of an array by inserting a new axis (dimension)
@@ -166,7 +166,7 @@ def expand_dims(X, axis):
     return dpt.reshape(X, shape)
 
 
-def squeeze(X, axis=None):
+def squeeze(X, /, axis=None):
     """squeeze(x, axis)
 
     Removes singleton dimensions (axes) from array `x`.
@@ -211,7 +211,7 @@ def squeeze(X, axis=None):
         return dpt.reshape(X, new_shape)
 
 
-def broadcast_to(X, shape):
+def broadcast_to(X, /, shape):
     """broadcast_to(x, shape)
 
     Broadcast an array to a new `shape`; returns the broadcasted
@@ -277,7 +277,7 @@ def broadcast_arrays(*args):
     return [broadcast_to(X, shape) for X in args]
 
 
-def flip(X, axis=None):
+def flip(X, /, *, axis=None):
     """flip(x, axis)
 
     Reverses the order of elements in an array `x` along the given `axis`.
@@ -309,7 +309,7 @@ def flip(X, axis=None):
     return X[indexer]
 
 
-def roll(X, shift, axis=None):
+def roll(X, /, shift, *, axis=None):
     """
     roll(x, shift, axis)
 
@@ -467,7 +467,7 @@ def _concat_axis_None(arrays):
     return res
 
 
-def concat(arrays, axis=0):
+def concat(arrays, /, *, axis=0):
     """concat(arrays, axis)
 
     Joins a sequence of arrays along an existing axis.
@@ -535,7 +535,7 @@ def concat(arrays, axis=0):
     return res
 
 
-def stack(arrays, axis=0):
+def stack(arrays, /, *, axis=0):
     """
     stack(arrays, axis)
 
@@ -596,7 +596,7 @@ def stack(arrays, axis=0):
     return res
 
 
-def unstack(X, axis=0):
+def unstack(X, /, *, axis=0):
     """unstack(x, axis=0)
 
     Splits an array in a sequence of arrays along the given axis.
@@ -625,7 +625,7 @@ def unstack(X, axis=0):
     return tuple(Y[i] for i in range(Y.shape[0]))
 
 
-def moveaxis(X, source, destination):
+def moveaxis(X, source, destination, /):
     """moveaxis(x, source, destination)
 
     Moves axes of an array to new positions.
@@ -646,7 +646,7 @@ def moveaxis(X, source, destination):
             in the half-open interval `[-N, N)`.
 
     Returns:
-        usm_narray:
+        usm_ndarray:
             Array with moved axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same
@@ -693,7 +693,7 @@ def swapaxes(X, axis1, axis2):
             a valid `axis` must be in the half-open interval `[-N, N)`.
 
     Returns:
-        usm_narray:
+        usm_ndarray:
             Array with swapped axes.
             The returned array must has the same data type as `x`,
             is created on the same device as `x` and has the same USM
@@ -714,34 +714,40 @@ def swapaxes(X, axis1, axis2):
     return dpt.permute_dims(X, tuple(ind))
 
 
-def repeat(x, repeats, axis=None):
+def repeat(x, repeats, /, *, axis=None):
     """repeat(x, repeats, axis=None)
 
-    Repeat elements of an array.
+    Repeat elements of an array on a per-element basis.
 
     Args:
         x (usm_ndarray): input array
 
         repeats (Union[int, Sequence[int, ...], usm_ndarray]):
             The number of repetitions for each element.
-            `repeats` is broadcast to fit the shape of the given axis.
+
+            `repeats` must be broadcast-compatible with `N` where `N` is
+            `prod(x.shape)` if `axis` is `None` and `x.shape[axis]`
+            otherwise.
+
             If `repeats` is an array, it must have an integer data type.
-            Otherwise, `repeats` must be a Python integer, tuple, list, or
-            range.
+            Otherwise, `repeats` must be a Python integer or sequence of
+            Python integers (i.e., a tuple, list, or range).
 
         axis (Optional[int]):
             The axis along which to repeat values. If `axis` is `None`, the
-            function repeats elements of the flattened array.
-            Default: `None`.
+            function repeats elements of the flattened array. Default: `None`.
 
     Returns:
-        usm_narray:
-            Array with repeated elements.
-            The returned array must have the same data type as `x`, is created
-            on the same device as `x` and has the same USM allocation type as
-            `x`. If `axis` is `None`, the returned array is one-dimensional,
+        usm_ndarray:
+            output array with repeated elements.
+
+            If `axis` is `None`, the returned array is one-dimensional,
             otherwise, it has the same shape as `x`, except for the axis along
             which elements were repeated.
+
+            The returned array will have the same data type as `x`.
+            The returned array will be located on the same device as `x` and
+            have the same USM allocation type as `x`.
 
     Raises:
         AxisError: if `axis` value is invalid.
@@ -930,28 +936,35 @@ def repeat(x, repeats, axis=None):
     return res
 
 
-def tile(x, repetitions):
+def tile(x, repetitions, /):
     """tile(x, repetitions)
 
     Repeat an input array `x` along each axis a number of times given by
     `repetitions`.
 
     For `N` = len(`repetitions`) and `M` = len(`x.shape`):
-    - if `M < N`, `x` will have `N - M` new axes prepended to its shape
-    - if `M > N`, `repetitions` will have `M - N` new axes 1 prepended to it
+
+        * If `M < N`, `x` will have `N - M` new axes prepended to its shape
+        * If `M > N`, `repetitions` will have `M - N` ones prepended to it
 
     Args:
         x (usm_ndarray): input array
 
         repetitions (Union[int, Tuple[int, ...]]):
-            The number of repetitions for each dimension.
+            The number of repetitions along each dimension of `x`.
 
     Returns:
-        usm_narray:
-            Array with tiled elements.
-            The returned array must have the same data type as `x`,
-            is created on the same device as `x` and has the same USM
-            allocation type as `x`.
+        usm_ndarray:
+            tiled output array.
+
+            The returned array will have rank `max(M, N)`. If `S` is the
+            shape of `x` after prepending dimensions and `R` is
+            `repetitions` after prepending ones, then the shape of the
+            result will be `S[i] * R[i]` for each dimension `i`.
+
+            The returned array will have the same data type as `x`.
+            The returned array will be located on the same device as `x` and
+            have the same USM allocation type as `x`.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
@@ -974,7 +987,10 @@ def tile(x, repetitions):
     # case of empty input
     if x.size == 0:
         return dpt.empty(
-            res_shape, x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+            res_shape,
+            dtype=x.dtype,
+            usm_type=x.usm_type,
+            sycl_queue=x.sycl_queue,
         )
     in_sh = x.shape
     if res_shape == in_sh:
@@ -997,7 +1013,9 @@ def tile(x, repetitions):
             broadcast_sh.extend([reps, sh])
             expanded_sh.extend([1, sh])
     exec_q = x.sycl_queue
-    res = dpt.empty((out_sz,), x.dtype, usm_type=x.usm_type, sycl_queue=exec_q)
+    xdt = x.dtype
+    xut = x.usm_type
+    res = dpt.empty((out_sz,), dtype=xdt, usm_type=xut, sycl_queue=exec_q)
     # no need to copy data for empty output
     if out_sz > 0:
         x = dpt.broadcast_to(

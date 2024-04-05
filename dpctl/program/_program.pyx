@@ -276,15 +276,15 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
-        We use the ``DPCTLKernelBundle_CreateFromOCLSpirv()`` C API function to
+        We use the :c:func:`DPCTLKernelBundle_CreateFromOCLSpirv` C API function to
         create a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
         from an compiled SPIR-V binary file.
 
         Parameters:
             q (SyclQueue): The :class:`SyclQueue` for which the
                            :class:`SyclProgram` is going to be built.
-            IL (const char[:]) : SPIR-V binary IL file for an OpenCL program.
-            copts (unicode) : Optional compilation flags that will be used
+            IL (bytes) : SPIR-V binary IL file for an OpenCL program.
+            copts (str) : Optional compilation flags that will be used
                               when compiling the program.
 
         Returns:

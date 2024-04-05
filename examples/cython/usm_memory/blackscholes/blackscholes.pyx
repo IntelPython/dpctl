@@ -135,7 +135,7 @@ def populate_params(
     """ populate_params(params, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed)
 
     Args:
-        params: usm_narray
+        params: usm_ndarray
             Array of shape (n_opts, 5) to populate with price, strike, time to
             maturity, interest rate, volatility rate per option using uniform
             distribution with provided distribution parameters.

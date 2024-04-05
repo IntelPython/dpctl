@@ -66,11 +66,11 @@ class UniqueInverseResult(NamedTuple):
 def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
     """unique_values(x)
 
-    Returns the unique elements of an input array x.
+    Returns the unique elements of an input array `x`.
 
     Args:
         x (usm_ndarray):
-            input array. The input with more than one dimension is flattened.
+            input array. Inputs with more than one dimension are flattened.
     Returns:
         usm_ndarray
             an array containing the set of unique elements in `x`. The
@@ -152,7 +152,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
 
     Args:
         x (usm_ndarray):
-            input array. The input with more than one dimension is flattened.
+            input array. Inputs with more than one dimension are flattened.
     Returns:
         tuple[usm_ndarray, usm_ndarray]
             a namedtuple `(values, counts)` whose
@@ -278,7 +278,7 @@ def unique_inverse(x):
 
     Args:
         x (usm_ndarray):
-            input array. The input with more than one dimension is flattened.
+            input array. Inputs with more than one dimension are flattened.
     Returns:
         tuple[usm_ndarray, usm_ndarray]
             a namedtuple `(values, inverse_indices)` whose
@@ -435,7 +435,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
 
     Args:
         x (usm_ndarray):
-            input array. The input with more than one dimension is flattened.
+            input array. Inputs with more than one dimension are flattened.
     Returns:
         tuple[usm_ndarray, usm_ndarray, usm_ndarray, usm_ndarray]
             a namedtuple `(values, indices, inverse_indices, counts)` whose

@@ -248,8 +248,9 @@ kernel_arg_type = _kernel_arg_type()
 
 cdef class SyclKernelSubmitError(Exception):
     """
-    A SyclKernelSubmitError exception is raised when the provided
-    :class:`.SyclKernel` could not be submitted to the :class:`.SyclQueue`.
+    A ``SyclKernelSubmitError`` exception is raised when
+    the provided :class:`.program.SyclKernel` could not be
+    submitted to the :class:`.SyclQueue`.
 
     """
     pass
@@ -257,16 +258,18 @@ cdef class SyclKernelSubmitError(Exception):
 
 cdef class SyclKernelInvalidRangeError(Exception):
     """
-    A SyclKernelInvalidRangeError is raised when the provided range has less
-    than one or more than three dimensions.
+    A ``SyclKernelInvalidRangeError`` is raised when the provided
+    range has less than one or more than three dimensions.
     """
     pass
 
 
 cdef class SyclQueueCreationError(Exception):
     """
-    A SyclQueueCreationError exception is raised when a :class:`.SyclQueue`
-    could not be created. :class:`.SyclQueue` creation can fail if the filter
+    A ``SyclQueueCreationError`` exception is raised when a
+    :class:`.SyclQueue` could not be created.
+
+    :class:`.SyclQueue` creation can fail if the filter
     string is invalid, or the backend or device type values are not supported.
 
     """
@@ -389,8 +392,9 @@ cdef class _SyclQueue:
 cdef class SyclQueue(_SyclQueue):
     """
     SyclQueue(*args, **kwargs)
-    Python class representing ``sycl::queue``. There are multiple
-    ways to create a :class:`dpctl.SyclQueue` object:
+    Python class representing ``sycl::queue``.
+
+    There are multiple ways to create a :class:`dpctl.SyclQueue` object:
 
         - Invoking the constructor with no arguments creates a context using
           the default selector.

@@ -48,7 +48,7 @@ cdef bint queue_equiv(SyclQueue q1, SyclQueue q2):
     return q1.__eq__(q2)
 
 
-def get_execution_queue(qs):
+def get_execution_queue(qs, /):
     """ Given a list of :class:`dpctl.SyclQueue` objects
     returns the execution queue under compute follows data paradigm,
     or returns `None` if queues are not equal.
@@ -71,7 +71,7 @@ def get_execution_queue(qs):
     return qs[0]
 
 
-def get_coerced_usm_type(usm_types):
+def get_coerced_usm_type(usm_types, /):
     """ Given a list of strings denoting the types of USM allocations
     for input arrays returns the type of USM allocation for the output
     array(s) per compute follows data paradigm.
@@ -122,7 +122,7 @@ def _validate_usm_type_disallow_none(usm_type):
         )
 
 
-def validate_usm_type(usm_type, allow_none=True):
+def validate_usm_type(usm_type, /, *, allow_none=True):
     """ validate_usm_type(usm_type, allow_none=True)
 
     Raises an exception if `usm_type` is invalid.
