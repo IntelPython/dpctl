@@ -48,8 +48,8 @@ include "_slicing.pxi"
 
 cdef class InternalUSMArrayError(Exception):
     """
-    A InternalError exception is raised when internal
-    inconsistency has been detected.
+    A InternalUSMArrayError exception is raised when internal
+    inconsistency has been detected in :class:`.usm_ndarray`.
     """
     pass
 
@@ -170,7 +170,7 @@ cdef class usm_ndarray:
         """
         strides and offset must be given in units of array elements.
         buffer can be strings ('device'|'shared'|'host' to allocate new memory)
-        or dpctl.memory.MemoryUSM* buffers, or usm_ndrray instances.
+        or ``dpctl.memory.MemoryUSM*`` buffers, or ``usm_ndrray`` instances.
         """
         cdef int nd = 0
         cdef int typenum = 0
@@ -200,7 +200,7 @@ cdef class usm_ndarray:
                 except Exception as e:
                     raise TypeError(
                         "Argument shape must a non-negative integer, "
-			"or a list/tuple of such integers."
+                        "or a list/tuple of such integers."
                     ) from e
         nd = len(shape)
         if dtype is None:
@@ -302,7 +302,10 @@ cdef class usm_ndarray:
 
     @property
     def _pointer(self):
-        "Returns USM pointer for data allocation encoded as integer"
+        """
+        Returns USM pointer to the start of array (element with zero
+        multi-index) encoded as integer.
+        """
         return <size_t> self.get_data()
 
     cdef Py_ssize_t get_offset(self) except *:
@@ -324,7 +327,26 @@ cdef class usm_ndarray:
 
     @property
     def _byte_bounds(self):
-        """Returns a 2-tuple with pointers to the end-points of the array"""
+        """Returns a 2-tuple with pointers to the end-points of the array
+
+        :Example:
+
+            .. code-block:: python
+
+                from dpctl import tensor
+
+                x = tensor.ones((3, 10, 7))
+                y = tensor.flip(x[:, 1::2], axis=1)
+
+                beg_p, end_p = y._byte_bounds
+                # Bytes taken to store this array
+                bytes_extent = end_p - beg_p
+
+                # C-contiguous copy is more compact
+                yc = tensor.copy(y, order="C")
+                beg_pc, end_pc = yc._byte_bounds
+                assert bytes_extent < end_pc - beg_pc
+        """
         cdef Py_ssize_t min_disp = 0
         cdef Py_ssize_t max_disp = 0
         cdef Py_ssize_t step_ = 0
@@ -480,7 +502,7 @@ cdef class usm_ndarray:
     @property
     def usm_data(self):
         """
-        Gives USM memory object underlying usm_array instance.
+        Gives USM memory object underlying :class:`.usm_ndarray` instance.
         """
         return self.get_base()
 
@@ -489,6 +511,20 @@ cdef class usm_ndarray:
         """
         Elements of the shape tuple give the lengths of the
         respective array dimensions.
+
+        Setting shape is allowed only when reshaping to the requested
+        dimensions can be returned as view, otherwise :exc:`AttributeError`
+        is raised. Use :func:`dpctl.tensor.reshape` to reshape the array
+        in all cases.
+
+        :Example:
+
+            .. code-block:: python
+
+                from dpctl import tensor
+
+                x = tensor.arange(899)
+                x.shape = (29, 31)
         """
         if self.nd_ > 0:
             return _make_int_tuple(self.nd_, self.shape_)
@@ -497,11 +533,6 @@ cdef class usm_ndarray:
 
     @shape.setter
     def shape(self, new_shape):
-        """
-        Setting shape is only allowed when reshaping to the requested
-        dimensions can be returned as view. Use :func:`dpctl.tensor.reshape`
-        to reshape the array in all other cases.
-        """
         cdef int new_nd = -1
         cdef Py_ssize_t nelems = -1
         cdef int err = 0
@@ -567,9 +598,25 @@ cdef class usm_ndarray:
         Returns memory displacement in array elements, upon unit
         change of respective index.
 
-        E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)
+        For example, for strides ``(s1, s2, s3)`` and multi-index
+        ``(i1, i2, i3)`` position of the respective element relative
+        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.
 
-           a[i1, i2, i3] == (&a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]
+        :Example:
+
+            .. code-block:: python
+
+                from dpctl import tensor
+
+                x = tensor.zeros((20, 30))
+                xv = x[10:, :15]
+
+                multi_id = (3, 5)
+                byte_displacement = xv[multi_id]._pointer - xv[0, 0]._pointer
+                element_displacement = sum(
+                    i * s for i, s in zip(multi_id, xv.strides)
+                )
+                assert byte_displacement == element_displacement * xv.itemsize
         """
         if (self.strides_):
             return _make_int_tuple(self.nd_, self.strides_)
@@ -595,8 +642,17 @@ cdef class usm_ndarray:
     @property
     def usm_type(self):
         """
-        USM type of underlying memory. Can be ``"device"``, ``"shared"``,
-        or ``"host"``.
+        USM type of underlying memory. Possible values are:
+
+            * ``"device"``
+                USM-device allocation in device memory, only accessible
+                to kernels executed on the device
+            * ``"shared"``
+                USM-shared allocation in device memory, accessible both
+                from the device and from host
+            * ``"host"``
+                USM-host allocation in host memory, accessible both
+                from the device and from host
 
         See: https://docs.oneapi.com/versions/latest/dpcpp/iface/usm.html
         """
@@ -650,7 +706,22 @@ cdef class usm_ndarray:
     @property
     def device(self):
         """
-        Returns data-API object representing residence of the array data.
+        Returns :class:`dpctl.tensor.Device` object representing
+        residence of the array data.
+
+        The ``Device`` object represents Array API notion of the
+        device, and contains :class:`dpctl.SyclQueue` associated
+        with this array. Hence, ``.device`` property provides
+        information distinct from ``.sycl_device`` property.
+
+        :Example:
+
+            .. code-block:: python
+
+                >>> from dpctl import tensor
+                >>> x = tensor.ones(10)
+                >>> x.device
+                Device(level_zero:gpu:0)
         """
         return Device.create_device(self.sycl_queue)
 
@@ -664,7 +735,7 @@ cdef class usm_ndarray:
 
     @property
     def T(self):
-        """ Returns transposed array for 2D array, raises `ValueError`
+        """Returns transposed array for 2D array, raises ``ValueError``
         otherwise.
         """
         if self.nd_ == 2:
@@ -678,7 +749,8 @@ cdef class usm_ndarray:
 
     @property
     def mT(self):
-        """ Returns array where the last two dimensions are transposed.
+        """ Returns array (a view) where the last two dimensions are
+        transposed.
         """
         if self.nd_ < 2:
             raise ValueError(
@@ -688,8 +760,26 @@ cdef class usm_ndarray:
 
     @property
     def real(self):
-        """ Returns real component for arrays with complex data-types
-        and returns itself for all other data-types.
+        """
+        Returns view into real component for arrays with
+        complex data-types and returns itself for all other
+        data-types.
+
+        :Example:
+
+            .. code-block:: python
+
+                from dpctl import tensor
+
+                # Create complex array from
+                # arrays of real and imaginary parts
+
+                re = tensor.linspace(-1, 1, num=100, dtype="f4")
+                im = tensor.full_like(re, fill_value=tensor.pi)
+
+                z = tensor.empty_like(re, dtype="c8")
+                z.real[:] = re
+                z.imag[:] = im
         """
         # explicitly check for UAR_HALF, which is greater than UAR_CFLOAT
         if (self.typenum_ < UAR_CFLOAT or self.typenum_ == UAR_HALF):
@@ -700,8 +790,20 @@ cdef class usm_ndarray:
 
     @property
     def imag(self):
-        """ Returns imaginary component for arrays with complex data-types
-        and returns zero array for all other data-types.
+        """ Returns view into imaginary component for arrays with
+        complex data-types and returns new zero array for all other
+        data-types.
+
+        :Example:
+
+            .. code-block:: python
+
+                from dpctl import tensor
+
+                # Reset imaginary part of complex array
+
+                z = tensor.ones(100, dtype="c8")
+                z.imag[:] = dpt.pi/2
         """
         # explicitly check for UAR_HALF, which is greater than UAR_CFLOAT
         if (self.typenum_ < UAR_CFLOAT or self.typenum_ == UAR_HALF):
@@ -771,7 +873,7 @@ cdef class usm_ndarray:
         res.flags_ = _copy_writable(res.flags_, self.flags_)
         return res
 
-    def to_device(self, target, stream=None):
+    def to_device(self, target_device, stream=None):
         """ to_device(target_device)
 
         Transfers this array to specified target device.
@@ -799,7 +901,10 @@ cdef class usm_ndarray:
                 an instance of :class:`dpctl.SyclDevice` corresponding to a
                 non-partitioned SYCL device, an instance of
                 :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_array.device`.
+                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            stream (:class:`dpctl.SyclQueue`, optional):
+                Execution queue to synchronize with. If ``None``,
+                synchronization is not performed.
 
         Returns:
             usm_ndarray:
@@ -810,7 +915,7 @@ cdef class usm_ndarray:
         """
         cdef c_dpctl.DPCTLSyclQueueRef QRef = NULL
         cdef c_dpmem._Memory arr_buf
-        d = Device.create_device(target)
+        d = Device.create_device(target_device)
 
         if (stream is None or type(stream) is not dpctl.SyclQueue or
             stream == self.sycl_queue):
@@ -861,7 +966,20 @@ cdef class usm_ndarray:
         """
         Returns array namespace, member functions of which
         implement data API.
+
+        Args:
+            api_version (str, optional)
+                Request namespace compliant with given version of
+                array API. If ``None``, namespace for the most
+                recent supported version is returned.
+                Default: ``None``.
         """
+        if api_version is not None:
+            from ._array_api import __array_api_version__
+            if not isinstance(api_version, str):
+                raise TypeError(f"Expected type str, got {type(api_version)}")
+            if api_version != __array_api_version__:
+                raise ValueError(f"Only {__array_api_version__} is supported")
         return self.array_namespace_ if self.array_namespace_ is not None else dpctl.tensor
 
     def __bool__(self):
@@ -929,12 +1047,17 @@ cdef class usm_ndarray:
         """
         Produces DLPack capsule.
 
+        Args:
+            stream (:class:`dpctl.SyclQueue`, optional):
+                Execution queue to synchronize with. If ``None``,
+                synchronization is not performed.
+
         Raises:
-            MemoryError: when host memory can not be allocated.
-            DLPackCreationError: when array is allocated on a partitioned
+            MemoryError:
+                when host memory can not be allocated.
+            DLPackCreationError:
+                when array is allocated on a partitioned
                 SYCL device, or with a non-default context.
-            NotImplementedError: when non-default value of `stream` keyword
-                is used.
         """
         _caps = c_dlpack.to_dlpack_capsule(self)
         if (stream is None or type(stream) is not dpctl.SyclQueue or
@@ -947,15 +1070,15 @@ cdef class usm_ndarray:
 
     def __dlpack_device__(self):
         """
-        Gives a tuple (`device_type`, `device_id`) corresponding to ``DLDevice``
-        entry in ``DLTensor`` in DLPack protocol.
+        Gives a tuple (``device_type``, ``device_id``) corresponding to
+        ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.
 
-        The tuple describes the non-partitioned device where the array
-        has been allocated.
+        The tuple describes the non-partitioned device where the array has been allocated,
+        or the non-partitioned parent device of the allocation device.
 
         Raises:
-            DLPackCreationError: when array is allocation on a partitioned
-                SYCL device
+            DLPackCreationError:
+                when the ``device_id`` could not be determined.
         """
         cdef int dev_id = c_dlpack.get_parent_device_ordinal_id(<c_dpctl.SyclDevice>self.sycl_device)
         if dev_id < 0:
@@ -1541,5 +1664,5 @@ cdef api object UsmNDArray_MakeFromPtr(
 
 
 def _is_object_with_buffer_protocol(o):
-   "Returns True if object support Python buffer protocol"
+   "Returns True if object supports Python buffer protocol"
    return _is_buffer(o)
