@@ -291,7 +291,7 @@ cpdef cpp_bool has_accelerator_devices():
 
 
 cpdef SyclDevice select_accelerator_device():
-    """ A wrapper for SYCL's ``accelerator_selector`` class.
+    """A wrapper for ``sycl::device{sycl::accelerator_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -313,7 +313,7 @@ cpdef SyclDevice select_accelerator_device():
 
 
 cpdef SyclDevice select_cpu_device():
-    """ A wrapper for SYCL's ``cpu_selector`` class.
+    """A wrapper for ``sycl::device{sycl::cpu_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -335,7 +335,7 @@ cpdef SyclDevice select_cpu_device():
 
 
 cpdef SyclDevice select_default_device():
-    """ A wrapper for SYCL's ``default_selector`` class.
+    """A wrapper for ``sycl::device{sycl::default_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -357,7 +357,7 @@ cpdef SyclDevice select_default_device():
 
 
 cpdef SyclDevice select_gpu_device():
-    """ A wrapper for SYCL's ``gpu_selector`` class.
+    """A wrapper for ``sycl::device{sycl::gpu_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
