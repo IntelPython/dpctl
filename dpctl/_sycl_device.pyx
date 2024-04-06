@@ -426,17 +426,20 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def has_aspect_cpu(self):
-        """ Returns True if this device is a CPU device, False otherwise.
+        """ Returns ``True`` if this device is a CPU device,
+        ``False`` otherwise.
 
         Returns:
-            bool: Indicates if the device is a cpu.
+            bool:
+                Indicates if the device is a cpu.
         """
         cdef _aspect_type AT = _aspect_type._cpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_gpu(self):
-        """ Returns True if this device is a GPU device, False otherwise.
+        """ Returns ``True`` if this device is a GPU device,
+        ``False`` otherwise.
 
         Returns:
             bool: Indicates if the device is a gpu.
@@ -446,200 +449,224 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def has_aspect_accelerator(self):
-        """ Returns True if this device is an accelerator device, False
-        otherwise.
+        """ Returns ``True`` if this device is an accelerator device,
+        ``False`` otherwise.
 
         SYCL considers an accelerator to be a device that usually uses a
         peripheral interconnect for communication.
 
         Returns:
-            bool: Indicates if the device is an accelerator.
+            bool:
+                Indicates if the device is an accelerator.
         """
         cdef _aspect_type AT = _aspect_type._accelerator
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_custom(self):
-        """ Returns True if this device is a custom device, False otherwise.
+        """ Returns ``True`` if this device is a custom device,
+        ``False`` otherwise.
 
         A custom device can be a dedicated accelerator that can use the
         SYCL API, but programmable kernels cannot be dispatched to the device,
         only fixed functionality is available. Refer SYCL spec for more details.
 
         Returns:
-            bool: Indicates if the device is a custom SYCL device.
+            bool:
+                Indicates if the device is a custom SYCL device.
         """
         cdef _aspect_type AT = _aspect_type._custom
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_fp16(self):
-        """ Returns True if the device supports half-precision floating point
-        operations, False otherwise.
+        """ Returns ``True`` if the device supports half-precision floating
+        point operations, ``False`` otherwise.
 
         Returns:
-            bool: Indicates that the device supports half precision floating
-            point operations.
+            bool:
+                Indicates that the device supports half precision floating
+                point operations.
         """
         cdef _aspect_type AT = _aspect_type._fp16
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_fp64(self):
-        """ Returns True if the device supports 64-bit precision floating point
-        operations, False otherwise.
+        """ Returns ``True`` if the device supports 64-bit precision floating
+        point operations, ``False`` otherwise.
 
         Returns:
-            bool: Indicates that the device supports 64-bit precision floating
-            point operations.
+            bool:
+                Indicates that the device supports 64-bit precision floating
+                point operations.
         """
         cdef _aspect_type AT = _aspect_type._fp64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_atomic64(self):
-        """ Returns true if the device supports a basic set of atomic
-        operations, False otherwise.
+        """ Returns ``True`` if the device supports a basic set of atomic
+        operations, ``False`` otherwise.
 
         Indicates that the device supports the following atomic operations on
         64-bit values:
 
-            - atomic::load
-            - atomic::store
-            - atomic::fetch_add
-            - atomic::fetch_sub
-            - atomic::exchange
-            - atomic::compare_exchange_strong
-            - atomic::compare_exchange_weak
+            - ``sycl::atomic_ref::load``
+            - ``sycl::atomic_ref::store``
+            - ``sycl::atomic_ref::fetch_add``
+            - ``sycl::atomic_ref::fetch_sub``
+            - ``sycl::atomic_ref::exchange``
+            - ``sycl::atomic_ref::compare_exchange_strong``
+            - ``sycl::atomic_ref::compare_exchange_weak``
 
         Returns:
-            bool: Indicates that the device supports a basic set of atomic
-            operations on 64-bit values.
+            bool:
+                Indicates that the device supports a basic set of atomic
+                operations on 64-bit values.
         """
         cdef _aspect_type AT = _aspect_type._atomic64
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_image(self):
-        """ Returns True if the device supports images, False otherwise (refer
-        Sec 4.7.3 of SYCL 2020 spec).
+        """ Returns ``True`` if the device supports images, ``False`` otherwise
+        (refer Sec 4.15.3 of SYCL 2020 spec).
 
         Returns:
-            bool: Indicates that the device supports images
+            bool:
+                Indicates that the device supports images
         """
         cdef _aspect_type AT = _aspect_type._image
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_online_compiler(self):
-        """ Returns True if this device supports online compilation of
-        device code, False otherwise.
+        """ Returns ``True`` if this device supports online compilation of
+        device code, ``False`` otherwise.
 
         Returns:
-            bool: Indicates that the device supports online compilation of
-            device code.
+            bool:
+                Indicates that the device supports online compilation of
+                device code.
         """
         cdef _aspect_type AT = _aspect_type._online_compiler
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_online_linker(self):
-        """ Returns True if this device supports online linking of
-        device code, False otherwise.
+        """ Returns ``True`` if this device supports online linking of
+        device code, ``False`` otherwise.
 
         Returns:
-            bool: Indicates that the device supports online linking of device
-            code.
+            bool:
+                Indicates that the device supports online linking of device
+                code.
         """
         cdef _aspect_type AT = _aspect_type._online_linker
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_queue_profiling(self):
-        """ Returns True if this device supports queue profiling,
-        False otherwise.
+        """ Returns ``True`` if this device supports queue profiling,
+        ``False`` otherwise.
 
         Returns:
-            bool: Indicates that the device supports queue profiling.
+            bool:
+                Indicates that the device supports queue profiling.
         """
         cdef _aspect_type AT = _aspect_type._queue_profiling
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_device_allocations(self):
-        """ Returns True if this device supports explicit USM allocations,
-        False otherwise (refer Section 4.8 of SYCL 2020 specs).
+        """ Returns ``True`` if this device supports explicit USM allocations,
+        ``False`` otherwise (refer Section 4.8 of SYCL 2020 specs).
 
         Returns:
-            bool: Indicates that the device supports explicit USM allocations.
+            bool:
+                Indicates that the device supports explicit USM allocations.
         """
         cdef _aspect_type AT = _aspect_type._usm_device_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_host_allocations(self):
-        """ Returns True if this device can access USM-host memory,
-        False otherwise (refer Section 4.8 of SYCL 2020 specs).
+        """ Returns ``True`` if this device can access USM-host memory,
+        ``False`` otherwise (refer Section 4.8 of SYCL 2020 specs).
 
         Returns:
-            bool: Indicates that the device can access USM memory
-            allocated using ``sycl::malloc_host``.
+            bool:
+                Indicates that the device can access USM memory
+                allocated using ``sycl::malloc_host``.
         """
         cdef _aspect_type AT = _aspect_type._usm_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_shared_allocations(self):
-        """ Returns True if this device supports USM-shared memory
-        allocated on the same device, False otherwise.
+        """ Returns ``True`` if this device supports USM-shared memory
+        allocated on the same device, ``False`` otherwise.
 
         Returns:
-            bool: Indicates that the device supports USM memory
-            allocated using ``sycl::malloc_shared``.
+            bool:
+                Indicates that the device supports USM memory
+                allocated using ``sycl::malloc_shared``.
         """
         cdef _aspect_type AT = _aspect_type._usm_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_system_allocations(self):
-        """ Returns True if system allocator may be used instead of SYCL USM
-        allocation mechanism for USM-shared allocations on this device,
-        False otherwise.
+        """ Returns ``True`` if system allocator may be used instead of
+        SYCL USM allocation mechanism for USM-shared allocations on this
+        device, ``False`` otherwise.
 
         Returns:
-            bool: Indicates that system allocator may be used instead of
-            ``sycl::malloc_shared``.
+            bool:
+                Indicates that system allocator may be used instead of
+                ``sycl::malloc_shared``.
         """
         cdef _aspect_type AT = _aspect_type._usm_system_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_atomic_host_allocations(self):
-        """ Returns True if this device supports USM-host allocations and
-        the host and this device may concurrently access and atomically
-        modify host allocations, False otherwise.
+        """ Returns ``True`` if this device supports USM-host allocations
+        and the host and this device may concurrently access and atomically
+        modify host allocations, ``False`` otherwise.
 
         Returns:
-            bool: Indicates if the device supports USM atomic host allocations.
+            bool:
+                Indicates if the device supports USM atomic host allocations.
         """
         cdef _aspect_type AT = _aspect_type._usm_atomic_host_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_usm_atomic_shared_allocations(self):
-        """ Returns True if this device supports USM-shared allocations and
-        the host and other devices in the same context as this device may
+        """ Returns ``True`` if this device supports USM-shared allocations
+        and the host and other devices in the same context as this device may
         concurrently access and atomically modify shared allocations,
-        False otherwise
+        ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if this device supports concurrent atomic modification
+                of USM-shared allocation by host and device.
         """
         cdef _aspect_type AT = _aspect_type._usm_atomic_shared_allocations
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
     def has_aspect_host_debuggable(self):
-        """ Returns True if kernels running on this device can be debugged
+        """ Returns ``True`` if kernels running on this device can be debugged
         using standard debuggers that are normally available on the host
-        system, False otherwise
+        system, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if host debugger may be used to debug device code.
         """
         cdef _aspect_type AT = _aspect_type._host_debuggable
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -647,43 +674,73 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def image_2d_max_width(self):
         """ Returns the maximum width of a 2D image or 1D image in pixels.
-            The minimum value is 8192 if the SYCL device has aspect::image.
+            The minimum value is 8192 if the SYCL device has
+            ``sycl::aspect::image``.
+
+            Returns:
+                int:
+                    Maximum width of a 2D image or 1D image in pixels.
         """
         return DPCTLDevice_GetImage2dMaxWidth(self._device_ref)
 
     @property
     def image_2d_max_height(self):
         """ Returns the maximum height of a 2D image or 1D image in pixels.
-            The minimum value is 8192 if the SYCL device has aspect::image.
+            The minimum value is 8192 if the SYCL device has
+            ``sycl::aspect::image``.
+
+            Returns:
+                int:
+                    Maximum height of a 2D image or 1D image in pixels.
         """
         return DPCTLDevice_GetImage2dMaxHeight(self._device_ref)
 
     @property
     def image_3d_max_width(self):
         """ Returns the maximum width of a 3D image in pixels.
-            The minimum value is 2048 if the SYCL device has aspect::image.
+            The minimum value is 2048 if the SYCL device has
+            ``sycl::aspect::image``.
+
+            Returns:
+                int:
+                    Maximum width of a 3D image in pixels.
         """
         return DPCTLDevice_GetImage3dMaxWidth(self._device_ref)
 
     @property
     def image_3d_max_height(self):
         """ Returns the maximum height of a 3D image in pixels.
-            The minimum value is 2048 if the SYCL device has aspect::image.
+            The minimum value is 2048 if the SYCL device has
+            ``sycl::aspect::image``.
+
+            Returns:
+                int:
+                    Maximum heigth of a 3D image in pixels.
         """
         return DPCTLDevice_GetImage3dMaxHeight(self._device_ref)
 
     @property
     def image_3d_max_depth(self):
         """ Returns the maximum depth of a 3D image in pixels.
-            The minimum value is 2048 if the SYCL device has aspect::image.
+            The minimum value is 2048 if the SYCL device has
+            ``sycl::aspect::image``.
+
+            Returns:
+                int:
+                    Maximum depth of a 3D image in pixels.
         """
         return DPCTLDevice_GetImage3dMaxDepth(self._device_ref)
 
     @property
     def default_selector_score(self):
-        """ Integer score assigned to this device by DPC++ runtime's default
-        scoring function. Score of -1 denotes that this device was rejected
-        and may not be properly programmed by the DPC++ runtime.
+        """ Integral score assigned to this device by DPC++ runtime's default
+        selector's scoring function. Score of -1 denotes that this device
+        was rejected and may not be properly programmed by the DPC++ runtime.
+
+        Returns:
+            int:
+                Score assign to this device by ``sycl::default_selector_v``
+                function.
         """
         cdef DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create()
         cdef int score = -1
@@ -696,7 +753,12 @@ cdef class SyclDevice(_SyclDevice):
     def max_read_image_args(self):
         """ Returns the maximum number of simultaneous image objects that
         can be read from by a kernel. The minimum value is 128 if the
-        SYCL device has aspect::image.
+        SYCL device has ``sycl::aspect::image``.
+
+        Returns:
+            int:
+                Maximum number of image objects that can be read from by
+                a kernel.
         """
         return DPCTLDevice_GetMaxReadImageArgs(self._device_ref)
 
@@ -704,36 +766,46 @@ cdef class SyclDevice(_SyclDevice):
     def max_write_image_args(self):
         """ Returns the maximum number of simultaneous image objects that
         can be written to by a kernel. The minimum value is 8 if the SYCL
-        device has aspect::image.
+        device has ``sycl::aspect::image``.
+
+        Return:
+            int:
+                Maximum number of simultaneous image objects that
+                can be written to by a kernel.
         """
         return DPCTLDevice_GetMaxWriteImageArgs(self._device_ref)
 
     @property
     def is_accelerator(self):
-        """ Returns True if the SyclDevice instance is a SYCL accelerator
-        device.
+        """ Returns ``True`` if thi instance is a SYCL
+        accelerator device.
 
         Returns:
-            bool: True if the SyclDevice is a SYCL accelerator device,
-            else False.
+            bool:
+                ``True`` if the :class:`.SyclDevice` is a SYCL accelerator
+                device, else ``False``.
         """
         return DPCTLDevice_IsAccelerator(self._device_ref)
 
     @property
     def is_cpu(self):
-        """ Returns True if the SyclDevice instance is a SYCL CPU device.
+        """ Returns ``True`` if this instance is a SYCL CPU device.
 
         Returns:
-            bool: True if the SyclDevice is a SYCL CPU device, else False.
+            bool:
+                ``True`` if the :class:`.SyclDevice` is a SYCL CPU device,
+                else ``False``.
         """
         return DPCTLDevice_IsCPU(self._device_ref)
 
     @property
     def is_gpu(self):
-        """ Returns True if the SyclDevice instance is a SYCL GPU device.
+        """ Returns ``True`` if this instance is a SYCL GPU device.
 
         Returns:
-            bool: True if the SyclDevice is a SYCL GPU device, else False.
+            bool:
+                ``True`` if the :class:`.SyclDevice` is a SYCL GPU device,
+                else ``False``.
         """
         return DPCTLDevice_IsGPU(self._device_ref)
 
@@ -743,7 +815,8 @@ cdef class SyclDevice(_SyclDevice):
         work-item IDs used by the data parallel execution model.
 
         Returns:
-            int: The maximum number of work items supported by the device.
+            int:
+                The maximum number of work items supported by the device.
         """
         cdef uint32_t max_work_item_dims = 0
         max_work_item_dims = DPCTLDevice_GetMaxWorkItemDims(self._device_ref)
@@ -757,8 +830,9 @@ cdef class SyclDevice(_SyclDevice):
         :py:attr:`~has_aspect_custom`.
 
         Returns:
-            tuple[int,]: A tuple with the maximum allowed value for a 1D range
-            used to enqueue a kernel on the device.
+            Tuple[int,]:
+                A one-tuple with the maximum allowed value for a 1D range
+                used to enqueue a kernel on the device.
         """
         cdef size_t *max_work_item_sizes1d = NULL
         cdef size_t s0
@@ -777,8 +851,9 @@ cdef class SyclDevice(_SyclDevice):
         :py:attr:`~has_aspect_custom`.
 
         Returns:
-            tuple[int, int]: A tuple with the maximum allowed value for each
-            dimension of a 2D range used to enqueue a kernel on the device.
+            Tuple[int]:
+                A two-tuple with the maximum allowed value for each
+                dimension of a 2D range used to enqueue a kernel on the device.
         """
         cdef size_t *max_work_item_sizes2d = NULL
         cdef size_t s0
@@ -799,8 +874,10 @@ cdef class SyclDevice(_SyclDevice):
         :py:attr:`~has_aspect_custom`.
 
         Returns:
-            tuple[int, int, int]: A tuple with the maximum allowed value for
-            each dimension of a 3D range used to enqueue a kernel on the device.
+            Tuple[int]:
+                A three-tuple with the maximum allowed value for
+                each dimension of a 3D range used to enqueue a kernel on
+                the device.
         """
         return (
             self._max_work_item_sizes[0],
@@ -812,12 +889,13 @@ cdef class SyclDevice(_SyclDevice):
     def max_work_item_sizes(self):
         """ Returns the maximum number of work-items that are permitted in each
         dimension of the work-group of the nd_range. The minimum value is
-        `(1; 1; 1)` for devices that evaluate to False for
+        `(1; 1; 1)` for devices that evaluate to ``False`` for
         :py:attr:`~has_aspect_custom`.
 
         Returns:
-            tuple[int, int, int]: A tuple whose length depends on the number of
-            workgrpup dimensions supported by the device.
+            Tuple[int]:
+                A three-tuple whose length depends on the number of
+                workgroup dimensions supported by the device.
 
         .. deprecated:: 0.14
            The property is deprecated use :py:attr:`~max_work_item_sizes3d`
@@ -840,7 +918,8 @@ cdef class SyclDevice(_SyclDevice):
         device. The minimum value is 1.
 
         Returns:
-            int: The number of compute units in the device.
+            int:
+                The number of compute units in the device.
         """
         cdef uint32_t max_compute_units = 0
         max_compute_units = DPCTLDevice_GetMaxComputeUnits(self._device_ref)
@@ -853,7 +932,8 @@ cdef class SyclDevice(_SyclDevice):
         value is 1.
 
         Returns:
-            int: The maximum supported work group size.
+            int:
+                The maximum supported work group size.
         """
         cdef uint32_t max_work_group_size = 0
         max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(self._device_ref)
@@ -866,8 +946,9 @@ cdef class SyclDevice(_SyclDevice):
         device. The minimum value is 1.
 
         Returns:
-            int: The maximum number of sub-groups support per work-group by
-            the device.
+            int:
+                The maximum number of sub-groups support per work-group by
+                the device.
         """
         cdef uint32_t max_num_sub_groups = (
             DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
@@ -876,12 +957,13 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def sub_group_independent_forward_progress(self):
-        """ Returns True if the device supports independent forward progress of
+        """ Returns ``True`` if the device supports independent forward progress of
         sub-groups with respect to other sub-groups in the same work-group.
 
         Returns:
-            bool: Indicates if the device supports independent forward progress
-            of sub-groups.
+            bool:
+                Indicates if the device supports independent forward progress
+                of sub-groups.
         """
         return DPCTLDevice_GetSubGroupIndependentForwardProgress(
             self._device_ref
@@ -892,7 +974,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns list of supported sub-group sizes for this device.
 
         Returns:
-            List[int]: List of supported sub-group sizes.
+            List[int]:
+                List of supported sub-group sizes.
         """
         cdef size_t *sg_sizes = NULL
         cdef size_t sg_sizes_len = 0
@@ -914,8 +997,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns the platform associated with this device.
 
         Returns:
-            :class:`dpctl.SyclPlatform`: The platform associated with this
-            device.
+            :class:`dpctl.SyclPlatform`:
+                The platform associated with this device.
         """
         cdef DPCTLSyclPlatformRef PRef = (
             DPCTLDevice_GetPlatform(self._device_ref)
@@ -929,6 +1012,19 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_char(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``char``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                pvw_c = dev.preferred_vector_width_char
         """
         return DPCTLDevice_GetPreferredVectorWidthChar(self._device_ref)
 
@@ -936,6 +1032,19 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_short(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``short``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                pvw_s = dev.preferred_vector_width_short
         """
         return DPCTLDevice_GetPreferredVectorWidthShort(self._device_ref)
 
@@ -943,6 +1052,19 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_int(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``int``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                pvw_i = dev.preferred_vector_width_int
         """
         return DPCTLDevice_GetPreferredVectorWidthInt(self._device_ref)
 
@@ -950,6 +1072,19 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_long(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``long``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                pvw_l = dev.preferred_vector_width_long
         """
         return DPCTLDevice_GetPreferredVectorWidthLong(self._device_ref)
 
@@ -957,6 +1092,19 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_float(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``float``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                pvw_f = dev.preferred_vector_width_float
         """
         return DPCTLDevice_GetPreferredVectorWidthFloat(self._device_ref)
 
@@ -964,6 +1112,22 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_double(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``double``.
+
+        If device does not support double-precision floating point operations,
+        the native width is zero.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                pvw_d = dev.preferred_vector_width_double
         """
         return DPCTLDevice_GetPreferredVectorWidthDouble(self._device_ref)
 
@@ -971,6 +1135,13 @@ cdef class SyclDevice(_SyclDevice):
     def preferred_vector_width_half(self):
         """ Returns the preferred native vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Preferred native vector width size for C type ``sycl::half``.
+
+        If device does not support half-precision floating point operations,
+        the native width is zero.
         """
         return DPCTLDevice_GetPreferredVectorWidthHalf(self._device_ref)
 
@@ -978,6 +1149,19 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_char(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``char``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                nvw_c = dev.native_vector_width_char
         """
         return DPCTLDevice_GetNativeVectorWidthChar(self._device_ref)
 
@@ -985,6 +1169,19 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_short(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``short``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                nvw_s = dev.native_vector_width_short
         """
         return DPCTLDevice_GetNativeVectorWidthShort(self._device_ref)
 
@@ -992,6 +1189,19 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_int(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``int``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                nvw_i = dev.native_vector_width_int
         """
         return DPCTLDevice_GetNativeVectorWidthInt(self._device_ref)
 
@@ -999,6 +1209,19 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_long(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``long``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                nvw_l = dev.native_vector_width_long
         """
         return DPCTLDevice_GetNativeVectorWidthLong(self._device_ref)
 
@@ -1006,6 +1229,19 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_float(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``float``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                nvw_f = dev.native_vector_width_float
         """
         return DPCTLDevice_GetNativeVectorWidthFloat(self._device_ref)
 
@@ -1013,6 +1249,19 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_double(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``double``.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+
+                dev = dpctl.select_cpu_device()
+                nvw_d = dev.native_vector_width_double
         """
         return DPCTLDevice_GetNativeVectorWidthDouble(self._device_ref)
 
@@ -1020,12 +1269,20 @@ cdef class SyclDevice(_SyclDevice):
     def native_vector_width_half(self):
         """ Returns the native ISA vector width size for built-in scalar
         types that can be put into vectors.
+
+        Returns:
+            int:
+                Native ISA vector width size for C type ``sycl::half``.
         """
         return DPCTLDevice_GetNativeVectorWidthHalf(self._device_ref)
 
     @property
     def global_mem_size(self):
         """ Returns the size of global memory on this device in bytes.
+
+        Returns:
+            int:
+                Size of global memory in bytes.
         """
         cdef size_t global_mem_size = 0
         global_mem_size = DPCTLDevice_GetGlobalMemSize(self._device_ref)
@@ -1034,6 +1291,10 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def local_mem_size(self):
         """ Returns the size of local memory on this device in bytes.
+
+        Returns:
+            int:
+                Size of global memory in bytes.
         """
         cdef size_t local_mem_size = 0
         local_mem_size = DPCTLDevice_GetLocalMemSize(self._device_ref)
@@ -1044,7 +1305,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns the device vendor name as a string.
 
         Returns:
-            str: The vendor name for the device as a string.
+            str:
+                The vendor name for the device as a string.
         """
         return self._vendor.decode()
 
@@ -1053,7 +1315,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns a backend-defined driver version as a string.
 
         Returns:
-            str: The driver version of the device as a string.
+            str:
+                The driver version of the device as a string.
         """
         return self._driver_version.decode()
 
@@ -1062,7 +1325,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns the name of the device as a string
 
         Returns:
-            str: The name of the device as a string.
+            str:
+                The name of the device as a string.
         """
         return self._name.decode()
 
@@ -1071,7 +1335,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns the name of the class  :class:`dpctl.SyclDevice`
 
         Returns:
-            str: Name of the class as a string.
+            str:
+                Name of the class as a string.
         """
         return "SyclDevice"
 
@@ -1092,6 +1357,10 @@ cdef class SyclDevice(_SyclDevice):
     def __hash__(self):
         """Returns a hash value by hashing the underlying ``sycl::device``
         object.
+
+        Returns:
+            int:
+                Hash value.
         """
         return DPCTLDevice_Hash(self._device_ref)
 
@@ -1104,6 +1373,18 @@ cdef class SyclDevice(_SyclDevice):
         device’s total number of compute units is not evenly divided by
         count, then the remaining compute units are not included in any of
         the sub-devices.
+
+        Args:
+            count (int):
+                Number of sub-devices to partition into.
+
+        Returns:
+            List[:class:`dpctl.SyclDevice`]:
+                Created sub-devices.
+
+        Raises:
+            dpctl.SyclSubdeviceCreationError:
+                if sub-devices can not be created.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         if count > 0:
@@ -1122,6 +1403,14 @@ cdef class SyclDevice(_SyclDevice):
 
         For each non-zero value ``M`` in the counts vector, a sub-device
         with ``M`` compute units is created.
+
+        Returns:
+            List[:class:`dpctl.SyclDevice`]:
+                Created sub-devices.
+
+        Raises:
+            dpctl.SyclSubdeviceCreationError:
+                if sub-devices can not be created.
         """
         cdef int ncounts = len(counts)
         cdef size_t *counts_buff = NULL
@@ -1160,6 +1449,14 @@ cdef class SyclDevice(_SyclDevice):
     ):
         """ Returns a list of sub-devices partitioned from this SYCL device by
         affinity domain based on the ``domain`` parameter.
+
+        Returns:
+            List[:class:`dpctl.SyclDevice`]:
+                Created sub-devices.
+
+        Raises:
+            dpctl.SyclSubdeviceCreationError:
+                if sub-devices can not be created.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
         DVRef = DPCTLDevice_CreateSubDevicesByAffinity(self._device_ref, domain)
@@ -1218,12 +1515,17 @@ cdef class SyclDevice(_SyclDevice):
                   created.
 
         Returns:
-            list: List of :class:`dpctl.SyclDevice` objects
+            List[:class:`dpctl.SyclDevice`]:
+                Created sub-devices.
 
         Raises:
-            TypeError: If the "partition" keyword arg is not specified or the
-                       affinity domain string is not legal or is not one of the
-                       three supported options.
+            TypeError:
+                If the ``partition`` keyword argument is not specified or
+                the affinity domain string is not legal or is not one of the
+                three supported options.
+            dpctl.SyclSubdeviceCreationError:
+                If sub-devices can not be created.
+
 
         """
         if "partition" not in kwargs:
@@ -1279,8 +1581,9 @@ cdef class SyclDevice(_SyclDevice):
         """ Parent device for a sub-device, or None for a root device.
 
         Returns:
-            dpctl.SyclDevice: A parent :class:`dpctl.SyclDevice` instance if the
-            device is a sub-device, ``None`` otherwise.
+            dpctl.SyclDevice:
+                A parent :class:`dpctl.SyclDevice` instance if the
+                device is a sub-device, ``None`` otherwise.
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
@@ -1293,7 +1596,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Profiling timer resolution.
 
         Returns:
-            int: The resolution of device timer in nanoseconds.
+            int:
+                The resolution of device timer in nanoseconds.
         """
         cdef size_t timer_res = 0
         timer_res = DPCTLDevice_GetProfilingTimerResolution(self._device_ref)
@@ -1318,7 +1622,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Maximum size of memory object than can be allocated.
 
         Returns:
-            int: Maximum size of memory object in bytes
+            int:
+                Maximum size of memory object in bytes
         """
         cdef uint64_t max_alloc_sz = DPCTLDevice_GetMaxMemAllocSize(
             self._device_ref
@@ -1330,9 +1635,12 @@ cdef class SyclDevice(_SyclDevice):
         """ Global device cache memory type.
 
         Returns:
-            global_mem_cache_type: type of cache memory
+            global_mem_cache_type:
+                type of cache memory
+
         Raises:
-            RuntimeError: If an unrecognized memory type is reported by runtime.
+            RuntimeError:
+                If an unrecognized memory type is reported by runtime.
         """
         cdef _global_mem_cache_type gmcTy = (
            DPCTLDevice_GetGlobalMemCacheType(self._device_ref)
@@ -1351,7 +1659,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Global device memory cache size.
 
         Returns:
-            int: Cache size in bytes
+            int:
+                Cache size in bytes
         """
         cdef uint64_t cache_sz = DPCTLDevice_GetGlobalMemCacheSize(
             self._device_ref
@@ -1363,7 +1672,8 @@ cdef class SyclDevice(_SyclDevice):
         """ Global device memory cache line size.
 
         Returns:
-            int: Cache size in bytes
+            int:
+                Cache size in bytes
         """
         cdef uint64_t cache_line_sz = DPCTLDevice_GetGlobalMemCacheLineSize(
             self._device_ref
@@ -1377,7 +1687,8 @@ cdef class SyclDevice(_SyclDevice):
         value returned by :attr:`dpctl.SyclDevice.max_compute_units`.
 
         Returns:
-            int: The maximum number of sub-devices that can be created when this
+            int:
+                The maximum number of sub-devices that can be created when this
                 device is partitioned. Zero value indicates that device can not
                 be partitioned.
         """
@@ -1391,17 +1702,19 @@ cdef class SyclDevice(_SyclDevice):
         same _device_ref as this SyclDevice.
 
         Args:
-            other (dpctl.SyclDevice): A :class:`dpctl.SyclDevice` instance to
-            compare against.
+            other (dpctl.SyclDevice):
+                A :class:`dpctl.SyclDevice` instance to
+                compare against.
 
         Returns:
-            bool: ``True`` if the devices point to the same underlying
-            ``sycl::device``, otherwise ``False``.
+            bool:
+                ``True`` if the devices point to the same underlying
+                ``sycl::device``, otherwise ``False``.
         """
         return DPCTLDevice_AreEq(self._device_ref, other.get_device_ref())
 
     def __eq__(self, other):
-        "Returns True if two devices are the same"
+        "Returns ``True`` if two devices are the same"
         if isinstance(other, SyclDevice):
             return self.equals(<SyclDevice> other)
         else:
@@ -1413,10 +1726,12 @@ cdef class SyclDevice(_SyclDevice):
         string ``"backend:device_type:relative_id"`` selecting the device.
 
         Returns:
-            str: A Python string representing a filter selector string.
+            str:
+                A Python string representing a filter selector string.
 
         Raises:
-            TypeError: If the device is a sub-device.
+            TypeError:
+                If the device is a sub-device.
 
         :Example:
             .. code-block:: python
@@ -1511,19 +1826,22 @@ cdef class SyclDevice(_SyclDevice):
         of the given keyword arguments.
 
         Args:
-            include_backend (optional): Defaults to ``True``.
-                A boolean flag indicating if the backend should be included in
-                the filter string.
-            include_device_type (optional): Defaults to ``True``.
-                A boolean flag indicating if the device type should be included
-                in the filter string.
+            include_backend (bool, optional):
+                A flag indicating if the backend should be included in
+                the filter string. Default: ``True``.
+            include_device_type (bool, optional):
+                A flag indicating if the device type should be included
+                in the filter string. Default: ``True``.
 
         Returns:
-            str: A Python string representing a filter selector string.
+            str:
+                A Python string representing a filter selector string.
 
         Raises:
-            TypeError: If the device is a sub-device.
-            ValueError: If no match for the device was found in the vector
+            TypeError:
+                If the device is a sub-device.
+            ValueError:
+                If no match for the device was found in the vector
                 returned by ``sycl::device::get_devices()``
 
         :Example:
