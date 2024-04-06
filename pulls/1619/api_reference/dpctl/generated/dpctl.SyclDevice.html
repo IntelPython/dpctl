@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.SyclDevice.addressof_ref" href="generated/dpctl.SyclDevice.addressof_ref.html" /><link rel="prev" title="dpctl" href="../index.html" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.SyclDevice - Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</title>
+        <title>dpctl.SyclDevice - Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -134,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -157,7 +157,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+241.g6b3b5f87c5 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -846,7 +846,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the backend_type enum value for this device</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.default_selector_score.html#dpctl.SyclDevice.default_selector_score" title="dpctl.SyclDevice.default_selector_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_selector_score</span></code></a></p></td>
-<td><p>Integer score assigned to this device by DPC++ runtime's default scoring function.</p></td>
+<td><p>Integral score assigned to this device by DPC++ runtime's default selector's scoring function.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.device_type.html#dpctl.SyclDevice.device_type" title="dpctl.SyclDevice.device_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device_type</span></code></a></p></td>
 <td><p>Returns the type of the device as a <cite>device_type</cite> enum.</p></td>
@@ -870,58 +870,58 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the size of global memory on this device in bytes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_accelerator.html#dpctl.SyclDevice.has_aspect_accelerator" title="dpctl.SyclDevice.has_aspect_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_accelerator</span></code></a></p></td>
-<td><p>Returns True if this device is an accelerator device, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is an accelerator device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_atomic64.html#dpctl.SyclDevice.has_aspect_atomic64" title="dpctl.SyclDevice.has_aspect_atomic64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_atomic64</span></code></a></p></td>
-<td><p>Returns true if the device supports a basic set of atomic operations, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports a basic set of atomic operations, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_cpu.html#dpctl.SyclDevice.has_aspect_cpu" title="dpctl.SyclDevice.has_aspect_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_cpu</span></code></a></p></td>
-<td><p>Returns True if this device is a CPU device, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a CPU device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_custom.html#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a></p></td>
-<td><p>Returns True if this device is a custom device, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a custom device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_fp16.html#dpctl.SyclDevice.has_aspect_fp16" title="dpctl.SyclDevice.has_aspect_fp16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp16</span></code></a></p></td>
-<td><p>Returns True if the device supports half-precision floating point operations, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports half-precision floating point operations, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_fp64.html#dpctl.SyclDevice.has_aspect_fp64" title="dpctl.SyclDevice.has_aspect_fp64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_fp64</span></code></a></p></td>
-<td><p>Returns True if the device supports 64-bit precision floating point operations, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports 64-bit precision floating point operations, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_gpu.html#dpctl.SyclDevice.has_aspect_gpu" title="dpctl.SyclDevice.has_aspect_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_gpu</span></code></a></p></td>
-<td><p>Returns True if this device is a GPU device, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a GPU device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_host_debuggable.html#dpctl.SyclDevice.has_aspect_host_debuggable" title="dpctl.SyclDevice.has_aspect_host_debuggable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_host_debuggable</span></code></a></p></td>
-<td><p>Returns True if kernels running on this device can be debugged using standard debuggers that are normally available on the host system, False otherwise</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if kernels running on this device can be debugged using standard debuggers that are normally available on the host system, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_image.html#dpctl.SyclDevice.has_aspect_image" title="dpctl.SyclDevice.has_aspect_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_image</span></code></a></p></td>
-<td><p>Returns True if the device supports images, False otherwise (refer Sec 4.7.3 of SYCL 2020 spec).</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports images, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (refer Sec 4.15.3 of SYCL 2020 spec).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_online_compiler.html#dpctl.SyclDevice.has_aspect_online_compiler" title="dpctl.SyclDevice.has_aspect_online_compiler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_compiler</span></code></a></p></td>
-<td><p>Returns True if this device supports online compilation of device code, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports online compilation of device code, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_online_linker.html#dpctl.SyclDevice.has_aspect_online_linker" title="dpctl.SyclDevice.has_aspect_online_linker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_linker</span></code></a></p></td>
-<td><p>Returns True if this device supports online linking of device code, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports online linking of device code, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_queue_profiling.html#dpctl.SyclDevice.has_aspect_queue_profiling" title="dpctl.SyclDevice.has_aspect_queue_profiling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_queue_profiling</span></code></a></p></td>
-<td><p>Returns True if this device supports queue profiling, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports queue profiling, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations.html#dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_host_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports USM-host allocations and the host and this device may concurrently access and atomically modify host allocations, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports USM-host allocations and the host and this device may concurrently access and atomically modify host allocations, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations.html#dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_atomic_shared_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports USM-shared allocations and the host and other devices in the same context as this device may concurrently access and atomically modify shared allocations, False otherwise</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports USM-shared allocations and the host and other devices in the same context as this device may concurrently access and atomically modify shared allocations, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_usm_device_allocations.html#dpctl.SyclDevice.has_aspect_usm_device_allocations" title="dpctl.SyclDevice.has_aspect_usm_device_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_device_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports explicit USM allocations, False otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports explicit USM allocations, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_usm_host_allocations.html#dpctl.SyclDevice.has_aspect_usm_host_allocations" title="dpctl.SyclDevice.has_aspect_usm_host_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_host_allocations</span></code></a></p></td>
-<td><p>Returns True if this device can access USM-host memory, False otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device can access USM-host memory, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (refer Section 4.8 of SYCL 2020 specs).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_usm_shared_allocations.html#dpctl.SyclDevice.has_aspect_usm_shared_allocations" title="dpctl.SyclDevice.has_aspect_usm_shared_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_shared_allocations</span></code></a></p></td>
-<td><p>Returns True if this device supports USM-shared memory allocated on the same device, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports USM-shared memory allocated on the same device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_usm_system_allocations.html#dpctl.SyclDevice.has_aspect_usm_system_allocations" title="dpctl.SyclDevice.has_aspect_usm_system_allocations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_usm_system_allocations</span></code></a></p></td>
-<td><p>Returns True if system allocator may be used instead of SYCL USM allocation mechanism for USM-shared allocations on this device, False otherwise.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if system allocator may be used instead of SYCL USM allocation mechanism for USM-shared allocations on this device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.image_2d_max_height.html#dpctl.SyclDevice.image_2d_max_height" title="dpctl.SyclDevice.image_2d_max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_2d_max_height</span></code></a></p></td>
 <td><p>Returns the maximum height of a 2D image or 1D image in pixels.</p></td>
@@ -939,13 +939,13 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the maximum width of a 3D image in pixels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_accelerator.html#dpctl.SyclDevice.is_accelerator" title="dpctl.SyclDevice.is_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_accelerator</span></code></a></p></td>
-<td><p>Returns True if the SyclDevice instance is a SYCL accelerator device.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if thi instance is a SYCL accelerator device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_cpu.html#dpctl.SyclDevice.is_cpu" title="dpctl.SyclDevice.is_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cpu</span></code></a></p></td>
-<td><p>Returns True if the SyclDevice instance is a SYCL CPU device.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this instance is a SYCL CPU device.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_gpu.html#dpctl.SyclDevice.is_gpu" title="dpctl.SyclDevice.is_gpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_gpu</span></code></a></p></td>
-<td><p>Returns True if the SyclDevice instance is a SYCL GPU device.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this instance is a SYCL GPU device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.local_mem_size.html#dpctl.SyclDevice.local_mem_size" title="dpctl.SyclDevice.local_mem_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_mem_size</span></code></a></p></td>
 <td><p>Returns the size of local memory on this device in bytes.</p></td>
@@ -1041,7 +1041,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Profiling timer resolution.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.sub_group_independent_forward_progress.html#dpctl.SyclDevice.sub_group_independent_forward_progress" title="dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_independent_forward_progress</span></code></a></p></td>
-<td><p>Returns True if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.sub_group_sizes.html#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
 <td><p>Returns list of supported sub-group sizes for this device.</p></td>
@@ -1127,7 +1127,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e07d81ef"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=33b8be71"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
