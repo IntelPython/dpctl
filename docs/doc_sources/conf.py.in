@@ -21,7 +21,7 @@ author = "Intel Corp."
 
 version = dpctl.__version__.strip(".dirty")
 # The full version, including alpha/beta/rc tags
-release = dpctl.__version__.strip(".dirty")
+release, _ = dpctl.__version__.strip(".dirty").split("+")
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -76,13 +76,16 @@ highlight_language = "Python"
 source_suffix = ".rst"
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = "default"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
 html_static_path = ["_static"]
+
+html_logo = "_static/dpctl.svg"
+html_favicon = "_static/dpctl.svg"
 
 html_theme_options = {
     # "canonical_url": "",
