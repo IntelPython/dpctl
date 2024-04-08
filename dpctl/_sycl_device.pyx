@@ -239,51 +239,53 @@ cdef class SyclDevice(_SyclDevice):
 
     There are two ways of creating a SyclDevice instance:
 
-        - by directly passing in a filter string to the class
-          constructor. The filter string needs to conform to the
-          :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
+    - by directly passing in a filter string to the class
+    constructor. The filter string needs to conform to the
+    :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a SyclDevice with an explicit filter string,
-                # in this case the first level_zero gpu device.
-                level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0")
-                level_zero_gpu.print_device_info()
+            # Create a SyclDevice with an explicit filter string,
+            # in this case the first level_zero gpu device.
+            level_zero_gpu = dpctl.SyclDevice("level_zero:gpu:0")
+            level_zero_gpu.print_device_info()
 
-        - by calling one of the device selector helper functions:
+    - by calling one of the device selector helper functions:
 
-          :py:func:`dpctl.select_accelerator_device()`,
-          :py:func:`dpctl.select_cpu_device()`,
-          :py:func:`dpctl.select_default_device()`,
-          :py:func:`dpctl.select_gpu_device()`,
+        :py:func:`dpctl.select_accelerator_device()`,
+        :py:func:`dpctl.select_cpu_device()`,
+        :py:func:`dpctl.select_default_device()`,
+        :py:func:`dpctl.select_gpu_device()`,
 
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a SyclDevice of type GPU based on whatever is returned
-                # by the SYCL `gpu_selector` device selector class.
-                gpu = dpctl.select_gpu_device()
-                gpu.print_device_info()
+            # Create a SyclDevice of type GPU based on whatever is returned
+            # by the SYCL `gpu_selector` device selector class.
+            gpu = dpctl.select_gpu_device()
+            gpu.print_device_info()
 
     Args:
-        arg (optional): The argument can be a selector string or None.
-                        Defaults to ``None``.
+        arg (optional):
+            The argument can be a selector string or ``None``.
+            Defaults to ``None``.
 
     Raises:
-        MemoryError: If the constructor could not allocate necessary
-                     temporary memory.
-        SyclDeviceCreationError: If the :class:`dpctl.SyclDevice` object
-                                 creation failed.
-        TypeError: If the list of :class:`dpctl.SyclDevice` objects was empty,
-                   or the input capsule contained a null pointer or could not
-                   be renamed.
-
+        MemoryError:
+            If the constructor could not allocate necessary
+            temporary memory.
+        SyclDeviceCreationError:
+            If the :class:`dpctl.SyclDevice` object creation failed.
+        TypeError:
+            If the list of :class:`dpctl.SyclDevice` objects was empty,
+            or the input capsule contained a null pointer or could not
+            be renamed.
     """
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -357,7 +359,8 @@ cdef class SyclDevice(_SyclDevice):
             )
 
     def print_device_info(self):
-        """ Print information about the SYCL device.
+        """
+        Print information about the SYCL device.
         """
         cdef const char * info_str = DPCTLDeviceMgr_GetDeviceInfoStr(
             self._device_ref
@@ -367,27 +370,45 @@ cdef class SyclDevice(_SyclDevice):
         print(py_info.decode("utf-8"))
 
     cdef DPCTLSyclDeviceRef get_device_ref(self):
-        """ Returns the DPCTLSyclDeviceRef pointer for this class.
+        """
+        Returns the :c:struct:`DPCTLSyclDeviceRef` pointer for this class.
         """
         return self._device_ref
 
     def addressof_ref(self):
         """
-        Returns the address of the ``DPCTLSyclDeviceRef`` pointer as a
+        Returns the address of the :c:struct:`DPCTLSyclDeviceRef` pointer as a
         ``size_t``.
 
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> hex(dev.addressof_ref())
+                '0x55b18ec649d0'
+
         Returns:
-            int: The address of the ``DPCTLSyclDeviceRef`` object used to create
-            this :class:`dpctl.SyclDevice` cast to a ``size_t``.
+            int: The address of the :c:struct:`DPCTLSyclDeviceRef` object used
+            to create this :class:`dpctl.SyclDevice` cast to a ``size_t``.
         """
         return <size_t>self._device_ref
 
     @property
     def backend(self):
-        """Returns the backend_type enum value for this device
+        """Returns the ``backend_type`` enum value for this device
+
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.backend
+                <backend_type.opencl: 4>
 
         Returns:
-            backend_type: The backend for the device.
+            backend_type:
+                The backend for the device.
         """
         cdef _backend_type BTy = (
             DPCTLDevice_GetBackend(self._device_ref)
@@ -403,12 +424,23 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def device_type(self):
-        """ Returns the type of the device as a `device_type` enum.
+        """ Returns the type of the device as a ``device_type`` enum.
+
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.device_type
+                <device_type.cpu: 4>
 
         Returns:
-            device_type: The type of device encoded as a device_type enum.
+            device_type:
+                The type of device encoded as a ``device_type`` enum.
+
         Raises:
-            ValueError: If the device type is not recognized.
+            ValueError:
+                If the device type is not recognized.
         """
         cdef _device_type DTy = (
             DPCTLDevice_GetDeviceType(self._device_ref)
@@ -429,9 +461,17 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns ``True`` if this device is a CPU device,
         ``False`` otherwise.
 
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_cpu
+                True
+
         Returns:
             bool:
-                Indicates if the device is a cpu.
+                Indicates whether the device is a cpu.
         """
         cdef _aspect_type AT = _aspect_type._cpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -441,8 +481,17 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns ``True`` if this device is a GPU device,
         ``False`` otherwise.
 
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_gpu
+                False
+
         Returns:
-            bool: Indicates if the device is a gpu.
+            bool:
+                Indicates whether the device is a gpu.
         """
         cdef _aspect_type AT = _aspect_type._gpu
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -455,9 +504,17 @@ cdef class SyclDevice(_SyclDevice):
         SYCL considers an accelerator to be a device that usually uses a
         peripheral interconnect for communication.
 
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_accelerator
+                False
+
         Returns:
             bool:
-                Indicates if the device is an accelerator.
+                Indicates whether the device is an accelerator.
         """
         cdef _aspect_type AT = _aspect_type._accelerator
         return DPCTLDevice_HasAspect(self._device_ref, AT)
@@ -471,6 +528,14 @@ cdef class SyclDevice(_SyclDevice):
         SYCL API, but programmable kernels cannot be dispatched to the device,
         only fixed functionality is available. Refer SYCL spec for more details.
 
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_custom
+                False
+
         Returns:
             bool:
                 Indicates if the device is a custom SYCL device.
@@ -482,6 +547,14 @@ cdef class SyclDevice(_SyclDevice):
     def has_aspect_fp16(self):
         """ Returns ``True`` if the device supports half-precision floating
         point operations, ``False`` otherwise.
+
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_fp16
+                True
 
         Returns:
             bool:
@@ -495,6 +568,14 @@ cdef class SyclDevice(_SyclDevice):
     def has_aspect_fp64(self):
         """ Returns ``True`` if the device supports 64-bit precision floating
         point operations, ``False`` otherwise.
+
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_fp64
+                True
 
         Returns:
             bool:
@@ -519,6 +600,14 @@ cdef class SyclDevice(_SyclDevice):
             - ``sycl::atomic_ref::exchange``
             - ``sycl::atomic_ref::compare_exchange_strong``
             - ``sycl::atomic_ref::compare_exchange_weak``
+
+        :Example:
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.has_aspect_atomic64
+                True
 
         Returns:
             bool:
@@ -1469,9 +1558,9 @@ cdef class SyclDevice(_SyclDevice):
         Creates a list of sub-devices by partitioning a root device based on the
         provided partition specifier.
 
-        A partition specifier must be provided using a "partition"
-        keyword argument. Possible values for the specifier are: an int, a
-        string specifying the affinity domain, or a collection of ints.
+        A partition specifier must be provided using a ``partition``
+        keyword argument. Possible values for the specifier are: an integer, a
+        string specifying the affinity domain, or a collection of integers.
 
         :Example:
             .. code-block:: python
@@ -1484,7 +1573,7 @@ cdef class SyclDevice(_SyclDevice):
                 for d in sub_devs:
                     d.print_device_info()
 
-                #Create sub-devices partitioning by affinity.
+                # Create sub-devices partitioning by affinity.
                 try:
                     sd = cpu_d.create_sub_devices(partition="numa")
                     print(
@@ -1497,22 +1586,24 @@ cdef class SyclDevice(_SyclDevice):
                     print("Device partitioning by affinity was not successful.")
 
         Args:
-            partition: Specification to partition the device as follows:
+            partition (Union[int, str, List[int]]):
+                Specification to partition the device as follows:
 
-                - Specifying an int (`count`). The returned list contains as
-                  many sub-devices as can be created such that each sub-device
-                  contains `count` compute units. If the device’s total number
-                  of compute units is not evenly divided by `count`, then the
-                  remaining compute units are not included in any of the
-                  sub-devices.
+                - Specifying an int (``count``)
+                    The returned list contains as
+                    many sub-devices as can be created such that each sub-device
+                    contains ``count`` compute units. If the device’s total number
+                    of compute units is not evenly divided by ``count``, then the
+                    remaining compute units are not included in any of the
+                    sub-devices.
 
-                - Specifying an affinity domain as a string. The supported
-                  values are: `numa`, `L4_cache`, `L3_cache`, `L2_cache`,
-                  `L1_cache`, `next_partitionable`.
+                - Specifying an affinity domain as a string
+                    The supported values are: ``"numa"``, ``"L4_cache"``, ``"L3_cache"``,
+                    ``"L2_cache"``, ``"L1_cache"``, ``"next_partitionable"``.
 
-                - Specifying a collection of int values. For each non-zero value
-                  `M` in the collection, a sub-device with `M` compute units is
-                  created.
+                - Specifying a collection of integral values
+                    For each non-zero value ``M`` in the collection, a sub-device with ``M``
+                    compute units is created.
 
         Returns:
             List[:class:`dpctl.SyclDevice`]:
@@ -1525,8 +1616,6 @@ cdef class SyclDevice(_SyclDevice):
                 three supported options.
             dpctl.SyclSubdeviceCreationError:
                 If sub-devices can not be created.
-
-
         """
         if "partition" not in kwargs:
             raise TypeError(
