@@ -876,7 +876,7 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def is_accelerator(self):
-        """ Returns ``True`` if thi instance is a SYCL
+        """ Returns ``True`` if this instance is a SYCL
         accelerator device.
 
         Returns:
