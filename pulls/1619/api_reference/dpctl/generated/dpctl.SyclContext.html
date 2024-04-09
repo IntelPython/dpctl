@@ -767,8 +767,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclContext" title="Permalink to this definition">#</a></dt>
 <dd><p>A Python wrapper for the <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> C++ class.</p>
 <p>There are multiple ways to create a <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>Invoking the constructor with no arguments creates a context using
 the default selector.</p></li>
 </ul>
@@ -844,7 +843,6 @@ object. The capsule will be renamed upon successful consumption
 to ensure one-time use. A new named capsule can be constructed by
 using <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclContext._get_capsule()</span></code> method.</p></li>
 </ul>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>arg</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
@@ -856,8 +854,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#MemoryError" title="(in Python v3.12)"><strong>MemoryError</strong></a> – If the constructor could not allocate necessary
     temporary memory.</p></li>
-<li><p><a class="reference internal" href="dpctl.SyclContextCreationError.html#dpctl.SyclContextCreationError" title="dpctl.SyclContextCreationError"><strong>SyclContextCreationError</strong></a> – If the <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object
-    creation failed.</p></li>
+<li><p><a class="reference internal" href="dpctl.SyclContextCreationError.html#dpctl.SyclContextCreationError" title="dpctl.SyclContextCreationError"><strong>SyclContextCreationError</strong></a> – If the <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a> object creation failed.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If the list of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects was empty,
     or the input capsule contained a null pointer or could not
     be renamed.</p></li>
