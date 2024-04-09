@@ -490,7 +490,7 @@ def asarray(
             boolean indicating whether or not to copy the
             input. If ``True``, always creates a copy. If ``False``, the
             need to copy raises :exc:`ValueError`. If ``None``, tries to reuse
-            existing memory allocations if possible, but allowes to perform
+            existing memory allocations if possible, but allows to perform
             a copy otherwise. Default: ``None``
         order (``"C"``, ``"F"``, ``"A"``, ``"K"``, optional):
             memory layout of the output array. Default: ``"K"``

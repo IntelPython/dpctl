@@ -961,7 +961,7 @@ cdef class SyclQueue(_SyclQueue):
 
         .. note::
             The ``host_task`` attempts to acquire Python GIL, and it is
-            known to be unsafe during interpreter shudown sequence. It is
+            known to be unsafe during interpreter shutdown sequence. It is
             thus strongly advised to ensure that all submitted ``host_task``
             complete before the end of the Python script.
         """

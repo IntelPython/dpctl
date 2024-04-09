@@ -113,7 +113,7 @@ cdef class usm_ndarray:
             :class:`dpctl.memory.MemoryUSMShared`, or
             :class:`dpctl.memory.MemoryUSMHost`. Recognized strings are
             ``"device"``, ``"shared"``, or ``"host"``. Additional arguments to
-            the USM memory alloctors can be passed in a dictionary specified
+            the USM memory allocators can be passed in a dictionary specified
             via ``buffer_ctor_kwrds`` keyword parameter.
             Default: ``"device"``.
         offset (int, optional):

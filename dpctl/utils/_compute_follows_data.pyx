@@ -89,7 +89,7 @@ def get_coerced_usm_type(usm_types, /):
 
     Args:
         usm_types (List[str]):
-            a list or a tuple of strings of ``.usm_types`` atributes
+            a list or a tuple of strings of ``.usm_types`` attributes
             for input arrays
 
     Returns:

@@ -814,7 +814,7 @@ cdef class SyclDevice(_SyclDevice):
 
             Returns:
                 int:
-                    Maximum heigth of a 3D image in pixels.
+                    Maximum height of a 3D image in pixels.
         """
         return DPCTLDevice_GetImage3dMaxHeight(self._device_ref)
 
