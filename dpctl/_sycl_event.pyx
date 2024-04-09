@@ -108,22 +108,22 @@ cdef class SyclEvent(_SyclEvent):
     Python class representing ``sycl::event``. There are multiple
     ways to create a :class:`dpctl.SyclEvent` object:
 
-        - Invoking the constructor with no arguments creates a ready event
-          using the default constructor of the ``sycl::event``.
+    - Invoking the constructor with no arguments creates a ready event
+      using the default constructor of the ``sycl::event``.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a default SyclEvent
-                e = dpctl.SyclEvent()
+            # Create a default SyclEvent
+            e = dpctl.SyclEvent()
 
-        - Invoking the constructor with a named ``PyCapsule`` with name
-          **"SyclEventRef"** that carries a pointer to a ``sycl::event``
-          object. The capsule will be renamed upon successful consumption
-          to ensure one-time use. A new named capsule can be constructed by
-          using :func:`dpctl.SyclEvent._get_capsule` method.
+    - Invoking the constructor with a named ``PyCapsule`` with name
+      **"SyclEventRef"** that carries a pointer to a ``sycl::event``
+      object. The capsule will be renamed upon successful consumption
+      to ensure one-time use. A new named capsule can be constructed by
+      using :func:`dpctl.SyclEvent._get_capsule` method.
 
     Args:
         arg (optional): Defaults to ``None``.
@@ -132,10 +132,12 @@ cdef class SyclEvent(_SyclEvent):
             named ``PyCapsule`` called **"SyclEventRef"**.
 
     Raises:
-        ValueError: If the :class:`dpctl.SyclEvent` object creation failed.
-        TypeError: In case of incorrect arguments given to constructors,
-                   unexpected types of input arguments, or in the case the input
-                   capsule contained a null pointer or could not be renamed.
+        ValueError:
+            If the :class:`dpctl.SyclEvent` object creation failed.
+        TypeError:
+            In case of incorrect arguments given to constructors,
+            unexpected types of input arguments, or in the case the input
+            capsule contained a null pointer or could not be renamed.
     """
 
     @staticmethod
@@ -212,7 +214,7 @@ cdef class SyclEvent(_SyclEvent):
             )
 
     cdef DPCTLSyclEventRef get_event_ref(self):
-        """ Returns the `DPCTLSyclEventRef` pointer for this class.
+        """ Returns the ``DPCTLSyclEventRef`` pointer for this class.
         """
         return self._event_ref
 
@@ -237,12 +239,13 @@ cdef class SyclEvent(_SyclEvent):
             )
 
     def addressof_ref(self):
-        """ Returns the address of the C API `DPCTLSyclEventRef` pointer as
-        a size_t.
+        """ Returns the address of the C API ``DPCTLSyclEventRef`` pointer as
+        a ``size_t``.
 
         Returns:
-            The address of the `DPCTLSyclEventRef` object used to create this
-            `SyclEvent` cast to a size_t.
+            int:
+                The address of the ``DPCTLSyclEventRef`` object used to
+                create this :class:`.SyclEvent` cast to a ``size_t``.
         """
         return <size_t>self._event_ref
 
@@ -255,12 +258,14 @@ cdef class SyclEvent(_SyclEvent):
         of scope.
 
         Returns:
-            :class:`pycapsule`: A capsule object storing a copy of the
-            ``sycl::event`` pointer belonging to a
-            :class:`dpctl.SyclEvent` instance.
+            :class:`pycapsule`:
+                A capsule object storing a copy of the
+                ``sycl::event`` pointer belonging to a
+                :class:`dpctl.SyclEvent` instance.
         Raises:
-            ValueError: If the ``DPCTLEvent_Copy`` fails to copy the
-                        ``sycl::event`` pointer.
+            ValueError:
+                If the ``DPCTLEvent_Copy`` fails to copy the
+                ``sycl::event`` pointer.
 
         """
         cdef DPCTLSyclEventRef ERef = NULL
@@ -276,6 +281,20 @@ cdef class SyclEvent(_SyclEvent):
     @property
     def execution_status(self):
         """ Returns the event_status_type enum value for this event.
+
+        :Example:
+
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> ev = dpctl.SyclEvent()
+                >>> ev.execution_status
+                <event_status_type.complete: 4>
+
+        Returns:
+            event_status_type
+                Completion status for the task whose submission generated
+                this event
         """
         cdef _event_status_type ESTy = DPCTLEvent_GetCommandExecutionStatus(
                                         self._event_ref
@@ -294,8 +313,18 @@ cdef class SyclEvent(_SyclEvent):
         """Returns the backend_type enum value for the device
         associated with this event.
 
+        :Example:
+
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> ev = dpctl.SyclEvent()
+                >>> ev.backend
+                <backend_type.level_zero: 3>
+
         Returns:
-            backend_type: The backend for the device.
+            backend_type:
+                The backend for the device.
         """
         cdef _backend_type BE = DPCTLEvent_GetBackend(self._event_ref)
         if BE == _backend_type._OPENCL:
@@ -310,7 +339,11 @@ cdef class SyclEvent(_SyclEvent):
     def get_wait_list(self):
         """
         Returns the list of :class:`dpctl.SyclEvent` objects that depend
-        on this event.
+        on this event. Transitive dependencies are not listed.
+
+        Returns:
+            List[:class:`dpctl.SyclEvent`]:
+                List of event objects that directly depend on this event.
         """
         cdef DPCTLEventVectorRef EVRef = DPCTLEvent_GetWaitList(
             self.get_event_ref()
@@ -332,7 +365,13 @@ cdef class SyclEvent(_SyclEvent):
     def profiling_info_submit(self):
         """
         Returns the 64-bit time value in nanoseconds
-        when ``sycl::command_group`` was submitted to the queue.
+        when ``sycl::command_group`` was submitted to
+        a queue for execution.
+
+        Returns:
+            int:
+                Timestamp in nanoseconds when task was
+                submitted.
         """
         cdef uint64_t profiling_info_submit = 0
         profiling_info_submit = DPCTLEvent_GetProfilingInfoSubmit(
@@ -343,8 +382,13 @@ cdef class SyclEvent(_SyclEvent):
     @property
     def profiling_info_start(self):
         """
-        Returns the 64-bit time value in nanoseconds
-        when ``sycl::command_group`` started execution on the device.
+        Returns the 64-bit device timestamp value in nanoseconds
+        when ``sycl::command_group`` started execution on
+        the device.
+
+        Returns:
+            int:
+                Timestamp in nanoseconds when task started execution.
         """
         cdef uint64_t profiling_info_start = 0
         profiling_info_start = DPCTLEvent_GetProfilingInfoStart(self._event_ref)
@@ -353,13 +397,22 @@ cdef class SyclEvent(_SyclEvent):
     @property
     def profiling_info_end(self):
         """
-        Returns the 64-bit time value in nanoseconds
+        Returns the 64-bit timestamp value in nanoseconds
         when ``sycl::command_group`` finished execution on the device.
+
+        Returns:
+            int:
+                Timestamp in nanoseconds when task completed execution.
         """
         cdef uint64_t profiling_info_end = 0
         profiling_info_end = DPCTLEvent_GetProfilingInfoEnd(self._event_ref)
         return profiling_info_end
 
     cpdef void wait(self):
-        "Synchronously wait for completion of this event."
+        """
+        Synchronously wait for completion of this event.
+
+        Returns:
+            None
+        """
         with nogil: DPCTLEvent_Wait(self._event_ref)
