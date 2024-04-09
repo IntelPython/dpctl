@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.17.0dev0+206.g5fadcfdfaa documentation</title>
+  <title>dpctl.SyclQueue &mdash; Data Parallel Control (dpctl) 0.17.0dev0+215.g57acb3a2bc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=593ba3e3"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=cc36a1a5"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+206.g5fadcfdfaa
+                0.17.0dev0+215.g57acb3a2bc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -123,8 +123,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclQueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue" title="Permalink to this definition"></a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p>
 <p>There are multiple ways to create a <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>Invoking the constructor with no arguments creates a context using
 the default selector.</p></li>
 </ul>
@@ -200,7 +199,6 @@ object. The capsule will be renamed upon successful consumption
 to ensure one-time use. A new named capsule can be constructed by
 using <a class="reference internal" href="#dpctl.SyclQueue._get_capsule" title="dpctl.SyclQueue._get_capsule"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclQueue._get_capsule()</span></code></a> method.</p></li>
 </ul>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -236,25 +234,25 @@ The argument can be either “default”, “in_order”,
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.backend" title="dpctl.SyclQueue.backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></a></p></td>
-<td><p>Returns the backend_type enum value for this queue.</p></td>
+<td><p>Returns the <code class="docutils literal notranslate"><span class="pre">backend_type</span></code> enum value for this queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.driver_version" title="dpctl.SyclQueue.driver_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">driver_version</span></code></a></p></td>
 <td><p>Returns the driver version for the device associated with this queue.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.has_enable_profiling" title="dpctl.SyclQueue.has_enable_profiling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_enable_profiling</span></code></a></p></td>
-<td><p>True if SyclQueue was constructed with enabled_profiling property, False otherwise.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> was constructed with <code class="docutils literal notranslate"><span class="pre">&quot;enabled_profiling&quot;</span></code> property, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.is_in_order" title="dpctl.SyclQueue.is_in_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_in_order</span></code></a></p></td>
-<td><p>True if SyclQueue is in-order, False if it is out-of-order.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue`</span></code> is in-order, <code class="docutils literal notranslate"><span class="pre">False</span></code> if it is out-of-order.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.name" title="dpctl.SyclQueue.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>Returns the device name for the device associated with this queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.sycl_context" title="dpctl.SyclQueue.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_context</span></code></a></p></td>
-<td><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a> underlying this queue</p></td>
+<td><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a> underlying this queue.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.sycl_device" title="dpctl.SyclQueue.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_device</span></code></a></p></td>
-<td><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> underlying this queue</p></td>
+<td><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> targeted by this queuey.</p></td>
 </tr>
 </tbody>
 </table>
@@ -262,7 +260,7 @@ The argument can be either “default”, “in_order”,
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.addressof_ref" title="dpctl.SyclQueue.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a>()</p></td>
-<td><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
+<td><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclQueueRef</span></code> pointer as integral value of type <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a>()</p></td>
 <td><p></p></td>
@@ -277,7 +275,7 @@ The argument can be either “default”, “in_order”,
 <td><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.memcpy_async" title="dpctl.SyclQueue.memcpy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memcpy_async</span></code></a>(dest, src, count[, dEvents])</p></td>
-<td><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p></td>
+<td><p>Copy memory from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dst</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
 <td><p></p></td>
@@ -286,13 +284,13 @@ The argument can be either “default”, “in_order”,
 <td><p>Print information about the SYCL device associated with this queue.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
-<td><p></p></td>
+<td><p>Submit <a class="reference internal" href="SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_async</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
-<td><p></p></td>
+<td><p>Asynchronously submit <a class="reference internal" href="SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclQueue.submit_barrier" title="dpctl.SyclQueue.submit_barrier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></a>([dependent_events])</p></td>
-<td><p>Submits a barrier to the queue.</p></td>
+<td><p>Submits a barrier to this queue.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a>()</p></td>
 <td><p></p></td>
@@ -306,7 +304,7 @@ The argument can be either “default”, “in_order”,
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclQueue._submit_keep_args_alive" title="dpctl.SyclQueue._submit_keep_args_alive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_submit_keep_args_alive</span></code></a>(args, events)</p></td>
-<td><p>Keeps objects in <cite>args</cite> alive until tasks associated with events complete.</p></td>
+<td><p>Keeps objects in <code class="docutils literal notranslate"><span class="pre">args</span></code> alive until tasks associated with events complete.</p></td>
 </tr>
 </tbody>
 </table>
@@ -317,7 +315,7 @@ The argument can be either “default”, “in_order”,
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.backend">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclQueue.backend" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the backend_type enum value for this queue.</p>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">backend_type</span></code> enum value for this queue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The backend for the queue.</p>
@@ -346,14 +344,74 @@ associated with this queue.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.has_enable_profiling">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">has_enable_profiling</span></span><a class="headerlink" href="#dpctl.SyclQueue.has_enable_profiling" title="Permalink to this definition"></a></dt>
-<dd><p>True if SyclQueue was constructed with enabled_profiling property,
-False otherwise.</p>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> was constructed with
+<code class="docutils literal notranslate"><span class="pre">&quot;enabled_profiling&quot;</span></code> property, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p>..code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">has_enable_profiling</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">has_enable_profiling</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether profiling information for tasks submitted
+to this <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> is being collected.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Profiling information can be accessed using
+properties
+<a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent.profiling_info_submit" title="dpctl.SyclEvent.profiling_info_submit"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclEvent.profiling_info_submit</span></code></a>,
+<a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent.profiling_info_start" title="dpctl.SyclEvent.profiling_info_start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclEvent.profiling_info_start</span></code></a>, and
+<a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent.profiling_info_end" title="dpctl.SyclEvent.profiling_info_end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclEvent.profiling_info_end</span></code></a>. It is
+also necessary for proper working of
+<a class="reference internal" href="SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclTimer</span></code></a>.</p>
+<p>Collection of profiling information is not enabled
+by default.</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.is_in_order">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">is_in_order</span></span><a class="headerlink" href="#dpctl.SyclQueue.is_in_order" title="Permalink to this definition"></a></dt>
-<dd><p>True if SyclQueue is in-order, False if it is out-of-order.</p>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue`</span></code> is in-order,
+<code class="docutils literal notranslate"><span class="pre">False</span></code> if it is out-of-order.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p>..code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">is_in_order</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;in_order&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">is_in_order</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Indicates whether this <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> was created
+with <code class="docutils literal notranslate"><span class="pre">property=&quot;in_order&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unless requested otherwise, <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> is constructed
+to support out-of-order execution.</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -374,13 +432,31 @@ associated with this queue.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.sycl_context">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">sycl_context</span></span><a class="headerlink" href="#dpctl.SyclQueue.sycl_context" title="Permalink to this definition"></a></dt>
-<dd><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a> underlying this queue</p>
+<dd><p>Returns <a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a> underlying this queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclContext</span></code></a></dt><dd><p>SYCL context underlying this queue</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.sycl_device">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">sycl_device</span></span><a class="headerlink" href="#dpctl.SyclQueue.sycl_device" title="Permalink to this definition"></a></dt>
-<dd><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> underlying this queue</p>
+<dd><p>Returns <a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> targeted by this queuey.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><a class="reference internal" href="SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a></dt><dd><p>SYCL device targeted by this queue</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -389,12 +465,15 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.addressof_ref">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the address of the C API DPCTLSyclQueueRef pointer as a
-<code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+<dd><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclQueueRef</span></code> pointer as
+integral value of type <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclQueueRef</span></code> object used to create this
-<a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclQueueRef</span></code> object used to create
+this <a class="reference internal" href="#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object cast to <code class="docutils literal notranslate"><span class="pre">size_t</span></code> type.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -423,7 +502,7 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.memcpy_async">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memcpy_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memcpy_async" title="Permalink to this definition"></a></dt>
-<dd><p>Copy memory from <cite>src</cite> to <cite>dst</cite></p>
+<dd><p>Copy memory from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dst</span></code></p>
 </dd></dl>
 
 <dl class="py function">
@@ -441,17 +520,90 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Submit <a class="reference internal" href="SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> (<a class="reference internal" href="SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><em>dpctl.program.SyclKernel</em></a>) – SYCL kernel object</p></li>
+<li><p><strong>args</strong> (<em>List</em><em>[</em><em>object</em><em>]</em>) – List of kernel arguments</p></li>
+<li><p><strong>gS</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – Global iteration range. Must be a list of length 1, 2, or 3.</p></li>
+<li><p><strong>lS</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Local iteration range. Must be <code class="docutils literal notranslate"><span class="pre">None</span></code> or have the same
+length as <code class="docutils literal notranslate"><span class="pre">gS</span></code> and each element of <code class="docutils literal notranslate"><span class="pre">gS</span></code> must be divisible
+by respective element of <code class="docutils literal notranslate"><span class="pre">lS</span></code>.</p></li>
+<li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – List of events indicating ordering of this task relative
+to tasks associated with specified events.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An event which is always complete. May be ignored.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent">dpctl.SyclEvent</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.submit()</span></code></a> is a synchronizing method.
+Use <a class="reference internal" href="#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.submit_async()</span></code></a> to avoid synchronization.</p>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit_async">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit_async" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Asynchronously submit <a class="reference internal" href="SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> (<a class="reference internal" href="SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><em>dpctl.program.SyclKernel</em></a>) – SYCL kernel object</p></li>
+<li><p><strong>args</strong> (<em>List</em><em>[</em><em>object</em><em>]</em>) – List of kernel arguments</p></li>
+<li><p><strong>gS</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – Global iteration range. Must be a list of length 1, 2, or 3.</p></li>
+<li><p><strong>lS</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Local iteration range. Must be <code class="docutils literal notranslate"><span class="pre">None</span></code> or have the same
+length as <code class="docutils literal notranslate"><span class="pre">gS</span></code> and each element of <code class="docutils literal notranslate"><span class="pre">gS</span></code> must be divisible
+by respective element of <code class="docutils literal notranslate"><span class="pre">lS</span></code>.</p></li>
+<li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – List of events indicating ordering of this task relative
+to tasks associated with specified events.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An event associated with submission of the kernel.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent">dpctl.SyclEvent</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One must ensure that the lifetime of all kernel arguments
+extends after the submitted task completes. It is not a concern for
+scalar arguments since they are passed by value, but for
+objects representing USM allocations which are passed to the kernel
+as unified address space pointers.</p>
+<p>One way of accomplishing this is to use
+<a class="reference internal" href="#dpctl.SyclQueue._submit_keep_args_alive" title="dpctl.SyclQueue._submit_keep_args_alive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue._submit_keep_args_alive()</span></code></a>.</p>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit_barrier">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit_barrier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependent_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit_barrier" title="Permalink to this definition"></a></dt>
-<dd><p>Submits a barrier to the queue.</p>
+<dd><p>Submits a barrier to this queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dependent_events</strong> – <dl class="simple">
+<dt>List[dpctl.SyclEvent]:</dt><dd><p>List or tuple of events that must complete
+before this task may begin execution.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Event associated with the submitted task</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent">dpctl.SyclEvent</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -470,16 +622,16 @@ associated with this queue.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclQueue._submit_keep_args_alive">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclQueue.</span></span><span class="sig-name descname"><span class="pre">_submit_keep_args_alive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue._submit_keep_args_alive" title="Permalink to this definition"></a></dt>
-<dd><p>Keeps objects in <cite>args</cite> alive until tasks associated with events
+<dd><p>Keeps objects in <code class="docutils literal notranslate"><span class="pre">args</span></code> alive until tasks associated with events
 complete.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> (<em>object</em>) – Python object to keep alive.
 Typically a tuple with arguments to offloaded tasks</p></li>
-<li><p><strong>events</strong> (<em>Tuple</em><em>[</em><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em>) – Gating events
+<li><p><strong>events</strong> (<em>Tuple</em><em>[</em><a class="reference internal" href="SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em>) – Gating events.
 The list or tuple of events associated with tasks
-working on Python objects collected in <cite>args</cite>.</p></li>
+working on Python objects collected in <code class="docutils literal notranslate"><span class="pre">args</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -490,13 +642,16 @@ working on Python objects collected in <cite>args</cite>.</p></li>
 </p>
 </dd>
 </dl>
-<p>Increments reference count of <cite>args</cite> and schedules asynchronous
+<p>Increments reference count of <code class="docutils literal notranslate"><span class="pre">args</span></code> and schedules asynchronous
 <code class="docutils literal notranslate"><span class="pre">host_task</span></code> to decrement the count once dependent events are
 complete.</p>
-<p>N.B.: The <cite>host_task</cite> attempts to acquire Python GIL, and it is
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">host_task</span></code> attempts to acquire Python GIL, and it is
 known to be unsafe during interpreter shudown sequence. It is
-thus strongly advised to ensure that all submitted <cite>host_task</cite>
+thus strongly advised to ensure that all submitted <code class="docutils literal notranslate"><span class="pre">host_task</span></code>
 complete before the end of the Python script.</p>
+</div>
 </dd></dl>
 
 </section>

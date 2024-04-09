@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclPlatform &mdash; Data Parallel Control (dpctl) 0.17.0dev0+206.g5fadcfdfaa documentation</title>
+  <title>dpctl.SyclPlatform &mdash; Data Parallel Control (dpctl) 0.17.0dev0+215.g57acb3a2bc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=593ba3e3"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=cc36a1a5"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+206.g5fadcfdfaa
+                0.17.0dev0+215.g57acb3a2bc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -121,9 +121,9 @@
 <dt class="sig sig-object py" id="dpctl.SyclPlatform">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclPlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform" title="Permalink to this definition"></a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::platform</span></code> class.</p>
-<p>There are two ways of creating a SyclDevice instance:</p>
-<blockquote>
-<div><ul class="simple">
+<p>There are two ways of creating a :class`:<cite>.SyclPlatform</cite>
+instance:</p>
+<ul class="simple">
 <li><p>Invoking the constructor with no arguments creates a
 platform using the default selector.</p></li>
 </ul>
@@ -154,7 +154,6 @@ creates a queue for the device corresponding to the filter string.</p></li>
 </div>
 </dd>
 </dl>
-</div></blockquote>
 <p class="rubric">Attributes:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -165,7 +164,7 @@ creates a queue for the device corresponding to the filter string.</p></li>
 <td><p>Returns the default platform context for this platform</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.name" title="dpctl.SyclPlatform.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
-<td><p>Returns the name of the platform as a string</p></td>
+<td><p>Returns the name of the platform as a string.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclPlatform.vendor" title="dpctl.SyclPlatform.vendor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vendor</span></code></a></p></td>
 <td><p>Returns the platform vendor name as a string.</p></td>
@@ -208,7 +207,7 @@ creates a queue for the device corresponding to the filter string.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
-<dt>SyclContext</dt><dd><p>The default context for the platform.</p>
+<dt><a class="reference internal" href="SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a></dt><dd><p>The default context for the platform.</p>
 </dd>
 </dl>
 </p>
@@ -222,19 +221,43 @@ creates a queue for the device corresponding to the filter string.</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.name">
 <span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dpctl.SyclPlatform.name" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the name of the platform as a string</p>
+<dd><p>Returns the name of the platform as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Name of the platform</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.vendor">
 <span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">vendor</span></span><a class="headerlink" href="#dpctl.SyclPlatform.vendor" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the platform vendor name as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Vendor name</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclPlatform.version">
 <span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dpctl.SyclPlatform.version" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a backend-defined driver version as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Version of the backend-defined driver</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -246,8 +269,7 @@ creates a queue for the device corresponding to the filter string.</p></li>
 <dd><p>Print information about the SYCL platform.</p>
 <p>The level of information printed out by the function can be controlled
 by the optional <code class="docutils literal notranslate"><span class="pre">vebosity</span></code> setting.</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p><strong>Verbosity level 0</strong>: Prints out the list of platforms and their
 names.</p></li>
 <li><p><strong>Verbosity level 1</strong>: Prints out the name, version, vendor,
@@ -256,13 +278,14 @@ backend, number of devices for each platform.</p></li>
 everything in the previous levels along with the name, version,
 and filter string for each device is printed.</p></li>
 </ul>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>verbosity</strong> (<em>optional</em>) – Defaults to 0.
+<dd class="field-odd"><p><strong>verbosity</strong> (<em>Literal</em><em>[</em><em>0</em><em>, </em><em>1</em><em>, </em><em>2</em><em>]</em><em>, </em><em>optional</em>) – <p>.
 The verbosity controls how much information is printed by the
-function. 0 is the lowest level set by default and 2 is the
-highest level to print the most verbose output.</p>
+function. Value <code class="docutils literal notranslate"><span class="pre">0</span></code> is the lowest level set by default and <code class="docutils literal notranslate"><span class="pre">2</span></code>
+is the highest level to print the most verbose output.
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</p>
 </dd>
 </dl>
 </dd></dl>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.SyclEvent &mdash; Data Parallel Control (dpctl) 0.17.0dev0+206.g5fadcfdfaa documentation</title>
+  <title>dpctl.SyclEvent &mdash; Data Parallel Control (dpctl) 0.17.0dev0+215.g57acb3a2bc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=593ba3e3"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=cc36a1a5"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -49,7 +49,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+206.g5fadcfdfaa
+                0.17.0dev0+215.g57acb3a2bc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -123,8 +123,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">SyclEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent" title="Permalink to this definition"></a></dt>
 <dd><p>Python class representing <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>. There are multiple
 ways to create a <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> object:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>Invoking the constructor with no arguments creates a ready event
 using the default constructor of the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code>.</p></li>
 </ul>
@@ -145,7 +144,6 @@ object. The capsule will be renamed upon successful consumption
 to ensure one-time use. A new named capsule can be constructed by
 using <a class="reference internal" href="#dpctl.SyclEvent._get_capsule" title="dpctl.SyclEvent._get_capsule"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.SyclEvent._get_capsule()</span></code></a> method.</p></li>
 </ul>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>arg</strong> (<em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
@@ -172,13 +170,13 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <td><p>Returns the event_status_type enum value for this event.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent.profiling_info_end" title="dpctl.SyclEvent.profiling_info_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_info_end</span></code></a></p></td>
-<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> finished execution on the device.</p></td>
+<td><p>Returns the 64-bit timestamp value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> finished execution on the device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclEvent.profiling_info_start" title="dpctl.SyclEvent.profiling_info_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_info_start</span></code></a></p></td>
-<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> started execution on the device.</p></td>
+<td><p>Returns the 64-bit device timestamp value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> started execution on the device.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent.profiling_info_submit" title="dpctl.SyclEvent.profiling_info_submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiling_info_submit</span></code></a></p></td>
-<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> was submitted to the queue.</p></td>
+<td><p>Returns the 64-bit time value in nanoseconds when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> was submitted to a queue for execution.</p></td>
 </tr>
 </tbody>
 </table>
@@ -186,7 +184,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dpctl.SyclEvent.addressof_ref" title="dpctl.SyclEvent.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a>()</p></td>
-<td><p>Returns the address of the C API <cite>DPCTLSyclEventRef</cite> pointer as a size_t.</p></td>
+<td><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclEventRef</span></code> pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dpctl.SyclEvent.get_wait_list" title="dpctl.SyclEvent.get_wait_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_wait_list</span></code></a>()</p></td>
 <td><p>Returns the list of <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> objects that depend on this event.</p></td>
@@ -216,12 +214,20 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#dpctl.SyclEvent.backend" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the backend_type enum value for the device
 associated with this event.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The backend for the device.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ev</span><span class="o">.</span><span class="n">backend</span>
+<span class="go">&lt;backend_type.level_zero: 3&gt;</span>
+</pre></div>
+</div>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="dpctl_enum_api.html#dpctl.backend_type" title="dpctl.backend_type">backend_type</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The backend for the device.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpctl_enum_api.html#dpctl.backend_type" title="dpctl.backend_type">backend_type</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -230,27 +236,72 @@ associated with this event.</p>
 <dt class="sig sig-object py" id="dpctl.SyclEvent.execution_status">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">execution_status</span></span><a class="headerlink" href="#dpctl.SyclEvent.execution_status" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the event_status_type enum value for this event.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ev</span><span class="o">.</span><span class="n">execution_status</span>
+<span class="go">&lt;event_status_type.complete: 4&gt;</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>event_status_type</dt><dd><p>Completion status for the task whose submission generated
+this event</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.profiling_info_end">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">profiling_info_end</span></span><a class="headerlink" href="#dpctl.SyclEvent.profiling_info_end" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the 64-bit time value in nanoseconds
+<dd><p>Returns the 64-bit timestamp value in nanoseconds
 when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> finished execution on the device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Timestamp in nanoseconds when task completed execution.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.profiling_info_start">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">profiling_info_start</span></span><a class="headerlink" href="#dpctl.SyclEvent.profiling_info_start" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the 64-bit time value in nanoseconds
-when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> started execution on the device.</p>
+<dd><p>Returns the 64-bit device timestamp value in nanoseconds
+when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> started execution on
+the device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Timestamp in nanoseconds when task started execution.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.profiling_info_submit">
 <span class="sig-prename descclassname"><span class="pre">SyclEvent.</span></span><span class="sig-name descname"><span class="pre">profiling_info_submit</span></span><a class="headerlink" href="#dpctl.SyclEvent.profiling_info_submit" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the 64-bit time value in nanoseconds
-when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> was submitted to the queue.</p>
+when <code class="docutils literal notranslate"><span class="pre">sycl::command_group</span></code> was submitted to
+a queue for execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Timestamp in nanoseconds when task was
+submitted.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -259,12 +310,15 @@ when <code class="docutils literal notranslate"><span class="pre">sycl::command_
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.addressof_ref">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">addressof_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.addressof_ref" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the address of the C API <cite>DPCTLSyclEventRef</cite> pointer as
-a size_t.</p>
+<dd><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclEventRef</span></code> pointer as
+a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The address of the <cite>DPCTLSyclEventRef</cite> object used to create this
-<cite>SyclEvent</cite> cast to a size_t.</p>
+<dd class="field-odd"><p>The address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclEventRef</span></code> object used to
+create this <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclEvent</span></code></a> cast to a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -273,13 +327,26 @@ a size_t.</p>
 <dt class="sig sig-object py" id="dpctl.SyclEvent.get_wait_list">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">get_wait_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.get_wait_list" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the list of <a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a> objects that depend
-on this event.</p>
+on this event. Transitive dependencies are not listed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of event objects that directly depend on this event.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.SyclEvent.wait">
 <span class="sig-prename descclassname"><span class="pre">dpctl.SyclEvent.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclEvent.wait" title="Permalink to this definition"></a></dt>
 <dd><p>Synchronously wait for completion of this event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
