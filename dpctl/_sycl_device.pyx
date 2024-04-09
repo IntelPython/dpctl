@@ -924,8 +924,8 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_work_item_sizes1d(self):
         """ Returns the maximum number of work-items that are permitted in each
-        dimension of the work-group of the nd_range<1>. The minimum value is
-        `(1 )` for devices that evaluate to False for
+        dimension of the work-group of the ``sycl::nd_range<1>``. The minimum
+        value is ``(1, )`` for devices that evaluate to ``False`` for
         :py:attr:`~has_aspect_custom`.
 
         Returns:
@@ -945,8 +945,8 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_work_item_sizes2d(self):
         """ Returns the maximum number of work-items that are permitted in each
-        dimension of the work-group of the nd_range<2>. The minimum value is
-        `(1; 1)` for devices that evaluate to False for
+        dimension of the work-group of the ``sycl::nd_range<2>``. The minimum
+        value is ``(1, 1,)`` for devices that evaluate to ``False`` for
         :py:attr:`~has_aspect_custom`.
 
         Returns:
@@ -968,8 +968,8 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def max_work_item_sizes3d(self):
         """ Returns the maximum number of work-items that are permitted in each
-        dimension of the work-group of the nd_range<3>. The minimum value is
-        `(1; 1; 1)` for devices that evaluate to False for
+        dimension of the work-group of the ``sycl::nd_range<3>``. The minimum
+        value is ``(1, 1, 1,)`` for devices that evaluate to ``False`` for
         :py:attr:`~has_aspect_custom`.
 
         Returns:
