@@ -240,10 +240,11 @@ cdef class SyclDevice(_SyclDevice):
     There are two ways of creating a SyclDevice instance:
 
     - by directly passing in a filter string to the class
-    constructor. The filter string needs to conform to the
-    :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
+      constructor. The filter string needs to conform to the
+      :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
 
     :Example:
+
         .. code-block:: python
 
             import dpctl
@@ -254,14 +255,13 @@ cdef class SyclDevice(_SyclDevice):
             level_zero_gpu.print_device_info()
 
     - by calling one of the device selector helper functions:
-
-        :py:func:`dpctl.select_accelerator_device()`,
-        :py:func:`dpctl.select_cpu_device()`,
-        :py:func:`dpctl.select_default_device()`,
-        :py:func:`dpctl.select_gpu_device()`,
-
+      :py:func:`dpctl.select_accelerator_device()`,
+      :py:func:`dpctl.select_cpu_device()`,
+      :py:func:`dpctl.select_default_device()`,
+      :py:func:`dpctl.select_gpu_device()`
 
     :Example:
+
         .. code-block:: python
 
             import dpctl
@@ -272,7 +272,7 @@ cdef class SyclDevice(_SyclDevice):
             gpu.print_device_info()
 
     Args:
-        arg (optional):
+        arg (str, optional):
             The argument can be a selector string or ``None``.
             Defaults to ``None``.
 
@@ -381,6 +381,7 @@ cdef class SyclDevice(_SyclDevice):
         ``size_t``.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -399,6 +400,7 @@ cdef class SyclDevice(_SyclDevice):
         """Returns the ``backend_type`` enum value for this device
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -427,6 +429,7 @@ cdef class SyclDevice(_SyclDevice):
         """ Returns the type of the device as a ``device_type`` enum.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -462,6 +465,7 @@ cdef class SyclDevice(_SyclDevice):
         ``False`` otherwise.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -482,6 +486,7 @@ cdef class SyclDevice(_SyclDevice):
         ``False`` otherwise.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -505,6 +510,7 @@ cdef class SyclDevice(_SyclDevice):
         peripheral interconnect for communication.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -529,6 +535,7 @@ cdef class SyclDevice(_SyclDevice):
         only fixed functionality is available. Refer SYCL spec for more details.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -549,6 +556,7 @@ cdef class SyclDevice(_SyclDevice):
         point operations, ``False`` otherwise.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -570,6 +578,7 @@ cdef class SyclDevice(_SyclDevice):
         point operations, ``False`` otherwise.
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -602,6 +611,7 @@ cdef class SyclDevice(_SyclDevice):
             - ``sycl::atomic_ref::compare_exchange_weak``
 
         :Example:
+
             .. code-block:: python
 
                 >>> import dpctl
@@ -1061,6 +1071,15 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def sub_group_sizes(self):
         """ Returns list of supported sub-group sizes for this device.
+
+        :Example:
+
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.sub_group_sizes
+                [4, 8, 16, 32, 64]
 
         Returns:
             List[int]:
@@ -1722,6 +1741,15 @@ cdef class SyclDevice(_SyclDevice):
     @property
     def global_mem_cache_type(self):
         """ Global device cache memory type.
+
+        :Example:
+
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> dev = dpctl.select_cpu_device()
+                >>> dev.global_mem_cache_type
+                <global_mem_cache_type.read_write: 4>
 
         Returns:
             global_mem_cache_type:
