@@ -28,11 +28,11 @@ Introduction to array library
 .. toctree::
     :hidden:
 
-    installation
-    parallelisms
-    why_dpctl
-    enumerating_devices
-    device_selection
-    device_info
-    environment_variables
-    tensor_intro
+    _installation
+    _parallelisms
+    _why_dpctl
+    _enumerating_devices
+    _device_selection
+    _device_info
+    _environment_variables
+    _tensor_intro
