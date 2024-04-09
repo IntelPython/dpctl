@@ -14,10 +14,11 @@
     </script>
     <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclQueue.submit_async" href="dpctl.SyclQueue.submit_async.html" /><link rel="prev" title="dpctl.SyclQueue.print_device_info" href="dpctl.SyclQueue.print_device_info.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.SyclQueue.submit - Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="shortcut icon" href="../../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>dpctl.SyclQueue.submit - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/doxyrest-pygments.css?v=ff3f4257" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -27,7 +28,7 @@
 
 <style>
   body {
-    --color-code-background: #eeffcc;
+    --color-code-background: #f8f8f8;
   --color-code-foreground: black;
   
   }
@@ -134,7 +135,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -156,8 +157,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../../_static/dpctl.svg" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -761,7 +765,33 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.submit">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.submit" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Submit <a class="reference internal" href="../dpctl.program.SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> (<a class="reference internal" href="../dpctl.program.SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><em>dpctl.program.SyclKernel</em></a>) – SYCL kernel object</p></li>
+<li><p><strong>args</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a><em>]</em>) – List of kernel arguments</p></li>
+<li><p><strong>gS</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – Global iteration range. Must be a list of length 1, 2, or 3.</p></li>
+<li><p><strong>lS</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – Local iteration range. Must be <code class="docutils literal notranslate"><span class="pre">None</span></code> or have the same
+length as <code class="docutils literal notranslate"><span class="pre">gS</span></code> and each element of <code class="docutils literal notranslate"><span class="pre">gS</span></code> must be divisible
+by respective element of <code class="docutils literal notranslate"><span class="pre">lS</span></code>.</p></li>
+<li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – List of events indicating ordering of this task relative
+to tasks associated with specified events.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An event which is always complete. May be ignored.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent">dpctl.SyclEvent</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.submit()</span></code></a> is a synchronizing method.
+Use <a class="reference internal" href="dpctl.SyclQueue.submit_async.html#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.submit_async()</span></code></a> to avoid synchronization.</p>
+</div>
+</dd></dl>
 
 </section>
 
@@ -833,10 +863,12 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=33b8be71"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../../../_static/design-tabs.js?v=36754332"></script>
     <script src="../../../../_static/target-highlight.js?v=df7d332b"></script>
     </body>

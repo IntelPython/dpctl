@@ -14,10 +14,11 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="dpctl" href="dpctl/index.html" /><link rel="prev" title="DLPack exchange of USM allocated arrays" href="../user_guides/dlpack.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>API Reference - Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>API Reference - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -27,7 +28,7 @@
 
 <style>
   body {
-    --color-code-background: #eeffcc;
+    --color-code-background: #f8f8f8;
   --color-code-foreground: black;
   
   }
@@ -134,7 +135,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -156,8 +157,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/dpctl.svg" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -786,9 +790,9 @@
 </li>
 <li><dl class="simple">
 <dt>Extension generators</dt><dd><ul>
-<li><p><a class="reference internal" href="dpctl_cython.html#dpctl-cython-api"><span class="std std-ref">Cython declarations</span></a> for classes defined in <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> and supporting functions</p></li>
-<li><p><a class="reference internal" href="dpctl_pybind11.html#dpctl-pybind11-api"><span class="std std-ref">Integration with pybind11</span></a>, defining type casters mapping SYCL classes to Python classes, as well as defining C++ classes wrapping a Python object for <a class="reference internal" href="dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> and <a class="reference internal" href="dpctl/memory.html#module-dpctl.memory" title="dpctl.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a> objects.</p></li>
-<li><p><a class="reference internal" href="dpctl_cmake.html#dpctl-cmake-support"><span class="std std-ref">Integration with CMake</span></a> to simplify building DPC++-based Python extension using scikit-build.</p></li>
+<li><p><a class="reference internal" href="dpctl_cython.html#dpctl-cython-api"><span class="std std-ref">Declarations</span></a> for classes defined in <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> and supporting functions for use in <a class="reference external" href="https://cython.readthedocs.io/en/latest/">Cython</a>.</p></li>
+<li><p><a class="reference internal" href="dpctl_pybind11.html#dpctl-pybind11-api"><span class="std std-ref">Integration</span></a> with <a class="reference external" href="https://pybind11.readthedocs.io/en/stable/">pybind11</a> defines type casters connecting SYCL classes and Python classes, as well as defines C++ classes wrapping a Python object for <a class="reference internal" href="dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> and <a class="reference internal" href="dpctl/memory.html#module-dpctl.memory" title="dpctl.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a> objects.</p></li>
+<li><p><a class="reference internal" href="dpctl_cmake.html#dpctl-cmake-support"><span class="std std-ref">Integration</span></a> with <a class="reference external" href="https://cmake.org/documentation/">CMake</a> to simplify building DPC++-based Python extension using <a class="reference external" href="https://scikit-build.readthedocs.io/en/latest/">scikit-build</a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -854,10 +858,12 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=33b8be71"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
     <script src="../_static/target-highlight.js?v=df7d332b"></script>
     </body>

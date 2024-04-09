@@ -7,7 +7,8 @@ Data Parallel Control
 Python package :py:mod:`dpctl` enables Python users to engage with multiple
 compute devices commonly available in modern consumer- and server-grade
 computers using industry-standard :sycl_execution_model:`SYCL execution model <>`
-facilitated by Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>`.
+facilitated by Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>` implementing
+:sycl_spec_2020:`SYCL 2020 standard <>`.
 
 ..
    :mod:`dpctl` leverages `oneAPI DPC++ compiler runtime <dpcpp_compiler>`_ to

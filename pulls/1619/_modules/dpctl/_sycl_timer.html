@@ -13,10 +13,11 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl._sycl_timer - Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>dpctl._sycl_timer - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -26,7 +27,7 @@
 
 <style>
   body {
-    --color-code-background: #eeffcc;
+    --color-code-background: #f8f8f8;
   --color-code-foreground: black;
   
   }
@@ -133,7 +134,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -155,8 +156,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/dpctl.svg" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -812,7 +816,7 @@
 <span class="sd">            import dpctl</span>
 
 <span class="sd">            # Create a default SyclQueue</span>
-<span class="sd">            q = dpctl.SyclQueue(property=&#39;enable_profiling&#39;)</span>
+<span class="sd">            q = dpctl.SyclQueue(property=&quot;enable_profiling&quot;)</span>
 
 <span class="sd">            # create the timer</span>
 <span class="sd">            milliseconds_sc = 1e-3</span>
@@ -820,18 +824,22 @@
 
 <span class="sd">            # use the timer</span>
 <span class="sd">            with timer(queue=q):</span>
-<span class="sd">                code_block</span>
+<span class="sd">                code_block1</span>
+
+<span class="sd">            # use the timer</span>
+<span class="sd">            with timer(queue=q):</span>
+<span class="sd">                code_block2</span>
 
 <span class="sd">            # retrieve elapsed times in milliseconds</span>
 <span class="sd">            wall_dt, device_dt = timer.dt</span>
 
-<span class="sd">    Note:</span>
+<span class="sd">    .. note::</span>
 <span class="sd">        The timer submits barriers to the queue at the entrance and the</span>
 <span class="sd">        exit of the context and uses profiling information from events</span>
 <span class="sd">        associated with these submissions to perform the timing. Thus</span>
-<span class="sd">        :class:`dpctl.SyclTimer` requires the queue with &quot;enable_profiling&quot;</span>
+<span class="sd">        :class:`dpctl.SyclTimer` requires the queue with ``&quot;enable_profiling&quot;``</span>
 <span class="sd">        property. In order to be able to collect the profiling information,</span>
-<span class="sd">        the `dt` property ensures that both submitted barriers complete their</span>
+<span class="sd">        the ``dt`` property ensures that both submitted barriers complete their</span>
 <span class="sd">        execution and thus effectively synchronizes the queue.</span>
 
 <span class="sd">    Args:</span>
@@ -841,10 +849,22 @@
 <span class="sd">            Default: :py:func:`timeit.default_timer`.</span>
 <span class="sd">        time_scale (Union[int, float], optional):</span>
 <span class="sd">            Ratio of the unit of time of interest and one second.</span>
-<span class="sd">            Default: `1`.</span>
+<span class="sd">            Default: ``1``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SyclTimer.__init__"><a class="viewcode-back" href="../../api_reference/dpctl/generated/generated/dpctl.SyclTimer.__init__.html#dpctl.SyclTimer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_timer</span><span class="o">=</span><span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">,</span> <span class="n">time_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create new instance of :class:`.SyclTimer`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            host_timer (callable, optional)</span>
+<span class="sd">                A function that takes no arguments and returns a value</span>
+<span class="sd">                measuring time.</span>
+<span class="sd">                Default: :meth:`timeit.default_timer`.</span>
+<span class="sd">            time_scale (Union[int, float], optional):</span>
+<span class="sd">                Scaling factor applied to durations measured by</span>
+<span class="sd">                the host_timer. Default: ``1``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">host_timer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_scale</span> <span class="o">=</span> <span class="n">time_scale</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="kc">None</span>
@@ -882,11 +902,47 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a pair of elapsed times (host_dt, device_dt).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a pair of elapsed times ``host_dt`` and</span>
+<span class="sd">        ``device_dt``.</span>
 
-<span class="sd">        The host_dt is the duration as measured by the host</span>
-<span class="sd">        timer, while the device_dt is the duration as measured by</span>
-<span class="sd">        the device timer and encoded in profiling events.&quot;&quot;&quot;</span>
+<span class="sd">        The ``host_dt`` is the duration as measured by the host</span>
+<span class="sd">        timer, while the ``device_dt`` is the duration as measured by</span>
+<span class="sd">        the device timer and encoded in profiling events.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            HostDeviceDuration:</span>
+<span class="sd">                Data class with ``host_dt`` and ``device_dt`` members which</span>
+<span class="sd">                supports unpacking into a 2-tuple.</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                import dpctl</span>
+<span class="sd">                from dpctl import tensor</span>
+
+<span class="sd">                q = dpctl.SyclQueue(property=&quot;enable_profiling&quot;)</span>
+
+<span class="sd">                device = tensor.Device.create_device(q)</span>
+<span class="sd">                timer = dpctl.SyclTimer()</span>
+
+<span class="sd">                with timer(q):</span>
+<span class="sd">                    x = tensor.linspace(-4, 4, num=10**6, dtype=&quot;float32&quot;)</span>
+<span class="sd">                    e = tensor.exp(-0.5 * tensor.square(x))</span>
+<span class="sd">                    s = tensor.sin(2.3 * x + 0.11)</span>
+<span class="sd">                    f = e * s</span>
+
+<span class="sd">                host_dt, device_dt = timer.dt</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Since different timers are used to measure host and device</span>
+<span class="sd">            durations, one should not expect that ``host_dt`` is always</span>
+<span class="sd">            strictly greater than ``device_dt``.</span>
+
+<span class="sd">            Use tracing tools like ``onetrace``, or ``unitrace`` from</span>
+<span class="sd">            `intel/pti-gpu &lt;https://github.com/intel/pti-gpu&gt;`_ repository</span>
+<span class="sd">            for more accurate measurements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">es</span><span class="p">,</span> <span class="n">ef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bracketing_events</span><span class="p">:</span>
             <span class="n">es</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="n">ef</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
@@ -928,10 +984,12 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=33b8be71"></script>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script src="../../_static/target-highlight.js?v=df7d332b"></script>
     </body>

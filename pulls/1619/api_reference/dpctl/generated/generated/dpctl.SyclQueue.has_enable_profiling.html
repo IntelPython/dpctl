@@ -14,10 +14,11 @@
     </script>
     <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclQueue.is_in_order" href="dpctl.SyclQueue.is_in_order.html" /><link rel="prev" title="dpctl.SyclQueue.driver_version" href="dpctl.SyclQueue.driver_version.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>dpctl.SyclQueue.has_enable_profiling - Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="shortcut icon" href="../../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+        <title>dpctl.SyclQueue.has_enable_profiling - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/doxyrest-pygments.css?v=ff3f4257" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -27,7 +28,7 @@
 
 <style>
   body {
-    --color-code-background: #eeffcc;
+    --color-code-background: #f8f8f8;
   --color-code-foreground: black;
   
   }
@@ -134,7 +135,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.17.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -156,8 +157,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../../_static/dpctl.svg" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0+243.g3fae3ed6a documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.17.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -761,8 +765,41 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpctl.SyclQueue.has_enable_profiling">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">has_enable_profiling</span></span><a class="headerlink" href="#dpctl.SyclQueue.has_enable_profiling" title="Permalink to this definition">#</a></dt>
-<dd><p>True if SyclQueue was constructed with enabled_profiling property,
-False otherwise.</p>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <a class="reference internal" href="../dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> was constructed with
+<code class="docutils literal notranslate"><span class="pre">&quot;enabled_profiling&quot;</span></code> property, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p>..code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">has_enable_profiling</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">has_enable_profiling</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether profiling information for tasks submitted
+to this <a class="reference internal" href="../dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueue</span></code></a> is being collected.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Profiling information can be accessed using
+properties
+<a class="reference internal" href="dpctl.SyclEvent.profiling_info_submit.html#dpctl.SyclEvent.profiling_info_submit" title="dpctl.SyclEvent.profiling_info_submit"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclEvent.profiling_info_submit</span></code></a>,
+<a class="reference internal" href="dpctl.SyclEvent.profiling_info_start.html#dpctl.SyclEvent.profiling_info_start" title="dpctl.SyclEvent.profiling_info_start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclEvent.profiling_info_start</span></code></a>, and
+<a class="reference internal" href="dpctl.SyclEvent.profiling_info_end.html#dpctl.SyclEvent.profiling_info_end" title="dpctl.SyclEvent.profiling_info_end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclEvent.profiling_info_end</span></code></a>. It is
+also necessary for proper working of
+<a class="reference internal" href="../dpctl.SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclTimer</span></code></a>.</p>
+<p>Collection of profiling information is not enabled
+by default.</p>
+</div>
 </dd></dl>
 
 </section>
@@ -835,10 +872,12 @@ False otherwise.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=33b8be71"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../../../_static/design-tabs.js?v=36754332"></script>
     <script src="../../../../_static/target-highlight.js?v=df7d332b"></script>
     </body>
