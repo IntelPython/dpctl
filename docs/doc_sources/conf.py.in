@@ -42,6 +42,8 @@ extensions = [
     "sphinx_design",
 ]
 
+copybutton_prompt_text = ">>> "
+
 googleanalytics_id = 'G-7TCKS5BHYE'
 googleanalytics_enabled = True
 
