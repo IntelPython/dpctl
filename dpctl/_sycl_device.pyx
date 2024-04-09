@@ -929,7 +929,7 @@ cdef class SyclDevice(_SyclDevice):
         :py:attr:`~has_aspect_custom`.
 
         Returns:
-            Tuple[int,]:
+            Tuple[int]:
                 A one-tuple with the maximum allowed value for a 1D range
                 used to enqueue a kernel on the device.
         """
@@ -994,7 +994,7 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[int]:
                 A three-tuple whose length depends on the number of
-                workgroup dimensions supported by the device.
+                work-group dimensions supported by the device.
 
         .. deprecated:: 0.14
            The property is deprecated use :py:attr:`~max_work_item_sizes3d`
@@ -1032,7 +1032,7 @@ cdef class SyclDevice(_SyclDevice):
 
         Returns:
             int:
-                The maximum supported work group size.
+                The maximum supported work-group size.
         """
         cdef uint32_t max_work_group_size = 0
         max_work_group_size = DPCTLDevice_GetMaxWorkGroupSize(self._device_ref)
