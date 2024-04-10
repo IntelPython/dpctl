@@ -153,9 +153,9 @@ def validate_usm_type(usm_type, /, *, allow_none=True):
             Specification for USM allocation type. Valid specifications
             are:
 
-                * ``"device"``
-                * ``"shared"``
-                * ``"host"``
+            * ``"device"``
+            * ``"shared"``
+            * ``"host"``
 
             If ``allow_none`` keyword argument is set, a value of
             ``None`` is also permitted.

@@ -31,9 +31,10 @@ del sys_platform
 def onetrace_enabled():
     """Enable ``onetrace`` collection for kernels executed in this context.
 
-    N.B.: Proper working of this utility assumes that Python interpreter
-    has been launched by ``onetrace`` or ``unitrace`` tool from project
-    `intel/pti-gpu <https://github.com/intel/pti-gpu>`_.
+    .. note::
+        Proper working of this utility assumes that Python interpreter
+        has been launched by ``onetrace`` or ``unitrace`` tool from project
+        `intel/pti-gpu <https://github.com/intel/pti-gpu>`_.
 
     :Example:
         Launch the Python interpreter using `onetrace` tool:
