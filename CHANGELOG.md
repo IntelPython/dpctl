@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.1] - Apr. XX, 2024
+## [0.16.1] - Apr. 10, 2024
 
 This is a bug-fix release, which also provides a change needed by ``numba_dpex`` project to support dispatching kernels
 consuming instances of ``sycl::local_accessor`` template type.
