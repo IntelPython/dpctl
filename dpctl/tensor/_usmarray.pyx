@@ -48,7 +48,7 @@ include "_slicing.pxi"
 
 cdef class InternalUSMArrayError(Exception):
     """
-    A InternalUSMArrayError exception is raised when internal
+    An InternalUSMArrayError exception is raised when internal
     inconsistency has been detected in :class:`.usm_ndarray`.
     """
     pass
@@ -170,7 +170,7 @@ cdef class usm_ndarray:
         """
         strides and offset must be given in units of array elements.
         buffer can be strings ('device'|'shared'|'host' to allocate new memory)
-        or ``dpctl.memory.MemoryUSM*`` buffers, or ``usm_ndrray`` instances.
+        or ``dpctl.memory.MemoryUSM*`` buffers, or ``usm_ndarray`` instances.
         """
         cdef int nd = 0
         cdef int typenum = 0
