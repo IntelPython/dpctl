@@ -54,7 +54,7 @@ def get_execution_queue(qs, /):
     Get execution queue from queues associated with input arrays.
 
     Args:
-        qs (List[:class:`dpctl.SyclQueue`]):
+        qs (List[:class:`dpctl.SyclQueue`], Tuple[:class:`dpctl.SyclQueue`]):
             a list or a tuple of :class:`dpctl.SyclQueue` objects
             corresponding to arrays that are being combined.
 
@@ -88,7 +88,7 @@ def get_coerced_usm_type(usm_types, /):
     model.
 
     Args:
-        usm_types (List[str]):
+        usm_types (List[str], Tuple[str]):
             a list or a tuple of strings of ``.usm_types`` attributes
             for input arrays
 
