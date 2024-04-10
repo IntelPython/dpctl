@@ -95,7 +95,7 @@ def get_coerced_usm_type(usm_types, /):
     Returns:
          str
             type of USM allocation for the output arrays (s).
-            ``None`` if any of the input string is not recognized.
+            ``None`` if any of the input strings are not recognized.
     """
     if not isinstance(usm_types, (list, tuple)):
         raise TypeError(

@@ -87,7 +87,7 @@ cdef class SyclPlatform(_SyclPlatform):
     """ SyclPlatform(self, arg=None)
     Python class representing ``sycl::platform`` class.
 
-    There are two ways of creating a :class`:`.SyclPlatform`
+    There are two ways of creating a :class:`.SyclPlatform`
     instance:
 
     - Invoking the constructor with no arguments creates a
