@@ -240,7 +240,7 @@ cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
         Note: This function is currently only supported for the OpenCL backend.
 
         Parameters:
-            q (SyclQueue)
+            q (:class:`dpctl.SyclQueue`)
                 The :class:`dpctl.SyclQueue` for which the
                 :class:`.SyclProgram` is going to be built.
             src (str)
@@ -250,7 +250,7 @@ cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
                 when compiling the program. Default: ``""``.
 
         Returns:
-            program (SyclProgram)
+            program (:class:`.SyclProgram`)
                 A :class:`.SyclProgram` object wrapping the
                 ``sycl::kernel_bundle<sycl::bundle_state::executable>``
                 returned by the C API.
@@ -285,7 +285,7 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
         from an compiled SPIR-V binary file.
 
         Parameters:
-            q (SyclQueue)
+            q (:class:`dpctl.SyclQueue`)
                 The :class:`dpctl.SyclQueue` for which the
                 :class:`.SyclProgram` is going to be built.
             IL (bytes)
@@ -295,8 +295,8 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
                 when compiling the program. Default: ``""``.
 
         Returns:
-            program (SyclProgram)
-                A :class:`SyclProgram` object wrapping the
+            program (:class:`.SyclProgram`)
+                A :class:`.SyclProgram` object wrapping the
                 ``sycl::kernel_bundle<sycl::bundle_state::executable>``
                 returned by the C API.
 
