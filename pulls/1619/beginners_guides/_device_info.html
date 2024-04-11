@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Obtaining information about device" href="device_info.html" /><link rel="prev" title="Enumerating available devices" href="enumerating_devices.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Environment variables" href="_environment_variables.html" /><link rel="prev" title="Device selection" href="_device_selection.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Device selection - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+        <title>Obtaining information about device - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -146,7 +146,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -173,13 +173,13 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Beginner’s guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelisms.html">Types of parallelisms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enumerating_devices.html">Enumerating available devices</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Device selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device_info.html">Obtaining information about device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="_parallelisms.html">Types of parallelisms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_enumerating_devices.html">Enumerating available devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_device_selection.html">Device selection</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Obtaining information about device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_environment_variables.html">Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -761,73 +761,62 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="device-selection">
-<span id="beginners-guide-device-selection"></span><h1>Device selection<a class="headerlink" href="#device-selection" title="Permalink to this heading">#</a></h1>
-<p>DPC++ runtime provides a way to select a device with a highest score to for a set of selection scroring strategies.
-Amongst these are a default selector, CPU selector, GPU selector, as well as filter-string selector.</p>
-<section id="using-fixed-device-selectors">
-<h2>Using fixed device selectors<a class="headerlink" href="#using-fixed-device-selectors" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> exposes device selection using fixed selectors as free functions:</p>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_default_device.html#dpctl.select_default_device" title="dpctl.select_default_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_default_device()</span></code></a></p></td>
-<td><p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_gpu_device.html#dpctl.select_gpu_device" title="dpctl.select_gpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_gpu_device()</span></code></a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_cpu_device.html#dpctl.select_cpu_device" title="dpctl.select_cpu_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_cpu_device()</span></code></a></p></td>
-<td><p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_accelerator_device.html#dpctl.select_accelerator_device" title="dpctl.select_accelerator_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_accelerator_device()</span></code></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="selecting-device-based-on-aspects">
-<h2>Selecting device based on aspects<a class="headerlink" href="#selecting-device-based-on-aspects" title="Permalink to this heading">#</a></h2>
-<p>In addition, <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_device_with_aspects.html#dpctl.select_device_with_aspects" title="dpctl.select_device_with_aspects"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_device_with_aspects()</span></code></a> permits selecting a device based on aspects it is required to have:</p>
+          <section id="obtaining-information-about-device">
+<span id="beginners-guide-device-info"></span><h1>Obtaining information about device<a class="headerlink" href="#obtaining-information-about-device" title="Permalink to this heading">#</a></h1>
+<p>An instance of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> provides access to a collection of
+descriptors characterizing underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code>.</p>
+<p>Properties <code class="docutils literal notranslate"><span class="pre">has_aspect_*</span></code> expose Boolean descriptors which can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+Other descriptions are exposed as properties of the instance.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example: Selecting devices based on their aspects</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Obtaining information about a device</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
-<span class="c1"># select a device that support float64 data type</span>
-<span class="n">dev1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_device_with_aspects</span><span class="p">(</span><span class="s2">&quot;fp64&quot;</span><span class="p">)</span>
+<span class="c1"># create default-selected device</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
 
-<span class="c1"># select a device that supports atomic operations on 64-bit types</span>
-<span class="c1"># in USM-shared allocations</span>
-<span class="n">dev2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_device_with_aspects</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;atomic64&quot;</span><span class="p">,</span> <span class="s2">&quot;usm_atomic_shared_allocations&quot;</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="c1"># number of compute units</span>
+<span class="n">cu</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_compute_units</span>
+<span class="c1"># maximal supported size of a work-group</span>
+<span class="n">max_wg</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_work_group_size</span>
+<span class="c1"># size of shared local memory in bytes</span>
+<span class="n">loc_mem_sz</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">local_mem_size</span>
+
+<span class="c1"># name of the device</span>
+<span class="n">dname</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">name</span>
+<span class="c1"># maximal clock frequency in MHz</span>
+<span class="n">freq</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_clock_frequency</span>
 </pre></div>
 </div>
 </div>
-<p>An aspect string <code class="docutils literal notranslate"><span class="pre">asp</span></code> is valid if <code class="docutils literal notranslate"><span class="pre">hasattr(dpctl.SyclDevice,</span> <span class="pre">&quot;has_aspect_&quot;</span> <span class="pre">+</span> <span class="pre">asp)</span></code> evaluates to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-</section>
-<section id="selecting-device-using-filter-selector-string">
-<h2>Selecting device using filter selector string<a class="headerlink" href="#selecting-device-using-filter-selector-string" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> may also be created using <a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html#filter-selector-string"><span class="std std-ref">filter selector string</span></a> specified
-as argument to the class constructor:</p>
+<p>For Intel GPU devices, additional architectural information can be access with <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.intel_device_info" title="dpctl.utils.intel_device_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a> function:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Example: Creating device based on filter-selector string</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
+<div class="code-block-caption"><span class="caption-text">Example: Intel GPU-specific information</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">dpctl</span><span class="o">,</span> <span class="nn">dpctl.utils</span>
 
-<span class="c1"># create any GPU device</span>
-<span class="n">dev_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">d_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
 
-<span class="c1"># take second device GPU device in the list of GPU devices</span>
-<span class="c1"># 0-based number is used</span>
-<span class="n">dev_gpu1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu:1&quot;</span><span class="p">)</span>
-
-<span class="c1"># create GPU device, or CPU if GPU is not available</span>
-<span class="n">dev_gpu_or_cpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu,cpu&quot;</span><span class="p">)</span>
+<span class="c1"># Output for Iris Xe integerate GPU, with PCI ID 0x9a49</span>
+<span class="c1"># (corresponding decimal value: 39497)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">intel_device_info</span><span class="p">(</span><span class="n">d_gpu</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+<span class="p">{</span><span class="s1">&#39;device_id&#39;</span><span class="p">:</span> <span class="mi">39497</span><span class="p">,</span>
+<span class="s1">&#39;gpu_eu_count&#39;</span><span class="p">:</span> <span class="mi">96</span><span class="p">,</span>
+<span class="s1">&#39;gpu_hw_threads_per_eu&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+<span class="s1">&#39;gpu_eu_simd_width&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="s1">&#39;gpu_slices&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="s1">&#39;gpu_subslices_per_slice&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+<span class="s1">&#39;gpu_eu_count_per_subslice&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
-</section>
+<p>Please refer to “Intel(R) Xe GPU Architecture” section of the “<a class="reference external" href="https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/">oneAPI GPU Optimization Guide</a>”
+for detailed explanation of these architectural descriptors.</p>
 </section>
 
         </article>
@@ -835,23 +824,23 @@ as argument to the class constructor:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="device_info.html">
+          <a class="next-page" href="_environment_variables.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Obtaining information about device</div>
+                <div class="title">Environment variables</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="enumerating_devices.html">
+          <a class="prev-page" href="_device_selection.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Enumerating available devices</div>
+                <div class="title">Device selection</div>
                 
               </div>
             </a>
@@ -873,29 +862,8 @@ as argument to the class constructor:</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Device selection</a><ul>
-<li><a class="reference internal" href="#using-fixed-device-selectors">Using fixed device selectors</a></li>
-<li><a class="reference internal" href="#selecting-device-based-on-aspects">Selecting device based on aspects</a></li>
-<li><a class="reference internal" href="#selecting-device-using-filter-selector-string">Selecting device using filter selector string</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

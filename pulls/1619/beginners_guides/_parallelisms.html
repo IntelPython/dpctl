@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Environment variables" href="environment_variables.html" /><link rel="prev" title="Device selection" href="device_selection.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="History of dpctl name" href="_why_dpctl.html" /><link rel="prev" title="Installing dpctl" href="installation.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Obtaining information about device - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+        <title>Types of parallelisms - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -173,13 +173,13 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Beginner’s guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelisms.html">Types of parallelisms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enumerating_devices.html">Enumerating available devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device_selection.html">Device selection</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Obtaining information about device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Types of parallelisms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_enumerating_devices.html">Enumerating available devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_device_selection.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_device_info.html">Obtaining information about device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_environment_variables.html">Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -767,56 +767,19 @@
           </label>
         </div>
         <article role="main">
-          <section id="obtaining-information-about-device">
-<span id="beginners-guide-device-info"></span><h1>Obtaining information about device<a class="headerlink" href="#obtaining-information-about-device" title="Permalink to this heading">#</a></h1>
-<p>An instance of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> provides access to a collection of
-descriptors characterizing underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code>.</p>
-<p>Properties <code class="docutils literal notranslate"><span class="pre">has_aspect_*</span></code> expose Boolean descriptors which can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-Other descriptions are exposed as properties of the instance.</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example: Obtaining information about a device</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-
-<span class="c1"># create default-selected device</span>
-<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
-
-<span class="c1"># number of compute units</span>
-<span class="n">cu</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_compute_units</span>
-<span class="c1"># maximal supported size of a work-group</span>
-<span class="n">max_wg</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_work_group_size</span>
-<span class="c1"># size of shared local memory in bytes</span>
-<span class="n">loc_mem_sz</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">local_mem_size</span>
-
-<span class="c1"># name of the device</span>
-<span class="n">dname</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">name</span>
-<span class="c1"># maximal clock frequency in MHz</span>
-<span class="n">freq</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">max_clock_frequency</span>
-</pre></div>
-</div>
-</div>
-<p>For Intel GPU devices, additional architectural information can be access with <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.intel_device_info" title="dpctl.utils.intel_device_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a> function:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Example: Intel GPU-specific information</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">dpctl</span><span class="o">,</span> <span class="nn">dpctl.utils</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">d_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
-
-<span class="c1"># Output for Iris Xe integerate GPU, with PCI ID 0x9a49</span>
-<span class="c1"># (corresponding decimal value: 39497)</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">intel_device_info</span><span class="p">(</span><span class="n">d_gpu</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
-<span class="p">{</span><span class="s1">&#39;device_id&#39;</span><span class="p">:</span> <span class="mi">39497</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_count&#39;</span><span class="p">:</span> <span class="mi">96</span><span class="p">,</span>
-<span class="s1">&#39;gpu_hw_threads_per_eu&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_simd_width&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-<span class="s1">&#39;gpu_slices&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-<span class="s1">&#39;gpu_subslices_per_slice&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_count_per_subslice&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<p>Please refer to “Intel(R) Xe GPU Architecture” section of the “<a class="reference external" href="https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/">oneAPI GPU Optimization Guide</a>”
-for detailed explanation of these architectural descriptors.</p>
+          <section id="types-of-parallelisms">
+<span id="parallelism-definitions"></span><h1>Types of parallelisms<a class="headerlink" href="#types-of-parallelisms" title="Permalink to this heading">#</a></h1>
+<p>Parallelism refers to an opportunity to work on multiple parts of a problem independently.</p>
+<p>Exploiting parallelism requires capable hardware to work on more than one thing at a time,
+such as GPUs or multi-core CPUs.</p>
+<p>Two commonly encountered types of parallelism are:</p>
+<ul class="simple">
+<li><p>Task parallelism - problem is decomposed into independent tasks.</p></li>
+<li><p>Data parallelism - same task can be independently performed on different data inputs.</p></li>
+</ul>
+<p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/data-parallel-c-plus-plus.html">Intel(R) oneAPI DPC++</a> compiler implements SYCL standard which brings data parallelism to C++ language,
+so it is appropriate that DPC++ stands for data-parallel C++. Please refer to open access book “<a class="reference external" href="https://link.springer.com/book/10.1007/978-1-4842-5574-2">Data Parallel C++</a>”
+by J. Rainders, et. al. for a great introduction.</p>
 </section>
 
         </article>
@@ -824,23 +787,23 @@ for detailed explanation of these architectural descriptors.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="environment_variables.html">
+          <a class="next-page" href="_why_dpctl.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Environment variables</div>
+                <div class="title">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="device_selection.html">
+          <a class="prev-page" href="installation.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Device selection</div>
+                <div class="title">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></div>
                 
               </div>
             </a>

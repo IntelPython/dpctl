@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="User guides" href="../user_guides/index.html" /><link rel="prev" title="Environment variables" href="environment_variables.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Enumerating available devices" href="_enumerating_devices.html" /><link rel="prev" title="Types of parallelisms" href="_parallelisms.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Getting started with dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+        <title>History of dpctl name - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -146,7 +146,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -173,13 +173,13 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Beginner’s guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelisms.html">Types of parallelisms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enumerating_devices.html">Enumerating available devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device_selection.html">Device selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device_info.html">Obtaining information about device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment variables</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="_parallelisms.html">Types of parallelisms</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_enumerating_devices.html">Enumerating available devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_device_selection.html">Device selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_device_info.html">Obtaining information about device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_environment_variables.html">Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -761,239 +761,43 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="getting-started-with-dpctl-tensor">
-<span id="beginners-guide-tensor-intro"></span><h1>Getting started with <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><a class="headerlink" href="#getting-started-with-dpctl-tensor" title="Permalink to this heading">#</a></h1>
-<p>The tensor submodule provides an N-dimensional array object for a tensor whose values have the same data type
-from the <a class="reference internal" href="../api_reference/dpctl/tensor.data_types.html#dpctl-tensor-data-types"><span class="std std-ref">following list</span></a>:</p>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int8</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int16</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int32</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">int64</span></code></p></td>
-<td></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">float16</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">complex64</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">bool</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint32</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">uint64</span></code></p></td>
-<td></td>
-<td></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">float64</span></code></p></td>
-<td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">complex128</span></code></p></td>
-</tr>
-</tbody>
-</table>
+          <section id="history-of-dpctl-name">
+<span id="beginners-guide-why-dpctl"></span><h1>History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name<a class="headerlink" href="#history-of-dpctl-name" title="Permalink to this heading">#</a></h1>
+<p><a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL standard</a> proposes an execution model, in which a
+user controls  <a class="reference internal" href="../user_guides/queues.html#user-guide-queues"><span class="std std-ref">execution placement</span></a> by specifying
+<code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> object amongst arguments. This execution model affords
+uniform API for executing code of variety of devices addressable with SYCL:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Example of execution on different devices</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Execute on CPU device</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">q_cpu</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Execute on GPU device from vendor A</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">q_gpuA</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Execute on GPU device from vendor B</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">q_gpuB</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
 </div>
-<section id="creating-an-array">
-<h2>Creating an array<a class="headerlink" href="#creating-an-array" title="Permalink to this heading">#</a></h2>
-<p>Array <a class="reference internal" href="../api_reference/dpctl/tensor.creation_functions.html#dpctl-tensor-creation-functions"><span class="std std-ref">creation functions</span></a> support keyword arguments that
-control the device where the array is allocated as well as aspects of
-<a class="reference internal" href="../api_reference/dpctl/memory.html#dpctl-memory-pyapi"><span class="std std-ref">Unified Shared Memory allocation</span></a> for the array.</p>
-<p>These three keywords are:</p>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Keyword arguments</p></th>
-<th class="head"><p>Default value</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">usm_type</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></td>
-<td><p>type of USM allocation to make</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">device</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-<td><p><a class="reference internal" href="../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> instance</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-<td><p>Instance of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> associated with array</p></td>
-</tr>
-</tbody>
-</table>
 </div>
-<p>Arguments <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and <code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary to each other, and
-a user need only provide one of these.</p>
-<p>A valid setting for the <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword argument is any object that can be passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.Device.create_device()</span></code>.
-If both <code class="docutils literal notranslate"><span class="pre">device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> keyword arguments are specified, they must correspond to <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instances which
-compare equal to one another.</p>
-<p>A created instance of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a> has an associated <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instance that can be retrieved
-using <a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.tensor.usm_ndarray.sycl_queue.html#dpctl.tensor.usm_ndarray.sycl_queue" title="dpctl.tensor.usm_ndarray.sycl_queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.sycl_queue</span></code></a> property. The underlying USM allocation
-is allocated on <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> and is bound to <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> targeted by this queue.</p>
-</section>
-<section id="execution-model">
-<h2>Execution model<a class="headerlink" href="#execution-model" title="Permalink to this heading">#</a></h2>
-<p id="dpctl-tensor-compute-follows-data">When one of more instances of <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> objects are passed to a function in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> other than creation function,
-a “compute follows data” execution model is followed.</p>
-<p>The model requires that <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instances associated with each array compared equal to one another, signifying that
-each one corresponds to the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> object. In such a case, the output array is associated with the same
-<code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> and computations are scheduled for execution using this <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code>.</p>
+<p>Intel(R) oneAPI DPC++ compiler is an implementation of SYCL standard along
+with a set of oneAPI extensions proposed for adoption into the standard.</p>
+<p>DPC++ stands for <a class="reference external" href="https://link.springer.com/book/10.1007/978-1-4842-5574-2">Data-Parallel C++</a>, because it brings
+<a class="reference internal" href="_parallelisms.html#parallelism-definitions"><span class="std std-ref">data parallelism</span></a> to C++ language.</p>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> was created out of the need to interact with DPC++ runtime
+to control execution placement from LLVM as needed by <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
+<p>The name Data Parallel ConTroL (DPCTL) stuck.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Two instances <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> may target the same <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and be using the same <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code>, but correspond
-to different scheduling enties, and hence be in violation of the compute-follows-data requirement. One common example of this are
-<code class="docutils literal notranslate"><span class="pre">SyclQueue</span></code> corresponding to default-selected device and using platform default context but created using different properties, e.g.
-one with <cite>“enable_profiling”</cite> set and another without it.</p>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is not related to Open vSwitch Data Paths Control program <code class="docutils literal notranslate"><span class="pre">osv-dpctl</span></code>
+provided by <a class="reference external" href="https://www.openvswitch.org/">Open vSwitch</a>.</p>
 </div>
-<p>If input arrays do not conform to the compute-follows-data requirements, <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.ExecutionPlacementError" title="dpctl.utils.ExecutionPlacementError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">dpctl.utils.ExecutionPlacementError</span></code></a> is raised.
-User must explicitly migrate the data to unambiguously control the execution placement.</p>
-</section>
-<section id="migrating-arrays">
-<h2>Migrating arrays<a class="headerlink" href="#migrating-arrays" title="Permalink to this heading">#</a></h2>
-<p>Array content can be migrated to a different device <a class="reference internal" href="../api_reference/dpctl/tensor.usm_ndarray.html#dpctl-tensor-usm-ndarray-to-device-example"><span class="std std-ref">using</span></a>
-either <a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.tensor.usm_ndarray.to_device.html#dpctl.tensor.usm_ndarray.to_device" title="dpctl.tensor.usm_ndarray.to_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.to_device()</span></code></a> method, or by using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a> function.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">arr.to_device(device=target_device)</span></code> method will be zero-copy if the <code class="docutils literal notranslate"><span class="pre">arr.sycl_queue</span></code> and the <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>
-instance associated with new target device have the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> instances.</p>
-<p>Here is an example of migration without a copy using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> method:</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example: Use <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
-<span class="n">q_prof</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
-
-<span class="n">timer</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclTimer</span><span class="p">()</span>
-<span class="c1"># no data migration takes place here (zero-copy),</span>
-<span class="c1"># but x and x1 arrays do not satify compute-follows-data requirements</span>
-<span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">q_prof</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="n">q_prof</span><span class="p">):</span>
-    <span class="n">y1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="n">tensor</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tensor</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x1</span><span class="p">))</span>
-
-<span class="c1"># also a zero copy operation</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">y1</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
-<span class="n">host_dt</span><span class="p">,</span> <span class="n">device_dt</span> <span class="o">=</span> <span class="n">timer</span><span class="o">.</span><span class="n">dt</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution on device </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">device_dt</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution on host took </span><span class="si">{</span><span class="n">host_dt</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Data migration when the current and the target SYCL contexts are different is performed via host. That means that data are copied from
-the current device to the host, and then from the host to the target device:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-
-<span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
-
-<span class="c1"># data migration is performed via host</span>
-<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">x_cpu</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>An alternative way to migrate data is to use <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">asarray()</span></code></a> and specify device-placement keyword arguments:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">asarray</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-
-<span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
-
-<span class="c1"># data migration is performed via host</span>
-<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_cpu</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>An advantage of using the function <code class="docutils literal notranslate"><span class="pre">asarray</span></code> is that migration from <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances allocated on different
-devices as well migration from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> may be accomplished in a single call:</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Example: <code class="docutils literal notranslate"><span class="pre">asarray</span></code> may migrate multiple arrays</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-
-<span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;opencl:gpu&quot;</span><span class="p">)</span>
-<span class="n">x_np</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-
-<span class="c1"># Array w has shape (3, 10, 10)</span>
-<span class="n">w</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">x_cpu</span><span class="p">,</span> <span class="n">x_gpu</span><span class="p">,</span> <span class="n">x_np</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;level_zero:gpu&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Migration may also occur during calls to other array creation functions, e.g. <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a> when the <cite>fill_value</cite> parameter is an instance
-of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a>. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e. the
-new array is created on the same device where <cite>fill_value</cite> array was allocated.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> as arguments to array construction _dpctl_tensor_utility_functions</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-
-<span class="c1"># Zero-dimensional array allocated on CPU device</span>
-<span class="n">pi_on_device</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-
-<span class="c1"># x will also be allocated on CPU device</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">pi_on_device</span><span class="p">)</span>
-
-<span class="c1"># Create array on GPU. Migration of `pi_on_device` to GPU via host</span>
-<span class="c1"># takes place under the hood</span>
-<span class="n">y_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">pi_on_device</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="combining-arrays-with-different-usm-types">
-<h2>Combining arrays with different USM types<a class="headerlink" href="#combining-arrays-with-different-usm-types" title="Permalink to this heading">#</a></h2>
-<p>For functions with single argument the returned array has the same <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> as the input array.</p>
-<p>Functions that combine several <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances the <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> of the output array is determined
-using the following coercion rule:</p>
-<div class="table-wrapper docutils container">
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td></td>
-<td><p>“device”</p></td>
-<td><p>“shared”</p></td>
-<td><p>“host”</p></td>
-</tr>
-<tr class="row-even"><td><p>“device”</p></td>
-<td><p>“device”</p></td>
-<td><p>“device”</p></td>
-<td><p>“device”</p></td>
-</tr>
-<tr class="row-odd"><td><p>“shared”</p></td>
-<td><p>“device”</p></td>
-<td><p>“shared”</p></td>
-<td><p>“shared”</p></td>
-</tr>
-<tr class="row-even"><td><p>“host”</p></td>
-<td><p>“device”</p></td>
-<td><p>“shared”</p></td>
-<td><p>“host”</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>If assignign USM-type “device” a score of 0, USM-type “shared” a score of 1, and USM-type “host” a score of 2,
-the USM-type of the output array has the smallest score of all its inputs.</p>
-<p>The convenience function <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.get_coerced_usm_type" title="dpctl.utils.get_coerced_usm_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coerced_usm_type()</span></code></a> is a convenience function to determine the USM-type
-following this convention:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">get_coerced_usm_type</span>
-
-<span class="c1"># r1 has value &quot;device&quot;</span>
-<span class="n">r1</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
-
-<span class="c1"># r2 has value &quot;shared&quot;</span>
-<span class="n">r2</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
-
-<span class="c1"># r3 has value &quot;host&quot;</span>
-<span class="n">r3</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
-</pre></div>
-</div>
-</section>
 </section>
 
         </article>
@@ -1001,23 +805,23 @@ following this convention:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../user_guides/index.html">
+          <a class="next-page" href="_enumerating_devices.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">User guides</div>
+                <div class="title">Enumerating available devices</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="environment_variables.html">
+          <a class="prev-page" href="_parallelisms.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Environment variables</div>
+                <div class="title">Types of parallelisms</div>
                 
               </div>
             </a>
@@ -1039,30 +843,8 @@ following this convention:</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><ul>
-<li><a class="reference internal" href="#creating-an-array">Creating an array</a></li>
-<li><a class="reference internal" href="#execution-model">Execution model</a></li>
-<li><a class="reference internal" href="#migrating-arrays">Migrating arrays</a></li>
-<li><a class="reference internal" href="#combining-arrays-with-different-usm-types">Combining arrays with different USM types</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
