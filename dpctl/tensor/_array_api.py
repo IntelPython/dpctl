@@ -107,8 +107,7 @@ class Info:
         Returns a dictionary of default data types for ``device``.
 
         Args:
-            device (Optional[:class:`dpctl.SyclDevice`,
-            :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`]):
+            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`]):
                 array API concept of device used in getting default data types.
                 ``device`` can be ``None`` (in which case the default device
                 is used), an instance of :class:`dpctl.SyclDevice` corresponding
@@ -119,7 +118,8 @@ class Info:
 
         Returns:
             dict:
-                a dictionary of default data types for ``device``
+                a dictionary of default data types for ``device``:
+
                     - ``"real floating"``: dtype
                     - ``"complex floating"``: dtype
                     - ``"integral"``: dtype
@@ -143,15 +143,12 @@ class Info:
         Returns a dictionary of all Array API data types of a specified
         ``kind`` supported by ``device``
 
-        This dictionary only includes data types supported by the array API.
-
-        See [array API](array_api).
-
-        [array_api]: https://data-apis.org/array-api/latest/
+        This dictionary only includes data types supported by the
+        `Python Array API <https://data-apis.org/array-api/latest/>`_
+        specification.
 
         Args:
-            device (Optional[:class:`dpctl.SyclDevice`,
-            :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
+            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
                 array API concept of device used in getting default data types.
                 ``device`` can be ``None`` (in which case the default device is
                 used), an instance of :class:`dpctl.SyclDevice` corresponding
@@ -167,6 +164,7 @@ class Info:
                   types supported by `device`
                 - if ``kind`` is a string, returns a dictionary containing the
                   data types belonging to the data type kind specified.
+
                 Supports:
 
                     - ``"bool"``
