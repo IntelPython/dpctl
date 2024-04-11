@@ -773,7 +773,7 @@
 <dt class="sig sig-object py" id="dpctl.tensor._array_api.Info.dtypes">
 <span class="sig-prename descclassname"><span class="pre">Info.</span></span><span class="sig-name descname"><span class="pre">dtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/dpctl/tensor/_array_api.html#Info.dtypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor._array_api.Info.dtypes" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a dictionary of all Array API data types of a specified
-<code class="docutils literal notranslate"><span class="pre">kind</span></code> supported by <code class="docutils literal notranslate"><span class="pre">device</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">kind</span></code> supported by <code class="docutils literal notranslate"><span class="pre">device</span></code>.</p>
 <p>This dictionary only includes data types supported by the
 <a class="reference external" href="https://data-apis.org/array-api/latest/">Python Array API</a>
 specification.</p>
@@ -792,11 +792,9 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 <li><p>if <code class="docutils literal notranslate"><span class="pre">kind</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returns a dictionary of all data
 types supported by <cite>device</cite></p></li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">kind</span></code> is a string, returns a dictionary containing the
-data types belonging to the data type kind specified.</p></li>
-</ul>
+data types belonging to the data type kind specified.</p>
 <p>Supports:</p>
-<blockquote>
-<div><ul>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;bool&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;signed</span> <span class="pre">integer&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;unsigned</span> <span class="pre">integer&quot;</span></code></p></li>
@@ -805,13 +803,12 @@ data types belonging to the data type kind specified.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;complex</span> <span class="pre">floating&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;numeric&quot;</span></code></p></li>
 </ul>
-</div></blockquote>
-<ul>
+</li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">kind</span></code> is a tuple, the tuple represents a union of
 <code class="docutils literal notranslate"><span class="pre">kind</span></code> strings, and returns a dictionary containing data
 types corresponding to the-specified union.</p></li>
 </ul>
-<p>Default: <cite>None</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
 </dd>

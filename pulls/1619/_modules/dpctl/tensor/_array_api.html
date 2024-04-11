@@ -909,7 +909,7 @@
 <span class="sd">        dtypes(*, device=None, kind=None)</span>
 
 <span class="sd">        Returns a dictionary of all Array API data types of a specified</span>
-<span class="sd">        ``kind`` supported by ``device``</span>
+<span class="sd">        ``kind`` supported by ``device``.</span>
 
 <span class="sd">        This dictionary only includes data types supported by the</span>
 <span class="sd">        `Python Array API &lt;https://data-apis.org/array-api/latest/&gt;`_</span>
@@ -933,21 +933,21 @@
 <span class="sd">                - if ``kind`` is a string, returns a dictionary containing the</span>
 <span class="sd">                  data types belonging to the data type kind specified.</span>
 
-<span class="sd">                Supports:</span>
+<span class="sd">                  Supports:</span>
 
-<span class="sd">                    - ``&quot;bool&quot;``</span>
-<span class="sd">                    - ``&quot;signed integer&quot;``</span>
-<span class="sd">                    - ``&quot;unsigned integer&quot;``</span>
-<span class="sd">                    - ``&quot;integral&quot;``</span>
-<span class="sd">                    - ``&quot;real floating&quot;``</span>
-<span class="sd">                    - ``&quot;complex floating&quot;``</span>
-<span class="sd">                    - ``&quot;numeric&quot;``</span>
+<span class="sd">                  * ``&quot;bool&quot;``</span>
+<span class="sd">                  * ``&quot;signed integer&quot;``</span>
+<span class="sd">                  * ``&quot;unsigned integer&quot;``</span>
+<span class="sd">                  * ``&quot;integral&quot;``</span>
+<span class="sd">                  * ``&quot;real floating&quot;``</span>
+<span class="sd">                  * ``&quot;complex floating&quot;``</span>
+<span class="sd">                  * ``&quot;numeric&quot;``</span>
 
 <span class="sd">                - if ``kind`` is a tuple, the tuple represents a union of</span>
 <span class="sd">                  ``kind`` strings, and returns a dictionary containing data</span>
 <span class="sd">                  types corresponding to the-specified union.</span>
 
-<span class="sd">                Default: `None`.</span>
+<span class="sd">                Default: ``None``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict:</span>
