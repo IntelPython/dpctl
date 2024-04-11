@@ -773,7 +773,7 @@ Note: This function is currently only supported for the OpenCL backend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a>) – The <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> for which the
+<li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>) – The <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> for which the
 <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
 <li><p><strong>src</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Source string for an OpenCL program.</p></li>
 <li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Optional compilation flags that will be used
@@ -782,7 +782,7 @@ when compiling the program. Default: <code class="docutils literal notranslate">
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>program (SyclProgram)</dt><dd><p>A <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
+<dt>program (<a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a>)</dt><dd><p>A <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
 <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
 returned by the C API.</p>
 </dd>

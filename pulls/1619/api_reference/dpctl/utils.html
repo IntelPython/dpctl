@@ -768,7 +768,7 @@
 <dd><p>Get execution queue from queues associated with input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>qs</strong> (<em>List</em><em>[</em><a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><em>SyclQueue</em></a><em>]</em>) – a list or a tuple of <a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> objects
+<dd class="field-odd"><p><strong>qs</strong> (List[<a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>], Tuple[<a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>]) – a list or a tuple of <a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> objects
 corresponding to arrays that are being combined.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -785,17 +785,17 @@ or <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <dt class="sig sig-object py" id="dpctl.utils.get_coerced_usm_type">
 <span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_coerced_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_types</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_coerced_usm_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Get USM type of the output array for a function combining
-arrays of given USM type using compute-follows-data execution
+arrays of given USM types using compute-follows-data execution
 model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>usm_types</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – a list or a tuple of strings of <code class="docutils literal notranslate"><span class="pre">.usm_types</span></code> attributes
+<dd class="field-odd"><p><strong>usm_types</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – a list or a tuple of strings of <code class="docutils literal notranslate"><span class="pre">.usm_types</span></code> attributes
 for input arrays</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>str</dt><dd><p>type of USM allocation for the output arrays (s).
-<code class="docutils literal notranslate"><span class="pre">None</span></code> if any of the input string is not recognized.</p>
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if any of the input strings are not recognized.</p>
 </dd>
 </dl>
 </p>
@@ -812,13 +812,11 @@ for input arrays</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>usm_type</strong> – <p>Specification for USM allocation type. Valid specifications
 are:</p>
-<blockquote>
-<div><ul>
+<ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code></p></li>
 </ul>
-</div></blockquote>
 <p>If <code class="docutils literal notranslate"><span class="pre">allow_none</span></code> keyword argument is set, a value of
 <code class="docutils literal notranslate"><span class="pre">None</span></code> is also permitted.</p>
 </p></li>
@@ -840,9 +838,12 @@ Default: <cite>True</cite>.</p></li>
 <dt class="sig sig-object py" id="dpctl.utils.onetrace_enabled">
 <span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_onetrace_context.html#onetrace_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition">#</a></dt>
 <dd><p>Enable <code class="docutils literal notranslate"><span class="pre">onetrace</span></code> collection for kernels executed in this context.</p>
-<p>N.B.: Proper working of this utility assumes that Python interpreter
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Proper working of this utility assumes that Python interpreter
 has been launched by <code class="docutils literal notranslate"><span class="pre">onetrace</span></code> or <code class="docutils literal notranslate"><span class="pre">unitrace</span></code> tool from project
 <a class="reference external" href="https://github.com/intel/pti-gpu">intel/pti-gpu</a>.</p>
+</div>
 <dl class="field-list">
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Launch the Python interpreter using <cite>onetrace</cite> tool:</p>
@@ -879,8 +880,7 @@ Device Timeline (queue: 0x555aee86bed0): dpctl::tensor::kernels::constructors::l
 with device architectural details, and an empty
 dictionary otherwise. The dictionary contains
 the following keys:</p>
-<blockquote>
-<div><dl class="simple">
+<dl class="simple">
 <dt>device_id:</dt><dd><p>32-bits device PCI identifier</p>
 </dd>
 <dt>gpu_eu_count:</dt><dd><p>Total number of execution units</p>
@@ -898,7 +898,6 @@ the following keys:</p>
 <dt>max_mem_bandwidth:</dt><dd><p>Maximum memory bandwidth in bytes/second</p>
 </dd>
 </dl>
-</div></blockquote>
 <p>Unsupported descriptors are omitted from the dictionary.</p>
 <p>Descriptors other than the PCI identifier are supported only
 for <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevices</span></code> with Leve-Zero backend.</p>

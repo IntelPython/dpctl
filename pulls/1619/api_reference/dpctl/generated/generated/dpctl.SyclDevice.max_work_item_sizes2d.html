@@ -766,8 +766,8 @@
 <dt class="sig sig-object py" id="dpctl.SyclDevice.max_work_item_sizes2d">
 <span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">max_work_item_sizes2d</span></span><a class="headerlink" href="#dpctl.SyclDevice.max_work_item_sizes2d" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the maximum number of work-items that are permitted in each
-dimension of the work-group of the nd_range&lt;2&gt;. The minimum value is
-<cite>(1; 1)</cite> for devices that evaluate to False for
+dimension of the work-group of the <code class="docutils literal notranslate"><span class="pre">sycl::nd_range&lt;2&gt;</span></code>. The minimum
+value is <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,)</span></code> for devices that evaluate to <code class="docutils literal notranslate"><span class="pre">False</span></code> for
 <a class="reference internal" href="dpctl.SyclDevice.has_aspect_custom.html#dpctl.SyclDevice.has_aspect_custom" title="dpctl.SyclDevice.has_aspect_custom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">has_aspect_custom</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
