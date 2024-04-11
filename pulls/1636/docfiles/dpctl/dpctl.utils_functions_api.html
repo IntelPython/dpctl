@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.utils Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+225.g78f321ac80 documentation</title>
+  <title>dpctl.utils Functions &mdash; Data Parallel Control (dpctl) 0.17.0dev0+226.g0e4ef48362 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -26,7 +26,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=aaa98ea0"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=8d9b0fa7"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../_static/target-highlight.js?v=df7d332b"></script>
@@ -47,7 +47,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+225.g78f321ac80
+                0.17.0dev0+226.g0e4ef48362
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -102,8 +102,7 @@
 with device architectural details, and an empty
 dictionary otherwise. The dictionary contains
 the following keys:</p>
-<blockquote>
-<div><dl class="simple">
+<dl class="simple">
 <dt>device_id:</dt><dd><p>32-bits device PCI identifier</p>
 </dd>
 <dt>gpu_eu_count:</dt><dd><p>Total number of execution units</p>
@@ -121,7 +120,6 @@ the following keys:</p>
 <dt>max_mem_bandwidth:</dt><dd><p>Maximum memory bandwidth in bytes/second</p>
 </dd>
 </dl>
-</div></blockquote>
 <p>Unsupported descriptors are omitted from the dictionary.</p>
 <p>Descriptors other than the PCI identifier are supported only
 for <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevices</span></code> with Leve-Zero backend.</p>
@@ -179,9 +177,12 @@ for <code class="xref py py-class docutils literal notranslate"><span class="pre
 <dt class="sig sig-object py" id="dpctl.utils.onetrace_enabled">
 <span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_onetrace_context.html#onetrace_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition"></a></dt>
 <dd><p>Enable <code class="docutils literal notranslate"><span class="pre">onetrace</span></code> collection for kernels executed in this context.</p>
-<p>N.B.: Proper working of this utility assumes that Python interpreter
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Proper working of this utility assumes that Python interpreter
 has been launched by <code class="docutils literal notranslate"><span class="pre">onetrace</span></code> or <code class="docutils literal notranslate"><span class="pre">unitrace</span></code> tool from project
 <a class="reference external" href="https://github.com/intel/pti-gpu">intel/pti-gpu</a>.</p>
+</div>
 <dl class="field-list">
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Launch the Python interpreter using <cite>onetrace</cite> tool:</p>
