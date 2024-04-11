@@ -141,7 +141,7 @@ class Info:
         dtypes(*, device=None, kind=None)
 
         Returns a dictionary of all Array API data types of a specified
-        ``kind`` supported by ``device``
+        ``kind`` supported by ``device``.
 
         This dictionary only includes data types supported by the
         `Python Array API <https://data-apis.org/array-api/latest/>`_
@@ -165,21 +165,21 @@ class Info:
                 - if ``kind`` is a string, returns a dictionary containing the
                   data types belonging to the data type kind specified.
 
-                Supports:
+                  Supports:
 
-                    - ``"bool"``
-                    - ``"signed integer"``
-                    - ``"unsigned integer"``
-                    - ``"integral"``
-                    - ``"real floating"``
-                    - ``"complex floating"``
-                    - ``"numeric"``
+                  * ``"bool"``
+                  * ``"signed integer"``
+                  * ``"unsigned integer"``
+                  * ``"integral"``
+                  * ``"real floating"``
+                  * ``"complex floating"``
+                  * ``"numeric"``
 
                 - if ``kind`` is a tuple, the tuple represents a union of
                   ``kind`` strings, and returns a dictionary containing data
                   types corresponding to the-specified union.
 
-                Default: `None`.
+                Default: ``None``.
 
         Returns:
             dict:
