@@ -3,10 +3,7 @@
 
 .. currentmodule:: dpctl.tensor
 
-
-
 .. autoclass:: __array_namespace_info__
-
    
 
    

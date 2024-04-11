@@ -3,18 +3,15 @@
 
 .. currentmodule:: dpctl.tensor._array_api
 
-
-
 .. autoclass:: Info
-
    
 
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: generated
    
-      ~Info.__init__
       ~Info.capabilities
       ~Info.default_device
       ~Info.default_dtypes
