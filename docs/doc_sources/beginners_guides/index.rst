@@ -28,7 +28,7 @@ Introduction to array library
 .. toctree::
     :hidden:
 
-    _installation
+    installation
     _parallelisms
     _why_dpctl
     _enumerating_devices
