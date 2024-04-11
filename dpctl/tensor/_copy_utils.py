@@ -116,31 +116,31 @@ def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     :class:`numpy.ndarray`.
 
     Args:
-        arg (array-like): An instance of input convertible to
-            :class:`numpy.ndarray`
+        arg:
+            Input convertible to :class:`numpy.ndarray`
         device (object): array API specification of device where the
             output array is created. Device can be specified by a
             a filter selector string, an instance of
             :class:`dpctl.SyclDevice`, an instance of
             :class:`dpctl.SyclQueue`, or an instance of
-            :class:`dpctl.tensor.Device`. If the value is `None`,
+            :class:`dpctl.tensor.Device`. If the value is ``None``,
             returned array is created on the default-selected device.
-            Default: `None`.
+            Default: ``None``
         usm_type (str): The requested USM allocation type for the
-            output array. Recognized values are `"device"`, `"shared"`,
-            or `"host"`.
+            output array. Recognized values are ``"device"``,
+            ``"shared"``, or ``"host"``
         sycl_queue (:class:`dpctl.SyclQueue`, optional):
             A SYCL queue that determines output array allocation device
             as well as execution placement of data movement operations.
-            The `device` and `sycl_queue` arguments
+            The ``device`` and ``sycl_queue`` arguments
             are equivalent. Only one of them should be specified. If both
             are provided, they must be consistent and result in using the
-            same execution queue. Default: `None`.
+            same execution queue. Default: ``None``
 
     The returned array has the same shape, and the same data type kind.
     If the device does not support the data type of input array, a
     closest support data type of the same kind may be returned, e.g.
-    input array of type `float16` may be upcast to `float32` if the
+    input array of type ``float16`` may be upcast to ``float32`` if the
     target device does not support 16-bit floating point type.
     """
     q = normalize_queue_device(sycl_queue=sycl_queue, device=device)
@@ -151,7 +151,7 @@ def to_numpy(usm_ary, /):
     """
     to_numpy(usm_ary)
 
-    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`
+    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data type.
 
     Args:
@@ -160,7 +160,7 @@ def to_numpy(usm_ary, /):
     Returns:
         :class:`numpy.ndarray`:
             An instance of :class:`numpy.ndarray` populated with content of
-            `usm_ary`
+            ``usm_ary``
     """
     return _copy_to_numpy(usm_ary)
 
@@ -169,7 +169,7 @@ def asnumpy(usm_ary):
     """
     asnumpy(usm_ary)
 
-    Copies content of :class:`dpctl.tensor.usm_ndarray` instance `usm_ary`
+    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data
     type.
 
@@ -179,7 +179,7 @@ def asnumpy(usm_ary):
     Returns:
         :class:`numpy.ndarray`:
             An instance of :class:`numpy.ndarray` populated with content
-            of `usm_ary`
+            of ``usm_ary``
     """
     return _copy_to_numpy(usm_ary)
 
@@ -508,22 +508,28 @@ def copy(usm_ary, /, *, order="K"):
 
     Args:
         ary (usm_ndarray):
-            Input array.
-        order ({"C", "F", "A", "K"}, optional):
-            Controls the memory layout of the output array.
+            Input array
+        order (``"C"``, ``"F"``, ``"A"``, ``"K"``, optional):
+            Controls the memory layout of the output array
     Returns:
         usm_ndarray:
             A copy of the input array.
 
-    Memory layout of the copy is controlled by `order` keyword,
-    following NumPy's conventions. The `order` keywords can be
+    Memory layout of the copy is controlled by ``order`` keyword,
+    following NumPy's conventions. The ``order`` keywords can be
     one of the following:
 
-       - "C": C-contiguous memory layout
-       - "F": Fortran-contiguous memory layout
-       - "A": Fortran-contiguous if the input array is also Fortran-contiguous,
-         otherwise C-contiguous
-       - "K": match the layout of `usm_ary` as closely as possible.
+    .. list-table::
+
+        * - ``"C"``
+          - C-contiguous memory layout
+        * - ``"F"``
+          - Fortran-contiguous memory layout
+        * - ``"A"``
+          - Fortran-contiguous if the input array is also Fortran-contiguous,
+            otherwise C-contiguous
+        * - ``"K"``
+          - match the layout of ``usm_ary`` as closely as possible.
 
     """
     if len(order) == 0 or order[0] not in "KkAaCcFf":

@@ -87,32 +87,33 @@ cdef class SyclPlatform(_SyclPlatform):
     """ SyclPlatform(self, arg=None)
     Python class representing ``sycl::platform`` class.
 
-    There are two ways of creating a SyclDevice instance:
+    There are two ways of creating a :class:`.SyclPlatform`
+    instance:
 
-        - Invoking the constructor with no arguments creates a
-          platform using the default selector.
+    - Invoking the constructor with no arguments creates a
+      platform using the default selector.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a SyclPlatform for default-selected device
-                pl = dpctl.SyclPlatform()
-                print(pl.name, pl.version)
+            # Create a SyclPlatform for default-selected device
+            pl = dpctl.SyclPlatform()
+            print(pl.name, pl.version)
 
-        - Invoking the constructor with specific filter selector string that
-          creates a queue for the device corresponding to the filter string.
+    - Invoking the constructor with specific filter selector string that
+      creates a queue for the device corresponding to the filter string.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a SyclPlatform for device selected by
-                # filter-selector string
-                pl = dpctl.SyclPlatform("opencl:cpu")
-                print(pl.name, pl.version)
+            # Create a SyclPlatform for device selected by
+            # filter-selector string
+            pl = dpctl.SyclPlatform("opencl:cpu")
+            print(pl.name, pl.version)
     """
 
     @staticmethod
@@ -217,20 +218,20 @@ cdef class SyclPlatform(_SyclPlatform):
         The level of information printed out by the function can be controlled
         by the optional ``vebosity`` setting.
 
-            - **Verbosity level 0**: Prints out the list of platforms and their
-              names.
-            - **Verbosity level 1**: Prints out the name, version, vendor,
-              backend, number of devices for each platform.
-            - **Verbosity level 2**: At the highest level of verbosity
-              everything in the previous levels along with the name, version,
-              and filter string for each device is printed.
+        - **Verbosity level 0**: Prints out the list of platforms and their
+          names.
+        - **Verbosity level 1**: Prints out the name, version, vendor,
+          backend, number of devices for each platform.
+        - **Verbosity level 2**: At the highest level of verbosity
+          everything in the previous levels along with the name, version,
+          and filter string for each device is printed.
 
         Args:
-            verbosity (optional): Defaults to 0.
+            verbosity (Literal[0, 1, 2], optional):.
                 The verbosity controls how much information is printed by the
-                function. 0 is the lowest level set by default and 2 is the
-                highest level to print the most verbose output.
-
+                function. Value ``0`` is the lowest level set by default and ``2``
+                is the highest level to print the most verbose output.
+                Default: ``0``
         """
         cdef size_t v = 0
 
@@ -251,19 +252,32 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def vendor(self):
-        """ Returns the platform vendor name as a string.
+        """
+        Returns the platform vendor name as a string.
+
+        Returns:
+            str:
+                Vendor name
         """
         return self._vendor.decode()
 
     @property
     def version(self):
         """ Returns a backend-defined driver version as a string.
+
+        Returns:
+            str:
+                Version of the backend-defined driver
         """
         return self._version.decode()
 
     @property
     def name(self):
-        """ Returns the name of the platform as a string
+        """ Returns the name of the platform as a string.
+
+        Returns:
+            str:
+                Name of the platform
         """
         return self._name.decode()
 
@@ -272,7 +286,8 @@ cdef class SyclPlatform(_SyclPlatform):
         """Returns the backend_type enum value for this platform
 
         Returns:
-            backend_type: The backend for the platform.
+            backend_type:
+                The backend for the platform.
         """
         cdef _backend_type BTy = (
             DPCTLPlatform_GetBackend(self._platform_ref)
@@ -291,7 +306,7 @@ cdef class SyclPlatform(_SyclPlatform):
         """Returns the default platform context for this platform
 
         Returns:
-            SyclContext
+            :class:`dpctl.SyclContext`
                 The default context for the platform.
         Raises:
             SyclContextCreationError
@@ -315,9 +330,10 @@ cdef class SyclPlatform(_SyclPlatform):
         :class:`dpctl.SyclPlatform` instance.
 
         Returns:
-            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclPlatform` objects
-            point to the same ``DPCTLSyclPlatformRef`` object, otherwise
-            ``False``.
+            bool:
+                ``True`` if the two :class:`dpctl.SyclPlatform` objects
+                point to the same ``DPCTLSyclPlatformRef`` object, otherwise
+                ``False``.
         """
         return DPCTLPlatform_AreEq(self._platform_ref, other.get_platform_ref())
 
@@ -328,9 +344,10 @@ cdef class SyclPlatform(_SyclPlatform):
         :class:`dpctl.SyclPlatform` instance.
 
         Returns:
-            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclPlatform` objects
-            point to the same ``DPCTLSyclPlatformRef`` object, otherwise
-            ``False``.
+            bool:
+                ``True`` if the two :class:`dpctl.SyclPlatform` objects
+                point to the same ``DPCTLSyclPlatformRef`` object, otherwise
+                ``False``.
         """
         if isinstance(other, SyclPlatform):
             return self.equals(<SyclPlatform> other)
@@ -341,6 +358,9 @@ cdef class SyclPlatform(_SyclPlatform):
         """
         Returns a hash value by hashing the underlying ``sycl::platform`` object.
 
+        Returns:
+            int:
+                Hash value
         """
         return DPCTLPlatform_Hash(self._platform_ref)
 
@@ -456,7 +476,8 @@ cpdef list get_platforms():
     Returns a list of all available SYCL platforms on the system.
 
     Returns:
-        list: A list of SYCL platforms on the system.
+        List[:class:`.SyclPlatform`]:
+            A list of SYCL platforms on the system.
     """
     cdef list platforms = []
     cdef DPCTLPlatformVectorRef PVRef = NULL

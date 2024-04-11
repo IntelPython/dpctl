@@ -32,26 +32,36 @@ __all__ = ["get_execution_queue", "get_coerced_usm_type", "ExecutionPlacementErr
 
 
 class ExecutionPlacementError(Exception):
-    """Exception raised when execution placement target can be determined
-    from input arrays.
+    """Exception raised when execution placement target can not
+    be unambiguously determined from input arrays.
 
-    Make sure that input arrays are associated with the same SyclQueue,
-    or migrate data to the same SyclQueue using usm_ndarray.to_device
-    method.
+    Make sure that input arrays are associated with the same
+    :class:`dpctl.SyclQueue`,
+    or migrate data to the same :class:`dpctl.SyclQueue` using
+    :meth:`dpctl.tensor.usm_ndarray.to_device` method.
     """
     pass
 
 
 cdef bint queue_equiv(SyclQueue q1, SyclQueue q2):
-    """ Queues are equivalent if q1 == q2, that is they are copies
+    """Queues are equivalent if ``q1 == q2``, that is they are copies
     of the same underlying SYCL object and hence are the same."""
     return q1.__eq__(q2)
 
 
 def get_execution_queue(qs, /):
-    """ Given a list of :class:`dpctl.SyclQueue` objects
-    returns the execution queue under compute follows data paradigm,
-    or returns `None` if queues are not equal.
+    """
+    Get execution queue from queues associated with input arrays.
+
+    Args:
+        qs (List[:class:`dpctl.SyclQueue`], Tuple[:class:`dpctl.SyclQueue`]):
+            a list or a tuple of :class:`dpctl.SyclQueue` objects
+            corresponding to arrays that are being combined.
+
+    Returns:
+        SyclQueue:
+            execution queue under compute follows data paradigm,
+            or ``None`` if queues are not equal.
     """
     if not isinstance(qs, (list, tuple)):
         raise TypeError(
@@ -72,10 +82,21 @@ def get_execution_queue(qs, /):
 
 
 def get_coerced_usm_type(usm_types, /):
-    """ Given a list of strings denoting the types of USM allocations
-    for input arrays returns the type of USM allocation for the output
-    array(s) per compute follows data paradigm.
-    Returns `None` if the type can not be deduced."""
+    """
+    Get USM type of the output array for a function combining
+    arrays of given USM types using compute-follows-data execution
+    model.
+
+    Args:
+        usm_types (List[str], Tuple[str]):
+            a list or a tuple of strings of ``.usm_types`` attributes
+            for input arrays
+
+    Returns:
+         str
+            type of USM allocation for the output arrays (s).
+            ``None`` if any of the input strings are not recognized.
+    """
     if not isinstance(usm_types, (list, tuple)):
         raise TypeError(
             "Expected a list or a tuple, got {}".format(type(usm_types))
@@ -130,16 +151,24 @@ def validate_usm_type(usm_type, /, *, allow_none=True):
     Args:
         usm_type:
             Specification for USM allocation type. Valid specifications
-            are `"device"`, `"shared"`, or `"host"`. If `allow_none`
-            keyword argument is set, a value of `None` is also permitted.
+            are:
+
+            * ``"device"``
+            * ``"shared"``
+            * ``"host"``
+
+            If ``allow_none`` keyword argument is set, a value of
+            ``None`` is also permitted.
         allow_none (bool, optional):
-            Whether `usm_type` value of `None` is considered valid.
+            Whether ``usm_type`` value of ``None`` is considered valid.
             Default: `True`.
 
     Raises:
-        ValueError: if `usm_type` is an unrecognized string.
-        TypeError:  if `usm_type` is not a string, and `usm_type` is not `None`
-            provided `allow_none` is `True`.
+        ValueError:
+            if ``usm_type`` is not a recognized string.
+        TypeError:
+            if ``usm_type`` is not a string, and ``usm_type`` is
+            not ``None`` provided ``allow_none`` is ``True``.
     """
     if allow_none:
         _validate_usm_type_allow_none(usm_type)

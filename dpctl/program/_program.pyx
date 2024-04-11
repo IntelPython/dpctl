@@ -230,7 +230,7 @@ cdef class SyclProgram:
         return int(<size_t>self._program_ref)
 
 
-cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
+cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
     """
         Creates a Sycl interoperability program from an OpenCL source string.
 
@@ -240,20 +240,24 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
         Note: This function is currently only supported for the OpenCL backend.
 
         Parameters:
-            q (SyclQueue)   : The :class:`SyclQueue` for which the
-                              :class:`SyclProgram` is going to be built.
-            src (unicode): Source string for an OpenCL program.
-            copts (unicode) : Optional compilation flags that will be used
-                              when compiling the program.
+            q (:class:`dpctl.SyclQueue`)
+                The :class:`dpctl.SyclQueue` for which the
+                :class:`.SyclProgram` is going to be built.
+            src (str)
+                Source string for an OpenCL program.
+            copts (str, optional)
+                Optional compilation flags that will be used
+                when compiling the program. Default: ``""``.
 
         Returns:
-            program (SyclProgram): A :class:`SyclProgram` object wrapping the
-            ``sycl::kernel_bundle<sycl::bundle_state::executable>`` returned
-            by the C API.
+            program (:class:`.SyclProgram`)
+                A :class:`.SyclProgram` object wrapping the
+                ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+                returned by the C API.
 
         Raises:
-            SyclProgramCompilationError: If a SYCL kernel bundle could not be
-            created.
+            SyclProgramCompilationError
+                If a SYCL kernel bundle could not be created.
     """
 
     cdef DPCTLSyclKernelBundleRef KBref
@@ -272,7 +276,7 @@ cpdef create_program_from_source(SyclQueue q, unicode src, unicode copts=""):
 
 
 cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
-                                unicode copts=""):
+                                str copts=""):
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
@@ -281,20 +285,24 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
         from an compiled SPIR-V binary file.
 
         Parameters:
-            q (SyclQueue): The :class:`SyclQueue` for which the
-                           :class:`SyclProgram` is going to be built.
-            IL (bytes) : SPIR-V binary IL file for an OpenCL program.
-            copts (str) : Optional compilation flags that will be used
-                              when compiling the program.
+            q (:class:`dpctl.SyclQueue`)
+                The :class:`dpctl.SyclQueue` for which the
+                :class:`.SyclProgram` is going to be built.
+            IL (bytes)
+                SPIR-V binary IL file for an OpenCL program.
+            copts (str, optional)
+                Optional compilation flags that will be used
+                when compiling the program. Default: ``""``.
 
         Returns:
-            program (SyclProgram): A :class:`SyclProgram` object wrapping the
-            ``sycl::kernel_bundle<sycl::bundle_state::executable>`` returned by
-            the C API.
+            program (:class:`.SyclProgram`)
+                A :class:`.SyclProgram` object wrapping the
+                ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+                returned by the C API.
 
         Raises:
-            SyclProgramCompilationError: If a SYCL kernel bundle could not be
-            created.
+            SyclProgramCompilationError
+                If a SYCL kernel bundle could not be created.
     """
 
     cdef DPCTLSyclKernelBundleRef KBref
@@ -323,7 +331,8 @@ cdef api DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(SyclProgram pro
 cdef api SyclProgram SyclProgram_Make(DPCTLSyclKernelBundleRef KBRef):
     """
     C-API function to create :class:`dpctl.program.SyclProgram`
-    instance from opaque sycl kernel bundle reference.
+    instance from opaque ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+    reference.
     """
     cdef DPCTLSyclKernelBundleRef copied_KBRef = DPCTLKernelBundle_Copy(KBRef)
     return SyclProgram._create(copied_KBRef)

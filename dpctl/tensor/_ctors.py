@@ -478,37 +478,40 @@ def asarray(
         obj: Python object to convert. Can be an instance of
             :class:`dpctl.tensor.usm_ndarray`,
             an object representing SYCL USM allocation and implementing
-            `__sycl_usm_array_interface__` protocol, an instance
+            ``__sycl_usm_array_interface__`` protocol, an instance
             of :class:`numpy.ndarray`, an object supporting Python buffer
             protocol, a Python scalar, or a (possibly nested) sequence of
             Python scalars.
-        dtype (data type, optional): output array data type. If `dtype` is
-            `None`, the output array data type is inferred from data types in
-            `obj`. Default: `None`.
-        copy (`bool`, optional): boolean indicating whether or not to copy the
-            input. If `True`, always creates a copy. If `False`, need to copy
-            raises `ValueError`. If `None`, try to reuse existing memory
-            allocations if possible, but allowed to perform a copy otherwise.
-            Default: `None`.
-        order ("C","F","A","K", optional): memory layout of the output array.
-            Default: "K"
+        dtype (data type, optional):
+            output array data type. If ``dtype`` is
+            ``None``, the output array data type is inferred from data types in
+            ``obj``. Default: ``None``
+        copy (`bool`, optional):
+            boolean indicating whether or not to copy the
+            input. If ``True``, always creates a copy. If ``False``, the
+            need to copy raises :exc:`ValueError`. If ``None``, tries to reuse
+            existing memory allocations if possible, but allows to perform
+            a copy otherwise. Default: ``None``
+        order (``"C"``, ``"F"``, ``"A"``, ``"K"``, optional):
+            memory layout of the output array. Default: ``"K"``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector string,
-            an instance of :class:`dpctl.SyclDevice` corresponding to a
-            non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. For `usm_type=None` the allocation
-            type is inferred from the input if `obj` has USM allocation, or
-            `"device"` is used instead. Default: `None`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation and
-            copying. Default: `None`.
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -662,27 +665,33 @@ def empty(
     USM allocation.
 
     Args:
-        shape (tuple): Dimensions of the array to be created.
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. The `None` value creates an array of floating
-            point data type. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: "C"
+        shape (Tuple[int], int):
+            Dimensions of the array to be created.
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. The ``None`` value creates an
+            array of floating point data type. Default: ``None``
+        order (``"C"``, or ``F"``):
+            memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector string,
-            an instance of :class:`dpctl.SyclDevice` corresponding to a
-            non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. Default: `"device"`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -767,25 +776,30 @@ def arange(
     as a one-dimensional array.
 
     Args:
-        start: Starting point of the interval
-        stop: Ending point of the interval. Default: `None`
-        step: Increment of the returned sequence. Default: `1`
-        dtype: Output array data type. Default: `None`
+        start:
+            Starting point of the interval
+        stop:
+            Ending point of the interval. Default: ``None``
+        step: Increment of the returned sequence. Default: ``1``
+        dtype: Output array data type. Default: ``None``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. Default: `'device'`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -866,26 +880,32 @@ def zeros(
     shape and filled with zeros.
 
     Args:
-        shape (tuple): Dimensions of the array to be created.
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: `"C"`
+        shape (Tuple[int], int):
+            Dimensions of the array to be created.
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. Default: ``None``
+        order ("C", or F"):
+            memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. Default: `"device"`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -927,26 +947,31 @@ def ones(
     shape and filled with ones.
 
     Args:
-        shape (tuple): Dimensions of the array to be created.
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: `"C"`
+        shape (Tuple[int], int):
+            Dimensions of the array to be created.
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. Default: ``None``
+        order ("C", or F"): memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. Default: `"device"`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -987,30 +1012,33 @@ def full(
     shape and filled with `fill_value`.
 
     Args:
-        shape (tuple): Dimensions of the array to be created.
-        fill_value (int,float,complex): fill value
+        shape (tuple):
+            Dimensions of the array to be created.
+        fill_value (int,float,complex,usm_ndarray):
+            fill value
         dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: "C"
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. Default: ``None``
+        order ("C", or F"):
+            memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL
-            USM allocation for the output array. If `usm_type` is `None`, it is
-            inferred from `fill_value` input if it is an instance of
-            `ums_ndarray`, or interpreted as `"device"` otherwise.
-            Default: `None`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -1074,28 +1102,32 @@ def empty_like(
     same `shape` as the input array `x`.
 
     Args:
-        x (usm_ndarray): Input array from which to derive the output array
-            shape.
-        dtype (optional): data type of the array. Can be typestring,
-            a :py:class:`numpy.dtype` object, numpy char string,
-            or a numpy scalar type. Default: `None`.
-        order ("C" or F"): memory layout for the array. Default: `"C"`.
+        x (usm_ndarray):
+            Input array from which to derive the output array shape.
+        dtype (optional):
+            data type of the array. Can be a typestring,
+            a :class:`numpy.dtype` object, NumPy char string,
+            or a NumPy scalar type. Default: ``None``
+        order ("C", or F"):
+            memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :py:class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :py:attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL
-            USM allocation for the output array. If `usm_type` is `None`, the
-            the ``usm_type`` is inferred from the input array. Default: `None`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -1137,29 +1169,35 @@ def zeros_like(
     initialized with zeros.
 
     Args:
-        x (usm_ndarray): Input array from which to derive the shape of the
+        x (usm_ndarray):
+            Input array from which to derive the shape of the
             output array.
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. If `None`, output array has the same data type as
-            the input array. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: `"C"`.
-        device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
-            string, an instance of :class:`dpctl.SyclDevice` corresponding
-            to a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL
-            USM allocation for the output array. If `None`, output array has
-            the same USM allocation type as the input array. Default: `None`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string, or a
+            NumPy scalar type. If `None`, output array has the same data
+            type as the input array. Default: ``None``
+        order ("C", or F"):
+            memory layout for the array. Default: ``"C"``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -1200,28 +1238,33 @@ def ones_like(
     having the same `shape` as the input array `x`.
 
     Args:
-        x (usm_ndarray): Input array from which to derive the output array
-            shape.
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: `"C"`.
-        device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
-            string, an instance of :class:`dpctl.SyclDevice` corresponding
-            to a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL
-            USM allocation for the output array. If `None`, output array has
-            the same USM allocation type as the input array. Default: `None`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+        x (usm_ndarray):
+            Input array from which to derive the output array shape
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. Default: `None`
+        order ("C", or F"):
+            memory layout for the array. Default: ``"C"``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -1275,28 +1318,32 @@ def full_like(
         x (usm_ndarray): Input array from which to derive the output array
             shape.
         fill_value: the value to fill output array with
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. If `dtype` is `None`, the output array data type is
-            inferred from `x`. Default: `None`.
-        order ("C", or F"): memory layout for the array. Default: `"C"`.
-        device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string, or a
+            NumPy scalar type. If ``dtype`` is ``None``, the output array data
+            type is inferred from ``x``. Default: ``None``
+        order ("C", or F"):
+            memory layout for the array. Default: ``"C"``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL
-            USM allocation for the output array. If `None`, output array has
-            the same USM allocation type as the input array `x`.
-            Default: `None`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -1350,37 +1397,46 @@ def linspace(
     evenly spaced numbers of specified interval.
 
     Args:
-        start: the start of the interval.
-        stop: the end of the interval. If the `endpoint` is `False`, the
-            function must generate `num+1` evenly spaced points starting
-            with `start` and ending with `stop` and exclude the `stop`
-            from the returned array such that the returned array consists
-            of evenly spaced numbers over the half-open interval
-            `[start, stop)`. If `endpoint` is `True`, the output
-            array must consist of evenly spaced numbers over the closed
-            interval `[start, stop]`. Default: `True`.
-        num: number of samples. Must be a non-negative integer; otherwise,
-            the function raises `ValueError` exception.
-        dtype: output array data type. Should be a floating data type.
-            If `dtype` is `None`, the output array must be the default
-            floating point data type. Default: `None`.
-        device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector string,
-            an instance of :class:`dpctl.SyclDevice` corresponding to a
-            non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. Default: `"device"`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
-        endpoint: boolean indicating whether to include `stop` in the
-            interval. Default: `True`.
+        start:
+            the start of the interval.
+        stop:
+            the end of the interval. If the ``endpoint`` is ``False``, the
+            function generates ``num+1`` evenly spaced points starting
+            with ``start`` and ending with ``stop`` and exclude the
+            ``stop`` from the returned array such that the returned array
+            consists of evenly spaced numbers over the half-open interval
+            ``[start, stop)``. If ``endpoint`` is ``True``, the output
+            array consists of evenly spaced numbers over the closed
+            interval ``[start, stop]``. Default: ``True``
+        num (int):
+            number of samples. Must be a non-negative integer; otherwise,
+            the function raises ``ValueError`` exception.
+        dtype:
+            output array data type. Should be a floating data type.
+            If ``dtype`` is ``None``, the output array must be the default
+            floating point data type for target device.
+            Default: ``None``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
+        endpoint: boolean indicating whether to include ``stop`` in the
+            interval. Default: ``True``
 
     Returns:
         usm_ndarray:
@@ -1438,33 +1494,42 @@ def eye(
     diagonal.
 
     Args:
-        n_rows: number of rows in the output array.
-        n_cols (optional): number of columns in the output array. If None,
-            n_cols = n_rows. Default: `None`.
-        k: index of the diagonal, with 0 as the main diagonal.
-            A positive value of k is a superdiagonal, a negative value
+        n_rows (int):
+            number of rows in the output array.
+        n_cols (int, optional):
+            number of columns in the output array. If ``None``,
+            ``n_cols = n_rows``. Default: ``None``
+        k (int):
+            index of the diagonal, with ``0`` as the main diagonal.
+            A positive value of ``k`` is a superdiagonal, a negative value
             is a subdiagonal.
-            Raises `TypeError` if `k` is not an integer.
-            Default: `0`.
-        dtype (optional): data type of the array. Can be typestring,
-            a `numpy.dtype` object, `numpy` char string, or a numpy
-            scalar type. Default: `None`.
-        order ("C" or F"): memory layout for the array. Default: "C"
-        device (optional): array API concept of device where the output array
-            is created. `device` can be `None`, a oneAPI filter selector
+            Raises :exc:`TypeError` if ``k`` is not an integer.
+            Default: ``0``
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string, or
+            a NumPy scalar type. Default: ``None``
+        order ("C" or F"):
+            memory layout for the array. Default: ``"C"``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
-        usm_type ("device", "shared", "host", optional): The type of SYCL USM
-            allocation for the output array. Default: `"device"`.
-        sycl_queue (:class:`dpctl.SyclQueue`, optional): The SYCL queue to use
-            for output array allocation and copying. `sycl_queue` and `device`
-            are exclusive keywords, i.e. use one or another. If both are
-            specified, a `TypeError` is raised unless both imply the same
-            underlying SYCL queue to be used. If both are `None`, a cached
-            queue targeting default-selected device is used for allocation
-            and copying. Default: `None`.
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
 
     Returns:
         usm_ndarray:
@@ -1506,17 +1571,21 @@ def eye(
 
 def tril(x, /, *, k=0):
     """
-    Returns the lower triangular part of a matrix (or a stack of matrices) `x`.
+    Returns the lower triangular part of a matrix (or a stack of matrices)
+    ``x``.
 
     The lower triangular part of the matrix is defined as the elements on and
-    below the specified diagonal `k`.
+    below the specified diagonal ``k``.
 
     Args:
-        x (usm_ndarray): Input array.
-        k (int, optional): Specifies the diagonal above which to set
-            elements to zero. If `k = 0`, the diagonal is the main diagonal.
-            If `k < 0`, the diagonal is below the main diagonal.
-            If `k > 0`, the diagonal is above the main diagonal. Default: `0`.
+        x (usm_ndarray):
+            Input array
+        k (int, optional):
+            Specifies the diagonal above which to set
+            elements to zero. If ``k = 0``, the diagonal is the main diagonal.
+            If ``k < 0``, the diagonal is below the main diagonal.
+            If ``k > 0``, the diagonal is above the main diagonal.
+            Default: ``0``
 
     Returns:
         usm_ndarray:
@@ -1574,17 +1643,21 @@ def tril(x, /, *, k=0):
 
 def triu(x, /, *, k=0):
     """
-    Returns the upper triangular part of a matrix (or a stack of matrices) `x`.
+    Returns the upper triangular part of a matrix (or a stack of matrices)
+    ``x``.
 
     The upper triangular part of the matrix is defined as the elements on and
-    above the specified diagonal `k`.
+    above the specified diagonal ``k``.
 
     Args:
-        x (usm_ndarray): Input array.
-        k (int, optional): Specifies the diagonal below which to set
-            elements to zero. If `k = 0`, the diagonal is the main diagonal.
-            If `k < 0`, the diagonal is below the main diagonal.
-            If `k > 0`, the diagonal is above the main diagonal. Default: `0`.
+        x (usm_ndarray):
+            Input array
+        k (int, optional):
+            Specifies the diagonal below which to set
+            elements to zero. If ``k = 0``, the diagonal is the main diagonal.
+            If ``k < 0``, the diagonal is below the main diagonal.
+            If ``k > 0``, the diagonal is above the main diagonal.
+            Default: ``0``
 
     Returns:
         usm_ndarray:
@@ -1646,24 +1719,27 @@ def meshgrid(*arrays, indexing="xy"):
     from vectors.
 
     Args:
-        arrays (usm_ndarray): an arbitrary number of one-dimensional arrays
+        arrays (usm_ndarray):
+            an arbitrary number of one-dimensional arrays
             representing grid coordinates. Each array should have the same
             numeric data type.
-        indexing: Cartesian (`xy`) or matrix (`ij`) indexing of output.
+        indexing (``"xy"``, or ``"ij"``):
+            Cartesian (``"xy"``) or matrix (``"ij"``) indexing of output.
             If provided zero or one one-dimensional vector(s) (i.e., the
-            zero- and one-dimensional cases, respectively), the `indexing`
-            keyword has no effect and should be ignored. Default: `xy`.
+            zero- and one-dimensional cases, respectively), the ``indexing``
+            keyword has no effect and should be ignored. Default: ``"xy"``
 
     Returns:
-        List[array]: list of `N` arrays, where `N` is the number of
+        List[array]:
+            list of ``N`` arrays, where ``N`` is the number of
             provided one-dimensional input arrays. Each returned array must
-            have rank `N`.
-            For a set of `n` vectors with lengths `N0`, `N1`, `N2`, ...
+            have rank ``N``.
+            For a set of ``n`` vectors with lengths ``N0``, ``N1``, ``N2``, ...
             The cartesian indexing results in arrays of shape
-            `(N1, N0, N2, ...)`, while the
+            ``(N1, N0, N2, ...)``, while the
             matrix indexing results in arrays of shape
-            `(N0, N1, N2, ...)`.
-            Default: `xy`.
+            ``(N0, N1, N2, ...)``.
+            Default: ``"xy"``.
 
     Raises:
         ValueError: If vectors are not of the same data type, or are not

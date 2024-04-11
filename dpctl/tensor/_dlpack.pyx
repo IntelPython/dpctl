@@ -329,22 +329,26 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps):
     from_dlpack_capsule(caps)
 
     Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
-    named Python capsule object referencing instance of `DLManagedTensor`
+    named Python capsule object referencing instance of ``DLManagedTensor``
     without copy. The instance forms a view in the memory of the tensor.
 
     Args:
-        caps: Python capsule with name "dltensor" expected to reference
-            an instance of `DLManagedTensor` struct.
+        caps:
+            Python capsule with name ``"dltensor"`` expected to reference
+            an instance of ``DLManagedTensor`` struct.
     Returns:
         Instance of :class:`dpctl.tensor.usm_ndarray` with a view into
-        memory of the tensor. Capsule is renamed to "used_dltensor" upon
-        success.
+        memory of the tensor. Capsule is renamed to ``"used_dltensor"``
+        upon success.
     Raises:
-        TypeError: if argument is not a "dltensor" capsule.
-        ValueError: if argument is "used_dltensor" capsule
-        BufferError:  if the USM pointer is not bound to the reconstructed
-             sycl context, or the DLPack's device_type is not supported
-             by dpctl.
+        TypeError:
+            if argument is not a ``"dltensor"`` capsule.
+        ValueError:
+            if argument is ``"used_dltensor"`` capsule
+        BufferError:
+            if the USM pointer is not bound to the reconstructed
+            sycl context, or the DLPack's device_type is not supported
+            by :mod:`dpctl`.
     """
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef bytes usm_type
@@ -508,25 +512,30 @@ cpdef from_dlpack(array):
     """ from_dlpack(obj)
 
     Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
-    object `obj` that implements `__dlpack__` protocol. The output
+    object ``obj`` that implements ``__dlpack__`` protocol. The output
     array is always a zero-copy view of the input.
 
     Args:
-        obj: A Python object representing an array that supports `__dlpack__`
-            protocol.
+        obj:
+            A Python object representing an array that supports
+            ``__dlpack__`` protocol.
 
     Returns:
         usm_ndarray:
-            An array with a view into the tensor underlying the input `obj`.
+            An array with a view into the tensor underlying the
+            input ``obj``.
 
     Raises:
-        TypeError: if `obj` does not implement `__dlpack__` method.
-        ValueError: if zero copy view can not be constructed because
-            the input array resides on an unsupported device.
+        TypeError:
+            if ``obj`` does not implement ``__dlpack__`` method
+        ValueError:
+            if zero copy view can not be constructed because
+            the input array resides on an unsupported device
 
     See https://dmlc.github.io/dlpack/latest/ for more details.
 
     :Example:
+
         .. code-block:: python
 
             import dpctl

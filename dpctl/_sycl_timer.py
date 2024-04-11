@@ -55,7 +55,7 @@ class SyclTimer:
             import dpctl
 
             # Create a default SyclQueue
-            q = dpctl.SyclQueue(property='enable_profiling')
+            q = dpctl.SyclQueue(property="enable_profiling")
 
             # create the timer
             milliseconds_sc = 1e-3
@@ -63,18 +63,22 @@ class SyclTimer:
 
             # use the timer
             with timer(queue=q):
-                code_block
+                code_block1
+
+            # use the timer
+            with timer(queue=q):
+                code_block2
 
             # retrieve elapsed times in milliseconds
             wall_dt, device_dt = timer.dt
 
-    Note:
+    .. note::
         The timer submits barriers to the queue at the entrance and the
         exit of the context and uses profiling information from events
         associated with these submissions to perform the timing. Thus
-        :class:`dpctl.SyclTimer` requires the queue with "enable_profiling"
+        :class:`dpctl.SyclTimer` requires the queue with ``"enable_profiling"``
         property. In order to be able to collect the profiling information,
-        the `dt` property ensures that both submitted barriers complete their
+        the ``dt`` property ensures that both submitted barriers complete their
         execution and thus effectively synchronizes the queue.
 
     Args:
@@ -84,10 +88,22 @@ class SyclTimer:
             Default: :py:func:`timeit.default_timer`.
         time_scale (Union[int, float], optional):
             Ratio of the unit of time of interest and one second.
-            Default: `1`.
+            Default: ``1``.
     """
 
     def __init__(self, host_timer=timeit.default_timer, time_scale=1):
+        """
+        Create new instance of :class:`.SyclTimer`.
+
+        Args:
+            host_timer (callable, optional)
+                A function that takes no arguments and returns a value
+                measuring time.
+                Default: :meth:`timeit.default_timer`.
+            time_scale (Union[int, float], optional):
+                Scaling factor applied to durations measured by
+                the host_timer. Default: ``1``.
+        """
         self.timer = host_timer
         self.time_scale = time_scale
         self.queue = None
@@ -125,11 +141,47 @@ class SyclTimer:
 
     @property
     def dt(self):
-        """Returns a pair of elapsed times (host_dt, device_dt).
+        """Returns a pair of elapsed times ``host_dt`` and
+        ``device_dt``.
 
-        The host_dt is the duration as measured by the host
-        timer, while the device_dt is the duration as measured by
-        the device timer and encoded in profiling events."""
+        The ``host_dt`` is the duration as measured by the host
+        timer, while the ``device_dt`` is the duration as measured by
+        the device timer and encoded in profiling events.
+
+        Returns:
+            HostDeviceDuration:
+                Data class with ``host_dt`` and ``device_dt`` members which
+                supports unpacking into a 2-tuple.
+
+        :Example:
+
+            .. code-block:: python
+
+                import dpctl
+                from dpctl import tensor
+
+                q = dpctl.SyclQueue(property="enable_profiling")
+
+                device = tensor.Device.create_device(q)
+                timer = dpctl.SyclTimer()
+
+                with timer(q):
+                    x = tensor.linspace(-4, 4, num=10**6, dtype="float32")
+                    e = tensor.exp(-0.5 * tensor.square(x))
+                    s = tensor.sin(2.3 * x + 0.11)
+                    f = e * s
+
+                host_dt, device_dt = timer.dt
+
+        .. note::
+            Since different timers are used to measure host and device
+            durations, one should not expect that ``host_dt`` is always
+            strictly greater than ``device_dt``.
+
+            Use tracing tools like ``onetrace``, or ``unitrace`` from
+            `intel/pti-gpu <https://github.com/intel/pti-gpu>`_ repository
+            for more accurate measurements.
+        """
         for es, ef in self.bracketing_events:
             es.wait()
             ef.wait()

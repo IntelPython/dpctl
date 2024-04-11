@@ -396,68 +396,68 @@ cdef class SyclQueue(_SyclQueue):
 
     There are multiple ways to create a :class:`dpctl.SyclQueue` object:
 
-        - Invoking the constructor with no arguments creates a context using
-          the default selector.
+    - Invoking the constructor with no arguments creates a context using
+      the default selector.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a default SyclQueue
-                q = dpctl.SyclQueue()
-                print(q.sycl_device)
+            # Create a default SyclQueue
+            q = dpctl.SyclQueue()
+            print(q.sycl_device)
 
-        - Invoking the constructor with specific filter selector string that
-          creates a queue for the device corresponding to the filter string.
+    - Invoking the constructor with specific filter selector string that
+      creates a queue for the device corresponding to the filter string.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create in-order SyclQueue for either gpu, or cpu device
-                q = dpctl.SyclQueue("gpu,cpu", property="in_order")
-                print([q.sycl_device.is_gpu, q.sycl_device.is_cpu])
+            # Create in-order SyclQueue for either gpu, or cpu device
+            q = dpctl.SyclQueue("gpu,cpu", property="in_order")
+            print([q.sycl_device.is_gpu, q.sycl_device.is_cpu])
 
-        - Invoking the constructor with a :class:`dpctl.SyclDevice` object
-          creates a queue for that device, automatically finding/creating
-          a :class:`dpctl.SyclContext` for the given device.
+    - Invoking the constructor with a :class:`dpctl.SyclDevice` object
+      creates a queue for that device, automatically finding/creating
+      a :class:`dpctl.SyclContext` for the given device.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                d = dpctl.SyclDevice("gpu")
-                q = dpctl.SyclQueue(d)
-                ctx = q.sycl_context
-                print(q.sycl_device == d)
-                print(any([ d == ctx_d for ctx_d in ctx.get_devices()]))
+            d = dpctl.SyclDevice("gpu")
+            q = dpctl.SyclQueue(d)
+            ctx = q.sycl_context
+            print(q.sycl_device == d)
+            print(any([ d == ctx_d for ctx_d in ctx.get_devices()]))
 
-        - Invoking the constructor with a :class:`dpctl.SyclContext` and a
-          :class:`dpctl.SyclDevice` creates a queue for given context and
-          device.
+    - Invoking the constructor with a :class:`dpctl.SyclContext` and a
+      :class:`dpctl.SyclDevice` creates a queue for given context and
+      device.
 
-        :Example:
-            .. code-block:: python
+    :Example:
+        .. code-block:: python
 
-                import dpctl
+            import dpctl
 
-                # Create a CPU device using the opencl driver
-                cpu_d = dpctl.SyclDevice("opencl:cpu")
-                # Partition the CPU device into sub-devices with two cores each.
-                sub_devices = cpu_d.create_sub_devices(partition=2)
-                # Create a context common to all the sub-devices.
-                ctx = dpctl.SyclContext(sub_devices)
-                # create a queue for each sub-device using the common context
-                queues = [dpctl.SyclQueue(ctx, sub_d) for sub_d in sub_devices]
+            # Create a CPU device using the opencl driver
+            cpu_d = dpctl.SyclDevice("opencl:cpu")
+            # Partition the CPU device into sub-devices with two cores each.
+            sub_devices = cpu_d.create_sub_devices(partition=2)
+            # Create a context common to all the sub-devices.
+            ctx = dpctl.SyclContext(sub_devices)
+            # create a queue for each sub-device using the common context
+            queues = [dpctl.SyclQueue(ctx, sub_d) for sub_d in sub_devices]
 
-        - Invoking the constructor with a named ``PyCapsule`` with the name
-          **"SyclQueueRef"** that carries a pointer to a ``sycl::queue``
-          object. The capsule will be renamed upon successful consumption
-          to ensure one-time use. A new named capsule can be constructed by
-          using :func:`dpctl.SyclQueue._get_capsule` method.
+    - Invoking the constructor with a named ``PyCapsule`` with the name
+      **"SyclQueueRef"** that carries a pointer to a ``sycl::queue``
+      object. The capsule will be renamed upon successful consumption
+      to ensure one-time use. A new named capsule can be constructed by
+      using :func:`dpctl.SyclQueue._get_capsule` method.
 
     Args:
         ctx (:class:`dpctl.SyclContext`, optional): Sycl context to create
@@ -700,9 +700,9 @@ cdef class SyclQueue(_SyclQueue):
 
     cdef int _init_queue_from_capsule(self, object cap):
         """
-        For named PyCapsule with name SyclQueueRef, which carries pointer to
-        sycl::queue object, interpreted as DPCTLSyclQueueRef, creates
-        corresponding SyclQueue.
+        For named PyCapsule with name "SyclQueueRef", which carries pointer to
+        ``sycl::queue`` object, interpreted as ``DPCTLSyclQueueRef``, creates
+        corresponding :class:`.SyclQueue`.
         """
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclDeviceRef DRef = NULL
@@ -743,7 +743,7 @@ cdef class SyclQueue(_SyclQueue):
     @staticmethod
     cdef SyclQueue _create(DPCTLSyclQueueRef qref):
         """
-        This function calls DPCTLQueue_Delete(qref).
+        This function calls ``DPCTLQueue_Delete(qref)``.
         The user of this function must pass a copy to keep the
         qref argument alive.
         """
@@ -763,7 +763,7 @@ cdef class SyclQueue(_SyclQueue):
         """
         Static factory method to create :class:`dpctl.SyclQueue` instance
         from given :class:`dpctl.SyclContext`, :class:`dpctl.SyclDevice`
-        and optional integer `props` encoding the queue properties.
+        and optional integer ``props`` encoding the queue properties.
         """
         cdef _SyclQueue ret = _SyclQueue.__new__(_SyclQueue)
         cdef DPCTLSyclContextRef cref = ctx.get_context_ref()
@@ -850,8 +850,8 @@ cdef class SyclQueue(_SyclQueue):
         return ret
 
     cdef cpp_bool equals(self, SyclQueue q):
-        """ Returns true if the SyclQueue argument `q` has the same _queue_ref
-            as this SyclQueue.
+        """ Returns true if the :class:`.SyclQueue` argument ``q`` has the
+            same ``._queue_ref`` attribute as this :class:`.SyclQueue`.
         """
         return DPCTLQueue_AreEq(self._queue_ref, q.get_queue_ref())
 
@@ -861,9 +861,10 @@ cdef class SyclQueue(_SyclQueue):
         the same underlying ``DPCTLSyclQueueRef`` object.
 
         Returns:
-            :obj:`bool`: ``True`` if the two :class:`dpctl.SyclQueue` objects
-            point to the same ``DPCTLSyclQueueRef`` object, otherwise
-            ``False``.
+            bool:
+                ``True`` if the two :class:`dpctl.SyclQueue` objects
+                point to the same ``DPCTLSyclQueueRef`` object, otherwise
+                ``False``.
         """
         if isinstance(other, SyclQueue):
             return self.equals(<SyclQueue> other)
@@ -872,10 +873,11 @@ cdef class SyclQueue(_SyclQueue):
 
     @property
     def backend(self):
-        """ Returns the backend_type enum value for this queue.
+        """ Returns the ``backend_type`` enum value for this queue.
 
         Returns:
-            backend_type: The backend for the queue.
+            backend_type:
+                The backend for the queue.
         """
         cdef _backend_type BE = DPCTLQueue_GetBackend(self._queue_ref)
         if BE == _backend_type._OPENCL:
@@ -889,12 +891,24 @@ cdef class SyclQueue(_SyclQueue):
 
     @property
     def sycl_context(self):
-        "Returns :class:`.SyclContext` underlying this queue"
+        """
+        Returns :class:`SyclContext` underlying this queue.
+
+        Returns:
+            :class:`SyclContext`
+                SYCL context underlying this queue
+        """
         return self._context
 
     @property
     def sycl_device(self):
-        "Returns :class:`.SyclDevice` underlying this queue"
+        """
+        Returns :class:`.SyclDevice` targeted by this queuey.
+
+        Returns:
+            :class:`SyclDevice`
+                SYCL device targeted by this queue
+        """
         return self._device
 
     cpdef SyclContext get_sycl_context(self):
@@ -908,12 +922,13 @@ cdef class SyclQueue(_SyclQueue):
 
     def addressof_ref(self):
         """
-        Returns the address of the C API DPCTLSyclQueueRef pointer as a
-        ``size_t``.
+        Returns the address of the C API ``DPCTLSyclQueueRef`` pointer as
+        integral value of type ``size_t``.
 
         Returns:
-            The address of the ``DPCTLSyclQueueRef`` object used to create this
-            :class:`dpctl.SyclQueue` cast to a ``size_t``.
+            int:
+                The address of the ``DPCTLSyclQueueRef`` object used to create
+                this :class:`dpctl.SyclQueue` object cast to ``size_t`` type.
         """
         return <size_t>self._queue_ref
 
@@ -925,27 +940,30 @@ cdef class SyclQueue(_SyclQueue):
     ):
         """ SyclQueue._submit_keep_args_alive(args, events)
 
-        Keeps objects in `args` alive until tasks associated with events
+        Keeps objects in ``args`` alive until tasks associated with events
         complete.
 
         Args:
-            args(object): Python object to keep alive.
-               Typically a tuple with arguments to offloaded tasks
-            events(Tuple[dpctl.SyclEvent]): Gating events
-               The list or tuple of events associated with tasks
-               working on Python objects collected in `args`.
+            args(object):
+                Python object to keep alive.
+                Typically a tuple with arguments to offloaded tasks
+            events(Tuple[dpctl.SyclEvent]):
+                Gating events.
+                The list or tuple of events associated with tasks
+                working on Python objects collected in ``args``.
         Returns:
             dpctl.SyclEvent
                The event associated with the submission of host task.
 
-        Increments reference count of `args` and schedules asynchronous
+        Increments reference count of ``args`` and schedules asynchronous
         ``host_task`` to decrement the count once dependent events are
         complete.
 
-        N.B.: The `host_task` attempts to acquire Python GIL, and it is
-        known to be unsafe during interpreter shudown sequence. It is
-        thus strongly advised to ensure that all submitted `host_task`
-        complete before the end of the Python script.
+        .. note::
+            The ``host_task`` attempts to acquire Python GIL, and it is
+            known to be unsafe during interpreter shutdown sequence. It is
+            thus strongly advised to ensure that all submitted ``host_task``
+            complete before the end of the Python script.
         """
         cdef size_t nDE = len(dEvents)
         cdef DPCTLSyclEventRef *depEvents = NULL
@@ -999,6 +1017,38 @@ cdef class SyclQueue(_SyclQueue):
         list lS=None,
         list dEvents=None
     ):
+        """
+        Asynchronously submit :class:`dpctl.program.SyclKernel` for execution.
+
+        Args:
+            kernel (dpctl.program.SyclKernel):
+                SYCL kernel object
+            args (List[object]):
+                List of kernel arguments
+            gS (List[int]):
+                Global iteration range. Must be a list of length 1, 2, or 3.
+            lS (List[int], optional):
+                Local iteration range. Must be ``None`` or have the same
+                length as ``gS`` and each element of ``gS`` must be divisible
+                by respective element of ``lS``.
+            dEvents (List[dpctl.SyclEvent], optional):
+                List of events indicating ordering of this task relative
+                to tasks associated with specified events.
+
+        Returns:
+            dpctl.SyclEvent:
+                An event associated with submission of the kernel.
+
+        .. note::
+            One must ensure that the lifetime of all kernel arguments
+            extends after the submitted task completes. It is not a concern for
+            scalar arguments since they are passed by value, but for
+            objects representing USM allocations which are passed to the kernel
+            as unified address space pointers.
+
+            One way of accomplishing this is to use
+            :meth:`dpctl.SyclQueue._submit_keep_args_alive`.
+        """
         cdef void **kargs = NULL
         cdef _arg_data_type *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
@@ -1131,6 +1181,32 @@ cdef class SyclQueue(_SyclQueue):
         list lS=None,
         list dEvents=None
     ):
+        """
+        Submit :class:`dpctl.program.SyclKernel` for execution.
+
+        Args:
+            kernel (dpctl.program.SyclKernel):
+                SYCL kernel object
+            args (List[object]):
+                List of kernel arguments
+            gS (List[int]):
+                Global iteration range. Must be a list of length 1, 2, or 3.
+            lS (List[int], optional):
+                Local iteration range. Must be ``None`` or have the same
+                length as ``gS`` and each element of ``gS`` must be divisible
+                by respective element of ``lS``.
+            dEvents (List[dpctl.SyclEvent], optional):
+                List of events indicating ordering of this task relative
+                to tasks associated with specified events.
+
+        Returns:
+            dpctl.SyclEvent:
+                An event which is always complete. May be ignored.
+
+        .. note::
+            :meth:`dpctl.SyclQueue.submit` is a synchronizing method.
+            Use :meth:`dpctl.SyclQueue.submit_async` to avoid synchronization.
+        """
         cdef SyclEvent e = self.submit_async(kernel, args, gS, lS, dEvents)
         e.wait()
         return e
@@ -1151,7 +1227,7 @@ cdef class SyclQueue(_SyclQueue):
         DPCTLEvent_Delete(ERef)
 
     cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=None):
-        """Copy memory from `src` to `dst`"""
+        """Copy memory from ``src`` to ``dst``"""
         cdef DPCTLSyclEventRef ERef = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef size_t nDE = 0
@@ -1226,13 +1302,67 @@ cdef class SyclQueue(_SyclQueue):
 
     @property
     def is_in_order(self):
-        """True if SyclQueue is in-order, False if it is out-of-order."""
+        """``True`` if :class:`.SyclQueue`` is in-order,
+        ``False`` if it is out-of-order.
+
+        :Example:
+
+            ..code-block:: python
+
+                >>> import dpctl
+                >>> q = dpctl.SyclQueue("cpu")
+                >>> q.is_in_order
+                False
+                >>> q = dpctl.SyclQueue("cpu", property="in_order")
+                >>> q.is_in_order
+                True
+
+        Returns:
+            bool:
+                Indicates whether this :class:`.SyclQueue` was created
+                with ``property="in_order"``.
+
+        .. note::
+            Unless requested otherwise, :class:`.SyclQueue` is constructed
+            to support out-of-order execution.
+        """
         return DPCTLQueue_IsInOrder(self._queue_ref)
 
     @property
     def has_enable_profiling(self):
-        """True if SyclQueue was constructed with enabled_profiling property,
-        False otherwise."""
+        """
+        ``True`` if :class:`.SyclQueue` was constructed with
+        ``"enabled_profiling"`` property, ``False`` otherwise.
+
+        :Example:
+
+            ..code-block:: python
+
+                >>> import dpctl
+                >>> q = dpctl.SyclQueue("cpu")
+                >>> q.has_enable_profiling
+                False
+                >>> q = dpctl.SyclQueue("cpu", property="enable_profiling")
+                >>> q.has_enable_profiling
+                True
+
+        Returns:
+            bool:
+                Whether profiling information for tasks submitted
+                to this :class:`.SyclQueue` is being collected.
+
+        .. note::
+            Profiling information can be accessed using
+            properties
+            :attr:`dpctl.SyclEvent.profiling_info_submit`,
+            :attr:`dpctl.SyclEvent.profiling_info_start`, and
+            :attr:`dpctl.SyclEvent.profiling_info_end`. It is
+            also necessary for proper working of
+            :class:`dpctl.SyclTimer`.
+
+            Collection of profiling information is not enabled
+            by default.
+        """
         return DPCTLQueue_HasEnableProfiling(self._queue_ref)
 
     @property
@@ -1261,6 +1391,9 @@ cdef class SyclQueue(_SyclQueue):
         """
         Returns a hash value by hashing the underlying ``sycl::queue`` object.
 
+        Returns:
+            int:
+                Hash value of this :class:`.SyclQueue` instance
         """
         return DPCTLQueue_Hash(self._queue_ref)
 
@@ -1275,7 +1408,17 @@ cdef class SyclQueue(_SyclQueue):
 
     cpdef SyclEvent submit_barrier(self, dependent_events=None):
         """
-        Submits a barrier to the queue.
+        Submits a barrier to this queue.
+
+        Args:
+            dependent_events:
+                List[dpctl.SyclEvent]:
+                    List or tuple of events that must complete
+                    before this task may begin execution.
+
+        Returns:
+            dpctl.SyclEvent:
+                Event associated with the submitted task
         """
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef ERef = NULL
@@ -1316,7 +1459,8 @@ cdef class SyclQueue(_SyclQueue):
         associated with this queue.
 
         Returns:
-            str: The name of the device as a string.
+            str:
+                The name of the device as a string.
         """
         return self.sycl_device.name
 
@@ -1326,7 +1470,8 @@ cdef class SyclQueue(_SyclQueue):
         associated with this queue.
 
         Returns:
-            str: The driver version of the device as a string.
+            str:
+                The driver version of the device as a string.
         """
         return self.sycl_device.driver_version
 

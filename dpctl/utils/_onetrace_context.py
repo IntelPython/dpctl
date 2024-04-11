@@ -29,11 +29,12 @@ del sys_platform
 
 @contextmanager
 def onetrace_enabled():
-    """Enable `onetrace` collection for kernels executed in this context.
+    """Enable ``onetrace`` collection for kernels executed in this context.
 
-    N.B.: Proper working of this utility assumes that Python interpreter
-    has been launched by `onetrace` or `unitrace` tool from project
-    `intel/pti-gpu <https://github.com/intel/pti-gpu>`_.
+    .. note::
+        Proper working of this utility assumes that Python interpreter
+        has been launched by ``onetrace`` or ``unitrace`` tool from project
+        `intel/pti-gpu <https://github.com/intel/pti-gpu>`_.
 
     :Example:
         Launch the Python interpreter using `onetrace` tool:
@@ -53,8 +54,17 @@ def onetrace_enabled():
             # onetrace output reporting on execution of the kernel
             # should be seen, starting with "Device Timeline"
             with onetrace_enabled():
-                dpt.arange(100, dtype='int16')
+                a = dpt.arange(100, dtype='int16')
 
+        Sample output:
+
+        .. code-block:: text
+
+            >>> with onetrace_enabled():
+            ...     a = dpt.arange(100, dtype='int16')
+            ...
+            Device Timeline (queue: 0x555aee86bed0): dpctl::tensor::kernels::constructors::linear_sequence_step_kernel<short>[SIMD32 {1; 1; 1} {100; 1; 1}]<1.1> [ns] = 44034325658 (append) 44034816544 (submit) 44036296752 (start) 44036305918 (end)
+            >>>
     """
     global _UNCHECKED
 
