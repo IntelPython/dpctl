@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpctl.tensor._array_api &mdash; Data Parallel Control (dpctl) 0.17.0dev0+226.g0e4ef48362 documentation</title>
+  <title>dpctl.tensor._array_api &mdash; Data Parallel Control (dpctl) 0.17.0dev0+228.gcce8ddb92f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -25,7 +25,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=8d9b0fa7"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=d353ac55"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
         <script src="../../../_static/target-highlight.js?v=df7d332b"></script>
@@ -46,7 +46,7 @@
             Data Parallel Control (dpctl)
           </a>
               <div class="version">
-                0.17.0dev0+226.g0e4ef48362
+                0.17.0dev0+228.gcce8ddb92f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -148,7 +148,7 @@
 
 <span class="k">class</span> <span class="nc">Info</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    namespace returned by `__array_namespace_info__()`</span>
+<span class="sd">    namespace returned by ``__array_namespace_info__()``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -176,13 +176,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        capabilities()</span>
 
-<span class="sd">        Returns a dictionary of `dpctl`&#39;s capabilities.</span>
+<span class="sd">        Returns a dictionary of ``dpctl``&#39;s capabilities.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict:</span>
-<span class="sd">                dictionary of `dpctl`&#39;s capabilities</span>
-<span class="sd">                - `boolean_indexing`: bool</span>
-<span class="sd">                - `data_dependent_shapes`: bool</span>
+<span class="sd">                dictionary of ``dpctl``&#39;s capabilities</span>
+<span class="sd">                - ``&quot;boolean_indexing&quot;``: bool</span>
+<span class="sd">                - ``data_dependent_shapes&quot;``: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -198,25 +198,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        default_dtypes(*, device=None)</span>
 
-<span class="sd">        Returns a dictionary of default data types for `device`.</span>
+<span class="sd">        Returns a dictionary of default data types for ``device``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            device (Optional[dpctl.SyclDevice, dpctl.SyclQueue,</span>
-<span class="sd">            dpctl.tensor.Device]):</span>
+<span class="sd">            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`]):</span>
 <span class="sd">                array API concept of device used in getting default data types.</span>
-<span class="sd">                `device` can be `None` (in which case the default device is</span>
-<span class="sd">                used), an instance of :class:`dpctl.SyclDevice` corresponding</span>
+<span class="sd">                ``device`` can be ``None`` (in which case the default device</span>
+<span class="sd">                is used), an instance of :class:`dpctl.SyclDevice` corresponding</span>
 <span class="sd">                to a non-partitioned SYCL device, an instance of</span>
-<span class="sd">                :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">                :attr:`dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`</span>
+<span class="sd">                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">                Default: ``None``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict:</span>
-<span class="sd">                a dictionary of default data types for `device`</span>
-<span class="sd">                    - `real floating`: dtype</span>
-<span class="sd">                    - `complex floating`: dtype</span>
-<span class="sd">                    - `integral`: dtype</span>
-<span class="sd">                    - `indexing`: dtype</span>
+<span class="sd">                a dictionary of default data types for ``device``:</span>
+
+<span class="sd">                    - ``&quot;real floating&quot;``: dtype</span>
+<span class="sd">                    - ``&quot;complex floating&quot;``: dtype</span>
+<span class="sd">                    - ``&quot;integral&quot;``: dtype</span>
+<span class="sd">                    - ``&quot;indexing&quot;``: dtype</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">device</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
@@ -233,47 +234,51 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        dtypes(*, device=None, kind=None)</span>
 
-<span class="sd">        Returns a dictionary of all Array API data types of a specified `kind`</span>
-<span class="sd">        supported by `device`</span>
+<span class="sd">        Returns a dictionary of all Array API data types of a specified</span>
+<span class="sd">        ``kind`` supported by ``device``</span>
 
-<span class="sd">        This dictionary only includes data types supported by the array API.</span>
-
-<span class="sd">        See [array API](array_api).</span>
-
-<span class="sd">        [array_api]: https://data-apis.org/array-api/latest/</span>
+<span class="sd">        This dictionary only includes data types supported by the</span>
+<span class="sd">        `Python Array API &lt;https://data-apis.org/array-api/latest/&gt;`_</span>
+<span class="sd">        specification.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            device (Optional[dpctl.SyclDevice, dpctl.SyclQueue,</span>
-<span class="sd">            dpctl.tensor.Device, str]):</span>
+<span class="sd">            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):</span>
 <span class="sd">                array API concept of device used in getting default data types.</span>
-<span class="sd">                `device` can be `None` (in which case the default device is</span>
+<span class="sd">                ``device`` can be ``None`` (in which case the default device is</span>
 <span class="sd">                used), an instance of :class:`dpctl.SyclDevice` corresponding</span>
 <span class="sd">                to a non-partitioned SYCL device, an instance of</span>
-<span class="sd">                :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">                :attr:`dpctl.tensor.usm_array.device`. Default: `None`.</span>
+<span class="sd">                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`</span>
+<span class="sd">                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">                Default: ``None``.</span>
 
 <span class="sd">            kind (Optional[str, Tuple[str, ...]]):</span>
 <span class="sd">                data type kind.</span>
-<span class="sd">                - if `kind` is `None`, returns a dictionary of all data types</span>
-<span class="sd">                supported by `device`</span>
-<span class="sd">                - if `kind` is a string, returns a dictionary containing the</span>
-<span class="sd">                data types belonging to the data type kind specified.</span>
+
+<span class="sd">                - if ``kind`` is ``None``, returns a dictionary of all data</span>
+<span class="sd">                  types supported by `device`</span>
+<span class="sd">                - if ``kind`` is a string, returns a dictionary containing the</span>
+<span class="sd">                  data types belonging to the data type kind specified.</span>
+
 <span class="sd">                Supports:</span>
-<span class="sd">                    - &quot;bool&quot;</span>
-<span class="sd">                    - &quot;signed integer&quot;</span>
-<span class="sd">                    - &quot;unsigned integer&quot;</span>
-<span class="sd">                    - &quot;integral&quot;</span>
-<span class="sd">                    - &quot;real floating&quot;</span>
-<span class="sd">                    - &quot;complex floating&quot;</span>
-<span class="sd">                    - &quot;numeric&quot;</span>
-<span class="sd">                - if `kind` is a tuple, the tuple represents a union of `kind`</span>
-<span class="sd">                strings, and returns a dictionary containing data types</span>
-<span class="sd">                corresponding to the-specified union.</span>
+
+<span class="sd">                    - ``&quot;bool&quot;``</span>
+<span class="sd">                    - ``&quot;signed integer&quot;``</span>
+<span class="sd">                    - ``&quot;unsigned integer&quot;``</span>
+<span class="sd">                    - ``&quot;integral&quot;``</span>
+<span class="sd">                    - ``&quot;real floating&quot;``</span>
+<span class="sd">                    - ``&quot;complex floating&quot;``</span>
+<span class="sd">                    - ``&quot;numeric&quot;``</span>
+
+<span class="sd">                - if ``kind`` is a tuple, the tuple represents a union of</span>
+<span class="sd">                  ``kind`` strings, and returns a dictionary containing data</span>
+<span class="sd">                  types corresponding to the-specified union.</span>
+
 <span class="sd">                Default: `None`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict:</span>
-<span class="sd">                a dictionary of the supported data types of the specified `kind`</span>
+<span class="sd">                a dictionary of the supported data types of the specified</span>
+<span class="sd">                ``kind``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">device</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
