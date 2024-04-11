@@ -54,7 +54,7 @@ __array_api_version__ = "2023.12"
 
 class Info:
     """
-    namespace returned by `__array_namespace_info__()`
+    namespace returned by ``__array_namespace_info__()``
     """
 
     def __init__(self):
@@ -82,13 +82,13 @@ class Info:
         """
         capabilities()
 
-        Returns a dictionary of `dpctl`'s capabilities.
+        Returns a dictionary of ``dpctl``'s capabilities.
 
         Returns:
             dict:
-                dictionary of `dpctl`'s capabilities
-                - `boolean_indexing`: bool
-                - `data_dependent_shapes`: bool
+                dictionary of ``dpctl``'s capabilities
+                - ``"boolean_indexing"``: bool
+                - ``data_dependent_shapes"``: bool
         """
         return self._capabilities.copy()
 
@@ -104,25 +104,26 @@ class Info:
         """
         default_dtypes(*, device=None)
 
-        Returns a dictionary of default data types for `device`.
+        Returns a dictionary of default data types for ``device``.
 
         Args:
-            device (Optional[dpctl.SyclDevice, dpctl.SyclQueue,
-            dpctl.tensor.Device]):
+            device (Optional[:class:`dpctl.SyclDevice`,
+            :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`]):
                 array API concept of device used in getting default data types.
-                `device` can be `None` (in which case the default device is
-                used), an instance of :class:`dpctl.SyclDevice` corresponding
+                ``device`` can be ``None`` (in which case the default device
+                is used), an instance of :class:`dpctl.SyclDevice` corresponding
                 to a non-partitioned SYCL device, an instance of
-                :class:`dpctl.SyclQueue`, or a `Device` object returned by
-                :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
+                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
+                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+                Default: ``None``.
 
         Returns:
             dict:
-                a dictionary of default data types for `device`
-                    - `real floating`: dtype
-                    - `complex floating`: dtype
-                    - `integral`: dtype
-                    - `indexing`: dtype
+                a dictionary of default data types for ``device``
+                    - ``"real floating"``: dtype
+                    - ``"complex floating"``: dtype
+                    - ``"integral"``: dtype
+                    - ``"indexing"``: dtype
         """
         if device is None:
             device = dpctl.select_default_device()
@@ -139,8 +140,8 @@ class Info:
         """
         dtypes(*, device=None, kind=None)
 
-        Returns a dictionary of all Array API data types of a specified `kind`
-        supported by `device`
+        Returns a dictionary of all Array API data types of a specified
+        ``kind`` supported by ``device``
 
         This dictionary only includes data types supported by the array API.
 
@@ -149,37 +150,43 @@ class Info:
         [array_api]: https://data-apis.org/array-api/latest/
 
         Args:
-            device (Optional[dpctl.SyclDevice, dpctl.SyclQueue,
-            dpctl.tensor.Device, str]):
+            device (Optional[:class:`dpctl.SyclDevice`,
+            :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
                 array API concept of device used in getting default data types.
-                `device` can be `None` (in which case the default device is
+                ``device`` can be ``None`` (in which case the default device is
                 used), an instance of :class:`dpctl.SyclDevice` corresponding
                 to a non-partitioned SYCL device, an instance of
-                :class:`dpctl.SyclQueue`, or a `Device` object returned by
-                :attr:`dpctl.tensor.usm_array.device`. Default: `None`.
+                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
+                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+                Default: ``None``.
 
             kind (Optional[str, Tuple[str, ...]]):
                 data type kind.
-                - if `kind` is `None`, returns a dictionary of all data types
-                supported by `device`
-                - if `kind` is a string, returns a dictionary containing the
-                data types belonging to the data type kind specified.
+
+                - if ``kind`` is ``None``, returns a dictionary of all data
+                  types supported by `device`
+                - if ``kind`` is a string, returns a dictionary containing the
+                  data types belonging to the data type kind specified.
                 Supports:
-                    - "bool"
-                    - "signed integer"
-                    - "unsigned integer"
-                    - "integral"
-                    - "real floating"
-                    - "complex floating"
-                    - "numeric"
-                - if `kind` is a tuple, the tuple represents a union of `kind`
-                strings, and returns a dictionary containing data types
-                corresponding to the-specified union.
+
+                    - ``"bool"``
+                    - ``"signed integer"``
+                    - ``"unsigned integer"``
+                    - ``"integral"``
+                    - ``"real floating"``
+                    - ``"complex floating"``
+                    - ``"numeric"``
+
+                - if ``kind`` is a tuple, the tuple represents a union of
+                  ``kind`` strings, and returns a dictionary containing data
+                  types corresponding to the-specified union.
+
                 Default: `None`.
 
         Returns:
             dict:
-                a dictionary of the supported data types of the specified `kind`
+                a dictionary of the supported data types of the specified
+                ``kind``
         """
         if device is None:
             device = dpctl.select_default_device()
