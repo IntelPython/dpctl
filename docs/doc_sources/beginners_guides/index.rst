@@ -36,5 +36,5 @@ Miscellaneous
 
     installation
     managing_devices
-    misc
     tensor_intro
+    misc

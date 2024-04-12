@@ -1,7 +1,7 @@
 .. _beginners_guide_tensor_intro:
 
-Getting started with :py:mod:`dpctl.tensor`
-===========================================
+Intro to :py:mod:`dpctl.tensor`
+===============================
 
 Supported array data types
 --------------------------
