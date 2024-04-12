@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Types of parallelisms" href="_parallelisms.html" /><link rel="prev" title="Beginner’s guides" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Managing devices" href="managing_devices.html" /><link rel="prev" title="Beginner’s guides" href="index.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
         <title>Installing dpctl - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
@@ -173,13 +173,9 @@
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Beginner’s guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="_parallelisms.html">Types of parallelisms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_enumerating_devices.html">Enumerating available devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_device_selection.html">Device selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_device_info.html">Obtaining information about device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_environment_variables.html">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="managing_devices.html">Managing devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -193,6 +189,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/license.html">License</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guides/environment_variables.html">Environment variables</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_reference/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -775,6 +772,7 @@
 <a class="reference external" href="https://github.com/IntelPython/dpctl/blob/master/LICENSE">LICENSE</a> file.
 All usage and contributions to the project are subject to the terms and
 conditions of this license.</p>
+<p>See user guide  <a class="reference internal" href="../user_guides/license.html#user-guide-dpctl-license"><span class="std std-ref">document</span></a> for additional information.</p>
 </section>
 <section id="installation-using-conda">
 <h2>Installation using conda<a class="headerlink" href="#installation-using-conda" title="Permalink to this heading">#</a></h2>
@@ -832,7 +830,7 @@ please check <a class="reference internal" href="#building-from-source">Building
 <section id="installation-via-intel-r-distribution-for-python">
 <h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.15.0dev1+22.gffc5429c37)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.15.0dev1+24.g8df60be570)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
@@ -935,12 +933,12 @@ each example Python project and how to execute its test suite.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="_parallelisms.html">
+          <a class="next-page" href="managing_devices.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Types of parallelisms</div>
+                <div class="title">Managing devices</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

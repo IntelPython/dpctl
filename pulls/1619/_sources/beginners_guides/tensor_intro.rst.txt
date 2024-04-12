@@ -3,6 +3,9 @@
 Getting started with :py:mod:`dpctl.tensor`
 ===========================================
 
+Supported array data types
+--------------------------
+
 The tensor submodule provides an N-dimensional array object for a tensor whose values have the same data type
 from the :ref:`following list <dpctl_tensor_data_types>`:
 

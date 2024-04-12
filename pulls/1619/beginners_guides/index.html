@@ -173,13 +173,9 @@
 <ul class="current">
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Beginner’s guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Beginner’s guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="_parallelisms.html">Types of parallelisms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_why_dpctl.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_enumerating_devices.html">Enumerating available devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_device_selection.html">Device selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_device_info.html">Obtaining information about device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_environment_variables.html">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="managing_devices.html">Managing devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensor_intro.html">Getting started with <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -193,6 +189,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/license.html">License</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guides/environment_variables.html">Environment variables</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_reference/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -769,9 +766,6 @@
         <article role="main">
           <section id="beginner-s-guides">
 <span id="beginners-guides"></span><h1>Beginner’s guides<a class="headerlink" href="#beginner-s-guides" title="Permalink to this heading">#</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="_why_dpctl.html#beginners-guide-why-dpctl"><span class="std std-ref">Why</span></a> is it called <code class="docutils literal notranslate"><span class="pre">&quot;dpctl&quot;</span></code>?</p></li>
-</ul>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -782,16 +776,19 @@
 <section id="working-with-devices">
 <h2>Working with devices<a class="headerlink" href="#working-with-devices" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="_enumerating_devices.html#beginners-guide-enumerating-devices"><span class="std std-ref">Enumerating available devices</span></a></p></li>
-<li><p><a class="reference internal" href="_device_selection.html#beginners-guide-device-selection"><span class="std std-ref">Selecting a device</span></a></p></li>
-<li><p><a class="reference internal" href="_device_info.html#beginners-guide-device-info"><span class="std std-ref">Querying information about device</span></a></p></li>
-<li><p><a class="reference internal" href="_environment_variables.html#beginners-guide-env-variables"><span class="std std-ref">Can I influence which device is the default one?</span></a></p></li>
+<li><p><a class="reference internal" href="managing_devices.html#beginners-guide-managing-devices"><span class="std std-ref">Managing devices</span></a></p></li>
 </ul>
 </section>
 <section id="introduction-to-array-library">
 <h2>Introduction to array library<a class="headerlink" href="#introduction-to-array-library" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="_tensor_intro.html#beginners-guide-tensor-intro"><span class="std std-ref">Getting started</span></a> with <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></p></li>
+<li><p><a class="reference internal" href="tensor_intro.html#beginners-guide-tensor-intro"><span class="std std-ref">Getting started</span></a> with <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></p></li>
+</ul>
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>History of <code class="docutils literal notranslate"><span class="pre">&quot;dpctl&quot;</span></code> <a class="reference internal" href="misc.html#beginners-guide-why-dpctl"><span class="std std-ref">name</span></a>?</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -857,6 +854,7 @@
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#working-with-devices">Working with devices</a></li>
 <li><a class="reference internal" href="#introduction-to-array-library">Introduction to array library</a></li>
+<li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
 </ul>
