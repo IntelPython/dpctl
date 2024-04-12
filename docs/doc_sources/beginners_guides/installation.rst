@@ -14,6 +14,8 @@ conditions of this license.
 
 .. _dpctl_license: https://github.com/IntelPython/dpctl/blob/master/LICENSE
 
+See user guide  :ref:`document <user_guide_dpctl_license>` for additional information.
+
 Installation using conda
 ========================
 

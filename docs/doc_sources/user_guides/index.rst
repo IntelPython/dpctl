@@ -19,3 +19,4 @@ User guides
    intro
    license
    dlpack
+   environment_variables
