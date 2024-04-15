@@ -7,7 +7,7 @@
 Subpackage :py:mod:`dpctl.memory` exposes Unified Shared Memory(USM) operations.
 
 Unified Shared Memory is a pointer-based memory management in SYCL guaranteeing that
-all devices use a `unified address space <sycl_unified_address_space_>`_.
+the host and all devices use a `unified address space <sycl_unified_address_space_>`_.
 Quoting from the SYCL specification:
 
 .. _sycl_unified_address_space: https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#_unified_addressing

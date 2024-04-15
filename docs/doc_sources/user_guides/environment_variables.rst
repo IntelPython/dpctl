@@ -13,7 +13,7 @@ Variable ``ONEAPI_DEVICE_SELECTOR``
 The varible ``ONEAPI_DEVICE_SELECTOR`` can be used to limit the choice of devices
 available to :py:mod:`dpctl`. Please refer to
 :ref:`Managing Devices <beginners_guide_oneapi_device_selector>` for detailed
-description and uses.
+description and :ref:`uses <beginners_guide_oneapi_device_selector_usecase>`.
 
 Variable ``SYCL_CACHE_PERSISTENT``
 ----------------------------------
@@ -30,4 +30,23 @@ disk and reuse it in subsequent Python sessions (assuming the variable remains t
 are started).
 
 Setting of the environment variable ``SYCL_CACHE_PERSISTENT`` improves times of function invocations,
-but requires sufficient disk space.
+but requires sufficient disk space. The size of the disk footprint can be controlled using
+``SYCL_CACHE_MAX_SIZE``.
+
+Variable ``SYCL_PI_TRACE``
+--------------------------
+
+Setting this debugging variable enables specific levels of tracing for SYCL Programming Interfaces (PI).
+The value of the variable is a bit-mask, with the following supported values
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``1``
+      - Enables tracing of PI plugins/devices discovery
+    * - ``2``
+      - Enables tracing of PI calls
+    * - ``-1``
+      - Enables all levels of tracing

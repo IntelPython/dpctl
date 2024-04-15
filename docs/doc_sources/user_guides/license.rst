@@ -1,7 +1,10 @@
 .. _user_guide_dpctl_license:
 
-License
-=======
+Licenses
+========
+
+Data Parallel Control license
+-----------------------------
 
 :py:mod:`dpctl` is licensed under Apache License 2.0 that can be found in
 `LICENSE <dpctl_license_>`_ file.

@@ -10,17 +10,6 @@ computers using industry-standard :sycl_execution_model:`SYCL execution model <>
 facilitated by Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>` implementing
 :sycl_spec_2020:`SYCL 2020 standard <>`.
 
-..
-   :mod:`dpctl` leverages `oneAPI DPC++ compiler runtime <dpcpp_compiler>`_ to
-   answer the following three questions users of heterogenous platforms ask:
-
-   1.  What are available compute devices?
-   2.  How to specify the device a computation is to be offloaded to?
-   3.  How to manage sharing of data between devices and Python?
-
-   :mod:`dpctl` implements Python classes and free functions mapping to DPC++
-   entities to answer these questions.
-
 :py:mod:`dpctl` provides a reference data-parallel implementation of
 array library :py:mod:`dpctl.tensor` conforming to Python Array API specification.
 The implementation adheres to a programming model affording clear control
