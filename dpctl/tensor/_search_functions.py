@@ -40,37 +40,35 @@ def _where_result_type(dt1, dt2, dev):
         return None
 
 
-def where(condition, x1, x2):
-    """where(condition, x1, x2)
-
+def where(condition, x1, x2, /, *, order="K"):
+    """
     Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen
-    from `x1` or `x2` depending on `condition`.
+    from ``x1`` or ``x2`` depending on ``condition``.
 
     Args:
-        condition (usm_ndarray): When True yields from `x1`,
-            and otherwise yields from `x2`.
-            Must be compatible with `x1` and `x2` according
+        condition (usm_ndarray): When ``True`` yields from ``x1``,
+            and otherwise yields from ``x2``.
+            Must be compatible with ``x1`` and ``x2`` according
             to broadcasting rules.
         x1 (usm_ndarray): Array from which values are chosen when
-            `condition` is True.
-            Must be compatible with `condition` and `x2` according
+            ``condition`` is ``True``.
+            Must be compatible with ``condition`` and ``x2`` according
             to broadcasting rules.
         x2 (usm_ndarray): Array from which values are chosen when
-            `condition` is not True.
-            Must be compatible with `condition` and `x2` according
+            ``condition`` is not ``True``.
+            Must be compatible with ``condition`` and ``x2`` according
             to broadcasting rules.
+        order (``"K"``, ``"C"``, ``"F"``, ``"A"``, optional):
+            Memory layout of the new output array.
+            Default: ``"K"``.
 
     Returns:
         usm_ndarray:
-            An array with elements from `x1` where `condition` is True,
-            and elements from `x2` elsewhere.
+            An array with elements from ``x1`` where ``condition`` is ``True``,
+            and elements from ``x2`` elsewhere.
 
     The data type of the returned array is determined by applying
-    the Type Promotion Rules to `x1` and `x2`.
-
-    The memory layout of the returned array is
-    F-contiguous (column-major) when all inputs are F-contiguous,
-    and C-contiguous (row-major) otherwise.
+    the Type Promotion Rules to ``x1`` and ``x2``.
     """
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
@@ -84,6 +82,8 @@ def where(condition, x1, x2):
         raise TypeError(
             "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(x2)}"
         )
+    if order not in ["K", "C", "F", "A"]:
+        order = "K"
     exec_q = dpctl.utils.get_execution_queue(
         (
             condition.sycl_queue,
@@ -114,15 +114,41 @@ def where(condition, x1, x2):
 
     res_shape = _broadcast_shapes(condition, x1, x2)
 
-    if condition.size == 0:
-        return dpt.empty(
-            res_shape, dtype=dst_dtype, usm_type=dst_usm_type, sycl_queue=exec_q
+    if order == "A":
+        order = (
+            "F"
+            if all(
+                arr.flags.f_contiguous
+                for arr in (
+                    condition,
+                    x1,
+                    x2,
+                )
+            )
+            else "C"
         )
+
+    if condition.size == 0:
+        if order == "K":
+            return _empty_like_triple_orderK(
+                condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
+            )
+        else:
+            return dpt.empty(
+                res_shape,
+                dtype=dst_dtype,
+                order=order,
+                usm_type=dst_usm_type,
+                sycl_queue=exec_q,
+            )
 
     deps = []
     wait_list = []
     if x1_dtype != dst_dtype:
-        _x1 = _empty_like_orderK(x1, dst_dtype)
+        if order == "K":
+            _x1 = _empty_like_orderK(x1, dst_dtype)
+        else:
+            _x1 = dpt.empty_like(x1, dtype=dst_dtype, order=order)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x1, dst=_x1, sycl_queue=exec_q
         )
@@ -131,7 +157,10 @@ def where(condition, x1, x2):
         wait_list.append(ht_copy1_ev)
 
     if x2_dtype != dst_dtype:
-        _x2 = _empty_like_orderK(x2, dst_dtype)
+        if order == "K":
+            _x2 = _empty_like_orderK(x2, dst_dtype)
+        else:
+            _x2 = dpt.empty_like(x2, dtype=dst_dtype, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=_x2, sycl_queue=exec_q
         )
@@ -139,9 +168,18 @@ def where(condition, x1, x2):
         deps.append(copy2_ev)
         wait_list.append(ht_copy2_ev)
 
-    dst = _empty_like_triple_orderK(
-        condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
-    )
+    if order == "K":
+        dst = _empty_like_triple_orderK(
+            condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
+        )
+    else:
+        dst = dpt.empty(
+            res_shape,
+            dtype=dst_dtype,
+            order=order,
+            usm_type=dst_usm_type,
+            sycl_queue=exec_q,
+        )
 
     condition = dpt.broadcast_to(condition, res_shape)
     x1 = dpt.broadcast_to(x1, res_shape)
