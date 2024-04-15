@@ -3,11 +3,12 @@
 DLPack exchange of USM allocated arrays
 =======================================
 
-DLPack preamble
+DLPack overview
 ---------------
 
-`DLPack <dlpack_docs_>`_ is a common C-ABI compatible data structure that allows data exchange between major frameworks.
-DLPack strives to be minimal, intentionally leaves allocators, device API out of scope.
+`DLPack <dlpack_docs_>`_ is a commonly used C-ABI compatible data structure that allows data exchange
+between major frameworks. DLPack strives to be minimal, intentionally leaves allocators API and
+device API out of scope.
 
 Data shared via DLPack are owned by the producer who provides a deleter function stored in the
 `DLManagedTensor <dlpack_managed_tensor_>`_, and are only accessed by consumer.

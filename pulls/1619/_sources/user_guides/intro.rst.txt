@@ -1,4 +1,4 @@
-.. _basic_concepts_intro:
+.. _oneapi_programming_model_intro:
 
 oneAPI execution model
 -----------------------
@@ -32,13 +32,3 @@ and native extension developers should refer to the programmer guide.
 
 .. _codeplay_plugins_url: https://developer.codeplay.com/products/oneapi/
 .. _os_intel_llvm_gh_url: https://github.com/intel/llvm
-
-.. toctree::
-    :maxdepth: 1
-    :caption: Table of Contents
-
-    basic_concepts
-    device_selection
-    platforms
-    devices
-    queues

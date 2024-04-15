@@ -226,6 +226,8 @@ as argument to the class constructor:
     # create GPU device, or CPU if GPU is not available
     dev_gpu_or_cpu = dpctl.SyclDevice("gpu,cpu")
 
+.. _beginners_guide_oneapi_device_selector_usecase:
+
 Selecting device using ``ONEAPI_DEVICE_SELECTOR``
 -------------------------------------------------
 
