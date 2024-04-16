@@ -466,12 +466,14 @@ def test_where_out():
     assert dpt.all(res[:, 3, :] == ar1[:, 3, :])
 
     condition = dpt.tile(
-        dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
+        dpt.reshape(dpt.asarray([1, 0], dtype="i4"), (1, 2, 1)),
         (n1, 2, n3),
     )
-    res = dpt.where(condition, condition, condition[:, ::-1, :], out=condition)
+    res = dpt.where(
+        condition[:, ::-1, :], condition[:, ::-1, :], condition, out=condition
+    )
     assert dpt.all(res == condition)
-    assert dpt.all(condition)
+    assert dpt.all(condition == 1)
 
     condition = dpt.tile(
         dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
@@ -479,10 +481,10 @@ def test_where_out():
     )
     ar1 = dpt.full((n1, n2, n3), 7, dtype="i4")
     ar2 = dpt.full_like(ar1, -5)
-    res = dpt.where(condition, ar1, ar2, out=ar2)
-    assert dpt.all(ar2 == res)
-    assert dpt.all(ar2[:, ::2, :] == 7)
-    assert dpt.all(ar2[:, 1::2, :] == -5)
+    res = dpt.where(condition, ar1, ar2, out=ar2[:, ::-1, :])
+    assert dpt.all(ar2[:, ::-1, :] == res)
+    assert dpt.all(ar2[:, ::2, :] == -5)
+    assert dpt.all(ar2[:, 1::2, :] == 7)
 
     condition = dpt.tile(
         dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
@@ -490,10 +492,10 @@ def test_where_out():
     )
     ar1 = dpt.full((n1, n2, n3), 7, dtype="i4")
     ar2 = dpt.full_like(ar1, -5)
-    res = dpt.where(condition, ar1, ar2, out=ar1)
-    assert dpt.all(ar1 == res)
-    assert dpt.all(ar1[:, ::2, :] == 7)
-    assert dpt.all(ar1[:, 1::2, :] == -5)
+    res = dpt.where(condition, ar1, ar2, out=ar1[:, ::-1, :])
+    assert dpt.all(ar1[:, ::-1, :] == res)
+    assert dpt.all(ar1[:, ::2, :] == -5)
+    assert dpt.all(ar1[:, 1::2, :] == 7)
 
 
 def test_where_out_arg_validation():

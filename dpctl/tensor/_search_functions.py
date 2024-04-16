@@ -150,13 +150,16 @@ def where(condition, x1, x2, /, *, order="K", out=None):
             )
 
         if ti._array_overlap(condition, out):
-            out = dpt.empty_like(out)
+            if not ti._same_logical_tensors(condition, out):
+                out = dpt.empty_like(out)
 
         if ti._array_overlap(x1, out):
-            out = dpt.empty_like(out)
+            if not ti._same_logical_tensors(x1, out):
+                out = dpt.empty_like(out)
 
         if ti._array_overlap(x2, out):
-            out = dpt.empty_like(out)
+            if not ti._same_logical_tensors(x2, out):
+                out = dpt.empty_like(out)
 
     if order == "A":
         order = (
