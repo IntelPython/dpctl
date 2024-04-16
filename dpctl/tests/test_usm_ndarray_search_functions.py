@@ -494,3 +494,29 @@ def test_where_out():
     assert dpt.all(ar1 == res)
     assert dpt.all(ar1[:, ::2, :] == 7)
     assert dpt.all(ar1[:, 1::2, :] == -5)
+
+
+def test_where_out_arg_validation():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    condition = dpt.ones(5, dtype="i4", sycl_queue=q1)
+    x1 = dpt.ones(5, dtype="i4", sycl_queue=q1)
+    x2 = dpt.ones(5, dtype="i4", sycl_queue=q1)
+
+    out_wrong_queue = dpt.empty_like(condition, sycl_queue=q2)
+    out_wrong_dtype = dpt.empty_like(condition, dtype="f4")
+    out_wrong_shape = dpt.empty(6, dtype="i4", sycl_queue=q1)
+    out_not_writable = dpt.empty_like(condition)
+    out_not_writable.flags["W"] = False
+
+    with pytest.raises(TypeError):
+        dpt.where(condition, x1, x2, out=dict())
+    with pytest.raises(ExecutionPlacementError):
+        dpt.where(condition, x1, x2, out=out_wrong_queue)
+    with pytest.raises(ValueError):
+        dpt.where(condition, x1, x2, out=out_wrong_dtype)
+    with pytest.raises(ValueError):
+        dpt.where(condition, x1, x2, out=out_wrong_shape)
+    with pytest.raises(ValueError):
+        dpt.where(condition, x1, x2, out=out_not_writable)
