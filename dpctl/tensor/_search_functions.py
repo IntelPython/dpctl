@@ -18,6 +18,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._manipulation_functions import _broadcast_shapes
+from dpctl.utils import ExecutionPlacementError
 
 from ._copy_utils import _empty_like_orderK, _empty_like_triple_orderK
 from ._type_utils import _all_data_types, _can_cast
@@ -40,7 +41,7 @@ def _where_result_type(dt1, dt2, dev):
         return None
 
 
-def where(condition, x1, x2, /, *, order="K"):
+def where(condition, x1, x2, /, *, order="K", out=None):
     """
     Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen
     from ``x1`` or ``x2`` depending on ``condition``.
@@ -59,8 +60,14 @@ def where(condition, x1, x2, /, *, order="K"):
             Must be compatible with ``condition`` and ``x2`` according
             to broadcasting rules.
         order (``"K"``, ``"C"``, ``"F"``, ``"A"``, optional):
-            Memory layout of the new output array.
+            Memory layout of the new output arra,
+            if parameter ``out`` is ``None``.
             Default: ``"K"``.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of `out` must match the expected shape and the
+            expected data type of the result.
+            If ``None`` then a new array is returned. Default: ``None``.
 
     Returns:
         usm_ndarray:
@@ -93,7 +100,7 @@ def where(condition, x1, x2, /, *, order="K"):
     )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError
-    dst_usm_type = dpctl.utils.get_coerced_usm_type(
+    out_usm_type = dpctl.utils.get_coerced_usm_type(
         (
             condition.usm_type,
             x1.usm_type,
@@ -103,8 +110,8 @@ def where(condition, x1, x2, /, *, order="K"):
 
     x1_dtype = x1.dtype
     x2_dtype = x2.dtype
-    dst_dtype = _where_result_type(x1_dtype, x2_dtype, exec_q.sycl_device)
-    if dst_dtype is None:
+    out_dtype = _where_result_type(x1_dtype, x2_dtype, exec_q.sycl_device)
+    if out_dtype is None:
         raise TypeError(
             "function 'where' does not support input "
             f"types ({x1_dtype}, {x2_dtype}), "
@@ -113,6 +120,43 @@ def where(condition, x1, x2, /, *, order="K"):
         )
 
     res_shape = _broadcast_shapes(condition, x1, x2)
+
+    orig_out = out
+    if out is not None:
+        if not isinstance(out, dpt.usm_ndarray):
+            raise TypeError(
+                "output array must be of usm_ndarray type, got " f"{type(out)}"
+            )
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != res_shape:
+            raise ValueError(
+                "The shape of input and output arrays are "
+                f"inconsistent. Expected output shape is {res_shape}, "
+                f"got {out.shape}"
+            )
+
+        if out_dtype != out.dtype:
+            raise ValueError(
+                f"Output array of type {out_dtype} is needed, "
+                f"got {out.dtype}"
+            )
+
+        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(condition, out):
+            out = dpt.empty_like(out)
+
+        if ti._array_overlap(x1, out):
+            out = dpt.empty_like(out)
+
+        if ti._array_overlap(x2, out):
+            out = dpt.empty_like(out)
 
     if order == "A":
         order = (
@@ -129,26 +173,35 @@ def where(condition, x1, x2, /, *, order="K"):
         )
 
     if condition.size == 0:
-        if order == "K":
-            return _empty_like_triple_orderK(
-                condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
-            )
+        if out is not None:
+            return out
         else:
-            return dpt.empty(
-                res_shape,
-                dtype=dst_dtype,
-                order=order,
-                usm_type=dst_usm_type,
-                sycl_queue=exec_q,
-            )
+            if order == "K":
+                return _empty_like_triple_orderK(
+                    condition,
+                    x1,
+                    x2,
+                    out_dtype,
+                    res_shape,
+                    out_usm_type,
+                    exec_q,
+                )
+            else:
+                return dpt.empty(
+                    res_shape,
+                    dtype=out_dtype,
+                    order=order,
+                    usm_type=out_usm_type,
+                    sycl_queue=exec_q,
+                )
 
     deps = []
     wait_list = []
-    if x1_dtype != dst_dtype:
+    if x1_dtype != out_dtype:
         if order == "K":
-            _x1 = _empty_like_orderK(x1, dst_dtype)
+            _x1 = _empty_like_orderK(x1, out_dtype)
         else:
-            _x1 = dpt.empty_like(x1, dtype=dst_dtype, order=order)
+            _x1 = dpt.empty_like(x1, dtype=out_dtype, order=order)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x1, dst=_x1, sycl_queue=exec_q
         )
@@ -156,11 +209,11 @@ def where(condition, x1, x2, /, *, order="K"):
         deps.append(copy1_ev)
         wait_list.append(ht_copy1_ev)
 
-    if x2_dtype != dst_dtype:
+    if x2_dtype != out_dtype:
         if order == "K":
-            _x2 = _empty_like_orderK(x2, dst_dtype)
+            _x2 = _empty_like_orderK(x2, out_dtype)
         else:
-            _x2 = dpt.empty_like(x2, dtype=dst_dtype, order=order)
+            _x2 = dpt.empty_like(x2, dtype=out_dtype, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=_x2, sycl_queue=exec_q
         )
@@ -168,32 +221,43 @@ def where(condition, x1, x2, /, *, order="K"):
         deps.append(copy2_ev)
         wait_list.append(ht_copy2_ev)
 
-    if order == "K":
-        dst = _empty_like_triple_orderK(
-            condition, x1, x2, dst_dtype, res_shape, dst_usm_type, exec_q
-        )
-    else:
-        dst = dpt.empty(
-            res_shape,
-            dtype=dst_dtype,
-            order=order,
-            usm_type=dst_usm_type,
-            sycl_queue=exec_q,
-        )
+    if out is None:
+        if order == "K":
+            out = _empty_like_triple_orderK(
+                condition, x1, x2, out_dtype, res_shape, out_usm_type, exec_q
+            )
+        else:
+            out = dpt.empty(
+                res_shape,
+                dtype=out_dtype,
+                order=order,
+                usm_type=out_usm_type,
+                sycl_queue=exec_q,
+            )
 
     condition = dpt.broadcast_to(condition, res_shape)
     x1 = dpt.broadcast_to(x1, res_shape)
     x2 = dpt.broadcast_to(x2, res_shape)
 
-    hev, _ = ti._where(
+    hev, where_ev = ti._where(
         condition=condition,
         x1=x1,
         x2=x2,
-        dst=dst,
+        dst=out,
         sycl_queue=exec_q,
         depends=deps,
     )
+    if not (orig_out is None or orig_out is out):
+        # Copy the out data from temporary buffer to original memory
+        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=out,
+            dst=orig_out,
+            sycl_queue=exec_q,
+            depends=[where_ev],
+        )
+        ht_copy_out_ev.wait()
+        out = orig_out
     dpctl.SyclEvent.wait_for(wait_list)
     hev.wait()
 
-    return dst
+    return out
