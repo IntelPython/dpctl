@@ -386,31 +386,47 @@ def test_where_order():
         ar1 = dpt.zeros(test_sh, dtype=dt1, order="C")
         ar2 = dpt.ones(test_sh, dtype=dt2, order="C")
         condition = dpt.zeros(test_sh, dtype="?", order="C")
-        res = dpt.where(condition, ar1, ar2)
-        assert res.flags.c_contiguous
+        res1 = dpt.where(condition, ar1, ar2, order="C")
+        assert res1.flags.c_contiguous
+        res2 = dpt.where(condition, ar1, ar2, order="F")
+        assert res2.flags.f_contiguous
+        res3 = dpt.where(condition, ar1, ar2, order="A")
+        assert res3.flags.c_contiguous
+        res4 = dpt.where(condition, ar1, ar2, order="K")
+        assert res4.flags.c_contiguous
 
         ar1 = dpt.ones(test_sh, dtype=dt1, order="F")
         ar2 = dpt.ones(test_sh, dtype=dt2, order="F")
         condition = dpt.zeros(test_sh, dtype="?", order="F")
-        res = dpt.where(condition, ar1, ar2)
-        assert res.flags.f_contiguous
+        res1 = dpt.where(condition, ar1, ar2, order="C")
+        assert res1.flags.c_contiguous
+        res2 = dpt.where(condition, ar1, ar2, order="F")
+        assert res2.flags.f_contiguous
+        res3 = dpt.where(condition, ar1, ar2, order="A")
+        assert res2.flags.f_contiguous
+        res4 = dpt.where(condition, ar1, ar2, order="K")
+        assert res4.flags.f_contiguous
 
         ar1 = dpt.ones(test_sh2, dtype=dt1, order="C")[:20, ::-2]
         ar2 = dpt.ones(test_sh2, dtype=dt2, order="C")[:20, ::-2]
         condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2]
-        res = dpt.where(condition, ar1, ar2)
-        assert res.strides == (n, -1)
+        res1 = dpt.where(condition, ar1, ar2, order="K")
+        assert res1.strides == (n, -1)
+        res2 = dpt.where(condition, ar1, ar2, order="C")
+        assert res2.strides == (n, 1)
 
         ar1 = dpt.ones(test_sh2, dtype=dt1, order="C")[:20, ::-2].mT
         ar2 = dpt.ones(test_sh2, dtype=dt2, order="C")[:20, ::-2].mT
         condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2].mT
-        res = dpt.where(condition, ar1, ar2)
-        assert res.strides == (-1, n)
+        res1 = dpt.where(condition, ar1, ar2, order="K")
+        assert res1.strides == (-1, n)
+        res2 = dpt.where(condition, ar1, ar2, order="C")
+        assert res2.strides == (n, 1)
 
         ar1 = dpt.ones(n, dtype=dt1, order="C")
         ar2 = dpt.broadcast_to(dpt.ones(n, dtype=dt2, order="C"), test_sh)
         condition = dpt.zeros(n, dtype="?", order="C")
-        res = dpt.where(condition, ar1, ar2)
+        res = dpt.where(condition, ar1, ar2, order="K")
         assert res.strides == (20, 1)
 
 
