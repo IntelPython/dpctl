@@ -443,6 +443,8 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
         axis = tuple(range(nd))
     if not isinstance(axis, (tuple, list)):
         axis = (axis,)
+    if any([x.shape[i] == 0 for i in axis]):
+        raise ValueError("reduction cannot be performed over zero-size axes")
     axis = normalize_axis_tuple(axis, nd, "axis")
     red_nd = len(axis)
     perm = [i for i in range(nd) if i not in axis] + list(axis)
@@ -489,14 +491,6 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
         out = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
-
-    if x.size == 0:
-        if any([x.shape[i] == 0 for i in axis]):
-            raise ValueError(
-                "reduction cannot be performed over zero-size axes"
-            )
-        else:
-            return out
 
     host_tasks_list = []
     if red_nd == 0:
@@ -615,6 +609,8 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             f"`axis` argument expected `int` or `None`, got {type(axis)}"
         )
     axis = normalize_axis_tuple(axis, nd, "axis")
+    if any([x.shape[i] == 0 for i in axis]):
+        raise ValueError("reduction cannot be performed over zero-size axes")
     red_nd = len(axis)
     perm = [i for i in range(nd) if i not in axis] + list(axis)
     x_tmp = dpt.permute_dims(x, perm)
@@ -660,14 +656,6 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
         out = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
-
-    if x.size == 0:
-        if any([x.shape[i] == 0 for i in axis]):
-            raise ValueError(
-                "reduction cannot be performed over zero-size axes"
-            )
-        else:
-            return out
 
     if red_nd == 0:
         ht_e_fill, _ = ti._full_usm_ndarray(
