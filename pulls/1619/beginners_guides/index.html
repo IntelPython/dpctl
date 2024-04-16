@@ -179,9 +179,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../user_guides/intro.html">oneAPI execution model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guides/license.html">Licenses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guides/execution_model.html">oneAPI programming model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/environment_variables.html">Environment variables</a></li>
 </ul>
@@ -724,6 +723,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licenses</a></li>
 </ul>
 
 </div>
@@ -760,6 +760,16 @@
         <article role="main">
           <section id="beginner-s-guides">
 <span id="beginners-guides"></span><h1>Beginner’s guides<a class="headerlink" href="#beginner-s-guides" title="Permalink to this heading">#</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> brings the standard-based execution model to program a heterogeneous system
+to Python through invocations of oneAPI-based native libraries, their Python interfaces,
+or by using DPC++-based Python native extensions built using <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> integration with
+Python native extension generators.</p>
+<p>The <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> runtime is built on top of the C++ SYCL-2020 standard as implemented in
+<a class="reference external" href="dpcpp_compiler">Intel(R) oneAPI DPC++ compiler</a> and is designed to be both vendor and
+architecture agnostic.</p>
+</section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -782,7 +792,8 @@
 <section id="miscellaneous">
 <h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>History of <code class="docutils literal notranslate"><span class="pre">&quot;dpctl&quot;</span></code> <a class="reference internal" href="misc.html#beginners-guide-why-dpctl"><span class="std std-ref">name</span></a>?</p></li>
+<li><p>History of <code class="docutils literal notranslate"><span class="pre">&quot;dpctl&quot;</span></code> <a class="reference internal" href="misc.html#beginners-guide-why-dpctl"><span class="std std-ref">name</span></a></p></li>
+<li><p>Frequenty asked questions</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -845,6 +856,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Beginner’s guides</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#working-with-devices">Working with devices</a></li>
 <li><a class="reference internal" href="#introduction-to-array-library">Introduction to array library</a></li>

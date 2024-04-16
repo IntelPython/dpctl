@@ -179,9 +179,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guides/intro.html">oneAPI execution model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guides/basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guides/license.html">Licenses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guides/execution_model.html">oneAPI programming model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guides/environment_variables.html">Environment variables</a></li>
 </ul>
@@ -724,6 +723,7 @@
 <li class="toctree-l2"><a class="reference internal" href="contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Licenses</a></li>
 </ul>
 
 </div>
@@ -760,11 +760,11 @@
         <article role="main">
           <section id="data-parallel-control">
 <h1>Data Parallel Control<a class="headerlink" href="#data-parallel-control" title="Permalink to this heading">#</a></h1>
-<p id="dpctlintroduction">Python package <a class="reference internal" href="api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> enables Python users to engage with multiple
+<p id="dpctlintroduction">Python package <a class="reference internal" href="api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> enables Python users to engage multiple
 compute devices commonly available in modern consumer- and server-grade
 computers using industry-standard <a class="reference external" href="https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_execution_model">SYCL execution model</a>
-facilitated by Intel(R) oneAPI <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html">DPC++ compiler</a> implementing
-<a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 standard</a>.</p>
+facilitated by <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 standard</a>-compliant
+Intel(R) oneAPI <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html">DPC++ compiler</a>.</p>
 <p><a class="reference internal" href="api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides a reference data-parallel implementation of
 array library <a class="reference internal" href="api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> conforming to Python Array API specification.
 The implementation adheres to a programming model affording clear control

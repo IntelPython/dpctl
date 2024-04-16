@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="oneAPI execution model" href="intro.html" /><link rel="prev" title="History of dpctl name" href="../beginners_guides/misc.html" />
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Heterogeneous Systems and Programming Concepts" href="basic_concepts.html" /><link rel="prev" title="History of dpctl name" href="../beginners_guides/misc.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
         <title>User guides - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
@@ -179,9 +179,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">User guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="intro.html">oneAPI execution model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="license.html">Licenses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="execution_model.html">oneAPI programming model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dlpack.html">DLPack exchange of USM allocated arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment variables</a></li>
 </ul>
@@ -724,6 +723,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licenses</a></li>
 </ul>
 
 </div>
@@ -761,18 +761,10 @@
           <section id="user-guides">
 <span id="id1"></span><h1>User guides<a class="headerlink" href="#user-guides" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
-<li><p>Concepts relevant to <a class="reference internal" href="basic_concepts.html#basic-concepts"><span class="std std-ref">heterogeneous programming</span></a></p></li>
-<li><p>Definition and explanation of <a class="reference internal" href="intro.html#oneapi-programming-model-intro"><span class="std std-ref">basic concepts</span></a> involved in SYCL execution model</p></li>
-<li><p>Overview of array library <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> conforming to Python array API specification</p></li>
-<li><dl class="simple">
-<dt>Writing custom operations on <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> container</dt><dd><ul>
-<li><p>Write kernels using <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a></p></li>
-<li><p>Write Python extensions in SYCL using Intel(R) oneAPI DPC++ compiler and <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a></p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p>Concepts relevant to <a class="reference internal" href="basic_concepts.html#basic-concepts"><span class="std std-ref">heterogeneous programming</span></a>.</p></li>
+<li><p>oneAPI <a class="reference internal" href="execution_model.html#oneapi-programming-model-intro"><span class="std std-ref">execution model</span></a> in Python</p></li>
 <li><p><a class="reference internal" href="dlpack.html#dpctl-tensor-dlpack-support"><span class="std std-ref">Protocol</span></a> for exchanging USM allocations using DLPack</p></li>
+<li><p><a class="reference internal" href="environment_variables.html#user-guides-env-variables"><span class="std std-ref">Environment variables</span></a> affecting <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a></p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -783,12 +775,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="intro.html">
+          <a class="next-page" href="basic_concepts.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">oneAPI execution model</div>
+                <div class="title">Heterogeneous Systems and Programming Concepts</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

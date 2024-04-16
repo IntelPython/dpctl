@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="DLPack exchange of USM allocated arrays" href="dlpack.html" /><link rel="prev" title="Heterogeneous Systems and Programming Concepts" href="basic_concepts.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
-        <title>Licenses - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
+        <title>oneAPI programming model - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -179,9 +179,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">User guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="intro.html">oneAPI execution model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Licenses</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">oneAPI programming model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dlpack.html">DLPack exchange of USM allocated arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment variables</a></li>
 </ul>
@@ -724,6 +723,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licenses</a></li>
 </ul>
 
 </div>
@@ -758,24 +758,129 @@
           </label>
         </div>
         <article role="main">
-          <section id="licenses">
-<span id="user-guide-dpctl-license"></span><h1>Licenses<a class="headerlink" href="#licenses" title="Permalink to this heading">#</a></h1>
-<section id="data-parallel-control-license">
-<h2>Data Parallel Control license<a class="headerlink" href="#data-parallel-control-license" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is licensed under Apache License 2.0 that can be found in
-<a class="reference external" href="https://github.com/IntelPython/dpctl/blob/master/LICENSE">LICENSE</a> file.
-All usage and contributions to the project are subject to the terms and
-conditions of this license.</p>
+          <section id="oneapi-programming-model">
+<span id="oneapi-programming-model-intro"></span><h1>oneAPI programming model<a class="headerlink" href="#oneapi-programming-model" title="Permalink to this heading">#</a></h1>
+<section id="oneapi-library-and-its-python-interface">
+<h2>oneAPI library and its Python interface<a class="headerlink" href="#oneapi-library-and-its-python-interface" title="Permalink to this heading">#</a></h2>
+<p>Using oneAPI libraries, a user calls functions that take <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> and a collection of
+<code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> objects among other arguments, e.g.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Prototypical call signature of oneMKL function</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sycl</span><span class="o">::</span><span class="n">event</span>
+<span class="n">compute</span><span class="p">(</span>
+    <span class="n">sycl</span><span class="o">::</span><span class="n">queue</span> <span class="o">&amp;</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">...,</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">sycl</span><span class="o">::</span><span class="n">event</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">dependent_events</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">compute</span></code> inserts computational tasks into the queue <code class="docutils literal notranslate"><span class="pre">exec_q</span></code> for DPC++ runtime to
+execute on the device the queue targets. The execution may begin only after other tasks whose
+execution status is represented by <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> objects in the provided <code class="docutils literal notranslate"><span class="pre">dependent_events</span></code>
+vector complete. If the vector is empty, the runtime begins the execution as soon as the device is
+ready. The function returns a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> object representing completion of the set of
+computational tasks submitted by the <code class="docutils literal notranslate"><span class="pre">compute</span></code> function.</p>
+<p>Hence, in oneAPI programming model, the execution <strong>queue</strong> is used to specify which device the
+function will execute on. To create a queue, one must specify a device to target.</p>
+<p>In <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> is represented by <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> Python type,
+and a Python API to call such a function might look like</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_compute</span><span class="p">(</span>
+    <span class="n">exec_q</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">,</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">dependent_events</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Even if Python API to an offloading Python function looks different from this, it must
+translate to a similar call under the hood.</p>
+<p>The arguments to the function must be suitable for use in the offloading functions.
+Typically these are Python scalars, or objects representing USM allocations, such as
+<a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>, <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a> and friends.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The USM allocations these objects represent must not get deallocated before
+offloaded tasks that access them complete.</p>
+<p>This is something authors of DPC++-based Python extensions must take care of,
+and users of such extensions should assume assured.</p>
+</div>
 </section>
-<section id="third-party-components-and-their-licenses">
-<h2>Third party components and their licenses<a class="headerlink" href="#third-party-components-and-their-licenses" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> vendors DLPack header file which governed by Apache 2.0 license
-that can be found in its <a class="reference external" href="https://github.com/IntelPython/dpctl/blob/master/dpctl/tensor/include/dlpack/LICENSE.third-party">LICENSE</a> vendored file. DLPack header
-is used to implement support for data interchanging mechanism in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>
-as required by Python Array API specification, cf. <a class="reference external" href="https://data-apis.org/array-api/latest/design_topics/data_interchange.html">data interchange document</a>.</p>
-<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> vendors <a class="reference external" href="https://github.com/python-versioneer/python-versioneer/">versioneer</a> to generate it version from git history
-of its sources. Versioneer has been placed in public domain per <a class="reference external" href="https://github.com/python-versioneer/python-versioneer/blob/master/LICENSE">license file</a>
-in its original repository.</p>
+<section id="usm-allocations-in-dpctl-and-compute-follows-data">
+<h2>USM allocations in <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> and compute-follows-data<a class="headerlink" href="#usm-allocations-in-dpctl-and-compute-follows-data" title="Permalink to this heading">#</a></h2>
+<p>To make a USM allocation on a device in SYCL, one needs to specify <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> in the
+memory of which the allocation is made, and the <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> to which the allocation
+is bound.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> object is often used instead. In such cases <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> associated
+with the queue are used to make the allocation.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> chose to associate a queue object with every USM allocation.</p>
+<p>The associated queue may be queried using <code class="docutils literal notranslate"><span class="pre">.sycl_queue</span></code> property of the
+Python type representing the USM allocation.</p>
+</div>
+<p>This design choice allows <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> to have a preferred queue to use when operating on any single
+USM allocation, i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">unary_func</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+    <span class="n">code1</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">_func_impl</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+    <span class="n">code2</span>
+</pre></div>
+</div>
+<p>When combining several objects representing USM-allocations, the
+<a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-compute-follows-data"><span class="std std-ref">programming model</span></a>
+adopted in <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> insists that queues associated with each object be the same, in which
+case it is the execution queue used. Alternatively <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.ExecutionPlacementError" title="dpctl.utils.ExecutionPlacementError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">dpctl.utils.ExecutionPlacementError</span></code></a> is raised.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">binary_func</span><span class="p">(</span>
+    <span class="n">x1</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span>
+    <span class="n">x2</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span>
+<span class="p">):</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctil</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>In order to ensure that compute-follows-data works seemlessly out-of-the-box, <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> maintains
+a cache of with context and device as keys and queues as values used by <a class="reference internal" href="../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">sycl_dev</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d2</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">dpctl</span><span class="o">.</span><span class="n">select_cpu_device</span><span class="p">())</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span><span class="o">.</span><span class="n">sycl_queue</span> <span class="o">==</span> <span class="n">d2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">sycl_queue</span> <span class="o">==</span> <span class="n">d3</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">d2</span><span class="o">.</span><span class="n">sycl_queue</span> <span class="o">==</span> <span class="n">d3</span><span class="o">.</span><span class="n">sycl_queue</span>
+<span class="go">(True, True, True)</span>
+</pre></div>
+</div>
+<p>Since <a class="reference internal" href="../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> class is used by all <a class="reference internal" href="../api_reference/dpctl/tensor.creation_functions.html#dpctl-tensor-creation-functions"><span class="std std-ref">array creation functions</span></a>
+in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>, the same value used as <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword argument results in array instances that
+can be combined together in accordance with compute-follows-data programming model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># queue for default-constructed device is used</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x12</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x12</span><span class="o">.</span><span class="n">sycl_queue</span> <span class="o">==</span> <span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x12</span><span class="o">.</span><span class="n">sycl_queue</span> <span class="o">==</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span>
+<span class="go">(True, True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># default constructors of SyclQueue class create different instance of the queue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">==</span> <span class="n">q2</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y2</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># this call raises ExecutionPlacementError since compute-follows-data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># rules are not met</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-array-migration"><span class="std std-ref">array migration</span></a> section of the introduction to
+<a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> to examples on how to resolve <code class="docutils literal notranslate"><span class="pre">ExecutionPlacementError</span></code> exceptions.</p>
 </section>
 </section>
 
@@ -834,9 +939,9 @@ in its original repository.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Licenses</a><ul>
-<li><a class="reference internal" href="#data-parallel-control-license">Data Parallel Control license</a></li>
-<li><a class="reference internal" href="#third-party-components-and-their-licenses">Third party components and their licenses</a></li>
+<li><a class="reference internal" href="#">oneAPI programming model</a><ul>
+<li><a class="reference internal" href="#oneapi-library-and-its-python-interface">oneAPI library and its Python interface</a></li>
+<li><a class="reference internal" href="#usm-allocations-in-dpctl-and-compute-follows-data">USM allocations in <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> and compute-follows-data</a></li>
 </ul>
 </li>
 </ul>

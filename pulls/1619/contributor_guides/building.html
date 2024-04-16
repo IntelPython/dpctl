@@ -179,9 +179,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guides/index.html">User guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of User guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../user_guides/intro.html">oneAPI execution model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guides/license.html">Licenses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guides/execution_model.html">oneAPI programming model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guides/environment_variables.html">Environment variables</a></li>
 </ul>
@@ -724,6 +723,7 @@
 <li class="toctree-l2"><a class="reference internal" href="memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licenses</a></li>
 </ul>
 
 </div>
@@ -800,17 +800,11 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>dpctl
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can face issues with conda-build version 3.20. Use conda-build
-3.18 instead.</p>
-</div>
 </section>
 <section id="build-and-install-with-scikit-build">
 <h3>Build and Install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this heading">#</a></h3>
 <p>To build using Python <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>, install the following Python packages:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cython</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmake</span></code></p></li>
@@ -820,28 +814,64 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 <li><p><code class="docutils literal notranslate"><span class="pre">gmock</span></code> (optional to run C API tests)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> (optional to run Python API tests)</p></li>
 </ul>
-</div></blockquote>
 <p>Once the prerequisites are installed, building using <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code> involves the usual steps.</p>
 <p>To build and install, run:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="lnx" for="sd-tab-item-0">
+Linux</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
 </pre></div>
 </div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="win" for="sd-tab-item-1">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+</pre></div>
+</div>
+</div>
+</div>
 <p>To develop, run:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="lnx" for="sd-tab-item-2">
+Linux</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>develop<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
 </pre></div>
 </div>
-<p>On Windows OS, use <code class="docutils literal notranslate"><span class="pre">icx</span></code> for both C and CXX compilers.</p>
-<p>To develop on Linux OS, use the driver script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="win" for="sd-tab-item-3">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
 </pre></div>
+</div>
+</div>
+</div>
+<p>Developing can be streamlined using the driver script:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="lnx" for="sd-tab-item-4">
+Linux</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="win" for="sd-tab-item-5">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python scripts/build_locally.py --verbose
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 </section>
-<section id="building-using-custom-dpcpp">
-<h2>Building Using Custom dpcpp<a class="headerlink" href="#building-using-custom-dpcpp" title="Permalink to this heading">#</a></h2>
+<section id="building-using-custom-dpc">
+<h2>Building Using Custom DPC++<a class="headerlink" href="#building-using-custom-dpc" title="Permalink to this heading">#</a></h2>
 <p>You can build dpctl from the source using the <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">DPC++ toolchain</a>
 instead of the DPC++ compiler that comes with oneAPI.</p>
-<p>Do this, to enable support for CUDA devices.</p>
 <p>Following steps in the <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use a command-line option to set
 the relevant CMake variables, for example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>develop<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>clang<span class="k">)</span><span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>clang++<span class="k">)</span>
@@ -965,7 +995,7 @@ make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><sp
 <li><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#building-using-custom-dpcpp">Building Using Custom dpcpp</a></li>
+<li><a class="reference internal" href="#building-using-custom-dpc">Building Using Custom DPC++</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>

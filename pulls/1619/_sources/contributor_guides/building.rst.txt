@@ -57,57 +57,85 @@ After building the Conda package, install it by executing:
 
     conda install dpctl
 
-.. note::
-
-    You can face issues with conda-build version 3.20. Use conda-build
-    3.18 instead.
-
 
 Build and Install with scikit-build
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To build using Python ``setuptools`` and ``scikit-build``, install the following Python packages:
 
-    - ``cython``
-    - ``numpy``
-    - ``cmake``
-    - ``scikit-build``
-    - ``ninja``
-    - ``gtest`` (optional to run C API tests)
-    - ``gmock`` (optional to run C API tests)
-    - ``pytest`` (optional to run Python API tests)
+- ``cython``
+- ``numpy``
+- ``cmake``
+- ``scikit-build``
+- ``ninja``
+- ``gtest`` (optional to run C API tests)
+- ``gmock`` (optional to run C API tests)
+- ``pytest`` (optional to run Python API tests)
 
 Once the prerequisites are installed, building using ``scikit-build`` involves the usual steps.
 
 To build and install, run:
 
-.. code-block:: bash
+.. tab-set::
 
-    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+    .. tab-item:: Linux
+        :sync: lnx
+
+        .. code-block:: bash
+
+            python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+
+    .. tab-item:: Windows
+        :sync: win
+
+        .. code-block:: bat
+
+            python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
 
 
 To develop, run:
 
-.. code-block:: bash
+.. tab-set::
 
-    python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+    .. tab-item:: Linux
+        :sync: lnx
 
-On Windows OS, use ``icx`` for both C and CXX compilers.
+        .. code-block:: bash
 
-To develop on Linux OS, use the driver script:
+            python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
 
-.. code-block:: bash
+    .. tab-item:: Windows
+        :sync: win
 
-    python scripts/build_locally.py
+        .. code-block:: bat
+
+            python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
 
 
-Building Using Custom dpcpp
+Developing can be streamlined using the driver script:
+
+.. tab-set::
+
+    .. tab-item:: Linux
+        :sync: lnx
+
+        .. code-block:: bash
+
+            python scripts/build_locally.py --verbose
+
+    .. tab-item:: Windows
+        :sync: win
+
+        .. code-block:: bat
+
+            python scripts/build_locally.py --verbose
+
+
+Building Using Custom DPC++
 ---------------------------
 
 You can build dpctl from the source using the `DPC++ toolchain <https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md>`_
 instead of the DPC++ compiler that comes with oneAPI.
-
-Do this, to enable support for CUDA devices.
 
 Following steps in the `Build and install with scikit-build`_ use a command-line option to set
 the relevant CMake variables, for example:
