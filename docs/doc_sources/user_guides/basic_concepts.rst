@@ -58,8 +58,8 @@ Definitions
 * **Unified Shared Memory**
    Unified Shared Memory (USM) refers to pointer-based device memory management.
    USM allocations are bound to context. It means, a pointer representing
-   USM allocation can be unambiguously mapped to the data it represents only
-   if the associated context is known. USM allocations are accessible by
+   USM allocation can be unambiguously mapped to the data it represents *only
+   if* the associated context is known. USM allocations are accessible by
    computational kernels that are executed on a device, provided that the
    allocation is bound to the same context that is used to construct the queue
    where the kernel is scheduled for execution.

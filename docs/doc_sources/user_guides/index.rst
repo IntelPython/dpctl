@@ -4,33 +4,55 @@
 User guides
 ===========
 
-* Concepts relevant to :ref:`heterogeneous programming <basic_concepts>`
-* Definition and explanation of :ref:`basic concepts <oneapi_programming_model_intro>` involved in SYCL execution model
+* Concepts relevant to :ref:`heterogeneous programming <basic_concepts>`.
 
-* Overview of array library :py:mod:`dpctl.tensor` conforming to Python array API specification
-* Writing custom operations on :py:class:`dpctl.tensor.usm_ndarray` container
-   - Write kernels using :py:mod:`numba_dpex`
-   - Write Python extensions in SYCL using Intel(R) oneAPI DPC++ compiler and :py:mod:`dpctl`
+* oneAPI :ref:`execution model <oneapi_programming_model_intro>` in Python
 
 * :ref:`Protocol <dpctl_tensor_dlpack_support>` for exchanging USM allocations using DLPack
 
-..
-   :mod:`dpctl` leverages `oneAPI DPC++ compiler runtime <dpcpp_compiler>`_ to
-   answer the following three questions users of heterogenous platforms ask:
+* :ref:`Environment variables <user_guides_env_variables>` affecting :mod:`dpctl`
 
-   1.  What are available compute devices?
-   2.  How to specify the device a computation is to be offloaded to?
-   3.  How to manage sharing of data between devices and Python?
 
-   :mod:`dpctl` implements Python classes and free functions mapping to DPC++
-   entities to answer these questions.
+.. Further topics:
+   ## Where dpctl.tensor goes beyond array API
 
+      - support for float16
+      - support for out= keyword
+      - Support for combining basic and advanced indexing
+      - Additional API functions:
+            - dpt.place
+            - dpt.put
+            - dpt.extract
+            - Extended dpt.take
+            - dpt.cbrt
+            - dpt.rsqrt
+            - dpt.reciprocal
+            - dpt.cumulative_logsumexp
+            - dpt.reduce_hypot
+            - dpt.allclose
+         - Mutability tutorial
+            - 0D arrays, no scalars
+            - array is mutable, pitfalls and best practices
+
+   ## Using tools to understand performance
+
+      - Getting unitrace
+      - Using it to check GPU activity
+      - Using it to collect tracing information
+      - Using VTune
+      - Using ITT API to zoom in on specific portion of your program
+
+   ## Building DPC++ based Python extension with dpctl
+
+   - Compatibility with system compiler (Intel LLVM is compatible with GCC runtime/VS runtime)
+   - Simple example
+   - List examples from dpctl
+         - Document each native extension example
 
 .. toctree::
    :hidden:
 
-   intro
    basic_concepts
-   license
+   execution_model
    dlpack
    environment_variables

@@ -4,6 +4,18 @@
 Beginner's guides
 =================
 
+Introduction
+------------
+
+:mod:`dpctl` brings the standard-based execution model to program a heterogeneous system
+to Python through invocations of oneAPI-based native libraries, their Python interfaces,
+or by using DPC++-based Python native extensions built using :mod:`dpctl` integration with
+Python native extension generators.
+
+The :py:mod:`dpctl` runtime is built on top of the C++ SYCL-2020 standard as implemented in
+`Intel(R) oneAPI DPC++ compiler <dpcpp_compiler>`_ and is designed to be both vendor and
+architecture agnostic.
+
 Installation
 ------------
 
@@ -15,12 +27,6 @@ Working with devices
 
 * :ref:`Managing devices <beginners_guide_managing_devices>`
 
-..
-    * :ref:`Enumerating available devices <beginners_guide_enumerating_devices>`
-    * :ref:`Selecting a device <beginners_guide_device_selection>`
-    * :ref:`Querying information about device <beginners_guide_device_info>`
-    * :ref:`Can I influence which device is the default one? <beginners_guide_env_variables>`
-
 Introduction to array library
 -----------------------------
 
@@ -29,7 +35,8 @@ Introduction to array library
 Miscellaneous
 -------------
 
-* History of ``"dpctl"`` :ref:`name <beginners_guide_why_dpctl>`?
+* History of ``"dpctl"`` :ref:`name <beginners_guide_why_dpctl>`
+* Frequenty asked questions
 
 .. toctree::
     :hidden:

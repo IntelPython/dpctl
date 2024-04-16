@@ -70,11 +70,10 @@ A created instance of :class:`usm_ndarray` has an associated :class:`dpctl.SyclQ
 using :attr:`dpctl.tensor.usm_ndarray.sycl_queue` property. The underlying USM allocation
 is allocated on :class:`dpctl.SyclDevice` and is bound to :class:`dpctl.SyclContext` targeted by this queue.
 
+.. _dpctl_tensor_compute_follows_data:
 
 Execution model
 ---------------
-
-.. _dpctl_tensor_compute_follows_data:
 
 When one of more instances of ``usm_ndarray`` objects are passed to a function in :py:mod:`dpctl.tensor` other than creation function,
 a "compute follows data" execution model is followed.
@@ -92,6 +91,7 @@ each one corresponds to the same underlying ``sycl::queue`` object. In such a ca
 If input arrays do not conform to the compute-follows-data requirements, :py:exc:`dpctl.utils.ExecutionPlacementError` is raised.
 User must explicitly migrate the data to unambiguously control the execution placement.
 
+.. _dpctl_tensor_array_migration:
 
 Migrating arrays
 ----------------
@@ -227,3 +227,61 @@ following this convention:
 
     # r3 has value "host"
     r3 = get_coerced_usm_type(["host", "host", "host"])
+
+Sharing data between devices and Python
+---------------------------------------
+
+Python objects, such as sequences of :class:`int`, :class:`float`, or :class:`complex` objects,
+or NumPy arrays can be converted to :class:`dpctl.tensor.usm_ndarray` using :func:`dpctl.tensor.asarray`
+function.
+
+.. code-block:: python
+
+    >>> from dpctl import tensor as dpt
+    >>> import numpy as np
+    >>> import mkl_random
+
+    >>> # Sample from true random number generator
+    >>> rs = mkl_random.RandomState(brng="nondeterm")
+    >>> x_np = rs.uniform(-1, 1, size=(6, 512)).astype(np.float32)
+
+    >>> # copy data to USM-device (default) allocated array
+    >>> x_usm = dpt.asarray(x_np)
+    >>> dpt.max(x_usm, axis=1)
+    usm_ndarray([0.9998379 , 0.9963589 , 0.99818915, 0.9975991 , 0.9999802 ,
+                0.99851537], dtype=float32)
+    >>> np.max(x_np, axis=1)
+    array([0.9998379 , 0.9963589 , 0.99818915, 0.9975991 , 0.9999802 ,
+          0.99851537], dtype=float32)
+
+The content of :class:`dpctl.tensor.usm_ndarray` may be copied into
+a NumPy array using :func:`dpctl.tensor.asnumpy` function:
+
+.. code-block:: python
+
+    from dpctl import tensor as dpt
+    import numpy as np
+
+    def sieve_pass(r : dpt.usm_ndarray, v : dpt.usm_ndarray) -> dpt.usm_ndarray:
+        "Single pass of sieve of Eratosthenes"
+        m = dpt.min(r[r > v])
+        r[ (r > m) & (r % m == 0) ] = 0
+        return m
+
+    def sieve(n : int) -> dpt.usm_ndarray:
+        "Find primes <=n using sieve of Erathosthenes"
+        idt = dpt.int32
+        s = dpt.concat((
+          dpt.arange(2, 3, dtype=idt),
+          dpt.arange(3, n + 1, 2, dtype=idt)
+        ))
+        lb = dpt.zeros(tuple(), dtype=idt)
+        while lb * lb < n + 1:
+            lb = sieve_pass(s, lb)
+        return s[s > 0]
+
+    # get prime numbers <= a million into NumPy array
+    # to save to disk
+    ps_np = dpt.asnumpy(sieve(10**6))
+
+    np.savetxt("primes.txt", ps_np, fmt="%d")

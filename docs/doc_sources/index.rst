@@ -4,11 +4,11 @@ Data Parallel Control
 
 .. _DpctlIntroduction:
 
-Python package :py:mod:`dpctl` enables Python users to engage with multiple
+Python package :py:mod:`dpctl` enables Python users to engage multiple
 compute devices commonly available in modern consumer- and server-grade
 computers using industry-standard :sycl_execution_model:`SYCL execution model <>`
-facilitated by Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>` implementing
-:sycl_spec_2020:`SYCL 2020 standard <>`.
+facilitated by :sycl_spec_2020:`SYCL 2020 standard <>`-compliant
+Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>`.
 
 :py:mod:`dpctl` provides a reference data-parallel implementation of
 array library :py:mod:`dpctl.tensor` conforming to Python Array API specification.
@@ -86,3 +86,4 @@ take place.
    user_guides/index
    api_reference/index
    contributor_guides/index
+   license
