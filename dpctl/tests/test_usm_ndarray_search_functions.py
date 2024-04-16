@@ -439,3 +439,58 @@ def test_where_unaligned():
 
     expected = dpt.full(512, 2, dtype="i4")
     assert dpt.all(dpt.where(x[1:], a, b) == expected)
+
+
+def test_where_out():
+    get_queue_or_skip()
+
+    n1, n2, n3 = 3, 4, 5
+    ar1 = dpt.reshape(dpt.arange(n1 * n2 * n3, dtype="i4"), (n1, n2, n3))
+    ar2 = dpt.full_like(ar1, -5)
+    condition = dpt.tile(
+        dpt.reshape(
+            dpt.asarray([True, False, False, True], dtype="?"), (1, n2, 1)
+        ),
+        (n1, 1, n3),
+    )
+
+    out = dpt.zeros((2 * n1, 3 * n2, n3), dtype="i4")
+    res = dpt.where(condition, ar1, ar2, out=out[::-2, 1::3, :])
+
+    assert dpt.all(res == out[::-2, 1::3, :])
+    assert dpt.all(out[::-2, 0::3, :] == 0)
+    assert dpt.all(out[::-2, 2::3, :] == 0)
+
+    assert dpt.all(res[:, 1:3, :] == -5)
+    assert dpt.all(res[:, 0, :] == ar1[:, 0, :])
+    assert dpt.all(res[:, 3, :] == ar1[:, 3, :])
+
+    condition = dpt.tile(
+        dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
+        (n1, 2, n3),
+    )
+    res = dpt.where(condition, condition, condition[:, ::-1, :], out=condition)
+    assert dpt.all(res == condition)
+    assert dpt.all(condition)
+
+    condition = dpt.tile(
+        dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
+        (n1, 2, n3),
+    )
+    ar1 = dpt.full((n1, n2, n3), 7, dtype="i4")
+    ar2 = dpt.full_like(ar1, -5)
+    res = dpt.where(condition, ar1, ar2, out=ar2)
+    assert dpt.all(ar2 == res)
+    assert dpt.all(ar2[:, ::2, :] == 7)
+    assert dpt.all(ar2[:, 1::2, :] == -5)
+
+    condition = dpt.tile(
+        dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
+        (n1, 2, n3),
+    )
+    ar1 = dpt.full((n1, n2, n3), 7, dtype="i4")
+    ar2 = dpt.full_like(ar1, -5)
+    res = dpt.where(condition, ar1, ar2, out=ar1)
+    assert dpt.all(ar1 == res)
+    assert dpt.all(ar1[:, ::2, :] == 7)
+    assert dpt.all(ar1[:, 1::2, :] == -5)
