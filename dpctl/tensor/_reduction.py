@@ -192,8 +192,8 @@ def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         axis (Optional[int, Tuple[int, ...]]):
             axis or axes along which sums must be computed. If a tuple
             of unique integers, sums are computed over multiple axes.
-            If `None`, the sum is computed over the entire array.
-            Default: `None`.
+            If ``None``, the sum is computed over the entire array.
+            Default: ``None``.
         dtype (Optional[dtype]):
             data type of the returned array. If ``None``, the default data
             type is inferred from the "kind" of the input array data type.
