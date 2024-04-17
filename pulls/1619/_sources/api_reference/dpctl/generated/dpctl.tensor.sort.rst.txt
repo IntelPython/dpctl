@@ -1,6 +1,0 @@
-﻿dpctl.tensor.sort
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: sort

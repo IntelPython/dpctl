@@ -1,6 +1,0 @@
-﻿dpctl.tensor.from\_dlpack
-=========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: from_dlpack
