@@ -224,7 +224,7 @@ API for :c:struct:`PyUSMArrayObject`
 .. c:function:: void UsmNDArray_SetWritableFlag(struct PyUSMArrayObject *arr, int flag)
 
     :param arr: Input object
-    :param flags: Whether to set writable flag of the array to read-only, or to writeable
+    :param flags: Whether to set writable flag of the array to read-only, or to writable
 
     Non-zero value of ``flag`` parameter sets the array flag bit to writable, a zero-value
     of ``flag`` parameter sets the flag bit of the array to read-only.
