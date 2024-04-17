@@ -99,7 +99,7 @@ case it is the execution queue used. Alternatively :exc:`dpctl.utils.ExecutionPl
             raise dpctl.utils.ExecutionPlacementError
         ...
 
-In order to ensure that compute-follows-data works seemlessly out-of-the-box, :mod:`dpctl` maintains
+In order to ensure that compute-follows-data works seamlessly out-of-the-box, :mod:`dpctl` maintains
 a cache of with context and device as keys and queues as values used by :class:`dpctl.tensor.Device` class.
 
 .. code-block:: python

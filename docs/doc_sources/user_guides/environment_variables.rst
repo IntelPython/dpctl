@@ -10,7 +10,7 @@ affect DPC++ compiler runtime.
 Variable ``ONEAPI_DEVICE_SELECTOR``
 -----------------------------------
 
-The varible ``ONEAPI_DEVICE_SELECTOR`` can be used to limit the choice of devices
+The variable ``ONEAPI_DEVICE_SELECTOR`` can be used to limit the choice of devices
 available to :py:mod:`dpctl`. Please refer to
 :ref:`Managing Devices <beginners_guide_oneapi_device_selector>` for detailed
 description and :ref:`uses <beginners_guide_oneapi_device_selector_usecase>`.

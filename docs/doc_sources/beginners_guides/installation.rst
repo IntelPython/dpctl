@@ -104,7 +104,7 @@ instructions on how to install required drivers on Linux.
 .. _gpu_stack_installation_guide: https://dgpu-docs.intel.com/
 
 .. note::
-    Instructions for setting up GPU drivers in Windows Subsytem for Linux is forthcoming.
+    Instructions for setting up GPU drivers in Windows Subsystem for Linux (WSL) is forthcoming.
 
 Building from source
 ====================

@@ -97,7 +97,7 @@ To obtain all platforms available on a system programmatically, use
 :func:`dpctl.lsplatform` function. Refer to :ref:`Enumerating available devices <beginners_guide_enumerating_devices>`
 for more information.
 
-It is possible to select devices from spefic backend, and hence belonging to
+It is possible to select devices from specific backend, and hence belonging to
 the same platform, by :ref:`using <beginners_guide_oneapi_device_selector>`
 ``ONEAPI_DEVICE_SELECTOR`` environment variable, or by using
 a :ref:`filter selector string <filter_selector_string>`.
@@ -124,7 +124,7 @@ working of :func:`dpctl.tensor.from_dlpack` function is only supported for devic
 platforms that support default platform context SYCL extension `sycl_ext_oneapi_default_platform_context`_,
 and only of those allocations that are bound to this default context.
 
-To query where a particular device ``dev`` belongs to a plaform that implements
+To query where a particular device ``dev`` belongs to a platform that implements
 the default context, check whether ``dev.sycl_platform.default_context`` returns an instance
 of :class:`dpctl.SyclContext` or raises an exception.
 
@@ -141,7 +141,7 @@ SYCL queue is an entity associated with scheduling computational tasks for execu
 on a targeted SYCL device and using some specific SYCL context.
 
 Queue constructor generally requires both to be specified. For platforms that support the
-default platform context, a shortcut queue constuctor call that specifies only a device would
+default platform context, a shortcut queue constructor call that specifies only a device would
 use the default platform context associated with the platform given device is a part of.
 
 .. code-block:: python
@@ -161,7 +161,7 @@ they do not compare equal, since they correspond to two independent scheduling e
 
 .. note::
    :class:`dpctl.tensor.usm_ndarray` objects one associated with ``q1`` and another associated with ``q2``
-   could not be combined in a call to the same function that implementes
+   could not be combined in a call to the same function that implements
    :ref:`compute-followed-data programming model <dpctl_tensor_compute_follows_data>` in :mod:`dpctl.tensor`.
 
 

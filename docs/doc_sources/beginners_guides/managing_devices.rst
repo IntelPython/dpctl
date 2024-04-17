@@ -147,7 +147,7 @@ of valid settings are:
 Device selection
 ================
 
-DPC++ runtime provides a way to select a device with a highest score to for a set of selection scroring strategies.
+DPC++ runtime provides a way to select a device with a highest score to for a set of selection scoring strategies.
 Amongst these are a default selector, CPU selector, GPU selector, as well as filter-string selector.
 
 Using fixed device selectors

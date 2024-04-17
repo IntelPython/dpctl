@@ -4,13 +4,13 @@ Building from the Source
 ========================
 
 To build :py:mod:`dpctl` from the source, you need DPC++ compiler.
-To run expamples and test suite you would need GPU drivers and/or CPU
+To run examples and test suite you would need GPU drivers and/or CPU
 OpenCL drivers. It is preferable to use the Intel(R) oneAPI DPC++ compiler
 available as part of oneAPI Base-Kit. However, it is possible to use a custom
-build of dpcpp to build :py:mod:`dpctl`, especially if you want to enable
+build of DPC++ to build :py:mod:`dpctl`, especially if you want to enable
 CUDA support or try latest features.
 
-Building using oneAPI dpcpp
+Building using oneAPI DPC++
 ---------------------------
 
 Install oneAPI and graphics drivers to the system prior
