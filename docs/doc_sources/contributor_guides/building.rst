@@ -35,8 +35,8 @@ Build and Install Using Conda-Build
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can use the conda-recipe included with the sources to build the dpctl
-package. The advantage of this approach is that all dependencies are pulled in
-from oneAPI's intelpython conda channel that is installed as a part of oneAPI.
+package. The advantage of this approach is that all oneAPI library dependencies are
+pulled in from oneAPI's local conda channel that is installed as a part of oneAPI.
 
 .. code-block:: bash
 
