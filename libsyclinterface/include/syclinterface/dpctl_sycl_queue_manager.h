@@ -95,7 +95,7 @@ DPCTL_API
 void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
- * @brief Pushes the passed in sycl::queue object to the queue manager's
+ * @brief Pushes the passed in ``sycl::queue`` object to the queue manager's
  * internal stack of queues and makes the queue the current queue.
  *
  * The queue manager maintains a thread-local stack of sycl::queue
@@ -104,7 +104,7 @@ void DPCTLQueueMgr_SetGlobalQueue(__dpctl_keep const DPCTLSyclQueueRef QRef);
  * current queue is the queue returned by the DPCTLQueueMgr_GetCurrentQueue()
  * function.
  *
- * @param    QRef           An opaque reference to a syc::queue.
+ * @param    QRef           An opaque reference to a ``sycl::queue``.
  * @ingroup QueueManager
  */
 DPCTL_API

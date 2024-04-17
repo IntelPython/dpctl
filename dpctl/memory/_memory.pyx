@@ -357,9 +357,9 @@ cdef class _Memory:
 
             * ``"data"`` (Tuple[int, bool])
                 unified address space pointer presented as Python integer
-                and a Boolean value of 'writeable' flag. If ``False`` the
+                and a Boolean value of 'writable' flag. If ``False`` the
                 allocation is read-only. The return flag is always set to
-                writeable.
+                writable.
             * ``"shape"`` (Tuple[int])
                 Extent of array in bytes. Shape is always 1-tuple for
                 this object.
@@ -789,7 +789,7 @@ cdef class MemoryUSMHost(_Memory):
         queue (Optional[:class:`dpctl.SyclQueue`]):
             SYCL queue associated with return allocation
             instance. Allocation is made in host memory accessible
-            to all device in te SYCL context from the queue.
+            to all device in the SYCL context from the queue.
             Allocation is bound to SYCL context from the queue.
             If ``queue`` is ``None`` a cached
             default-constructed :class:`dpctl.SyclQueue` is

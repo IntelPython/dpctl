@@ -124,7 +124,7 @@ DPCTLPlatform_GetName(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @brief Returns a C string corresponding to the vendor providing the platform.
  *
  * @param    PRef           Opaque pointer to a sycl::platform
- * @return    A C string containing the name of the vendor provifing the
+ * @return    A C string containing the name of the vendor providing the
  * platform.
  * @ingroup PlatformInterface
  */

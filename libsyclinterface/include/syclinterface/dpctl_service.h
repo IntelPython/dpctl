@@ -54,7 +54,7 @@ DPCTL_API
 void DPCTLService_InitLogger(const char *app_name, const char *log_dir);
 
 /*!
- * @brief Finilize logger if enabled, no-op otherwise.
+ * @brief Finalize logger if enabled, no-op otherwise.
  *
  * @ingroup Service
  */
