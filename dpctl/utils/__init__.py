@@ -66,7 +66,7 @@ def intel_device_info(dev, /):
     Unsupported descriptors are omitted from the dictionary.
 
     Descriptors other than the PCI identifier are supported only
-    for :class:`.SyclDevices` with Leve-Zero backend.
+    for :class:`.SyclDevices` with Level-Zero backend.
     """
     if not isinstance(dev, SyclDevice):
         raise TypeError(f"Expected dpctl.SyclDevice, got {type(dev)}")

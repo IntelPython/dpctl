@@ -903,7 +903,7 @@ cdef class SyclQueue(_SyclQueue):
     @property
     def sycl_device(self):
         """
-        Returns :class:`.SyclDevice` targeted by this queuey.
+        Returns :class:`.SyclDevice` targeted by this queue.
 
         Returns:
             :class:`SyclDevice`
