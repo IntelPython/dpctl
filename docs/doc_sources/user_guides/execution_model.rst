@@ -94,7 +94,7 @@ case it is the execution queue used. Alternatively :exc:`dpctl.utils.ExecutionPl
         x1 : dpctl.tensor.usm_ndarray,
         x2 : dpctl.tensor.usm_ndarray
     ):
-        exec_q = dpctil.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
+        exec_q = dpctl.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
         if exec_q is None:
             raise dpctl.utils.ExecutionPlacementError
         ...

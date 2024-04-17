@@ -45,6 +45,7 @@ extensions = [
 
 copybutton_prompt_text = ">>> "
 spelling_warning = True
+spelling_word_list_filename = "known_words.txt"
 
 googleanalytics_id = 'G-7TCKS5BHYE'
 googleanalytics_enabled = True

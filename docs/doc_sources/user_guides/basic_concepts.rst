@@ -162,7 +162,7 @@ they do not compare equal, since they correspond to two independent scheduling e
 .. note::
    :class:`dpctl.tensor.usm_ndarray` objects one associated with ``q1`` and another associated with ``q2``
    could not be combined in a call to the same function that implements
-   :ref:`compute-followed-data programming model <dpctl_tensor_compute_follows_data>` in :mod:`dpctl.tensor`.
+   :ref:`compute-follows-data <dpctl_tensor_compute_follows_data>` programming model in :mod:`dpctl.tensor`.
 
 
 Event
