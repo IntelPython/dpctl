@@ -54,7 +54,9 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" sphinx_rtd_theme pydot graphviz sphinxcontrib-programoutput sphinxcontrib-googleanalytics
+          pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" pydot graphviz furo \
+                      sphinxcontrib-programoutput sphinxcontrib-googleanalytics sphinx-design \
+                      sphinxcontrib-jsmath sphinx-copybutton sphinxcontrib-spelling
       - name: Checkout repo
         uses: actions/checkout@v4.1.1
         with:
@@ -74,12 +76,15 @@ jobs:
               -DCMAKE_CXX_COMPILER:PATH=$(which icpx)         \
               -DDPCTL_GENERATE_DOCS=ON                        \
               -DDPCTL_ENABLE_DOXYREST=ON                      \
-              -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64
+              -DDoxyrest_DIR=`pwd`/doxyrest-2.1.2-linux-amd64 \
+              -DCMAKE_VERBOSE_MAKEFILE=ON
           python -c "import dpctl; print(dpctl.__version__)" || exit 1
-          cd "$(find _skbuild -name cmake-build)" || exit 1
+          pushd "$(find _skbuild -name cmake-build)" || exit 1
           cmake --build . --target Sphinx || exit 1
           mv ../cmake-install/docs/docs ~/docs
           git clean -dfx
+          popd
+          git reset --hard
       - name: Publish docs
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' && github.event.action != 'closed' }}
         shell: bash -l {0}

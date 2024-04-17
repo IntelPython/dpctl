@@ -27,6 +27,8 @@ def run(
     compiler_root=None,
     bin_llvm=None,
     doxyrest_dir=None,
+    verbose=False,
+    cmake_opts="",
 ):
     IS_LIN = False
 
@@ -55,9 +57,15 @@ def run(
         "-DDPCTL_GENERATE_DOCS=ON",
     ]
 
+    if verbose:
+        cmake_args.append("-DCMAKE_VERBOSE_MAKEFILE=ON")
+
     if doxyrest_dir:
         cmake_args.append("-DDPCTL_ENABLE_DOXYREST=ON")
         cmake_args.append("-DDoxyrest_DIR=" + doxyrest_dir)
+
+    if cmake_opts:
+        cmake_args += cmake_opts.split()
 
     env = dict()
     if bin_llvm:
@@ -126,6 +134,19 @@ if __name__ == "__main__":
             + "for libsyclinterface"
         ),
     )
+    driver.add_argument(
+        "--verbose",
+        help="Build using vebose makefile mode",
+        dest="verbose",
+        action="store_true",
+    )
+    driver.add_argument(
+        "--cmake-opts",
+        help="Options to pass through to cmake",
+        dest="cmake_opts",
+        default="",
+        type=str,
+    )
 
     args = parser.parse_args()
 
@@ -162,4 +183,6 @@ if __name__ == "__main__":
         compiler_root=args.compiler_root,
         bin_llvm=args.bin_llvm,
         doxyrest_dir=args.doxyrest_root,
+        verbose=args.verbose,
+        cmake_opts=args.cmake_opts,
     )

@@ -257,7 +257,7 @@ PROTECTION_FILTER = "public"
 --! setting to ``false``.
 --!
 
-EXCLUDE_EMPTY_DEFINES = true
+EXCLUDE_EMPTY_DEFINES = false
 
 --!
 --! If non-``nil``, each define will be checked using this regular expression

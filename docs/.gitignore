@@ -4,6 +4,6 @@ docfiles/libsyclinterface
 docfiles/dpctl
 api
 build
-conf.py
-index.rst
 doxyrest-config.lua
+doc_sources/api_reference/dpctl/generated
+doc_sources/api_reference/libsyclinterface/generated

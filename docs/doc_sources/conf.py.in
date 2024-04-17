@@ -1,0 +1,162 @@
+# Configuration file for the Sphinx documentation builder.
+#
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+import os
+import sys
+
+import dpctl
+
+sys.path.insert(0, os.path.abspath("."))
+
+import extlinks_gen as urlgen  # noqa: E402
+
+project = "Data Parallel Control (dpctl)"
+copyright = "2020-2024, Intel Corp."
+author = "Intel Corp."
+
+version = dpctl.__version__.strip(".dirty")
+# The full version, including alpha/beta/rc tags
+release, _ = dpctl.__version__.strip(".dirty").split("+")
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
+    "sphinx_copybutton",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "sphinxcontrib.programoutput",
+    "sphinxcontrib.googleanalytics",
+    "sphinxcontrib.spelling",
+    "sphinx_design",
+]
+
+copybutton_prompt_text = ">>> "
+spelling_warning = True
+spelling_word_list_filename = "known_words.txt"
+
+googleanalytics_id = 'G-7TCKS5BHYE'
+googleanalytics_enabled = True
+
+todo_include_todos = True
+use_doxyrest = "@DPCTL_ENABLE_DOXYREST@"
+
+if use_doxyrest == "ON":
+    # Specify the path to Doxyrest extensions for Sphinx:
+    import os
+    import sys
+
+    sys.path.insert(
+        1,
+        os.path.abspath("@DOXYREST_SPHINX_DIR@"),
+    )
+    extensions += ["doxyrest", "cpplexer"]
+    # A workaround to fix issues leftover in the doxyrest generated
+    # rst files.
+    import fileinput
+
+    with fileinput.FileInput(
+        "@DOXYREST_OUTPUT_DIR@/global.rst", inplace=True
+    ) as file:
+        for line in file:
+            print(line.replace("typedefDPCTL_C_EXTERN_C_BEGIN", ""), end="")
+
+
+templates_path = ["_templates"]
+exclude_patterns = []
+
+highlight_language = "Python"
+
+source_suffix = ".rst"
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = "default"
+
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_theme = "furo"
+html_static_path = ["_static"]
+
+html_logo = "_static/dpctl.svg"
+html_favicon = "_static/dpctl.svg"
+
+html_theme_options = {
+    # "canonical_url": "",
+    # "analytics_id": "",
+    # "display_version": True,
+    # "prev_next_buttons_location": "bottom",
+    # "style_external_links": False,
+    # "logo_only": False,
+    # Toc options
+    # "collapse_navigation": True,
+    # "sticky_navigation": True,
+    # "navigation_depth": 4,
+    # "includehidden": True,
+    # "titles_only": False,
+}
+
+
+# A dictionary of urls
+extlinks = urlgen.create_extlinks()
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "dpnp": ("https://intelpython.github.io/dpnp/", None),
+    "numba_dpex": ("https://intelpython.github.io/numba-dpex/latest/", None),
+    "cython": ("https://docs.cython.org/en/latest/", None),
+}
+
+# When the cmake DPCTL_USE_MULTIVERSION_TEMPLATE flag is set we generate
+# links in the sidebar to the documentation for older versions of dpctl.
+# Note that this option does not actually generate the documentation for
+# older versions, it only adds links in the sidebar to earlier versions of
+# the documentation. All earlier versions of the documentation should be
+# generated and pushed to the gh-pages branch manually, after which the
+# doc_versions.txt should be updated.
+
+generate_multiversion = "@DPCTL_USE_MULTIVERSION_TEMPLATE@"
+
+if generate_multiversion == "ON":
+    try:
+        html_context
+    except NameError:
+        html_context = dict()
+    html_context["display_lower_left"] = True
+    templates_path = ["_templates"]
+    html_context["current_version"] = version
+    html_context["version"] = version
+
+    # POPULATE LINKS TO OTHER VERSIONS
+    html_context["versions"] = list()
+
+    # Populate the list of documented versions from the doc_versions.tx
+    versions = []
+    with open("doc_versions.txt", "r") as doc_versions:
+        while True:
+            version = doc_versions.readline().strip()
+            if not version:
+                break
+            elif len(version):
+                versions.append(version)
+
+    # FIXME: Remove this hard coding
+    DOC_SITE_NAME = "https://intelpython.github.io/dpctl/"
+
+    for version in versions:
+        html_context["versions"].append(
+            (version, DOC_SITE_NAME + version + "/index.html")
+        )
