@@ -44,7 +44,7 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_DECLARE_VECTOR(Platform)
 
 /*!
- * @brief Prints out information about the sycl::platform argument.
+ * @brief Prints out information about the ``sycl::platform`` argument.
  *
  * The helper function is used to print metadata about a given platform. The
  * amount of information printed out is controlled by the verbosity level.
@@ -57,7 +57,7 @@ DPCTL_DECLARE_VECTOR(Platform)
  *                    platform.
  *
  * @param    PRef           A #DPCTLSyclPlatformRef opaque pointer.
- * @param    verbosity      Verbosilty level to control how much information is
+ * @param    verbosity      Verbosity level to control how much information is
  *                          printed out.
  */
 DPCTL_API
@@ -78,7 +78,7 @@ void DPCTLPlatformMgr_PrintInfo(__dpctl_keep const DPCTLSyclPlatformRef PRef,
  *                    platform.
  *
  * @param    PRef           A #DPCTLSyclPlatformRef opaque pointer.
- * @param    verbosity      Verbosilty level to control how much information is
+ * @param    verbosity      Verbosity level to control how much information is
  *                          printed out.
  * @return   A formatted C string capturing the information about the
  *           sycl::platform argument.

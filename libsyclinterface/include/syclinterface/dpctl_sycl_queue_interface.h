@@ -41,7 +41,7 @@ DPCTL_C_EXTERN_C_BEGIN
 
 /*!
  * @brief A wrapper for sycl::queue constructor to construct a new queue from
- * the provided context, device, async handler and propertis bit flags.
+ * the provided context, device, async handler and properties bit flags.
  *
  * @param    CRef           An opaque pointer to a sycl::context.
  * @param    DRef           An opaque pointer to a sycl::device
@@ -67,7 +67,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
  * @brief Constructs a ``sycl::queue`` object of the specified SYCL device.
  *
  * Constructs a new SYCL queue for the specified SYCL device. The
- * behaviour of this function differs from the following queue constructor:
+ * behavior of this function differs from the following queue constructor:
  *
  * @code
  *    queue(
@@ -81,9 +81,9 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
  * context for the device and instead look to reuse a previously cached
  * SYCL context for the device (refer dpctl_sycl_device_manager.cpp).
  * DPCTL caches contexts only for root devices and for all custom devices the
- * function begaves the same way as the SYCL constructor.
+ * function behaves the same way as the SYCL constructor.
  *
- * @param    dRef           An opaque pointer to a ``sycl::device``.
+ * @param    DRef           An opaque pointer to a ``sycl::device``.
  * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during queue creation. Can be
  *                          NULL if no async_handler is needed.
@@ -98,7 +98,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
  */
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
-DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef dRef,
+DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                            error_handler_callback *handler,
                            int properties);
 

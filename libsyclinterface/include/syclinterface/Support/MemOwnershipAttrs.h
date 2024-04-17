@@ -55,7 +55,7 @@
  * the ownership of the object and the user must not use the object as an
  * argument to another function.
  *
- * The __dpctl_take attribute mens that the function destroys it before the
+ * The __dpctl_take attribute means that the function destroys it before the
  * function returns, and the caller must not use the object again in any other
  * function. If the pointer annotated with __dpctl_take is NULL then it is
  * treated as an error, since it may prevent the normal behavior of the
