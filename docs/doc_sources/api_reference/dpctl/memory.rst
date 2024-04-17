@@ -30,7 +30,7 @@ Three types of USM allocations are supported:
     * - ``"shared"``
       - Allocations in device memory accessible by both the host and the device
     * - ``"host"``
-      - Allocations in host memory accessiblle by both the host and the device
+      - Allocations in host memory accessible by both the host and the device
 
 
 .. py:module:: dpctl.memory
