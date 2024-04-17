@@ -890,7 +890,7 @@ abstracts the <a class="reference external" href="https://sycl.readthedocs.io/en
 <p>To obtain all platforms available on a system programmatically, use
 <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.lsplatform.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.lsplatform()</span></code></a> function. Refer to <a class="reference internal" href="../beginners_guides/managing_devices.html#beginners-guide-enumerating-devices"><span class="std std-ref">Enumerating available devices</span></a>
 for more information.</p>
-<p>It is possible to select devices from spefic backend, and hence belonging to
+<p>It is possible to select devices from specific backend, and hence belonging to
 the same platform, by <a class="reference internal" href="../beginners_guides/managing_devices.html#beginners-guide-oneapi-device-selector"><span class="std std-ref">using</span></a>
 <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code> environment variable, or by using
 a <a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html#filter-selector-string"><span class="std std-ref">filter selector string</span></a>.</p>
@@ -911,7 +911,7 @@ in <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array
 working of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.from_dlpack.html#dpctl.tensor.from_dlpack" title="dpctl.tensor.from_dlpack"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.from_dlpack()</span></code></a> function is only supported for devices of those
 platforms that support default platform context SYCL extension <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_default_context.asciidoc">sycl_ext_oneapi_default_platform_context</a>,
 and only of those allocations that are bound to this default context.</p>
-<p>To query where a particular device <code class="docutils literal notranslate"><span class="pre">dev</span></code> belongs to a plaform that implements
+<p>To query where a particular device <code class="docutils literal notranslate"><span class="pre">dev</span></code> belongs to a platform that implements
 the default context, check whether <code class="docutils literal notranslate"><span class="pre">dev.sycl_platform.default_context</span></code> returns an instance
 of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> or raises an exception.</p>
 </section>
@@ -920,7 +920,7 @@ of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.Sy
 <p>SYCL queue is an entity associated with scheduling computational tasks for execution
 on a targeted SYCL device and using some specific SYCL context.</p>
 <p>Queue constructor generally requires both to be specified. For platforms that support the
-default platform context, a shortcut queue constuctor call that specifies only a device would
+default platform context, a shortcut queue constructor call that specifies only a device would
 use the default platform context associated with the platform given device is a part of.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Queues constructed from device instance or filter string that selects it have the same context</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
@@ -940,8 +940,8 @@ they do not compare equal, since they correspond to two independent scheduling e
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> objects one associated with <code class="docutils literal notranslate"><span class="pre">q1</span></code> and another associated with <code class="docutils literal notranslate"><span class="pre">q2</span></code>
-could not be combined in a call to the same function that implementes
-<a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-compute-follows-data"><span class="std std-ref">compute-followed-data programming model</span></a> in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>.</p>
+could not be combined in a call to the same function that implements
+<a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-compute-follows-data"><span class="std std-ref">compute-follows-data</span></a> programming model in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>.</p>
 </div>
 </section>
 <section id="event">

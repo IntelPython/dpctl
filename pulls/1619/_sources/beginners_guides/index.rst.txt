@@ -36,7 +36,7 @@ Miscellaneous
 -------------
 
 * History of ``"dpctl"`` :ref:`name <beginners_guide_why_dpctl>`
-* Frequenty asked questions
+* Frequently asked questions
 
 .. toctree::
     :hidden:

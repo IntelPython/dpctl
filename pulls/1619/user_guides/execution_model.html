@@ -835,13 +835,13 @@ case it is the execution queue used. Alternatively <a class="reference internal"
     <span class="n">x1</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span>
     <span class="n">x2</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span>
 <span class="p">):</span>
-    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctil</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span>
     <span class="o">...</span>
 </pre></div>
 </div>
-<p>In order to ensure that compute-follows-data works seemlessly out-of-the-box, <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> maintains
+<p>In order to ensure that compute-follows-data works seamlessly out-of-the-box, <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> maintains
 a cache of with context and device as keys and queues as values used by <a class="reference internal" href="../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>

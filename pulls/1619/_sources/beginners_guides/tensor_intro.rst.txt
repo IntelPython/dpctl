@@ -84,7 +84,7 @@ each one corresponds to the same underlying ``sycl::queue`` object. In such a ca
 
 .. note::
     Two instances :class:`dpctl.SyclQueue` may target the same ``sycl::device`` and be using the same ``sycl::context``, but correspond
-    to different scheduling enties, and hence be in violation of the compute-follows-data requirement. One common example of this are
+    to different scheduling entries, and hence be in violation of the compute-follows-data requirement. One common example of this are
     ``SyclQueue`` corresponding to default-selected device and using platform default context but created using different properties, e.g.
     one with `"enable_profiling"` set and another without it.
 
@@ -207,7 +207,7 @@ using the following coercion rule:
 | "host"     | "device" | "shared" | "host"   |
 +------------+----------+----------+----------+
 
-If assignign USM-type "device" a score of 0, USM-type "shared" a score of 1, and USM-type "host" a score of 2,
+If assigning USM-type "device" a score of 0, USM-type "shared" a score of 1, and USM-type "host" a score of 2,
 the USM-type of the output array has the smallest score of all its inputs.
 
 .. currentmodule:: dpctl.utils

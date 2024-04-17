@@ -21,7 +21,7 @@ with the object to which the token applies. Deletion functions, such as
 :c:func:`DPCTLDevice_Delete`, represent set of such functions.
 
 The token ``__dpctl_keep`` indicates that the library does not alter allocation associated
-with the object to which the tocken applies. Functions to query integral device descriptors,
+with the object to which the token applies. Functions to query integral device descriptors,
 such as :c:func:`DPCTLDevice_GetMaxComputeUnits`, are examples of such functions.
 
 .. code-block:: C

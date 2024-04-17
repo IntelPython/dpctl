@@ -840,7 +840,7 @@ each one corresponds to the same underlying <code class="docutils literal notran
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Two instances <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> may target the same <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and be using the same <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code>, but correspond
-to different scheduling enties, and hence be in violation of the compute-follows-data requirement. One common example of this are
+to different scheduling entries, and hence be in violation of the compute-follows-data requirement. One common example of this are
 <code class="docutils literal notranslate"><span class="pre">SyclQueue</span></code> corresponding to default-selected device and using platform default context but created using different properties, e.g.
 one with <cite>“enable_profiling”</cite> set and another without it.</p>
 </div>
@@ -971,7 +971,7 @@ using the following coercion rule:</p>
 </tbody>
 </table>
 </div>
-<p>If assignign USM-type “device” a score of 0, USM-type “shared” a score of 1, and USM-type “host” a score of 2,
+<p>If assigning USM-type “device” a score of 0, USM-type “shared” a score of 1, and USM-type “host” a score of 2,
 the USM-type of the output array has the smallest score of all its inputs.</p>
 <p>The convenience function <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.get_coerced_usm_type" title="dpctl.utils.get_coerced_usm_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coerced_usm_type()</span></code></a> is a convenience function to determine the USM-type
 following this convention:</p>
