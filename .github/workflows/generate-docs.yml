@@ -56,7 +56,7 @@ jobs:
         run: |
           pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" pydot graphviz furo \
                       sphinxcontrib-programoutput sphinxcontrib-googleanalytics sphinx-design \
-                      sphinxcontrib-jsmath sphinx-copybutton
+                      sphinxcontrib-jsmath sphinx-copybutton sphinxcontrib-spelling
       - name: Checkout repo
         uses: actions/checkout@v4.1.1
         with:

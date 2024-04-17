@@ -39,10 +39,12 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinxcontrib.programoutput",
     "sphinxcontrib.googleanalytics",
+    "sphinxcontrib.spelling",
     "sphinx_design",
 ]
 
 copybutton_prompt_text = ">>> "
+spelling_warning = True
 
 googleanalytics_id = 'G-7TCKS5BHYE'
 googleanalytics_enabled = True
