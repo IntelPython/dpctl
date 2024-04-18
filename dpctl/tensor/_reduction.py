@@ -44,12 +44,15 @@ def _reduction_over_axis(
     nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
-    if not isinstance(axis, (tuple, list)):
-        axis = (axis,)
-    axis = normalize_axis_tuple(axis, nd, "axis")
+        perm = list(axis)
+        arr = x
+    else:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, nd, "axis")
+        perm = [i for i in range(nd) if i not in axis] + list(axis)
+        arr = dpt.permute_dims(x, perm)
     red_nd = len(axis)
-    perm = [i for i in range(nd) if i not in axis] + list(axis)
-    arr = dpt.permute_dims(x, perm)
     res_shape = arr.shape[: nd - red_nd]
     q = x.sycl_queue
     inp_dt = x.dtype
@@ -89,7 +92,7 @@ def _reduction_over_axis(
             )
         if res_dt != out.dtype:
             raise ValueError(
-                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
+                f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
         if dpctl.utils.get_execution_queue((q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
@@ -441,14 +444,17 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
     nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
-    if not isinstance(axis, (tuple, list)):
-        axis = (axis,)
-    if any([x.shape[i] == 0 for i in axis]):
-        raise ValueError("reduction cannot be performed over zero-size axes")
-    axis = normalize_axis_tuple(axis, nd, "axis")
+        perm = list(axis)
+        x_tmp = x
+    else:
+        if not isinstance(axis, (tuple, list)):
+            axis = (axis,)
+        axis = normalize_axis_tuple(axis, nd, "axis")
+        perm = [i for i in range(nd) if i not in axis] + list(axis)
+        x_tmp = dpt.permute_dims(x, perm)
     red_nd = len(axis)
-    perm = [i for i in range(nd) if i not in axis] + list(axis)
-    x_tmp = dpt.permute_dims(x, perm)
+    if any([x_tmp.shape[i] == 0 for i in range(-red_nd, 0)]):
+        raise ValueError("reduction cannot be performed over zero-size axes")
     res_shape = x_tmp.shape[: nd - red_nd]
     exec_q = x.sycl_queue
     res_dt = x.dtype
@@ -476,7 +482,7 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
             )
         if res_dt != out.dtype:
             raise ValueError(
-                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
+                f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
         if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
@@ -602,18 +608,22 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
     nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
-    elif isinstance(axis, int):
-        axis = (axis,)
+        perm = list(axis)
+        x_tmp = x
     else:
-        raise TypeError(
-            f"`axis` argument expected `int` or `None`, got {type(axis)}"
-        )
+        if isinstance(axis, int):
+            axis = (axis,)
+        else:
+            raise TypeError(
+                f"`axis` argument expected `int` or `None`, got {type(axis)}"
+            )
+        axis = normalize_axis_tuple(axis, nd, "axis")
+        perm = [i for i in range(nd) if i not in axis] + list(axis)
+        x_tmp = dpt.permute_dims(x, perm)
     axis = normalize_axis_tuple(axis, nd, "axis")
-    if any([x.shape[i] == 0 for i in axis]):
-        raise ValueError("reduction cannot be performed over zero-size axes")
     red_nd = len(axis)
-    perm = [i for i in range(nd) if i not in axis] + list(axis)
-    x_tmp = dpt.permute_dims(x, perm)
+    if any([x_tmp.shape[i] == 0 for i in range(-red_nd, 0)]):
+        raise ValueError("reduction cannot be performed over zero-size axes")
     res_shape = x_tmp.shape[: nd - red_nd]
     exec_q = x.sycl_queue
     res_dt = ti.default_device_index_type(exec_q.sycl_device)
@@ -641,7 +651,7 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             )
         if res_dt != out.dtype:
             raise ValueError(
-                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
+                f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
         if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(

@@ -537,8 +537,9 @@ def test_numeric_reduction_out_kwarg():
     x = dpt.ones((n1, n2, n3), dtype="i4")
     out = dpt.zeros((2 * n1, 3 * n2), dtype="f4")
     res = dpt.sum(x, axis=-1, dtype="f4", out=out[::-2, 1::3])
-    assert dpt.allclose(out[::-2, 0::3], dpt.zeros_like(res))
-    assert dpt.allclose(out[::-2, 2::3], dpt.zeros_like(res))
+    zero_res = dpt.zeros_like(res)
+    assert dpt.allclose(out[::-2, 0::3], zero_res)
+    assert dpt.allclose(out[::-2, 2::3], zero_res)
     assert dpt.allclose(out[::-2, 1::3], res)
     assert dpt.allclose(out[::-2, 1::3], dpt.full_like(res, 5, dtype="f4"))
 
