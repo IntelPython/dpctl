@@ -63,7 +63,7 @@ template <typename output_typesT,
 std::pair<sycl::event, sycl::event>
 py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
                const dpctl::tensor::usm_ndarray &dst,
-               sycl::queue q,
+               sycl::queue &q,
                const std::vector<sycl::event> &depends,
                //
                const output_typesT &output_type_vec,
@@ -301,7 +301,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const dpctl::tensor::usm_ndarray &src1,
     const dpctl::tensor::usm_ndarray &src2,
     const dpctl::tensor::usm_ndarray &dst, // dst = op(src1, src2), elementwise
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     const std::vector<sycl::event> depends,
     //
     const output_typesT &output_type_table,
@@ -622,7 +622,7 @@ template <typename output_typesT,
 std::pair<sycl::event, sycl::event>
 py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
                         const dpctl::tensor::usm_ndarray &rhs,
-                        sycl::queue exec_q,
+                        sycl::queue &exec_q,
                         const std::vector<sycl::event> depends,
                         //
                         const output_typesT &output_type_table,
