@@ -414,6 +414,10 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
         ind_offsets.push_back(py::ssize_t(0));
     }
 
+    if (ind_nelems == 0) {
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
+
     char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
 
     if (packed_ind_ptrs == nullptr) {
@@ -715,6 +719,10 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
 
         ind_ptrs.push_back(ind_data);
         ind_offsets.push_back(py::ssize_t(0));
+    }
+
+    if (ind_nelems == 0) {
+        return std::make_pair(sycl::event{}, sycl::event{});
     }
 
     char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
