@@ -386,31 +386,47 @@ def test_where_order():
         ar1 = dpt.zeros(test_sh, dtype=dt1, order="C")
         ar2 = dpt.ones(test_sh, dtype=dt2, order="C")
         condition = dpt.zeros(test_sh, dtype="?", order="C")
-        res = dpt.where(condition, ar1, ar2)
-        assert res.flags.c_contiguous
+        res1 = dpt.where(condition, ar1, ar2, order="C")
+        assert res1.flags.c_contiguous
+        res2 = dpt.where(condition, ar1, ar2, order="F")
+        assert res2.flags.f_contiguous
+        res3 = dpt.where(condition, ar1, ar2, order="A")
+        assert res3.flags.c_contiguous
+        res4 = dpt.where(condition, ar1, ar2, order="K")
+        assert res4.flags.c_contiguous
 
         ar1 = dpt.ones(test_sh, dtype=dt1, order="F")
         ar2 = dpt.ones(test_sh, dtype=dt2, order="F")
         condition = dpt.zeros(test_sh, dtype="?", order="F")
-        res = dpt.where(condition, ar1, ar2)
-        assert res.flags.f_contiguous
+        res1 = dpt.where(condition, ar1, ar2, order="C")
+        assert res1.flags.c_contiguous
+        res2 = dpt.where(condition, ar1, ar2, order="F")
+        assert res2.flags.f_contiguous
+        res3 = dpt.where(condition, ar1, ar2, order="A")
+        assert res2.flags.f_contiguous
+        res4 = dpt.where(condition, ar1, ar2, order="K")
+        assert res4.flags.f_contiguous
 
         ar1 = dpt.ones(test_sh2, dtype=dt1, order="C")[:20, ::-2]
         ar2 = dpt.ones(test_sh2, dtype=dt2, order="C")[:20, ::-2]
         condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2]
-        res = dpt.where(condition, ar1, ar2)
-        assert res.strides == (n, -1)
+        res1 = dpt.where(condition, ar1, ar2, order="K")
+        assert res1.strides == (n, -1)
+        res2 = dpt.where(condition, ar1, ar2, order="C")
+        assert res2.strides == (n, 1)
 
         ar1 = dpt.ones(test_sh2, dtype=dt1, order="C")[:20, ::-2].mT
         ar2 = dpt.ones(test_sh2, dtype=dt2, order="C")[:20, ::-2].mT
         condition = dpt.zeros(test_sh2, dtype="?", order="C")[:20, ::-2].mT
-        res = dpt.where(condition, ar1, ar2)
-        assert res.strides == (-1, n)
+        res1 = dpt.where(condition, ar1, ar2, order="K")
+        assert res1.strides == (-1, n)
+        res2 = dpt.where(condition, ar1, ar2, order="C")
+        assert res2.strides == (n, 1)
 
         ar1 = dpt.ones(n, dtype=dt1, order="C")
         ar2 = dpt.broadcast_to(dpt.ones(n, dtype=dt2, order="C"), test_sh)
         condition = dpt.zeros(n, dtype="?", order="C")
-        res = dpt.where(condition, ar1, ar2)
+        res = dpt.where(condition, ar1, ar2, order="K")
         assert res.strides == (20, 1)
 
 
@@ -423,3 +439,86 @@ def test_where_unaligned():
 
     expected = dpt.full(512, 2, dtype="i4")
     assert dpt.all(dpt.where(x[1:], a, b) == expected)
+
+
+def test_where_out():
+    get_queue_or_skip()
+
+    n1, n2, n3 = 3, 4, 5
+    ar1 = dpt.reshape(dpt.arange(n1 * n2 * n3, dtype="i4"), (n1, n2, n3))
+    ar2 = dpt.full_like(ar1, -5)
+    condition = dpt.tile(
+        dpt.reshape(
+            dpt.asarray([True, False, False, True], dtype="?"), (1, n2, 1)
+        ),
+        (n1, 1, n3),
+    )
+
+    out = dpt.zeros((2 * n1, 3 * n2, n3), dtype="i4")
+    res = dpt.where(condition, ar1, ar2, out=out[::-2, 1::3, :])
+
+    assert dpt.all(res == out[::-2, 1::3, :])
+    assert dpt.all(out[::-2, 0::3, :] == 0)
+    assert dpt.all(out[::-2, 2::3, :] == 0)
+
+    assert dpt.all(res[:, 1:3, :] == -5)
+    assert dpt.all(res[:, 0, :] == ar1[:, 0, :])
+    assert dpt.all(res[:, 3, :] == ar1[:, 3, :])
+
+    condition = dpt.tile(
+        dpt.reshape(dpt.asarray([1, 0], dtype="i4"), (1, 2, 1)),
+        (n1, 2, n3),
+    )
+    res = dpt.where(
+        condition[:, ::-1, :], condition[:, ::-1, :], condition, out=condition
+    )
+    assert dpt.all(res == condition)
+    assert dpt.all(condition == 1)
+
+    condition = dpt.tile(
+        dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
+        (n1, 2, n3),
+    )
+    ar1 = dpt.full((n1, n2, n3), 7, dtype="i4")
+    ar2 = dpt.full_like(ar1, -5)
+    res = dpt.where(condition, ar1, ar2, out=ar2[:, ::-1, :])
+    assert dpt.all(ar2[:, ::-1, :] == res)
+    assert dpt.all(ar2[:, ::2, :] == -5)
+    assert dpt.all(ar2[:, 1::2, :] == 7)
+
+    condition = dpt.tile(
+        dpt.reshape(dpt.asarray([True, False], dtype="?"), (1, 2, 1)),
+        (n1, 2, n3),
+    )
+    ar1 = dpt.full((n1, n2, n3), 7, dtype="i4")
+    ar2 = dpt.full_like(ar1, -5)
+    res = dpt.where(condition, ar1, ar2, out=ar1[:, ::-1, :])
+    assert dpt.all(ar1[:, ::-1, :] == res)
+    assert dpt.all(ar1[:, ::2, :] == -5)
+    assert dpt.all(ar1[:, 1::2, :] == 7)
+
+
+def test_where_out_arg_validation():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    condition = dpt.ones(5, dtype="i4", sycl_queue=q1)
+    x1 = dpt.ones(5, dtype="i4", sycl_queue=q1)
+    x2 = dpt.ones(5, dtype="i4", sycl_queue=q1)
+
+    out_wrong_queue = dpt.empty_like(condition, sycl_queue=q2)
+    out_wrong_dtype = dpt.empty_like(condition, dtype="f4")
+    out_wrong_shape = dpt.empty(6, dtype="i4", sycl_queue=q1)
+    out_not_writable = dpt.empty_like(condition)
+    out_not_writable.flags["W"] = False
+
+    with pytest.raises(TypeError):
+        dpt.where(condition, x1, x2, out=dict())
+    with pytest.raises(ExecutionPlacementError):
+        dpt.where(condition, x1, x2, out=out_wrong_queue)
+    with pytest.raises(ValueError):
+        dpt.where(condition, x1, x2, out=out_wrong_dtype)
+    with pytest.raises(ValueError):
+        dpt.where(condition, x1, x2, out=out_wrong_shape)
+    with pytest.raises(ValueError):
+        dpt.where(condition, x1, x2, out=out_not_writable)

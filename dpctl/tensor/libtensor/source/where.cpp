@@ -114,7 +114,12 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(dst, condition) || overlap(dst, x1) || overlap(dst, x2)) {
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if ((overlap(dst, condition) && !same_logical_tensors(dst, condition)) ||
+        (overlap(dst, x1) && !same_logical_tensors(dst, x1)) ||
+        (overlap(dst, x2) && !same_logical_tensors(dst, x2)))
+    {
         throw py::value_error("Destination array overlaps with input.");
     }
 
