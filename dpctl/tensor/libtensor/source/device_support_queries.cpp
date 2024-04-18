@@ -82,7 +82,7 @@ sycl::device _extract_device(const py::object &arg)
 
     PyObject *source = arg.ptr();
     if (api.PySyclQueue_Check_(source)) {
-        sycl::queue q = py::cast<sycl::queue>(arg);
+        const sycl::queue &q = py::cast<sycl::queue>(arg);
         return q.get_device();
     }
     else if (api.PySyclDevice_Check_(source)) {
@@ -98,31 +98,31 @@ sycl::device _extract_device(const py::object &arg)
 
 std::string default_device_fp_type(const py::object &arg)
 {
-    sycl::device d = _extract_device(arg);
+    const sycl::device &d = _extract_device(arg);
     return _default_device_fp_type(d);
 }
 
 std::string default_device_int_type(const py::object &arg)
 {
-    sycl::device d = _extract_device(arg);
+    const sycl::device &d = _extract_device(arg);
     return _default_device_int_type(d);
 }
 
 std::string default_device_bool_type(const py::object &arg)
 {
-    sycl::device d = _extract_device(arg);
+    const sycl::device &d = _extract_device(arg);
     return _default_device_bool_type(d);
 }
 
 std::string default_device_complex_type(const py::object &arg)
 {
-    sycl::device d = _extract_device(arg);
+    const sycl::device &d = _extract_device(arg);
     return _default_device_complex_type(d);
 }
 
 std::string default_device_index_type(const py::object &arg)
 {
-    sycl::device d = _extract_device(arg);
+    const sycl::device &d = _extract_device(arg);
     return _default_device_index_type(d);
 }
 

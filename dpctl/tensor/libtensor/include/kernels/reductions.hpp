@@ -2383,7 +2383,7 @@ public:
 };
 
 typedef sycl::event (*search_strided_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -2507,7 +2507,7 @@ template <typename argTy,
           typename ReductionOpT,
           typename IndexOpT>
 sycl::event search_over_group_temps_strided_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -2804,7 +2804,7 @@ sycl::event search_over_group_temps_strided_impl(
 }
 
 typedef sycl::event (*search_contig_impl_fn_ptr)(
-    sycl::queue,
+    sycl::queue &,
     size_t,
     size_t,
     const char *,
@@ -2819,7 +2819,7 @@ template <typename argTy,
           typename ReductionOpT,
           typename IndexOpT>
 sycl::event search_axis1_over_group_temps_contig_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
@@ -3098,7 +3098,7 @@ template <typename argTy,
           typename ReductionOpT,
           typename IndexOpT>
 sycl::event search_axis0_over_group_temps_contig_impl(
-    sycl::queue exec_q,
+    sycl::queue &exec_q,
     size_t iter_nelems, // number of reductions    (num. of rows in a matrix
                         // when reducing over rows)
     size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
