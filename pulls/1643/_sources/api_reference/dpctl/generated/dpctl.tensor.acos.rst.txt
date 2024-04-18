@@ -1,0 +1,10 @@
+﻿dpctl.tensor.acos
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: acos
+    :no-value:
+
+
