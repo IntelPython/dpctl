@@ -86,7 +86,7 @@ jobs:
           popd
           git reset --hard
       - name: Publish docs
-        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.ref == 'refs/heads/master' && github.event.action != 'closed' }}
+        if: ${{ !github.event.pull_request && github.ref == 'refs/heads/master' }}
         shell: bash -l {0}
         run: |
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
