@@ -1,6 +1,0 @@
-﻿dpctl.tensor.reshape
-====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: reshape
