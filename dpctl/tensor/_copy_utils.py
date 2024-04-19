@@ -766,22 +766,26 @@ def _take_multi_index(ary, inds, p):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
+    ary_nd = ary.ndim
+    p = normalize_axis_index(operator.index(p), ary_nd)
     queues_ = [
         ary.sycl_queue,
     ]
     usm_types_ = [
         ary.usm_type,
     ]
-    if not isinstance(inds, list) and not isinstance(inds, tuple):
+    if not isinstance(inds, (list, tuple)):
         inds = (inds,)
-    all_integers = True
     for ind in inds:
         if not isinstance(ind, dpt.usm_ndarray):
             raise TypeError("all elements of `ind` expected to be usm_ndarrays")
         queues_.append(ind.sycl_queue)
         usm_types_.append(ind.usm_type)
-        if all_integers:
-            all_integers = ind.dtype.kind in "ui"
+        if ind.dtype.kind not in "ui":
+            raise IndexError(
+                "arrays used as indices must be of integer (or boolean) type"
+            )
+    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
@@ -790,30 +794,36 @@ def _take_multi_index(ary, inds, p):
             "Use `usm_ndarray.to_device` method to migrate data to "
             "be associated with the same queue."
         )
-    if not all_integers:
-        raise IndexError(
-            "arrays used as indices must be of integer (or boolean) type"
-        )
     if len(inds) > 1:
+        ind_dt = dpt.result_type(*inds)
+        # ind arrays have been checked to be of integer dtype
+        if ind_dt.kind not in "ui":
+            raise ValueError(
+                "cannot safely promote indices to an integer data type"
+            )
+        inds = tuple(
+            map(
+                lambda ind: ind
+                if ind.dtype == ind_dt
+                else dpt.astype(ind, ind_dt),
+                inds,
+            )
+        )
         inds = dpt.broadcast_arrays(*inds)
+    ind0 = inds[0]
     ary_sh = ary.shape
-    ary_nd = ary.ndim
-    p = normalize_axis_index(operator.index(p), ary_nd)
     p_end = p + len(inds)
-    inds_sz = inds[0].size
+    inds_sz = ind0.size
     if 0 in ary_sh[p : p_end + 1] and inds_sz != 0:
         raise IndexError("cannot take non-empty indices from an empty axis")
-    res_shape = ary_sh[:p] + inds[0].shape + ary_sh[p + len(inds) :]
-    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    res_shape = ary_sh[:p] + ind0.shape + ary_sh[p_end:]
     res = dpt.empty(
         res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
-
     hev, _ = ti._take(
         src=ary, ind=inds, dst=res, axis_start=p, mode=0, sycl_queue=exec_q
     )
     hev.wait()
-
     return res
 
 
@@ -881,6 +891,8 @@ def _put_multi_index(ary, inds, p, vals):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
+    ary_nd = ary.ndim
+    p = normalize_axis_index(operator.index(p), ary_nd)
     if isinstance(vals, dpt.usm_ndarray):
         queues_ = [ary.sycl_queue, vals.sycl_queue]
         usm_types_ = [ary.usm_type, vals.usm_type]
@@ -891,22 +903,19 @@ def _put_multi_index(ary, inds, p, vals):
         usm_types_ = [
             ary.usm_type,
         ]
-    if not isinstance(inds, list) and not isinstance(inds, tuple):
+    if not isinstance(inds, (list, tuple)):
         inds = (inds,)
-    all_integers = True
     for ind in inds:
         if not isinstance(ind, dpt.usm_ndarray):
             raise TypeError("all elements of `ind` expected to be usm_ndarrays")
         queues_.append(ind.sycl_queue)
         usm_types_.append(ind.usm_type)
-        if all_integers:
-            all_integers = ind.dtype.kind in "ui"
-    if not all_integers:
-        raise IndexError(
-            "arrays used as indices must be of integer (or boolean) type"
-        )
-    exec_q = dpctl.utils.get_execution_queue(queues_)
+        if ind.dtype.kind not in "ui":
+            raise IndexError(
+                "arrays used as indices must be of integer (or boolean) type"
+            )
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
             vals = dpt.asarray(
@@ -922,19 +931,28 @@ def _put_multi_index(ary, inds, p, vals):
             "be associated with the same queue."
         )
     if len(inds) > 1:
-        inds = dpt.broadcast_arrays(*inds)
-    ary_sh = ary.shape
-    ary_nd = ary.ndim
-    p = normalize_axis_index(operator.index(p), ary_nd)
-    p_end = p + len(inds)
-    inds_sz = inds[0].size
-    if 0 in ary_sh[p : p_end + 1] and inds_sz != 0:
-        raise IndexError(
-            "cannot put elements at non-empty indices along empty axis"
+        ind_dt = dpt.result_type(*inds)
+        # ind arrays have been checked to be of integer dtype
+        if ind_dt.kind not in "ui":
+            raise ValueError(
+                "cannot safely promote indices to an integer data type"
+            )
+        inds = tuple(
+            map(
+                lambda ind: ind
+                if ind.dtype == ind_dt
+                else dpt.astype(ind, ind_dt),
+                inds,
+            )
         )
-    expected_vals_shape = (
-        ary.shape[:p] + inds[0].shape + ary.shape[p + len(inds) :]
-    )
+        inds = dpt.broadcast_arrays(*inds)
+    ind0 = inds[0]
+    ary_sh = ary.shape
+    p_end = p + len(inds)
+    inds_sz = ind0.size
+    if 0 in ary_sh[p : p_end + 1] and inds_sz != 0:
+        raise IndexError("cannot put into non-empty indices from an empty axis")
+    expected_vals_shape = ary_sh[:p] + ind0.shape + ary_sh[p_end:]
     if vals.dtype == ary.dtype:
         rhs = vals
     else:
@@ -944,5 +962,4 @@ def _put_multi_index(ary, inds, p, vals):
         dst=ary, ind=inds, val=rhs, axis_start=p, mode=0, sycl_queue=exec_q
     )
     hev.wait()
-
     return
