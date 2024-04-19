@@ -1,0 +1,6 @@
+﻿dpctl.tensor.astype
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: astype
