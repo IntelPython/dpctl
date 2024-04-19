@@ -1433,3 +1433,107 @@ def test_nonzero_dtype():
     index_dt = dpt.dtype(ti.default_device_index_type(x.sycl_queue))
     assert idx.dtype == index_dt
     assert idy.dtype == index_dt
+
+
+def test_take_empty_axes():
+    get_queue_or_skip()
+
+    x = dpt.ones((3, 0, 4, 5, 6), dtype="f4")
+    inds = dpt.ones(1, dtype="i4")
+
+    with pytest.raises(IndexError):
+        dpt.take(x, inds, axis=1)
+
+    inds = dpt.ones(0, dtype="i4")
+    r = dpt.take(x, inds, axis=1)
+    assert r.shape == x.shape
+
+
+def test_put_empty_axes():
+    get_queue_or_skip()
+
+    x = dpt.ones((3, 0, 4, 5, 6), dtype="f4")
+    inds = dpt.ones(1, dtype="i4")
+    vals = dpt.zeros((3, 1, 4, 5, 6), dtype="f4")
+
+    with pytest.raises(IndexError):
+        dpt.put(x, inds, vals, axis=1)
+
+    inds = dpt.ones(0, dtype="i4")
+    vals = dpt.zeros_like(x)
+
+    with pytest.raises(ValueError):
+        dpt.put(x, inds, vals, axis=1)
+
+
+def test_put_cast_vals():
+    get_queue_or_skip()
+
+    x = dpt.arange(10, dtype="i4")
+    inds = dpt.arange(7, 10, dtype="i4")
+    vals = dpt.zeros_like(inds, dtype="f4")
+
+    dpt.put(x, inds, vals)
+    assert dpt.all(x[7:10] == 0)
+
+
+def test_advanced_integer_indexing_cast_vals():
+    get_queue_or_skip()
+
+    x = dpt.arange(10, dtype="i4")
+    inds = dpt.arange(7, 10, dtype="i4")
+    vals = dpt.zeros_like(inds, dtype="f4")
+
+    x[inds] = vals
+    assert dpt.all(x[7:10] == 0)
+
+
+def test_advanced_integer_indexing_empty_axis():
+    get_queue_or_skip()
+
+    # getting
+    x = dpt.ones((3, 0, 4, 5, 6), dtype="f4")
+    inds = dpt.ones(1, dtype="i4")
+    with pytest.raises(IndexError):
+        x[:, inds, ...]
+    with pytest.raises(IndexError):
+        x[inds, inds, inds, ...]
+
+    # setting
+    with pytest.raises(IndexError):
+        x[:, inds, ...] = 2
+    with pytest.raises(IndexError):
+        x[inds, inds, inds, ...] = 2
+
+    # empty inds
+    inds = dpt.ones(0, dtype="i4")
+    assert x[:, inds, ...].shape == x.shape
+    assert x[inds, inds, inds, ...].shape == (0, 5, 6)
+
+    vals = dpt.zeros_like(x)
+    x[:, inds, ...] = vals
+    vals = dpt.zeros((0, 5, 6), dtype="f4")
+    x[inds, inds, inds, ...] = vals
+
+
+def test_advanced_integer_indexing_cast_indices():
+    get_queue_or_skip()
+
+    inds0 = dpt.asarray([0, 1], dtype="i1")
+    for ind_dts in (("i1", "i2", "i4"), ("i1", "u4", "i4"), ("u1", "u2", "u8")):
+        x = dpt.ones((3, 4, 5, 6), dtype="i4")
+        inds0 = dpt.asarray([0, 1], dtype=ind_dts[0])
+        inds1 = dpt.astype(inds0, ind_dts[1])
+        x[inds0, inds1, ...] = 2
+        assert dpt.all(x[inds0, inds1, ...] == 2)
+        inds2 = dpt.astype(inds0, ind_dts[2])
+        x[inds0, inds1, ...] = 2
+        assert dpt.all(x[inds0, inds1, inds2, ...] == 2)
+
+    # fail when float would be required per type promotion
+    inds0 = dpt.asarray([0, 1], dtype="i1")
+    inds1 = dpt.astype(inds0, "u4")
+    inds2 = dpt.astype(inds0, "u8")
+    x = dpt.ones((3, 4, 5, 6), dtype="i4")
+    with pytest.raises(ValueError):
+        x[inds0, inds1, inds2, ...]
