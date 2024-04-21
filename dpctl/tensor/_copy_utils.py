@@ -813,8 +813,7 @@ def _take_multi_index(ary, inds, p):
     ind0 = inds[0]
     ary_sh = ary.shape
     p_end = p + len(inds)
-    inds_sz = ind0.size
-    if 0 in ary_sh[p:p_end] and inds_sz != 0:
+    if 0 in ary_sh[p:p_end] and ind0.size != 0:
         raise IndexError("cannot take non-empty indices from an empty axis")
     res_shape = ary_sh[:p] + ind0.shape + ary_sh[p_end:]
     res = dpt.empty(
@@ -949,8 +948,7 @@ def _put_multi_index(ary, inds, p, vals):
     ind0 = inds[0]
     ary_sh = ary.shape
     p_end = p + len(inds)
-    inds_sz = ind0.size
-    if 0 in ary_sh[p:p_end] and inds_sz != 0:
+    if 0 in ary_sh[p:p_end] and ind0.size != 0:
         raise IndexError(
             "cannot put into non-empty indices along an empty axis"
         )
