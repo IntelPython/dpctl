@@ -16,7 +16,6 @@
 
 import operator
 
-import numpy as np
 from numpy.core.numeric import normalize_axis_index
 
 import dpctl
@@ -47,15 +46,15 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
        indices (usm_ndarray):
           One-dimensional array of indices.
        axis:
-          The axis over which the values will be selected.
-          If x is one-dimensional, this argument is optional.
-          Default: `None`.
+          The axis along which the values will be selected.
+          If ``x`` is one-dimensional, this argument is optional.
+          Default: ``None``.
        mode:
           How out-of-bounds indices will be handled.
-          "wrap" - clamps indices to (-n <= i < n), then wraps
+          ``"wrap"`` - clamps indices to (-n <= i < n), then wraps
           negative indices.
-          "clip" - clips indices to (0 <= i < n)
-          Default: `"wrap"`.
+          ``"clip"`` - clips indices to (0 <= i < n)
+          Default: ``"wrap"``.
 
     Returns:
        usm_ndarray:
@@ -73,7 +72,7 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
                 type(indices)
             )
         )
-    if not np.issubdtype(indices.dtype, np.integer):
+    if indices.dtype.kind not in "ui":
         raise IndexError(
             "`indices` expected integer data type, got `{}`".format(
                 indices.dtype
@@ -104,6 +103,9 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
 
     if x_ndim > 0:
         axis = normalize_axis_index(operator.index(axis), x_ndim)
+        x_sh = x.shape
+        if x_sh[axis] == 0 and indices.size != 0:
+            raise IndexError("cannot take non-empty indices from an empty axis")
         res_shape = x.shape[:axis] + indices.shape + x.shape[axis + 1 :]
     else:
         if axis != 0:
@@ -130,19 +132,26 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
           The array the values will be put into.
        indices (usm_ndarray)
           One-dimensional array of indices.
+
+          Note that if indices are not unique, a race
+          condition will result, and the value written to
+          ``x`` will not be deterministic.
+          :py:func:`dpctl.tensor.unique` can be used to
+          guarantee unique elements in ``indices``.
        vals:
-          Array of values to be put into `x`.
-          Must be broadcastable to the shape of `indices`.
+          Array of values to be put into ``x``.
+          Must be broadcastable to the result shape
+          ``x.shape[:axis] + indices.shape + x.shape[axis+1:]``.
        axis:
-          The axis over which the values will be placed.
-          If x is one-dimensional, this argument is optional.
-          Default: `None`.
+          The axis along which the values will be placed.
+          If ``x`` is one-dimensional, this argument is optional.
+          Default: ``None``.
        mode:
           How out-of-bounds indices will be handled.
-          "wrap" - clamps indices to (-n <= i < n), then wraps
+          ``"wrap"`` - clamps indices to (-n <= i < n), then wraps
           negative indices.
-          "clip" - clips indices to (0 <= i < n)
-          Default: `"wrap"`.
+          ``"clip"`` - clips indices to (0 <= i < n)
+          Default: ``"wrap"``.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -168,7 +177,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         raise ValueError(
             "`indices` expected a 1D array, got `{}`".format(indices.ndim)
         )
-    if not np.issubdtype(indices.dtype, np.integer):
+    if indices.dtype.kind not in "ui":
         raise IndexError(
             "`indices` expected integer data type, got `{}`".format(
                 indices.dtype
@@ -195,7 +204,9 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
 
     if x_ndim > 0:
         axis = normalize_axis_index(operator.index(axis), x_ndim)
-
+        x_sh = x.shape
+        if x_sh[axis] == 0 and indices.size != 0:
+            raise IndexError("cannot take non-empty indices from an empty axis")
         val_shape = x.shape[:axis] + indices.shape + x.shape[axis + 1 :]
     else:
         if axis != 0:
@@ -206,10 +217,18 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         vals = dpt.asarray(
             vals, dtype=x.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
+    # choose to throw here for consistency with `place`
+    if vals.size == 0:
+        raise ValueError(
+            "cannot put into non-empty indices along an empty axis"
+        )
+    if vals.dtype == x.dtype:
+        rhs = vals
+    else:
+        rhs = dpt.astype(vals, x.dtype)
+    rhs = dpt.broadcast_to(rhs, val_shape)
 
-    vals = dpt.broadcast_to(vals, val_shape)
-
-    hev, _ = ti._put(x, (indices,), vals, axis, mode, sycl_queue=exec_q)
+    hev, _ = ti._put(x, (indices,), rhs, axis, mode, sycl_queue=exec_q)
     hev.wait()
 
 
