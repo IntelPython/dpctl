@@ -768,17 +768,24 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array the values will be put into.</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
-<li><p><strong>vals</strong> – Array of values to be put into <cite>x</cite>.
-Must be broadcastable to the shape of <cite>indices</cite>.</p></li>
-<li><p><strong>axis</strong> – The axis over which the values will be placed.
-If x is one-dimensional, this argument is optional.
-Default: <cite>None</cite>.</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – <p>One-dimensional array of indices.</p>
+<p>Note that if indices are not unique, a race
+condition will result, and the value written to
+<code class="docutils literal notranslate"><span class="pre">x</span></code> will not be deterministic.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.unique()</span></code> can be used to
+guarantee unique elements in <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p>
+</p></li>
+<li><p><strong>vals</strong> – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
+Must be broadcastable to the result shape
+<code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis+1:]</span></code>.</p></li>
+<li><p><strong>axis</strong> – The axis along which the values will be placed.
+If <code class="docutils literal notranslate"><span class="pre">x</span></code> is one-dimensional, this argument is optional.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
-“wrap” - clamps indices to (-n &lt;= i &lt; n), then wraps
+<code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code> - clamps indices to (-n &lt;= i &lt; n), then wraps
 negative indices.
-“clip” - clips indices to (0 &lt;= i &lt; n)
-Default: <cite>“wrap”</cite>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code> - clips indices to (0 &lt;= i &lt; n)
+Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p></li>
 </ul>
 </dd>
 </dl>

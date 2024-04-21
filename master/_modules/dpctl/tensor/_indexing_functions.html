@@ -775,7 +775,6 @@
 
 <span class="kn">import</span> <span class="nn">operator</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpctl</span>
@@ -806,15 +805,15 @@
 <span class="sd">       indices (usm_ndarray):</span>
 <span class="sd">          One-dimensional array of indices.</span>
 <span class="sd">       axis:</span>
-<span class="sd">          The axis over which the values will be selected.</span>
-<span class="sd">          If x is one-dimensional, this argument is optional.</span>
-<span class="sd">          Default: `None`.</span>
+<span class="sd">          The axis along which the values will be selected.</span>
+<span class="sd">          If ``x`` is one-dimensional, this argument is optional.</span>
+<span class="sd">          Default: ``None``.</span>
 <span class="sd">       mode:</span>
 <span class="sd">          How out-of-bounds indices will be handled.</span>
-<span class="sd">          &quot;wrap&quot; - clamps indices to (-n &lt;= i &lt; n), then wraps</span>
+<span class="sd">          ``&quot;wrap&quot;`` - clamps indices to (-n &lt;= i &lt; n), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">          &quot;clip&quot; - clips indices to (0 &lt;= i &lt; n)</span>
-<span class="sd">          Default: `&quot;wrap&quot;`.</span>
+<span class="sd">          ``&quot;clip&quot;`` - clips indices to (0 &lt;= i &lt; n)</span>
+<span class="sd">          Default: ``&quot;wrap&quot;``.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">       usm_ndarray:</span>
@@ -832,7 +831,7 @@
                 <span class="nb">type</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
             <span class="s2">&quot;`indices` expected integer data type, got `</span><span class="si">{}</span><span class="s2">`&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span>
@@ -863,6 +862,9 @@
 
     <span class="k">if</span> <span class="n">x_ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">x_ndim</span><span class="p">)</span>
+        <span class="n">x_sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">x_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;cannot take non-empty indices from an empty axis&quot;</span><span class="p">)</span>
         <span class="n">res_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -889,19 +891,26 @@
 <span class="sd">          The array the values will be put into.</span>
 <span class="sd">       indices (usm_ndarray)</span>
 <span class="sd">          One-dimensional array of indices.</span>
+
+<span class="sd">          Note that if indices are not unique, a race</span>
+<span class="sd">          condition will result, and the value written to</span>
+<span class="sd">          ``x`` will not be deterministic.</span>
+<span class="sd">          :py:func:`dpctl.tensor.unique` can be used to</span>
+<span class="sd">          guarantee unique elements in ``indices``.</span>
 <span class="sd">       vals:</span>
-<span class="sd">          Array of values to be put into `x`.</span>
-<span class="sd">          Must be broadcastable to the shape of `indices`.</span>
+<span class="sd">          Array of values to be put into ``x``.</span>
+<span class="sd">          Must be broadcastable to the result shape</span>
+<span class="sd">          ``x.shape[:axis] + indices.shape + x.shape[axis+1:]``.</span>
 <span class="sd">       axis:</span>
-<span class="sd">          The axis over which the values will be placed.</span>
-<span class="sd">          If x is one-dimensional, this argument is optional.</span>
-<span class="sd">          Default: `None`.</span>
+<span class="sd">          The axis along which the values will be placed.</span>
+<span class="sd">          If ``x`` is one-dimensional, this argument is optional.</span>
+<span class="sd">          Default: ``None``.</span>
 <span class="sd">       mode:</span>
 <span class="sd">          How out-of-bounds indices will be handled.</span>
-<span class="sd">          &quot;wrap&quot; - clamps indices to (-n &lt;= i &lt; n), then wraps</span>
+<span class="sd">          ``&quot;wrap&quot;`` - clamps indices to (-n &lt;= i &lt; n), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">          &quot;clip&quot; - clips indices to (0 &lt;= i &lt; n)</span>
-<span class="sd">          Default: `&quot;wrap&quot;`.</span>
+<span class="sd">          ``&quot;clip&quot;`` - clips indices to (0 &lt;= i &lt; n)</span>
+<span class="sd">          Default: ``&quot;wrap&quot;``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -927,7 +936,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;`indices` expected a 1D array, got `</span><span class="si">{}</span><span class="s2">`&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indices</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
             <span class="s2">&quot;`indices` expected integer data type, got `</span><span class="si">{}</span><span class="s2">`&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span>
@@ -954,7 +963,9 @@
 
     <span class="k">if</span> <span class="n">x_ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">x_ndim</span><span class="p">)</span>
-
+        <span class="n">x_sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">x_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;cannot take non-empty indices from an empty axis&quot;</span><span class="p">)</span>
         <span class="n">val_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -965,10 +976,18 @@
         <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
             <span class="n">vals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">vals_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
+    <span class="c1"># choose to throw here for consistency with `place`</span>
+    <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot put into non-empty indices along an empty axis&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="n">vals</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">val_shape</span><span class="p">)</span>
 
-    <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">val_shape</span><span class="p">)</span>
-
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">indices</span><span class="p">,),</span> <span class="n">vals</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">indices</span><span class="p">,),</span> <span class="n">rhs</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
 
 
