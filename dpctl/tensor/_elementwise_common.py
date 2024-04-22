@@ -416,6 +416,7 @@ class BinaryElementwiseFunc:
         docs,
         binary_inplace_fn=None,
         acceptance_fn=None,
+        weak_type_resolver=None,
     ):
         self.__name__ = "BinaryElementwiseFunc"
         self.name_ = name
@@ -428,6 +429,10 @@ class BinaryElementwiseFunc:
             self.acceptance_fn_ = acceptance_fn
         else:
             self.acceptance_fn_ = _acceptance_fn_default_binary
+        if callable(weak_type_resolver):
+            self.weak_type_resolver_ = weak_type_resolver
+        else:
+            self.weak_type_resolver_ = _resolve_weak_types
 
     def __str__(self):
         return f"<{self.__name__} '{self.name_}'>"
@@ -475,6 +480,22 @@ class BinaryElementwiseFunc:
         `dpctl.tensor.hypot` with both arrays being of integral data type.
         """
         return self.acceptance_fn_
+
+    def get_array_dtype_scalar_type_resolver_function(self):
+        """Returns the function which determines how to treat
+        Python scalar types for this elementwise binary function.
+
+        Resolver influences what type the scalar will be
+        treated as prior to type promotion behavior.
+        The function takes 3 arguments:
+            o1_dtype - A class representing a Python scalar type or a dtype
+            o2_dtype - A class representing a Python scalar type or a dtype
+            sycl_dev - :class:`dpctl.SyclDevice` on which function evaluation
+                is carried out.
+
+        One of o1_dtype and o2_dtype must be a dtype
+        """
+        return self.weak_type_resolver_
 
     @property
     def nin(self):
@@ -579,7 +600,9 @@ class BinaryElementwiseFunc:
         if not all(_validate_dtype(o) for o in (o1_dtype, o2_dtype)):
             raise ValueError("Operands have unsupported data types")
 
-        o1_dtype, o2_dtype = _resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
+        o1_dtype, o2_dtype = self.weak_type_resolver_(
+            o1_dtype, o2_dtype, sycl_dev
+        )
 
         buf1_dt, buf2_dt, res_dt = _find_buf_dtype2(
             o1_dtype,

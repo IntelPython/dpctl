@@ -22,6 +22,7 @@ from ._type_utils import (
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
     _acceptance_fn_subtract,
+    _resolve_weak_types_comparisons,
 )
 
 # U01: ==== ABS    (x)
@@ -690,7 +691,11 @@ Returns:
 """
 
 equal = BinaryElementwiseFunc(
-    "equal", ti._equal_result_type, ti._equal, _equal_docstring_
+    "equal",
+    ti._equal_result_type,
+    ti._equal,
+    _equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_comparisons,
 )
 del _equal_docstring_
 
@@ -845,7 +850,11 @@ Returns:
 """
 
 greater = BinaryElementwiseFunc(
-    "greater", ti._greater_result_type, ti._greater, _greater_docstring_
+    "greater",
+    ti._greater_result_type,
+    ti._greater,
+    _greater_docstring_,
+    weak_type_resolver=_resolve_weak_types_comparisons,
 )
 del _greater_docstring_
 
@@ -881,6 +890,7 @@ greater_equal = BinaryElementwiseFunc(
     ti._greater_equal_result_type,
     ti._greater_equal,
     _greater_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_comparisons,
 )
 del _greater_equal_docstring_
 
@@ -1027,7 +1037,11 @@ Returns:
 """
 
 less = BinaryElementwiseFunc(
-    "less", ti._less_result_type, ti._less, _less_docstring_
+    "less",
+    ti._less_result_type,
+    ti._less,
+    _less_docstring_,
+    weak_type_resolver=_resolve_weak_types_comparisons,
 )
 del _less_docstring_
 
@@ -1063,6 +1077,7 @@ less_equal = BinaryElementwiseFunc(
     ti._less_equal_result_type,
     ti._less_equal,
     _less_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_comparisons,
 )
 del _less_equal_docstring_
 
@@ -1499,7 +1514,11 @@ Returns:
 """
 
 not_equal = BinaryElementwiseFunc(
-    "not_equal", ti._not_equal_result_type, ti._not_equal, _not_equal_docstring_
+    "not_equal",
+    ti._not_equal_result_type,
+    ti._not_equal,
+    _not_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_comparisons,
 )
 del _not_equal_docstring_
 

@@ -70,7 +70,25 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
             return less_complex<argT1>(in1, in2);
         }
         else {
-            return (in1 < in2);
+            if constexpr (std::is_integral_v<argT1> &&
+                          std::is_integral_v<argT2> &&
+                          std::is_signed_v<argT1> != std::is_signed_v<argT2>)
+            {
+                if constexpr (std::is_signed_v<argT1> &&
+                              !std::is_signed_v<argT2>) {
+                    return (in1 < 0) ? true : (static_cast<argT2>(in1) < in2);
+                }
+                else {
+                    if constexpr (!std::is_signed_v<argT1> &&
+                                  std::is_signed_v<argT2>) {
+                        return (in2 < 0) ? false
+                                         : (in1 < static_cast<argT1>(in2));
+                    }
+                }
+            }
+            else {
+                return (in1 < in2);
+            }
         }
     }
 
@@ -79,7 +97,6 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
     operator()(const sycl::vec<argT1, vec_sz> &in1,
                const sycl::vec<argT2, vec_sz> &in2) const
     {
-
         auto tmp = (in1 < in2);
 
         if constexpr (std::is_same_v<resT,
@@ -147,6 +164,10 @@ template <typename T1, typename T2> struct LessOutputType
                                         bool>,
         td_ns::
             BinaryTypeMapResultEntry<T1, std::int64_t, T2, std::int64_t, bool>,
+        td_ns::
+            BinaryTypeMapResultEntry<T1, std::uint64_t, T2, std::int64_t, bool>,
+        td_ns::
+            BinaryTypeMapResultEntry<T1, std::int64_t, T2, std::uint64_t, bool>,
         td_ns::BinaryTypeMapResultEntry<T1, sycl::half, T2, sycl::half, bool>,
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, bool>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, bool>,
