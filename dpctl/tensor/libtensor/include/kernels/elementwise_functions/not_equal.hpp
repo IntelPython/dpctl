@@ -61,19 +61,7 @@ template <typename argT1, typename argT2, typename resT> struct NotEqualFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        if constexpr (std::is_same_v<argT1, std::complex<float>> &&
-                      std::is_same_v<argT2, float>)
-        {
-            return (std::real(in1) != in2 || std::imag(in1) != 0.0f);
-        }
-        else if constexpr (std::is_same_v<argT1, float> &&
-                           std::is_same_v<argT2, std::complex<float>>)
-        {
-            return (in1 != std::real(in2) || std::imag(in2) != 0.0f);
-        }
-        else {
-            return (in1 != in2);
-        }
+        return (in1 != in2);
     }
 
     template <int vec_sz>
@@ -160,10 +148,6 @@ template <typename T1, typename T2> struct NotEqualOutputType
                                         T2,
                                         std::complex<double>,
                                         bool>,
-        td_ns::
-            BinaryTypeMapResultEntry<T1, float, T2, std::complex<float>, bool>,
-        td_ns::
-            BinaryTypeMapResultEntry<T1, std::complex<float>, T2, float, bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
