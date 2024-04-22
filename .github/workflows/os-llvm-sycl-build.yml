@@ -113,7 +113,7 @@ jobs:
           pip install numpy"<1.26.0" cython setuptools pytest scikit-build cmake ninja
 
       - name: Checkout repo
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.3
         with:
           fetch-depth: 0
 
