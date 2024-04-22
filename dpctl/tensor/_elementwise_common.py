@@ -488,12 +488,16 @@ class BinaryElementwiseFunc:
         Resolver influences what type the scalar will be
         treated as prior to type promotion behavior.
         The function takes 3 arguments:
-            o1_dtype - A class representing a Python scalar type or a dtype
-            o2_dtype - A class representing a Python scalar type or a dtype
-            sycl_dev - :class:`dpctl.SyclDevice` on which function evaluation
-                is carried out.
 
-        One of o1_dtype and o2_dtype must be a dtype
+        Args:
+            o1_dtype (object, dtype):
+                A class representing a Python scalar type or a ``dtype``
+            o2_dtype (object, dtype):
+                A class representing a Python scalar type or a ``dtype``
+            sycl_dev (:class:`dpctl.SyclDevice`):
+                Device on which function evaluation is carried out.
+
+        One of ``o1_dtype`` and ``o2_dtype`` must be a ``dtype`` instance.
         """
         return self.weak_type_resolver_
 
