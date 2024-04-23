@@ -768,13 +768,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array the values will be put into.</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – <p>One-dimensional array of indices.</p>
-<p>Note that if indices are not unique, a race
-condition will result, and the value written to
-<code class="docutils literal notranslate"><span class="pre">x</span></code> will not be deterministic.
-<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.unique()</span></code> can be used to
-guarantee unique elements in <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p>
-</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
 <li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
 Must be broadcastable to the result shape
 <code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis+1:]</span></code>.</p></li>
@@ -798,7 +792,8 @@ negative indices.</p></li>
 <p>If input array <code class="docutils literal notranslate"><span class="pre">indices</span></code> contains duplicates, a race condition
 occurs, and the value written into corresponding positions in <code class="docutils literal notranslate"><span class="pre">x</span></code>
 may vary from run to run. Preserving sequential semantics in handing
-the duplicates requires additional work, e.g.</p>
+the duplicates to achieve deterministic behavior requires additional
+work, e.g.</p>
 <dl class="field-list">
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
