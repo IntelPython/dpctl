@@ -1,6 +1,0 @@
-dpctl.tensor.usm\_ndarray.\_pointer
-===================================
-
-.. currentmodule:: dpctl.tensor
-
-.. autoattribute:: usm_ndarray._pointer
