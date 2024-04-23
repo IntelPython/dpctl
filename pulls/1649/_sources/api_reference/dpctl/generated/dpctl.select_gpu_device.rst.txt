@@ -1,6 +1,0 @@
-﻿dpctl.select\_gpu\_device
-=========================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: select_gpu_device
