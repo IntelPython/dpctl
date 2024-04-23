@@ -136,12 +136,6 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
             The array the values will be put into.
         indices (usm_ndarray):
             One-dimensional array of indices.
-
-            Note that if indices are not unique, a race
-            condition will result, and the value written to
-            ``x`` will not be deterministic.
-            :func:`dpctl.tensor.unique` can be used to
-            guarantee unique elements in ``indices``.
         vals (usm_ndarray):
             Array of values to be put into ``x``.
             Must be broadcastable to the result shape
@@ -165,7 +159,8 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         If input array ``indices`` contains duplicates, a race condition
         occurs, and the value written into corresponding positions in ``x``
         may vary from run to run. Preserving sequential semantics in handing
-        the duplicates requires additional work, e.g.
+        the duplicates to achieve deterministic behavior requires additional
+        work, e.g.
 
         :Example:
 
