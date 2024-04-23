@@ -41,25 +41,29 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
     Takes elements from an array along a given axis at given indices.
 
     Args:
-       x (usm_ndarray):
-          The array that elements will be taken from.
-       indices (usm_ndarray):
-          One-dimensional array of indices.
-       axis:
-          The axis along which the values will be selected.
-          If ``x`` is one-dimensional, this argument is optional.
-          Default: ``None``.
-       mode:
-          How out-of-bounds indices will be handled.
-          ``"wrap"`` - clamps indices to (-n <= i < n), then wraps
-          negative indices.
-          ``"clip"`` - clips indices to (0 <= i < n)
-          Default: ``"wrap"``.
+        x (usm_ndarray):
+            The array that elements will be taken from.
+        indices (usm_ndarray):
+            One-dimensional array of indices.
+        axis (int, optional):
+            The axis along which the values will be selected.
+            If ``x`` is one-dimensional, this argument is optional.
+            Default: ``None``.
+        mode (str, optional):
+            How out-of-bounds indices will be handled. Possible values
+            are:
+
+            - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+              negative indices.
+            - ``"clip"``: clips indices to (``0 <= i < n``).
+
+            Default: ``"wrap"``.
 
     Returns:
        usm_ndarray:
-          Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-          filled with elements from x.
+          Array with shape
+          ``x.shape[:axis] + indices.shape + x.shape[axis + 1:]``
+          filled with elements from ``x``.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -128,30 +132,71 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     Puts values into an array along a given axis at given indices.
 
     Args:
-       x (usm_ndarray):
-          The array the values will be put into.
-       indices (usm_ndarray)
-          One-dimensional array of indices.
+        x (usm_ndarray):
+            The array the values will be put into.
+        indices (usm_ndarray):
+            One-dimensional array of indices.
+        vals (usm_ndarray):
+            Array of values to be put into ``x``.
+            Must be broadcastable to the result shape
+            ``x.shape[:axis] + indices.shape + x.shape[axis+1:]``.
+        axis (int, optional):
+            The axis along which the values will be placed.
+            If ``x`` is one-dimensional, this argument is optional.
+            Default: ``None``.
+        mode (str, optional):
+            How out-of-bounds indices will be handled. Possible values
+            are:
 
-          Note that if indices are not unique, a race
-          condition will result, and the value written to
-          ``x`` will not be deterministic.
-          :py:func:`dpctl.tensor.unique` can be used to
-          guarantee unique elements in ``indices``.
-       vals:
-          Array of values to be put into ``x``.
-          Must be broadcastable to the result shape
-          ``x.shape[:axis] + indices.shape + x.shape[axis+1:]``.
-       axis:
-          The axis along which the values will be placed.
-          If ``x`` is one-dimensional, this argument is optional.
-          Default: ``None``.
-       mode:
-          How out-of-bounds indices will be handled.
-          ``"wrap"`` - clamps indices to (-n <= i < n), then wraps
-          negative indices.
-          ``"clip"`` - clips indices to (0 <= i < n)
-          Default: ``"wrap"``.
+            - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+              negative indices.
+            - ``"clip"``: clips indices to (``0 <= i < n``).
+
+            Default: ``"wrap"``.
+
+    .. note::
+
+        If input array ``indices`` contains duplicates, a race condition
+        occurs, and the value written into corresponding positions in ``x``
+        may vary from run to run. Preserving sequential semantics in handing
+        the duplicates to achieve deterministic behavior requires additional
+        work, e.g.
+
+        :Example:
+
+            .. code-block:: python
+
+                from dpctl import tensor as dpt
+
+                def put_vec_duplicates(vec, ind, vals):
+                    "Put values into vec, handling possible duplicates in ind"
+                    assert vec.ndim, ind.ndim, vals.ndim == 1, 1, 1
+
+                    # find positions of last occurences of each
+                    # unique index
+                    ind_flipped = dpt.flip(ind)
+                    ind_uniq = dpt.unique_all(ind_flipped).indices
+                    has_dups = len(ind) != len(ind_uniq)
+
+                    if has_dups:
+                        ind_uniq = dpt.subtract(vec.size - 1, ind_uniq)
+                        ind = dpt.take(ind, ind_uniq)
+                        vals = dpt.take(vals, ind_uniq)
+
+                    dpt.put(vec, ind, vals)
+
+                n = 512
+                ind = dpt.concat((dpt.arange(n), dpt.arange(n, -1, step=-1)))
+                x = dpt.zeros(ind.size, dtype="int32")
+                vals = dpt.arange(ind.size, dtype=x.dtype)
+
+                # Values corresponding to last positions of
+                # duplicate indices are written into the vector x
+                put_vec_duplicates(x, ind, vals)
+
+                parts = (vals[-1:-n-2:-1], dpt.zeros(n, dtype=x.dtype))
+                expected = dpt.concat(parts)
+                assert dpt.all(x == expected)
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -237,7 +282,7 @@ def extract(condition, arr):
 
     Returns the elements of an array that satisfies the condition.
 
-    If `condition` is boolean ``dpctl.tensor.extract`` is
+    If ``condition`` is boolean ``dpctl.tensor.extract`` is
     equivalent to ``arr[condition]``.
 
     Note that ``dpctl.tensor.place`` does the opposite of
@@ -245,14 +290,16 @@ def extract(condition, arr):
 
     Args:
        conditions (usm_ndarray):
-            An array whose non-zero or True entries indicate the element
-            of `arr` to extract.
+            An array whose non-zero or ``True`` entries indicate the element
+            of ``arr`` to extract.
+
        arr (usm_ndarray):
-            Input array of the same size as `condition`.
+            Input array of the same size as ``condition``.
 
     Returns:
         usm_ndarray:
-            Rank 1 array of values from `arr` where `condition` is True.
+            Rank 1 array of values from ``arr`` where ``condition`` is
+            ``True``.
     """
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
@@ -280,20 +327,20 @@ def place(arr, mask, vals):
 
     Change elements of an array based on conditional and input values.
 
-    If `mask` is boolean ``dpctl.tensor.place`` is
+    If ``mask`` is boolean ``dpctl.tensor.place`` is
     equivalent to ``arr[condition] = vals``.
 
     Args:
         arr (usm_ndarray):
             Array to put data into.
         mask (usm_ndarray):
-            Boolean mask array. Must have the same size as `arr`.
+            Boolean mask array. Must have the same size as ``arr``.
         vals (usm_ndarray, sequence):
-            Values to put into `arr`. Only the first N elements are
-            used, where N is the number of True values in `mask`. If
-            `vals` is smaller than N, it will be repeated, and if
-            elements of `arr` are to be masked, this sequence must be
-            non-empty. Array `vals` must be one dimensional.
+            Values to put into ``arr``. Only the first N elements are
+            used, where N is the number of True values in ``mask``. If
+            ``vals`` is smaller than N, it will be repeated, and if
+            elements of ``arr`` are to be masked, this sequence must be
+            non-empty. Array ``vals`` must be one dimensional.
     """
     if not isinstance(arr, dpt.usm_ndarray):
         raise TypeError(
@@ -345,13 +392,14 @@ def nonzero(arr):
     Return the indices of non-zero elements.
 
     Returns a tuple of usm_ndarrays, one for each dimension
-    of `arr`, containing the indices of the non-zero elements
-    in that dimension. The values of `arr` are always tested in
+    of ``arr``, containing the indices of the non-zero elements
+    in that dimension. The values of ``arr`` are always tested in
     row-major, C-style order.
 
     Args:
         arr (usm_ndarray):
             Input array, which has non-zero array rank.
+
     Returns:
         Tuple[usm_ndarray, ...]:
             Indices of non-zero array elements.
