@@ -293,7 +293,7 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        size_t lws = 64;
+        const size_t lws = 128;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -774,7 +774,7 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        size_t lws = 64;
+        const size_t lws = 128;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -914,7 +914,7 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
     // We read sg.load(&padded_vec[(base / n0)]). The vector is padded to
     // ensure that reads are accessible
 
-    size_t lws = 64;
+    const size_t lws = 128;
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(make_padded_vec_ev);
@@ -993,7 +993,7 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
     // We read sg.load(&padded_vec[(base / n0)]). The vector is padded to
     // ensure that reads are accessible
 
-    size_t lws = 64;
+    const size_t lws = 128;
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(make_padded_vec_ev);
