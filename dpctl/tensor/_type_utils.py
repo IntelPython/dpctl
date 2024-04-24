@@ -346,21 +346,17 @@ def _strong_dtype_num_kind(o):
     raise ValueError(f"Unrecognized kind {k} for dtype {o}")
 
 
+def _is_weak_dtype(dtype):
+    return isinstance(
+        dtype,
+        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
+    )
+
+
 def _resolve_weak_types(o1_dtype, o2_dtype, dev):
     "Resolves weak data type per NEP-0050"
-    if isinstance(
-        o1_dtype,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
-        if isinstance(
-            o2_dtype,
-            (
-                WeakBooleanType,
-                WeakIntegralType,
-                WeakFloatingType,
-                WeakComplexType,
-            ),
-        ):
+    if _is_weak_dtype(o1_dtype):
+        if _is_weak_dtype(o2_dtype):
             raise ValueError
         o1_kind_num = _weak_type_num_kind(o1_dtype)
         o2_kind_num = _strong_dtype_num_kind(o2_dtype)
@@ -377,10 +373,7 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
             return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
         else:
             return o2_dtype, o2_dtype
-    elif isinstance(
-        o2_dtype,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
+    elif _is_weak_dtype(o2_dtype):
         o1_kind_num = _strong_dtype_num_kind(o1_dtype)
         o2_kind_num = _weak_type_num_kind(o2_dtype)
         if o2_kind_num > o1_kind_num:
@@ -395,6 +388,58 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
                 _to_device_supported_dtype(dpt.float64, dev),
             )
         else:
+            return o1_dtype, o1_dtype
+    else:
+        return o1_dtype, o2_dtype
+
+
+def _resolve_weak_types_comparisons(o1_dtype, o2_dtype, dev):
+    "Resolves weak data type per NEP-0050 for comparisons,"
+    "where result type is known to be `bool` and special behavior"
+    "is needed to handle mixed integer kinds"
+    if _is_weak_dtype(o1_dtype):
+        if _is_weak_dtype(o2_dtype):
+            raise ValueError
+        o1_kind_num = _weak_type_num_kind(o1_dtype)
+        o2_kind_num = _strong_dtype_num_kind(o2_dtype)
+        if o1_kind_num > o2_kind_num:
+            if isinstance(o1_dtype, WeakIntegralType):
+                return dpt.dtype(ti.default_device_int_type(dev)), o2_dtype
+            if isinstance(o1_dtype, WeakComplexType):
+                if o2_dtype is dpt.float16 or o2_dtype is dpt.float32:
+                    return dpt.complex64, o2_dtype
+                return (
+                    _to_device_supported_dtype(dpt.complex128, dev),
+                    o2_dtype,
+                )
+            return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
+        else:
+            if isinstance(o1_dtype, WeakIntegralType):
+                if o2_dtype.kind == "u":
+                    # Python scalar may be negative, assumes mixed int loops
+                    # exist
+                    return dpt.dtype(ti.default_device_int_type(dev)), o2_dtype
+            return o2_dtype, o2_dtype
+    elif _is_weak_dtype(o2_dtype):
+        o1_kind_num = _strong_dtype_num_kind(o1_dtype)
+        o2_kind_num = _weak_type_num_kind(o2_dtype)
+        if o2_kind_num > o1_kind_num:
+            if isinstance(o2_dtype, WeakIntegralType):
+                return o1_dtype, dpt.dtype(ti.default_device_int_type(dev))
+            if isinstance(o2_dtype, WeakComplexType):
+                if o1_dtype is dpt.float16 or o1_dtype is dpt.float32:
+                    return o1_dtype, dpt.complex64
+                return o1_dtype, _to_device_supported_dtype(dpt.complex128, dev)
+            return (
+                o1_dtype,
+                _to_device_supported_dtype(dpt.float64, dev),
+            )
+        else:
+            if isinstance(o2_dtype, WeakIntegralType):
+                if o1_dtype.kind == "u":
+                    # Python scalar may be negative, assumes mixed int loops
+                    # exist
+                    return o1_dtype, dpt.dtype(ti.default_device_int_type(dev))
             return o1_dtype, o1_dtype
     else:
         return o1_dtype, o2_dtype
@@ -789,6 +834,7 @@ __all__ = [
     "_acceptance_fn_negative",
     "_acceptance_fn_subtract",
     "_resolve_weak_types",
+    "_resolve_weak_types_comparisons",
     "_weak_type_num_kind",
     "_strong_dtype_num_kind",
     "can_cast",

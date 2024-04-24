@@ -34,10 +34,9 @@ from dpctl.tensor._type_utils import _can_cast, _to_device_supported_dtype
 from dpctl.utils import ExecutionPlacementError
 
 from ._type_utils import (
-    WeakBooleanType,
     WeakComplexType,
-    WeakFloatingType,
     WeakIntegralType,
+    _is_weak_dtype,
     _strong_dtype_num_kind,
     _weak_type_num_kind,
 )
@@ -47,29 +46,10 @@ def _resolve_one_strong_two_weak_types(st_dtype, dtype1, dtype2, dev):
     "Resolves weak data types per NEP-0050,"
     "where the second and third arguments are"
     "permitted to be weak types"
-    if isinstance(
-        st_dtype,
-        (
-            WeakBooleanType,
-            WeakIntegralType,
-            WeakFloatingType,
-            WeakComplexType,
-        ),
-    ):
+    if _is_weak_dtype(st_dtype):
         raise ValueError
-    if isinstance(
-        dtype1,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
-        if isinstance(
-            dtype2,
-            (
-                WeakBooleanType,
-                WeakIntegralType,
-                WeakFloatingType,
-                WeakComplexType,
-            ),
-        ):
+    if _is_weak_dtype(dtype1):
+        if _is_weak_dtype(dtype2):
             kind_num1 = _weak_type_num_kind(dtype1)
             kind_num2 = _weak_type_num_kind(dtype2)
             st_kind_num = _strong_dtype_num_kind(st_dtype)
@@ -120,10 +100,7 @@ def _resolve_one_strong_two_weak_types(st_dtype, dtype1, dtype2, dev):
             return _to_device_supported_dtype(dpt.float64, dev), dtype2
         else:
             return max_dtype, dtype2
-    elif isinstance(
-        dtype2,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
+    elif _is_weak_dtype(dtype2):
         max_dt_num_kind, max_dtype = max(
             [
                 (_strong_dtype_num_kind(st_dtype), st_dtype),
@@ -152,15 +129,9 @@ def _resolve_one_strong_two_weak_types(st_dtype, dtype1, dtype2, dev):
 
 def _resolve_one_strong_one_weak_types(st_dtype, dtype, dev):
     "Resolves one weak data type with one strong data type per NEP-0050"
-    if isinstance(
-        st_dtype,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
+    if _is_weak_dtype(st_dtype):
         raise ValueError
-    if isinstance(
-        dtype,
-        (WeakBooleanType, WeakIntegralType, WeakFloatingType, WeakComplexType),
-    ):
+    if _is_weak_dtype(dtype):
         st_kind_num = _strong_dtype_num_kind(st_dtype)
         kind_num = _weak_type_num_kind(dtype)
         if kind_num > st_kind_num:

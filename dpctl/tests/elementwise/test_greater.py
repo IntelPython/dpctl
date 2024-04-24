@@ -263,3 +263,21 @@ def test_greater_canary_mock_array():
     c = Canary()
     with pytest.raises(ValueError):
         dpt.greater(a, c)
+
+
+def test_greater_mixed_integer_kinds():
+    get_queue_or_skip()
+
+    x1 = dpt.flip(dpt.arange(-9, 1, dtype="i8"))
+    x2 = dpt.arange(10, dtype="u8")
+
+    # u8 - i8
+    res = dpt.greater(x2, x1)
+    assert dpt.all(res[1:])
+    assert not res[0]
+    # i8 - u8
+    assert not dpt.any(dpt.greater(x1, x2))
+
+    # Python scalar
+    assert dpt.all(dpt.greater(x2, -1))
+    assert not dpt.any(dpt.greater(-1, x2))
